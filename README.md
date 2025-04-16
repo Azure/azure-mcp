@@ -18,22 +18,21 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "List my Azure storage accounts"
 - "Show me all my Cosmos DB databases"
 - "List my resource groups"
-
-### 📊 Query & Analyze
-
-- "Query my Log Analytics workspace"
 - "Show me the tables in my Storage account"
 - "List containers in my Cosmos DB database"
+- "Get details about my Storage container"
+
+### 📊 Query & Analyze
+- "Query my Log Analytics workspace"
 
 ### ⚙️ Manage Configuration
 
 - "List my App Configuration stores"
 - "Show my key-value pairs in App Config"
-- "Get details about my Storage container"
 
 ### 🔧 Advanced Azure Operations
 
-- "List my CDN endpoints using Azure CLI"
+- "List my Azure CDN endpoints"
 - "Help me build an Azure application using Node.js"
 
 ### 🔍 How It Works
