@@ -7,10 +7,12 @@ using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands;
 
-public abstract class SubscriptionCommand<TArgs> : GlobalCommand<TArgs>
+public abstract class SubscriptionCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs> : GlobalCommand<TArgs>
     where TArgs : SubscriptionArguments, new()
 {
     protected readonly Option<string> _subscriptionOption = ArgumentDefinitions.Common.Subscription.ToOption();

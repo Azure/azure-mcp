@@ -6,10 +6,13 @@ using AzureMcp.Models.Argument;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.Storage.Blob.Container;
 
-public abstract class BaseContainerCommand<TArgs> : BaseStorageCommand<TArgs> where TArgs : BaseContainerArguments, new()
+public abstract class BaseContainerCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs>
+    : BaseStorageCommand<TArgs> where TArgs : BaseContainerArguments, new()
 {
     protected readonly Option<string> _containerOption = ArgumentDefinitions.Storage.Container.ToOption();
 
