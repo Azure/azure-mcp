@@ -142,9 +142,28 @@ For a step-by-step installation, follow these instructions:
 
 ## 🤖 Custom MCP Clients
 
-You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via `http://localhost:5008` or via `STDIO`.
+You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.
 
-`npx -y @azure/mcp@latest server start`
+### Using standard IO
+
+1. Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using VS Code, follow instructions in [Manual Install](#-manual-install).
+
+### Using SSE
+
+1. Open a terminal window and execute: `npx -y @azure/mcp@latest server start --transport sse`
+2. The server starts up and is hosted at: http://localhost:5008.  To use another port, append `--port {YOUR-PORT-NUMBER}`.
+3. Open your MCP client and add the SSE configuration value.  This may differ between MCP clients.  In VS Code, it will look like:
+   ```json
+   {
+      "servers": {
+        "Azure MCP Server": {
+          "type": "sse",
+          "url": "http://localhost:5008/sse"
+        }
+      }
+    }
+   ```
+
 
 More end-to-end MCP client/agent guides are coming soon!
 
