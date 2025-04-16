@@ -92,6 +92,8 @@ For detailed command documentation and examples, see [Azure MCP Commands](docs/a
 
 ## 🔌 Getting Started
 
+The Azure MCP Server requires Node.js to install and run the server. If you don't have it installed, follow the instructions [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+
 ### VS Code + GitHub Copilot
 
 The Azure MCP Server provides Azure data plane tools. It can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code. If you're interested in broad developer support across a variety of Azure development scenarios not included in the Azure MCP Server, such as searching documentation on Microsoft Learn, we recommend this extension as well.
@@ -111,7 +113,7 @@ Click one of these buttons to install the Azure MCP Server for VS Code or VS Cod
 
 [![Install with NPX in VS Code](https://img.shields.io/badge/VS_Code-Install_Azure_MCP_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D) [![Install with NPX in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Azure_MCP_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D&quality=insiders)
 
-Just one click, and you're ready to go! 🎉
+Once you've installed  the Azure MCP Server, make sure you select Agent Mode and refresh the tools list. To learn more about Agent Mode, visit the [VS Code Documentation](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode).
 
 #### 🔧 Manual Install
 
