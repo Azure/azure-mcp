@@ -1,0 +1,28 @@
+# Instructions for CODEOWNERS file format and automatic build failure notifications:
+# https://github.com/Azure/azure-sdk/blob/main/docs/policies/opensource.md#codeowners
+
+# -----------------------------------------------------------------
+# IMPORTANT NOTE:
+#   The ordering of "ServiceLabel" blocks is important!
+#
+#   Matching takes place from bottom-to-top and will stop after the
+#   first match.  Place less specific matches earlier in the file
+#   and more specific matches later.
+#
+#   Be sure to add new entries in the area they belong, denoted by the
+#   header wrapped in "#" characters. (e.g. SDK, EngSys, Management)
+# -----------------------------------------------------------------
+
+##################
+# Catch all
+##################
+*                                      @jongio @conniey @g2vinay
+
+##################
+# Eng Sys
+##################
+/eng/                                  @hallipr @weshaggard
+/eng/common/                           @Azure/azure-sdk-eng
+/.github/workflows/                    @Azure/azure-sdk-eng
+/.github/CODEOWNERS                    @Azure/azure-sdk-eng @jongio
+/.config/1espt/                        @benbp @weshaggard

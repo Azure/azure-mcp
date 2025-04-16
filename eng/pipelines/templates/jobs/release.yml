@@ -1,0 +1,68 @@
+jobs:
+- job: TagRepository
+  displayName: "Create release tag"
+  condition: and(succeeded(), ne(variables['Skip.TagRepository'], 'true'))
+  steps:
+  - checkout: self
+
+  - download: current
+    displayName: Download $(PipelineArtifactName)_packed
+    artifact: $(PipelineArtifactName)_packed
+
+  - template: /eng/common/pipelines/templates/steps/retain-run.yml
+
+  - pwsh: |
+      gh release create `
+        "$(Version)" `
+        --title "$(Version)"
+
+      gh release upload $(Version) $(Pipeline.Workspace)/$(PipelineArtifactName)_packed/*.tgz
+    displayName: Create GitHub Release and upload artifacts
+    env:
+      GH_TOKEN: $(azuresdk-github-pat)
+
+- deployment: Publish
+  displayName: "Publish to npmjs.com"
+  condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
+  templateContext:
+    type: releaseJob
+    isProduction: true
+    inputs:
+    - input: pipelineArtifact
+      artifactName: $(PipelineArtifactName)_packed
+      targetPath: $(Pipeline.Workspace)/drop
+  environment: package-publish
+  timeoutInMinutes: 120
+  dependsOn: TagRepository
+  pool:
+    name: azsdk-pool-mms-ubuntu-2204-general
+    image: azsdk-pool-mms-ubuntu-2204-1espt
+    os: linux
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - template: /eng/pipelines/templates/steps/npm-release-task.yml
+          parameters:
+            PathToArtifacts: $(Pipeline.Workspace)/drop
+            Tag: latest
+
+- job: UpdatePackageVersion
+  displayName: "Update Package Versions"
+  condition: and(succeeded(), ne(variables['Skip.UpdatePackageVersion'], 'true'))
+  dependsOn: Publish
+  steps:
+  - checkout: self
+
+  # Apply the version increment to each library, which updates the Cargo.toml and changelog files.
+  - task: PowerShell@2
+    displayName: Increment version
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Update-Version.ps1
+
+  - template: /eng/common/pipelines/templates/steps/create-pull-request.yml
+    parameters:
+      PRBranchName: increment-package-version-$(Build.BuildId)
+      CommitMsg: "Increment package version after release"
+      PRTitle: "Increment version after release"

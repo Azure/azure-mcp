@@ -1,0 +1,11 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions": [
+      {
+        "file": [ 
+          "eng/common/testproxy/dotnet-devcert.pfx"
+        ],
+        "_justification": "File contains private key used by test code."
+      }
+    ]
+  }

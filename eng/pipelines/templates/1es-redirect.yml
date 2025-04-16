@@ -1,0 +1,60 @@
+resources:
+  repositories:
+    - repository: 1ESPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/1ESPipelineTemplates
+      ref: refs/tags/release
+
+parameters:
+  - name: stages
+    type: stageList
+    default: []
+  - name: Use1ESOfficial
+    type: boolean
+    default: true
+  - name: AutoBaseline
+    type: boolean
+    default: false
+
+extends:
+  ${{ if and(parameters.Use1ESOfficial, eq(variables['System.TeamProject'], 'internal')) }}:
+    template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  ${{ else }}:
+    template: v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    settings:
+      skipBuildTagsForGitHubPullRequests: true
+      # only enable autoBaseline for the internal build of rust-core on main branch
+      ${{ if parameters.AutoBaseline }}:
+        featureFlags:
+          autoBaseline: true
+    sdl:
+      ${{ if parameters.AutoBaseline }}:
+        autoBaseline:
+          isMainPipeline: true
+          enableForGitHub: true
+      sourceRepositoriesToScan:
+        exclude:
+          - repository: azure-sdk-build-tools
+      sourceAnalysisPool:
+        name: azsdk-pool-mms-win-2022-general
+        image: azsdk-pool-mms-win-2022-1espt
+        os: windows
+      eslint:
+        enabled: false
+        justificationForDisabling: "ESLint injected task has failures because it uses an old version of mkdirp. We should not fail for tools not controlled by the repo. See: https://dev.azure.com/azure-sdk/internal/_build/results?buildId=3556850"
+      codeql:
+        compiled:
+          enabled: false
+          justificationForDisabling: "CodeQL times our pipelines out by running for 2+ hours before being force canceled."
+      credscan:
+        suppressionsFile: $(Build.SourcesDirectory)/eng/CredScanSuppression.json
+        toolVersion: "2.3.12.23"
+        baselineFiles: $(Build.SourcesDirectory)/eng/rust.gdnbaselines
+      psscriptanalyzer:
+        compiled: true
+        break: true
+      policy: M365
+      # Turn off the build warnings caused by disabling some sdl checks
+      createAdoIssuesForJustificationsForDisablement: false
+    stages: ${{ parameters.stages }}

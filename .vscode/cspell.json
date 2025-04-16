@@ -1,0 +1,37 @@
+{
+    // cspell configuration file
+    "version": "0.2",
+    "language": "en",
+    "dictionaries": [
+        "typescript",
+        "node",
+        "csharp",
+        "powershell",
+        "softwareTerms"
+    ],
+    "ignorePaths": [
+        "**/node_modules/**",
+        "**/.dist/**",
+        "**/.work/**",
+        "**/.git/**",
+        "**/.vscode/**"
+    ],
+    "words": [
+        "1espt",
+        "azmcp",
+        "azsdk",
+        "azuresdk",
+        "codesign",
+        "cvzf",
+        "LINUXOS",
+        "LINUXPOOL",
+        "LINUXVMIMAGE",
+        "MACOS",
+        "MACPOOL",
+        "MACVMIMAGE",
+        "vsts",
+        "WINDOWSOS",
+        "WINDOWSPOOL",
+        "WINDOWSVMIMAGE"
+    ]
+}

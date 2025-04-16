@@ -1,0 +1,205 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Databases List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "cosmos",
+                "database",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--retry-max-retries", 
+                "0"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Tools List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "tools",
+                "list",
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Monitor Table List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "monitor",
+                "table",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        
+        {
+            "name": "Debug Storage Table List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "storage",
+                "table",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--account-name",
+                "${input:storageAccountName}",
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Monitor Log Query",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "monitor",
+                "log",
+                "query",
+                "--subscription",
+                "${input:subscription}",
+                "--workspace",
+                "${input:workspace}",
+                "--query",
+                "recent"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Launch MCP Server",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "@modelcontextprotocol/inspector",
+                "./bin/Debug/net9.0/azmcp.exe",
+                "server",
+                "start"
+            ],
+            "cwd": "${workspaceFolder}/src",
+            "console": "internalConsole"
+        },
+        {
+            "name": "Attach to MCP Server",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Debug Cosmos Container Items Query",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "cosmos",
+                "database",
+                "container",
+                "item",
+                "query",
+                "--subscription",
+                "${input:subscription}",
+                "--account-name",
+                "${input:cosmosAccountName}",
+                "--database-name",
+                "${input:cosmosDatabaseName}",
+                "--container-name",
+                "${input:cosmosContainerName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug MCP Server",
+            "configurations": ["Launch MCP Server", "Attach to MCP Server"]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "subscription",
+            "type": "promptString",
+            "description": "Azure Subscription",
+            "default": ""
+        },
+        {
+            "id": "cosmosAccountName",
+            "type": "promptString",
+            "description": "Cosmos DB Account Name",
+            "default": ""
+        }
+        ,
+        {
+            "id": "storageAccountName",
+            "type": "promptString",
+            "description": "Storage Account Name",
+            "default": ""
+        },
+        {
+            "id": "workspaceId",
+            "type": "promptString",
+            "description": "Log Analytics Workspace ID",
+            "default": ""
+        },
+        {
+            "id": "cosmosDatabaseName",
+            "type": "promptString",
+            "description": "Cosmos DB Database Name",
+            "default": ""
+        },
+        {
+            "id": "cosmosContainerName",
+            "type": "promptString",
+            "description": "Cosmos DB Container Name",
+            "default": ""
+        }
+    ]
+}

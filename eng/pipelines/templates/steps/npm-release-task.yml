@@ -1,0 +1,102 @@
+parameters:
+  - name: PathToArtifacts
+    type: string
+  - name: Registry
+    type: string
+    default: 'https://registry.npmjs.org/'
+  - name: Tag
+    type: string
+
+steps:
+  - template: /eng/common/pipelines/templates/steps/set-default-branch.yml
+
+  - ${{ if eq(parameters.Registry, 'https://registry.npmjs.org/') }}:
+    - task: EsrpRelease@9
+      displayName: 'Publish ${{parameters.Artifact.name}} to ESRP'
+      inputs:
+        ConnectedServiceName: 'Azure SDK PME Managed Identity'
+        ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
+        DomainTenantId: '975f013f-7f24-47e8-a7d3-abc4752bf346'
+        Usemanagedidentity: true
+        KeyVaultName: 'kv-azuresdk-codesign'
+        SignCertName: 'azure-sdk-esrp-release-certificate'
+        Intent: 'PackageDistribution'
+        ContentType: 'npm'
+        FolderLocation: ${{parameters.PathToArtifacts}}
+        Owners: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+        Approvers: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+        ServiceEndpointUrl: 'https://api.esrp.microsoft.com'
+        MainPublisher: 'ESRPRELPACMANTEST'
+        productstate: ${{parameters.Tag}}
+
+  - ${{ else }}:
+    - template: /eng/common/pipelines/templates/steps/create-authenticated-npmrc.yml
+      parameters:
+        npmrcPath: ${{parameters.PathToArtifacts}}/.npmrc
+        registryUrl: ${{ parameters.Registry }}
+
+    - pwsh: |
+        $tgzFiles = Get-ChildItem -Path ${{parameters.PathToArtifacts}} -Filter *.tgz
+        | Sort-Object -Descending
+        
+        if ($tgzFiles.Count -eq 0) {
+          Write-Host "No .tgz files found in ${{parameters.PathToArtifacts}}"
+          exit 1
+        }
+
+        Write-Host "Publishing the following files to ${{parameters.Registry}}:"
+        foreach ($file in $tgzFiles) {
+          Write-Host "  - $($file.FullName)"
+        }
+
+        $tag = '${{parameters.Tag}}'
+        foreach ($file in $tgzFiles) {
+          $command = "npm publish '$file' --access public --tag '$tag'"
+          Write-Host "> $command"
+          Invoke-Expression $command
+        }
+      displayName: Publish to Dev Feed
+      workingDirectory: ${{parameters.PathToArtifacts}}
+
+    - pwsh: |
+        $markdown = @"
+        To run the dev version of the package, you can use the following command:
+        ``````bash
+        npx --yes --registry '${{ parameters.Registry }}' @azure/mcp@$(Version) --version
+        ``````
+
+        You can also globally install the package and run it like:
+        ``````bash
+        npm install --registry '${{ parameters.Registry }}' -g @azure/mcp@$(Version)
+
+        azmcp --version
+        ``````
+
+        ## mcp.json
+
+        Configure the server in ``.vscode/mcp.json`` with:
+        ``````json
+        {
+          "servers": {
+            "Azure MCP Server": {
+              "command": "npx",
+              "args": [
+                "-y",
+                "--registry",
+                "${{ parameters.Registry }}",
+                "@azure/mcp@$(Version)",
+                "server",
+                "start"
+              ]
+            }
+          }
+        }
+        ``````
+        "@
+        
+        New-Item '$(Pipeline.Workspace)/.work' -ItemType Directory -Force | Out-Null
+        $path = '$(Pipeline.Workspace)/.work/Usage.md'
+
+        $markdown | Out-File -FilePath $path -Encoding utf8
+        Write-Host "##vso[task.uploadsummary]$path"
+      displayName: "Document dev version usage"

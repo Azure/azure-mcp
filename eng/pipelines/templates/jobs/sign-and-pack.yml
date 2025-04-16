@@ -1,0 +1,78 @@
+parameters:
+- name: TimeoutInMinutes
+  type: number
+  default: 120
+- name: SkipSigning
+  type: boolean
+  default: false
+
+jobs:
+- job: SignAndPack
+  ${{ if parameters.SkipSigning }}:
+    displayName: "Pack"
+  ${{ else }}:
+    displayName: "Sign and Pack"
+  condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
+  timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+  pool:
+    name: $(MACPOOL)
+    vmImage: $(MACVMIMAGE)
+    os: macos
+  templateContext:
+    outputParentDirectory: $(Build.ArtifactStagingDirectory)
+    outputs:
+    - ${{ if not(parameters.SkipSigning) }}:
+      - output: pipelineArtifact
+        artifact: $(PipelineArtifactName)_signed
+        path: $(Build.ArtifactStagingDirectory)/signed
+        condition: succeededOrFailed()
+    - output: pipelineArtifact
+      artifact: $(PipelineArtifactName)_packed
+      path: $(Build.ArtifactStagingDirectory)/packed
+      condition: succeededOrFailed()
+  steps:
+  - checkout: self
+    
+  - checkout: azure-sdk-build-tools
+
+  - download: current
+    displayName: Download artifacts
+
+  - task: Powershell@2
+    displayName: "Compress packages"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/azure-mcp-pr/eng/scripts/Compress-ForSigning.ps1
+      arguments: >
+        -ArtifactsPath '$(Pipeline.Workspace)'
+        -ArtifactPrefix '$(PipelineArtifactName)_'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/signed'
+        
+  - ${{ if not(parameters.SkipSigning) }}:
+    - template: pipelines/steps/azd-cli-win-signing.yml@azure-sdk-build-tools
+      parameters:
+        WinPath: $(Build.ArtifactStagingDirectory)/signed
+        WinPattern: '**/*.exe'
+
+    - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
+      parameters:
+        MacPath: $(Build.ArtifactStagingDirectory)/signed
+        MacPattern: "**/*.zip"
+
+  - task: Powershell@2
+    displayName: "Expand packages"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/azure-mcp-pr/eng/scripts/Expand-AfterSigning.ps1
+      arguments: >
+        -Path '$(Build.ArtifactStagingDirectory)/signed'
+
+  - task: Powershell@2
+    displayName: "Pack modules"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/azure-mcp-pr/eng/scripts/Pack-Modules.ps1
+      arguments: >
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
+        -Version '$(Version)'

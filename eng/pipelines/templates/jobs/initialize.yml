@@ -1,0 +1,45 @@
+parameters:
+- name: ReleaseRun
+  type: boolean
+  default: false
+
+jobs:
+- job: Initialize
+  timeoutInMinutes: 90
+  steps:
+  - checkout: self
+
+  - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+    - pwsh: |
+        Write-Host "##[group] Environment Variables"
+        Get-ChildItem env: | ForEach-Object { Write-Host "$($_.Name)  =  $($_.Value)" }
+        Write-Host "##[endgroup]"
+      displayName: Dump environment variables
+
+  - pwsh: |
+      Write-Host "Attaching build reason string to the build for additional tag generation."
+      @('$(Build.Reason)') | ConvertTo-Json -AsArray | Out-File -FilePath $(System.DefaultWorkingDirectory)/build-reason.json -Encoding utf8
+      Write-Host '##vso[task.addattachment type=AdditionalTags;name=AdditionalTags;]$(System.DefaultWorkingDirectory)/build-reason.json'
+    displayName: Tag build reason
+  
+  - task: Powershell@2
+    name: Version
+    displayName: "Set package version"
+    condition: and(succeeded(), ne(variables['NoPackagesChanged'],'true'))
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Get-Version.ps1
+      ${{ if eq(parameters.ReleaseRun, true) }}:
+        arguments: >
+          -Variable 'Version'
+      ${{ elseif and(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
+        arguments: >
+          -Variable 'Version'
+          -PrereleaseLabel 'beta'
+          -PrereleaseNumber '$(Build.BuildId)'
+      ${{ else }}:
+        arguments: >
+          -Variable 'Version'
+          -PrereleaseLabel 'alpha'
+          -PrereleaseNumber '$(Build.BuildId)'
+

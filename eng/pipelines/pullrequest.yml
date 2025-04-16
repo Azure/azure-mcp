@@ -1,0 +1,9 @@
+pr:
+  branches:
+    include:
+      - main
+      - feature/*
+      - hotfix/*
+
+extends:
+  template: /eng/pipelines/templates/common.yml

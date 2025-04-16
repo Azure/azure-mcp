@@ -1,0 +1,28 @@
+parameters:
+- name: SkipSigning
+  displayName: Skip signing
+  type: boolean
+  default: false
+  
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+      - hotfix/*
+
+pr:
+  branches:
+    include:
+      - main
+      - feature/*
+      - hotfix/*
+
+extends:
+  template: /eng/pipelines/templates/common.yml
+  parameters:
+    SkipSigning: ${{ parameters.SkipSigning }}
+    # We release signed, manual runs from main and hotfix branches
+    # All other runs get -alpha prerelease labels
+    PublishPackages: true
+    ReleaseRun: ${{ and(eq(variables['Build.Reason'], 'Manual'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')), not(parameters.SkipSigning)) }}

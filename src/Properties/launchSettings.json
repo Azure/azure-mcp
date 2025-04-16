@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "azmcp": {
+      "commandName": "Project",
+      "commandLineArgs": "server start --transport sse"
+    }
+  }
+}
