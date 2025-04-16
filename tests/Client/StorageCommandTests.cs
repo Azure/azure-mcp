@@ -46,7 +46,7 @@ namespace AzureMcp.Tests.Client
 
         [Fact]
         [Trait("Category", "Live")]
-        public async Task Should_list_storage_accounts_by_subscription_name_with_tenant()
+        public async Task Should_list_storage_accounts_by_subscription_name_with_tenant_id()
         {
             var result = await CallToolAsync(
                 "azmcp-storage-account-list",
@@ -80,7 +80,7 @@ namespace AzureMcp.Tests.Client
 
         [Fact]
         [Trait("Category", "Live")]
-        public async Task Should_list_containers()
+        public async Task Should_list_blobs_in_container()
         {
             var result = await CallToolAsync(
                 "azmcp-storage-blob-list",
@@ -89,16 +89,17 @@ namespace AzureMcp.Tests.Client
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantName },
                 { "account-name", Settings.StorageAccountName },
+                { "container-name", Settings.StorageContainerName },
                 });
 
-            Assert.True(result.TryGetProperty("containers", out var actual));
+            Assert.True(result.TryGetProperty("blobs", out var actual));
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
         }
 
         [Fact]
         [Trait("Category", "Live")]
-        public async Task Should_list_blobs_in_container()
+        public async Task Should_list_containers()
         {
             var result = await CallToolAsync(
                 "azmcp-storage-blob-container-list",
@@ -184,7 +185,6 @@ namespace AzureMcp.Tests.Client
 
             Assert.True(result.TryGetProperty("details", out var actual));
             Assert.Equal(JsonValueKind.Object, actual.ValueKind);
-            Assert.NotEmpty(actual.EnumerateArray());
         }
     }
 }
