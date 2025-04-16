@@ -15,15 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Azure/azure-mcp.git",
-    "directory": "eng/npm/platform"
+    "url": "git+https://github.com/Azure/azure-mcp.git"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "main": "./index.js",
   "bin": {
-    "azmcp-{os}-{cpu}": "{executable}"
+    "azmcp-{os}-{cpu}": "./dist/{executable}"
   },
   "os": [
     "{os}"

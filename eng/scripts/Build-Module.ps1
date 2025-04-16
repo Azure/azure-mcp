@@ -67,9 +67,14 @@ try {
     
     # Clear and recreate the package output directory
     Remove-Item -Path $outputDir -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
-    New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+    New-Item -Path "$outputDir/dist" -ItemType Directory -Force | Out-Null
 
-    $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir' /p:Version=$Version" 
+    # Copy the platform package files to the output directory
+    Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
+    Copy-Item -Path "$RepoRoot/README.md" -Destination $outputDir -Force
+    Copy-Item -Path "$RepoRoot/LICENSE" -Destination $outputDir -Force
+
+    $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version" 
     
     if($SelfContained) {
         $command += " --self-contained"
@@ -84,9 +89,6 @@ try {
     }
 
     Invoke-LoggedCommand $command -GroupOutput
-    
-    # Copy the platform package files to the output directory
-    Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
 
     $package = Get-Content "$outputDir/package.json" -Raw
     $package = $package.Replace('{os}', $node_os)

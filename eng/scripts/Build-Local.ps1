@@ -13,7 +13,7 @@ param(
 
 $RepoRoot = (Resolve-Path "$PSScriptRoot/../..").Path.Replace('\', '/')
 
-$packagesPath = "$RepoRoot/.work/packages"
+$packagesPath = "$RepoRoot/.work/platform"
 $distPath = "$RepoRoot/.dist"
 
 function Build($os, $arch) {

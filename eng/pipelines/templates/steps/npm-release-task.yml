@@ -6,13 +6,16 @@ parameters:
     default: 'https://registry.npmjs.org/'
   - name: Tag
     type: string
+  - name: DisplayNameSegment
+    type: string
+    default: 'packages'
 
 steps:
   - template: /eng/common/pipelines/templates/steps/set-default-branch.yml
 
   - ${{ if eq(parameters.Registry, 'https://registry.npmjs.org/') }}:
     - task: EsrpRelease@9
-      displayName: 'Publish packages to ESRP'
+      displayName: Publish ${{parameters.DisplayNameSegment}} to npmjs.com
       inputs:
         ConnectedServiceName: 'Azure SDK PME Managed Identity'
         ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
@@ -33,7 +36,7 @@ steps:
     - template: /eng/common/pipelines/templates/steps/create-authenticated-npmrc.yml
       parameters:
         npmrcPath: ${{parameters.PathToArtifacts}}/.npmrc
-        registryUrl: ${{ parameters.Registry }}
+        registryUrl: ${{parameters.Registry}}
 
     - pwsh: |
         $tgzFiles = Get-ChildItem -Path ${{parameters.PathToArtifacts}} -Filter *.tgz
@@ -55,19 +58,19 @@ steps:
           Write-Host "> $command"
           Invoke-Expression $command
         }
-      displayName: Publish to Dev Feed
+      displayName: Publish ${{parameters.DisplayNameSegment}} to dev feed
       workingDirectory: ${{parameters.PathToArtifacts}}
 
     - pwsh: |
         $markdown = @"
         To run the dev version of the package, you can use the following command:
         ``````bash
-        npx --yes --registry '${{ parameters.Registry }}' @azure/mcp@$(Version) --version
+        npx --yes --registry '${{parameters.Registry}}' @azure/mcp@$(Version) --version
         ``````
 
         You can also globally install the package and run it like:
         ``````bash
-        npm install --registry '${{ parameters.Registry }}' -g @azure/mcp@$(Version)
+        npm install --registry '${{parameters.Registry}}' -g @azure/mcp@$(Version)
 
         azmcp --version
         ``````
@@ -83,7 +86,7 @@ steps:
               "args": [
                 "-y",
                 "--registry",
-                "${{ parameters.Registry }}",
+                "${{parameters.Registry}}",
                 "@azure/mcp@$(Version)",
                 "server",
                 "start"
