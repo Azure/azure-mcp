@@ -21,8 +21,8 @@
 ##################
 # Eng Sys
 ##################
-/eng/                                  @hallipr @weshaggard
+/eng/                                  @Azure/azure-sdk-eng @jongio
 /eng/common/                           @Azure/azure-sdk-eng
 /.github/workflows/                    @Azure/azure-sdk-eng
 /.github/CODEOWNERS                    @Azure/azure-sdk-eng @jongio
-/.config/1espt/                        @benbp @weshaggard
+/.config/1espt/                        @Azure/azure-sdk-eng
