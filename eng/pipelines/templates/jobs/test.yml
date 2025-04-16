@@ -46,7 +46,7 @@ jobs:
     condition: succeededOrFailed()
     displayName: "Publish Results"
     inputs:
-      testResultsFiles: "$(Build.SourcesDirectory)/.work/TestResults/*.trx"
+      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
       testRunTitle: "${{ parameters.OSName }}"
       testResultsFormat: "VSTest"
       mergeTestResults: true
