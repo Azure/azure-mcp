@@ -5,12 +5,14 @@ using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands;
 
 /// <summary>
 /// Interface for all commands
 /// </summary>
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
 public interface IBaseCommand
 {
     /// <summary>
