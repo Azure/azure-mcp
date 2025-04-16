@@ -12,7 +12,7 @@ steps:
 
   - ${{ if eq(parameters.Registry, 'https://registry.npmjs.org/') }}:
     - task: EsrpRelease@9
-      displayName: 'Publish ${{parameters.Artifact.name}} to ESRP'
+      displayName: 'Publish packages to ESRP'
       inputs:
         ConnectedServiceName: 'Azure SDK PME Managed Identity'
         ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
