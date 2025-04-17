@@ -42,16 +42,40 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - template: /eng/pipelines/templates/steps/npm-release-task.yml
-          parameters:
-            DisplayNameSegment: "platform packages"
-            PathToArtifacts: $(Pipeline.Workspace)/drop/platform
-            Tag: latest
-        - template: /eng/pipelines/templates/steps/npm-release-task.yml
-          parameters:
-            DisplayNameSegment: "wrapper package"
-            PathToArtifacts: $(Pipeline.Workspace)/drop/wrapper
-            Tag: latest
+        - task: EsrpRelease@9
+          displayName: Publish platform packages to npmjs.com
+          inputs:
+            ConnectedServiceName: 'Azure SDK PME Managed Identity'
+            ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
+            DomainTenantId: '975f013f-7f24-47e8-a7d3-abc4752bf346'
+            Usemanagedidentity: true
+            KeyVaultName: 'kv-azuresdk-codesign'
+            SignCertName: 'azure-sdk-esrp-release-certificate'
+            Intent: 'PackageDistribution'
+            ContentType: 'npm'
+            FolderLocation: $(Pipeline.Workspace)/drop/platform
+            Owners: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+            Approvers: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+            ServiceEndpointUrl: 'https://api.esrp.microsoft.com'
+            MainPublisher: 'ESRPRELPACMANTEST'
+            productstate: latest
+        - task: EsrpRelease@9
+          displayName: Publish wrapper package to npmjs.com
+          inputs:
+            ConnectedServiceName: 'Azure SDK PME Managed Identity'
+            ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
+            DomainTenantId: '975f013f-7f24-47e8-a7d3-abc4752bf346'
+            Usemanagedidentity: true
+            KeyVaultName: 'kv-azuresdk-codesign'
+            SignCertName: 'azure-sdk-esrp-release-certificate'
+            Intent: 'PackageDistribution'
+            ContentType: 'npm'
+            FolderLocation: $(Pipeline.Workspace)/drop/wrapper
+            Owners: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+            Approvers: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+            ServiceEndpointUrl: 'https://api.esrp.microsoft.com'
+            MainPublisher: 'ESRPRELPACMANTEST'
+            productstate: latest
 
 # TODO: Disabling UpdatePackageVersions until the the service account can fork the repo.
 # - job: UpdatePackageVersion

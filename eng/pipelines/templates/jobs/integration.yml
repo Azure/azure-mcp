@@ -9,7 +9,7 @@ jobs:
     displayName: Download $(PipelineArtifactName)_packed
     artifact: $(PipelineArtifactName)_packed
     
-  - template: /eng/pipelines/templates/steps/npm-release-task.yml
+  - template: /eng/pipelines/templates/steps/publish-to-dev-feed.yml
     parameters:
       PathToArtifacts: $(Pipeline.Workspace)/$(PipelineArtifactName)_packed
       Registry: https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/npm/registry/
