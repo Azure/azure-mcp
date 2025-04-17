@@ -8,7 +8,6 @@ jobs:
   - download: current
     displayName: Download $(PipelineArtifactName)_packed
     artifact: $(PipelineArtifactName)_packed
-    targetPath: $(Pipeline.Workspace)/drop
 
   - template: /eng/common/pipelines/templates/steps/retain-run.yml
 
@@ -17,8 +16,8 @@ jobs:
         "$(Version)" `
         --title "$(Version)"
 
-      gh release upload $(Version) $(Pipeline.Workspace)/drop/platform/*.tgz
-      gh release upload $(Version) $(Pipeline.Workspace)/drop/wrapper/*.tgz
+      gh release upload $(Version) $(Pipeline.Workspace)/$(PipelineArtifactName)_packed/platform/*.tgz
+      gh release upload $(Version) $(Pipeline.Workspace)/$(PipelineArtifactName)_packed/wrapper/*.tgz
     displayName: Create GitHub Release and upload artifacts
     env:
       GH_TOKEN: $(azuresdk-github-pat)
