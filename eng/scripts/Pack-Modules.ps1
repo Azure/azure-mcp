@@ -71,8 +71,8 @@ try {
             Invoke-LoggedCommand "chmod +x `"$packageFolder/index.js`""
 
             if ($os -ne 'win32') {
-                Write-Host "Setting executable permissions for $packageFolder/bin/azmcp" -ForegroundColor Yellow
-                Invoke-LoggedCommand "chmod +x `"$packageFolder/bin/azmcp`""
+                Write-Host "Setting executable permissions for $packageFolder/dist/azmcp" -ForegroundColor Yellow
+                Invoke-LoggedCommand "chmod +x `"$packageFolder/dist/azmcp`""
             }
         }
         else {

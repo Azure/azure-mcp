@@ -43,7 +43,7 @@ foreach ($packageJson in $packageJsonFiles) {
         # Mac requires code signing the binary with an entitlements file such that the signed and notarized binary will properly invoke on
         # a mac system. However, the `codesign` command is only available on a MacOS agent. With that being the case, we simply special case
         # this function here to ensure that the script does not fail outside of a MacOS agent.
-        $binaryFilePath = "$packageDirectory/bin/azmcp"
+        $binaryFilePath = "$packageDirectory/dist/azmcp"
 
         if ($IsMacOS) {
             Invoke-LoggedCommand "chmod +x `"$binaryFilePath`""
