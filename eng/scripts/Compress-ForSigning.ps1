@@ -19,7 +19,6 @@ $artifactDirectories = Get-ChildItem -Path $ArtifactsPath -Directory
 
 New-Item -ItemType Directory -Force -Path $OutputPath | Out-Null
 $OutputPath = (Resolve-Path $OutputPath).Path.Replace('\', '/')
-            $entitlements = "$RepoRoot/eng/dotnet-executable-entitlements.plist"
 
 foreach ($artifactDirectory in $artifactDirectories) {
     Write-Host "`n##[group] Artifact directory '$artifactDirectory' contents:"
@@ -44,12 +43,12 @@ foreach ($packageJson in $packageJsonFiles) {
         # Mac requires code signing the binary with an entitlements file such that the signed and notarized binary will properly invoke on
         # a mac system. However, the `codesign` command is only available on a MacOS agent. With that being the case, we simply special case
         # this function here to ensure that the script does not fail outside of a MacOS agent.
-        $binaryFilePath = "$packageDirectory/azmcp"
+        $binaryFilePath = "$packageDirectory/bin/azmcp"
 
         if ($IsMacOS) {
-            chmod +x $binaryFilePath
-            codesign --deep -s - -f --options runtime --entitlements $entitlements $binaryFilePath
-            codesign -d --entitlements :- $binaryFilePath
+            Invoke-LoggedCommand "chmod +x `"$binaryFilePath`""
+            Invoke-LoggedCommand "codesign --deep -s - -f --options runtime --entitlements `"$entitlements`" `"$binaryFilePath`""
+            Invoke-LoggedCommand "codesign -d --entitlements :- `"$binaryFilePath`""
         } else {
             Write-Warning "Mac binaries should be code signed with entitlements, but this is only possible on a mac agent."
         }

@@ -67,11 +67,12 @@ try {
         }
 
         if (!$IsWindows) {
-            Write-Host "Setting executable permissions for $packageFolder/azmcp" -ForegroundColor Yellow
+            Write-Host "Setting executable permissions for $packageFolder/index.js" -ForegroundColor Yellow
             Invoke-LoggedCommand "chmod +x `"$packageFolder/index.js`""
 
             if ($os -ne 'win32') {
-                Invoke-LoggedCommand "chmod +x `"$packageFolder/azmcp`""
+                Write-Host "Setting executable permissions for $packageFolder/bin/azmcp" -ForegroundColor Yellow
+                Invoke-LoggedCommand "chmod +x `"$packageFolder/bin/azmcp`""
             }
         }
         else {
