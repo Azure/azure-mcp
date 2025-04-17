@@ -19,6 +19,12 @@
 *                                      @jongio @conniey @g2vinay @hallipr
 
 ##################
+# Documentation
+##################
+LICENSE                                @jongio @conniey @g2vinay @hallipr @rohit-ganguly
+*.md                                   @jongio @conniey @g2vinay @hallipr @rohit-ganguly
+
+##################
 # Eng Sys
 ##################
 /eng/                                  @Azure/azure-sdk-eng @jongio
