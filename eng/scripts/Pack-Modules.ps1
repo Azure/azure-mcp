@@ -79,6 +79,10 @@ try {
             Write-Warning "Executable permissions are not set when packing on a Windows agent."
         }
 
+        Copy-Item -Path "$RepoRoot/README.md" -Destination $packageFolder -Force
+        Copy-Item -Path "$RepoRoot/LICENSE" -Destination $packageFolder -Force
+        Write-Host "Copied README.md and LICENSE to $packageFolder"
+
         Write-Host "Packaging $packageFolder into $OutputPath/platform"
         Invoke-LoggedCommand "npm pack $packageFolder --pack-destination '$OutputPath/platform'" -GroupOutput | Tee-Object -Variable fileName
         Write-Host "Package location: $OutputPath/platform/$fileName" -ForegroundColor Yellow
@@ -100,6 +104,10 @@ try {
 
     $package | ConvertTo-Json -Depth 10 | Out-File -FilePath "$wrapperFolder/package.json" -Encoding utf8
     Write-Host "Created package.json in $wrapperFolder"
+
+    Copy-Item -Path "$RepoRoot/README.md" -Destination $wrapperFolder -Force
+    Copy-Item -Path "$RepoRoot/LICENSE" -Destination $wrapperFolder -Force
+    Write-Host "Copied README.md and LICENSE to $wrapperFolder"
 
     Write-Host "Packaging $wrapperFolder into $OutputPath/wrapper"
     Invoke-LoggedCommand "npm pack $wrapperFolder --pack-destination '$OutputPath/wrapper'" -GroupOutput | Tee-Object -Variable fileName

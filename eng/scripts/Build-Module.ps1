@@ -71,8 +71,6 @@ try {
 
     # Copy the platform package files to the output directory
     Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
-    Copy-Item -Path "$RepoRoot/README.md" -Destination $outputDir -Force
-    Copy-Item -Path "$RepoRoot/LICENSE" -Destination $outputDir -Force
 
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version" 
     
