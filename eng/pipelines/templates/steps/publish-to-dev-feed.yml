@@ -17,7 +17,7 @@ steps:
   - pwsh: |
       $platformFiles = Get-ChildItem -Path ./platform -Filter *.tgz
       $wrapperFiles = Get-ChildItem -Path ./wrapper -Filter *.tgz
-      $tgzFiles = $platformFiles, $wrapperFiles
+      $tgzFiles = $platformFiles + $wrapperFiles
       
       if ($tgzFiles.Count -eq 0) {
         Write-Host "No .tgz files found in ${{parameters.PathToArtifacts}}"
