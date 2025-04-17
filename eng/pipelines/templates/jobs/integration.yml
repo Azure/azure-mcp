@@ -12,7 +12,7 @@ jobs:
   - template: /eng/pipelines/templates/steps/publish-to-dev-feed.yml
     parameters:
       PathToArtifacts: $(Pipeline.Workspace)/$(PipelineArtifactName)_packed
-      Registry: https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/npm/registry/
+      Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
       ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'IndividualCI')) }}:
         Tag: latest
       ${{ else }}:
