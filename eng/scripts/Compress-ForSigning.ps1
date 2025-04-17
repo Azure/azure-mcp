@@ -53,7 +53,7 @@ foreach ($packageJson in $packageJsonFiles) {
             Write-Warning "Mac binaries should be code signed with entitlements, but this is only possible on a mac agent."
         }
         
-        $archivePath = "$packageDirectory/azmcp.zip"
+        $archivePath = "$binaryFilePath.zip"
         Write-Host "Creating $archivePath" -ForegroundColor Yellow
         # We only need to compress the single binary file.
         Compress-Archive -Path $binaryFilePath -DestinationPath $archivePath
