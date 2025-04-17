@@ -20,7 +20,7 @@ steps:
       $tgzFiles = $platformFiles + $wrapperFiles
       
       if ($tgzFiles.Count -eq 0) {
-        Write-Host "No .tgz files found in ${{parameters.PathToArtifacts}}"
+        Write-Host "No .tgz files found in ${{parameters.PathTo$Artifacts}}"
         exit 1
       }
 
@@ -34,6 +34,9 @@ steps:
         $command = "npm publish '$file' --access public --tag '$tag'"
         Write-Host "> $command"
         Invoke-Expression $command
+        if (!$?) {
+          exit 1
+        }
       }
     displayName: Publish packages to dev feed
     workingDirectory: ${{parameters.PathToArtifacts}}
