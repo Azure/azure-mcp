@@ -8,10 +8,13 @@ using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.Monitor;
 
-public abstract class BaseMonitorCommand<TArgs>() : SubscriptionCommand<TArgs>
+public abstract class BaseMonitorCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs>
+    : SubscriptionCommand<TArgs>
     where TArgs : SubscriptionArguments, IWorkspaceArguments, new()
 {
     protected readonly Option<string> _workspaceOption = ArgumentDefinitions.Monitor.Workspace.ToOption();

@@ -6,10 +6,13 @@ using AzureMcp.Models.Argument;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.AppConfig;
 
-public abstract class BaseAppConfigCommand<T> : SubscriptionCommand<T> where T : BaseAppConfigArguments, new()
+public abstract class BaseAppConfigCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
+    : SubscriptionCommand<T> where T : BaseAppConfigArguments, new()
 {
     protected readonly Option<string> _accountOption = ArgumentDefinitions.AppConfig.Account.ToOption();
 

@@ -12,12 +12,21 @@ using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace AzureMcp.Commands;
 
-public abstract class GlobalCommand<TArgs> : BaseCommand
+internal static class TrimAnnotations
+{
+    public const DynamicallyAccessedMemberTypes CommandAnnotations =
+        DynamicallyAccessedMemberTypes.PublicProperties
+        | DynamicallyAccessedMemberTypes.NonPublicProperties;
+}
+
+public abstract class GlobalCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs> : BaseCommand
     where TArgs : GlobalArguments, new()
 {
     protected readonly Option<string> _tenantOption = ArgumentDefinitions.Common.Tenant.ToOption();

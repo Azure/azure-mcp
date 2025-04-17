@@ -5,10 +5,13 @@ using AzureMcp.Arguments.Cosmos;
 using AzureMcp.Models.Argument;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.Cosmos;
 
-public abstract class BaseDatabaseCommand<TArgs> : BaseCosmosCommand<TArgs> where TArgs : BaseDatabaseArguments, new()
+public abstract class BaseDatabaseCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs>
+    : BaseCosmosCommand<TArgs> where TArgs : BaseDatabaseArguments, new()
 {
     protected readonly Option<string> _databaseOption = ArgumentDefinitions.Cosmos.Database.ToOption();
 

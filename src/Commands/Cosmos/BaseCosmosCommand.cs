@@ -8,10 +8,13 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.Cosmos;
 
-public abstract class BaseCosmosCommand<TArgs> : SubscriptionCommand<TArgs> where TArgs : BaseCosmosArguments, new()
+public abstract class BaseCosmosCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs>
+    : SubscriptionCommand<TArgs> where TArgs : BaseCosmosArguments, new()
 {
     protected readonly Option<string> _accountOption = ArgumentDefinitions.Cosmos.Account.ToOption();
 

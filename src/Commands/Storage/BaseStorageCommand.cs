@@ -6,10 +6,13 @@ using AzureMcp.Models.Argument;
 using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.Storage;
 
-public abstract class BaseStorageCommand<T> : SubscriptionCommand<T>
+public abstract class BaseStorageCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
+    : SubscriptionCommand<T>
     where T : BaseStorageArguments, new()
 {
     protected readonly Option<string> _accountOption = ArgumentDefinitions.Storage.Account.ToOption();

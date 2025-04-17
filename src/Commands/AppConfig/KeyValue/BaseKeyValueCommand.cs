@@ -5,10 +5,13 @@ using AzureMcp.Arguments.AppConfig.KeyValue;
 using AzureMcp.Models.Argument;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public abstract class BaseKeyValueCommand<T> : BaseAppConfigCommand<T> where T : BaseKeyValueArguments, new()
+public abstract class BaseKeyValueCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
+    : BaseAppConfigCommand<T> where T : BaseKeyValueArguments, new()
 {
     protected readonly Option<string> _keyOption = ArgumentDefinitions.AppConfig.Key.ToOption();
     protected readonly Option<string> _labelOption = ArgumentDefinitions.AppConfig.Label.ToOption();
