@@ -20,7 +20,7 @@ steps:
       $tgzFiles = $platformFiles + $wrapperFiles
       
       if ($tgzFiles.Count -eq 0) {
-        Write-Host "No .tgz files found in ${{parameters.PathTo$Artifacts}}"
+        Write-Host "No .tgz files found in ${{parameters.PathToArtifacts}}"
         exit 1
       }
 
