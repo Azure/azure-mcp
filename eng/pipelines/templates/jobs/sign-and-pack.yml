@@ -32,8 +32,6 @@ jobs:
       condition: succeededOrFailed()
   steps:
   - checkout: self
-    
-  - checkout: azure-sdk-build-tools
 
   - download: current
     displayName: Download artifacts
@@ -42,7 +40,7 @@ jobs:
     displayName: "Compress packages"
     inputs:
       pwsh: true
-      filePath: $(Build.SourcesDirectory)/azure-mcp/eng/scripts/Compress-ForSigning.ps1
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Compress-ForSigning.ps1
       arguments: >
         -ArtifactsPath '$(Pipeline.Workspace)'
         -ArtifactPrefix '$(PipelineArtifactName)_'
@@ -63,7 +61,7 @@ jobs:
     displayName: "Expand packages"
     inputs:
       pwsh: true
-      filePath: $(Build.SourcesDirectory)/azure-mcp/eng/scripts/Expand-AfterSigning.ps1
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Expand-AfterSigning.ps1
       arguments: >
         -Path '$(Build.ArtifactStagingDirectory)/signed'
 
@@ -71,7 +69,7 @@ jobs:
     displayName: "Pack modules"
     inputs:
       pwsh: true
-      filePath: $(Build.SourcesDirectory)/azure-mcp/eng/scripts/Pack-Modules.ps1
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
         -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed'
         -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
