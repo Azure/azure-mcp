@@ -146,7 +146,7 @@ You can easily configure your MCP client to use the Azure MCP Server. Have your 
 
 ### Using standard IO
 
-1. Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using VS Code, follow instructions in [Manual Install](#-manual-install).
+Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using VS Code, follow instructions in [Manual Install](#-manual-install).
 
 ### Using SSE
 
