@@ -21,6 +21,7 @@
 ##################
 # Documentation
 ##################
+/docs/
 LICENSE                                @jongio @conniey @g2vinay @hallipr @rohit-ganguly
 *.md                                   @jongio @conniey @g2vinay @hallipr @rohit-ganguly
 
