@@ -54,6 +54,7 @@ public sealed class ContainerListCommand : BaseDatabaseCommand<ContainerListArgu
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An exception occurred listing containers for Cosmos DB database.");
             HandleException(context.Response, ex);
         }
 
