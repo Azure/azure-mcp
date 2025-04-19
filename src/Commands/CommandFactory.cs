@@ -61,6 +61,7 @@ public class CommandFactory
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
+        RegisterAppServicePlanCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -172,6 +173,20 @@ public class CommandFactory
         keyValue.AddCommand("set", new AppConfig.KeyValue.KeyValueSetCommand(GetLogger<AppConfig.KeyValue.KeyValueSetCommand>()));
         keyValue.AddCommand("show", new AppConfig.KeyValue.KeyValueShowCommand(GetLogger<AppConfig.KeyValue.KeyValueShowCommand>()));
         keyValue.AddCommand("delete", new AppConfig.KeyValue.KeyValueDeleteCommand(GetLogger<AppConfig.KeyValue.KeyValueDeleteCommand>()));
+    }
+
+    private void RegisterAppServicePlanCommands()
+    {
+        // Create Monitor command group
+        var monitor = new CommandGroup("appservice", "Azure App Service operations - Commands for managing App Service.");
+        _rootGroup.AddSubGroup(monitor);
+
+        // Create Monitor subgroups
+        var plan = new CommandGroup("plan", "Azure App Service plan operations - Commands for managing App Service plan.");
+        monitor.AddSubGroup(plan);
+
+        plan.AddCommand("list", new AppService.AppServicePlanListCommand(
+            GetLogger<AppService.AppServicePlanListCommand>()));
     }
 
     private void RegisterToolsCommands()

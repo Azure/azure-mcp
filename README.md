@@ -72,6 +72,9 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - Handle labeled configurations
 - Lock/unlock configuration settings
 
+### ⚙️ Azure App Service
+- List App Service Plans
+
 ### 📦 Azure Resource Groups
 - List resource groups
 - Resource group management operations

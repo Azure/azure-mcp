@@ -24,6 +24,7 @@ public class ServiceStartCommandTests
         services.AddSingleton(Substitute.For<IMonitorService>());
         services.AddSingleton(Substitute.For<IResourceGroupService>());
         services.AddSingleton(Substitute.For<IAppConfigService>());
+        services.AddSingleton(Substitute.For<IAppServiceService>());
         services.AddSingleton<CommandFactory>();
 
         _serviceProvider = services.BuildServiceProvider();

@@ -177,6 +177,7 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         services.AddSingleton(rootServiceProvider.GetRequiredService<IMonitorService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IResourceGroupService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IAppConfigService>());
+        services.AddSingleton(rootServiceProvider.GetRequiredService<IAppServiceService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IExternalProcessService>());
     }
 

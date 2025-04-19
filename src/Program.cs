@@ -62,5 +62,6 @@ static void ConfigureServices(IServiceCollection services)
     services.AddSingleton<IMonitorService, MonitorService>();
     services.AddSingleton<IResourceGroupService, ResourceGroupService>();
     services.AddSingleton<IAppConfigService, AppConfigService>();
+    services.AddSingleton<IAppServiceService, AppServiceService>();
     services.AddSingleton<CommandFactory>();
 }
