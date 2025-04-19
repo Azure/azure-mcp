@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments;
-using AzureMcp.Arguments.Group;
+using AzureMcp.Arguments.AppService;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
@@ -12,7 +11,7 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppService;
 
-public sealed class AppServicePlanListCommand : SubscriptionCommand<AppServiceArguments>
+public sealed class AppServicePlanListCommand : SubscriptionCommand<BaseAppServiceArguments>
 {
     private readonly ILogger<AppServicePlanListCommand> _logger;
 
@@ -26,7 +25,7 @@ public sealed class AppServicePlanListCommand : SubscriptionCommand<AppServiceAr
     protected override string GetCommandDescription() =>
         $"""
         List all app service plans in a subscription. This command retrieves all app service plans available
-        in the specified {ArgumentDefinitions.Common.SubscriptionName}. Results include app service plan names and IDs,
+        in the specified {ArgumentDefinitions.Common.SubscriptionName}. Results include app service plan names,
         returned as a JSON array.
         """;
 

@@ -4,9 +4,9 @@
 using AzureMcp.Models.Argument;
 using System.Text.Json.Serialization;
 
-namespace AzureMcp.Arguments;
+namespace AzureMcp.Arguments.AppService;
 
-public class AppServiceArguments : SubscriptionArguments
+public class BaseAppServiceArguments : SubscriptionArguments
 {
 
 }
