@@ -114,6 +114,12 @@ azmcp appconfig kv unlock --subscription <subscription> --account-name <account-
 azmcp appconfig kv delete --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
 ```
 
+### App Service Operations
+```bash
+# List App Service Plans in a subscription
+azmcp appservice plan list --subscription <subscription>
+```
+
 ### Resource Group Operations
 ```bash
 # List resource groups in a subscription
