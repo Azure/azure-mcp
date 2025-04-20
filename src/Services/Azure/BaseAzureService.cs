@@ -42,9 +42,9 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
         return await _tenantService.GetTenantId(tenant);
     }
 
-    protected TokenCredential GetCredential(string? tenant = null)
+    protected async Task<TokenCredential> GetCredential(string? tenant = null)
     {
-        var tenantId = string.IsNullOrEmpty(tenant) ? null : Task.Run(() => ResolveTenantIdAsync(tenant)).GetAwaiter().GetResult();
+        var tenantId = string.IsNullOrEmpty(tenant) ? null : await ResolveTenantIdAsync(tenant);
 
         // Return cached credential if it exists and tenant ID hasn't changed
         if (_credential != null && _lastTenantId == tenantId)
@@ -91,7 +91,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
         try
         {
-            var credential = GetCredential(tenantId);
+            var credential = await GetCredential(tenantId);
             var options = AddDefaultPolicies(new ArmClientOptions());
 
             // Configure retry policy if provided

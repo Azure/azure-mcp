@@ -28,7 +28,7 @@ public class TenantService(ICacheService cacheService)
         var results = new List<ArgumentOption>();
         
         var options = AddDefaultPolicies(new ArmClientOptions());
-        var client = new ArmClient(GetCredential(), default, options);
+        var client = new ArmClient(await GetCredential(), default, options);
 
         await foreach (var tenant in client.GetTenants())
         {
