@@ -24,9 +24,9 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
 
     protected override string GetCommandDescription() =>
         $"""
-        Execute a KQL query against a Log Analytics workspace. Requires {ArgumentDefinitions.Monitor.WorkspaceIdOrName} 
-        and resource group. Optional {ArgumentDefinitions.Monitor.HoursName} 
-        (default: {ArgumentDefinitions.Monitor.Hours.DefaultValue}) and {ArgumentDefinitions.Monitor.LimitName} 
+        Execute a KQL query against a Log Analytics workspace. Requires {ArgumentDefinitions.Monitor.WorkspaceIdOrName}
+        and resource group. Optional {ArgumentDefinitions.Monitor.HoursName}
+        (default: {ArgumentDefinitions.Monitor.Hours.DefaultValue}) and {ArgumentDefinitions.Monitor.LimitName}
         (default: {ArgumentDefinitions.Monitor.Limit.DefaultValue}) parameters.
         The {ArgumentDefinitions.Monitor.QueryTextName} parameter accepts KQL syntax.
         """;
@@ -74,7 +74,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
                 args.Tenant,
                 args.RetryPolicy);
 
-            context.Response.Results = results;
+            context.Response.Results = ResponseResult.Create(results, JsonSrcGenCtx.Default.ListJsonNode);
         }
         catch (Exception ex)
         {

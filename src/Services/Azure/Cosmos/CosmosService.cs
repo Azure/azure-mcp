@@ -7,6 +7,7 @@ using AzureMcp.Models;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace AzureMcp.Services.Azure.Cosmos;
 
@@ -200,7 +201,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         return containers;
     }
 
-    public async Task<List<JsonDocument>> QueryItems(
+    public async Task<List<JsonNode>> QueryItems(
         string accountName,
         string databaseName,
         string containerName,
@@ -220,8 +221,8 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             var baseQuery = string.IsNullOrEmpty(query) ? "SELECT * FROM c" : query;
             var queryDef = new QueryDefinition(baseQuery);
 
-            var items = new List<JsonDocument>();
-            var queryIterator = container.GetItemQueryIterator<System.Dynamic.ExpandoObject>(
+            var items = new List<JsonNode>();
+            var queryIterator = container.GetItemQueryStreamIterator(
                 queryDef,
                 requestOptions: new QueryRequestOptions { MaxItemCount = -1 }
             );
@@ -229,11 +230,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             while (queryIterator.HasMoreResults)
             {
                 var response = await queryIterator.ReadNextAsync();
-                foreach (var item in response)
-                {
-                    var json = JsonSerializer.Serialize(item);
-                    items.Add(JsonDocument.Parse(json));
-                }
+                items.Add(JsonNode.Parse(response.Content)!);
             }
 
             return items;

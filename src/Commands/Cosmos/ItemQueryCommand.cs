@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Cosmos;
 
@@ -24,9 +26,9 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
 
     protected override string GetCommandDescription() =>
         $"""
-        Execute a SQL query against items in a Cosmos DB container. Requires {ArgumentDefinitions.Cosmos.AccountName}, 
-        {ArgumentDefinitions.Cosmos.DatabaseName}, and {ArgumentDefinitions.Cosmos.ContainerName}. 
-        The {ArgumentDefinitions.Cosmos.QueryText} parameter accepts SQL query syntax. Results are returned as a 
+        Execute a SQL query against items in a Cosmos DB container. Requires {ArgumentDefinitions.Cosmos.AccountName},
+        {ArgumentDefinitions.Cosmos.DatabaseName}, and {ArgumentDefinitions.Cosmos.ContainerName}.
+        The {ArgumentDefinitions.Cosmos.QueryText} parameter accepts SQL query syntax. Results are returned as a
         JSON array of documents.
         """;
 
@@ -80,7 +82,7 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
                 args.RetryPolicy);
 
             context.Response.Results = items?.Count > 0 ?
-                new { items } :
+                ResponseResult.Create(new ItemQueryCommandResult(items), JsonSrcGenCtx.Default.ItemQueryCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -93,4 +95,7 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record ItemQueryCommandResult(List<JsonNode> Items);
 }

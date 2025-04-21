@@ -8,6 +8,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Subscription;
 
@@ -39,7 +40,11 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
             var subscriptions = await subscriptionService.GetSubscriptions(args.Tenant,
                 args.RetryPolicy);
 
-            context.Response.Results = subscriptions?.Count > 0 ? new { subscriptions } : null;
+            context.Response.Results = subscriptions?.Count > 0
+                ? ResponseResult.Create(
+                    new SubscriptionListCommandResult(subscriptions),
+                    JsonSrcGenCtx.Default.SubscriptionListCommandResult)
+                : null;
         }
         catch (Exception ex)
         {
@@ -49,4 +54,7 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record SubscriptionListCommandResult(List<ArgumentOption> Subscriptions);
 }

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using AzureMcp.Arguments.Cosmos;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
@@ -19,8 +20,8 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
 
     protected override string GetCommandDescription() =>
         """
-        List all containers in a Cosmos DB database. This command retrieves and displays all containers within 
-        the specified database and Cosmos DB account. Results include container names and are returned as a 
+        List all containers in a Cosmos DB database. This command retrieves and displays all containers within
+        the specified database and Cosmos DB account. Results include container names and are returned as a
         JSON array. You must specify both an account name and a database name.
         """;
 
@@ -46,7 +47,9 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
                 args.RetryPolicy);
 
             context.Response.Results = containers?.Count > 0 ?
-                new { containers } :
+                ResponseResult.Create(
+                    new ContainerListCommandResult(containers),
+                    JsonSrcGenCtx.Default.CosmosContainerListCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -57,4 +60,6 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
 
         return context.Response;
     }
+
+    internal record ContainerListCommandResult(IReadOnlyList<string> Containers);
 }

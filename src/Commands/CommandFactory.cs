@@ -23,7 +23,7 @@ public class CommandFactory
     private readonly ILogger<CommandFactory> _logger;
     private readonly RootCommand _rootCommand;
     private readonly CommandGroup _rootGroup;
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly JsonSrcGenCtx _srcGenWithOptions;
 
     internal static readonly char Separator = '-';
 
@@ -39,13 +39,13 @@ public class CommandFactory
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
         _rootCommand = CreateRootCommand();
         _commandMap = CreateCommmandDictionary(_rootGroup, string.Empty);
-        _jsonOptions = new JsonSerializerOptions
+        _srcGenWithOptions = new JsonSrcGenCtx(new JsonSerializerOptions
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        });
     }
 
     public RootCommand RootCommand => _rootCommand;
@@ -282,10 +282,10 @@ public class CommandFactory
 
                 if (response.Status == 200 && response.Results == null)
                 {
-                    response.Results = new List<object>();
+                    response.Results = ResponseResult.Create(new List<string>(), JsonSrcGenCtx.Default.ListString);
                 }
 
-                Console.WriteLine(JsonSerializer.Serialize(response, _jsonOptions));
+                Console.WriteLine(JsonSerializer.Serialize(response, _srcGenWithOptions.CommandResponse));
             }
             catch (Exception ex)
             {

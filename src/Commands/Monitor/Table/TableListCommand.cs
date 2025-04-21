@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Monitor.Table;
 
@@ -61,7 +62,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
                 args.RetryPolicy);
 
             context.Response.Results = tables?.Count > 0 ?
-                new { tables } :
+                ResponseResult.Create(new TableListCommandResult(tables), JsonSrcGenCtx.Default.MonitorTableListCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -90,4 +91,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? ArgumentDefinitions.Common.ResourceGroup.DefaultValue;
         return args;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record TableListCommandResult(List<string> Tables);
 }

@@ -201,7 +201,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
                 break;
         }
 
-        response.Results = contentResults;
+        response.Results = ResponseResult.Create(contentResults, JsonSrcGenCtx.Default.ListString);
 
         return response;
     }
@@ -260,7 +260,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             );
         }
 
-        response.Results = contentResults;
+        response.Results = ResponseResult.Create(contentResults, JsonSrcGenCtx.Default.ListString);
 
         return response;
     }

@@ -8,6 +8,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Storage.Table;
 
@@ -45,7 +46,9 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
                 args.Tenant,
                 args.RetryPolicy);
 
-            context.Response.Results = tables?.Count > 0 ? new { tables } : null;
+            context.Response.Results = tables?.Count > 0
+                ? ResponseResult.Create(new TableListCommandResult(tables), JsonSrcGenCtx.Default.StorageTableListCommandResult)
+                : null;
 
             // Only show warning if we actually had to fall back to a different auth method
             if (context.Response.Results is not null && !string.IsNullOrEmpty(context.Response.Message))
@@ -75,4 +78,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record TableListCommandResult(List<string> Tables);
 }

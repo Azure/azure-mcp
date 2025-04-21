@@ -7,6 +7,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Storage.Blob.Container;
 
@@ -42,7 +43,11 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
                 args.Tenant,
                 args.RetryPolicy);
 
-            context.Response.Results = containers?.Count > 0 ? new { containers } : null;
+            context.Response.Results = containers?.Count > 0
+                ? ResponseResult.Create(
+                    new ContainerListCommandResult(containers),
+                    JsonSrcGenCtx.Default.StorageContainerListCommandResult)
+                : null;
         }
         catch (Exception ex)
         {
@@ -52,4 +57,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record ContainerListCommandResult(List<string> Containers);
 }

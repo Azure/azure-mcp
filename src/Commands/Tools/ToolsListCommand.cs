@@ -12,16 +12,21 @@ using System.CommandLine.Parsing;
 namespace AzureMcp.Commands.Tools;
 
 [HiddenCommand]
-public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()
+public sealed class ToolsListCommand : BaseCommand
 {
-    private readonly ILogger<ToolsListCommand> _logger = logger;
+    private readonly ILogger<ToolsListCommand> _logger;
+
+    public ToolsListCommand(ILogger<ToolsListCommand> logger) : base()
+    {
+        _logger = logger;
+    }
 
     protected override string GetCommandName() => "list";
 
     protected override string GetCommandDescription() =>
         """
         List all available commands and their tools in a hierarchical structure. This command returns detailed information
-        about each command, including its name, description, full command path, available subcommands, and all supported 
+        about each command, including its name, description, full command path, available subcommands, and all supported
         arguments. Use this to explore the CLI's functionality or to build interactive command interfaces.
         """;
 
@@ -35,7 +40,7 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
                 .Select(kvp => CreateCommand(kvp.Key, kvp.Value))
                 .ToList());
 
-            context.Response.Results = tools;
+            context.Response.Results = ResponseResult.Create(tools, JsonSrcGenCtx.Default.ListCommandInfo);
             return context.Response;
         }
         catch (Exception ex)

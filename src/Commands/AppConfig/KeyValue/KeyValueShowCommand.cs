@@ -7,6 +7,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
@@ -18,8 +19,8 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
 
     protected override string GetCommandDescription() =>
         """
-        Show a specific key-value setting in an App Configuration store. This command retrieves and displays the value, 
-        label, content type, ETag, last modified time, and lock status for a specific setting. You must specify an 
+        Show a specific key-value setting in an App Configuration store. This command retrieves and displays the value,
+        label, content type, ETag, last modified time, and lock status for a specific setting. You must specify an
         account name and key. Optionally, you can specify a label otherwise the setting with default label will be retrieved.
         """;
 
@@ -44,7 +45,9 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
                 args.RetryPolicy,
                 args.Label);
 
-            context.Response.Results = new { setting };
+            context.Response.Results = ResponseResult.Create(
+                new KeyValueShowResult(setting),
+                JsonSrcGenCtx.Default.KeyValueShowResult);
         }
         catch (Exception ex)
         {
@@ -54,4 +57,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record KeyValueShowResult(Models.AppConfig.KeyValueSetting Setting);
 }

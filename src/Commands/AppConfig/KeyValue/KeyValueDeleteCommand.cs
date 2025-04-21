@@ -7,6 +7,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
@@ -18,8 +19,8 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
 
     protected override string GetCommandDescription() =>
         """
-        Delete a key-value pair from an App Configuration store. This command removes the specified key-value pair from the store. 
-        If a label is specified, only the labeled version is deleted. If no label is specified, the key-value with the matching 
+        Delete a key-value pair from an App Configuration store. This command removes the specified key-value pair from the store.
+        If a label is specified, only the labeled version is deleted. If no label is specified, the key-value with the matching
         key and the default label will be deleted.
         """;
 
@@ -44,7 +45,8 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
                 args.RetryPolicy,
                 args.Label);
 
-            context.Response.Results = new { key = args.Key, label = args.Label };
+            var result = new KeyValueDeleteCommandResult(args.Key, args.Label);
+            context.Response.Results = ResponseResult.Create(result, JsonSrcGenCtx.Default.KeyValueDeleteCommandResult);
         }
         catch (Exception ex)
         {
@@ -54,4 +56,7 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record KeyValueDeleteCommandResult(string? Key, string? Label);
 }

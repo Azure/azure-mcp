@@ -9,6 +9,7 @@ using ModelContextProtocol.Utils.Json;
 using System.CommandLine;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace AzureMcp.Commands.Server;
 
@@ -102,7 +103,7 @@ public class ToolOperations
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
-            var jsonResponse = JsonSerializer.Serialize(commandResponse.Results);
+            var jsonResponse = JsonSerializer.Serialize(commandResponse.Results, JsonSrcGenCtx.Default.CommandResponse);
 
             return new CallToolResponse
             {
@@ -149,26 +150,28 @@ public class ToolOperations
 
         var args = command.GetArguments()?.ToList();
 
-        var schema = new Dictionary<string, object>
+        var schema = new JsonObject
         {
             ["type"] = "object"
         };
 
         if (args != null && args.Count > 0)
         {
-            var arguments = args.ToDictionary(
-                    p => p.Name,
-                    p => new
-                    {
-                        type = p.Type.ToLower(),
-                        description = p.Description,
-                    });
+            var arguments = new JsonObject();
+            foreach (var arg in args)
+            {
+                arguments.Add(arg.Name, new JsonObject()
+                {
+                    ["type"] = arg.Type.ToLower(),
+                    ["description"] = arg.Description,
+                });
+            }
 
             schema["properties"] = arguments;
-            schema["required"] = args.Where(p => p.Required).Select(p => p.Name).ToArray();
+            schema["required"] = new JsonArray(args.Where(p => p.Required).Select(p => (JsonNode)p.Name).ToArray());
         }
 
-        tool.InputSchema = JsonSerializer.SerializeToElement(schema, McpJsonUtilities.DefaultOptions);
+        tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSrcGenCtx(McpJsonUtilities.DefaultOptions).JsonNode);
 
         return tool;
     }

@@ -5,6 +5,7 @@ using AzureMcp.Services.Interfaces;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Services.ProcessExecution;
 
@@ -102,7 +103,7 @@ public class ExternalProcessService : IExternalProcessService
                 result.Error,
                 result.Command
             };
-            return JsonSerializer.SerializeToElement(error);
+            return JsonSerializer.SerializeToElement(error, JsonSrcGenCtx.Default.ParseError);
         }
 
         try
@@ -112,9 +113,17 @@ public class ExternalProcessService : IExternalProcessService
         }
         catch
         {
-            return JsonSerializer.SerializeToElement(new { output = result.Output });
+            return JsonSerializer.SerializeToElement(new ParseOutput(result.Output), JsonSrcGenCtx.Default.ParseOutput);
         }
     }
+
+    internal record ParseError(
+        int ExitCode,
+        string Error,
+        string Command
+    );
+
+    internal record ParseOutput([property: JsonPropertyName("output")] string Output);
 
     public void SetEnvironmentVariables(IDictionary<string, string> variables)
     {

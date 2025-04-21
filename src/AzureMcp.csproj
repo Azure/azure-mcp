@@ -12,6 +12,7 @@
     <RootNamespace>AzureMcp</RootNamespace>
 
     <!-- Publishing settings -->
+    <IsAotCompatible>true</IsAotCompatible>
     <PublishSingleFile>false</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>false</PublishReadyToRun>

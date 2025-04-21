@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
@@ -21,8 +22,8 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
 
     protected override string GetCommandDescription() =>
         """
-        Set a key-value setting in an App Configuration store. This command creates or updates a key-value setting 
-        with the specified value. You must specify an account name, key, and value. Optionally, you can specify a 
+        Set a key-value setting in an App Configuration store. This command creates or updates a key-value setting
+        with the specified value. You must specify an account name, key, and value. Optionally, you can specify a
         label otherwise the default label will be used.
         """;
 
@@ -73,7 +74,10 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
                 args.RetryPolicy,
                 args.Label);
 
-            context.Response.Results = new { key = args.Key, value = args.Value, label = args.Label };
+            context.Response.Results = ResponseResult.Create(
+                new KeyValueSetCommandResult(args.Key, args.Value, args.Label),
+                JsonSrcGenCtx.Default.KeyValueSetCommandResult
+            );
         }
         catch (Exception ex)
         {
@@ -83,4 +87,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record KeyValueSetCommandResult(string? Key, string? Value, string? Label);
 }

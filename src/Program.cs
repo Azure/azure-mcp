@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp;
 using AzureMcp.Commands;
 using AzureMcp.Extensions;
 using AzureMcp.Models.Command;
@@ -40,7 +41,7 @@ catch (Exception ex)
         Duration = 0
     };
 
-    Console.WriteLine(JsonSerializer.Serialize(response));
+    Console.WriteLine(JsonSerializer.Serialize(response, JsonSrcGenCtx.Default.CommandResponse));
     return 1;
 }
 

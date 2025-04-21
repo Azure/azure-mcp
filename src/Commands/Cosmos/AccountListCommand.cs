@@ -7,6 +7,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Cosmos;
 
@@ -18,7 +19,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
 
     protected override string GetCommandDescription() =>
         """
-        List all Cosmos DB accounts in a subscription. This command retrieves and displays all Cosmos DB accounts 
+        List all Cosmos DB accounts in a subscription. This command retrieves and displays all Cosmos DB accounts
         available in the specified subscription. Results include account names and are returned as a JSON array.
         """;
 
@@ -41,7 +42,9 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 args.RetryPolicy);
 
             context.Response.Results = accounts?.Count > 0 ?
-                new { accounts } :
+                ResponseResult.Create(
+                    new AccountListCommandResult(accounts),
+                    JsonSrcGenCtx.Default.CosmosAccountListCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -52,4 +55,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
 
         return context.Response;
     }
+
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    internal record AccountListCommandResult(List<string> Accounts);
 }

@@ -4,6 +4,7 @@
 using AzureMcp.Arguments;
 using AzureMcp.Models;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace AzureMcp.Services.Interfaces;
 
@@ -29,7 +30,7 @@ public interface ICosmosService : IDisposable
         string? tenant = null,
         RetryPolicyArguments? retryPolicy = null);
 
-    Task<List<JsonDocument>> QueryItems(
+    Task<List<JsonNode>> QueryItems(
         string accountName,
         string databaseName,
         string containerName,

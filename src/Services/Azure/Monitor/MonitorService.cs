@@ -8,6 +8,7 @@ using AzureMcp.Arguments;
 using AzureMcp.Models.Monitor;
 using AzureMcp.Services.Interfaces;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace AzureMcp.Services.Azure.Monitor;
 
@@ -32,7 +33,7 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
             """
     };
 
-    public async Task<List<JsonDocument>> QueryWorkspace(
+    public async Task<List<JsonNode>> QueryWorkspace(
         string subscription,
         string workspace,
         string query,
@@ -65,7 +66,7 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
                 new QueryTimeRange(TimeSpan.FromDays(timeSpanDays))
             );
 
-            var results = new List<JsonDocument>();
+            var results = new List<JsonNode>();
             if (response.Value.Table != null)
             {
                 var rows = response.Value.Table.Rows;
@@ -75,12 +76,12 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
                 {
                     foreach (var row in rows)
                     {
-                        var rowDict = new Dictionary<string, object>();
+                        var rowDict = new JsonObject();
                         for (int i = 0; i < columns.Count; i++)
                         {
-                            rowDict[columns[i].Name] = row[i];
+                            rowDict[columns[i].Name] = JsonNode.Parse(row[i]?.ToString() ?? "null");
                         }
-                        results.Add(JsonDocument.Parse(JsonSerializer.Serialize(rowDict)));
+                        results.Add(rowDict);
                     }
                 }
             }
@@ -162,7 +163,7 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
         }
     }
 
-    public async Task<object> QueryLogs(
+    public async Task<List<JsonNode>> QueryLogs(
         string subscription,
         string workspace,
         string query,
@@ -208,20 +209,8 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
                 retryPolicy
             );
 
-            // Convert JsonDocument results to Dictionary<string, object>
-            var results = new List<Dictionary<string, object?>>();
-            foreach (var jsonDoc in jsonResults)
-            {
-                var dict = new Dictionary<string, object?>();
-                foreach (var property in jsonDoc.RootElement.EnumerateObject())
-                {
-                    dict[property.Name] = GetValueFromJsonElement(property.Value);
-                }
-                results.Add(dict);
-            }
-
             // Return the list as an object to match the interface
-            return results;
+            return jsonResults;
         }
         catch (Exception ex)
         {
@@ -234,42 +223,6 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
             };
 
             throw new Exception(errorMessage, ex);
-        }
-    }
-
-    // Helper method to convert JsonElement to appropriate .NET types
-    private static object? GetValueFromJsonElement(JsonElement element)
-    {
-        switch (element.ValueKind)
-        {
-            case JsonValueKind.String:
-                return element.GetString() ?? string.Empty; // Return empty string instead of null
-            case JsonValueKind.Number:
-                if (element.TryGetInt64(out long longValue))
-                    return longValue;
-                return element.GetDouble();
-            case JsonValueKind.True:
-                return true;
-            case JsonValueKind.False:
-                return false;
-            case JsonValueKind.Null:
-                return null;
-            case JsonValueKind.Object:
-                var obj = new Dictionary<string, object?>();
-                foreach (var property in element.EnumerateObject())
-                {
-                    obj[property.Name] = GetValueFromJsonElement(property.Value);
-                }
-                return obj;
-            case JsonValueKind.Array:
-                var array = new List<object?>();
-                foreach (var item in element.EnumerateArray())
-                {
-                    array.Add(GetValueFromJsonElement(item));
-                }
-                return array;
-            default:
-                return null;
         }
     }
 
