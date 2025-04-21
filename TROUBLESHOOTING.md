@@ -76,7 +76,7 @@ By default, VS Code logs informational, warning, and error level messages. To ge
 
 ### 401 Unauthorized: Local authorization is disbaled.
 
-This error indicates that the targeted resource is configured to disallow access using **Access Keys**, **API Keys**, or **SAS Tokens**, which are currently used by Azure MCP for authentication in certain scenarios.
+This error indicates that the targeted resource is configured to disallow access using **Access Keys**, which are currently used by Azure MCP for authentication in certain scenarios.
 
 #### Root Cause
 
