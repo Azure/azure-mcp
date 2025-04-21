@@ -72,6 +72,29 @@ By default, VS Code logs informational, warning, and error level messages. To ge
 3. Select the "Events" item.
 4. Under the Event Types, examine the events under `Microsoft-Extensions-Logging/*`
 
+## Authentication
+
+### 401 Unauthorized: Local authorization is disbaled.
+
+This error indicates that the targeted resource is configured to disallow access using **Access Keys**, **API Keys**, or **SAS Tokens**, which are currently used by Azure MCP for authentication in certain scenarios.
+
+#### Root Cause
+
+Azure MCP currently relies on **access key-based authentication** for some resources. However, many Azure services (e.g., **Cosmos DB**, **Azure Storage**) can be configured to enforce **Azure Entra ID** (formerly AAD) authentication only, thereby disabling local authorization mechanisms such as:
+
+- Primary or secondary access keys  
+- Shared access signatures (SAS)  
+- Connection strings containing embedded keys  
+
+When these local authorization methods are disabled, any access attempt from Azure MCP using them will result in a `401 Unauthorized` error.
+
+#### Upcoming Enhancement
+
+Support for **Azure Entra ID-based authentication** in these scenarios is to abe added in an upcoming release of Azure MCP. This will allow the MCP server to authenticate using federated identity or managed identity flows.
+
+> ℹ️ **Until Entra ID support is available**, ensure that local authorization is enabled for the target resource being accessed by Azure MCP.
+
+
 ## Common issues
 
 ### Console window is empty when running Azure MCP Server
