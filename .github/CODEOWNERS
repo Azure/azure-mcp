@@ -16,14 +16,7 @@
 ##################
 # Catch all
 ##################
-*                                      @jongio @conniey @g2vinay @hallipr
-
-##################
-# Documentation
-##################
-/docs/                                 @jongio @rohit-ganguly
-LICENSE                                @jongio @rohit-ganguly
-*.md                                   @jongio @rohit-ganguly
+*                                      @Azure/azure-mcp
 
 ##################
 # Eng Sys
