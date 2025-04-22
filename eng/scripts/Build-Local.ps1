@@ -11,6 +11,9 @@ param(
     [switch] $VerifyNpx
 )
 
+# Add C:\Program Files\nodejs\npx to path
+$env:PATH += ";C:\Program Files\nodejs"
+
 $RepoRoot = (Resolve-Path "$PSScriptRoot/../..").Path.Replace('\', '/')
 
 $packagesPath = "$RepoRoot/.work/platform"

@@ -234,8 +234,13 @@ public class CommandFactory
         var server = new CommandGroup("server", "SQL Server resource operations - Commands for listing and managing SQL Server resources.");
         sql.AddSubGroup(server);
 
+        // Create SQL database subgroup under server
+        var database = new CommandGroup("database", "SQL Database resource operations - Commands for listing and managing SQL Databases in a SQL Server.");
+        server.AddSubGroup(database);
+
         // Register SQL server commands
         server.AddCommand("list", new Sql.ServerListCommand());
+        database.AddCommand("list", new Sql.SqlDatabaseListCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)

@@ -58,8 +58,11 @@ azmcp cosmos database container item query --subscription <subscription> \
 ### Sql Operations
 ---
 ```bash
-# List
+# List SQL Servers in a subscription
 azmcp sql server list --subscription <subscription>
+
+# List SQL Databases in a SQL Server
+azmcp sql server database list --subscription <subscription> --server-name <server-name>
 ```
 ---
 
