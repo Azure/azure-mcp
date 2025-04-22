@@ -1,12 +1,12 @@
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Sql;
 using AzureMcp.Models.Command;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Sql;
-using Azure.ResourceManager.Resources;
 
 namespace AzureMcp.Commands.Sql;
 
