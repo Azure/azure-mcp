@@ -1,19 +1,18 @@
-using AzureMcp.Commands.Server;
+using AzureMcp.Commands.Sql;
 using AzureMcp.Models.Command;
-using System.CommandLine.Parsing;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Commands.Sql;
 
-public class SqlServerListCommandTests
+public class ServerListCommandTests
 {
     [Fact]
     public async Task ExecuteAsync_ReturnsServerListJson()
     {
-        var command = new SqlServerListCommand();
+        var command = new ServerListCommand();
         var context = new CommandContext(null!);
         var parser = new System.CommandLine.Parsing.Parser(new System.CommandLine.RootCommand());
-        var parseResult = parser.Parse("");
+        var parseResult = parser.Parse(new string[] { });
         var response = await command.ExecuteAsync(context, parseResult);
 
         Assert.Equal(0, response.Status);

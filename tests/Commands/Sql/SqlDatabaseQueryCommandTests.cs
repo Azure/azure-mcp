@@ -13,16 +13,7 @@ public class SqlDatabaseQueryCommandTests
     {
         var command = new SqlDatabaseQueryCommand();
         var context = new CommandContext(null!);
-        var parser = new System.CommandLine.Parser(new[]
-        {
-            new System.CommandLine.Command("query")
-            {
-                SqlDatabaseQueryCommand.SubscriptionOption,
-                SqlDatabaseQueryCommand.ServerNameOption,
-                SqlDatabaseQueryCommand.DatabaseNameOption,
-                SqlDatabaseQueryCommand.QueryOption
-            }
-        });
+        var parser = new Parser();
         var parseResult = parser.Parse("query --subscription test-sub --server-name test-server --database-name test-db --query 'SELECT 1 AS TestColumn'");
 
         var result = await command.ExecuteAsync(context, parseResult);

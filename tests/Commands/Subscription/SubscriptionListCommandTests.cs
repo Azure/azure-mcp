@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using NSubstitute;
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Text.Json;
 using Xunit;
 
@@ -26,7 +24,7 @@ public class SubscriptionListCommandTests
     private readonly ISubscriptionService _subscriptionService;
     private readonly SubscriptionListCommand _command;
     private readonly CommandContext _context;
-    private readonly Parser _parser;
+    private readonly System.CommandLine.Parsing.Parser _parser;
 
     public SubscriptionListCommandTests()
     {
@@ -40,7 +38,7 @@ public class SubscriptionListCommandTests
         _serviceProvider = collection.BuildServiceProvider();
         _command = new(_logger);
         _context = new(_serviceProvider);
-        _parser = new(_command.GetCommand());
+        _parser = new System.CommandLine.Parsing.Parser(_command.GetCommand());
     }
 
     [Fact]
@@ -57,7 +55,7 @@ public class SubscriptionListCommandTests
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns(expectedSubscriptions);
 
-        var args = _parser.Parse("");
+        var args = _parser.Parse(new string[] { });
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -74,7 +72,7 @@ public class SubscriptionListCommandTests
     {
         // Arrange
         var tenantId = "test-tenant-id";
-        var args = _parser.Parse($"--tenant {tenantId}");
+        var args = _parser.Parse(new[] { "--tenant", tenantId });
 
         _subscriptionService
             .GetSubscriptions(Arg.Is<string>(x => x == tenantId), Arg.Any<RetryPolicyArguments>())
@@ -99,7 +97,7 @@ public class SubscriptionListCommandTests
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns([]);
 
-        var args = _parser.Parse("");
+        var args = _parser.Parse(new string[] { });
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -119,7 +117,7 @@ public class SubscriptionListCommandTests
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns(Task.FromException<List<ArgumentOption>>(new Exception(expectedError)));
 
-        var args = _parser.Parse("");
+        var args = _parser.Parse(new string[] { });
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -135,7 +133,7 @@ public class SubscriptionListCommandTests
     {
         // Arrange
         var authMethod = AuthMethod.Credential.ToString().ToLowerInvariant();
-        var args = _parser.Parse($"--auth-method {authMethod}");
+        var args = _parser.Parse(new[] { "--auth-method", authMethod });
 
         _subscriptionService
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
@@ -166,7 +164,7 @@ public class SubscriptionListCommandTests
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns(expectedSubscriptions);
 
-        var args = _parser.Parse($"--subscription {expectedSubscriptionId}");
+        var args = _parser.Parse(new[] { "--subscription", expectedSubscriptionId });
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -201,7 +199,7 @@ public class SubscriptionListCommandTests
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns(expectedSubscriptions);
 
-        var args = _parser.Parse($"--subscription {expectedSubscriptionName}");
+        var args = _parser.Parse(new[] { "--subscription", expectedSubscriptionName });
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
