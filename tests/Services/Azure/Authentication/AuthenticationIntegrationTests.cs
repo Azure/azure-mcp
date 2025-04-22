@@ -44,16 +44,14 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         await _serviceProvider.DisposeAsync();
     }
 
-    [SkipIfDotnetTestFact]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task LoginWithIdentityBroker_ThenListSubscriptions_ShouldSucceed()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            _output.WriteLine("Skipping OSX since identity broker is not supported yet.");
-            return;
-        }
+        Assert.SkipWhen(SkipExtensions.IsRunningFromDotnetTest(), SkipExtensions.RunningFromDotnetTestReason);
+        Assert.SkipWhen(RuntimeInformation.IsOSPlatform(OSPlatform.OSX), "Identity broker is not supported on MacOS");
 
+        // Test implementation remains unchanged since we handle skipping in the attribute
         _output.WriteLine("Testing InteractiveBrowserCredential with identity broker...");
 
         await AuthenticateWithBrokerAsync();
