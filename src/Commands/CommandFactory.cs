@@ -240,6 +240,7 @@ public class CommandFactory
 
         // Register SQL server commands
         server.AddCommand("list", new Sql.SqlServerListCommand());
+        database.AddCommand("list", new Sql.SqlDatabaseListCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)
