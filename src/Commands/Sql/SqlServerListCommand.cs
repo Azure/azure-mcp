@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AzureMcp.Commands.Sql;
 
-public sealed class ServerListCommand() : BaseCommand
+public sealed class SqlServerListCommand() : BaseCommand
 {
     protected override string GetCommandName() => "list";
     protected override string GetCommandDescription() => "List all SQL Servers";

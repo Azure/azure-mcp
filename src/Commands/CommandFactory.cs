@@ -239,7 +239,7 @@ public class CommandFactory
         server.AddSubGroup(database);
 
         // Register SQL server commands
-        server.AddCommand("list", new Sql.ServerListCommand());
+        server.AddCommand("list", new Sql.SqlServerListCommand());
         database.AddCommand("list", new Sql.SqlDatabaseListCommand());
         database.AddCommand("query", new Sql.SqlDatabaseQueryCommand());
     }
