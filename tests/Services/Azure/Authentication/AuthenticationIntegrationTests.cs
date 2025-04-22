@@ -9,6 +9,7 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,7 +44,12 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
     [Trait("Category", "Live")]
     public async Task LoginWithIdentityBroker_ThenListSubscriptions_ShouldSucceed()
     {
-        // Test implementation remains unchanged since we handle skipping in the attribute
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            _output.WriteLine("Skipping OSX since identity broker is not supported yet.");
+            return;
+        }
+
         _output.WriteLine("Testing InteractiveBrowserCredential with identity broker...");
 
         await AuthenticateWithBrokerAsync();
