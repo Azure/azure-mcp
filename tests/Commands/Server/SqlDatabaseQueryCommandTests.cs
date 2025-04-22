@@ -1,0 +1,33 @@
+using AzureMcp.Commands.Sql;
+using AzureMcp.Models.Command;
+using System.CommandLine.Parsing;
+using System.Text.Json;
+using Xunit;
+
+namespace AzureMcp.Tests.Commands.Server;
+
+public class SqlDatabaseQueryCommandTests
+{
+    [Fact]
+    public async Task ExecuteAsync_ReturnsQueryResultsJson()
+    {
+        var command = new SqlDatabaseQueryCommand();
+        var context = new CommandContext(null!);
+        var parser = new System.CommandLine.Parser(new[]
+        {
+            new System.CommandLine.Command("query")
+            {
+                SqlDatabaseQueryCommand.SubscriptionOption,
+                SqlDatabaseQueryCommand.ServerNameOption,
+                SqlDatabaseQueryCommand.DatabaseNameOption,
+                SqlDatabaseQueryCommand.QueryOption
+            }
+        });
+        var parseResult = parser.Parse("query --subscription test-sub --server-name test-server --database-name test-db --query 'SELECT 1 AS TestColumn'");
+
+        var result = await command.ExecuteAsync(context, parseResult);
+
+        Assert.Equal(0, result.Status);
+        Assert.Contains("TestColumn", result.Results?.ToString());
+    }
+}

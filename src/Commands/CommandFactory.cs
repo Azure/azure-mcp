@@ -241,6 +241,7 @@ public class CommandFactory
         // Register SQL server commands
         server.AddCommand("list", new Sql.ServerListCommand());
         database.AddCommand("list", new Sql.SqlDatabaseListCommand());
+        database.AddCommand("query", new Sql.SqlDatabaseQueryCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)
