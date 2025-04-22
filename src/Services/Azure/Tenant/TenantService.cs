@@ -26,7 +26,7 @@ public class TenantService(ICacheService cacheService)
 
         // If not in cache, fetch from Azure
         var results = new List<ArgumentOption>();
-        
+
         var options = AddDefaultPolicies(new ArmClientOptions());
         var client = new ArmClient(GetCredential(), default, options);
 

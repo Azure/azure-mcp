@@ -1,11 +1,11 @@
+using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Sql;
-using Azure.Identity;
 using AzureMcp.Models.Command;
+using System.Collections.Generic;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace AzureMcp.Commands.Sql;
 
