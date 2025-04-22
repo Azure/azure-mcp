@@ -1,9 +1,9 @@
-using AzureMcp.Commands.Server;
+using AzureMcp.Commands.Sql;
 using AzureMcp.Models.Command;
 using System.CommandLine.Parsing;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Commands.Sql;
 
 public class SqlServerListCommandTests
 {
