@@ -38,7 +38,7 @@ public class CommandFactory
         _logger = logger;
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
         _rootCommand = CreateRootCommand();
-        _commandMap = CreateCommmandDictionary(_rootGroup, string.Empty);
+        _commandMap = CreateCommandDictionary(_rootGroup, string.Empty);
         _jsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -66,6 +66,7 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterSqlCommands();
     }
 
     private void RegisterCosmosCommands()
@@ -221,7 +222,20 @@ public class CommandFactory
         // Register MCP Server commands
         var startServer = new ServiceStartCommand(_serviceProvider);
         mcpServer.AddCommand("start", startServer);
+    }
 
+    private void RegisterSqlCommands()
+    {
+        // Create SQL command group
+        var sql = new CommandGroup("sql", "SQL Server operations - Commands for managing and interacting with SQL Servers.");
+        _rootGroup.AddSubGroup(sql);
+
+        // Create SQL server subgroup
+        var server = new CommandGroup("server", "SQL Server resource operations - Commands for listing and managing SQL Server resources.");
+        sql.AddSubGroup(server);
+
+        // Register SQL server commands
+        server.AddCommand("list", new Sql.ServerListCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)
@@ -325,7 +339,7 @@ public class CommandFactory
         return _commandMap.GetValueOrDefault(hyphenatedName);
     }
 
-    private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)
+    private static Dictionary<string, IBaseCommand> CreateCommandDictionary(CommandGroup node, string prefix)
     {
         var aggregated = new Dictionary<string, IBaseCommand>();
         var updatedPrefix = GetPrefix(prefix, node.Name);
@@ -348,7 +362,7 @@ public class CommandFactory
         foreach (var command in node.SubGroup)
         {
             var childPrefix = GetPrefix(updatedPrefix, command.Name);
-            var subcommandsDictionary = CreateCommmandDictionary(command, updatedPrefix);
+            var subcommandsDictionary = CreateCommandDictionary(command, updatedPrefix);
 
             foreach (var item in subcommandsDictionary)
             {

@@ -23,6 +23,7 @@
         "azuresdk",
         "codesign",
         "cvzf",
+        "eastus",
         "LINUXOS",
         "LINUXPOOL",
         "LINUXVMIMAGE",
@@ -30,6 +31,7 @@
         "MACPOOL",
         "MACVMIMAGE",
         "vsts",
+        "westus",
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE"
