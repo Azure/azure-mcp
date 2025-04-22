@@ -26,8 +26,8 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Client_Should_Invoke_Tool_Successfully()
     {
-        var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?>
-            { }, cancellationToken: TestContext.Current.CancellationToken);
+        var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?> { },
+            cancellationToken: TestContext.Current.CancellationToken);
 
         var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
 
