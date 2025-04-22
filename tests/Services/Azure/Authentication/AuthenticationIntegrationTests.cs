@@ -18,7 +18,7 @@ namespace AzureMcp.Tests.Services.Azure.Authentication;
 
 public class AuthenticationIntegrationTests : IAsyncLifetime
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ServiceProvider _serviceProvider;
     private readonly ISubscriptionService _subscriptionService;
     private readonly ITestOutputHelper _output;
 
@@ -38,7 +38,10 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
 
     public Task InitializeAsync() => Task.CompletedTask;
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public async Task DisposeAsync()
+    {
+        await _serviceProvider.DisposeAsync();
+    }
 
     [SkipIfDotnetTestFact]
     [Trait("Category", "Live")]
