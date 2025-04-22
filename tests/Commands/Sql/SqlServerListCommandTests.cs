@@ -9,7 +9,7 @@ public class ServerListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsServerListJson()
     {
-        var command = new ServerListCommand();
+        var command = new SqlServerListCommand();
         var context = new CommandContext(null!);
         var parser = new System.CommandLine.Parsing.Parser(new System.CommandLine.RootCommand());
         var parseResult = parser.Parse(new string[] { });
