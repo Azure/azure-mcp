@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace AzureMcp.Commands.Sql;
 
-public sealed class SqlServerListCommand() : BaseCommand
+public sealed class SqlServerListCommand(ISqlServerLister sqlServerLister) : BaseCommand
 {
     protected override string GetCommandName() => "list";
     protected override string GetCommandDescription() => "List all SQL Servers";
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
-        var servers = await GetSqlServersAsync();
+        var servers = await sqlServerLister.ListSqlServersAsync();
         var json = JsonSerializer.Serialize(servers, new JsonSerializerOptions { WriteIndented = true });
         var response = new CommandResponse
         {
@@ -27,9 +27,8 @@ public sealed class SqlServerListCommand() : BaseCommand
         return response;
     }
 
-    private static string GetResourceGroupName(string resourceId)
+    public static string GetResourceGroupName(string resourceId)
     {
-        // Resource ID format: /subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.Sql/servers/{name}
         var parts = resourceId.Split('/');
         for (int i = 0; i < parts.Length - 1; i++)
         {
@@ -39,7 +38,7 @@ public sealed class SqlServerListCommand() : BaseCommand
         return string.Empty;
     }
 
-    private static async Task<List<object>> GetSqlServersAsync()
+    public static async Task<IReadOnlyList<object>> ListSqlServersAsync()
     {
         var credential = new DefaultAzureCredential();
         var armClient = new ArmClient(credential);

@@ -239,9 +239,9 @@ public class CommandFactory
         server.AddSubGroup(database);
 
         // Register SQL server commands
-        server.AddCommand("list", new Sql.SqlServerListCommand());
+        server.AddCommand("list", new Sql.SqlServerListCommand(new Sql.SqlServerLister()));
         database.AddCommand("list", new Sql.SqlDatabaseListCommand());
-        database.AddCommand("query", new Sql.SqlDatabaseQueryCommand());
+        database.AddCommand("query", new Sql.SqlDatabaseQueryCommand(new Sql.SqlDatabaseQueryService()));
     }
 
     private void ConfigureCommands(CommandGroup group)

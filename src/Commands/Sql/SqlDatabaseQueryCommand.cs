@@ -11,7 +11,7 @@ using Microsoft.Data.SqlClient;
 
 namespace AzureMcp.Commands.Sql;
 
-public sealed class SqlDatabaseQueryCommand() : BaseCommand
+public sealed class SqlDatabaseQueryCommand(ISqlDatabaseQueryService queryService) : BaseCommand
 {
     public static Option<string> SubscriptionOption { get; } = new Option<string>(
         name: "--subscription",
@@ -58,7 +58,7 @@ public sealed class SqlDatabaseQueryCommand() : BaseCommand
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);
-        var results = await ExecuteSqlQueryAsync(args);
+        var results = await queryService.ExecuteQueryAsync(args.Subscription!, args.ServerName!, args.DatabaseName!, args.Query!);
         var json = JsonSerializer.Serialize(results, new JsonSerializerOptions { WriteIndented = true });
         var response = new CommandResponse
         {
@@ -67,45 +67,5 @@ public sealed class SqlDatabaseQueryCommand() : BaseCommand
             Results = json
         };
         return response;
-    }
-
-    private static async Task<object> ExecuteSqlQueryAsync(SqlDatabaseQueryArguments args)
-    {
-        // Discover the server FQDN from Azure ResourceManager
-        var credential = new DefaultAzureCredential();
-        var armClient = new ArmClient(credential);
-        var subscriptionResource = armClient.GetSubscriptionResource(SubscriptionResource.CreateResourceIdentifier(args.Subscription!));
-        string? fqdn = null;
-        foreach (var sqlServer in subscriptionResource.GetSqlServers())
-        {
-            if (sqlServer.Data.Name.Equals(args.ServerName, StringComparison.OrdinalIgnoreCase))
-            {
-                fqdn = sqlServer.Data.FullyQualifiedDomainName;
-                break;
-            }
-        }
-        if (string.IsNullOrEmpty(fqdn))
-            return new { Error = "SQL Server not found." };
-
-        // Build connection string (assumes Azure AD integrated auth)
-        var builder = new SqlConnectionStringBuilder
-        {
-            DataSource = fqdn,
-            InitialCatalog = args.DatabaseName,
-            Authentication = SqlAuthenticationMethod.ActiveDirectoryDefault
-        };
-        using var conn = new SqlConnection(builder.ConnectionString);
-        await conn.OpenAsync();
-        using var cmd = new SqlCommand(args.Query, conn);
-        using var reader = await cmd.ExecuteReaderAsync();
-        var rows = new List<Dictionary<string, object?>>();
-        while (await reader.ReadAsync())
-        {
-            var row = new Dictionary<string, object?>();
-            for (int i = 0; i < reader.FieldCount; i++)
-                row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-            rows.Add(row);
-        }
-        return rows;
     }
 }
