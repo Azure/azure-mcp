@@ -10,7 +10,7 @@ public class LiveTestSettingsFixture : IAsyncLifetime
 {
     public LiveTestSettings Settings { get; private set; } = new();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var testSettingsFileName = ".testsettings.json";
         var directory = Path.GetDirectoryName(typeof(CommandTests).Assembly.Location);
@@ -33,8 +33,5 @@ public class LiveTestSettingsFixture : IAsyncLifetime
         throw new FileNotFoundException($"Test settings file '{testSettingsFileName}' not found in the assembly directory or its parent directories.");
     }
 
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

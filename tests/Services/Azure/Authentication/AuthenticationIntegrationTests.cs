@@ -12,7 +12,6 @@ using NSubstitute;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AzureMcp.Tests.Services.Azure.Authentication;
 
@@ -36,9 +35,11 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         _subscriptionService = _serviceProvider.GetRequiredService<ISubscriptionService>();
     }
 
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
     public Task InitializeAsync() => Task.CompletedTask;
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _serviceProvider.DisposeAsync();
     }

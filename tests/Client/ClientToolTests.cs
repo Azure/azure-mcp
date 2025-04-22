@@ -18,7 +18,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_List_Tools()
     {
-        var tools = await _client.ListToolsAsync();
+        var tools = await _client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotEmpty(tools);
     }
 
@@ -26,10 +26,8 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Client_Should_Invoke_Tool_Successfully()
     {
-        var result = await _client.CallToolAsync(
-            "azmcp-subscription-list",
-            new Dictionary<string, object?>
-            { });
+        var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?>
+            { }, cancellationToken: TestContext.Current.CancellationToken);
 
         var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
 
@@ -48,9 +46,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Client_Should_Handle_Invalid_Tools()
     {
-        var result = await _client.CallToolAsync(
-                "non_existent_tool",
-                new Dictionary<string, object?>());
+        var result = await _client.CallToolAsync("non_existent_tool", new Dictionary<string, object?>(), cancellationToken: TestContext.Current.CancellationToken);
 
         var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
         Assert.True(string.IsNullOrWhiteSpace(content));
@@ -60,7 +56,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Client_Should_Ping_Server_Successfully()
     {
-        await _client.PingAsync();
+        await _client.PingAsync(cancellationToken: TestContext.Current.CancellationToken);
         // If no exception is thrown, the ping was successful.
     }
 
@@ -69,7 +65,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourcesAsync());
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourcesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -78,7 +74,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Read_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ReadResourceAsync("test://resource"));
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ReadResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -87,7 +83,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Templates_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourceTemplatesAsync());
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourceTemplatesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -96,7 +92,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Subscribe_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.SubscribeToResourceAsync("test://resource"));
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.SubscribeToResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -105,7 +101,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Unsubscribe_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.UnsubscribeFromResourceAsync("test://resource"));
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.UnsubscribeFromResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -114,14 +110,14 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Not_Hang_On_Logging_SetLevel_Not_Supported()
     {
-        await _client.SetLoggingLevel(LoggingLevel.Info);
+        await _client.SetLoggingLevel(LoggingLevel.Info, cancellationToken: TestContext.Current.CancellationToken);
     }
 
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Prompts_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListPromptsAsync());
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListPromptsAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
@@ -130,7 +126,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Prompts_Get_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.GetPromptAsync("unsupported_prompt"));
+        var ex = await Assert.ThrowsAsync<McpException>(() => _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(-32601, ex.ErrorCode);
     }
