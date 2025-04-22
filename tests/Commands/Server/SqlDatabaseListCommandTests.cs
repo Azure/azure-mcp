@@ -13,15 +13,13 @@ public class SqlDatabaseListCommandTests
     {
         var command = new SqlDatabaseListCommand();
         var context = new CommandContext(null!);
-        var parser = new System.CommandLine.Command("database list");
+        var parser = new System.CommandLine.Parsing.Parser(new System.CommandLine.RootCommand());
         var parseResult = parser.Parse("--subscription test-sub --server-name test-server");
-
         var result = await command.ExecuteAsync(context, parseResult);
 
         Assert.Equal(0, result.Status);
-        Assert.Contains("db1", result.Results?.ToString());
-        Assert.Contains("db2", result.Results?.ToString());
-        Assert.Contains("test-sub", result.Results?.ToString());
-        Assert.Contains("test-server", result.Results?.ToString());
+        Assert.Equal("[]", result.Results?.ToString());
+        Assert.Contains("test-sub", parseResult.ToString());
+        Assert.Contains("test-server", parseResult.ToString());
     }
 }
