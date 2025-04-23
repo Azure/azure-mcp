@@ -97,15 +97,20 @@ Your job is to answer questions about an Azure environment by executing Azure CL
                     _cachedAzPath = cmdPath;
                     return cmdPath;
                 }
-            }
-            else
-            {
-                var fullPath = Path.Combine(dir, "az");
-                if (File.Exists(fullPath))
+
+                cmdPath = Path.Combine(dir, "az.bat");
+                if (File.Exists(cmdPath))
                 {
-                    _cachedAzPath = fullPath;
-                    return fullPath;
+                    _cachedAzPath = cmdPath;
+                    return cmdPath;
                 }
+            }
+
+            var fullPath = Path.Combine(dir, "az");
+            if (File.Exists(fullPath))
+            {
+                _cachedAzPath = fullPath;
+                return fullPath;
             }
         }
 
