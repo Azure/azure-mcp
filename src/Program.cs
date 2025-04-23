@@ -5,6 +5,7 @@ using AzureMcp.Commands;
 using AzureMcp.Extensions;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.AppConfig;
+using AzureMcp.Services.Azure.Compute;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.Monitor;
 using AzureMcp.Services.Azure.ResourceGroup;
@@ -56,6 +57,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddSingleton<ICacheService, CacheService>();
     services.AddSingleton<IExternalProcessService, ExternalProcessService>();
     services.AddSingleton<ISubscriptionService, SubscriptionService>();
+    services.AddSingleton<IComputeService, ComputeService>();
     services.AddSingleton<ITenantService, TenantService>();
     services.AddSingleton<ICosmosService, CosmosService>();
     services.AddSingleton<IStorageService, StorageService>();

@@ -37,7 +37,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     private static DefaultAzureCredential CreateDefaultCredential(string? tenantId)
     {
-        var includeProdCreds = 
+        var includeProdCreds =
             Environment.GetEnvironmentVariable("AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
 
         return new DefaultAzureCredential(new DefaultAzureCredentialOptions

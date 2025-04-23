@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Commands.Compute.Vm;
 using AzureMcp.Commands.Cosmos;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
@@ -66,6 +68,21 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterComputeCommands();
+    }
+
+    private void RegisterComputeCommands()
+    {
+        // Create Compute command group
+        var compute = new CommandGroup("compute", "Compute operations - Commands for managing Azure virtual machines.");
+        _rootGroup.AddSubGroup(compute);
+
+        // Create VMs subgroup
+        var vms = new CommandGroup("vm", "Virtual machine operations - Commands for listing and managing Azure virtual machines.");
+        compute.AddSubGroup(vms);
+
+        // Register VM commands
+        vms.AddCommand("list", new Compute.Vm.VmListCommand(GetLogger<Compute.Vm.VmListCommand>()));
     }
 
     private void RegisterCosmosCommands()

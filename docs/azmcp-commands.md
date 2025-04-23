@@ -90,6 +90,12 @@ azmcp monitor log query --subscription <subscription> \
                         --query "| order by TimeGenerated desc"
 ```
 
+### Compute Operations
+```bash
+# List Virtual machines in a subscription
+azmcp compute vm list --subscription <subscription>
+```
+
 ### App Configuration Operations
 ```bash
 # List App Configuration stores in a subscription
