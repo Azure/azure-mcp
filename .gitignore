@@ -10,3 +10,4 @@ node_modules
 .npmrc
 .testsettings.json
 
+/src/AzureMcp.sln.DotSettings.user
