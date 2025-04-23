@@ -1,10 +1,9 @@
 # Contributing to Azure MCP
 
-Thank you for your interest in contributing to Azure MCP! This document provides guidelines and steps for contributing to this project.
+There are many ways to contribute to the Azure MCP project: reporting bugs, submitting pull requests, and creating suggestions.
+After cloning and building the repo, check out the [issues list](https://github.com/Azure/azure-mcp/issues).  Issues labeled [help wanted](https://github.com/Azure/azure-mcp/labels/help%20wanted) are good issues to submit a PR for.  Issues labeled [good first issue](https://github.com/Azure/azure-mcp/labels/good%20first%20issue) are great candidates to pick up if you are in the code for the first time.  If you are contributing significant changes, or if the issue is already assigned to a specific milestone, please discuss with the assignee of the issue first before starting to work on the issue.
 
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 1. Install either the stable or Insiders release of VS Code.
    * [Stable release](https://code.visualstudio.com/download)
