@@ -37,8 +37,6 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
 
     public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
-    public Task InitializeAsync() => Task.CompletedTask;
-
     public async ValueTask DisposeAsync()
     {
         await _serviceProvider.DisposeAsync();
