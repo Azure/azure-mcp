@@ -11,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Storage.Table;
 
-public sealed class TableListCommand : BaseStorageCommand<TableListArguments>
+public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseStorageCommand<TableListArguments>()
 {
-    private readonly ILogger<TableListCommand> _logger;
-
-    public TableListCommand(ILogger<TableListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<TableListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

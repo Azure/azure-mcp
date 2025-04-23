@@ -2,34 +2,17 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace AzureMcp.Tests.Services.Azure.Authentication;
 
 /// <summary>
 /// Provides window handle information for native authentication dialogs.
 /// </summary>
-public static class WindowHandleProvider
+public static partial class WindowHandleProvider
 {
     /// <summary>
-    /// Get the handle of the foreground window for Windows
-    /// </summary>
-    [DllImport("user32.dll")]
-    static extern IntPtr GetForegroundWindow();
-
-    /// <summary>
-    /// Get the handle of the console window for Linux
-    /// </summary>
-    [DllImport("libX11.so.6")]
-    private static extern IntPtr XOpenDisplay(string display);
-
-    [DllImport("libX11.so.6")]
-    private static extern IntPtr XRootWindow(IntPtr display, int screen);
-
-    [DllImport("libX11.so.6")]
-    private static extern IntPtr XDefaultRootWindow(IntPtr display);
-
-    /// <summary>
-    /// Get window handle on xplat
+    /// Get window handle across platforms
     /// </summary>
     public static IntPtr GetWindowHandle()
     {
@@ -37,19 +20,15 @@ public static class WindowHandleProvider
         {
             return GetForegroundWindow();
         }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             try
             {
                 IntPtr display = XOpenDisplay(":1");
-                if (display == IntPtr.Zero)
-                {
-                    Console.WriteLine("No X display available. Running in headless mode.");
-                }
-                else
-                {
-                    Console.WriteLine("X display is available.");
-                }
+                Console.WriteLine(display == IntPtr.Zero
+                    ? "No X display available. Running in headless mode."
+                    : "X display is available.");
                 return display;
             }
             catch (Exception ex)
@@ -58,11 +37,28 @@ public static class WindowHandleProvider
                 Console.WriteLine(ex.ToString());
                 Console.ResetColor();
             }
-            return IntPtr.Zero;
         }
-        else
-        {
-            throw new PlatformNotSupportedException("This platform is not supported.");
-        }
+
+        return IntPtr.Zero;
     }
+
+    [SupportedOSPlatform("windows")]
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.SysInt)]
+    private static partial IntPtr GetForegroundWindow();
+
+    [SupportedOSPlatform("linux")]
+    [LibraryImport("libX11.so.6")]
+    [return: MarshalAs(UnmanagedType.SysInt)]
+    private static partial IntPtr XOpenDisplay([MarshalAs(UnmanagedType.LPUTF8Str)] string display);
+
+    [SupportedOSPlatform("linux")]
+    [LibraryImport("libX11.so.6")]
+    [return: MarshalAs(UnmanagedType.SysInt)]
+    private static partial IntPtr XRootWindow(IntPtr display, int screen);
+
+    [SupportedOSPlatform("linux")]
+    [LibraryImport("libX11.so.6")]
+    [return: MarshalAs(UnmanagedType.SysInt)]
+    private static partial IntPtr XDefaultRootWindow(IntPtr display);
 }

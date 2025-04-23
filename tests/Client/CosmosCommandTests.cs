@@ -4,7 +4,6 @@
 using AzureMcp.Tests.Client.Helpers;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AzureMcp.Tests.Client;
 
@@ -16,8 +15,6 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_list_storage_accounts_by_subscription_id()
     {
-        await cosmos.EnsureLocalAccess(Settings, Client, Output);
-
         var result = await CallToolAsync(
             "azmcp-cosmos-database-list",
             new()
@@ -35,14 +32,13 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_list_cosmos_database_containers()
     {
-        await cosmos.EnsureLocalAccess(Settings, Client, Output);
-
         var result = await CallToolAsync(
             "azmcp-cosmos-database-container-list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.CosmosAccountName }
+                { "account-name", Settings.CosmosAccountName },
+                { "database-name", Settings.CosmosDatabaseName }
             });
 
         Assert.True(result.TryGetProperty("containers", out var containersArray));
@@ -54,15 +50,13 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_list_cosmos_database_containers_by_database_name()
     {
-        await cosmos.EnsureLocalAccess(Settings, Client, Output);
-
         var result = await CallToolAsync(
             "azmcp-cosmos-database-container-list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "account-name", Settings.CosmosAccountName },
-                { "database-name", "ToDoList" }
+                { "database-name", Settings.CosmosDatabaseName }
             });
 
         Assert.True(result.TryGetProperty("containers", out var containersArray));
@@ -74,16 +68,14 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_query_cosmos_database_container_items()
     {
-        await cosmos.EnsureLocalAccess(Settings, Client, Output);
-
         var result = await CallToolAsync(
             "azmcp-cosmos-database-container-item-query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "account-name", Settings.CosmosAccountName },
-                { "database-name", "ToDoList" },
-                { "container-name", "Items" }
+                { "database-name", Settings.CosmosDatabaseName },
+                { "container-name", Settings.CosmosContainerName }
             });
 
         Assert.True(result.TryGetProperty("items", out var itemsArray));

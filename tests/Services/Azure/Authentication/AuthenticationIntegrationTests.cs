@@ -9,15 +9,15 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AzureMcp.Tests.Services.Azure.Authentication;
 
 public class AuthenticationIntegrationTests : IAsyncLifetime
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ServiceProvider _serviceProvider;
     private readonly ISubscriptionService _subscriptionService;
     private readonly ITestOutputHelper _output;
 
@@ -35,15 +35,20 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         _subscriptionService = _serviceProvider.GetRequiredService<ISubscriptionService>();
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public async ValueTask DisposeAsync()
+    {
+        await _serviceProvider.DisposeAsync();
+    }
 
-    [SkipIfDotnetTestFact]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task LoginWithIdentityBroker_ThenListSubscriptions_ShouldSucceed()
     {
-        // Test implementation remains unchanged since we handle skipping in the attribute
+        Assert.SkipWhen(SkipExtensions.IsRunningFromDotnetTest(), SkipExtensions.RunningFromDotnetTestReason);
+        Assert.SkipWhen(RuntimeInformation.IsOSPlatform(OSPlatform.OSX), "Identity broker is not supported on MacOS");
+
         _output.WriteLine("Testing InteractiveBrowserCredential with identity broker...");
 
         await AuthenticateWithBrokerAsync();

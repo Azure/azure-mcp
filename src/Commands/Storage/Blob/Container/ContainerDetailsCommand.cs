@@ -11,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Storage.Blob.Container;
 
-public sealed class ContainerDetailsCommand : BaseContainerCommand<ContainerDetailsArguments>
+public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> logger) : BaseContainerCommand<ContainerDetailsArguments>()
 {
-    private readonly ILogger<ContainerDetailsCommand> _logger;
-
-    public ContainerDetailsCommand(ILogger<ContainerDetailsCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ContainerDetailsCommand> _logger = logger;
 
     protected override string GetCommandName() => "details";
 

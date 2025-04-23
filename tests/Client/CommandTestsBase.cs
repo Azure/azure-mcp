@@ -1,10 +1,10 @@
-﻿using AzureMcp.Tests.Client.Helpers;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
 
 namespace AzureMcp.Tests.Client;
 

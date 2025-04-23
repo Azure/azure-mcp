@@ -12,14 +12,9 @@ using System.CommandLine.Parsing;
 namespace AzureMcp.Commands.Tools;
 
 [HiddenCommand]
-public sealed class ToolsListCommand : BaseCommand
+public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()
 {
-    private readonly ILogger<ToolsListCommand> _logger;
-
-    public ToolsListCommand(ILogger<ToolsListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ToolsListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

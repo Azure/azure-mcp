@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Arguments.Cosmos;
+using AzureMcp.Models;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
@@ -12,15 +13,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Cosmos;
 
-public sealed class ItemQueryCommand : BaseContainerCommand<ItemQueryArguments>
+public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseContainerCommand<ItemQueryArguments>()
 {
-    private readonly ILogger<ItemQueryCommand> _logger;
-
-    public ItemQueryCommand(ILogger<ItemQueryCommand> logger) : base()
-    {
-        _logger = logger;
-    }
-
+    private readonly ILogger<ItemQueryCommand> _logger = logger;
     private const string DefaultQuery = "SELECT * FROM c";
 
     private readonly Option<string> _queryOption = ArgumentDefinitions.Cosmos.Query.ToOption();
@@ -80,6 +75,7 @@ public sealed class ItemQueryCommand : BaseContainerCommand<ItemQueryArguments>
                 args.Container!,
                 args.Query ?? DefaultQuery,
                 args.Subscription!,
+                args.AuthMethod ?? AuthMethod.Credential,
                 args.Tenant,
                 args.RetryPolicy);
 

@@ -14,10 +14,10 @@ using System.Runtime.InteropServices;
 
 namespace AzureMcp.Commands.Extension;
 
-public sealed class AzdCommand : GlobalCommand<AzdArguments>
+public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzdArguments>()
 {
-    private readonly ILogger<AzdCommand> _logger;
-    private readonly int _processTimeoutSeconds;
+    private readonly ILogger<AzdCommand> _logger = logger;
+    private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Azd.Command.ToOption();
     private static string? _cachedAzdPath;
 
@@ -28,12 +28,6 @@ public sealed class AzdCommand : GlobalCommand<AzdArguments>
         // Linux and MacOS
         Path.Combine("usr", "local", "bin"),
     ];
-
-    public AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSeconds = 300) : base()
-    {
-        _logger = logger;
-        _processTimeoutSeconds = processTimeoutSeconds;
-    }
 
     protected override string GetCommandName() => "azd";
 

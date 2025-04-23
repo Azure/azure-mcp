@@ -11,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Group;
 
-public sealed class GroupListCommand : SubscriptionCommand<BaseGroupArguments>
+public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : SubscriptionCommand<BaseGroupArguments>()
 {
-    private readonly ILogger<GroupListCommand> _logger;
-
-    public GroupListCommand(ILogger<GroupListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<GroupListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

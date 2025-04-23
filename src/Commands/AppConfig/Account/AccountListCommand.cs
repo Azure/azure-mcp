@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.Account;
 
-public sealed class AccountListCommand : SubscriptionCommand<AccountListArguments>
+public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : SubscriptionCommand<AccountListArguments>()
 {
-    private readonly ILogger<AccountListCommand> _logger;
-
-    public AccountListCommand(ILogger<AccountListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<AccountListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

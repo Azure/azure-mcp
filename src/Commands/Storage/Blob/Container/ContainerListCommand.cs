@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Storage.Blob.Container;
 
-public sealed class ContainerListCommand : BaseStorageCommand<ContainerListArguments>
+public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) : BaseStorageCommand<ContainerListArguments>()
 {
-    private readonly ILogger<ContainerListCommand> _logger;
-
-    public ContainerListCommand(ILogger<ContainerListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ContainerListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

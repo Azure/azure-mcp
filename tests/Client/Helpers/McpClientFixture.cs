@@ -12,7 +12,7 @@ public class McpClientFixture : IAsyncLifetime
 {
     public IMcpClient Client { get; private set; } = default!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath!, "azmcp.exe") : Path.Combine(testAssemblyPath!, "azmcp");
@@ -30,7 +30,7 @@ public class McpClientFixture : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (Client is IAsyncDisposable disposable)
             await disposable.DisposeAsync();

@@ -64,7 +64,7 @@ public class StorageService(ISubscriptionService subscriptionService, ICacheServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        var blobServiceClient = CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
         var containers = new List<string>();
 
         try
@@ -179,7 +179,7 @@ public class StorageService(ISubscriptionService subscriptionService, ICacheServ
     {
         ValidateRequiredParameters(accountName, containerName, subscriptionId);
 
-        var blobServiceClient = CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobs = new List<string>();
 
@@ -207,7 +207,7 @@ public class StorageService(ISubscriptionService subscriptionService, ICacheServ
     {
         ValidateRequiredParameters(accountName, containerName);
 
-        var blobServiceClient = CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
         try
@@ -299,11 +299,11 @@ public class StorageService(ISubscriptionService subscriptionService, ICacheServ
             case AuthMethod.Credential:
             default:
                 var defaultUri = $"https://{accountName}.table.core.windows.net";
-                return new TableServiceClient(new Uri(defaultUri), GetCredential(tenant), options);
+                return new TableServiceClient(new Uri(defaultUri), await GetCredential(tenant), options);
         }
     }
 
-    private BlobServiceClient CreateBlobServiceClient(string accountName, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
+    private async Task<BlobServiceClient> CreateBlobServiceClient(string accountName, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
     {
         var uri = $"https://{accountName}.blob.core.windows.net";
         var options = AddDefaultPolicies(new BlobClientOptions());
@@ -316,6 +316,6 @@ public class StorageService(ISubscriptionService subscriptionService, ICacheServ
             options.Retry.Mode = retryPolicy.Mode;
             options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
         }
-        return new BlobServiceClient(new Uri(uri), GetCredential(tenant), options);
+        return new BlobServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 }

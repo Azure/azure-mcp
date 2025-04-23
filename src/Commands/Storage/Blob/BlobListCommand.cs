@@ -11,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Storage.Blob;
 
-public sealed class BlobListCommand : BaseContainerCommand<BlobListArguments>
+public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseContainerCommand<BlobListArguments>()
 {
-    private readonly ILogger<BlobListCommand> _logger;
-
-    public BlobListCommand(ILogger<BlobListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<BlobListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

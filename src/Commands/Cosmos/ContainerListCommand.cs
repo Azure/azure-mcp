@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Arguments.Cosmos;
+using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Cosmos;
 
-public sealed class ContainerListCommand : BaseDatabaseCommand<ContainerListArguments>
+public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) : BaseDatabaseCommand<ContainerListArguments>()
 {
-    private readonly ILogger<ContainerListCommand> _logger;
-
-    public ContainerListCommand(ILogger<ContainerListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ContainerListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 
@@ -45,6 +41,7 @@ public sealed class ContainerListCommand : BaseDatabaseCommand<ContainerListArgu
                 args.Account!,
                 args.Database!,
                 args.Subscription!,
+                args.AuthMethod ?? AuthMethod.Credential,
                 args.Tenant,
                 args.RetryPolicy);
 

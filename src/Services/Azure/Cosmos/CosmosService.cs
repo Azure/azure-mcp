@@ -3,6 +3,7 @@
 
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Arguments;
+using AzureMcp.Models;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 using System.Text.Json;
@@ -37,16 +38,13 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         throw new Exception($"Cosmos DB account '{accountName}' not found in subscription '{subscriptionId}'");
     }
 
-    private async Task<CosmosClient> GetCosmosClientAsync(string accountName, string subscriptionId, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
+    private async Task<CosmosClient> CreateCosmosClientWithAuth(
+        string accountName,
+        string subscriptionId,
+        AuthMethod authMethod,
+        string? tenant = null,
+        RetryPolicyArguments? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, subscriptionId);
-
-        if (_cosmosClient != null)
-            return _cosmosClient;
-
-        var cosmosAccount = await GetCosmosAccountAsync(subscriptionId, accountName, tenant, retryPolicy);
-        var keys = await cosmosAccount.GetKeysAsync();
-
         var clientOptions = new CosmosClientOptions { AllowBulkExecution = true };
         clientOptions.CosmosClientTelemetryOptions.DisableDistributedTracing = false;
         clientOptions.CustomHandlers.Add(new UserPolicyRequestHandler(UserAgent));
@@ -57,13 +55,65 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             clientOptions.MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
         }
 
-        _cosmosClient = new CosmosClient(
-            string.Format(CosmosBaseUri, accountName),
-            keys.Value.PrimaryMasterKey,
-            clientOptions
-        );
+        switch (authMethod)
+        {
+            case AuthMethod.Key:
+                var cosmosAccount = await GetCosmosAccountAsync(subscriptionId, accountName, tenant);
+                var keys = await cosmosAccount.GetKeysAsync();
+                return new CosmosClient(
+                    string.Format(CosmosBaseUri, accountName),
+                    keys.Value.PrimaryMasterKey,
+                    clientOptions);
 
-        return _cosmosClient;
+            case AuthMethod.Credential:
+            default:
+                return new CosmosClient(
+                    string.Format(CosmosBaseUri, accountName),
+                    await GetCredential(tenant),
+                    clientOptions);
+        }
+    }
+
+    private async Task<CosmosClient> GetCosmosClientAsync(
+        string accountName,
+        string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
+        string? tenant = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, subscriptionId);
+
+        if (_cosmosClient != null)
+            return _cosmosClient;
+
+        try
+        {
+            // First attempt with requested auth method
+            _cosmosClient = await CreateCosmosClientWithAuth(
+                accountName,
+                subscriptionId,
+                authMethod,
+                tenant,
+                retryPolicy);
+
+            return _cosmosClient;
+        }
+        catch (Exception ex) when (
+            authMethod == AuthMethod.Credential &&
+            (ex.Message.Contains("401") || ex.Message.Contains("403")))
+        {
+            // If credential auth fails with 401/403, try key auth
+            _cosmosClient = await CreateCosmosClientWithAuth(
+                accountName,
+                subscriptionId,
+                AuthMethod.Key,
+                tenant,
+                retryPolicy);
+
+            return _cosmosClient;
+        }
+
+        throw new Exception($"Failed to create Cosmos client for account '{accountName}' with any authentication method");
     }
 
     public async Task<List<string>> GetCosmosAccounts(string subscriptionId, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
@@ -90,11 +140,16 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         return accounts;
     }
 
-    public async Task<List<string>> ListDatabases(string accountName, string subscriptionId, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
+    public async Task<List<string>> ListDatabases(
+        string accountName,
+        string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
+        string? tenant = null,
+        RetryPolicyArguments? retryPolicy = null)
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        var client = await GetCosmosClientAsync(accountName, subscriptionId, tenant, retryPolicy);
+        var client = await GetCosmosClientAsync(accountName, subscriptionId, authMethod, tenant, retryPolicy);
         var databases = new List<string>();
 
         try
@@ -114,11 +169,17 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         return databases;
     }
 
-    public async Task<List<string>> ListContainers(string accountName, string databaseName, string subscriptionId, string? tenant = null, RetryPolicyArguments? retryPolicy = null)
+    public async Task<List<string>> ListContainers(
+        string accountName,
+        string databaseName,
+        string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
+        string? tenant = null,
+        RetryPolicyArguments? retryPolicy = null)
     {
         ValidateRequiredParameters(accountName, databaseName, subscriptionId);
 
-        var client = await GetCosmosClientAsync(accountName, subscriptionId, tenant, retryPolicy);
+        var client = await GetCosmosClientAsync(accountName, subscriptionId, authMethod, tenant, retryPolicy);
         var containers = new List<string>();
 
         try
@@ -145,12 +206,13 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         string containerName,
         string? query,
         string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
         string? tenant = null,
         RetryPolicyArguments? retryPolicy = null)
     {
         ValidateRequiredParameters(accountName, databaseName, containerName, subscriptionId);
 
-        var client = await GetCosmosClientAsync(accountName, subscriptionId, tenant, retryPolicy);
+        var client = await GetCosmosClientAsync(accountName, subscriptionId, authMethod, tenant, retryPolicy);
 
         try
         {

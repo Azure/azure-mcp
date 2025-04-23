@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueUnlockCommand : BaseKeyValueCommand<KeyValueUnlockArguments>
+public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger) : BaseKeyValueCommand<KeyValueUnlockArguments>()
 {
-    private readonly ILogger<KeyValueUnlockCommand> _logger;
-
-    public KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueUnlockCommand> _logger = logger;
 
     protected override string GetCommandName() => "unlock";
 

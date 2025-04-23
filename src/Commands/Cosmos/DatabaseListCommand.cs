@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Arguments.Cosmos;
+using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Cosmos;
 
-public sealed class DatabaseListCommand : BaseCosmosCommand<DatabaseListArguments>
+public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseCosmosCommand<DatabaseListArguments>()
 {
-    private readonly ILogger<DatabaseListCommand> _logger;
-
-    public DatabaseListCommand(ILogger<DatabaseListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<DatabaseListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 
@@ -43,6 +39,7 @@ public sealed class DatabaseListCommand : BaseCosmosCommand<DatabaseListArgument
             var databases = await cosmosService.ListDatabases(
                 args.Account!,
                 args.Subscription!,
+                args.AuthMethod ?? AuthMethod.Credential,
                 args.Tenant,
                 args.RetryPolicy);
 

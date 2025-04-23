@@ -12,15 +12,10 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Monitor.Table;
 
-public sealed class TableListCommand : BaseMonitorCommand<TableListArguments>
+public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMonitorCommand<TableListArguments>()
 {
-    private readonly ILogger<TableListCommand> _logger;
+    private readonly ILogger<TableListCommand> _logger = logger;
     private readonly Option<string> _tableTypeOption = ArgumentDefinitions.Monitor.TableType.ToOption();
-
-    public TableListCommand(ILogger<TableListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
 
     protected override string GetCommandName() => "list";
 
