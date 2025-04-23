@@ -71,9 +71,5 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Arguments\Compute\Vm\" />
-  </ItemGroup>
 </Project>
 

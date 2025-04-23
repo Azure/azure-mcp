@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Compute.Vm;
 
-public sealed class VmListCommand : SubscriptionCommand<VmListArguments>
+public sealed class VmListCommand(ILogger<VmListCommand> logger) : SubscriptionCommand<VmListArguments>
 {
-    private readonly ILogger<VmListCommand> _logger;
-
-    public VmListCommand(ILogger<VmListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<VmListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 
