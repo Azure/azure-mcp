@@ -262,6 +262,16 @@ public static class ArgumentDefinitions
         }
     }
 
+    public static class Foundry{
+        public const string InferenceModelNameText = "inference-model-name";
+
+        public static readonly ArgumentDefinition<string> InferenceModelName = new(
+            InferenceModelNameText,
+            "Name of the inference model to get guidance for. This is the unique identifier for the model.",
+            required: true
+        );
+    }
+
     public static class Extension
     {
         public static class Az

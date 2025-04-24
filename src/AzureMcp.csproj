@@ -42,6 +42,12 @@
   </ItemGroup>
 
   <ItemGroup>
+      <Content Include="Services\Azure\Foundry\GuidanceDoc.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.45.0" />
     <PackageReference Include="Azure.Data.AppConfiguration" Version="1.6.0" />
     <PackageReference Include="Azure.Identity" Version="1.13.2" />

@@ -11,6 +11,7 @@ using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Storage;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Azure.Foundry;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
 using AzureMcp.Services.ProcessExecution;
@@ -62,5 +63,6 @@ static void ConfigureServices(IServiceCollection services)
     services.AddSingleton<IMonitorService, MonitorService>();
     services.AddSingleton<IResourceGroupService, ResourceGroupService>();
     services.AddSingleton<IAppConfigService, AppConfigService>();
+    services.AddSingleton<IFoundryService, FoundryService>();
     services.AddSingleton<CommandFactory>();
 }
