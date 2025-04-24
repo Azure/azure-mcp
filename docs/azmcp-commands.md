@@ -1,4 +1,3 @@
-
 # Azure MCP CLI Command Reference
 
 ## Global Args
