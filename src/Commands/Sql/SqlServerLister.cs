@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Sql;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AzureMcp.Commands.Sql;
 

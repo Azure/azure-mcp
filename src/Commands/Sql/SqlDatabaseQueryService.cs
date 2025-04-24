@@ -1,11 +1,11 @@
-using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.ResourceManager;
-using Azure.ResourceManager.Sql;
 using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Sql;
+using AzureMcp.Services.Azure;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
-using AzureMcp.Services.Azure;
+using System.Threading.Tasks;
 
 namespace AzureMcp.Commands.Sql;
 
@@ -20,8 +20,8 @@ public sealed class SqlDatabaseQueryService() : BaseAzureService, ISqlDatabaseQu
         var credential = await GetCredential();
         var armClient = new ArmClient(credential);
         // Ensure subscription is a full resource ID
-        string subscriptionResourceId = subscription.StartsWith("/subscriptions/") 
-            ? subscription 
+        string subscriptionResourceId = subscription.StartsWith("/subscriptions/")
+            ? subscription
             : $"/subscriptions/{subscription}";
         // Pass only the subscription GUID to CreateResourceIdentifier
         SubscriptionResource? subscriptionResource = null;

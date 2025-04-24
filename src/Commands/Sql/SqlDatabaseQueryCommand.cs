@@ -1,15 +1,15 @@
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Sql;
+using AzureMcp.Extensions;
+using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
+using Microsoft.Data.SqlClient;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Sql;
-using Azure.ResourceManager.Resources;
-using Microsoft.Data.SqlClient;
-using AzureMcp.Models.Argument;
-using AzureMcp.Extensions;
 
 namespace AzureMcp.Commands.Sql;
 
