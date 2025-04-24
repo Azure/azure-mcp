@@ -10,7 +10,7 @@ public class SqlDatabaseQueryCommandTests
 {
     private class MockSqlDatabaseQueryService : ISqlDatabaseQueryService
     {
-        public Task<object> ExecuteQueryAsync(string subscription, string serverName, string databaseName, string query)
+        public Task<object> ExecuteQueryAsync(string subscription, string serverName, string databaseName, string query, IProgress<int>? progress = null)
         {
             return Task.FromResult<object>(new[] { new { TestColumn = 1 } });
         }

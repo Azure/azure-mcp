@@ -19,24 +19,18 @@ The following args are available for all commands:
 ## Available Commands
 
 ### Server Operations
----
----
 ```bash
 # Start the MCP Server
 azmcp server start [--transport <transport>]
 ```
----
+
 ### Subscription Management
----
----
 ```bash
 # List available Azure subscriptions
 azmcp subscription list [--tenant-id <tenant-id>]
 ```
----
+
 ### Cosmos DB Operations
----
----
 ```bash
 # List Cosmos DB accounts in a subscription
 azmcp cosmos account list --subscription <subscription>
@@ -54,10 +48,8 @@ azmcp cosmos database container item query --subscription <subscription> \
                        --container-name <container-name> \
                        [--query "SELECT * FROM c"]
 ```
----
+
 ### Sql Operations
----
----
 ```bash
 # List SQL Servers in a subscription
 azmcp sql server list --subscription <subscription>
@@ -71,10 +63,8 @@ azmcp sql server database query --subscription <subscription> \
                        --database-name <database-name> \
                        [--query "SELECT * FROM sys.tables"]
 ```
----
+
 ### Storage Operations
----
----
 ```bash
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
@@ -91,10 +81,8 @@ azmcp storage blob container list --subscription <subscription> --account-name <
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> --account-name <account-name> --container-name <container-name>
 ```
----
+
 ### Monitor Operations
----
----
 ```bash
 # List Log Analytics workspaces in a subscription
 azmcp monitor workspace list --subscription <subscription>
@@ -116,11 +104,8 @@ azmcp monitor log query --subscription <subscription> \
                         --workspace <workspace> \
                         --table-name "AppEvents_CL" \
                         --query "| order by TimeGenerated desc"
-```
----
+
 ### App Configuration Operations
----
----
 ```bash
 # List App Configuration stores in a subscription
 azmcp appconfig account list --subscription <subscription>
@@ -143,18 +128,14 @@ azmcp appconfig kv unlock --subscription <subscription> --account-name <account-
 # Delete a key-value setting
 azmcp appconfig kv delete --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
 ```
----
+
 ### Resource Group Operations
----
----
 ```bash
 # List resource groups in a subscription
 azmcp group list --subscription <subscription>
 ```
----
+
 ### Azure CLI Extension Operations
----
----
 ```bash
 # Execute any Azure CLI command
 azmcp extension az --command "<command>"
@@ -169,12 +150,10 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 # List virtual machines
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
----
+
 ## Response Format
 
 All responses follow a consistent JSON format:
----
----
 ```json
 {
   "status": "200|403|500, etc",
@@ -184,7 +163,7 @@ All responses follow a consistent JSON format:
   "duration": 123
 }
 ```
----
+
 ## Error Handling
 
 The CLI returns structured JSON responses for errors, including:
@@ -197,7 +176,6 @@ The CLI returns structured JSON responses for errors, including:
 
 `azmcp cosmos database list --subscription <subscription>`
 
----
 ```json
 {
   "status": 400,
@@ -226,4 +204,3 @@ The CLI returns structured JSON responses for errors, including:
   "duration": 156
 }
 ```
----

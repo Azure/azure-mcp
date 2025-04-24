@@ -286,4 +286,29 @@ public static class ArgumentDefinitions
             );
         }
     }
+
+    public static class Sql
+    {
+        public const string ServerName = "server-name";
+        public const string DatabaseName = "database-name";
+        public const string QueryText = "query";
+
+        public static readonly ArgumentDefinition<string> Server = new(
+            ServerName,
+            "SQL Server name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Database = new(
+            DatabaseName,
+            "SQL Database name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Query = new(
+            QueryText,
+            "SQL query to execute.",
+            required: true
+        );
+    }
 }

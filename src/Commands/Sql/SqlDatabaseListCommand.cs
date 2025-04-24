@@ -2,6 +2,8 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Sql;
+using AzureMcp.Extensions;
+using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using System.CommandLine;
 using System.CommandLine.Parsing;
@@ -12,16 +14,8 @@ namespace AzureMcp.Commands.Sql;
 
 public sealed class SqlDatabaseListCommand() : BaseCommand
 {
-    private static readonly Option<string> SubscriptionOption = new Option<string>(
-        name: "--subscription",
-        description: "Azure subscription ID or name.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
-    private static readonly Option<string> ServerNameOption = new Option<string>(
-        name: "--server-name",
-        description: "SQL Server name.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
+    private static readonly Option<string> SubscriptionOption = ArgumentDefinitions.Common.Subscription.ToOption();
+    private static readonly Option<string> ServerNameOption = ArgumentDefinitions.Sql.Server.ToOption();
 
     protected override string GetCommandName() => "list";
     protected override string GetCommandDescription() => "List all SQL Databases for a given server";
@@ -40,10 +34,10 @@ public sealed class SqlDatabaseListCommand() : BaseCommand
         );
     }
 
-    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
+    public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);
-        var databases = await GetSqlDatabasesAsync(args.Subscription, args.ServerName);
+        var databases = GetSqlDatabases(args.Subscription, args.ServerName);
         var json = JsonSerializer.Serialize(databases, new JsonSerializerOptions { WriteIndented = true });
         var response = new CommandResponse
         {
@@ -51,10 +45,10 @@ public sealed class SqlDatabaseListCommand() : BaseCommand
             Message = "SQL Databases listed successfully.",
             Results = json
         };
-        return response;
+        return Task.FromResult(response);
     }
 
-    private static async Task<List<object>> GetSqlDatabasesAsync(string? subscription, string? serverName)
+    private static List<object> GetSqlDatabases(string? subscription, string? serverName)
     {
         var credential = new DefaultAzureCredential();
         var armClient = new ArmClient(credential);

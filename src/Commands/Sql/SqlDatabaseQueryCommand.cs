@@ -8,31 +8,17 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.Sql;
 using Azure.ResourceManager.Resources;
 using Microsoft.Data.SqlClient;
+using AzureMcp.Models.Argument;
+using AzureMcp.Extensions;
 
 namespace AzureMcp.Commands.Sql;
 
 public sealed class SqlDatabaseQueryCommand(ISqlDatabaseQueryService queryService) : BaseCommand
 {
-    public static Option<string> SubscriptionOption { get; } = new Option<string>(
-        name: "--subscription",
-        description: "Azure subscription ID or name.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
-    public static Option<string> ServerNameOption { get; } = new Option<string>(
-        name: "--server-name",
-        description: "SQL Server name.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
-    public static Option<string> DatabaseNameOption { get; } = new Option<string>(
-        name: "--database-name",
-        description: "SQL Database name.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
-    public static Option<string> QueryOption { get; } = new Option<string>(
-        name: "--query",
-        description: "SQL query to execute.",
-        parseArgument: result => result.Tokens.Count > 0 ? result.Tokens[0].Value : null
-    );
+    private static readonly Option<string> SubscriptionOption = ArgumentDefinitions.Common.Subscription.ToOption();
+    private static readonly Option<string> ServerNameOption = ArgumentDefinitions.Sql.Server.ToOption();
+    private static readonly Option<string> DatabaseNameOption = ArgumentDefinitions.Sql.Database.ToOption();
+    private static readonly Option<string> QueryOption = ArgumentDefinitions.Sql.Query.ToOption();
 
     protected override string GetCommandName() => "query";
     protected override string GetCommandDescription() => "Query a SQL Database using a SQL statement.";
