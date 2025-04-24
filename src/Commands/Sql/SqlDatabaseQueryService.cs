@@ -17,7 +17,7 @@ public sealed class SqlDatabaseQueryService() : BaseAzureService, ISqlDatabaseQu
         {
             return new { Error = "Subscription ID is required." };
         }
-        var credential = GetCredential();
+        var credential = await GetCredential();
         var armClient = new ArmClient(credential);
         // Ensure subscription is a full resource ID
         string subscriptionResourceId = subscription.StartsWith("/subscriptions/") 
