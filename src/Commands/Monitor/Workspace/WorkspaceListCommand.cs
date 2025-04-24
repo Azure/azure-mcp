@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Monitor.Workspace;
 
-public sealed class WorkspaceListCommand : SubscriptionCommand<WorkspaceListArguments>
+public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) : SubscriptionCommand<WorkspaceListArguments>()
 {
-    private readonly ILogger<WorkspaceListCommand> _logger;
-
-    public WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<WorkspaceListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

@@ -12,18 +12,13 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Monitor.Log;
 
-public sealed class LogQueryCommand : BaseMonitorCommand<LogQueryArguments>
+public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonitorCommand<LogQueryArguments>()
 {
-    private readonly ILogger<LogQueryCommand> _logger;
+    private readonly ILogger<LogQueryCommand> _logger = logger;
     private readonly Option<string> _tableNameOption = ArgumentDefinitions.Monitor.TableName.ToOption();
     private readonly Option<string> _queryOption = ArgumentDefinitions.Monitor.Query.ToOption();
     private readonly Option<int> _hoursOption = ArgumentDefinitions.Monitor.Hours.ToOption();
     private readonly Option<int> _limitOption = ArgumentDefinitions.Monitor.Limit.ToOption();
-
-    public LogQueryCommand(ILogger<LogQueryCommand> logger) : base()
-    {
-        _logger = logger;
-    }
 
     protected override string GetCommandName() => "query";
 

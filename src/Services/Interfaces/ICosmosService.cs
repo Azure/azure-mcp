@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Arguments;
+using AzureMcp.Models;
 using System.Text.Json;
 
 namespace AzureMcp.Services.Interfaces;
 
-public interface ICosmosService
+public interface ICosmosService : IDisposable
 {
     Task<List<string>> GetCosmosAccounts(
         string subscriptionId,
@@ -16,6 +17,7 @@ public interface ICosmosService
     Task<List<string>> ListDatabases(
         string accountName,
         string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
         string? tenant = null,
         RetryPolicyArguments? retryPolicy = null);
 
@@ -23,6 +25,7 @@ public interface ICosmosService
         string accountName,
         string databaseName,
         string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
         string? tenant = null,
         RetryPolicyArguments? retryPolicy = null);
 
@@ -32,6 +35,7 @@ public interface ICosmosService
         string containerName,
         string? query,
         string subscriptionId,
+        AuthMethod authMethod = AuthMethod.Credential,
         string? tenant = null,
         RetryPolicyArguments? retryPolicy = null);
 }

@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueShowCommand : BaseKeyValueCommand<KeyValueShowArguments>
+public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : BaseKeyValueCommand<KeyValueShowArguments>()
 {
-    private readonly ILogger<KeyValueShowCommand> _logger;
-
-    public KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueShowCommand> _logger = logger;
 
     protected override string GetCommandName() => "show";
 

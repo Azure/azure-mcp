@@ -1,21 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Xunit;
-
 namespace AzureMcp.Tests;
 
-public class SkipIfDotnetTestFactAttribute : FactAttribute
+public static class SkipExtensions
 {
-    public SkipIfDotnetTestFactAttribute()
-    {
-        if (IsRunningFromDotnetTest())
-        {
-            Skip = "Test skipped when running from dotnet test. This test requires interactive environment.";
-        }
-    }
+    public const string RunningFromDotnetTestReason =
+        "Test skipped when running from dotnet test. This test requires interactive environment.";
 
-    private static bool IsRunningFromDotnetTest()
+    public static bool IsRunningFromDotnetTest()
     {
         bool isVsCode = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSCODE_CLI")) ||
                        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSCODE_PID")) ||

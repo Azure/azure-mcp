@@ -10,14 +10,14 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
 {
     private readonly IMemoryCache _memoryCache = memoryCache;
 
-    public Task<T?> GetAsync<T>(string key, TimeSpan? expiration = null)
+    public ValueTask<T?> GetAsync<T>(string key, TimeSpan? expiration = null)
     {
-        return Task.FromResult(_memoryCache.TryGetValue(key, out T? value) ? value : default);
+        return _memoryCache.TryGetValue(key, out T? value) ? new ValueTask<T?>(value) : default;
     }
 
-    public Task SetAsync<T>(string key, T data, TimeSpan? expiration = null)
+    public ValueTask SetAsync<T>(string key, T data, TimeSpan? expiration = null)
     {
-        if (data == null) return Task.CompletedTask;
+        if (data == null) return default;
 
         var options = new MemoryCacheEntryOptions
         {
@@ -25,12 +25,12 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         };
 
         _memoryCache.Set(key, data, options);
-        return Task.CompletedTask;
+        return default;
     }
 
-    public Task DeleteAsync(string key)
+    public ValueTask DeleteAsync(string key)
     {
         _memoryCache.Remove(key);
-        return Task.CompletedTask;
+        return default;
     }
 }

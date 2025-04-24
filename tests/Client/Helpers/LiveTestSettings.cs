@@ -12,6 +12,8 @@ public class LiveTestSettings
     public string? ResourceGroupName { get; set; }
     public string? ResourceBaseName { get; set; }
     public string? CosmosAccountName { get; set; }
+    public string? CosmosDatabaseName { get; set; }
+    public string? CosmosContainerName { get; set; }
     public string? StorageAccountName { get; set; }
     public string? StorageContainerName { get; set; }
 }

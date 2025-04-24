@@ -12,14 +12,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueListCommand : BaseAppConfigCommand<KeyValueListArguments>
+public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : BaseAppConfigCommand<KeyValueListArguments>()
 {
-    private readonly ILogger<KeyValueListCommand> _logger;
-
-    public KeyValueListCommand(ILogger<KeyValueListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueListCommand> _logger = logger;
 
     // KeyValueList has different key and label descriptions, which is why we are defining here instead of using BaseKeyValueCommand
     private readonly Option<string> _keyOption = ArgumentDefinitions.AppConfig.KeyValueList.Key.ToOption();

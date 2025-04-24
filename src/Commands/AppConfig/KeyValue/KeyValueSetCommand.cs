@@ -12,15 +12,10 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueSetCommand : BaseKeyValueCommand<KeyValueSetArguments>
+public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : BaseKeyValueCommand<KeyValueSetArguments>()
 {
     private readonly Option<string> _valueOption = ArgumentDefinitions.AppConfig.Value.ToOption();
-    private readonly ILogger<KeyValueSetCommand> _logger;
-
-    public KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueSetCommand> _logger = logger;
 
     protected override string GetCommandName() => "set";
 

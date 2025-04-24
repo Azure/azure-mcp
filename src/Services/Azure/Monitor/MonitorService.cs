@@ -42,7 +42,7 @@ public class MonitorService(ISubscriptionService subscriptionService, IResourceG
     {
         ValidateRequiredParameters(subscription, workspace, query);
 
-        var credential = GetCredential(tenant);
+        var credential = await GetCredential(tenant);
         var options = AddDefaultPolicies(new LogsQueryClientOptions());
 
         if (retryPolicy != null)

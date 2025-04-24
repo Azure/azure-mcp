@@ -11,14 +11,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Subscription;
 
-public sealed class SubscriptionListCommand : GlobalCommand<SubscriptionListArguments>
+public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> logger) : GlobalCommand<SubscriptionListArguments>()
 {
-    private readonly ILogger<SubscriptionListCommand> _logger;
-
-    public SubscriptionListCommand(ILogger<SubscriptionListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<SubscriptionListCommand> _logger = logger;
 
     protected override string GetCommandName() => "list";
 

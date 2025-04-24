@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueLockCommand : BaseKeyValueCommand<KeyValueLockArguments>
+public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : BaseKeyValueCommand<KeyValueLockArguments>()
 {
-    private readonly ILogger<KeyValueLockCommand> _logger;
-
-    public KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueLockCommand> _logger = logger;
 
     protected override string GetCommandName() => "lock";
 

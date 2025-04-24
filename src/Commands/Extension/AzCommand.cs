@@ -13,10 +13,10 @@ using System.Runtime.InteropServices;
 
 namespace AzureMcp.Commands.Extension;
 
-public sealed class AzCommand : GlobalCommand<AzArguments>
+public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzArguments>()
 {
-    private readonly ILogger<AzCommand> _logger;
-    private readonly int _processTimeoutSeconds;
+    private readonly ILogger<AzCommand> _logger = logger;
+    private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
     private static string? _cachedAzPath;
 
@@ -28,12 +28,6 @@ public sealed class AzCommand : GlobalCommand<AzArguments>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python", "Python310", "Scripts"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python", "Python311", "Scripts")
     ];
-
-    public AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : base()
-    {
-        _logger = logger;
-        _processTimeoutSeconds = processTimeoutSeconds;
-    }
 
     protected override string GetCommandName() => "az";
 

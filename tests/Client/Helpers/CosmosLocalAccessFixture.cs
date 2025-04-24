@@ -4,7 +4,6 @@
 using ModelContextProtocol.Client;
 using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AzureMcp.Tests.Client.Helpers
 {

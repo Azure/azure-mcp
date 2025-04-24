@@ -10,14 +10,9 @@ using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
-public sealed class KeyValueDeleteCommand : BaseKeyValueCommand<KeyValueDeleteArguments>
+public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger) : BaseKeyValueCommand<KeyValueDeleteArguments>()
 {
-    private readonly ILogger<KeyValueDeleteCommand> _logger;
-
-    public KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<KeyValueDeleteCommand> _logger = logger;
 
     protected override string GetCommandName() => "delete";
 
