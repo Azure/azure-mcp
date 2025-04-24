@@ -227,15 +227,15 @@ public class CommandFactory
     private void RegisterSqlCommands()
     {
         // Create SQL command group
-        var sql = new CommandGroup("sql", "SQL Server operations - Commands for managing and interacting with SQL Servers.");
+        var sql = new CommandGroup("sql", "Azure SQL Server operations - Commands for managing and interacting with Azure SQL Servers.");
         _rootGroup.AddSubGroup(sql);
 
         // Create SQL server subgroup
-        var server = new CommandGroup("server", "SQL Server resource operations - Commands for listing and managing SQL Server resources.");
+        var server = new CommandGroup("server", "Azure SQL Server resource operations - Commands for listing and managing Azure SQL Server resources.");
         sql.AddSubGroup(server);
 
         // Create SQL database subgroup under server
-        var database = new CommandGroup("database", "SQL Database resource operations - Commands for listing and managing SQL Databases in a SQL Server.");
+        var database = new CommandGroup("database", "Azure SQL Database resource operations - Commands for listing and managing SQL Databases in an Azure SQL Server.");
         server.AddSubGroup(database);
 
         // Register SQL server commands

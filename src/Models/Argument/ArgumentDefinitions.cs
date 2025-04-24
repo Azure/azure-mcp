@@ -295,13 +295,13 @@ public static class ArgumentDefinitions
 
         public static readonly ArgumentDefinition<string> Server = new(
             ServerName,
-            "SQL Server name.",
+            "Azure SQL Server name.",
             required: true
         );
 
         public static readonly ArgumentDefinition<string> Database = new(
             DatabaseName,
-            "SQL Database name.",
+            "Azure SQL Database name.",
             required: true
         );
 

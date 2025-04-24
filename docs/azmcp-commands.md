@@ -104,6 +104,7 @@ azmcp monitor log query --subscription <subscription> \
                         --workspace <workspace> \
                         --table-name "AppEvents_CL" \
                         --query "| order by TimeGenerated desc"
+```
 
 ### App Configuration Operations
 ```bash
