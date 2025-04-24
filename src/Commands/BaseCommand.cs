@@ -43,7 +43,7 @@ public abstract class BaseCommand : IBaseCommand
     {
         // Don't clear arguments when handling exceptions
         response.Status = GetStatusCode(ex);
-        response.Message = GetErrorMessage(ex);
+        response.Message = GetErrorMessage(ex) + ".  See https://aka.ms/azmcp/troubleshooting for more information.";
         response.Results = new
         {
             ex.Message,
