@@ -16,10 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TROUBLESHOOTING.md = TROUBLESHOOTING.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1DE6797C-57F7-4DD9-8ED6-ADB7E88CF2EB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp", "src\AzureMcp.csproj", "{DC31191D-DEBD-F953-F28F-D360D6053092}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.Tests", "tests\AzureMcp.Tests.csproj", "{FDC17C76-2711-174D-F717-820CB23D899E}"
@@ -41,10 +37,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{DC31191D-DEBD-F953-F28F-D360D6053092} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{FDC17C76-2711-174D-F717-820CB23D899E} = {1DE6797C-57F7-4DD9-8ED6-ADB7E88CF2EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD4A7D36-AA20-40AB-B072-A5292B43E473}
