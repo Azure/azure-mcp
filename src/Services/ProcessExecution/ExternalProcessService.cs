@@ -103,7 +103,7 @@ public class ExternalProcessService : IExternalProcessService
                 result.Error,
                 result.Command
             };
-            return JsonSerializer.SerializeToElement(error, JsonSrcGenCtx.Default.ParseError);
+            return JsonSerializer.SerializeToElement(error, JsonSourceGenerationContext.Default.ParseError);
         }
 
         try
@@ -113,7 +113,7 @@ public class ExternalProcessService : IExternalProcessService
         }
         catch
         {
-            return JsonSerializer.SerializeToElement(new ParseOutput(result.Output), JsonSrcGenCtx.Default.ParseOutput);
+            return JsonSerializer.SerializeToElement(new ParseOutput(result.Output), JsonSourceGenerationContext.Default.ParseOutput);
         }
     }
 

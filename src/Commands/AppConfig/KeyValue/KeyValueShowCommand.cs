@@ -47,7 +47,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
 
             context.Response.Results = ResponseResult.Create(
                 new KeyValueShowResult(setting),
-                JsonSrcGenCtx.Default.KeyValueShowResult);
+                JsonSourceGenerationContext.Default.KeyValueShowResult);
         }
         catch (Exception ex)
         {

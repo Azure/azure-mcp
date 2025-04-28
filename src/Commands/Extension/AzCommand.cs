@@ -138,7 +138,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             }
 
             var jElem = processService.ParseJsonOutput(result);
-            context.Response.Results = ResponseResult.Create(jElem, JsonSrcGenCtx.Default.JsonElement);
+            context.Response.Results = ResponseResult.Create(jElem, JsonSourceGenerationContext.Default.JsonElement);
         }
         catch (Exception ex)
         {

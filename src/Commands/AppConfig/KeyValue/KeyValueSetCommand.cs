@@ -76,7 +76,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
 
             context.Response.Results = ResponseResult.Create(
                 new KeyValueSetCommandResult(args.Key, args.Value, args.Label),
-                JsonSrcGenCtx.Default.KeyValueSetCommandResult
+                JsonSourceGenerationContext.Default.KeyValueSetCommandResult
             );
         }
         catch (Exception ex)

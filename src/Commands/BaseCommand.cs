@@ -47,7 +47,7 @@ public abstract class BaseCommand : IBaseCommand
         response.Results = Models.Command.ResponseResult.Create(new ExceptionResult(
             ex.Message,
             ex.StackTrace,
-            ex.GetType().Name), JsonSrcGenCtx.Default.ExceptionResult);
+            ex.GetType().Name), JsonSourceGenerationContext.Default.ExceptionResult);
     }
 
     internal record ExceptionResult(

@@ -46,7 +46,7 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
                 args.Label);
 
             var result = new KeyValueDeleteCommandResult(args.Key, args.Label);
-            context.Response.Results = ResponseResult.Create(result, JsonSrcGenCtx.Default.KeyValueDeleteCommandResult);
+            context.Response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.KeyValueDeleteCommandResult);
         }
         catch (Exception ex)
         {

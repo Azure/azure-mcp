@@ -74,7 +74,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
                 args.Tenant,
                 args.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(results, JsonSrcGenCtx.Default.ListJsonNode);
+            context.Response.Results = ResponseResult.Create(results, JsonSourceGenerationContext.Default.ListJsonNode);
         }
         catch (Exception ex)
         {

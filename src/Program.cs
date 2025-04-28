@@ -41,7 +41,7 @@ catch (Exception ex)
         Duration = 0
     };
 
-    Console.WriteLine(JsonSerializer.Serialize(response, JsonSrcGenCtx.Default.CommandResponse));
+    Console.WriteLine(JsonSerializer.Serialize(response, JsonSourceGenerationContext.Default.CommandResponse));
     return 1;
 }
 

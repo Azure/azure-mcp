@@ -103,7 +103,7 @@ public class ToolOperations
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
-            var jsonResponse = JsonSerializer.Serialize(commandResponse.Results, JsonSrcGenCtx.Default.CommandResponse);
+            var jsonResponse = JsonSerializer.Serialize(commandResponse.Results, JsonSourceGenerationContext.Default.CommandResponse);
 
             return new CallToolResponse
             {
@@ -171,7 +171,9 @@ public class ToolOperations
             schema["required"] = new JsonArray(args.Where(p => p.Required).Select(p => (JsonNode)p.Name).ToArray());
         }
 
-        tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSrcGenCtx(McpJsonUtilities.DefaultOptions).JsonNode);
+        var newOptions = new JsonSerializerOptions(McpJsonUtilities.DefaultOptions);
+
+        tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSourceGenerationContext(newOptions).JsonNode);
 
         return tool;
     }

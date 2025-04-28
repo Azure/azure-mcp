@@ -47,7 +47,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
                 args.RetryPolicy);
 
             context.Response.Results = tables?.Count > 0
-                ? ResponseResult.Create(new TableListCommandResult(tables), JsonSrcGenCtx.Default.StorageTableListCommandResult)
+                ? ResponseResult.Create(new TableListCommandResult(tables), JsonSourceGenerationContext.Default.StorageTableListCommandResult)
                 : null;
 
             // Only show warning if we actually had to fall back to a different auth method

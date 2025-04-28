@@ -49,7 +49,7 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
             context.Response.Results =
                 ResponseResult.Create(
                     new KeyValueLockCommandResult(args.Key, args.Label),
-                    JsonSrcGenCtx.Default.KeyValueLockCommandResult);
+                    JsonSourceGenerationContext.Default.KeyValueLockCommandResult);
         }
         catch (Exception ex)
         {

@@ -40,7 +40,7 @@ public sealed class ToolsListCommand : BaseCommand
                 .Select(kvp => CreateCommand(kvp.Key, kvp.Value))
                 .ToList());
 
-            context.Response.Results = ResponseResult.Create(tools, JsonSrcGenCtx.Default.ListCommandInfo);
+            context.Response.Results = ResponseResult.Create(tools, JsonSourceGenerationContext.Default.ListCommandInfo);
             return context.Response;
         }
         catch (Exception ex)

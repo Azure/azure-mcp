@@ -43,7 +43,7 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
             context.Response.Results = subscriptions?.Count > 0
                 ? ResponseResult.Create(
                     new SubscriptionListCommandResult(subscriptions),
-                    JsonSrcGenCtx.Default.SubscriptionListCommandResult)
+                    JsonSourceGenerationContext.Default.SubscriptionListCommandResult)
                 : null;
         }
         catch (Exception ex)

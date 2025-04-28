@@ -89,7 +89,7 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
             context.Response.Results = settings?.Count > 0 ?
                 ResponseResult.Create(
                     new KeyValueListCommandResult(settings),
-                    JsonSrcGenCtx.Default.KeyValueListCommandResult) :
+                    JsonSourceGenerationContext.Default.KeyValueListCommandResult) :
                 null;
         }
         catch (Exception ex)

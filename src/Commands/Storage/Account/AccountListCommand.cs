@@ -44,7 +44,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 args.RetryPolicy);
 
             context.Response.Results = accounts?.Count > 0
-                ? ResponseResult.Create(new Result(accounts), JsonSrcGenCtx.Default.StorageAccountListCommandResult)
+                ? ResponseResult.Create(new Result(accounts), JsonSourceGenerationContext.Default.StorageAccountListCommandResult)
                 : null;
         }
         catch (Exception ex)

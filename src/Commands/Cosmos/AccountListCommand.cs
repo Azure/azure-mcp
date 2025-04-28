@@ -44,7 +44,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
             context.Response.Results = accounts?.Count > 0 ?
                 ResponseResult.Create(
                     new AccountListCommandResult(accounts),
-                    JsonSrcGenCtx.Default.CosmosAccountListCommandResult) :
+                    JsonSourceGenerationContext.Default.CosmosAccountListCommandResult) :
                 null;
         }
         catch (Exception ex)

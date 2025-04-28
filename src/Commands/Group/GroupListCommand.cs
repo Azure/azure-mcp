@@ -45,7 +45,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 args.RetryPolicy);
 
             context.Response.Results = groups?.Count > 0 ?
-                ResponseResult.Create(new Result(groups), JsonSrcGenCtx.Default.Result) :
+                ResponseResult.Create(new Result(groups), JsonSourceGenerationContext.Default.Result) :
                 null;
         }
         catch (Exception ex)

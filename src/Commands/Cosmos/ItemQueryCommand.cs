@@ -82,7 +82,7 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
                 args.RetryPolicy);
 
             context.Response.Results = items?.Count > 0 ?
-                ResponseResult.Create(new ItemQueryCommandResult(items), JsonSrcGenCtx.Default.ItemQueryCommandResult) :
+                ResponseResult.Create(new ItemQueryCommandResult(items), JsonSourceGenerationContext.Default.ItemQueryCommandResult) :
                 null;
         }
         catch (Exception ex)

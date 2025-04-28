@@ -48,7 +48,7 @@ public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> log
             );
 
             var result = new ContainerDetailsCommandResult(new JsonBlobContainerProperties(details));
-            context.Response.Results = ResponseResult.Create(result, JsonSrcGenCtx.Default.ContainerDetailsCommandResult);
+            context.Response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.ContainerDetailsCommandResult);
             return context.Response;
         }
         catch (Exception ex)

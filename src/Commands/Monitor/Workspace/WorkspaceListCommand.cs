@@ -46,7 +46,7 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
             context.Response.Results = workspaces?.Count > 0 ?
                 ResponseResult.Create(
                     new WorkspaceListCommandResult(workspaces),
-                    JsonSrcGenCtx.Default.WorkspaceListCommandResult) :
+                    JsonSourceGenerationContext.Default.WorkspaceListCommandResult) :
                 null;
         }
         catch (Exception ex)

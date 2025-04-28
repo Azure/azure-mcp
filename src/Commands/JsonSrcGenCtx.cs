@@ -47,7 +47,7 @@ namespace AzureMcp;
 [JsonSerializable(typeof(CommandResponse))]
 [JsonSerializable(typeof(AzureMcp.Models.ETag), TypeInfoPropertyName = "McpETag")]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
-internal partial class JsonSrcGenCtx : JsonSerializerContext
+internal partial class JsonSourceGenerationContext : JsonSerializerContext
 {
 
 }
