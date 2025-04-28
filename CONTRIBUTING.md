@@ -98,6 +98,14 @@ The Azure MCP Server implements the [Model Context Protocol specification](https
 3. Reference the original issue
 4. Wait for review and address any feedback
 
+## Official builds and releases
+
+The internal pipeline [azure-mcp](https://dev.azure.com/azure-sdk/internal/_build?definitionId=7571) is used for all official
+releases and CI builds. On every merge to main, a build will run and will produce a dynamically named prerelease
+package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/Npm/@azure%2Fmcp/overview/0.0.10-beta.4799791).
+
+Only manual runs of the pipeline publish official versions to npmjs.com.
+
 ## Questions and Support
 
 - Create an issue for questions
