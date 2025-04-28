@@ -103,7 +103,7 @@ public class ToolOperations
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
-            var jsonResponse = JsonSerializer.Serialize(commandResponse.Results, JsonSourceGenerationContext.Default.CommandResponse);
+            var jsonResponse = JsonSerializer.Serialize(commandResponse, JsonSourceGenerationContext.Default.CommandResponse);
 
             return new CallToolResponse
             {

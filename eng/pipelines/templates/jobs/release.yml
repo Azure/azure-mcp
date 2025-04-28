@@ -78,23 +78,22 @@ jobs:
             MainPublisher: 'ESRPRELPACMANTEST'
             productstate: latest
 
-# TODO: Disabling UpdatePackageVersions until the the service account can fork the repo.
-# - job: UpdatePackageVersion
-#   displayName: "Update Package Versions"
-#   condition: and(succeeded(), ne(variables['Skip.UpdatePackageVersion'], 'true'))
-#   dependsOn: Publish
-#   steps:
-#   - checkout: self
+- job: UpdatePackageVersion
+  displayName: "Update Package Versions"
+  condition: and(succeeded(), ne(variables['Skip.UpdatePackageVersion'], 'true'))
+  dependsOn: Publish
+  steps:
+  - checkout: self
 
-#   # Apply the version increment to each library, which updates the Cargo.toml and changelog files.
-#   - task: PowerShell@2
-#     displayName: Increment version
-#     inputs:
-#       targetType: filePath
-#       filePath: $(Build.SourcesDirectory)/eng/scripts/Update-Version.ps1
+  # Apply the version increment to each library, which updates the Cargo.toml and changelog files.
+  - task: PowerShell@2
+    displayName: Increment version
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Update-Version.ps1
 
-#   - template: /eng/common/pipelines/templates/steps/create-pull-request.yml
-#     parameters:
-#       PRBranchName: increment-package-version-$(Build.BuildId)
-#       CommitMsg: "Increment package version after release"
-#       PRTitle: "Increment version after release"
+  - template: /eng/common/pipelines/templates/steps/create-pull-request.yml
+    parameters:
+      PRBranchName: increment-package-version-$(Build.BuildId)
+      CommitMsg: "Increment package version after release"
+      PRTitle: "Increment version after release"
