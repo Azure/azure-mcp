@@ -64,7 +64,6 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         GetRootOwner = 3
     }
 
-#if WINDOWS
     /// <summary>
     /// Retrieves the handle to the ancestor of the specified window.
     /// </summary>
@@ -80,17 +79,18 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     public static IntPtr GetConsoleOrTerminalWindow()
     {
-        IntPtr consoleHandle = GetConsoleWindow();
-        IntPtr handle = GetAncestor(consoleHandle, GetAncestorFlags.GetRootOwner);
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+        {
+            IntPtr consoleHandle = GetConsoleWindow();
+            IntPtr handle = GetAncestor(consoleHandle, GetAncestorFlags.GetRootOwner);
 
-        return handle;
+            return handle;
+        }
+        else
+        {
+            return IntPtr.Zero;
+        }
     }
-#else
-   public static IntPtr GetConsoleOrTerminalWindow()
-    {
-        return IntPtr.Zero;
-    } 
-#endif
 
     private static string TokenCacheName = "azure-mcp-msal.cache";
 
