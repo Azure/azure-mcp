@@ -22,17 +22,17 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 {
     public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        ChainedTokenCredential chainedCredential = CreateChainedCredentialAsync(tenantId).Result;
+        ChainedTokenCredential chainedCredential = CreateChainedCredential(tenantId);
         return chainedCredential.GetToken(requestContext, cancellationToken);
     }
 
     public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        ChainedTokenCredential chainedCredential = CreateChainedCredentialAsync(tenantId).Result;
-        return ValueTask.FromResult(chainedCredential.GetToken(requestContext, cancellationToken));
+        ChainedTokenCredential chainedCredential = CreateChainedCredential(tenantId);
+        return chainedCredential.GetTokenAsync(requestContext, cancellationToken);
     }
 
-    private static async Task<ChainedTokenCredential> CreateChainedCredentialAsync(string? tenantId)
+    private static ChainedTokenCredential CreateChainedCredential(string? tenantId)
     {
         string? authRecordJson = Environment.GetEnvironmentVariable("AZURE_MCP_AUTH_AUTHENTICATION_RECORD");
         AuthenticationRecord? authRecord = null;
@@ -40,7 +40,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         {
             byte[] bytes = Encoding.UTF8.GetBytes(authRecordJson);
             using MemoryStream authRecordStream = new MemoryStream(bytes);
-            authRecord = await AuthenticationRecord.DeserializeAsync(authRecordStream);
+            authRecord = AuthenticationRecord.Deserialize(authRecordStream);
         }
 
         string? useOnlyBrokerCredential = Environment.GetEnvironmentVariable("AZURE_MCP_USE_ONLY_BROKER_CREDENTIAL");
