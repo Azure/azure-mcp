@@ -20,13 +20,19 @@ RUN dotnet publish "src/AzureMcp.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-bookworm-slim AS runtime
 WORKDIR /app
 
-# Install any required dependencies for Azure CLI integration
+# Install Azure CLI and required dependencies
 RUN apt-get update && apt-get install -y \
     curl \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \
+    gnupg \
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the published application
 COPY --from=publish /app/publish .
 
-# Set the entry point for the container
+# Set the entry point and default command for the container
 ENTRYPOINT ["dotnet", "azmcp.dll"]
+CMD ["server", "start", "--transport", "sse"]
