@@ -59,6 +59,5 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record DatabaseListCommandResult(List<string> Databases);
 }

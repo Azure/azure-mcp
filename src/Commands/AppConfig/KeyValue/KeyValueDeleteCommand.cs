@@ -57,6 +57,5 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record KeyValueDeleteCommandResult(string? Key, string? Label);
 }

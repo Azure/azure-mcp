@@ -56,6 +56,5 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record AccountListCommandResult(List<string> Accounts);
 }

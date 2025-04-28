@@ -60,6 +60,5 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record KeyValueLockCommandResult(string? Key, string? Label);
 }

@@ -58,6 +58,5 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record KeyValueShowResult(Models.AppConfig.KeyValueSetting Setting);
 }

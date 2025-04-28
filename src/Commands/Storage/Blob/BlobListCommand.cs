@@ -59,6 +59,5 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record BlobListCommandResult(List<string> Blobs);
 }

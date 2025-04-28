@@ -59,7 +59,6 @@ public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> log
         }
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record ContainerDetailsCommandResult(JsonBlobContainerProperties Details);
 
     internal class JsonBlobContainerProperties

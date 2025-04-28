@@ -58,6 +58,5 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record WorkspaceListCommandResult(List<WorkspaceInfo> Workspaces);
 }

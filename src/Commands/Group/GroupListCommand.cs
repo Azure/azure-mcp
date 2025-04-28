@@ -57,6 +57,5 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record class Result(List<ResourceGroupInfo> Groups);
 }

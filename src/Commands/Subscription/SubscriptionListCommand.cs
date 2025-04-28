@@ -55,6 +55,5 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record SubscriptionListCommandResult(List<ArgumentOption> Subscriptions);
 }

@@ -101,6 +101,5 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record KeyValueListCommandResult(List<KeyValueSetting> Settings);
 }

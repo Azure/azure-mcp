@@ -92,6 +92,5 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         return args;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record TableListCommandResult(List<string> Tables);
 }

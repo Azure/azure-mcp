@@ -58,6 +58,5 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         return context.Response;
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
     internal record ContainerListCommandResult(List<string> Containers);
 }
