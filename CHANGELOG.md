@@ -1,5 +1,17 @@
 # Release History
 
+## 0.0.11 (2025-04-29)
+
+### Features Added
+ 
+### Breaking Changes
+
+### Bugs Fixed
+- Bug fixes to existing MCP commands
+- See https://github.com/Azure/azure-mcp/releases/tag/0.0.11
+
+### Other Changes
+
 ## 0.0.10 (2025-04-17)
 
 ### Features Added
