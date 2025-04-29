@@ -4,7 +4,6 @@
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace AzureMcp.Services.Azure.Authentication;
@@ -32,9 +31,22 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         return chainedCredential.GetTokenAsync(requestContext, cancellationToken);
     }
 
+    private const string AuthenticationRecordEnvVarName = "AZURE_MCP_AUTHENTICATION_RECORD";
+    private const string OnlyUseBrokerCredentialEnvVarName = "AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL";
+    private const string ClientIdEnvVarName = "AZURE_MCP_CLIENT_ID";
+
+    private static bool ShouldUseOnlyBrokerCredential()
+    {
+        string? onlyUseBrokerCredential = Environment.GetEnvironmentVariable(OnlyUseBrokerCredentialEnvVarName);
+        return onlyUseBrokerCredential == "true"
+            || onlyUseBrokerCredential == "True"
+            || onlyUseBrokerCredential == "T"
+            || onlyUseBrokerCredential == "1";
+    }
+
     private static ChainedTokenCredential CreateChainedCredential(string? tenantId)
     {
-        string? authRecordJson = Environment.GetEnvironmentVariable("AZURE_MCP_AUTH_AUTHENTICATION_RECORD");
+        string? authRecordJson = Environment.GetEnvironmentVariable(AuthenticationRecordEnvVarName);
         AuthenticationRecord? authRecord = null;
         if (!string.IsNullOrEmpty(authRecordJson))
         {
@@ -43,8 +55,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             authRecord = AuthenticationRecord.Deserialize(authRecordStream);
         }
 
-        string? useOnlyBrokerCredential = Environment.GetEnvironmentVariable("AZURE_MCP_USE_ONLY_BROKER_CREDENTIAL");
-        if (useOnlyBrokerCredential == "true")
+        if (ShouldUseOnlyBrokerCredential())
         {
             return new(CreateBrowserCredential(tenantId, authRecord));
         }
@@ -54,56 +65,17 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         }
     }
 
-    private enum GetAncestorFlags
-    {
-        GetParent = 1,
-        GetRoot = 2,
-        /// <summary>
-        /// Retrieves the owned root window by walking the chain of parent and owner windows returned by GetParent.
-        /// </summary>
-        GetRootOwner = 3
-    }
-
-    /// <summary>
-    /// Retrieves the handle to the ancestor of the specified window.
-    /// </summary>
-    /// <param name="hwnd">A handle to the window whose ancestor is to be retrieved.
-    /// If this parameter is the desktop window, the function returns NULL. </param>
-    /// <param name="flags">The ancestor to be retrieved.</param>
-    /// <returns>The return value is the handle to the ancestor window.</returns>
-    [DllImport("user32.dll", ExactSpelling = true)]
-    static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestorFlags flags);
-
-    [DllImport("kernel32.dll")]
-    static extern IntPtr GetConsoleWindow();
-
-    public static IntPtr GetConsoleOrTerminalWindow()
-    {
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-        {
-            IntPtr consoleHandle = GetConsoleWindow();
-            IntPtr handle = GetAncestor(consoleHandle, GetAncestorFlags.GetRootOwner);
-
-            return handle;
-        }
-        else
-        {
-            return IntPtr.Zero;
-        }
-    }
-
     private static string TokenCacheName = "azure-mcp-msal.cache";
 
     private static InteractiveBrowserCredential CreateBrowserCredential(string? tenantId, AuthenticationRecord? authRecord)
     {
-        string? clientId = Environment.GetEnvironmentVariable("AZURE_MCP_AUTH_CLIENT_ID");
-        string? useOnlyBrokerCredential = Environment.GetEnvironmentVariable("AZURE_MCP_USE_ONLY_BROKER_CREDENTIAL");
+        string? clientId = Environment.GetEnvironmentVariable(ClientIdEnvVarName);
 
-        IntPtr handle = GetConsoleOrTerminalWindow();
+        IntPtr handle = WindowHandleProvider.GetWindowHandle();
 
         return new(new InteractiveBrowserCredentialBrokerOptions(handle)
         {
-            UseDefaultBrokerAccount = useOnlyBrokerCredential != "true" && authRecord is null,
+            UseDefaultBrokerAccount = !ShouldUseOnlyBrokerCredential() && authRecord is null,
             ClientId = clientId,
             TenantId = tenantId,
             AuthenticationRecord = authRecord,
