@@ -33,7 +33,7 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
                 .Select(kvp => CreateCommand(kvp.Key, kvp.Value))
                 .ToList());
 
-            context.Response.Results = ResponseResult.Create(tools, JsonSourceGenerationContext.Default.ListCommandInfo);
+            context.Response.Results = ResponseResult.Create(tools, ModelsJsonContext.Default.ListCommandInfo);
             return context.Response;
         }
         catch (Exception ex)

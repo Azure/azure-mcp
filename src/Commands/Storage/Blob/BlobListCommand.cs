@@ -47,7 +47,7 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
                 args.RetryPolicy);
 
             context.Response.Results = blobs?.Count > 0
-                ? ResponseResult.Create(new BlobListCommandResult(blobs), JsonSourceGenerationContext.Default.BlobListCommandResult)
+                ? ResponseResult.Create(new BlobListCommandResult(blobs), StorageJsonContext.Default.BlobListCommandResult)
                 : null;
         }
         catch (Exception ex)

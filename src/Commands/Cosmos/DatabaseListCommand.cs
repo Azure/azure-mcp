@@ -47,7 +47,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
             context.Response.Results = databases?.Count > 0 ?
                 ResponseResult.Create(
                     new DatabaseListCommandResult(databases),
-                    JsonSourceGenerationContext.Default.DatabaseListCommandResult) :
+                    CosmosJsonContext.Default.DatabaseListCommandResult) :
                 null;
         }
         catch (Exception ex)

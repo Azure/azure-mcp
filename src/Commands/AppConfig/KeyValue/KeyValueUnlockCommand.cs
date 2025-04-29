@@ -49,7 +49,7 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
             context.Response.Results =
                 ResponseResult.Create(
                     new KeyValueUnlockResult(args.Key, args.Label),
-                    JsonSourceGenerationContext.Default.KeyValueUnlockResult);
+                    AppConfigJsonContext.Default.KeyValueUnlockResult);
         }
         catch (Exception ex)
         {

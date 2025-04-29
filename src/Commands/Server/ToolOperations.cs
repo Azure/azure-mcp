@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol.Types;
@@ -103,7 +104,7 @@ public class ToolOperations
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
-            var jsonResponse = JsonSerializer.Serialize(commandResponse, JsonSourceGenerationContext.Default.CommandResponse);
+            var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
             return new CallToolResponse
             {

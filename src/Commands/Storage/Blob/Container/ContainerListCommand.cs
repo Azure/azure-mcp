@@ -46,7 +46,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
             context.Response.Results = containers?.Count > 0
                 ? ResponseResult.Create(
                     new ContainerListCommandResult(containers),
-                    JsonSourceGenerationContext.Default.StorageContainerListCommandResult)
+                    StorageJsonContext.Default.ContainerListCommandResult)
                 : null;
         }
         catch (Exception ex)

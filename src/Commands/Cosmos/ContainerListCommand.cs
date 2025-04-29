@@ -49,7 +49,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
             context.Response.Results = containers?.Count > 0 ?
                 ResponseResult.Create(
                     new ContainerListCommandResult(containers),
-                    JsonSourceGenerationContext.Default.CosmosContainerListCommandResult) :
+                    CosmosJsonContext.Default.ContainerListCommandResult) :
                 null;
         }
         catch (Exception ex)

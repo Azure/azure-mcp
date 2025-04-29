@@ -23,7 +23,7 @@ public class CommandFactory
     private readonly ILogger<CommandFactory> _logger;
     private readonly RootCommand _rootCommand;
     private readonly CommandGroup _rootGroup;
-    private readonly JsonSourceGenerationContext _srcGenWithOptions;
+    private readonly ModelsJsonContext _srcGenWithOptions;
 
     internal static readonly char Separator = '-';
 
@@ -39,7 +39,7 @@ public class CommandFactory
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
         _rootCommand = CreateRootCommand();
         _commandMap = CreateCommmandDictionary(_rootGroup, string.Empty);
-        _srcGenWithOptions = new JsonSourceGenerationContext(new JsonSerializerOptions
+        _srcGenWithOptions = new ModelsJsonContext(new JsonSerializerOptions
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
