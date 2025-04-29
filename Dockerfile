@@ -33,6 +33,35 @@ RUN apt-get update && apt-get install -y \
 # Copy the published application
 COPY --from=publish /app/publish .
 
+# Set environment variables with defaults that can be overridden
+ENV AZMCP_TRANSPORT=sse
+ENV AZMCP_PORT=5008
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+TRANSPORT_ARG=""\n\
+PORT_ARG=""\n\
+\n\
+# Only add transport parameter if AZMCP_TRANSPORT is set\n\
+if [ -n "$AZMCP_TRANSPORT" ]; then\n\
+    TRANSPORT_ARG="--transport $AZMCP_TRANSPORT"\n\
+fi\n\
+\n\
+# Only add port parameter if AZMCP_PORT is set\n\
+if [ -n "$AZMCP_PORT" ]; then\n\
+    PORT_ARG="--port $AZMCP_PORT"\n\
+fi\n\
+\n\
+if [ "$1" = "server" ] && [ "$2" = "start" ]; then\n\
+    # If the command is "server start", apply our transport and port arguments\n\
+    shift 2\n\
+    dotnet azmcp.dll server start $TRANSPORT_ARG $PORT_ARG "$@"\n\
+else\n\
+    # Otherwise, pass all arguments through directly\n\
+    dotnet azmcp.dll "$@"\n\
+fi' > /app/docker-entrypoint.sh \
+    && chmod +x /app/docker-entrypoint.sh
+
 # Set the entry point and default command for the container
-ENTRYPOINT ["dotnet", "azmcp.dll"]
-CMD ["server", "start", "--transport", "sse"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["server", "start"]
