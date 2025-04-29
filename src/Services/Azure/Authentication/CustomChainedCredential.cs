@@ -4,6 +4,7 @@
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
+using AzureMcp.Helpers;
 using System.Text;
 
 namespace AzureMcp.Services.Azure.Authentication;
@@ -19,16 +20,18 @@ namespace AzureMcp.Services.Azure.Authentication;
 /// </remarks>
 public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 {
+    private ChainedTokenCredential? _chainedCredential;
+
     public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        ChainedTokenCredential chainedCredential = CreateChainedCredential(tenantId);
-        return chainedCredential.GetToken(requestContext, cancellationToken);
+        _chainedCredential ??= CreateChainedCredential(tenantId);
+        return _chainedCredential.GetToken(requestContext, cancellationToken);
     }
 
     public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        ChainedTokenCredential chainedCredential = CreateChainedCredential(tenantId);
-        return chainedCredential.GetTokenAsync(requestContext, cancellationToken);
+        _chainedCredential ??= CreateChainedCredential(tenantId);
+        return _chainedCredential.GetTokenAsync(requestContext, cancellationToken);
     }
 
     private const string AuthenticationRecordEnvVarName = "AZURE_MCP_AUTHENTICATION_RECORD";
@@ -37,12 +40,8 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     private static bool ShouldUseOnlyBrokerCredential()
     {
-        string? onlyUseBrokerCredential = Environment.GetEnvironmentVariable(OnlyUseBrokerCredentialEnvVarName);
-        return onlyUseBrokerCredential == "true"
-            || onlyUseBrokerCredential == "True"
-            || onlyUseBrokerCredential == "T"
-            || onlyUseBrokerCredential == "1";
-    }
+        return EnvironmentHelpers.GetEnvironmentVariableAsBool(OnlyUseBrokerCredentialEnvVarName);
+     }
 
     private static ChainedTokenCredential CreateChainedCredential(string? tenantId)
     {
