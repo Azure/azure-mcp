@@ -69,6 +69,20 @@ Test requirements:
 - Mock external service calls
 - Test argument validation
 
+## Installing Git Hooks
+
+To ensure consistent code quality, you need to install the pre-commit hook. This hook will automatically run `dotnet format --verify-no-changes` before every commit.
+
+### One-Time Setup
+
+1. Run the following script from the root of the repository:
+
+   ```sh
+   ./setup-hooks.sh
+   ```
+
+This will install the pre-commit hook in your local `.git/hooks` directory.
+
 ## Code Style
 
 Run `dotnet format src/AzureMcp.sln` before submitting.
