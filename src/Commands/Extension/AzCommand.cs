@@ -82,7 +82,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             string fullPath = Path.Combine(path.Trim(), executableName);
             if (File.Exists(fullPath))
             {
-                _cachedAzPath = path.Trim();
+                _cachedAzPath = fullPath;
                 return _cachedAzPath;
             }
         }
