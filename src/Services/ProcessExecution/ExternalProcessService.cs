@@ -91,6 +91,104 @@ public class ExternalProcessService : IExternalProcessService
             errorBuilder.ToString().TrimEnd(),
             $"{executablePath} {arguments}");
     }
+    
+    public async Task<ProcessResult> ExecuteWithRealtimeOutputAsync(
+        string executablePath,
+        string arguments,
+        Action<string> stdOutHandler,
+        Action<string> stdErrHandler,
+        int timeoutSeconds = 300,
+        IEnumerable<string>? customPaths = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(executablePath);
+        ArgumentNullException.ThrowIfNull(stdOutHandler);
+        ArgumentNullException.ThrowIfNull(stdErrHandler);
+        
+        if (!File.Exists(executablePath))
+        {
+            throw new FileNotFoundException($"Executable not found at path: {executablePath}");
+        }
+
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = executablePath,
+            Arguments = arguments,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            RedirectStandardInput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
+
+        foreach (var keyValuePair in environmentVariables)
+        {
+            processStartInfo.EnvironmentVariables[keyValuePair.Key] = keyValuePair.Value;
+        }
+
+        using var process = new Process { StartInfo = processStartInfo };
+        using var outputWaitHandle = new AutoResetEvent(false);
+        using var errorWaitHandle = new AutoResetEvent(false);
+
+        var outputBuilder = new StringBuilder();
+        var errorBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (sender, e) =>
+        {
+            if (e.Data == null)
+                outputWaitHandle.Set();
+            else
+            {
+                outputBuilder.AppendLine(e.Data);
+                stdOutHandler(e.Data); // Real-time output handling
+            }
+        };
+
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            if (e.Data == null)
+                errorWaitHandle.Set();
+            else
+            {
+                errorBuilder.AppendLine(e.Data);
+                stdErrHandler(e.Data); // Real-time error handling
+            }
+        };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        var processExitedTask = Task.Run(() =>
+        {
+            if (!process.WaitForExit(timeoutSeconds * 1000))
+            {
+                process.Kill();
+                throw new TimeoutException($"Process execution timed out after {timeoutSeconds} seconds");
+            }
+        });
+        
+        var outputCompletedTask = Task.Run(() =>
+        {
+            outputWaitHandle.WaitOne(1000);
+            errorWaitHandle.WaitOne(1000);
+        });
+
+        await Task.WhenAll(processExitedTask, outputCompletedTask);
+
+        if (!process.HasExited)
+        {
+            process.Kill();
+            throw new TimeoutException($"Process execution timed out after {timeoutSeconds} seconds");
+        }
+
+        return new ProcessResult(
+            process.ExitCode,
+            outputBuilder.ToString().TrimEnd(),
+            errorBuilder.ToString().TrimEnd(),
+            $"{executablePath} {arguments}");
+    }
 
     public JsonElement ParseJsonOutput(ProcessResult result)
     {

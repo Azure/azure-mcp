@@ -11,6 +11,7 @@ using ModelContextProtocol.Server;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AzureMcp.Commands.Extension;
 
@@ -20,6 +21,9 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Azd.Command.ToOption();
     private static string? _cachedAzdPath;
+
+    // Commands that benefit from real-time output streaming
+    private static readonly string[] StreamingCommands = ["up", "provision", "deploy"];
 
     private static readonly string[] AzdCliPaths =
     [
@@ -89,7 +93,60 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             });
 
             var azdPath = FindAzdCliPath() ?? throw new FileNotFoundException("Azure Developer CLI executable not found in PATH or common installation locations. Please ensure Azure Developer CLI is installed.");
-            var result = await processService.ExecuteAsync(azdPath, command, _processTimeoutSeconds);
+
+            // Check if this command should use real-time streaming output
+            bool shouldStreamOutput = ShouldUseRealtimeStreaming(command);
+            ProcessResult result;
+            
+            if (shouldStreamOutput)
+            {
+                // Create a StringBuilder to collect the streamed output for the final result
+                var streamedOutput = new List<string>();
+                
+                // Define handlers for real-time output
+                void StdOutHandler(string line)
+                {
+                    streamedOutput.Add(line);
+                    
+                    // Send the output line as it arrives
+                    var streamingResponse = new CommandResponse
+                    {
+                        Status = 200,
+                        Message = "Real-time output",
+                        Results = new List<string> { line }
+                    };
+                    
+                    context.SendRealtimeResults(streamingResponse);
+                }
+                
+                void StdErrHandler(string line)
+                {
+                    streamedOutput.Add($"ERROR: {line}");
+                    
+                    // Send the error line as it arrives
+                    var streamingResponse = new CommandResponse
+                    {
+                        Status = 200,
+                        Message = "Real-time output",
+                        Results = new List<string> { $"ERROR: {line}" }
+                    };
+                    
+                    context.SendRealtimeResults(streamingResponse);
+                }
+                
+                // Execute with real-time streaming
+                result = await processService.ExecuteWithRealtimeOutputAsync(
+                    azdPath, 
+                    command, 
+                    StdOutHandler, 
+                    StdErrHandler, 
+                    _processTimeoutSeconds);
+            }
+            else
+            {
+                // Execute without streaming for other commands
+                result = await processService.ExecuteAsync(azdPath, command, _processTimeoutSeconds);
+            }
 
             if (string.IsNullOrWhiteSpace(result.Error) && result.ExitCode == 0)
             {
@@ -107,6 +164,15 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         }
 
         return context.Response;
+    }
+    
+    private static bool ShouldUseRealtimeStreaming(string command)
+    {
+        // Extract the base command (e.g. "up" from "up --no-prompt")
+        string baseCommand = command.Split(' ')[0].Trim().ToLowerInvariant();
+        
+        // Check if this is a command that benefits from real-time streaming
+        return StreamingCommands.Contains(baseCommand);
     }
 
     private static string? FindAzdCliPath()

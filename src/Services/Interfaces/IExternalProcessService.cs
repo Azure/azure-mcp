@@ -26,6 +26,24 @@ public interface IExternalProcessService
         string arguments,
         int timeoutSeconds = 300,
         IEnumerable<string>? customPaths = null);
+        
+    /// <summary>
+    /// Executes an external process with real-time output streaming through callbacks
+    /// </summary>
+    /// <param name="executableName">Name of the executable to find in PATH or common install locations</param>
+    /// <param name="arguments">Arguments to pass to the executable</param>
+    /// <param name="stdOutHandler">Callback for handling standard output lines in real-time</param>
+    /// <param name="stdErrHandler">Callback for handling standard error lines in real-time</param>
+    /// <param name="timeoutSeconds">Timeout in seconds</param>
+    /// <param name="customPaths">Optional additional paths to search for the executable</param>
+    /// <returns>Process execution result containing exit code, output and error streams</returns>
+    Task<ProcessResult> ExecuteWithRealtimeOutputAsync(
+        string executableName,
+        string arguments,
+        Action<string> stdOutHandler,
+        Action<string> stdErrHandler,
+        int timeoutSeconds = 300,
+        IEnumerable<string>? customPaths = null);
 
     /// <summary>
     /// Tries to parse the process output as JSON and return it as JsonElement

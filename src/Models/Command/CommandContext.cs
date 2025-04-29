@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Extensions.DependencyInjection;
+using ModelContextProtocol.Server;
 
 namespace AzureMcp.Models.Command;
 
@@ -14,6 +15,11 @@ public class CommandContext
     /// The service provider for dependency injection
     /// </summary>
     private readonly IServiceProvider _serviceProvider;
+    
+    /// <summary>
+    /// The MCPServer to send real-time results
+    /// </summary>
+    private readonly IMcpServer? _mcpServer;
 
     /// <summary>
     /// The response object that will be returned to the client
@@ -27,6 +33,8 @@ public class CommandContext
     public CommandContext(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _mcpServer = serviceProvider.GetService<IMcpServer>();
+        
         Response = new CommandResponse
         {
             Status = 200,
@@ -44,5 +52,14 @@ public class CommandContext
     public T GetService<T>() where T : class
     {
         return _serviceProvider.GetRequiredService<T>();
+    }
+    
+    /// <summary>
+    /// Sends real-time results to the client during long-running operations
+    /// </summary>
+    /// <param name="response">The response containing real-time results to send</param>
+    public void SendRealtimeResults(CommandResponse response)
+    {
+        _mcpServer?.SendRealtimeResults(response);
     }
 }
