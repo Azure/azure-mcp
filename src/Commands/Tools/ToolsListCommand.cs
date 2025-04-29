@@ -12,15 +12,8 @@ using System.CommandLine.Parsing;
 namespace AzureMcp.Commands.Tools;
 
 [HiddenCommand]
-public sealed class ToolsListCommand : BaseCommand
+public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()
 {
-    private readonly ILogger<ToolsListCommand> _logger;
-
-    public ToolsListCommand(ILogger<ToolsListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
-
     protected override string GetCommandName() => "list";
 
     protected override string GetCommandDescription() =>
@@ -45,7 +38,7 @@ public sealed class ToolsListCommand : BaseCommand
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred processing tool.");
+            logger.LogError(ex, "An exception occurred processing tool.");
             HandleException(context.Response, ex);
 
             return context.Response;
