@@ -67,5 +67,26 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
   </ItemGroup>
+
+  <!-- Runs before every dotnet build -->
+  <Target Name="InstallGitHooks" BeforeTargets="BeforeBuild">
+    <!-- ensure the .git/hooks folder exists -->
+    <MakeDir Condition="!Exists('$(MSBuildProjectDirectory)/../.git/hooks')" 
+             Directories="$(MSBuildProjectDirectory)/../.git/hooks" />
+
+    <!-- copy only changed files -->
+    <Copy SourceFiles="@(GitHookFiles)" 
+          DestinationFolder="$(MSBuildProjectDirectory)/../.git/hooks"
+          SkipUnchangedFiles="true" />
+
+    <!-- on mac/linux, make sure they’re executable -->
+    <Exec Condition="Exists('$(MSBuildProjectDirectory)/../.git/hooks/pre-commit') and '$(OS)' != 'Windows_NT'"
+          Command="chmod +x &quot;$(MSBuildProjectDirectory)/../.git/hooks/pre-commit&quot;" />
+  </Target>
+
+  <!-- gather all hook scripts under Scripts/git-hooks -->
+  <ItemGroup>
+    <GitHookFiles Include="$(MSBuildProjectDirectory)/Scripts/git-hooks/*" />
+  </ItemGroup>
 </Project>
 

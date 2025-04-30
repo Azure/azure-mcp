@@ -71,17 +71,11 @@ Test requirements:
 
 ## Installing Git Hooks
 
-To ensure consistent code quality, you need to install the pre-commit hook. This hook will automatically run `dotnet format --verify-no-changes` before every commit.
+To ensure consistent code quality, the pre-commit hook is automatically installed before every build. This hook will ensure that your code adheres to the required standards.
 
-### One-Time Setup
+### Automatic Setup
 
-1. Run the following script from the root of the repository:
-
-   ```sh
-   ./setup-hooks.sh
-   ```
-
-This will install the pre-commit hook in your local `.git/hooks` directory.
+The pre-commit hook is installed automatically when you build the project. You do not need to run any additional commands. The hook is located in the `Scripts/git-hooks/` directory and is copied to the `.git/hooks/` folder during the build process.
 
 ## Code Style
 
