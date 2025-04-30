@@ -82,6 +82,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
                 Name = TokenCacheName,
             }
         };
+
         if (clientId is not null)
         {
             brokerOptions.ClientId = clientId;
