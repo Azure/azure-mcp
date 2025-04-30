@@ -75,7 +75,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         InteractiveBrowserCredentialBrokerOptions brokerOptions = new(handle)
         {
             UseDefaultBrokerAccount = !ShouldUseOnlyBrokerCredential() && authRecord is null,
-            TenantId = tenantId,
+            TenantId = string.IsNullOrEmpty(tenantId) ? null : tenantId,
             AuthenticationRecord = authRecord,
             TokenCachePersistenceOptions = new TokenCachePersistenceOptions()
             {
