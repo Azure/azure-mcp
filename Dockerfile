@@ -34,7 +34,11 @@ RUN apt-get update && apt-get install -y \
 COPY --from=publish /app/publish .
 
 # Set environment variables with defaults that can be overridden
-ENV AZMCP_TRANSPORT=sse
+# the tranport can be set to "stdio" or "sse".
+# "stdio" is the default mode and uses standard input/output for communication.
+# "sse" is the server-sent events mode and uses HTTP for communication.
+ENV AZMCP_TRANSPORT=stdio
+# The port is used by the "sse" transport mode only, and defaults to 5008.
 ENV AZMCP_PORT=5008
 
 # Create entrypoint script
