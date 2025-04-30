@@ -72,17 +72,22 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
         IntPtr handle = WindowHandleProvider.GetWindowHandle();
 
-        return new(new InteractiveBrowserCredentialBrokerOptions(handle)
+        InteractiveBrowserCredentialBrokerOptions brokerOptions = new(handle)
         {
             UseDefaultBrokerAccount = !ShouldUseOnlyBrokerCredential() && authRecord is null,
-            ClientId = clientId,
             TenantId = tenantId,
             AuthenticationRecord = authRecord,
             TokenCachePersistenceOptions = new TokenCachePersistenceOptions()
             {
                 Name = TokenCacheName,
             }
-        });
+        };
+        if (clientId is not null)
+        {
+            brokerOptions.ClientId = clientId;
+        }
+
+        return new(brokerOptions);
     }
 
     private static DefaultAzureCredential CreateDefaultCredential(string? tenantId)
