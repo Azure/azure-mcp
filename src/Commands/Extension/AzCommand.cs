@@ -85,13 +85,13 @@ Your job is to answer questions about an Azure environment by executing Azure CL
                 var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 if (isWindows)
                 {
-                    string exePath = fullPath + ".cmd";
+                    string exePath = Path.ChangeExtension(fullPath, ".cmd");
                     if (File.Exists(exePath))
                     {
                         _cachedAzPath = exePath;
                         return _cachedAzPath;
                     }
-                    string batPath = fullPath + ".bat";
+                    string batPath = Path.ChangeExtension(fullPath, ".bat");
                     if (File.Exists(batPath))
                     {
                         _cachedAzPath = batPath;
