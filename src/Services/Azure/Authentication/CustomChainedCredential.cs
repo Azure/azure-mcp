@@ -37,6 +37,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
     private const string AuthenticationRecordEnvVarName = "AZURE_MCP_AUTHENTICATION_RECORD";
     private const string OnlyUseBrokerCredentialEnvVarName = "AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL";
     private const string ClientIdEnvVarName = "AZURE_MCP_CLIENT_ID";
+    private const string IncludeProductionCredentialEnvVarName = "AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS";
 
     private static bool ShouldUseOnlyBrokerCredential()
     {
@@ -93,8 +94,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     private static DefaultAzureCredential CreateDefaultCredential(string? tenantId)
     {
-        var includeProdCreds =
-            Environment.GetEnvironmentVariable("AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
+        var includeProdCreds = EnvironmentHelpers.GetEnvironmentVariableAsBool(IncludeProductionCredentialEnvVarName);
 
         return new DefaultAzureCredential(new DefaultAzureCredentialOptions
         {
