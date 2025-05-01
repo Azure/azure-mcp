@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.0.10</Version>
+    <Version>0.0.12</Version>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -72,4 +72,3 @@
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
   </ItemGroup>
 </Project>
-

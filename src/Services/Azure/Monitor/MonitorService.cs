@@ -11,8 +11,8 @@ using System.Text.Json;
 
 namespace AzureMcp.Services.Azure.Monitor;
 
-public class MonitorService(ISubscriptionService subscriptionService, IResourceGroupService resourceGroupService)
-    : BaseAzureService, IMonitorService
+public class MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+    : BaseAzureService(tenantService), IMonitorService
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));

@@ -1,7 +1,9 @@
 # Contributing to Azure MCP
 
 There are many ways to contribute to the Azure MCP project: reporting bugs, submitting pull requests, and creating suggestions.
-After cloning and building the repo, check out the [issues list](https://github.com/Azure/azure-mcp/issues).  Issues labeled [help wanted](https://github.com/Azure/azure-mcp/labels/help%20wanted) are good issues to submit a PR for.  Issues labeled [good first issue](https://github.com/Azure/azure-mcp/labels/good%20first%20issue) are great candidates to pick up if you are in the code for the first time.  If you are contributing significant changes, or if the issue is already assigned to a specific milestone, please discuss with the assignee of the issue first before starting to work on the issue.
+After cloning and building the repo, check out the [github project](https://github.com/orgs/Azure/projects/812/views/13) and [issues list](https://github.com/Azure/azure-mcp/issues).  Issues labeled [help wanted](https://github.com/Azure/azure-mcp/labels/help%20wanted) are good issues to submit a PR for.  Issues labeled [good first issue](https://github.com/Azure/azure-mcp/labels/good%20first%20issue) are great candidates to pick up if you are in the code for the first time.  
+>[!IMPORTANT]
+If you are contributing significant changes, or if the issue is already assigned to a specific milestone, please discuss with the assignee of the issue first before starting to work on the issue.
 
 ## Prerequisites
 
@@ -97,6 +99,14 @@ The Azure MCP Server implements the [Model Context Protocol specification](https
 2. Add or update tests as needed
 3. Reference the original issue
 4. Wait for review and address any feedback
+
+## Official builds and releases
+
+The internal pipeline [azure-mcp](https://dev.azure.com/azure-sdk/internal/_build?definitionId=7571) is used for all official
+releases and CI builds. On every merge to main, a build will run and will produce a dynamically named prerelease
+package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/Npm/@azure%2Fmcp/overview/0.0.10-beta.4799791).
+
+Only manual runs of the pipeline publish official versions to npmjs.com.
 
 ## Questions and Support
 

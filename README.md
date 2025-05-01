@@ -95,7 +95,7 @@ The Azure MCP Server requires Node.js to install and run the server. If you don'
 
 ### VS Code + GitHub Copilot
 
-The Azure MCP Server provides Azure data plane tools. It can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code. If you're interested in broad developer support across a variety of Azure development scenarios not included in the Azure MCP Server, such as searching documentation on Microsoft Learn, we recommend this extension as well.
+The Azure MCP Server provides Azure SDK and Azure CLI developer tools. It can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code. If you're interested in broad developer support across a variety of Azure development scenarios not included in the Azure MCP Server, such as searching documentation on Microsoft Learn, we recommend this extension as well.
 
 ### Prerequisites
 1. Install either the stable or Insiders release of VS Code:

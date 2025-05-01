@@ -19,15 +19,7 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
     private static string? _cachedAzPath;
-
-    private static readonly string[] AzureCliPaths =
-    [
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft SDKs", "Azure", "CLI2", "wbin"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Microsoft SDKs", "Azure", "CLI2", "wbin"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python", "Python39", "Scripts"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python", "Python310", "Scripts"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python", "Python311", "Scripts")
-    ];
+        
 
     protected override string GetCommandName() => "az";
 
@@ -72,43 +64,44 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 
     private static string? FindAzCliPath()
     {
+        string executableName = "az";
+
         // Return cached path if available and still exists
         if (!string.IsNullOrEmpty(_cachedAzPath) && File.Exists(_cachedAzPath))
         {
             return _cachedAzPath;
         }
 
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        var searchPaths = new List<string>(AzureCliPaths);
+        var pathEnv = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrEmpty(pathEnv))
+            return null;
 
-        // Add PATH environment directories
-        if (Environment.GetEnvironmentVariable("PATH")?.Split(Path.PathSeparator) is { } pathDirs)
+        string[] paths = pathEnv.Split(Path.PathSeparator);
+        foreach (string path in paths)
         {
-            searchPaths.AddRange(pathDirs);
-        }
-
-        foreach (var dir in searchPaths.Where(d => !string.IsNullOrEmpty(d)))
-        {
-            if (isWindows)
+            string fullPath = Path.Combine(path.Trim(), executableName);
+            if (File.Exists(fullPath))
             {
-                var cmdPath = Path.Combine(dir, "az.cmd");
-                if (File.Exists(cmdPath))
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                if (isWindows)
                 {
-                    _cachedAzPath = cmdPath;
-                    return cmdPath;
+                    string exePath = Path.ChangeExtension(fullPath, ".cmd");
+                    if (File.Exists(exePath))
+                    {
+                        _cachedAzPath = exePath;
+                        return _cachedAzPath;
+                    }
+                    string batPath = Path.ChangeExtension(fullPath, ".bat");
+                    if (File.Exists(batPath))
+                    {
+                        _cachedAzPath = batPath;
+                        return _cachedAzPath;
+                    }
                 }
-            }
-            else
-            {
-                var fullPath = Path.Combine(dir, "az");
-                if (File.Exists(fullPath))
-                {
-                    _cachedAzPath = fullPath;
-                    return fullPath;
-                }
+                _cachedAzPath = fullPath;
+                return _cachedAzPath;
             }
         }
-
         return null;
     }
 

@@ -30,7 +30,6 @@ public abstract class CommandTestsBase(McpClientFixture mcpClient, LiveTestSetti
         Output.WriteLine($"response content: {content}");
 
         var root = JsonSerializer.Deserialize<JsonElement>(content!);
-
-        return root;
+        return root.GetProperty("results");
     }
 }
