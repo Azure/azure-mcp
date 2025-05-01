@@ -79,9 +79,13 @@
           DestinationFolder="$(MSBuildProjectDirectory)/../.git/hooks"
           SkipUnchangedFiles="true" />
 
-    <!-- on mac/linux, make sure they’re executable -->
+    <!-- on mac/linux, make sure they're executable -->
     <Exec Condition="Exists('$(MSBuildProjectDirectory)/../.git/hooks/pre-commit') and '$(OS)' != 'Windows_NT'"
           Command="chmod +x &quot;$(MSBuildProjectDirectory)/../.git/hooks/pre-commit&quot;" />
+
+    <!-- on Windows, make sure they're executable -->
+    <Exec Condition="Exists('$(MSBuildProjectDirectory)/../.git/hooks/pre-commit') and '$(OS)' == 'Windows_NT'"
+          Command="attrib +x &quot;$(MSBuildProjectDirectory)/../.git/hooks/pre-commit&quot;" />
   </Target>
 
   <!-- gather all hook scripts under Scripts/git-hooks -->
