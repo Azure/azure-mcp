@@ -66,6 +66,7 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterFoundryCommands();
     }
 
     private void RegisterCosmosCommands()
@@ -222,6 +223,18 @@ public class CommandFactory
         var startServer = new ServiceStartCommand(_serviceProvider);
         mcpServer.AddCommand("start", startServer);
 
+    }
+
+    private void RegisterFoundryCommands()
+    {
+        var foundry = new CommandGroup("foundry", "Foundry service operations");
+        _rootGroup.AddSubGroup(foundry);
+
+        var models = new CommandGroup("models", "Foundry models operations");
+        foundry.AddSubGroup(models);
+
+        models.AddCommand("list", new Foundry.Models.ModelsListCommand());
+        models.AddCommand("guidance", new Foundry.Models.ModelGuidanceCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)

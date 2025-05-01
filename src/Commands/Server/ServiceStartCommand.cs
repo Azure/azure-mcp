@@ -174,6 +174,7 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         services.AddSingleton(rootServiceProvider.GetRequiredService<ITenantService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IStorageService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<ICosmosService>());
+        services.AddSingleton(rootServiceProvider.GetRequiredService<IFoundryService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IMonitorService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IResourceGroupService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IAppConfigService>());
