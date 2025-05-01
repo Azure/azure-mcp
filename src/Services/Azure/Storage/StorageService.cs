@@ -14,7 +14,7 @@ using AzureMcp.Services.Interfaces;
 
 namespace AzureMcp.Services.Azure.Storage;
 
-public class StorageService(ISubscriptionService subscriptionService, ICacheService cacheService) : BaseAzureService, IStorageService
+public class StorageService(ISubscriptionService subscriptionService, ITenantService tenantService,ICacheService cacheService) : BaseAzureService(tenantService), IStorageService
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));

@@ -27,11 +27,12 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         _chainedCredential.GetTokenAsync(requestContext, cancellationToken);
 
     private static ChainedTokenCredential CreateChainedCredential(string? tenantId) =>
-        new(CreateDefaultCredential(tenantId), CreateBrowserCredential());
+        new(CreateDefaultCredential(tenantId), CreateBrowserCredential(tenantId));
 
-    private static InteractiveBrowserCredential CreateBrowserCredential() =>
+    private static InteractiveBrowserCredential CreateBrowserCredential(string? tenantId) =>
         new(new InteractiveBrowserCredentialBrokerOptions(IntPtr.Zero)
         {
+            TenantId = string.IsNullOrEmpty(tenantId) ? null : tenantId,
             UseDefaultBrokerAccount = true
         });
 
