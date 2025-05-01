@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Server;
+using AzureMcp.Services.Interfaces.MCP;
 
 namespace AzureMcp.Models.Command;
 
@@ -20,6 +21,11 @@ public class CommandContext
     /// The MCPServer to send real-time results
     /// </summary>
     private readonly IMcpServer? _mcpServer;
+    
+    /// <summary>
+    /// The extensions for MCPServer that add additional capabilities
+    /// </summary>
+    private readonly IMcpServerExtensions? _mcpServerExtensions;
 
     /// <summary>
     /// The response object that will be returned to the client
@@ -34,6 +40,7 @@ public class CommandContext
     {
         _serviceProvider = serviceProvider;
         _mcpServer = serviceProvider.GetService<IMcpServer>();
+        _mcpServerExtensions = serviceProvider.GetService<IMcpServerExtensions>();
         
         Response = new CommandResponse
         {
@@ -60,6 +67,6 @@ public class CommandContext
     /// <param name="response">The response containing real-time results to send</param>
     public void SendRealtimeResults(CommandResponse response)
     {
-        _mcpServer?.SendRealtimeResults(response);
+        _mcpServerExtensions?.SendRealtimeResults(response);
     }
 }

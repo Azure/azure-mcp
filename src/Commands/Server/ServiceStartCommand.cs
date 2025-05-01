@@ -7,6 +7,7 @@ using AzureMcp.Models;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Interfaces.MCP;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
@@ -162,6 +163,9 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         {
             mcpServerBuilder.WithHttpTransport();
         }
+        
+        // Register the AzureMcpServerExtensions implementation as a singleton
+        services.AddSingleton<IMcpServerExtensions, AzureMcpServerExtensions>();
     }
 
     private static void ConfigureServices(IServiceCollection services, IServiceProvider rootServiceProvider)
