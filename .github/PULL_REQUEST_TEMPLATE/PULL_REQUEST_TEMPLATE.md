@@ -1,9 +1,10 @@
-## Description
+## What does this PR do?
 
---
+## GitHub issue number?
 
-This checklist is used to make sure that common guidelines for a pull request are followed.
+## Checklist before merging
 - [ ] **I have read the [contribution guidelines](https://github.com/Azure/azure-mcp/blob/main/CONTRIBUTING.md) on pull request process, code style, and testing.**
 - [ ] Title of the pull request is clear and informative.
 - [ ] There are a small number of commits, each of which have an informative message.  This means that previously merged commits do not appear in the history of the PR.  For more information on cleaning up the commits in your PR,  [see this page](https://github.com/Azure/azure-powershell/blob/master/documentation/development-docs/cleaning-up-commits.md).
-- [ ] Pull request includes test coverage for the included changes.
+- [ ] If it's a core feature, I have added thorough tests.
+- [ ] If it's a noteworthy bug fix or new feature, I have added an entry in CHANGELOG.md with a link back to the PR or issue
