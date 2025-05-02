@@ -5,6 +5,7 @@ using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
 using AzureMcp.Models.Argument;
+using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;

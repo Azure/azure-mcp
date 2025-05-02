@@ -48,7 +48,6 @@ public abstract class BaseMonitorCommand<
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Monitor.Workspace.Name, ArgumentDefinitions.Monitor.Workspace.Description)
             .WithValueAccessor(args => args.Workspace ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) => await GetWorkspaceOptions(context, args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.Monitor.Workspace.Required);
 
     protected override TArgs BindArguments(ParseResult parseResult)

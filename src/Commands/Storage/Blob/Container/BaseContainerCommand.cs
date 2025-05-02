@@ -44,18 +44,6 @@ public abstract class BaseContainerCommand<
         return ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Storage.Container.Name, ArgumentDefinitions.Storage.Container.Description)
             .WithValueAccessor(args => args.Container ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Account) || string.IsNullOrEmpty(args.Subscription))
-                {
-                    return [];
-                }
-
-                var storageService = context.GetService<IStorageService>();
-                var containers = await storageService.ListContainers(args.Account, args.Subscription);
-
-                return containers?.Select(c => new ArgumentOption { Name = c, Id = c }).ToList() ?? [];
-            })
             .WithIsRequired(ArgumentDefinitions.Storage.Container.Required);
     }
 }

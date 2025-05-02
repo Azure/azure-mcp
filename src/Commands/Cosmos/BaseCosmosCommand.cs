@@ -89,6 +89,5 @@ public abstract class BaseCosmosCommand<
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Cosmos.Account.Name, ArgumentDefinitions.Cosmos.Account.Description)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) => await GetAccountOptions(context, args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.Cosmos.Account.Required);
 }

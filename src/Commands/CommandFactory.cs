@@ -32,6 +32,21 @@ public class CommandFactory
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
 
+    // Add this new class inside CommandFactory
+    private class StringConverter : JsonConverter<string>
+    {
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return reader.GetString() ?? string.Empty;
+        }
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            var cleanValue = value?.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+            writer.WriteStringValue(cleanValue);
+        }
+    }
+
     public CommandFactory(IServiceProvider serviceProvider, ILogger<CommandFactory> logger)
     {
         _serviceProvider = serviceProvider;
@@ -46,6 +61,7 @@ public class CommandFactory
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
+        _jsonOptions.Converters.Add(new StringConverter());
     }
 
     public RootCommand RootCommand => _rootCommand;
@@ -61,6 +77,7 @@ public class CommandFactory
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
+        RegisterSearchCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -172,6 +189,24 @@ public class CommandFactory
         keyValue.AddCommand("set", new AppConfig.KeyValue.KeyValueSetCommand(GetLogger<AppConfig.KeyValue.KeyValueSetCommand>()));
         keyValue.AddCommand("show", new AppConfig.KeyValue.KeyValueShowCommand(GetLogger<AppConfig.KeyValue.KeyValueShowCommand>()));
         keyValue.AddCommand("delete", new AppConfig.KeyValue.KeyValueDeleteCommand(GetLogger<AppConfig.KeyValue.KeyValueDeleteCommand>()));
+    }
+
+    private void RegisterSearchCommands()
+    {
+        var search = new CommandGroup("search", "Search operations - Commands for managing and listing Azure AI Search services.");
+        _rootGroup.AddSubGroup(search);
+
+        var service = new CommandGroup("service", "Azure AI Search service operations - Commands for listing and managing search services in your Azure subscription.");
+        search.AddSubGroup(service);
+
+        service.AddCommand("list", new Search.Service.ServiceListCommand(GetLogger<Search.Service.ServiceListCommand>()));
+
+        var index = new CommandGroup("index", "Azure AI Search index operations - Commands for listing and managing search indexes in a specific search service.");
+        search.AddSubGroup(index);
+
+        index.AddCommand("list", new Search.Index.IndexListCommand(GetLogger<Search.Index.IndexListCommand>()));
+        index.AddCommand("describe", new Search.Index.IndexDescribeCommand(GetLogger<Search.Index.IndexDescribeCommand>()));
+        index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<Search.Index.IndexQueryCommand>()));
     }
 
     private void RegisterToolsCommands()

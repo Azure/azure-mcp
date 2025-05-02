@@ -41,15 +41,6 @@ public abstract class BaseStorageCommand<
         return ArgumentBuilder<T>
             .Create(ArgumentDefinitions.Storage.Account.Name, ArgumentDefinitions.Storage.Account.Description)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Subscription)) return [];
-
-                var storageService = context.GetService<IStorageService>();
-                var accounts = await storageService.GetStorageAccounts(args.Subscription);
-
-                return accounts?.Select(a => new ArgumentOption { Name = a, Id = a }).ToList() ?? [];
-            })
             .WithIsRequired(ArgumentDefinitions.Storage.Account.Required);
     }
 }

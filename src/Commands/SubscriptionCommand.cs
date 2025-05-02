@@ -34,17 +34,6 @@ public abstract class SubscriptionCommand<
         return ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Common.Subscription.Name, ArgumentDefinitions.Common.Subscription.Description)
             .WithValueAccessor(args => args.Subscription ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-
-                var subArgs = args as SubscriptionArguments;
-                if (string.IsNullOrEmpty(subArgs?.Subscription))
-                {
-                    return await GetSubscriptionOptions(context);
-                }
-                return [];
-
-            })
             .WithIsRequired(ArgumentDefinitions.Common.Subscription.Required);
     }
 

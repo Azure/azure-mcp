@@ -39,14 +39,5 @@ public abstract class BaseAppConfigCommand<
         ArgumentBuilder<T>
             .Create(ArgumentDefinitions.AppConfig.Account.Name, ArgumentDefinitions.AppConfig.Account.Description)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Subscription)) return [];
-
-                var appConfigService = context.GetService<IAppConfigService>();
-                var accounts = await appConfigService.GetAppConfigAccounts(args.Subscription);
-
-                return accounts?.Select(a => new ArgumentOption { Name = a.Name, Id = a.Name }).ToList() ?? [];
-            })
             .WithIsRequired(ArgumentDefinitions.AppConfig.Account.Required);
 }

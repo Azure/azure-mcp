@@ -35,11 +35,5 @@ public abstract class BaseContainerCommand<TArgs> : BaseDatabaseCommand<TArgs> w
         ArgumentBuilder<Arguments.Cosmos.BaseContainerArguments>
             .Create(ArgumentDefinitions.Cosmos.Container.Name, ArgumentDefinitions.Cosmos.Container.Description)
             .WithValueAccessor(args => args.Container ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-                await GetContainerOptions(
-                    context,
-                    args.Account ?? string.Empty,
-                    args.Database ?? string.Empty,
-                    args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.Cosmos.Container.Required);
 }

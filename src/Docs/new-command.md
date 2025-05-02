@@ -429,13 +429,6 @@ protected ArgumentBuilder<TArgs> CreateResourceArgument()
     return ArgumentBuilder<TArgs>
         .Create(ArgumentDefinitions.Service.Resource.Name, ArgumentDefinitions.Service.Resource.Description)
         .WithValueAccessor(args => args.Resource ?? string.Empty)
-        .WithSuggestedValuesLoader(async (context, args) =>
-        {
-            if (string.IsNullOrEmpty(args.Subscription)) return [];
-            var service = context.GetService<IServiceName>();
-            var resources = await service.GetResources(args.Subscription);
-            return resources?.Select(r => new ArgumentOption { Name = r, Id = r }).ToList() ?? [];
-        })
         .WithIsRequired(ArgumentDefinitions.Service.Resource.Required);
 }
 ```
@@ -965,15 +958,6 @@ protected override int GetStatusCode(Exception ex) => ex switch
     "status": 404,
     "message": "Storage container not found. Please check the container name and try again.",
     "results": null,
-    "arguments": [
-        {
-            "name": "container",
-            "description": "Name of the container",
-            "value": "missing-container",
-            "required": true,
-            "suggestedValues": ["container1", "container2"]
-        }
-    ]
 }
 ```
 
@@ -1229,27 +1213,6 @@ public async Task ExecuteAsync_WithServiceError_HandlesErrorCorrectly()
 }
 ```
 
-2. Argument Chain Validation:
-```csharp
-[Fact]
-public async Task ProcessArguments_WithMissingDependentValue_ReturnsSuggestions()
-{
-    // Arrange
-    var service = _serviceProvider.GetRequiredService<IStorageService>();
-    service.GetStorageAccounts(Arg.Any<string>())
-        .Returns(["account1", "account2"]);
-
-    // Act
-    var result = await _command.ExecuteAsync(_context, _parser);
-
-    // Assert
-    Assert.NotNull(result.Arguments);
-    var accountArg = result.Arguments.First(a => a.Name == "account");
-    Assert.NotNull(accountArg.SuggestedValues);
-    Assert.Contains("account1", accountArg.SuggestedValues.Select(v => v.Name));
-}
-```
-
 3. Authentication Testing:
 ```csharp
 [Fact]
@@ -1370,7 +1333,6 @@ public abstract class BaseStorageCommand<T> : SubscriptionCommand<T>
             .Create(ArgumentDefinitions.Storage.Account.Name,
                    ArgumentDefinitions.Storage.Account.Description)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithSuggestedValuesLoader(GetStorageAccounts)
             .WithIsRequired(ArgumentDefinitions.Storage.Account.Required);
     }
 }

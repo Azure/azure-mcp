@@ -178,6 +178,7 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         services.AddSingleton(rootServiceProvider.GetRequiredService<IResourceGroupService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IAppConfigService>());
         services.AddSingleton(rootServiceProvider.GetRequiredService<IExternalProcessService>());
+        services.AddSingleton(rootServiceProvider.GetRequiredService<ISearchService>());
     }
 
     private sealed class StdioMcpServerHostedService(IMcpServer session) : BackgroundService

@@ -53,35 +53,40 @@ public static class ArgumentDefinitions
             DelayName,
             "Initial delay in seconds between retry attempts. For exponential backoff, this value is used as the base.",
             defaultValue: 2.0,
-            required: false
+            required: false,
+            hidden: true
         );
 
         public static readonly ArgumentDefinition<double> MaxDelay = new(
             MaxDelayName,
             "Maximum delay in seconds between retries, regardless of the retry strategy.",
             defaultValue: 10.0,
-            required: false
+            required: false,
+            hidden: true
         );
 
         public static readonly ArgumentDefinition<int> MaxRetries = new(
             MaxRetriesName,
             "Maximum number of retry attempts for failed operations before giving up.",
             defaultValue: 3,
-            required: false
+            required: false,
+            hidden: true
         );
 
         public static readonly ArgumentDefinition<RetryMode> Mode = new(
             ModeName,
             "Retry strategy to use. 'fixed' uses consistent delays, 'exponential' increases delay between attempts.",
             defaultValue: Azure.Core.RetryMode.Exponential,
-            required: false
+            required: false,
+            hidden: true
         );
 
         public static readonly ArgumentDefinition<double> NetworkTimeout = new(
             NetworkTimeoutName,
             "Network operation timeout in seconds. Operations taking longer than this will be cancelled.",
             defaultValue: 100.0,
-            required: false
+            required: false,
+            hidden: true
         );
     }
 
@@ -140,6 +145,31 @@ public static class ArgumentDefinitions
             "SQL query to execute against the container. Uses Cosmos DB SQL syntax.",
             defaultValue: "SELECT * FROM c",
             required: false
+        );
+    }
+
+    public static class Search
+    {
+        public const string ServiceName = "service-name";
+        public const string IndexName = "index-name";
+        public const string QueryName = "query";
+
+        public static readonly ArgumentDefinition<string> Service = new(
+            ServiceName,
+            "The name of the Azure AI Search service (e.g., my-search-service).",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Index = new(
+            IndexName,
+            "The name of the search index within the Azure AI Search service.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Query = new(
+            QueryName,
+            "The search query to execute against the Azure AI Search index.",
+            required: true
         );
     }
 

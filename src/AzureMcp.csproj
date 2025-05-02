@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.0.10</Version>
+    <Version>0.0.12</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
@@ -15,6 +15,7 @@
     <PublishTrimmed>false</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- Debug configuration -->
@@ -50,6 +51,7 @@
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
+    <PackageReference Include="Azure.ResourceManager.Search" Version="1.2.3" />
     <PackageReference Include="Azure.ResourceManager.Storage" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
@@ -93,4 +95,3 @@
     <GitHookFiles Include="$(MSBuildProjectDirectory)/Scripts/git-hooks/*" />
   </ItemGroup>
 </Project>
-

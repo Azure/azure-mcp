@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, CosmosLocalAccessFixture cosmos, ITestOutputHelper output)
+public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
     : CommandTestsBase(mcpClient, liveTestSettings, output),
     IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>, IClassFixture<CosmosLocalAccessFixture>
 {

@@ -5,7 +5,6 @@ using Azure;
 using Azure.Core;
 using Azure.Identity;
 using AzureMcp.Arguments;
-using AzureMcp.Extensions;
 using AzureMcp.Models;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
@@ -108,7 +107,6 @@ public abstract class GlobalCommand<
         return ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Common.AuthMethod.Name, ArgumentDefinitions.Common.AuthMethod.Description)
             .WithValueAccessor(args => args.AuthMethod?.ToString() ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) => await GetAuthMethodOptions(context))
             .WithDefaultValue(AuthMethodArgument.GetDefaultAuthMethod().ToString())
             .WithIsRequired(false);
     }
@@ -118,7 +116,6 @@ public abstract class GlobalCommand<
         return ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Common.Tenant.Name, ArgumentDefinitions.Common.Tenant.Description)
             .WithValueAccessor(args => args.Tenant ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) => await GlobalCommand<TArgs>.GetTenantOptions(context))
             .WithIsRequired(ArgumentDefinitions.Common.Tenant.Required);
     }
 
@@ -139,15 +136,6 @@ public abstract class GlobalCommand<
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Common.ResourceGroup.Name, ArgumentDefinitions.Common.ResourceGroup.Description)
             .WithValueAccessor(args => (args as SubscriptionArguments)?.ResourceGroup ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                var subArgs = args as SubscriptionArguments;
-                if (string.IsNullOrEmpty(subArgs?.Subscription))
-                {
-                    return [];
-                }
-                return await GetResourceGroupOptions(context, subArgs.Subscription, subArgs.Tenant!);
-            })
             .WithIsRequired(true);
 
     protected async Task<List<ArgumentOption>> GetResourceGroupOptions(CommandContext context, string subscription, string tenant = "")
@@ -250,14 +238,7 @@ public abstract class GlobalCommand<
                     {
                         // Silently handle reflection errors
                     }
-                }
-
-                // Add the argument info to the response
-                // Only include default value if no value is provided
-                string? defaultToUse = string.IsNullOrEmpty(value) ? typedArgDef.DefaultValue : null;
-
-                AddArgumentInfo(context, typedArgDef.Name, value,
-                    typedArgDef.Description, defaultToUse, required: typedArgDef.Required);
+                }               
             }
         }
 
@@ -280,18 +261,6 @@ public abstract class GlobalCommand<
                     {
                         // We consider this argument as provided since it has a default value
                         continue;
-                    }
-
-                    // Find the argument in the response
-                    var argInfo = context.Response.Arguments?.FirstOrDefault(a => a.Name == typedArgDef.Name);
-                    if (argInfo != null && typedArgDef.SuggestedValuesLoader != null)
-                    {
-                        // Load suggested values
-                        var suggestedValues = await typedArgDef.SuggestedValuesLoader(context, args);
-                        if (suggestedValues?.Any() == true)
-                        {
-                            argInfo.SuggestedValues = suggestedValues;
-                        }
                     }
 
                     // Add to missing arguments list
@@ -332,21 +301,6 @@ public abstract class GlobalCommand<
         }
 
         return args;
-    }
-
-    protected void AddArgumentInfo(CommandContext context, string name, string value, string description, string? defaultValue = null, List<ArgumentOption>? suggestedValues = null, bool required = false)
-    {
-        context.Response.Arguments ??= [];
-
-        var argumentInfo = new ArgumentInfo(name, description, value, defaultValue, required: required);
-
-        if (string.IsNullOrEmpty(value))
-        {
-            argumentInfo.SuggestedValues = suggestedValues;
-        }
-
-        context.Response.Arguments.Add(argumentInfo);
-        context.Response.Arguments.SortArguments();
     }
 
     protected override string GetErrorMessage(Exception ex) => ex switch
