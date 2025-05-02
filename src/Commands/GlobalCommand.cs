@@ -238,7 +238,7 @@ public abstract class GlobalCommand<
                     {
                         // Silently handle reflection errors
                     }
-                }               
+                }
             }
         }
 

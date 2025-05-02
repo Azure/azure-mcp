@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>0.0.12</Version>
@@ -51,7 +51,7 @@
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
-    <PackageReference Include="Azure.ResourceManager.Search" Version="1.2.3" />
+    <PackageReference Include="Azure.ResourceManager.Search" />
     <PackageReference Include="Azure.ResourceManager.Storage" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
@@ -68,6 +68,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
+	<PackageReference Include="Azure.Search.Documents" />
   </ItemGroup>
 
   <!-- Runs before every dotnet build -->
