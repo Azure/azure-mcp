@@ -51,11 +51,6 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     {
         Assert.NotNull(Settings.SearchServiceName);
 
-        var parameters = new Dictionary<string, object?>
-        {
-            { "service-name", Settings.SearchServiceName }
-        };
-
         var result = await CallToolAsync(
             "azmcp-search-index-list",
             new()
