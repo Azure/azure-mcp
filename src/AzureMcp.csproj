@@ -56,8 +56,8 @@
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" Version="1.2.2" />
     <PackageReference Include="Azure.ResourceManager.Storage" Version="1.4.0" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.67.2" />
-    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.9" />
-    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.1.0-preview.9" />
+    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.11" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.1.0-preview.11" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.48.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />

@@ -68,7 +68,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourcesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ReadResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourceTemplatesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.SubscribeToResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.UnsubscribeFromResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListPromptsAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -129,6 +129,6 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 }
