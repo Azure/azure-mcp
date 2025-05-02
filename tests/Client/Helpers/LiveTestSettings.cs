@@ -16,4 +16,6 @@ public class LiveTestSettings
     public string? CosmosContainerName { get; set; }
     public string? StorageAccountName { get; set; }
     public string? StorageContainerName { get; set; }
+    public string? SearchServiceName { get; set; }
+    public string? SearchIndexName { get; set; }
 }
