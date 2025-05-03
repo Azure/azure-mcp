@@ -11,7 +11,7 @@ public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFix
     : CommandTestsBase(mcpClient, liveTestSettings, output),
     IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
 {
-    [Fact]
+    [Fact(Skip = "Custom table not in bicep template")]
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_tables()
     {
@@ -20,11 +20,11 @@ public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFix
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "workspace", $"{Settings.ResourceBaseName}-law" },
+                { "workspace", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName }
             });
 
-        Assert.True(result.TryGetProperty("tables", out var tablesArray));
+        var tablesArray = result.AssertProperty("tables");
         Assert.Equal(JsonValueKind.Array, tablesArray.ValueKind);
         Assert.NotEmpty(tablesArray.EnumerateArray());
     }
@@ -40,12 +40,12 @@ public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFix
                 { "subscription", Settings.SubscriptionId }
             });
 
-        Assert.True(result.TryGetProperty("workspaces", out var workspacesArray));
+        var workspacesArray = result.AssertProperty("workspaces");
         Assert.Equal(JsonValueKind.Array, workspacesArray.ValueKind);
         Assert.NotEmpty(workspacesArray.EnumerateArray());
     }
 
-    [Fact]
+    [Fact(Skip = "Custom table not in bicep template")]
     [Trait("Category", "Live")]
     public async Task Should_query_monitor_logs()
     {
@@ -54,12 +54,12 @@ public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFix
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "workspace", $"{Settings.ResourceBaseName}-law" },
+                { "workspace", Settings.ResourceBaseName },
                 { "query", "recent" },
                 { "table-name", "TestLogs_CL" },
                 { "resource-group", Settings.ResourceGroupName }
             });
 
-        Assert.Equal(JsonValueKind.Array, result.ValueKind);
+        Assert.Equal(JsonValueKind.Array, result?.ValueKind);
     }
 }

@@ -34,7 +34,7 @@ public class TenantService(ICacheService cacheService)
             var tenantId = tenant.Data.TenantId?.ToString() ?? throw new InvalidOperationException("Tenant ID cannot be null");
             results.Add(new ArgumentOption
             {
-                Name = tenant.Data.DisplayName,
+                Name = tenant.Data.DisplayName ?? string.Empty,
                 Id = tenantId
             });
         }

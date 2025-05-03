@@ -20,21 +20,17 @@ if (!$TestResultsPath) {
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
 # Run tests with coverage
-Write-Host "Running unit tests with coverage..."
-Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
-  " --collect:'XPlat Code Coverage'" +
-  " --filter 'Category!~Live'" +
-  " --results-directory '$TestResultsPath'" +
-  " --logger 'trx'")
+$filter = $Live ? "Category~Live" : "Category!~Live"
 
 if ($Live) {
-    # Run live tests
-    Write-Host "Running live tests..."
-    Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
-      " --filter 'Category~Live'" +
-      " --results-directory '$TestResultsPath'" +
-      " --logger 'trx'")
+    Invoke-LoggedCommand "az account show"
 }
+
+Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
+  " --collect:'XPlat Code Coverage'" +
+  " --filter '$filter'" +
+  " --results-directory '$TestResultsPath'" +
+  " --logger 'trx'")
 
 # Find the coverage file
 $coverageFile = Get-ChildItem -Path $TestResultsPath -Recurse -Filter "coverage.cobertura.xml"
@@ -44,6 +40,10 @@ $coverageFile = Get-ChildItem -Path $TestResultsPath -Recurse -Filter "coverage.
 if (-not $coverageFile) {
     Write-Error "No coverage file found!"
     exit 1
+}
+
+if($Live) {
+    exit 0
 }
 
 if ($env:TF_BUILD) {

@@ -22,7 +22,7 @@ public class CommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture li
                 { "subscription", Settings.SubscriptionId }
             });
 
-        Assert.True(result.TryGetProperty("groups", out var groupsArray));
+        var groupsArray = result.AssertProperty("groups");
         Assert.Equal(JsonValueKind.Array, groupsArray.ValueKind);
         Assert.NotEmpty(groupsArray.EnumerateArray());
     }
@@ -35,7 +35,7 @@ public class CommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture li
             "azmcp-subscription-list",
             new Dictionary<string, object?>());
 
-        Assert.True(result.TryGetProperty("subscriptions", out var subscriptionsArray));
+        var subscriptionsArray = result.AssertProperty("subscriptions");
         Assert.Equal(JsonValueKind.Array, subscriptionsArray.ValueKind);
         Assert.NotEmpty(subscriptionsArray.EnumerateArray());
     }

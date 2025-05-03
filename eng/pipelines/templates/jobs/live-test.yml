@@ -1,0 +1,89 @@
+parameters:
+# required matrix parameters
+- name: UsePlatformContainer
+  type: boolean
+- name: OSName
+  type: string
+- name: Matrix
+  type: object
+- name: DependsOn
+  type: string
+- name: CloudConfig
+  type: object
+- name: TimeoutInMinutes
+  type: number
+- name: EnvVars
+  type: object
+
+jobs:
+- job: Test_${{ parameters.OSName }}
+  displayName: "Live test"
+  dependsOn:
+  - ${{ parameters.DependsOn }}
+  strategy:
+    matrix: $[ ${{ parameters.Matrix }} ]
+  pool:
+    name: $(Pool)
+    ${{ if eq(parameters.OSName, 'macOS') }}:
+      vmImage: $(OSVmImage)
+    ${{ else }}:
+      image: $(OSVmImage)
+    os: ${{ parameters.OSName }}
+  variables:
+    Version: $[ dependencies.Initialize.outputs['Version.Version'] ]
+  steps:
+  - checkout: self
+
+  - task: UseDotNet@2
+    displayName: "Use .NET SDK from global.json"
+    retryCountOnTaskFailure: 3
+    inputs:
+      useGlobalJson: true
+
+  - template: /eng/common/TestResources/build-test-resource-config.yml
+    parameters:
+      EnvVars:
+        Pool: $(Pool)
+        ${{insert}}: ${{ parameters.EnvVars }}
+        
+  - template: /eng/common/TestResources/deploy-test-resources.yml
+    parameters:
+      Location: ${{ parameters.CloudConfig.Location }}
+      SubscriptionConfiguration: $(SubscriptionConfiguration)
+      ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
+      EnvVars:
+        Pool: $(Pool)
+        ${{insert}}: ${{ parameters.EnvVars }}
+
+  - task: AzureCLI@2
+    displayName: "Run tests - Federated Auth"
+    condition: and(succeeded(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))
+    timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+    env:
+      AZURE_TEST_MODE: 'live'
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      ${{ insert }}: ${{ parameters.EnvVars }}
+    inputs:
+      azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
+      scriptType: pscore
+      scriptLocation: scriptPath
+      scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
+      arguments: -Live
+      workingDirectory: $(Build.SourcesDirectory)
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: "Publish Results"
+    inputs:
+      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
+      testRunTitle: "${{ parameters.OSName }}"
+      testResultsFormat: "VSTest"
+      mergeTestResults: true
+        
+  - template: /eng/common/TestResources/remove-test-resources.yml
+    parameters:
+      SubscriptionConfiguration: $(SubscriptionConfiguration)
+      ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
+      EnvVars:
+        Pool: $(Pool)
+        ${{insert}}: ${{ parameters.EnvVars }}

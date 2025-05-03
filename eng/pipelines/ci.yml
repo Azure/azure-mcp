@@ -25,4 +25,5 @@ extends:
     # We release signed, manual runs from main and hotfix branches
     # All other runs get -alpha prerelease labels
     PublishPackages: true
+    RunLiveTests: true
     ReleaseRun: ${{ and(eq(variables['Build.Reason'], 'Manual'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')), not(parameters.SkipSigning)) }}

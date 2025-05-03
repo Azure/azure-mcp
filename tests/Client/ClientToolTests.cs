@@ -36,8 +36,8 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
         var root = JsonSerializer.Deserialize<JsonElement>(content!);
         Assert.Equal(JsonValueKind.Object, root.ValueKind);
 
-        Assert.True(root.TryGetProperty("results", out var results));
-        Assert.True(results.TryGetProperty("subscriptions", out var subscriptionsArray));
+        var results = root.AssertProperty("results");
+        var subscriptionsArray = results.AssertProperty("subscriptions");
         Assert.Equal(JsonValueKind.Array, subscriptionsArray.ValueKind);
 
         Assert.NotEmpty(subscriptionsArray.EnumerateArray());

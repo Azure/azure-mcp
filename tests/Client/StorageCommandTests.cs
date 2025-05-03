@@ -11,6 +11,8 @@ namespace AzureMcp.Tests.Client
     : CommandTestsBase(mcpClient, liveTestSettings, output),
     IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
     {
+        private const string TenantNameReason = "Service principals cannot use TenantName for lookup";
+
         [Fact]
         [Trait("Category", "Live")]
         public async Task Should_list_storage_accounts_by_subscription_id()
@@ -22,7 +24,7 @@ namespace AzureMcp.Tests.Client
                 { "subscription", Settings.SubscriptionId }
                 });
 
-            Assert.True(result.TryGetProperty("accounts", out var accounts));
+            var accounts = result.AssertProperty("accounts");
             Assert.Equal(JsonValueKind.Array, accounts.ValueKind);
             Assert.NotEmpty(accounts.EnumerateArray());
         }
@@ -38,7 +40,7 @@ namespace AzureMcp.Tests.Client
                 { "subscription", Settings.SubscriptionName }
                 });
 
-            Assert.True(result.TryGetProperty("accounts", out var accounts));
+            var accounts = result.AssertProperty("accounts");
             Assert.Equal(JsonValueKind.Array, accounts.ValueKind);
             Assert.NotEmpty(accounts.EnumerateArray());
         }
@@ -55,15 +57,16 @@ namespace AzureMcp.Tests.Client
                 { "tenant", Settings.TenantId }
                 });
 
-            Assert.True(result.TryGetProperty("accounts", out var accounts));
+            var accounts = result.AssertProperty("accounts");
             Assert.Equal(JsonValueKind.Array, accounts.ValueKind);
             Assert.NotEmpty(accounts.EnumerateArray());
         }
 
-        [Fact]
+        [Fact()]
         [Trait("Category", "Live")]
         public async Task Should_list_storage_accounts_by_subscription_name_with_tenant_name()
         {
+            Assert.SkipWhen(Extensions.IsRunningFromDotnetTest(), TenantNameReason);
             var result = await CallToolAsync(
                 "azmcp-storage-account-list",
                 new()
@@ -72,7 +75,7 @@ namespace AzureMcp.Tests.Client
                 { "tenant", Settings.TenantName }
                 });
 
-            Assert.True(result.TryGetProperty("accounts", out var accounts));
+            var accounts = result.AssertProperty("accounts");
             Assert.Equal(JsonValueKind.Array, accounts.ValueKind);
             Assert.NotEmpty(accounts.EnumerateArray());
         }
@@ -86,12 +89,12 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "tenant", Settings.TenantName },
-                { "account-name", Settings.StorageAccountName },
-                { "container-name", Settings.StorageContainerName },
+                { "tenant", Settings.TenantId },
+                { "account-name", Settings.ResourceBaseName },
+                { "container-name", "bar" },
                 });
 
-            Assert.True(result.TryGetProperty("blobs", out var actual));
+            var actual = result.AssertProperty("blobs");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
         }
@@ -105,12 +108,12 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "tenant", Settings.TenantName },
-                { "account-name", Settings.StorageAccountName },
+                { "tenant", Settings.TenantId },
+                { "account-name", Settings.ResourceBaseName },
                 { "retry-max-retries", 0 }
                 });
 
-            Assert.True(result.TryGetProperty("containers", out var actual));
+            var actual = result.AssertProperty("containers");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
         }
@@ -124,29 +127,48 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "tenant", Settings.TenantName },
-                { "account-name", Settings.StorageAccountName },
+                { "tenant", Settings.TenantId },
+                { "account-name", Settings.ResourceBaseName },
                 });
 
-            Assert.True(result.TryGetProperty("tables", out var actual));
+            var actual = result.AssertProperty("tables");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
         }
 
         [Fact]
         [Trait("Category", "Live")]
-        public async Task Should_list_storage_tables_with_tenant()
+        public async Task Should_list_storage_tables_with_tenant_id()
         {
             var result = await CallToolAsync(
                 "azmcp-storage-table-list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "tenant", Settings.TenantName },
-                { "account-name", Settings.StorageAccountName },
+                { "tenant", Settings.TenantId },
+                { "account-name", Settings.ResourceBaseName },
                 });
 
-            Assert.True(result.TryGetProperty("tables", out var actual));
+            var actual = result.AssertProperty("tables");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+            Assert.NotEmpty(actual.EnumerateArray());
+        }
+
+        [Fact()]
+        [Trait("Category", "Live")]
+        public async Task Should_list_storage_tables_with_tenant_name()
+        {
+            Assert.SkipWhen(Extensions.IsRunningFromDotnetTest(), TenantNameReason);
+            var result = await CallToolAsync(
+                "azmcp-storage-table-list",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantName },
+                { "account-name", Settings.ResourceBaseName },
+                });
+
+            var actual = result.AssertProperty("tables");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
         }
@@ -160,11 +182,11 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.StorageAccountName },
-                { "container-name", Settings.StorageContainerName }
+                { "account-name", Settings.ResourceBaseName },
+                { "container-name", "bar" }
                 });
 
-            Assert.True(result.TryGetProperty("details", out var actual));
+            var actual = result.AssertProperty("details");
             Assert.Equal(JsonValueKind.Object, actual.ValueKind);
         }
 
@@ -177,12 +199,12 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.StorageAccountName },
-                { "container-name", Settings.StorageContainerName },
+                { "account-name", Settings.ResourceBaseName },
+                { "container-name", "bar" },
                 { "auth-method", "key" }
                 });
 
-            Assert.True(result.TryGetProperty("details", out var actual));
+            var actual = result.AssertProperty("details");
             Assert.Equal(JsonValueKind.Object, actual.ValueKind);
         }
     }

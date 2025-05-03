@@ -9,7 +9,7 @@ namespace AzureMcp.Tests.Client;
 
 public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
     : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>, IClassFixture<CosmosLocalAccessFixture>
+    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
 {
     [Fact]
     [Trait("Category", "Live")]
@@ -20,10 +20,10 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.CosmosAccountName }
+                { "account-name", Settings.ResourceBaseName }
             });
 
-        Assert.True(result.TryGetProperty("databases", out var databasesArray));
+        var databasesArray = result.AssertProperty("databases");
         Assert.Equal(JsonValueKind.Array, databasesArray.ValueKind);
         Assert.NotEmpty(databasesArray.EnumerateArray());
     }
@@ -37,11 +37,11 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.CosmosAccountName },
-                { "database-name", Settings.CosmosDatabaseName }
+                { "account-name", Settings.ResourceBaseName },
+                { "database-name", "ToDoList" }
             });
 
-        Assert.True(result.TryGetProperty("containers", out var containersArray));
+        var containersArray = result.AssertProperty("containers");
         Assert.Equal(JsonValueKind.Array, containersArray.ValueKind);
         Assert.NotEmpty(containersArray.EnumerateArray());
     }
@@ -55,16 +55,16 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.CosmosAccountName },
-                { "database-name", Settings.CosmosDatabaseName }
+                { "account-name", Settings.ResourceBaseName },
+                { "database-name", "ToDoList" }
             });
 
-        Assert.True(result.TryGetProperty("containers", out var containersArray));
+        var containersArray = result.AssertProperty("containers");
         Assert.Equal(JsonValueKind.Array, containersArray.ValueKind);
         Assert.NotEmpty(containersArray.EnumerateArray());
     }
 
-    [Fact]
+    [Fact(Skip = "Cosmos needs post script to add items")]
     [Trait("Category", "Live")]
     public async Task Should_query_cosmos_database_container_items()
     {
@@ -73,12 +73,12 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.CosmosAccountName },
-                { "database-name", Settings.CosmosDatabaseName },
-                { "container-name", Settings.CosmosContainerName }
+                { "account-name", Settings.ResourceBaseName },
+                { "database-name", "ToDoList" },
+                { "container-name", "Items" }
             });
 
-        Assert.True(result.TryGetProperty("items", out var itemsArray));
+        var itemsArray = result.AssertProperty("items");
         Assert.Equal(JsonValueKind.Array, itemsArray.ValueKind);
         Assert.NotEmpty(itemsArray.EnumerateArray());
     }
@@ -94,7 +94,7 @@ public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
                 { "subscription", Settings.SubscriptionId }
             });
 
-        Assert.True(result.TryGetProperty("accounts", out var accountsArray));
+        var accountsArray = result.AssertProperty("accounts");
         Assert.Equal(JsonValueKind.Array, accountsArray.ValueKind);
         Assert.NotEmpty(accountsArray.EnumerateArray());
     }

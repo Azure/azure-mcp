@@ -10,7 +10,9 @@ parameters:
   type: string
 - name: CloudConfig
   type: object
-
+- name: TestTimeoutInMinutes
+  type: number
+  
 jobs:
 - job: Build_${{ parameters.OSName }}
   displayName: "Build"
@@ -51,8 +53,32 @@ jobs:
         -SelfContained
         -ReadyToRun
 
+  - task: Powershell@2
+    displayName: "Run tests"
+    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
+    timeoutInMinutes: ${{ parameters.TestTimeoutInMinutes }}
+    inputs:
+      pwsh: true
+      filePath:  $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
+      workingDirectory: $(Build.SourcesDirectory)
+
+  - task: PublishTestResults@2
+    displayName: "Publish Results"
+    condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
+    inputs:
+      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
+      testRunTitle: "${{ parameters.OSName }}"
+      testResultsFormat: "VSTest"
+      mergeTestResults: true
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish Code Coverage Reports
+    condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
+    inputs:
+      summaryFileLocation: $(CoverageFile)
+
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)
       ArtifactName: $(PipelineArtifactName)_$(System.JobName)
-      CustomCondition: and(succeededOrFailed(), ne(variables['NoPackagesChanged'],'true'))
+      CustomCondition: succeededOrFailed()

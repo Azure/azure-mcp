@@ -18,6 +18,7 @@
     ],
     "words": [
         "1espt",
+        "appconfig",
         "azmcp",
         "azsdk",
         "azuresdk",
@@ -29,6 +30,8 @@
         "MACOS",
         "MACPOOL",
         "MACVMIMAGE",
+        "pscore",
+        "testsettings",
         "vsts",
         "WINDOWSOS",
         "WINDOWSPOOL",

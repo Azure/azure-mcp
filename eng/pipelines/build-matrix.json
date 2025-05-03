@@ -1,21 +1,13 @@
 {
-  "displayNames": {
-  },
   "matrix": {
     "Agent": {
-      "win": {"OSVmImage": "env:WINDOWSVMIMAGE", "Pool": "env:WINDOWSPOOL"},
-      "osx": {"OSVmImage": "env:MACVMIMAGE","Pool": "env:MACPOOL"}
-    },
-    "Architecture": [
-      "x64", "arm64"
-    ]
-  },
-  "include": [
-    {
-      "Agent": {
-        "linux": {"OSVmImage": "env:LINUXVMIMAGE", "Pool": "env:LINUXPOOL"}
-      },
-      "Architecture": ["x64"]
+      "linux": {"OSVmImage": "env:LINUXVMIMAGE", "Pool": "env:LINUXPOOL"},
+      "osx": {"OSVmImage": "env:MACVMIMAGE","Pool": "env:MACPOOL"},
+      "win": {"OSVmImage": "env:WINDOWSVMIMAGE", "Pool": "env:WINDOWSPOOL"}
+   },
+   "Architecture": {
+      "x64": {"Architecture": "x64", "RunTests": "true" },
+      "arm64": {"Architecture": "arm64", "RunTests": "false"}
     }
-  ]
+  }
 }

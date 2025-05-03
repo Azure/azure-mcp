@@ -18,7 +18,7 @@ param (
     [ValidatePattern('^[-\w\._\(\)]+$')]
     [string] $ResourceGroupName,
 
-    [Parameter(Mandatory = $true, Position = 0)]
+    [Parameter(Position = 0)]
     [string] $ServiceDirectory,
 
     [Parameter()]
@@ -158,10 +158,13 @@ if ($initialContext) {
 
 # try..finally will also trap Ctrl+C.
 try {
-
     # Enumerate test resources to deploy. Fail if none found.
-    $repositoryRoot = "$PSScriptRoot/../../.." | Resolve-Path
-    $root = [System.IO.Path]::Combine($repositoryRoot, "sdk", $ServiceDirectory) | Resolve-Path
+    $root = $repositoryRoot = "$PSScriptRoot/../../.." | Resolve-Path
+
+    if($ServiceDirectory) {
+        $root = [System.IO.Path]::Combine($repositoryRoot, "sdk", $ServiceDirectory) | Resolve-Path
+    }
+
     if ($TestResourcesDirectory) {
         $root = $TestResourcesDirectory | Resolve-Path
         # Add an explicit check below in case ErrorActionPreference is overridden and Resolve-Path doesn't stop execution
@@ -170,6 +173,7 @@ try {
         }
         Write-Verbose "Overriding test resources search directory to '$root'"
     }
+    
     $templateFiles = @()
 
     "$ResourceType-resources.json", "$ResourceType-resources.bicep" | ForEach-Object {
@@ -191,7 +195,12 @@ try {
         exit
     }
 
+    # returns empty string if $ServiceDirectory is not set
     $serviceName = GetServiceLeafDirectoryName $ServiceDirectory
+
+    # in ci, random names are used
+    # in non-ci, without BaseName, ResourceGroupName or ServiceDirectory, all invocations will
+    # generate the same resource group name and base name for a given user
     $BaseName, $ResourceGroupName = GetBaseAndResourceGroupNames `
         -baseNameDefault $BaseName `
         -resourceGroupNameDefault $ResourceGroupName `
@@ -359,9 +368,10 @@ try {
         $ProvisionerApplicationOid = $sp.Id
     }
 
-    $tags = @{
-        Owners = (GetUserName)
-        ServiceDirectory = $ServiceDirectory
+    $tags = @{ Owners = (GetUserName) }
+
+    if ($ServiceDirectory) {
+        $tags['ServiceDirectory'] = $ServiceDirectory
     }
 
     # Tag the resource group to be deleted after a certain number of hours.

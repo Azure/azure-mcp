@@ -5,15 +5,11 @@ namespace AzureMcp.Tests.Client.Helpers;
 
 public class LiveTestSettings
 {
-    public string? TenantId { get; set; }
-    public string? TenantName { get; set; }
-    public string? SubscriptionId { get; set; }
-    public string? SubscriptionName { get; set; }
-    public string? ResourceGroupName { get; set; }
-    public string? ResourceBaseName { get; set; }
-    public string? CosmosAccountName { get; set; }
-    public string? CosmosDatabaseName { get; set; }
-    public string? CosmosContainerName { get; set; }
-    public string? StorageAccountName { get; set; }
-    public string? StorageContainerName { get; set; }
+    public string TenantId { get; set; } = string.Empty;
+    public string TenantName { get; set; } = string.Empty;
+    public string SubscriptionId { get; set; } = string.Empty;
+    public string SubscriptionName { get; set; } = string.Empty;
+    public string ResourceGroupName { get; set; } = string.Empty;
+    public string ResourceBaseName { get; set; } = string.Empty;
+    public bool DebugOutput { get; set; }
 }

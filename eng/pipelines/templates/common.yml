@@ -8,6 +8,9 @@ parameters:
 - name: ReleaseRun
   type: boolean
   default: false
+- name: RunLiveTests
+  type: boolean
+  default: false
 
 resources:
   repositories:
@@ -38,36 +41,43 @@ extends:
           SparseCheckout: false
           DependsOn: Initialize
           JobTemplatePath: /eng/pipelines/templates/jobs/build.yml
-          AdditionalParameters: {}
+          AdditionalParameters:
+            TestTimeoutInMinutes: 10
           MatrixConfigs:
             - Name: build_matrix
               Path: eng/pipelines/build-matrix.json
               Selection: all
               GenerateVMJobs: true
-      - template: /eng/pipelines/templates/jobs/analyze.yml
 
-    - stage: Test
-      dependsOn: []
-      pool:
-        name: $(LINUXPOOL)
-        image: $(LINUXVMIMAGE)
-        os: linux
-      variables:
-      - template: /eng/pipelines/templates/variables/image.yml
-      - template: /eng/pipelines/templates/variables/globals.yml
-      jobs:
-      - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
-        parameters:
-          SparseCheckout: false
-          JobTemplatePath: /eng/pipelines/templates/jobs/test.yml
-          AdditionalParameters: {}
-          MatrixConfigs:
+    - ${{ if and(eq(variables['System.TeamProject'], 'internal'), eq(parameters.RunLiveTests, 'true')) }}:
+      - stage: Test
+        displayName: 'Live test'
+        dependsOn: []
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+        variables:
+        - template: /eng/pipelines/templates/variables/image.yml
+        - template: /eng/pipelines/templates/variables/globals.yml
+        jobs:
+        - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
+          parameters:
+            SparseCheckout: false
+            MatrixConfigs:
             - Name: test_matrix
               Path: eng/pipelines/test-matrix.json
               Selection: all
               GenerateVMJobs: true
-
-    # All builds in the internal project get signing
+            JobTemplatePath: /eng/pipelines/templates/jobs/live-test.yml
+            AdditionalParameters:
+              TimeoutInMinutes: 60
+              EnvVars: {}
+            CloudConfig:
+              Cloud: Public
+              ServiceConnection: azure-sdk-tests-public
+         
+    # # All builds in the internal project get signing
     - stage: SignAndPack
       ${{ if parameters.SkipSigning }}:
         displayName: 'Pack'
@@ -90,7 +100,6 @@ extends:
           dependsOn:
           - Build
           - SignAndPack
-          - Test
           pool:
             name: $(LINUXPOOL)
             image: $(LINUXVMIMAGE)
@@ -108,7 +117,6 @@ extends:
           dependsOn:
           - Build
           - SignAndPack
-          - Test
           pool:
             name: $(LINUXPOOL)
             image: $(LINUXVMIMAGE)
