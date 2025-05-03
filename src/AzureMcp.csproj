@@ -73,26 +73,18 @@
 
   <!-- Runs before every dotnet build -->
   <Target Name="InstallGitHooks" BeforeTargets="BeforeBuild">
-    <!-- ensure the .git/hooks folder exists -->
-    <MakeDir Condition="!Exists('$(MSBuildProjectDirectory)/../.git/hooks')" 
-             Directories="$(MSBuildProjectDirectory)/../.git/hooks" />
+    <Message Text="Installing Git hooks..." Importance="high" />
 
-    <!-- copy only changed files -->
-    <Copy SourceFiles="@(GitHookFiles)" 
-          DestinationFolder="$(MSBuildProjectDirectory)/../.git/hooks"
-          SkipUnchangedFiles="true" />
+    <!-- Run the Install-GitHooks.ps1 script using PowerShell Core -->
+    <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildProjectDirectory)/../eng/scripts/Install-GitHooks.ps1&quot;"
+          ContinueOnError="true"
+          ConsoleToMsBuild="true"
+          IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="ExitCode"/>
+    </Exec>
 
-    <!-- on mac/linux, make sure they're executable -->
-    <Exec Condition="Exists('$(MSBuildProjectDirectory)/../.git/hooks/pre-commit') and '$(OS)' != 'Windows_NT'"
-          Command="chmod +x &quot;$(MSBuildProjectDirectory)/../.git/hooks/pre-commit&quot;" />
-
-    <!-- on Windows, make sure they're executable -->
-    <Exec Condition="Exists('$(MSBuildProjectDirectory)/../.git/hooks/pre-commit') and '$(OS)' == 'Windows_NT'"
-          Command="attrib +x &quot;$(MSBuildProjectDirectory)/../.git/hooks/pre-commit&quot;" />
+    <!-- Display informative message if pwsh fails -->
+    <Warning Text="Could not install Git hooks. PowerShell Core (pwsh) is required to install Git hooks."
+             Condition="'$(ExitCode)' != '0'" />
   </Target>
-
-  <!-- gather all hook scripts under Scripts/git-hooks -->
-  <ItemGroup>
-    <GitHookFiles Include="$(MSBuildProjectDirectory)/Scripts/git-hooks/*" />
-  </ItemGroup>
 </Project>
