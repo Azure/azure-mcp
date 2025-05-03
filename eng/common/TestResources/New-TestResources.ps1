@@ -162,7 +162,7 @@ try {
     $root = $repositoryRoot = "$PSScriptRoot/../../.." | Resolve-Path
 
     if($ServiceDirectory) {
-        $root = [System.IO.Path]::Combine($repositoryRoot, "sdk", $ServiceDirectory) | Resolve-Path
+        $root = "$repositoryRoot/sdk/$ServiceDirectory" | Resolve-Path
     }
 
     if ($TestResourcesDirectory) {
@@ -173,7 +173,7 @@ try {
         }
         Write-Verbose "Overriding test resources search directory to '$root'"
     }
-    
+
     $templateFiles = @()
 
     "$ResourceType-resources.json", "$ResourceType-resources.bicep" | ForEach-Object {
