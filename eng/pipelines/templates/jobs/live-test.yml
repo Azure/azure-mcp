@@ -77,32 +77,7 @@ jobs:
     displayName: "Publish Results"
     inputs:
       testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
-      testRunTitle: "live-${{ parameters.OSName }}-pwsh"
-      testResultsFormat: "VSTest"
-      mergeTestResults: true
-
-  - task: AzureCLI@2
-    displayName: "Run tests - az cli"
-    condition: and(succeededOrFailed(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))
-    timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
-    env:
-      AZURE_TEST_MODE: 'live'
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      ${{ insert }}: ${{ parameters.EnvVars }}
-    inputs:
-      azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
-      scriptType: pscore
-      scriptLocation: scriptPath
-      scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
-      arguments: -Live
-      workingDirectory: $(Build.SourcesDirectory)
-
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    displayName: "Publish Results"
-    inputs:
-      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
-      testRunTitle: "live-${{ parameters.OSName }}-cli"
+      testRunTitle: "live-${{ parameters.OSName }}"
       testResultsFormat: "VSTest"
       mergeTestResults: true
 
