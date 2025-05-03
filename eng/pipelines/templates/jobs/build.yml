@@ -12,7 +12,7 @@ parameters:
   type: object
 - name: TestTimeoutInMinutes
   type: number
-  
+
 jobs:
 - job: Build_${{ parameters.OSName }}
   displayName: "Build"
@@ -67,7 +67,7 @@ jobs:
     condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
     inputs:
       testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
-      testRunTitle: "${{ parameters.OSName }}"
+      testRunTitle: "unit-${{ parameters.OSName }}-$(Architecture)"
       testResultsFormat: "VSTest"
       mergeTestResults: true
 

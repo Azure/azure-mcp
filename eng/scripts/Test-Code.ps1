@@ -22,10 +22,6 @@ Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 # Run tests with coverage
 $filter = $Live ? "Category~Live" : "Category!~Live"
 
-if ($Live) {
-    Invoke-LoggedCommand "az account show"
-}
-
 Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
   " --collect:'XPlat Code Coverage'" +
   " --filter '$filter'" +

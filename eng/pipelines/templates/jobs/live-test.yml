@@ -45,7 +45,7 @@ jobs:
       EnvVars:
         Pool: $(Pool)
         ${{insert}}: ${{ parameters.EnvVars }}
-        
+
   - template: /eng/common/TestResources/deploy-test-resources.yml
     parameters:
       Location: ${{ parameters.CloudConfig.Location }}
@@ -56,7 +56,7 @@ jobs:
         ${{insert}}: ${{ parameters.EnvVars }}
 
   - task: AzureCLI@2
-    displayName: "Run tests - Federated Auth"
+    displayName: "Run tests - az cli"
     condition: and(succeeded(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))
     timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
     env:
@@ -76,10 +76,35 @@ jobs:
     displayName: "Publish Results"
     inputs:
       testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
-      testRunTitle: "${{ parameters.OSName }}"
+      testRunTitle: "live-${{ parameters.OSName }}-cli"
       testResultsFormat: "VSTest"
       mergeTestResults: true
-        
+
+  - task: AzurePowershell@5
+    displayName: "Run tests - az pwsh"
+    condition: and(succeeded(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))
+    timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+    env:
+      AZURE_TEST_MODE: 'live'
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      ${{ insert }}: ${{ parameters.EnvVars }}
+    inputs:
+      azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
+      scriptType: FilePath
+      scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
+      scriptArguments: -Live
+      pwsh: true
+      workingDirectory: $(Build.SourcesDirectory)
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: "Publish Results"
+    inputs:
+      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
+      testRunTitle: "live-${{ parameters.OSName }}-pwsh"
+      testResultsFormat: "VSTest"
+      mergeTestResults: true
+
   - template: /eng/common/TestResources/remove-test-resources.yml
     parameters:
       SubscriptionConfiguration: $(SubscriptionConfiguration)
