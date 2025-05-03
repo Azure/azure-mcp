@@ -65,6 +65,7 @@ jobs:
       ${{ insert }}: ${{ parameters.EnvVars }}
     inputs:
       azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
+      azurePowerShellVersion: 'LatestVersion'
       scriptType: FilePath
       scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
       scriptArguments: -Live
