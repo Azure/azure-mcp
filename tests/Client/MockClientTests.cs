@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Server;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Protocol.Messages;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;

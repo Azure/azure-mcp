@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using Azure.Core;
 using AzureMcp.Models.Argument;
-using System.Text.Json.Serialization;
 
 namespace AzureMcp.Arguments;
 
@@ -53,22 +53,27 @@ public class RetryPolicyArguments : IComparable<RetryPolicyArguments>, IEquatabl
 
     public int CompareTo(RetryPolicyArguments? other)
     {
-        if (other == null) return 1;
+        if (other == null)
+            return 1;
 
         // Compare by MaxRetries first
         var retryComparison = MaxRetries.CompareTo(other.MaxRetries);
-        if (retryComparison != 0) return retryComparison;
+        if (retryComparison != 0)
+            return retryComparison;
 
         // Then by Mode
         var modeComparison = Mode.CompareTo(other.Mode);
-        if (modeComparison != 0) return modeComparison;
+        if (modeComparison != 0)
+            return modeComparison;
 
         // Then by delay settings
         var delayComparison = DelaySeconds.CompareTo(other.DelaySeconds);
-        if (delayComparison != 0) return delayComparison;
+        if (delayComparison != 0)
+            return delayComparison;
 
         var maxDelayComparison = MaxDelaySeconds.CompareTo(other.MaxDelaySeconds);
-        if (maxDelayComparison != 0) return maxDelayComparison;
+        if (maxDelayComparison != 0)
+            return maxDelayComparison;
 
         // Finally by network timeout
         return NetworkTimeoutSeconds.CompareTo(other.NetworkTimeoutSeconds);

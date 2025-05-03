@@ -8,6 +8,5 @@ public class ArgumentInfo(
     string description,
     string? value = "",
     string? defaultValue = default,
-    List<ArgumentOption>? suggestedValues = null,
     bool required = false) :
-    ArgumentDefinition<string>(name, description, value, defaultValue, suggestedValues, required);
+    ArgumentDefinition<string>(name, description, value, defaultValue, required);

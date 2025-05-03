@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Tests.Client.Helpers;
 using System.Text.Json;
+using AzureMcp.Tests.Client.Helpers;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;

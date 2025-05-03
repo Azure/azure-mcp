@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments.AppConfig.KeyValue;
-using AzureMcp.Models.Argument;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Arguments.AppConfig.KeyValue;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 

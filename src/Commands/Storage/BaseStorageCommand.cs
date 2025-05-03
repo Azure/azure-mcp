@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments.Storage;
-using AzureMcp.Models.Argument;
-using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Arguments.Storage;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Commands.Storage;
 
@@ -41,15 +40,6 @@ public abstract class BaseStorageCommand<
         return ArgumentBuilder<T>
             .Create(ArgumentDefinitions.Storage.Account.Name, ArgumentDefinitions.Storage.Account.Description)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Subscription)) return [];
-
-                var storageService = context.GetService<IStorageService>();
-                var accounts = await storageService.GetStorageAccounts(args.Subscription);
-
-                return accounts?.Select(a => new ArgumentOption { Name = a, Id = a }).ToList() ?? [];
-            })
             .WithIsRequired(ArgumentDefinitions.Storage.Account.Required);
     }
 }

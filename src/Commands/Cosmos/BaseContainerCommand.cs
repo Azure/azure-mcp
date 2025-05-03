@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Argument;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Commands.Cosmos;
 
@@ -38,11 +38,5 @@ public abstract class BaseContainerCommand<
         ArgumentBuilder<Arguments.Cosmos.BaseContainerArguments>
             .Create(ArgumentDefinitions.Cosmos.Container.Name, ArgumentDefinitions.Cosmos.Container.Description)
             .WithValueAccessor(args => args.Container ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-                await GetContainerOptions(
-                    context,
-                    args.Account ?? string.Empty,
-                    args.Database ?? string.Empty,
-                    args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.Cosmos.Container.Required);
 }

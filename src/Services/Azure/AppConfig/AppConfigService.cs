@@ -28,7 +28,8 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         await foreach (var account in subscription.GetAppConfigurationStoresAsync())
         {
             ResourceIdentifier resourceId = account.Id;
-            if (resourceId.ToString().Length == 0) continue;
+            if (resourceId.ToString().Length == 0)
+                continue;
 
             var acc = new AppConfigurationAccount
             {

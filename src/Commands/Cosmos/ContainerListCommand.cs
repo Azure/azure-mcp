@@ -1,14 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure;
+using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Cosmos;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Cosmos;
 

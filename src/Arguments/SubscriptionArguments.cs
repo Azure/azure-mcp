@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Argument;
 using System.Text.Json.Serialization;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Arguments;
 

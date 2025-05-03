@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Reflection;
+using System.Runtime.Versioning;
 using Azure.Core;
 using Azure.ResourceManager;
 using AzureMcp.Arguments;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Interfaces;
-using System.Reflection;
-using System.Runtime.Versioning;
 
 namespace AzureMcp.Services.Azure;
 
@@ -38,7 +38,8 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
     protected async Task<string?> ResolveTenantIdAsync(string? tenant)
     {
-        if (tenant == null || _tenantService == null) return tenant;
+        if (tenant == null || _tenantService == null)
+            return tenant;
         return await _tenantService.GetTenantId(tenant);
     }
 

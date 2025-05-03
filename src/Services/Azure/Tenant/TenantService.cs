@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Identity;
 using Azure.ResourceManager;
 using AzureMcp.Models.Argument;
 using AzureMcp.Services.Interfaces;

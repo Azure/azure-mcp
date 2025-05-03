@@ -17,7 +17,8 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
 
     public ValueTask SetAsync<T>(string key, T data, TimeSpan? expiration = null)
     {
-        if (data == null) return default;
+        if (data == null)
+            return default;
 
         var options = new MemoryCacheEntryOptions
         {

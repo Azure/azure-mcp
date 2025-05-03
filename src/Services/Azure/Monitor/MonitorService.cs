@@ -1,19 +1,18 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Nodes;
 using Azure;
 using Azure.Monitor.Query;
 using Azure.ResourceManager.OperationalInsights;
 using AzureMcp.Arguments;
 using AzureMcp.Models.Monitor;
 using AzureMcp.Services.Interfaces;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace AzureMcp.Services.Azure.Monitor;
 
-public class MonitorService(ISubscriptionService subscriptionService, IResourceGroupService resourceGroupService)
-    : BaseAzureService, IMonitorService
+public class MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+    : BaseAzureService(tenantService), IMonitorService
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));

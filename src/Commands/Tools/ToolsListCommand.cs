@@ -1,13 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments;
+using System.CommandLine.Parsing;
 using AzureMcp.Models;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using System.CommandLine.Parsing;
 
 namespace AzureMcp.Commands.Tools;
 
@@ -47,14 +46,15 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
 
     private static CommandInfo CreateCommand(string hyphenatedName, IBaseCommand command)
     {
-        var argumentInfos = command.GetArguments()
-            ?.Select(arg => new ArgumentInfo(
-                name: arg.Name,
-                description: arg.Description,
-                value: string.Empty,
-                defaultValue: arg is ArgumentBuilder<GlobalArguments> args ? args.DefaultValue : null,
-                suggestedValues: arg is ArgumentBuilder<GlobalArguments> argsWithValues ? argsWithValues.SuggestedValues : null,
-                required: arg.Required))
+        var argumentInfos = command.GetCommand().Options
+            ?.Where(arg => !arg.IsHidden)
+            ?.Select(arg =>
+            {
+                return new ArgumentInfo(
+                    name: arg.Name,
+                    description: arg.Description!,
+                    required: arg.IsRequired);
+            })
             .ToList();
 
         return new CommandInfo

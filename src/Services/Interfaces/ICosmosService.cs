@@ -1,10 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Nodes;
 using AzureMcp.Arguments;
 using AzureMcp.Models;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace AzureMcp.Services.Interfaces;
 

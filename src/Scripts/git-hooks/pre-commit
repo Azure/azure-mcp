@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Get the repository root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Since the solution is always in the root, directly find it there
+SOLUTION_FILE=$(find "$REPO_ROOT" -maxdepth 1 -name "*.sln" -type f | head -n 1)
+
+# Exit if no solution file was found
+if [ -z "$SOLUTION_FILE" ]; then
+    echo "Error: No .sln file found in the repository root."
+    exit 1
+fi
+
+# Run dotnet format directly with the solution file path (no --workspace)
+echo "Running dotnet format on $SOLUTION_FILE"
+dotnet format "$SOLUTION_FILE" --verify-no-changes
+
+# If dotnet format found issues, prevent the commit
+if [ $? -ne 0 ]; then
+    echo "❌ dotnet format detected formatting issues."
+    echo "Please run 'dotnet format \"$SOLUTION_FILE\"' to fix the issues and then try committing again."
+    exit 1
+fi
+
+echo "✅ Code formatting check passed."
+exit 0

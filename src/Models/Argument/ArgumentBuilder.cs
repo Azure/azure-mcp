@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Arguments;
-using AzureMcp.Models.Command;
 
 namespace AzureMcp.Models.Argument;
 
@@ -16,11 +15,6 @@ public class ArgumentBuilder<TArgs> : ArgumentDefinition<string> where TArgs : G
     /// Function to access the current value of this argument from the arguments object
     /// </summary>
     public Func<TArgs, string> ValueAccessor { get; set; } = _ => string.Empty;
-
-    /// <summary>
-    /// Function to load suggested values for this argument
-    /// </summary>
-    public Func<CommandContext, TArgs, Task<List<ArgumentOption>>> SuggestedValuesLoader { get; set; } = (_, __) => Task.FromResult(new List<ArgumentOption>());
 
     /// <summary>
     /// Creates a new instance of ArgumentBuilder with the specified name and description
@@ -49,15 +43,6 @@ public class ArgumentBuilder<TArgs> : ArgumentDefinition<string> where TArgs : G
     public ArgumentBuilder<TArgs> WithValueAccessor(Func<TArgs, string> valueAccessor)
     {
         ValueAccessor = valueAccessor;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the value loader for this argument
-    /// </summary>
-    public ArgumentBuilder<TArgs> WithSuggestedValuesLoader(Func<CommandContext, TArgs, Task<List<ArgumentOption>>> suggestedValueLoader)
-    {
-        SuggestedValuesLoader = suggestedValueLoader;
         return this;
     }
 

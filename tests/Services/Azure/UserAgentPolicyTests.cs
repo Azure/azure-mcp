@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics.CodeAnalysis;
 using Azure.Core;
 using AzureMcp.Services.Azure;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace AzureMcp.Tests.Services.Azure;

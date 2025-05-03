@@ -17,6 +17,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 - "List my Azure storage accounts"
 - "Show me all my Cosmos DB databases"
+- "What indexes do I have in my Azure AI Search service 'mysvc'?"
 - "List my resource groups"
 - "Show me the tables in my Storage account"
 - "List containers in my Cosmos DB database"
@@ -24,6 +25,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 📊 Query & Analyze
 - "Query my Log Analytics workspace"
+- "Let's search this index for 'my search query'"
 
 ### ⚙️ Manage Configuration
 
@@ -47,6 +49,11 @@ The Azure MCP Server creates a seamless integration between AI agents and Azure 
 ## 🛠️ Currently Supported Tools
 
 The Azure MCP Server provides tools for interacting with the following Azure services:
+
+### 🔎 Azure AI Search (search engine/vector database)
+- List Azure AI Search services
+- List indexes and look at their schema and configuration
+- Query search indexes
 
 ### 📊 Azure Cosmos DB (NoSQL Databases)
 - List Cosmos DB accounts

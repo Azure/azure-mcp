@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp;
+using System.CommandLine;
+using System.Text.Json;
 using AzureMcp.Commands;
 using AzureMcp.Extensions;
 using AzureMcp.Models;
@@ -10,6 +11,7 @@ using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.Monitor;
 using AzureMcp.Services.Azure.ResourceGroup;
+using AzureMcp.Services.Azure.Search;
 using AzureMcp.Services.Azure.Storage;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
@@ -18,8 +20,6 @@ using AzureMcp.Services.Interfaces;
 using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
-using System.Text.Json;
 
 try
 {
@@ -38,7 +38,6 @@ catch (Exception ex)
     {
         Status = 500,
         Message = ex.Message,
-        Arguments = [],
         Duration = 0
     };
 
@@ -64,5 +63,6 @@ static void ConfigureServices(IServiceCollection services)
     services.AddSingleton<IMonitorService, MonitorService>();
     services.AddSingleton<IResourceGroupService, ResourceGroupService>();
     services.AddSingleton<IAppConfigService, AppConfigService>();
+    services.AddSingleton<ISearchService, SearchService>();
     services.AddSingleton<CommandFactory>();
 }

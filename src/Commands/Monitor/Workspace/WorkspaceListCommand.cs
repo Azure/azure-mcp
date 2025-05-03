@@ -1,14 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Monitor;
 using AzureMcp.Models.Command;
 using AzureMcp.Models.Monitor;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using System.CommandLine.Parsing;
-using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Monitor.Workspace;
 

@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments.Storage.Blob;
-using AzureMcp.Models.Argument;
-using AzureMcp.Services.Interfaces;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Arguments.Storage.Blob;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Commands.Storage.Blob.Container;
 
@@ -44,18 +43,6 @@ public abstract class BaseContainerCommand<
         return ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Storage.Container.Name, ArgumentDefinitions.Storage.Container.Description)
             .WithValueAccessor(args => args.Container ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-            {
-                if (string.IsNullOrEmpty(args.Account) || string.IsNullOrEmpty(args.Subscription))
-                {
-                    return [];
-                }
-
-                var storageService = context.GetService<IStorageService>();
-                var containers = await storageService.ListContainers(args.Account, args.Subscription);
-
-                return containers?.Select(c => new ArgumentOption { Name = c, Id = c }).ToList() ?? [];
-            })
             .WithIsRequired(ArgumentDefinitions.Storage.Container.Required);
     }
 }

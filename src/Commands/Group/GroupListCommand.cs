@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Group;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
@@ -8,8 +9,6 @@ using AzureMcp.Models.ResourceGroup;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using System.CommandLine.Parsing;
-using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Group;
 

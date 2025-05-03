@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments.Subscription;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Arguments.Subscription;
 
 namespace AzureMcp.Commands.Subscription;
 

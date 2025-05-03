@@ -30,8 +30,7 @@ public class CommandContext
         Response = new CommandResponse
         {
             Status = 200,
-            Message = "Success",
-            Arguments = []
+            Message = "Success"
         };
     }
 

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Argument;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -15,10 +14,6 @@ public class CommandResponse
 
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
-
-    [JsonPropertyName("args")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<ArgumentInfo>? Arguments { get; set; }
 
     [JsonPropertyName("results")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

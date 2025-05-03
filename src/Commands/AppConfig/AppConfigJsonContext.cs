@@ -1,6 +1,6 @@
 
-using AzureMcp.Commands.AppConfig.KeyValue;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.AppConfig.KeyValue;
 
 namespace AzureMcp.Commands.AppConfig;
 

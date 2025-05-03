@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol.Types;
-using System.Text.Json;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
@@ -36,7 +36,8 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
         var root = JsonSerializer.Deserialize<JsonElement>(content!);
         Assert.Equal(JsonValueKind.Object, root.ValueKind);
 
-        Assert.True(root.TryGetProperty("subscriptions", out var subscriptionsArray));
+        Assert.True(root.TryGetProperty("results", out var results));
+        Assert.True(results.TryGetProperty("subscriptions", out var subscriptionsArray));
         Assert.Equal(JsonValueKind.Array, subscriptionsArray.ValueKind);
 
         Assert.NotEmpty(subscriptionsArray.EnumerateArray());
@@ -67,7 +68,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourcesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -76,7 +77,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ReadResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -85,7 +86,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourceTemplatesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -94,7 +95,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.SubscribeToResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.UnsubscribeFromResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -119,7 +120,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListPromptsAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 
     [Fact]
@@ -128,6 +129,6 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     {
         var ex = await Assert.ThrowsAsync<McpException>(() => _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
-        Assert.Equal(-32601, ex.ErrorCode);
+        Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
 }

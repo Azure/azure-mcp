@@ -1,0 +1,8 @@
+* text=auto
+
+*.{bmp,dll,gif,jpg,png,snk,exe,wmv,mp4,ismv,isma} binary
+
+*.cs text diff=csharp
+*.csproj text=auto
+*.sln text=auto eol=crlf
+*.sh text=auto eol=lf

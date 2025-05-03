@@ -1,16 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
 using AzureMcp.Models.Argument;
+using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 using Xunit;
 
 namespace AzureMcp.Tests.Services.Azure.Authentication;

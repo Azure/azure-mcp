@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Reflection;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol.Transport;
-using System.Reflection;
 using Xunit;
 
 namespace AzureMcp.Tests.Client.Helpers;

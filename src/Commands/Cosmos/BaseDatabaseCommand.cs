@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Arguments.Cosmos;
-using AzureMcp.Models.Argument;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Arguments.Cosmos;
+using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Commands.Cosmos;
 
@@ -39,7 +39,5 @@ public abstract class BaseDatabaseCommand<
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Cosmos.Database.Name, ArgumentDefinitions.Cosmos.Database.Description)
             .WithValueAccessor(args => args.Database ?? string.Empty)
-            .WithSuggestedValuesLoader(async (context, args) =>
-                await GetDatabaseOptions(context, args.Account ?? string.Empty, args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.Cosmos.Database.Required);
 }

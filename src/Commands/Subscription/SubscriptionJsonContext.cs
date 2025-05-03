@@ -1,5 +1,5 @@
-using AzureMcp.Commands.Subscription;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.Subscription;
 
 namespace AzureMcp;
 
