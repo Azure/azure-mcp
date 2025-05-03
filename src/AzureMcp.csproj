@@ -84,7 +84,7 @@
     </Exec>
 
     <!-- Display informative message if pwsh fails -->
-    <Warning Text="Could not install Git hooks. PowerShell Core (pwsh) is required to install Git hooks."
+    <Warning Text="Could not install Git hooks. PowerShell Core (pwsh) is required to install Git hooks:\nhttps://learn.microsoft.com/powershell/scripting/install/installing-powershell"
              Condition="'$(ExitCode)' != '0'" />
   </Target>
 </Project>
