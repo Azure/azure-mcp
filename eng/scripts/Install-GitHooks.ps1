@@ -46,10 +46,8 @@ foreach ($file in $hookFiles) {
     Copy-Item -Path $file.FullName -Destination $targetFile -Force
 
     # Make hook files executable
-    Write-Host "  Setting executable permission for $($file.Name)..."
-    if ($IsWindows) {
-        & attrib +x $targetFile
-    } else {
+    if (!$IsWindows) {
+        Write-Host "  Setting executable permission for $($file.Name)..."
         & chmod +x $targetFile
     }
 }

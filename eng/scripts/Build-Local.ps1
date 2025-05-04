@@ -59,12 +59,13 @@ else {
 if ($VerifyNpx) {
     Push-Location -Path $RepoRoot
     try {
-        $tgzFile = Get-ChildItem -Path $distPath
-        | Where-Object -Property 'Name' -Match '^azure-mcp-[\d\.]+\.tgz$'
+        $tgzFile = Get-ChildItem -Path "$distPath/wrapper" -Filter '*.tgz'
         | Select-Object -ExpandProperty 'Name' -First 1
-    
-        Write-Host "> npx -y .dist/$tgzFile --help"
-        npx -y ".dist/$tgzFile" --help
+
+        Write-Host "> npx -y clear-npx-cache"
+        npx -y clear-npx-cache
+        Write-Host "> npx -y `".dist/wrapper/$tgzFile`" tools list"
+        npx -y ".dist/wrapper/$tgzFile" tools list
     }
     finally {
         Pop-Location

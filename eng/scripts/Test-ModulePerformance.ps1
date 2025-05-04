@@ -2,7 +2,7 @@
 #Requires -Version 7
 
 param(
-    [string] $Command = 'azmcp subscription list'
+    [string] $Command = 'azmcp tools list'
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -13,7 +13,7 @@ $combinations = @()
     @($false, $true) | ForEach-Object {
         $ReadyToRun = $_
         $combinations += @{
-            Name = "$($Trimmed ? 'Trimmed' : '')$($ReadyToRun ? 'ReadyToRun' : '')"
+            Name = "$($Trimmed ? 'aot' : 'no-aot')/$($ReadyToRun ? 'r2r' : 'no-r2r')"
             Trimmed = $Trimmed
             ReadyToRun = $ReadyToRun
         }
@@ -68,8 +68,8 @@ try {
             npm uninstall -g azmcp | Out-Null
 
             $start = Get-Date
-            Write-Host "> npm install -g .dist/azure-mcp-$version.tgz"
-            npm install -g ".dist/azure-mcp-$version.tgz" | Out-Null
+            Write-Host "> npm install -g .dist/wrapper/azure-mcp-$version.tgz"
+            npm install -g ".dist/wrapper/azure-mcp-$version.tgz" | Out-Null
             $installation = ((Get-Date) - $start).TotalMilliseconds
 
             $runs = @()
@@ -83,8 +83,8 @@ try {
                 $runs += ((Get-Date) - $start).TotalMilliseconds
             }
 
-            $tgzSize = (Get-Item -Path ".dist/azure-mcp-$nodeRid-$version.tgz").Length / 1MB
-            $packageSize = (Get-ChildItem -Path ".work/packages/$rid" -File -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB
+            $tgzSize = (Get-Item -Path ".dist/platform/azure-mcp-$nodeRid-$version.tgz").Length / 1MB
+            $packageSize = (Get-ChildItem -Path ".work/platform/$rid" -File -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB
 
             $results[$combination.Name] += @{
                 Compilation = $compilation
