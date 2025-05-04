@@ -57,7 +57,12 @@ public static class OpenTelemetryExtensions
         var appInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
         if (!string.IsNullOrEmpty(appInsightsConnectionString))
         {
-            services.AddOpenTelemetry().UseAzureMonitor();
+            services
+                .ConfigureOpenTelemetryTracerProvider((_, b) => b.AddSource("*"))
+                .ConfigureOpenTelemetryMeterProvider((_, b) => b.AddMeter("*"))
+                .AddOpenTelemetry()
+                    .ConfigureResource(r => r.AddService("azmcp", serviceVersion: Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString()))
+                    .UseAzureMonitor();
             return true;
         }
 
