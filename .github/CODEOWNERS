@@ -21,8 +21,6 @@
 ##################
 # Eng Sys
 ##################
-/eng/                                  @Azure/azure-sdk-eng @jongio
-/eng/common/                           @Azure/azure-sdk-eng
-/.github/workflows/                    @Azure/azure-sdk-eng
-/.github/CODEOWNERS                    @Azure/azure-sdk-eng @jongio
-/.config/1espt/                        @Azure/azure-sdk-eng
+/eng/                                  @Azure/azure-mcp @Azure/azure-sdk-eng
+/.github/                              @Azure/azure-mcp @Azure/azure-sdk-eng
+/.config/                              @Azure/azure-mcp @Azure/azure-sdk-eng

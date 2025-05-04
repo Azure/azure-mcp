@@ -2,7 +2,7 @@
 #Requires -Version 7
 
 param(
-    [string] $Command = 'azmcp subscription list'
+    [string] $Command = 'azmcp tenant list'
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -61,15 +61,16 @@ try {
         $start = Get-Date
         ./eng/scripts/Build-Local.ps1 -SelfContained:$true -Trimmed:$combination.Trimmed -ReadyToRun:$combination.ReadyToRun -UsePaths:$true -AllPlatforms:$false
         $compilation = ((Get-Date) - $start).TotalMilliseconds
-
-        for($i = 1; $i -le 3; $i++) {
+    }
+    for($i = 1; $i -le 3; $i++) {
+        foreach($combination in $combinations) {
             Write-Host "Running '$($combination.Name)' - Round $i"
             Write-Host "----------------------------------------"
             npm uninstall -g azmcp | Out-Null
 
             $start = Get-Date
-            Write-Host "> npm install -g .dist/azure-mcp-$version.tgz"
-            npm install -g ".dist/azure-mcp-$version.tgz" | Out-Null
+            Write-Host "> npm install -g .dist/wrapper/azure-mcp-$version.tgz"
+            npm install -g ".dist/wrapper/azure-mcp-$version.tgz" | Out-Null
             $installation = ((Get-Date) - $start).TotalMilliseconds
 
             $runs = @()
