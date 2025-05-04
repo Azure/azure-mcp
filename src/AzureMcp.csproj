@@ -58,7 +58,7 @@
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" ExcludeAssets="runtime;native" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Newtonsoft.Json" />
@@ -87,5 +87,15 @@
     <!-- Display informative message if pwsh fails -->
     <Warning Text="Could not install Git hooks. PowerShell Core (pwsh) is required to install Git hooks:\nhttps://learn.microsoft.com/powershell/scripting/install/installing-powershell"
              Condition="'$(ExitCode)' != '0'" />
+  </Target>
+
+  <!-- Remove Cosmos native files from the build output directory -->
+  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="Build">
+    <ItemGroup>
+      <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy(`%(FullPath)`).Contains(`$(PkgMicrosoft_Azure_Cosmos)`))" />
+    </ItemGroup>
+    <ItemGroup>
+      <ContentWithTargetPath Remove="@(FilesToRemove)" />
+    </ItemGroup>
   </Target>
 </Project>
