@@ -80,6 +80,7 @@ public class CommandFactory
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
+        RegisterKeyVaultCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -259,6 +260,17 @@ public class CommandFactory
         index.AddCommand("list", new Search.Index.IndexListCommand(GetLogger<Search.Index.IndexListCommand>()));
         index.AddCommand("describe", new Search.Index.IndexDescribeCommand(GetLogger<Search.Index.IndexDescribeCommand>()));
         index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<Search.Index.IndexQueryCommand>()));
+    }
+
+    private void RegisterKeyVaultCommands()
+    {
+        var keyVault = new CommandGroup("keyvault", "Key Vault operations - Commands for managing and accessing Azure Key Vault resources.");
+        _rootGroup.AddSubGroup(keyVault);
+
+        var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
+        keyVault.AddSubGroup(keys);
+
+        keys.AddCommand("listkeys", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
     }
 
     private void RegisterToolsCommands()
