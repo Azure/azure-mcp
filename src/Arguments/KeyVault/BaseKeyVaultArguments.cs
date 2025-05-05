@@ -3,4 +3,7 @@
 
 namespace AzureMcp.Arguments.KeyVault;
 
-public class BaseKeyVaultArguments : SubscriptionArguments;
+public class BaseKeyVaultArguments : SubscriptionArguments
+{
+    public string? VaultName { get; set; }
+}
