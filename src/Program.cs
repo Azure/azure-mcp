@@ -21,48 +21,55 @@ using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-try
+internal class Program
 {
-    ServiceCollection services = new();
-    ConfigureServices(services);
-    var serviceProvider = services.BuildServiceProvider();
-
-    var commandFactory = serviceProvider.GetRequiredService<CommandFactory>();
-    var rootCommand = commandFactory.RootCommand;
-
-    return await rootCommand.InvokeAsync(args);
-}
-catch (Exception ex)
-{
-    CommandResponse response = new()
+    private static async Task<int> Main(string[] args)
     {
-        Status = 500,
-        Message = ex.Message,
-        Duration = 0
-    };
+        try
+        {
+            ServiceCollection services = new();
+            ConfigureServices(services);
 
-    Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
-    return 1;
-}
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
 
-static void ConfigureServices(IServiceCollection services)
-{
-    services.ConfigureOpenTelemetry();
-    services.AddMemoryCache();
-    services.AddLogging(builder =>
+            var serviceProvider = services.BuildServiceProvider();
+            var commandFactory = serviceProvider.GetRequiredService<CommandFactory>();
+            var rootCommand = commandFactory.RootCommand;
+
+            return await rootCommand.InvokeAsync(args);
+        }
+        catch (Exception ex)
+        {
+            CommandResponse response = new()
+            {
+                Status = 500,
+                Message = ex.Message,
+                Duration = 0
+            };
+
+            Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
+            return 1;
+        }
+    }
+
+    internal static void ConfigureServices(IServiceCollection services)
     {
-        builder.AddConsole();
-        builder.SetMinimumLevel(LogLevel.Information);
-    });
-    services.AddSingleton<ICacheService, CacheService>();
-    services.AddSingleton<IExternalProcessService, ExternalProcessService>();
-    services.AddSingleton<ISubscriptionService, SubscriptionService>();
-    services.AddSingleton<ITenantService, TenantService>();
-    services.AddSingleton<ICosmosService, CosmosService>();
-    services.AddSingleton<IStorageService, StorageService>();
-    services.AddSingleton<IMonitorService, MonitorService>();
-    services.AddSingleton<IResourceGroupService, ResourceGroupService>();
-    services.AddSingleton<IAppConfigService, AppConfigService>();
-    services.AddSingleton<ISearchService, SearchService>();
-    services.AddSingleton<CommandFactory>();
+        services.ConfigureOpenTelemetry();
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, CacheService>();
+        services.AddSingleton<IExternalProcessService, ExternalProcessService>();
+        services.AddSingleton<ISubscriptionService, SubscriptionService>();
+        services.AddSingleton<ITenantService, TenantService>();
+        services.AddSingleton<ICosmosService, CosmosService>();
+        services.AddSingleton<IStorageService, StorageService>();
+        services.AddSingleton<IMonitorService, MonitorService>();
+        services.AddSingleton<IResourceGroupService, ResourceGroupService>();
+        services.AddSingleton<IAppConfigService, AppConfigService>();
+        services.AddSingleton<ISearchService, SearchService>();
+        services.AddSingleton<CommandFactory>();
+    }
 }

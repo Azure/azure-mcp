@@ -5,11 +5,9 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Reflection;
 using AzureMcp.Arguments.Server;
-using AzureMcp.Extensions;
 using AzureMcp.Models;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
-using AzureMcp.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
@@ -25,9 +23,8 @@ using OpenTelemetry.Trace;
 namespace AzureMcp.Commands.Server;
 
 [HiddenCommand]
-public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : BaseCommand
+public sealed class ServiceStartCommand : BaseCommand
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly Option<string> _transportOption = ArgumentDefinitions.Service.Transport.ToOption();
     private readonly Option<int> _portOption = ArgumentDefinitions.Service.Port.ToOption();
 
@@ -73,7 +70,7 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         if (serverArguments.Transport == TransportTypes.Sse)
         {
             var builder = WebApplication.CreateBuilder([]);
-            ConfigureServices(builder.Services, _serviceProvider);
+            Program.ConfigureServices(builder.Services);
             ConfigureMcpServer(builder.Services, serverArguments.Transport);
 
             builder.WebHost
@@ -99,7 +96,7 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
                 })
                 .ConfigureServices(services =>
                 {
-                    ConfigureServices(services, _serviceProvider);
+                    Program.ConfigureServices(services);
                     ConfigureMcpServer(services, serverArguments.Transport);
                 })
                 .Build();
@@ -162,23 +159,6 @@ public sealed class ServiceStartCommand(IServiceProvider serviceProvider) : Base
         {
             mcpServerBuilder.WithHttpTransport();
         }
-    }
-
-    private static void ConfigureServices(IServiceCollection services, IServiceProvider rootServiceProvider)
-    {
-        services.ConfigureOpenTelemetry();
-        services.AddMemoryCache();
-        services.AddSingleton(rootServiceProvider.GetRequiredService<CommandFactory>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<ICacheService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<ISubscriptionService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<ITenantService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<IStorageService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<ICosmosService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<IMonitorService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<IResourceGroupService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<IAppConfigService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<IExternalProcessService>());
-        services.AddSingleton(rootServiceProvider.GetRequiredService<ISearchService>());
     }
 
     private sealed class StdioMcpServerHostedService(IMcpServer session) : BackgroundService
