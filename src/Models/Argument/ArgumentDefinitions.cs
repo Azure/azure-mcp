@@ -410,4 +410,12 @@ public static class ArgumentDefinitions
             );
         }
     }
+
+    public static class KeyVault
+    {
+        public static readonly ArgumentDefinition<string> VaultName = new(
+            "vault-name",
+            "The name of the Key Vault.",
+            required: true);
+    }
 }
