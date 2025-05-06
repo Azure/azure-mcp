@@ -84,13 +84,12 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
             throw new ArgumentException("Key type cannot be null or empty", nameof(keyType));
         }
 
+        var type = new KeyType(keyType);
         var credential = await GetCredential(tenantId);
         var client = new KeyClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
 
         try
         {
-            var options = new CreateKeyOptions { };
-            var type = Enum.Parse<KeyType>(keyType, ignoreCase: true);
             return await client.CreateKeyAsync(keyName, type);
         }
         catch (Exception ex)
