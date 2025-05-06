@@ -413,9 +413,17 @@ public static class ArgumentDefinitions
 
     public static class KeyVault
     {
+        public const string VaultNameParam = "vault-name";
+        public const string KeyNameParam = "key-name";
+
         public static readonly ArgumentDefinition<string> VaultName = new(
-            "vault-name",
+            VaultNameParam,
             "The name of the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyName = new(
+            KeyNameParam,
+            "The name of the key to retrieve from the Key Vault.",
             required: true);
     }
 }

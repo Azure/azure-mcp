@@ -7,9 +7,8 @@ using AzureMcp.Services.Interfaces;
 
 namespace AzureMcp.Services.Azure.KeyVault;
 
-public sealed class KeyVaultService(ISubscriptionService subscriptionService) : BaseAzureService, IKeyVaultService
+public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
 {
-    private readonly ISubscriptionService _subscriptionService = subscriptionService;
 
     public async Task<List<string>> ListKeys(
         string vaultName,
@@ -36,5 +35,32 @@ public sealed class KeyVaultService(ISubscriptionService subscriptionService) : 
         }
 
         return keys;
+    }
+
+    public async Task<KeyVaultKey> GetKey(
+        string vaultName,
+        string keyName,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        ValidateRequiredParameters(vaultName, subscriptionId);
+
+        if (string.IsNullOrWhiteSpace(keyName))
+        {
+            throw new ArgumentException("Key name cannot be null or empty", nameof(keyName));
+        }
+
+        var credential = await GetCredential(tenantId);
+        var client = new KeyClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
+
+        try
+        {
+            return await client.GetKeyAsync(keyName);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving key '{keyName}' from vault {vaultName}: {ex.Message}", ex);
+        }
     }
 }

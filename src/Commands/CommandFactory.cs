@@ -271,6 +271,7 @@ public class CommandFactory
         keyVault.AddSubGroup(keys);
 
         keys.AddCommand("listkeys", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
+        keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
     }
 
     private void RegisterToolsCommands()

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.Security.KeyVault.Keys;
 using AzureMcp.Arguments;
 
 namespace AzureMcp.Services.Interfaces;
@@ -17,6 +18,22 @@ public interface IKeyVaultService
     /// <returns>List of key names in the vault.</returns>
     Task<List<string>> ListKeys(
         string vaultName,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null);
+
+    /// <summary>
+    /// Gets a key from an Azure Key Vault.
+    /// </summary>
+    /// <param name="vaultName">The name of the Key Vault</param>
+    /// <param name="keyName">The name of the key to retrieve</param>
+    /// <param name="subscriptionId">The subscription ID or name</param>
+    /// <param name="tenantId">Optional tenant ID for cross-tenant operations</param>
+    /// <param name="retryPolicy">Optional retry policy for the operation</param>
+    /// <returns>The key</returns>
+    Task<KeyVaultKey> GetKey(
+        string vaultName,
+        string keyName,
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
