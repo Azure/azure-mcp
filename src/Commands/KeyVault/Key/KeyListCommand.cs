@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using AzureMcp.Arguments.KeyVault;
+using AzureMcp.Arguments.Monitor;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
@@ -17,7 +17,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
     private readonly ILogger<KeyListCommand> _logger = logger;
     private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName.ToOption();
 
-    protected override string GetCommandName() => "listkeys";
+    protected override string GetCommandName() => "list";
 
     protected override string GetCommandDescription() =>
         """
