@@ -424,7 +424,7 @@ public static class ArgumentDefinitions
 
         public static readonly ArgumentDefinition<string> KeyName = new(
             KeyNameParam,
-            "The name of the key to retrieve from the Key Vault.",
+            "The name of the key to retrieve/modify from the Key Vault.",
             required: true);
 
         public static readonly ArgumentDefinition<string> KeyType = new(
