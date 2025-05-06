@@ -9,7 +9,6 @@ namespace AzureMcp.Services.Azure.KeyVault;
 
 public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
 {
-
     public async Task<List<string>> ListKeys(
         string vaultName,
         string subscriptionId,
