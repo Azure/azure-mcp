@@ -6,7 +6,7 @@ using AzureMcp.Arguments;
 
 namespace AzureMcp.Services.Interfaces;
 
-public interface IKeyVaultService 
+public interface IKeyVaultService
 {
     /// <summary>
     /// List all keys in a Key Vault.

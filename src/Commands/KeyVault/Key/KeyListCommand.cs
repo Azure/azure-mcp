@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using AzureMcp.Arguments.Monitor;
+using AzureMcp.Arguments.KeyVault;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;

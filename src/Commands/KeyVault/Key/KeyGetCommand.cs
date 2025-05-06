@@ -87,7 +87,7 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
                 args.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new KeyGetCommandResult(key),
+                new KeyGetCommandResult(key.Name, key.KeyType.ToString(), key.Properties.Enabled, key.Properties.NotBefore, key.Properties.ExpiresOn, key.Properties.CreatedOn, key.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.KeyGetCommandResult);
         }
         catch (Exception ex)
@@ -99,25 +99,5 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         return context.Response;
     }
 
-    internal record KeyGetCommandResult
-    {
-        public string Name { get; }
-        public string KeyType { get; }
-        public bool Enabled { get; }
-        public DateTimeOffset? NotBefore { get; }
-        public DateTimeOffset? ExpiresOn { get; }
-        public DateTimeOffset? CreatedOn { get; }
-        public DateTimeOffset? UpdatedOn { get; }
-
-        public KeyGetCommandResult(KeyVaultKey key)
-        {
-            Name = key.Name;
-            KeyType = key.KeyType.ToString();
-            Enabled = key.Properties.Enabled ?? true;
-            NotBefore = key.Properties.NotBefore;
-            ExpiresOn = key.Properties.ExpiresOn;
-            CreatedOn = key.Properties.CreatedOn;
-            UpdatedOn = key.Properties.UpdatedOn;
-        }
-    }
+    internal record KeyGetCommandResult(string Name, string KeyType, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
 }
