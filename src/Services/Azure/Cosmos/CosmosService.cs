@@ -14,7 +14,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     : BaseAzureService(tenantService), ICosmosService, IDisposable
 {
     private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
-    private CosmosClient? _cosmosClient;
+    private Dictionary<string, CosmosClient> _cosmosClientCache = [];
     private bool _disposed;
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
 
@@ -55,22 +55,47 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             clientOptions.MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
         }
 
+        CosmosClient cosmosClient;
         switch (authMethod)
         {
             case AuthMethod.Key:
                 var cosmosAccount = await GetCosmosAccountAsync(subscriptionId, accountName, tenant);
                 var keys = await cosmosAccount.GetKeysAsync();
-                return new CosmosClient(
+                cosmosClient = new CosmosClient(
                     string.Format(CosmosBaseUri, accountName),
                     keys.Value.PrimaryMasterKey,
                     clientOptions);
+                break;
 
             case AuthMethod.Credential:
             default:
-                return new CosmosClient(
+                cosmosClient = new CosmosClient(
                     string.Format(CosmosBaseUri, accountName),
                     await GetCredential(tenant),
                     clientOptions);
+                break;
+        }
+
+        // Validate the client by performing a lightweight operation
+        await ValidateCosmosClientAsync(cosmosClient);
+
+        return cosmosClient;
+    }
+
+    private async Task ValidateCosmosClientAsync(CosmosClient client)
+    {
+        try
+        {
+            // Perform a lightweight operation to validate the client
+            await client.ReadAccountAsync();
+        }
+        catch (CosmosException ex)
+        {
+            throw new Exception($"Failed to validate CosmosClient: {ex.StatusCode} - {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Unexpected error while validating CosmosClient: {ex.Message}", ex);
         }
     }
 
@@ -83,34 +108,36 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        if (_cosmosClient != null)
-            return _cosmosClient;
+        if (_cosmosClientCache.TryGetValue(accountName, out CosmosClient? value))
+            return value;
 
         try
         {
             // First attempt with requested auth method
-            _cosmosClient = await CreateCosmosClientWithAuth(
+            var cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 authMethod,
                 tenant,
                 retryPolicy);
 
-            return _cosmosClient;
+            _cosmosClientCache[accountName] = cosmosClient;
+            return cosmosClient;
         }
         catch (Exception ex) when (
             authMethod == AuthMethod.Credential &&
             (ex.Message.Contains("401") || ex.Message.Contains("403")))
         {
             // If credential auth fails with 401/403, try key auth
-            _cosmosClient = await CreateCosmosClientWithAuth(
+            var cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 AuthMethod.Key,
                 tenant,
                 retryPolicy);
 
-            return _cosmosClient;
+            _cosmosClientCache[accountName] = cosmosClient;
+            return cosmosClient;
         }
 
         throw new Exception($"Failed to create Cosmos client for account '{accountName}' with any authentication method");
@@ -250,7 +277,10 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         {
             if (disposing)
             {
-                _cosmosClient?.Dispose();
+                foreach (CosmosClient client in _cosmosClientCache.Values)
+                {
+                    client.Dispose();
+                }
             }
             _disposed = true;
         }
