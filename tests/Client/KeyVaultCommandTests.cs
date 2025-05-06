@@ -18,7 +18,7 @@ public class KeyVaultCommandTests(McpClientFixture mcpClient, LiveTestSettingsFi
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "vault-name", Settings.ResourceBaseName }
+                { "vault", Settings.ResourceBaseName }
             });
 
         var results = result.AssertProperty("keys");
@@ -37,8 +37,8 @@ public class KeyVaultCommandTests(McpClientFixture mcpClient, LiveTestSettingsFi
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "vault-name", Settings.ResourceBaseName },
-                { "key-name", existingKey}
+                { "vault", Settings.ResourceBaseName },
+                { "key", existingKey}
             });
 
         var results = result.AssertProperty("name");
@@ -56,8 +56,8 @@ public class KeyVaultCommandTests(McpClientFixture mcpClient, LiveTestSettingsFi
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "vault-name", Settings.ResourceBaseName },
-                { "key-name", keyName},
+                { "vault", Settings.ResourceBaseName },
+                { "key", keyName},
                 { "key-type", KeyType.Rsa.ToString() }
             });
 
