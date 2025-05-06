@@ -24,3 +24,14 @@
 /eng/                                  @Azure/azure-mcp @Azure/azure-sdk-eng
 /.github/                              @Azure/azure-mcp @Azure/azure-sdk-eng
 /.config/                              @Azure/azure-mcp @Azure/azure-sdk-eng
+
+# ######## Services ########
+
+# PRLabel: %KeyVault
+/src/Arguments/KeyVault/                @conniey @JonathanCrd
+/src/Commands/KeyVault/                 @conniey @JonathanCrd
+/src/Services/Azure/KeyVault/           @conniey @JonathanCrd
+ 
+# ServiceLabel: %KeyVault
+# ServiceOwners:                        @conniey @JonathanCrd
+ 
