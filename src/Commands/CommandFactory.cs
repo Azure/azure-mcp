@@ -270,8 +270,9 @@ public class CommandFactory
         var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
         keyVault.AddSubGroup(keys);
 
-        keys.AddCommand("listkeys", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
+        keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
         keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
+        keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
     }
 
     private void RegisterToolsCommands()

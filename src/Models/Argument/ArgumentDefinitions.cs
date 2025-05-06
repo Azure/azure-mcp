@@ -415,6 +415,7 @@ public static class ArgumentDefinitions
     {
         public const string VaultNameParam = "vault-name";
         public const string KeyNameParam = "key-name";
+        public const string KeyTypeParam = "key-type";
 
         public static readonly ArgumentDefinition<string> VaultName = new(
             VaultNameParam,
@@ -424,6 +425,11 @@ public static class ArgumentDefinitions
         public static readonly ArgumentDefinition<string> KeyName = new(
             KeyNameParam,
             "The name of the key to retrieve from the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyType = new(
+            KeyTypeParam,
+            "The type of key to create (RSA, EC).",
             required: true);
     }
 }
