@@ -183,7 +183,7 @@ azmcp keyvault key list --subscription <subscription> --vault <vault-name>
 # Gets a key in vault
 azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key <key-name>
 
-# Lists keys in vault
+# Create a key in vault
 azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
 ```
 
