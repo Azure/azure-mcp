@@ -37,4 +37,22 @@ public interface IKeyVaultService
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
+
+    /// <summary>
+    /// Creates a new key in an Azure Key Vault.
+    /// </summary>
+    /// <param name="vaultName">The name of the Key Vault</param>
+    /// <param name="keyName">The name of the key to create</param>
+    /// <param name="keyType">The type of key to create (e.g., RSA, EC, OCT)</param>
+    /// <param name="subscriptionId">The subscription ID or name</param>
+    /// <param name="tenantId">Optional tenant ID for cross-tenant operations</param>
+    /// <param name="retryPolicy">Optional retry policy for the operation</param>
+    /// <returns>The created key</returns>
+    Task<KeyVaultKey> CreateKey(
+        string vaultName,
+        string keyName,
+        string keyType,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null);
 }

@@ -63,4 +63,39 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
             throw new Exception($"Error retrieving key '{keyName}' from vault {vaultName}: {ex.Message}", ex);
         }
     }
+
+    public async Task<KeyVaultKey> CreateKey(
+        string vaultName,
+        string keyName,
+        string keyType,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        ValidateRequiredParameters(vaultName, subscriptionId);
+
+        if (string.IsNullOrWhiteSpace(keyName))
+        {
+            throw new ArgumentException("Key name cannot be null or empty", nameof(keyName));
+        }
+
+        if (string.IsNullOrWhiteSpace(keyType))
+        {
+            throw new ArgumentException("Key type cannot be null or empty", nameof(keyType));
+        }
+
+        var credential = await GetCredential(tenantId);
+        var client = new KeyClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
+
+        try
+        {
+            var options = new CreateKeyOptions { };
+            var type = Enum.Parse<KeyType>(keyType, ignoreCase: true);
+            return await client.CreateKeyAsync(keyName, type);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating key '{keyName}' in vault {vaultName}: {ex.Message}", ex);
+        }
+    }
 }
