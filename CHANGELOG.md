@@ -4,6 +4,7 @@
 
 ### Features Added
 
+- Support for Azure Key Vault keys https://github.com/Azure/azure-mcp/pull/119
 - Support for Kusto (Azure Data Explorer).  https://github.com/Azure/azure-mcp/pull/21
 
 ### Breaking Changes
