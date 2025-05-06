@@ -1,16 +1,10 @@
 # Release History
 
-## 0.0.13 (Unreleased)
+## 0.0.13 (2025-05-06)
 
 ### Features Added
 
 - Support for Azure PostgreSQL. https://github.com/Azure/azure-mcp/pull/81
-
-### Breaking Changes
-
-### Bugs Fixed
-
-### Other Changes
 
 ## 0.0.12 (2025-05-05)
 
