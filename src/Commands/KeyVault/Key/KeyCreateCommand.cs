@@ -29,8 +29,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 
         Required arguments:
         - subscription
-        - vault-name
-        - key-name
+        - vault
+        - key
         - key-type
 
         Key types:
