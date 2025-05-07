@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Databases List",
+            "name": "Debug Cosmos Databases List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -13,8 +13,241 @@
                 "list",
                 "--subscription",
                 "${input:subscription}",
+                "--account-name",
+                "${input:cosmosAccountName}",
                 "--retry-max-retries", 
                 "0"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Cluster List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "cluster",
+                "list",
+                "--subscription",
+                "${input:subscription}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Cluster Get",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "cluster",
+                "get",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Database List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "database",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Databases List with Cluster URI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "database",
+                "list",
+                "--cluster-uri",
+                "${input:kustoClusterUri}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Table List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "table",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}",
+                "--database-name",
+                "${input:kustoDatabaseName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Table List with Cluster URI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "table",
+                "list",
+                "--cluster-uri",
+                "${input:kustoClusterUri}",
+                "--database-name",
+                "${input:kustoDatabaseName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Table Schema",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "table",
+                "schema",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}",
+                "--database-name",
+                "${input:kustoDatabaseName}",
+                "--table-name",
+                "${input:kustoTableName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Sample",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "sample",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}",
+                "--database-name",
+                "${input:kustoDatabaseName}",
+                "--table-name",
+                "${input:kustoTableName}",
+                "--limit",
+                "1"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Query",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "query",
+                "--subscription",
+                "${input:subscription}",
+                "--cluster-name",
+                "${input:kustoClusterName}",
+                "--database-name",
+                "${input:kustoDatabaseName}",
+                "--query",
+                "${input:kustoQuery}",
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Debug Kusto Query with Cluster URI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "kusto",
+                "query",
+                "--cluster-uri",
+                "${input:kustoClusterUri}",
+                "--database-name",
+                "${input:kustoDatabaseName}",
+                "--query",
+                "${input:kustoQuery}",
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -175,8 +408,35 @@
             "type": "promptString",
             "description": "Cosmos DB Account Name",
             "default": ""
-        }
-        ,
+        },
+        {
+            "id": "kustoClusterUri",
+            "type": "promptString",
+            "description": "Kusto Cluster URI (e.g. https://<cluster>.<region>.kusto.windows.net)",
+            "default": ""
+        },
+        {
+            "id": "kustoClusterName",
+            "type": "promptString",
+            "description": "Kusto Cluster Name",
+            "default": ""
+        },
+        {
+            "id": "kustoDatabaseName",
+            "type": "promptString",
+            "description": "Kusto Database Name",
+            "default": ""
+        },
+        {
+            "id": "kustoTableName",
+            "type": "promptString",
+            "description": "Kusto Table Name"
+        },
+        {
+            "id": "kustoQuery",
+            "type": "promptString",
+            "description": "Kusto Query (KQL)"
+        },
         {
             "id": "storageAccountName",
             "type": "promptString",

@@ -9,6 +9,7 @@ using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Cosmos;
+using AzureMcp.Services.Azure.Kusto;
 using AzureMcp.Services.Azure.Monitor;
 using AzureMcp.Services.Azure.Postgres;
 using AzureMcp.Services.Azure.ResourceGroup;
@@ -66,6 +67,7 @@ internal class Program
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<ICosmosService, CosmosService>();
+        services.AddSingleton<IKustoService, KustoService>();
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();

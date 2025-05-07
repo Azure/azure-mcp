@@ -48,6 +48,36 @@ azmcp cosmos database container item query --subscription <subscription> \
                        [--query "SELECT * FROM c"]
 ```
 
+### Kusto Operations
+```bash
+# List Kusto clusters in a subscription
+azmcp kusto cluster list --subscription <subscription>
+
+# Get details for a Kusto cluster
+azmcp kusto cluster get --subscription <subscription> --cluster-name <cluster-name>
+
+# List databases in a Kusto cluster
+azmcp kusto database list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
+
+# List tables in a Kusto database
+azmcp kusto table list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
+                                --database-name <database-name> \
+
+# Retrieves the schema of a specified Kusto table.
+azmcp kusto table schema [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
+                                  --database-name <database-name> \
+                                  --table <table-name>
+
+# Query a Kusto database
+azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
+                           --database-name <database-name> \
+                           --query "<kql-query>"
+
+# Retrieves a sample of data from a specified Kusto table.
+azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
+                            --database-name <database-name> \
+                            --table <table-name> \
+                           [--limit <limit>]
 ### PostgreSQL Operations
 
 ```bash

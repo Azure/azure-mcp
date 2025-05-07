@@ -338,6 +338,54 @@ public static class ArgumentDefinitions
         }
     }
 
+    public static class Kusto
+    {
+        public const string ClusterName = "cluster-name";
+        public const string ClusterUriName = "cluster-uri";
+        public const string DatabaseName = "database-name";
+        public const string TableName = "table-name";
+        public const string LimitName = "limit";
+        public const string QueryText = "query";
+
+
+        public static readonly ArgumentDefinition<string> Cluster = new(
+            ClusterName,
+            "Kusto Cluster name.",
+            required: false
+        );
+
+        public static readonly ArgumentDefinition<string> ClusterUri = new(
+            ClusterUriName,
+            "Kusto Cluster URI.",
+            required: false
+        );
+
+        public static readonly ArgumentDefinition<string> Database = new(
+            DatabaseName,
+            "Kusto Database name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Table = new(
+            TableName,
+            "Kusto Table name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<int> Limit = new(
+            LimitName,
+            "The maximum number of results to return.",
+            defaultValue: 10,
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Query = new(
+            QueryText,
+            "Kusto query to execute. Uses KQL syntax.",
+            required: true
+        );
+    }
+
     public static class Extension
     {
         public static class Az

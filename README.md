@@ -22,6 +22,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Show me the tables in my Storage account"
 - "List containers in my Cosmos DB database"
 - "Get details about my Storage container"
+- "Get Kusto databases in cluster 'mycluster'"
+- "Sample 10 rows from table 'StormEvents' in Kusto database 'db1'"
 
 ### 📊 Query & Analyze
 - "Query my Log Analytics workspace"
@@ -65,6 +67,14 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - List and query databases.
 - List and get schema for tables.
 - List, get configuration and get parameters for servers.
+
+### 🧮 Kusto (Azure Data Explorer)
+- List Kusto clusters
+- List databases in a Kusto cluster
+- List tables in a Kusto database
+- Get schema for a Kusto table
+- Sample rows from a Kusto table
+- Query Kusto databases using KQL
 
 ### 💾 Azure Storage
 - List Storage accounts
