@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Support for Kusto (Azure Data Explorer).  https://github.com/Azure/azure-mcp/pull/21
+
 ### Breaking Changes
 
 ### Bugs Fixed
