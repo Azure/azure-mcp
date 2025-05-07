@@ -5,18 +5,21 @@ using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Arguments;
 using AzureMcp.Models;
+using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 
 namespace AzureMcp.Services.Azure.Cosmos;
 
-public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService)
+public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService)
     : BaseAzureService(tenantService), ICosmosService, IDisposable
 {
-    private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
-    private Dictionary<string, CosmosClient> _cosmosClientCache = [];
-    private bool _disposed;
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
+    private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
+    private const string COSMOS_CLIENTS_CACHE_KEY_PREFIX = "cosmos_clients_";
+    private static readonly TimeSpan CACHE_DURATION_CLIENTS = TimeSpan.FromMinutes(15);
+    private bool _disposed;
 
     private async Task<CosmosDBAccountResource> GetCosmosAccountAsync(
         string subscriptionId,
@@ -108,20 +111,22 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        if (_cosmosClientCache.TryGetValue(accountName, out CosmosClient? value))
-            return value;
+        var key = COSMOS_CLIENTS_CACHE_KEY_PREFIX + accountName;
+        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(key, CACHE_DURATION_CLIENTS);
+        if (cosmosClient != null)
+            return cosmosClient;
 
         try
         {
             // First attempt with requested auth method
-            var cosmosClient = await CreateCosmosClientWithAuth(
+            cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 authMethod,
                 tenant,
-                retryPolicy);
+            retryPolicy);
 
-            _cosmosClientCache[accountName] = cosmosClient;
+            await _cacheService.SetAsync(key, cosmosClient, CACHE_DURATION_CLIENTS);
             return cosmosClient;
         }
         catch (Exception ex) when (
@@ -129,17 +134,16 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             (ex.Message.Contains("401") || ex.Message.Contains("403")))
         {
             // If credential auth fails with 401/403, try key auth
-            var cosmosClient = await CreateCosmosClientWithAuth(
+            cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 AuthMethod.Key,
                 tenant,
                 retryPolicy);
 
-            _cosmosClientCache[accountName] = cosmosClient;
+            await _cacheService.SetAsync(key, cosmosClient, CACHE_DURATION_CLIENTS);
             return cosmosClient;
         }
-
         throw new Exception($"Failed to create Cosmos client for account '{accountName}' with any authentication method");
     }
 
@@ -277,10 +281,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         {
             if (disposing)
             {
-                foreach (CosmosClient client in _cosmosClientCache.Values)
-                {
-                    client.Dispose();
-                }
+               
             }
             _disposed = true;
         }
