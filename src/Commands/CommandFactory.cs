@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Commands.Cosmos;
+using AzureMcp.Commands.Kusto;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
@@ -74,10 +75,12 @@ public class CommandFactory
     {
         // Register top-level command groups
         RegisterCosmosCommands();
+        RegisterKustoCommands();
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
         RegisterSearchCommands();
+        RegisterPostgresCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -116,10 +119,60 @@ public class CommandFactory
         cosmosContainer.AddSubGroup(cosmosItem);
 
         // Register Cosmos commands
-        databases.AddCommand("list", new DatabaseListCommand(GetLogger<DatabaseListCommand>()));
+        databases.AddCommand("list", new Cosmos.DatabaseListCommand(GetLogger<Cosmos.DatabaseListCommand>()));
         cosmosContainer.AddCommand("list", new Cosmos.ContainerListCommand(GetLogger<Cosmos.ContainerListCommand>()));
         cosmosAccount.AddCommand("list", new Cosmos.AccountListCommand(GetLogger<Cosmos.AccountListCommand>()));
-        cosmosItem.AddCommand("query", new ItemQueryCommand(GetLogger<ItemQueryCommand>()));
+        cosmosItem.AddCommand("query", new Cosmos.ItemQueryCommand(GetLogger<Cosmos.ItemQueryCommand>()));
+    }
+
+    private void RegisterKustoCommands()
+    {
+        // Create Kusto command group
+        var kusto = new CommandGroup("kusto", "Kusto operations - Commands for managing and querying Azure Kusto clusters.");
+        _rootGroup.AddSubGroup(kusto);
+
+        // Create Kusto cluster subgroups
+        var clusters = new CommandGroup("cluster", "Kusto cluster operations - Commands for listing clusters in your Azure subscription.");
+        kusto.AddSubGroup(clusters);
+
+        var databases = new CommandGroup("database", "Kusto database operations - Commands for listing databases in a cluster.");
+        kusto.AddSubGroup(databases);
+
+        var tables = new CommandGroup("table", "Kusto table operations - Commands for listing tables in a database.");
+        kusto.AddSubGroup(tables);
+
+        kusto.AddCommand("sample", new Kusto.SampleCommand(GetLogger<Kusto.SampleCommand>()));
+        kusto.AddCommand("query", new Kusto.QueryCommand(GetLogger<Kusto.QueryCommand>()));
+
+        clusters.AddCommand("list", new Kusto.ClusterListCommand(GetLogger<Kusto.ClusterListCommand>()));
+        clusters.AddCommand("get", new Kusto.ClusterGetCommand(GetLogger<Kusto.ClusterGetCommand>()));
+
+        databases.AddCommand("list", new Kusto.DatabaseListCommand(GetLogger<Kusto.DatabaseListCommand>()));
+
+        tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<Kusto.TableListCommand>()));
+        tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
+    }
+
+    private void RegisterPostgresCommands()
+    {
+        var pg = new CommandGroup("postgres", "PostgreSQL operations - Commands for listing and managing Azure Database for PostgreSQL - Flexible server.");
+        _rootGroup.AddSubGroup(pg);
+
+        var database = new CommandGroup("database", "PostgreSQL database operations");
+        pg.AddSubGroup(database);
+        database.AddCommand("list", new Postgres.Database.DatabaseListCommand(GetLogger<Postgres.Database.DatabaseListCommand>()));
+        database.AddCommand("query", new Postgres.Database.DatabaseQueryCommand(GetLogger<Postgres.Database.DatabaseQueryCommand>()));
+
+        var table = new CommandGroup("table", "PostgreSQL table operations");
+        pg.AddSubGroup(table);
+        table.AddCommand("list", new Postgres.Table.TableListCommand(GetLogger<Postgres.Table.TableListCommand>()));
+        table.AddCommand("schema", new Postgres.Table.GetSchemaCommand(GetLogger<Postgres.Table.GetSchemaCommand>()));
+
+        var server = new CommandGroup("server", "PostgreSQL server operations");
+        pg.AddSubGroup(server);
+        server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<Postgres.Server.ServerListCommand>()));
+        server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
+        server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
     }
 
     private void RegisterStorageCommands()
@@ -264,7 +317,7 @@ public class CommandFactory
         _rootGroup.AddSubGroup(mcpServer);
 
         // Register MCP Server commands
-        var startServer = new ServiceStartCommand(_serviceProvider);
+        var startServer = new ServiceStartCommand();
         mcpServer.AddCommand("start", startServer);
 
     }

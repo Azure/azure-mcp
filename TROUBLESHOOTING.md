@@ -95,6 +95,21 @@ Support for **Azure Entra ID-based authentication** in these scenarios is to be 
 > ℹ️ **Until Entra ID support is available**, ensure that local authorization is enabled for the target resource being accessed by Azure MCP. The latest status can be tracked in this [issue](https://github.com/Azure/azure-mcp/issues/27)
 
 
+### AADSTS500200 error: User account is a personal Microsoft account
+
+This error occurs because the Azure MCP server uses Azure Identity SDK's `DefaultAzureCredential` for authentication, which is specifically designed for Azure Active Directory (Azure Entra ID) authentication flows, as they're designed to work with Azure services that require Azure AD-based authentication and authorization. See the [Authentication](/README.md#-authentication) section in for more details.
+
+Personal Microsoft accounts (@hotmail.com, @outlook.com, or @live.com) use a different authentication system that isn't compatible with these flows.
+
+To resolve this issue, you can:
+- Use a work or school account that's part of an Azure AD tenant.
+- Request access to an Azure subscription with your existing organizational account.
+    - Learn more: [Add organization users and manage access](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/add-organization-users?view=azure-devops&tabs=browser).
+- Create a new Azure subscription and associated Azure AD tenant.
+    - Learn more: [Associate or add an Azure subscription to your Microsoft Entra tenant](https://learn.microsoft.com/en-us/entra/fundamentals/how-subscriptions-associated-directory).
+- If you must use a personal account, first create an Azure AD tenant for your Azure subscription, then authenticate using that tenant.
+    - Learn more: [Quickstart: Create a new tenant in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/fundamentals/create-new-tenant), [Set up a new Microsoft Entra tenant](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant).
+
 ## Common issues
 
 ### Console window is empty when running Azure MCP Server

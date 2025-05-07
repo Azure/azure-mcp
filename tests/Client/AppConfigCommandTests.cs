@@ -248,7 +248,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         var setting = result.AssertProperty("setting");
         Assert.Equal(JsonValueKind.Object, setting.ValueKind);
 
-        var value = setting.AssertProperty("Value");
+        var value = setting.AssertProperty("value");
         Assert.Equal(JsonValueKind.String, value.ValueKind);
         Assert.Equal("foo-value", value.GetString());
     }

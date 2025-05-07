@@ -11,6 +11,8 @@ If you are contributing significant changes, or if the issue is already assigned
    * [Stable release](https://code.visualstudio.com/download)
    * [Insiders release](https://code.visualstudio.com/insiders)
 2. Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions.
+3. Install [Node.js](https://nodejs.org/en/download) 20 or later
+   * Ensure `node` and `npm` are in your path
 
 ### Project Structure
 
