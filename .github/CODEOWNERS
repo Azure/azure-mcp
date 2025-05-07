@@ -27,11 +27,11 @@
 
 # ######## Services ########
 
-# PRLabel: %KeyVault
+# PRLabel: %area-KeyVault
 /src/Arguments/KeyVault/                @conniey @JonathanCrd
 /src/Commands/KeyVault/                 @conniey @JonathanCrd
 /src/Services/Azure/KeyVault/           @conniey @JonathanCrd
  
-# ServiceLabel: %KeyVault
+# ServiceLabel: %area-KeyVault
 # ServiceOwners:                        @conniey @JonathanCrd
  
