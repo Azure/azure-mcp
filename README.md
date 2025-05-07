@@ -94,6 +94,9 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - Handle labeled configurations
 - Lock/unlock configuration settings
 
+### 🔑 Azure Key Vault
+- List, create, and get keys
+
 ### 📦 Azure Resource Groups
 - List resource groups
 - Resource group management operations

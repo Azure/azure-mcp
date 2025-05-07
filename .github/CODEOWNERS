@@ -29,9 +29,17 @@
 # Services
 ##################
 # PRLabel: %area-Kusto
-/src/Arguments/Kusto/                @danield137 @xiangyan99
-/src/Commands/Kusto/                 @danield137 @xiangyan99
-/src/Services/Azure/Kusto/           @danield137 @xiangyan99
+/src/Arguments/Kusto/                  @danield137 @xiangyan99
+/src/Commands/Kusto/                   @danield137 @xiangyan99
+/src/Services/Azure/Kusto/             @danield137 @xiangyan99
 
 # ServiceLabel: %area-Kusto
-# ServiceOwners:                     @danield137
+# ServiceOwners:                       @danield137
+
+# PRLabel: %area-KeyVault
+/src/Arguments/KeyVault/               @conniey @JonathanCrd
+/src/Commands/KeyVault/                @conniey @JonathanCrd
+/src/Services/Azure/KeyVault/          @conniey @JonathanCrd
+ 
+# ServiceLabel: %area-KeyVault
+# ServiceOwners:                       @conniey @JonathanCrd

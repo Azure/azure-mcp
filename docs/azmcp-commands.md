@@ -175,6 +175,18 @@ azmcp appconfig kv unlock --subscription <subscription> --account-name <account-
 azmcp appconfig kv delete --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
 ```
 
+### Azure Key Vault Operations
+```bash
+# Lists keys in vault
+azmcp keyvault key list --subscription <subscription> --vault <vault-name>
+
+# Gets a key in vault
+azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key <key-name>
+
+# Create a key in vault
+azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
+```
+
 ### Resource Group Operations
 ```bash
 # List resource groups in a subscription
