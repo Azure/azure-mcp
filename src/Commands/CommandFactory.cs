@@ -69,6 +69,7 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
+
     private void RegisterCommandGroup()
     {
         // Register top-level command groups
@@ -82,6 +83,16 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterBestPracticesCommand();
+    }
+
+    private void RegisterBestPracticesCommand()
+    {
+        // Register Azure Best Practices command at the root level
+        _rootGroup.AddCommand(
+            "azure-best-practices",
+            new BestPractices.AzureBestPracticesCommand(GetLogger<BestPractices.AzureBestPracticesCommand>())
+        );
     }
 
     private void RegisterCosmosCommands()
