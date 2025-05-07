@@ -24,3 +24,14 @@
 /eng/                                  @Azure/azure-mcp @Azure/azure-sdk-eng
 /.github/                              @Azure/azure-mcp @Azure/azure-sdk-eng
 /.config/                              @Azure/azure-mcp @Azure/azure-sdk-eng
+
+##################
+# Services
+##################
+# PRLabel: %area-Kusto
+/src/Arguments/Kusto/                @danield137 @xiangyan99
+/src/Commands/Kusto/                 @danield137 @xiangyan99
+/src/Services/Azure/Kusto/           @danield137 @xiangyan99
+
+# ServiceLabel: %area-Kusto
+# ServiceOwners:                     @danield137
