@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>0.0.14</Version>
@@ -74,6 +74,10 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
 	<PackageReference Include="Azure.Search.Documents" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\azure-best-practices.txt" />
   </ItemGroup>
 
   <!-- Runs before every dotnet build -->

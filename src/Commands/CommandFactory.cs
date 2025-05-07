@@ -74,6 +74,7 @@ public class CommandFactory
     private void RegisterCommandGroup()
     {
         // Register top-level command groups
+        RegisterBestPracticesCommand();
         RegisterCosmosCommands();
         RegisterKustoCommands();
         RegisterStorageCommands();
@@ -86,15 +87,19 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
-        RegisterBestPracticesCommand();
     }
 
     private void RegisterBestPracticesCommand()
     {
         // Register Azure Best Practices command at the root level
-        _rootGroup.AddCommand(
-            "azure-best-practices",
-            new BestPractices.AzureBestPracticesCommand(GetLogger<BestPractices.AzureBestPracticesCommand>())
+        var bestPractices = new CommandGroup(
+            "best-practices",
+            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code. #llm #best-practices #code-generation #azure #mandatory"
+        );
+        _rootGroup.AddSubGroup(bestPractices);
+        bestPractices.AddCommand(
+            "get",
+            new BestPractices.AzureBestPracticesGetCommand(GetLogger<BestPractices.AzureBestPracticesGetCommand>())
         );
     }
 
