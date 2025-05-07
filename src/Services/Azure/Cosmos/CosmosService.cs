@@ -281,7 +281,6 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         {
             if (disposing)
             {
-               
             }
             _disposed = true;
         }
