@@ -73,8 +73,8 @@ public class {Resource}{Operation}Arguments : BaseArgumentsWithSubscription
 
 IMPORTANT:
 1. Do not redefine properties from base classes
-2. Use `BaseArgumentsWithSubscription` for commands that require subscription (can be either ID or name)
-3. Use `BaseAzureArguments` only for commands that don't need subscription (rare)
+2. Use `SubscriptionArguments` for commands that require subscription (can be either ID or name)
+3. Use `GlobalArguments` only for commands that don't need subscription (rare)
 
 ## Step 2: Define Service Interface Method
 
@@ -115,7 +115,7 @@ Location: `src/Services/Azure/{Service}/{Service}Service.cs`
 
 Template:
 ```csharp
-public class {Service}Service : Base{Service}Service, I{Service}Service
+public class {Service}Service : BaseAzureService, I{Service}Service
 {
     public async Task<List<string>> {Operation}{Resource}(
         string {requiredParam1},
