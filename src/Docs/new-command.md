@@ -411,7 +411,7 @@ RegisterArgumentChain(
 
 2. Creating custom arguments:
 ```csharp
-ArgumentChain<TArgs>
+ArgumentBuilder<TArgs>
     .Create("name", "description")
     .WithValueAccessor(args => args.Property)
     .WithValueLoader(async (context, args) => await LoadValues())

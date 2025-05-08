@@ -86,6 +86,7 @@ public class CommandFactory
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterServiceBusCommands();
     }
 
     private void RegisterCosmosCommands()
@@ -323,6 +324,19 @@ public class CommandFactory
         var startServer = new ServiceStartCommand();
         mcpServer.AddCommand("start", startServer);
 
+    }
+
+    private void RegisterServiceBusCommands()
+    {
+        var serviceBus = new CommandGroup("servicebus", 
+            "Service Bus operations - Commands for managing Azure Service Bus resources");
+        _rootGroup.AddSubGroup(serviceBus);
+
+        var queue = new CommandGroup("queue",
+            "Queue operations - Commands for managing Service Bus queues");
+        serviceBus.AddSubGroup(queue);
+
+        queue.AddCommand("peek", new ServiceBus.Queue.QueuePeekCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)

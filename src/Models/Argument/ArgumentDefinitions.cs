@@ -432,4 +432,28 @@ public static class ArgumentDefinitions
             "The type of key to create (RSA, EC).",
             required: true);
     }
+
+    public static class ServiceBus
+    {
+        public const string NamespaceName = "namespace";
+        public const string QueueName = "queue";
+        public const string MaxMessagesName = "max-messages";
+
+        public static readonly ArgumentDefinition<string> Namespace = new(
+            NamespaceName,
+            "The Service Bus namespace name.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Queue = new(
+            QueueName,
+            "The queue name to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<int> MaxMessages = new(
+            MaxMessagesName,
+            "The maximum number of messages to return.",
+            defaultValue: 1,
+            required: false
+        );
+    }
 }
