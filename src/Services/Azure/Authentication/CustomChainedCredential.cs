@@ -96,11 +96,17 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
     {
         var includeProdCreds = EnvironmentHelpers.GetEnvironmentVariableAsBool(IncludeProductionCredentialEnvVarName);
 
-        return new DefaultAzureCredential(new DefaultAzureCredentialOptions
+        var defaultCredentialOptions = new DefaultAzureCredentialOptions
         {
-            TenantId = string.IsNullOrEmpty(tenantId) ? null : tenantId,
             ExcludeWorkloadIdentityCredential = !includeProdCreds,
             ExcludeManagedIdentityCredential = !includeProdCreds
-        });
+        };
+
+        if (!string.IsNullOrEmpty(tenantId))
+        {
+            defaultCredentialOptions.TenantId = tenantId;
+        }
+        
+        return new DefaultAzureCredential(defaultCredentialOptions);
     }
 }
