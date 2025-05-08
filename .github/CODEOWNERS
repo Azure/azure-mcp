@@ -36,6 +36,7 @@
 # ServiceLabel: %area-Kusto
 # ServiceOwners:                       @danield137
 
+
 # PRLabel: %area-KeyVault
 /src/Arguments/KeyVault/               @conniey @JonathanCrd
 /src/Commands/KeyVault/                @conniey @JonathanCrd
@@ -43,6 +44,7 @@
 
 # ServiceLabel: %area-KeyVault
 # ServiceOwners:                       @conniey @JonathanCrd
+
 
 # PRLabel: %area-CosmosDB
 /src/Arguments/Cosmos/               @sajeetharan @xiangyan99
