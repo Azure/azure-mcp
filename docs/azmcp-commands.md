@@ -190,6 +190,12 @@ azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key 
 azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
 ```
 
+### Azure Service Bus Operations
+```bash
+# Peeks at messages in a Service Bus queue.
+azmcp servicebus queue peek --subscription <subscription> --namespace <service-bus-namespace> --queue <queue-name> [--max-messages <int>]
+```
+
 ### Azure Resource Group Operations
 ```bash
 # List resource groups in a subscription
