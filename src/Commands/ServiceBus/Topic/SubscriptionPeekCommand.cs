@@ -11,7 +11,7 @@ using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using ModelContextProtocol.Server;
 
-namespace AzureMcp.Commands.ServiceBus.Subscription;
+namespace AzureMcp.Commands.ServiceBus.Topic;
 
 public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPeekArguments>
 {
@@ -30,8 +30,8 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         
         Required arguments:
         - namespace: Service Bus namespace name
-        - topic: Topic name containing the subscription
-        - subscription: Subscription name to peek messages from
+        - topic-name: Topic name containing the subscription
+        - subscription-name: Subscription name to peek messages from
         """;
 
     protected override void RegisterOptions(Command command)

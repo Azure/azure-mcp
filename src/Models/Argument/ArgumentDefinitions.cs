@@ -436,10 +436,10 @@ public static class ArgumentDefinitions
     public static class ServiceBus
     {
         public const string NamespaceName = "namespace";
-        public const string QueueName = "queue";
+        public const string QueueName = "queue-name";
         public const string MaxMessagesName = "max-messages";
-        public const string TopicName = "topic";
-        public const string SubscriptionName = "subscription";
+        public const string TopicName = "topic-name";
+        public const string SubscriptionName = "subscription-name";
 
         public static readonly ArgumentDefinition<string> Namespace = new(
             NamespaceName,

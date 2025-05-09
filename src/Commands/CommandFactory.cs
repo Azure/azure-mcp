@@ -329,10 +329,14 @@ public class CommandFactory
         var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources");
         _rootGroup.AddSubGroup(serviceBus);
 
-        var queue = new CommandGroup("queue", "Queue operations - Commands for managing Service Bus queues");
-        serviceBus.AddSubGroup(queue);
-
+        var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
         queue.AddCommand("peek", new ServiceBus.Queue.QueuePeekCommand());
+
+        var topic = new CommandGroup("topic", "Topic and Subscription operations - Commands for using Azure Service Bus topics and subscriptions.");
+        topic.AddCommand("peek", new ServiceBus.Topic.SubscriptionPeekCommand());
+
+        serviceBus.AddSubGroup(queue);
+        serviceBus.AddSubGroup(topic);
     }
 
     private void ConfigureCommands(CommandGroup group)

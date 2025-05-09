@@ -30,7 +30,7 @@ namespace AzureMcp.Tests.Client
                 "azmcp-servicebus-queue-peek",
                 new()
                 {
-                    { "subscription", Settings.SubscriptionId },
+                    { Common.SubscriptionName, Settings.SubscriptionId },
                     { ServiceBus.QueueName, queueName },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                     { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
@@ -52,10 +52,10 @@ namespace AzureMcp.Tests.Client
             await SendTestMessages(topicName, numberOfMessages);
 
             var result = await CallToolAsync(
-                "azmcp-servicebus-queue-peek",
+                "azmcp-servicebus-topic-peek",
                 new()
                 {
-                    { "subscription", Settings.SubscriptionId },
+                    { Common.SubscriptionName, Settings.SubscriptionId },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                     { ServiceBus.TopicName, topicName },
                     { ServiceBus.SubscriptionName, subscription },

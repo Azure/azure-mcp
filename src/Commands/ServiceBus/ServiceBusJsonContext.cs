@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using AzureMcp.Commands.ServiceBus.Queue;
-using AzureMcp.Commands.ServiceBus.Subscription;
+using AzureMcp.Commands.ServiceBus.Topic;
 
 namespace AzureMcp.Commands.ServiceBus;
 
