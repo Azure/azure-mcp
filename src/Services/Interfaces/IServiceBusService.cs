@@ -2,12 +2,30 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using AzureMcp.Arguments;
+using AzureMcp.Models.ServiceBus;
 
 namespace AzureMcp.Services.Interfaces;
 
 public interface IServiceBusService
 {
+    /// <summary>
+    /// Gets the details of a Service Bus queue.
+    /// </summary>
+    /// <param name="namespaceName">The Service Bus namespace name</param>
+    /// <param name="queueName">The queue name to get details for</param>
+    /// <param name="subscription">Subscription ID or name</param>
+    /// <param name="tenantId">Optional tenant ID</param>
+    /// <param name="retryPolicy">Optional retry policy</param>
+    /// <returns>Queue details</returns>
+    /// <exception cref="RequestFailedException">When the service request fails</exception>
+    Task<QueueDetails> GetQueueDetails(
+        string namespaceName,
+        string queueName,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null);
+
     /// <summary>
     /// Peeks messages from a Service Bus queue without removing them.
     /// </summary>
@@ -23,7 +41,6 @@ public interface IServiceBusService
         string namespaceName,
         string queueName,
         int maxMessages,
-        string subscription,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
 
@@ -44,7 +61,6 @@ public interface IServiceBusService
         string topicName,
         string subscriptionName,
         int maxMessages,
-        string subscription,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
 }

@@ -8,6 +8,7 @@ using AzureMcp.Commands.ServiceBus.Topic;
 namespace AzureMcp.Commands.ServiceBus;
 
 [JsonSerializable(typeof(QueuePeekCommand.QueuePeekCommandResult))]
+[JsonSerializable(typeof(QueueDetailsCommand.QueueDetailsCommandResult))]
 [JsonSerializable(typeof(SubscriptionPeekCommand.SubscriptionPeekCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class ServiceBusJsonContext : JsonSerializerContext

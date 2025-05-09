@@ -331,6 +331,7 @@ public class CommandFactory
 
         var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
         queue.AddCommand("peek", new ServiceBus.Queue.QueuePeekCommand());
+        queue.AddCommand("details", new ServiceBus.Queue.QueueDetailsCommand());
 
         var topic = new CommandGroup("topic", "Topic and Subscription operations - Commands for using Azure Service Bus topics and subscriptions.");
         topic.AddCommand("peek", new ServiceBus.Topic.SubscriptionPeekCommand());

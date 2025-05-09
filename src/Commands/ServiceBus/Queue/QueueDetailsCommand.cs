@@ -3,35 +3,32 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Text.Json.Serialization.Metadata;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using AzureMcp.Arguments.ServiceBus.Queue;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
+using AzureMcp.Models.ServiceBus;
 using AzureMcp.Services.Interfaces;
 using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.ServiceBus.Queue;
 
-public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
+public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments>
 {
     private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
-    private readonly Option<int> _maxMessagesOption = ArgumentDefinitions.ServiceBus.MaxMessages.ToOption();
     private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
 
-    protected override string GetCommandName() => "peek";
+    protected override string GetCommandName() => "details";
 
     protected override string GetCommandDescription() =>
         """
-        Peek messages from a Service Bus queue without removing them.  Message browsing, or peeking, enables a
-        Service Bus client to enumerate all messages in a queue, for diagnostic and debugging purposes.
-        The peek operation returns active, locked, deferred, and scheduled messages in the queue.
-
-        Returns message content, properties, and metadata.  Messages remain in the queue after peeking.
+        Get details about a Service Bus queue. Returns queue properties and runtime information. Properties returned include
+        lock duration, max message size, queue size, creation date, status, current message counts, etc.
 
         Required arguments:
         - namespace: Service Bus namespace name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - queue: Queue name to peek messages from
+        - queue-name: Queue name to get details and runtime information for.
         """;
 
     protected override void RegisterOptions(Command command)
@@ -39,7 +36,6 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
         base.RegisterOptions(command);
         command.AddOption(_namespaceOption);
         command.AddOption(_queueOption);
-        command.AddOption(_maxMessagesOption);
     }
 
     protected override void RegisterArguments()
@@ -47,15 +43,13 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
         base.RegisterArguments();
         AddArgument(CreateQueueArgument());
         AddArgument(CreateNamespaceArgument());
-        AddArgument(CreateMaxMessageArgument());
     }
 
-    protected override QueuePeekArguments BindArguments(ParseResult parseResult)
+    protected override BaseQueueArguments BindArguments(ParseResult parseResult)
     {
         var args = base.BindArguments(parseResult);
         args.Name = parseResult.GetValueForOption(_queueOption);
         args.Namespace = parseResult.GetValueForOption(_namespaceOption);
-        args.MaxMessages = parseResult.GetValueForOption(_maxMessagesOption);
         return args;
     }
 
@@ -72,18 +66,15 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
             }
 
             var service = context.GetService<IServiceBusService>();
-            var messages = await service.PeekQueueMessages(
+            var details = await service.GetQueueDetails(
                 args.Namespace!,
                 args.Name!,
-                args.MaxMessages ?? 1,
                 args.Tenant,
                 args.RetryPolicy);
 
-            var peekedMessages = messages ?? new List<ServiceBusReceivedMessage>();
-
             context.Response.Results = ResponseResult.Create(
-                new QueuePeekCommandResult(peekedMessages),
-                ServiceBusJsonContext.Default.QueuePeekCommandResult);
+                new QueueDetailsCommandResult(details),
+                ServiceBusJsonContext.Default.QueueDetailsCommandResult);
         }
         catch (Exception ex)
         {
@@ -106,29 +97,21 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
         _ => base.GetStatusCode(ex)
     };
 
-    private static ArgumentBuilder<QueuePeekArguments> CreateQueueArgument()
+    private static ArgumentBuilder<BaseQueueArguments> CreateQueueArgument()
     {
-        return ArgumentBuilder<QueuePeekArguments>
+        return ArgumentBuilder<BaseQueueArguments>
             .Create(ArgumentDefinitions.ServiceBus.Queue.Name, ArgumentDefinitions.ServiceBus.Queue.Description)
             .WithValueAccessor(args => args.Name ?? string.Empty)
             .WithIsRequired(true);
     }
 
-    private static ArgumentBuilder<QueuePeekArguments> CreateNamespaceArgument()
+    private static ArgumentBuilder<BaseQueueArguments> CreateNamespaceArgument()
     {
-        return ArgumentBuilder<QueuePeekArguments>
+        return ArgumentBuilder<BaseQueueArguments>
             .Create(ArgumentDefinitions.ServiceBus.Namespace.Name, ArgumentDefinitions.ServiceBus.Namespace.Description)
             .WithValueAccessor(args => args.Namespace ?? string.Empty)
             .WithIsRequired(true);
     }
 
-    private static ArgumentBuilder<QueuePeekArguments> CreateMaxMessageArgument()
-    {
-        return ArgumentBuilder<QueuePeekArguments>
-            .Create(ArgumentDefinitions.ServiceBus.Namespace.Name, ArgumentDefinitions.ServiceBus.Namespace.Description)
-            .WithValueAccessor(args => args.MaxMessages?.ToString() ?? "1")
-            .WithIsRequired(true);
-    }
-
-    internal record QueuePeekCommandResult(List<ServiceBusReceivedMessage> Messages);
+    internal record QueueDetailsCommandResult(QueueDetails QueueProperties);
 }

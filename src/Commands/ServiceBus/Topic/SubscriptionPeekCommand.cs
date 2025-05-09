@@ -81,7 +81,6 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
                 args.TopicName!,
                 args.SubscriptionName!,
                 args.MaxMessages ?? 1,
-                args.Subscription!,
                 args.Tenant,
                 args.RetryPolicy);
 
