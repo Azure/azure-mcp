@@ -24,12 +24,14 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
 
     protected override string GetCommandDescription() =>
         """
-        Peek messages from a Service Bus subscription without removing them.
-        Returns message content, properties, and metadata.
-        Messages remain in the subscription after peeking.
-        
+        Peek messages from a Service Bus subscription without removing them.  Message browsing, or peeking, enables a
+        Service Bus client to enumerate all messages in a subscription, for diagnostic and debugging purposes.
+        The peek operation returns active messages in the subscription.
+
+        Returns message content, properties, and metadata.  Messages remain in the subscription after peeking.
+
         Required arguments:
-        - namespace: Service Bus namespace name
+        - namespace: Service Bus namespace name. (This is usually in the form <namespace>.servicebus.windows.net)
         - topic-name: Topic name containing the subscription
         - subscription-name: Subscription name to peek messages from
         """;
@@ -47,7 +49,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
     {
         base.RegisterArguments();
         AddArgument(CreateSubscriptionNameArgument());
-        AddArgument(CreateTopicArgument());
+        AddArgument(CreateTopicNameArgument());
         AddArgument(CreateNamespaceArgument());
         AddArgument(CreateMaxMessageArgument());
     }
@@ -111,7 +113,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         _ => base.GetStatusCode(ex)
     };
 
-    private static ArgumentBuilder<SubscriptionPeekArguments> CreateTopicArgument()
+    private static ArgumentBuilder<SubscriptionPeekArguments> CreateTopicNameArgument()
     {
         return ArgumentBuilder<SubscriptionPeekArguments>
             .Create(ArgumentDefinitions.ServiceBus.Topic.Name, ArgumentDefinitions.ServiceBus.Topic.Description)
