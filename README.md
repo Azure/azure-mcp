@@ -163,6 +163,28 @@ For a step-by-step installation, follow these instructions:
 }
 ```
 
+#### Docker Install
+
+For a step-by-step installation, follow these instructions:
+1. Clone repository
+2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
+3. Add `.vscode/mcp.json` or update existing MCP configuration
+```json
+{
+  "servers": {
+    "Azure MCP Server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "azure/azuremcp"
+      ]
+    }
+  }
+}
+```
+
 ## 🧪 Test the Azure MCP Server
 
 1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
