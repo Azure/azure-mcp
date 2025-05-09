@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Arguments;
 using AzureMcp.Services.Interfaces;
