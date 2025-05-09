@@ -19,6 +19,12 @@ if (!$TestResultsPath) {
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
+Remove-Item "$RepoRoot/tests/xunit.runner.json" -Force
+Write-Output "Deleted existing xunit.runner.json file"
+Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "xunit.runner.json"
+Write-Output "Renamed xunit.runner.ci.json to xunit.runner.json"
+$xunitJson = Get-Content "C:\github\azure-mcp\tests\xunit.runner.json" | ConvertFrom-Json
+
 # Run tests with coverage
 $filter = $Live ? "Category~Live" : "Category!~Live"
 
