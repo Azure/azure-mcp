@@ -106,7 +106,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         {
             defaultCredentialOptions.TenantId = tenantId;
         }
-        
+
         return new DefaultAzureCredential(defaultCredentialOptions);
     }
 }
