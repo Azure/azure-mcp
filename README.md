@@ -103,6 +103,7 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 
 ### 🚌 Azure Service Bus
 - Peek at messages from topics/subscriptions and queues
+- Examine properties and runtime information about queues
 
 ### 🔧 Azure CLI Extension
 - Execute Azure CLI commands directly

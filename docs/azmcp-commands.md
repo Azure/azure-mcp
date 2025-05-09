@@ -193,10 +193,13 @@ azmcp keyvault key create --subscription <subscription> --vault <vault-name> --k
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue
-azmcp servicebus queue peek --subscription <subscription> --namespace <service-bus-namespace> --queue <queue-name> [--max-messages <int>]
+azmcp servicebus queue peek --namespace <service-bus-namespace> --queue-name <queue-name> [--max-messages <int>]
+
+# Returns runtime and details about the Service Bus queue
+azmcp servicebus queue details --namespace <service-bus-namespace> --queue-name <queue-name>
 
 # Peeks at messages in a Service Bus topic/subscription
-azmcp servicebus topic peek --subscription <subscription> --namespace <service-bus-namespace> --topic-name <topic-name> --subscription-name <subscription-name> [--max-messages <int>]
+azmcp servicebus topic peek --namespace <service-bus-namespace> --topic-name <topic-name> --subscription-name <subscription-name> [--max-messages <int>]
 ```
 
 ### Azure Resource Group Operations

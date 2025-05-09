@@ -4,7 +4,8 @@
 
 ### Features Added
 
-- Support for Azure Service Bus Queue. https://github.com/Azure/azure-mcp/pull/144
+- Support for getting properties and runtime information for queues and subscriptions.
+- Support for peeking at Azure Service Bus messages from queues or subscriptions. https://github.com/Azure/azure-mcp/pull/144
 
 ### Breaking Changes
 
