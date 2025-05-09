@@ -23,12 +23,14 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
 
     protected override string GetCommandDescription() =>
         """
-        Peek messages from a Service Bus queue without removing them.
-        Returns message content, properties, and metadata.
-        Messages remain in the queue after peeking.
-        
+        Peek messages from a Service Bus queue without removing them.  Message browsing, or peeking, enables a
+        Service Bus client to enumerate all messages in a queue, for diagnostic and debugging purposes.
+        The peek operation returns active, locked, deferred, and scheduled messages in the queue.
+
+        Returns message content, properties, and metadata.  Messages remain in the queue after peeking.
+
         Required arguments:
-        - namespace: Service Bus namespace name
+        - namespace: Service Bus namespace name. (This is usually in the form <namespace>.servicebus.windows.net)
         - queue: Queue name to peek messages from
         """;
 

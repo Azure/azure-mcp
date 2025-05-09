@@ -3,7 +3,6 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Text.Json.Serialization.Metadata;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Arguments.ServiceBus.Subscription;
 using AzureMcp.Models.Argument;
@@ -26,7 +25,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         """
         Peek messages from a Service Bus subscription without removing them.  Message browsing, or peeking, enables a
         Service Bus client to enumerate all messages in a subscription, for diagnostic and debugging purposes.
-        The peek operation returns active messages in the subscription.
+        The peek operation returns active, locked, and deferred messages in the subscription.
 
         Returns message content, properties, and metadata.  Messages remain in the subscription after peeking.
 
