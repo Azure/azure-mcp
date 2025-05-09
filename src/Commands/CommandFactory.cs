@@ -325,7 +325,8 @@ public class CommandFactory
     }
 
     private void RegisterServiceBusCommands()
-    {        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources");
+    {
+        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources");
         _rootGroup.AddSubGroup(serviceBus);
 
         var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
