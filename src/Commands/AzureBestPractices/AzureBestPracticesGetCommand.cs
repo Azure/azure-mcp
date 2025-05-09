@@ -1,13 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
 using System.CommandLine.Parsing;
-using AzureMcp.Arguments;
+using AzureMcp.Helpers;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using AzureMcp.Helpers;
 
 
 namespace AzureMcp.Commands.BestPractices;
