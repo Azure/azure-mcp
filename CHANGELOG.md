@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Support for Azure Service Bus Queue.
+
 ### Breaking Changes
 
 ### Bugs Fixed
