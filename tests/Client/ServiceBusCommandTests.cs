@@ -114,7 +114,6 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
                     { ServiceBus.TopicName, TOPIC_NAME },
                     { ServiceBus.SubscriptionName, SUBSCRIPTION_NAME },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
