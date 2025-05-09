@@ -20,7 +20,7 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
         var credential = await GetCredential(tenantId);
         var client = new ServiceBusAdministrationClient(namespaceName, credential);
         var runtimeProperties = (await client.GetQueueRuntimePropertiesAsync(queueName)).Value;
-        var properties = (await client.GetQueueAsync(tenantId)).Value;
+        var properties = (await client.GetQueueAsync(queueName)).Value;
 
         return new QueueDetails
         {

@@ -70,6 +70,26 @@ namespace AzureMcp.Tests.Client
             Assert.Equal(numberOfMessages, messages.GetArrayLength());
         }
 
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Queue_details()
+        {
+            var queueName = "queue1";
+
+            var result = await CallToolAsync(
+                "azmcp-servicebus-queue-details",
+                new()
+                {
+                    { Common.SubscriptionName, Settings.SubscriptionId },
+                    { ServiceBus.QueueName, queueName },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                });
+
+            var details = result.AssertProperty("queueDetails");
+            Assert.Equal(JsonValueKind.Object, details.ValueKind);
+        }
+
+
         private async Task SendTestMessages(string queueOrTopicName, int numberOfMessages)
         {
             var credentials = new CustomChainedCredential(Settings.TenantId);

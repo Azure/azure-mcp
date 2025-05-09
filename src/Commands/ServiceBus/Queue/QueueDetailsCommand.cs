@@ -4,7 +4,6 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using AzureMcp.Arguments.ServiceBus.Queue;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
@@ -113,5 +112,5 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments
             .WithIsRequired(true);
     }
 
-    internal record QueueDetailsCommandResult(QueueDetails QueueProperties);
+    internal record QueueDetailsCommandResult(QueueDetails QueueDetails);
 }
