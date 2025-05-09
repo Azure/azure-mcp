@@ -19,7 +19,9 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string SEARCH_SERVICES_CACHE_KEY = "search_services";
+    private const string SEARCH_CLIENTS_CACHE_KEY_PREFIX = "search_clients_";
     private static readonly TimeSpan CACHE_DURATION_SERVICES = TimeSpan.FromHours(1);
+    private static readonly TimeSpan CACHE_DURATION_CLIENTS = TimeSpan.FromMinutes(15);
 
     public async Task<List<string>> ListServices(
         string subscription,
@@ -70,25 +72,17 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
 
         try
         {
-            var credential = await GetCredential();
-
-            var clientOptions = AddDefaultPolicies(new SearchClientOptions());
-            ConfigureRetryPolicy(clientOptions, retryPolicy);
-
-            var endpoint = new Uri($"https://{serviceName}.search.windows.net");
-            var searchClient = new SearchIndexClient(endpoint, credential, clientOptions);
-
+            var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
             await foreach (var indexName in searchClient.GetIndexNamesAsync())
             {
                 indexes.Add(indexName);
             }
+            return indexes;
         }
         catch (Exception ex)
         {
             throw new Exception($"Error retrieving Search indexes: {ex.Message}", ex);
         }
-
-        return indexes;
     }
 
     public async Task<SearchIndexProxy?> DescribeIndex(
@@ -100,14 +94,7 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
 
         try
         {
-            var credential = await GetCredential();
-
-            var clientOptions = AddDefaultPolicies(new SearchClientOptions());
-            ConfigureRetryPolicy(clientOptions, retryPolicy);
-
-            var endpoint = new Uri($"https://{serviceName}.search.windows.net");
-            var searchClient = new SearchIndexClient(endpoint, credential, clientOptions);
-
+            var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
             var index = await searchClient.GetIndexAsync(indexName);
 
             return new(index.Value);
@@ -128,14 +115,9 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
 
         try
         {
-            var credential = await GetCredential();
-            var clientOptions = AddDefaultPolicies(new SearchClientOptions());
-            ConfigureRetryPolicy(clientOptions, retryPolicy);
-
-            var endpoint = new Uri($"https://{serviceName}.search.windows.net");
-            var indexClient = new SearchIndexClient(endpoint, credential, clientOptions);
-            var indexDefinition = await indexClient.GetIndexAsync(indexName);
-            var searchClient = indexClient.GetSearchClient(indexName);
+            var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
+            var indexDefinition = await searchClient.GetIndexAsync(indexName);
+            var client = searchClient.GetSearchClient(indexName);
 
             var options = new SearchOptions
             {
@@ -147,7 +129,7 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
             var vectorizableFields = FindVectorizableFields(indexDefinition.Value, vectorFields);
             ConfigureSearchOptions(searchText, options, indexDefinition.Value, vectorFields);
 
-            var searchResponse = await searchClient.SearchAsync<JsonElement>(searchText, options);
+            var searchResponse = await client.SearchAsync<JsonElement>(searchText, options);
 
             return await ProcessSearchResults(searchResponse);
         }
@@ -191,6 +173,24 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
         }
 
         return vectorizableFields;
+    }
+
+    private async Task<SearchIndexClient> GetSearchIndexClient(string serviceName, RetryPolicyArguments? retryPolicy)
+    {
+        var key = SEARCH_CLIENTS_CACHE_KEY_PREFIX + serviceName;
+        var searchClient = await _cacheService.GetAsync<SearchIndexClient>(key, CACHE_DURATION_CLIENTS);
+        if (searchClient == null)
+        {
+            var credential = await GetCredential();
+
+            var clientOptions = AddDefaultPolicies(new SearchClientOptions());
+            ConfigureRetryPolicy(clientOptions, retryPolicy);
+
+            var endpoint = new Uri($"https://{serviceName}.search.windows.net");
+            searchClient = new SearchIndexClient(endpoint, credential, clientOptions);
+            await _cacheService.SetAsync(key, searchClient, CACHE_DURATION_CLIENTS);
+        }
+        return searchClient;
     }
 
     private static void ConfigureSearchOptions(string q, SearchOptions options, SearchIndex indexDefinition, List<string> vectorFields)
