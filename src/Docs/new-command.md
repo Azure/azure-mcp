@@ -35,6 +35,9 @@ A complete command implementation requires the following files in this exact str
 
 5. Registration in: `src/Commands/CommandFactory.cs`
 
+6. Test class: `test/Client/{Service}CommandTests.cs`
+   Example: `test/Client/StorageCommandTests.cs`
+
 ### File Organization Rules
 
 1. Commands and Arguments must follow exact hierarchical structure:
@@ -332,29 +335,6 @@ private static void ConfigureServices(IServiceCollection services)
 using AzureMcp.Services.Azure.YourService;  // For YourService implementation
 ```
 
-3. After registering the command, update the MCP Server service registration:
-
-Location: `src/Commands/Server/ServiceStartCommand.cs`
-
-Check if your service is registered in the `ConfigureServices` method. Look for a line like:
-```csharp
-services.AddSingleton(rootServiceProvider.GetRequiredService<I{Service}Service>());
-```
-
-If not found, add it alongside the other service registrations:
-```csharp
-private static void ConfigureServices(IServiceCollection services, IServiceProvider rootServiceProvider)
-{
-    services.AddSingleton(rootServiceProvider.GetRequiredService<CommandFactory>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<ISubscriptionService>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<IStorageService>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<ICosmosService>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<IMonitorService>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<IResourceGroupService>());
-    services.AddSingleton(rootServiceProvider.GetRequiredService<IYourService>()); // Add your service here
-}
-```
-
 This ensures your service is available when the MCP Server is running in both STDIO and SSE modes.
 
 ## Step 7: Update README.md Documentation
@@ -404,8 +384,8 @@ There are two ways to create arguments:
 1. Using base command helper methods (preferred):
 ```csharp
 RegisterArgumentChain(
-    CreateAccountArgument(GetAccountOptions),
-    CreateContainerArgument(GetContainerOptions)
+    CreateAccountArgument(GetAccountOptions()),
+    CreateContainerArgument(GetContainerOptions())
 );
 ```
 
