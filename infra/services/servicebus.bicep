@@ -34,6 +34,23 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = {
   }
 }
 
+resource serviceBusTopic 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' = {
+  parent: serviceBusNamespace
+  name: 'topic1'
+  properties: {
+    defaultMessageTimeToLive: 'PT1H'
+  }
+}
+
+resource serviceBusSubscription 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2024-01-01' = {
+  parent: serviceBusTopic
+  name: 'subscription1'
+  properties: {
+    defaultMessageTimeToLive: 'PT1H'
+    lockDuration: 'PT5M'
+  }
+}
+
 resource dataOwnerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
   // This is the Service Bus Data Owner role.
