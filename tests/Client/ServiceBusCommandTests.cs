@@ -13,6 +13,10 @@ namespace AzureMcp.Tests.Client
     public class ServiceBusCommandTests : CommandTestsBase,
     IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
     {
+        private const string QUEUE_NAME = "queue1";
+        private const string TOPIC_NAME = "topic1";
+        private const string SUBSCRIPTION_NAME = "subscription1";
+
         private readonly string _serviceBusNamespace;
 
         public ServiceBusCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output) : base(mcpClient, liveTestSettings, output)
@@ -24,17 +28,16 @@ namespace AzureMcp.Tests.Client
         [Trait("Category", "Live")]
         public async Task Queue_peek_messages()
         {
-            var queueName = "queue1";
             var numberOfMessages = 2;
 
-            await SendTestMessages(queueName, numberOfMessages);
+            await SendTestMessages(QUEUE_NAME, numberOfMessages);
 
             var result = await CallToolAsync(
                 "azmcp-servicebus-queue-peek",
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, queueName },
+                    { ServiceBus.QueueName, QUEUE_NAME },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                     { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
                 });
@@ -48,20 +51,18 @@ namespace AzureMcp.Tests.Client
         [Trait("Category", "Live")]
         public async Task Topic_subscription_peek_messages()
         {
-            var topicName = "topic1";
-            var subscription = "subscription1";
             var numberOfMessages = 2;
 
-            await SendTestMessages(topicName, numberOfMessages);
+            await SendTestMessages(TOPIC_NAME, numberOfMessages);
 
             var result = await CallToolAsync(
-                "azmcp-servicebus-topic-peek",
+                "azmcp-servicebus-topic-subscription-peek",
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
-                    { ServiceBus.TopicName, topicName },
-                    { ServiceBus.SubscriptionName, subscription },
+                    { ServiceBus.TopicName, TOPIC_NAME },
+                    { ServiceBus.SubscriptionName, SUBSCRIPTION_NAME },
                     { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
                 });
 
@@ -74,18 +75,52 @@ namespace AzureMcp.Tests.Client
         [Trait("Category", "Live")]
         public async Task Queue_details()
         {
-            var queueName = "queue1";
-
             var result = await CallToolAsync(
                 "azmcp-servicebus-queue-details",
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, queueName },
+                    { ServiceBus.QueueName, QUEUE_NAME },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                 });
 
             var details = result.AssertProperty("queueDetails");
+            Assert.Equal(JsonValueKind.Object, details.ValueKind);
+        }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Topic_details()
+        {
+            var result = await CallToolAsync(
+                "azmcp-servicebus-topic-details",
+                new()
+                {
+                    { Common.SubscriptionName, Settings.SubscriptionId },
+                    { ServiceBus.TopicName, TOPIC_NAME },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                });
+
+            var details = result.AssertProperty("topicDetails");
+            Assert.Equal(JsonValueKind.Object, details.ValueKind);
+        }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Subscription_details()
+        {
+            var result = await CallToolAsync(
+                "azmcp-servicebus-topic-subscription-details",
+                new()
+                {
+                    { Common.SubscriptionName, Settings.SubscriptionId },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBus.TopicName, TOPIC_NAME },
+                    { ServiceBus.SubscriptionName, SUBSCRIPTION_NAME },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                });
+
+            var details = result.AssertProperty("subscriptionDetails");
             Assert.Equal(JsonValueKind.Object, details.ValueKind);
         }
 

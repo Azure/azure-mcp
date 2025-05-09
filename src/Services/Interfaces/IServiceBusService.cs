@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using AzureMcp.Arguments;
 using AzureMcp.Models.ServiceBus;
 
@@ -9,6 +10,23 @@ namespace AzureMcp.Services.Interfaces;
 
 public interface IServiceBusService
 {
+    /// <summary>
+    /// Gets the details of a Service Bus subscription.
+    /// </summary>
+    /// <param name="namespaceName">The Service Bus namespace name</param>
+    /// <param name="topicName">The topic name containing the subscription</param>
+    /// <param name="subscriptionName">The subscription name to get details for</param>
+    /// <param name="tenantId">Optional tenant ID</param>
+    /// <param name="retryPolicy">Optional retry policy</param>
+    /// <returns>Subscription details</returns>
+    /// <exception cref="RequestFailedException">When the service request fails</exception>
+    Task<SubscriptionDetails> GetSubscriptionDetails(
+        string namespaceName,
+        string topicName,
+        string subscriptionName,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null);
+
     /// <summary>
     /// Gets the details of a Service Bus queue.
     /// </summary>
@@ -22,6 +40,21 @@ public interface IServiceBusService
     Task<QueueDetails> GetQueueDetails(
         string namespaceName,
         string queueName,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null);
+
+    /// <summary>
+    /// Gets the details of a Service Bus topic.
+    /// </summary>
+    /// <param name="namespaceName">The Service Bus namespace name</param>
+    /// <param name="topicName">The topic name to get details for</param>
+    /// <param name="tenantId">Optional tenant ID</param>
+    /// <param name="retryPolicy">Optional retry policy</param>
+    /// <returns>Topic details</returns>
+    /// <exception cref="RequestFailedException">When the service request fails</exception>
+    Task<TopicDetails> GetTopicDetails(
+        string namespaceName,
+        string topicName,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
 

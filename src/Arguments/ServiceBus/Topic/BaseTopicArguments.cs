@@ -14,9 +14,4 @@ public class BaseTopicArguments : SubscriptionArguments
     /// Name of the topic.
     /// </summary>
     public string? TopicName { get; set; }
-
-    /// <summary>
-    /// Name of the subscription.
-    /// </summary>
-    public string? SubscriptionName { get; set; }
 }

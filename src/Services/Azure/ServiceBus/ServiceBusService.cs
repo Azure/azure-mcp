@@ -24,24 +24,83 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
 
         return new QueueDetails
         {
-            Name = runtimeProperties.Name,
-            LockDuration = properties.LockDuration,
-            RequiresSession = properties.RequiresSession,
             DefaultMessageTimeToLive = properties.DefaultMessageTimeToLive,
-            DeadLetteringOnMessageExpiration = properties.DeadLetteringOnMessageExpiration,
-            MaxDeliveryCount = properties.MaxDeliveryCount,
-            Status = properties.Status,
-            ForwardTo = properties.ForwardTo,
-            ForwardDeadLetteredMessagesTo = properties.ForwardDeadLetteredMessagesTo,
             EnablePartitioning = properties.EnablePartitioning,
             MaxMessageSizeInKilobytes = properties.MaxMessageSizeInKilobytes,
             MaxSizeInMegabytes = properties.MaxSizeInMegabytes,
-            TotalMessageCount = runtimeProperties.TotalMessageCount,
+            Name = properties.Name,
+            Status = properties.Status,
+
             ActiveMessageCount = runtimeProperties.ActiveMessageCount,
+            DeadLetteringOnMessageExpiration = properties.DeadLetteringOnMessageExpiration,
             DeadLetterMessageCount = runtimeProperties.DeadLetterMessageCount,
+            ForwardDeadLetteredMessagesTo = properties.ForwardDeadLetteredMessagesTo,
+            ForwardTo = properties.ForwardTo,
+            LockDuration = properties.LockDuration,
+            MaxDeliveryCount = properties.MaxDeliveryCount,
+            RequiresSession = properties.RequiresSession,
+            ScheduledMessageCount = runtimeProperties.ScheduledMessageCount,
+            SizeInBytes = runtimeProperties.SizeInBytes,
+            TotalMessageCount = runtimeProperties.TotalMessageCount,
+            TransferDeadLetterMessageCount = runtimeProperties.TransferDeadLetterMessageCount,
+            TransferMessageCount = runtimeProperties.TransferMessageCount,
+        };
+    }
+
+    public async Task<SubscriptionDetails> GetSubscriptionDetails(
+        string namespaceName,
+        string topicName,
+        string subscriptionName,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        var credential = await GetCredential(tenantId);
+        var client = new ServiceBusAdministrationClient(namespaceName, credential);
+        var runtimeProperties = (await client.GetSubscriptionRuntimePropertiesAsync(topicName, subscriptionName)).Value;
+        var properties = (await client.GetSubscriptionAsync(topicName, subscriptionName)).Value;
+
+        return new SubscriptionDetails
+        {
+            ActiveMessageCount = runtimeProperties.ActiveMessageCount,
+            DeadLetteringOnMessageExpiration = properties.DeadLetteringOnMessageExpiration,
+            DeadLetterMessageCount = runtimeProperties.DeadLetterMessageCount,
+            EnableBatchedOperations = properties.EnableBatchedOperations,
+            ForwardDeadLetteredMessagesTo = properties.ForwardDeadLetteredMessagesTo,
+            ForwardTo = properties.ForwardTo,
+            LockDuration = properties.LockDuration,
+            MaxDeliveryCount = properties.MaxDeliveryCount,
+            RequiresSession = properties.RequiresSession,
+            TotalMessageCount = runtimeProperties.TotalMessageCount,
+            SubscriptionName = runtimeProperties.SubscriptionName,
+            TopicName = runtimeProperties.TopicName,
             TransferMessageCount = runtimeProperties.TransferMessageCount,
             TransferDeadLetterMessageCount = runtimeProperties.TransferDeadLetterMessageCount,
+        };
+    }
+
+    public async Task<TopicDetails> GetTopicDetails(
+        string namespaceName,
+        string topicName,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        var credential = await GetCredential(tenantId);
+        var client = new ServiceBusAdministrationClient(namespaceName, credential);
+        var runtimeProperties = (await client.GetTopicRuntimePropertiesAsync(topicName)).Value;
+        var properties = (await client.GetTopicAsync(topicName)).Value;
+
+        return new TopicDetails
+        {
+            DefaultMessageTimeToLive = properties.DefaultMessageTimeToLive,
+            EnablePartitioning = properties.EnablePartitioning,
+            MaxMessageSizeInKilobytes = properties.MaxMessageSizeInKilobytes,
+            MaxSizeInMegabytes = properties.MaxSizeInMegabytes,
+            Name = properties.Name,
+            Status = properties.Status,
+
+            SubscriptionCount = runtimeProperties.SubscriptionCount,
             SizeInBytes = runtimeProperties.SizeInBytes,
+            ScheduledMessageCount = runtimeProperties.ScheduledMessageCount,
         };
     }
 
