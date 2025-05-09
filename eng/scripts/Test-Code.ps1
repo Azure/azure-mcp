@@ -22,7 +22,7 @@ Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 # Use xunit.runner.ci.json to disable parallel execution
 Remove-Item "$RepoRoot/tests/xunit.runner.json" -Force
 Write-Output "Deleted existing xunit.runner.json file"
-Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "xunit.runner.json"
+Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "$RepoRoot/tests/xunit.runner.json"
 Write-Output "Renamed xunit.runner.ci.json to xunit.runner.json"
 
 
