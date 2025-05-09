@@ -438,6 +438,8 @@ public static class ArgumentDefinitions
         public const string NamespaceName = "namespace";
         public const string QueueName = "queue";
         public const string MaxMessagesName = "max-messages";
+        public const string TopicName = "topic";
+        public const string SubscriptionName = "subscription";
 
         public static readonly ArgumentDefinition<string> Namespace = new(
             NamespaceName,
@@ -447,6 +449,16 @@ public static class ArgumentDefinitions
         public static readonly ArgumentDefinition<string> Queue = new(
             QueueName,
             "The queue name to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Subscription = new(
+            SubscriptionName,
+            "The name of subscription to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Topic = new(
+            TopicName,
+            "The name of the topic containing the subscription.",
             required: true);
 
         public static readonly ArgumentDefinition<int> MaxMessages = new(

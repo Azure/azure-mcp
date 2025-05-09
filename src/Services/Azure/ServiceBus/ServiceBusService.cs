@@ -24,4 +24,24 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
             return messages.ToList();
         }
     }
+
+    public async Task<List<ServiceBusReceivedMessage>> PeekSubscriptionMessages(
+        string namespaceName,
+        string topicName,
+        string subscriptionName,
+        int maxMessages,
+        string subscription,
+        string? tenantId = null,
+        RetryPolicyArguments? retryPolicy = null)
+    {
+        var credential = await GetCredential(tenantId);
+
+        await using (var client = new ServiceBusClient(namespaceName, credential))
+        await using (var receiver = client.CreateReceiver(topicName, subscriptionName))
+        {
+            var messages = await receiver.PeekMessagesAsync(maxMessages);
+
+            return messages.ToList();
+        }
+    }
 }

@@ -10,8 +10,6 @@ namespace AzureMcp.Tests.Client
     public class ServiceBusCommandTests : CommandTestsBase,
     IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
     {
-        private const string QUEUE_NAME = "queue1";
-
         private readonly string _serviceBusNamespace;
 
         public ServiceBusCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output) : base(mcpClient, liveTestSettings, output)
@@ -21,13 +19,59 @@ namespace AzureMcp.Tests.Client
 
         [Fact]
         [Trait("Category", "Live")]
-        public async Task Should_peek_messages()
+        public async Task Queue_peek_messages()
         {
+            var queueName = "queue1";
             var numberOfMessages = 2;
 
+            await SendTestMessages(queueName, numberOfMessages);
+
+            var result = await CallToolAsync(
+                "azmcp-servicebus-queue-peek",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { ServiceBus.QueueName, queueName },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
+                });
+
+            var messages = result.AssertProperty("messages");
+            Assert.Equal(JsonValueKind.Array, messages.ValueKind);
+            Assert.Equal(numberOfMessages, messages.GetArrayLength());
+        }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Topic_subscription_peek_messages()
+        {
+            var topicName = "topic1";
+            var subscription = "subscription1";
+            var numberOfMessages = 2;
+
+            await SendTestMessages(topicName, numberOfMessages);
+
+            var result = await CallToolAsync(
+                "azmcp-servicebus-queue-peek",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBus.TopicName, topicName },
+                    { ServiceBus.SubscriptionName, subscription },
+                    { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
+                });
+
+            var messages = result.AssertProperty("messages");
+            Assert.Equal(JsonValueKind.Array, messages.ValueKind);
+            Assert.Equal(numberOfMessages, messages.GetArrayLength());
+        }
+
+        private async Task SendTestMessages(string queueOrTopicName, int numberOfMessages)
+        {
             var credentials = new CustomChainedCredential(Settings.TenantId);
             await using (var client = new ServiceBusClient(_serviceBusNamespace, credentials))
-            await using (var sender = client.CreateSender(QUEUE_NAME))
+            await using (var sender = client.CreateSender(queueOrTopicName))
             {
                 var batch = await sender.CreateMessageBatchAsync(TestContext.Current.CancellationToken);
 
@@ -39,20 +83,6 @@ namespace AzureMcp.Tests.Client
 
                 await sender.SendMessagesAsync(batch, TestContext.Current.CancellationToken);
             }
-
-            var result = await CallToolAsync(
-                "azmcp-servicebus-queue-peek",
-                new()
-                {
-                    { "subscription", Settings.SubscriptionId },
-                    { ServiceBus.QueueName, QUEUE_NAME },
-                    { ServiceBus.NamespaceName,  _serviceBusNamespace},
-                    { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
-                });
-
-            var messages = result.AssertProperty("messages");
-            Assert.Equal(JsonValueKind.Array, messages.ValueKind);
-            Assert.Equal(numberOfMessages, messages.GetArrayLength());
         }
     }
 }
