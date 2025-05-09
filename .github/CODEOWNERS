@@ -53,3 +53,11 @@
 
 # ServiceLabel: %area-CosmosDB
 # ServiceOwners:                       @sajeetharan @xiangyan99
+
+# PRLabel: %area-ServiceBus
+/src/Arguments/ServiceBus/             @conniey @JonathanCrd
+/src/Commands/ServiceBus/              @conniey @JonathanCrd
+/src/Services/Azure/ServiceBus/        @conniey @JonathanCrd
+ 
+# ServiceLabel: %area-ServiceBus
+# ServiceOwners:                       @conniey @JonathanCrd
