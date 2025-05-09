@@ -93,8 +93,8 @@ public class CommandFactory
     {
         // Register Azure Best Practices command at the root level
         var bestPractices = new CommandGroup(
-            "best-practices",
-            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code. #llm #best-practices #code-generation #azure #mandatory"
+            "bestpractices",
+            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code."
         );
         _rootGroup.AddSubGroup(bestPractices);
         bestPractices.AddCommand(
