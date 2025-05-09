@@ -15,16 +15,9 @@ namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
 {
-    private readonly Option<string> _queueOption;
-    private readonly Option<int> _maxMessagesOption;
-    private readonly Option<string> _namespaceOption;
-
-    public QueuePeekCommand() : base()
-    {
-        _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
-        _maxMessagesOption = ArgumentDefinitions.ServiceBus.MaxMessages.ToOption();
-        _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
-    }
+    private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
+    private readonly Option<int> _maxMessagesOption = ArgumentDefinitions.ServiceBus.MaxMessages.ToOption();
+    private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
 
     protected override string GetCommandName() => "peek";
 
@@ -59,6 +52,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
     {
         var args = base.BindArguments(parseResult);
         args.Name = parseResult.GetValueForOption(_queueOption);
+        args.Namespace = parseResult.GetValueForOption(_namespaceOption);
         args.MaxMessages = parseResult.GetValueForOption(_maxMessagesOption);
         return args;
     }
