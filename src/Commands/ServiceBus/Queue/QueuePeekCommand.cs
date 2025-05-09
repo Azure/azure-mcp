@@ -3,7 +3,6 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Text.Json.Serialization.Metadata;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Arguments.ServiceBus.Queue;
 using AzureMcp.Models.Argument;

@@ -89,7 +89,6 @@ namespace AzureMcp.Tests.Client
             Assert.Equal(JsonValueKind.Object, details.ValueKind);
         }
 
-
         private async Task SendTestMessages(string queueOrTopicName, int numberOfMessages)
         {
             var credentials = new CustomChainedCredential(Settings.TenantId);
