@@ -1,5 +1,6 @@
-using System;
-using System.IO;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Reflection;
 
 namespace AzureMcp.Helpers
