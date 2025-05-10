@@ -103,20 +103,6 @@ public class CommandFactory
         );
     }
 
-    private void RegisterBestPracticesCommand()
-    {
-        // Register Azure Best Practices command at the root level
-        var bestPractices = new CommandGroup(
-            "bestpractices",
-            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code."
-        );
-        _rootGroup.AddSubGroup(bestPractices);
-        bestPractices.AddCommand(
-            "get",
-            new BestPractices.AzureBestPracticesGetCommand(GetLogger<BestPractices.AzureBestPracticesGetCommand>())
-        );
-    }
-
     private void RegisterCosmosCommands()
     {
         // Create Cosmos command group
