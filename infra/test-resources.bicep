@@ -65,3 +65,14 @@ module keyvault 'services/keyvault.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
+
+module servicebus 'services/servicebus.bicep' = {
+  name: '${deploymentName}-servicebus'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}

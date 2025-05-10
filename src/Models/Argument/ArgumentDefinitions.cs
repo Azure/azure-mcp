@@ -410,4 +410,62 @@ public static class ArgumentDefinitions
             );
         }
     }
+
+    public static class KeyVault
+    {
+        public const string VaultNameParam = "vault";
+        public const string KeyNameParam = "key";
+        public const string KeyTypeParam = "key-type";
+
+        public static readonly ArgumentDefinition<string> VaultName = new(
+            VaultNameParam,
+            "The name of the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyName = new(
+            KeyNameParam,
+            "The name of the key to retrieve/modify from the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyType = new(
+            KeyTypeParam,
+            "The type of key to create (RSA, EC).",
+            required: true);
+    }
+
+    public static class ServiceBus
+    {
+        public const string NamespaceName = "namespace";
+        public const string QueueName = "queue-name";
+        public const string MaxMessagesName = "max-messages";
+        public const string TopicName = "topic-name";
+        public const string SubscriptionName = "subscription-name";
+
+        public static readonly ArgumentDefinition<string> Namespace = new(
+            NamespaceName,
+            "The Service Bus namespace name.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Queue = new(
+            QueueName,
+            "The queue name to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Subscription = new(
+            SubscriptionName,
+            "The name of subscription to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Topic = new(
+            TopicName,
+            "The name of the topic containing the subscription.",
+            required: true);
+
+        public static readonly ArgumentDefinition<int> MaxMessages = new(
+            MaxMessagesName,
+            "The maximum number of messages to return.",
+            defaultValue: 1,
+            required: false
+        );
+    }
 }

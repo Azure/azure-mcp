@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Cosmos;
-using AzureMcp.Commands.Kusto;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
@@ -82,11 +80,27 @@ public class CommandFactory
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
+        RegisterKeyVaultCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterServiceBusCommands();
+    }
+
+    private void RegisterBestPracticesCommand()
+    {
+        // Register Azure Best Practices command at the root level
+        var bestPractices = new CommandGroup(
+            "bestpractices",
+            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code."
+        );
+        _rootGroup.AddSubGroup(bestPractices);
+        bestPractices.AddCommand(
+            "get",
+            new BestPractices.AzureBestPracticesGetCommand(GetLogger<BestPractices.AzureBestPracticesGetCommand>())
+        );
     }
 
     private void RegisterBestPracticesCommand()
@@ -277,6 +291,19 @@ public class CommandFactory
         index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<Search.Index.IndexQueryCommand>()));
     }
 
+    private void RegisterKeyVaultCommands()
+    {
+        var keyVault = new CommandGroup("keyvault", "Key Vault operations - Commands for managing and accessing Azure Key Vault resources.");
+        _rootGroup.AddSubGroup(keyVault);
+
+        var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
+        keyVault.AddSubGroup(keys);
+
+        keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
+        keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
+        keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
+    }
+
     private void RegisterToolsCommands()
     {
         // Create Tools command group
@@ -325,6 +352,28 @@ public class CommandFactory
         var startServer = new ServiceStartCommand();
         mcpServer.AddCommand("start", startServer);
 
+    }
+
+    private void RegisterServiceBusCommands()
+    {
+        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources");
+        _rootGroup.AddSubGroup(serviceBus);
+
+        var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
+        queue.AddCommand("peek", new ServiceBus.Queue.QueuePeekCommand());
+        queue.AddCommand("details", new ServiceBus.Queue.QueueDetailsCommand());
+
+        var topic = new CommandGroup("topic", "Topic operations - Commands for using Azure Service Bus topics and subscriptions.");
+        topic.AddCommand("details", new ServiceBus.Topic.TopicDetailsCommand());
+
+        var subscription = new CommandGroup("subscription", "Subscription operations - Commands for using subscriptions within a Service Bus topic.");
+        subscription.AddCommand("peek", new ServiceBus.Topic.SubscriptionPeekCommand());
+        subscription.AddCommand("details", new ServiceBus.Topic.SubscriptionDetailsCommand());
+
+        serviceBus.AddSubGroup(queue);
+        serviceBus.AddSubGroup(topic);
+
+        topic.AddSubGroup(subscription);
     }
 
     private void ConfigureCommands(CommandGroup group)

@@ -24,3 +24,40 @@
 /eng/                                  @Azure/azure-mcp @Azure/azure-sdk-eng
 /.github/                              @Azure/azure-mcp @Azure/azure-sdk-eng
 /.config/                              @Azure/azure-mcp @Azure/azure-sdk-eng
+
+##################
+# Services
+##################
+# PRLabel: %area-Kusto
+/src/Arguments/Kusto/                  @danield137 @xiangyan99
+/src/Commands/Kusto/                   @danield137 @xiangyan99
+/src/Services/Azure/Kusto/             @danield137 @xiangyan99
+
+# ServiceLabel: %area-Kusto
+# ServiceOwners:                       @danield137
+
+
+# PRLabel: %area-KeyVault
+/src/Arguments/KeyVault/               @conniey @JonathanCrd
+/src/Commands/KeyVault/                @conniey @JonathanCrd
+/src/Services/Azure/KeyVault/          @conniey @JonathanCrd
+
+# ServiceLabel: %area-KeyVault
+# ServiceOwners:                       @conniey @JonathanCrd
+
+
+# PRLabel: %area-CosmosDB
+/src/Arguments/Cosmos/               @sajeetharan @xiangyan99
+/src/Commands/Cosmos/                @sajeetharan @xiangyan99
+/src/Services/Azure/Cosmos/          @sajeetharan @xiangyan99
+
+# ServiceLabel: %area-CosmosDB
+# ServiceOwners:                       @sajeetharan @xiangyan99
+
+# PRLabel: %area-ServiceBus
+/src/Arguments/ServiceBus/             @conniey @JonathanCrd
+/src/Commands/ServiceBus/              @conniey @JonathanCrd
+/src/Services/Azure/ServiceBus/        @conniey @JonathanCrd
+ 
+# ServiceLabel: %area-ServiceBus
+# ServiceOwners:                       @shankarsama @EldertGrootenboer
