@@ -32,7 +32,7 @@ public class CommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture li
     public async Task Should_get_best_practices()
     {
         // Act
-        JsonElement? result = await CallToolAsync("azmcp-best-practices-get", new Dictionary<string, object?>());
+        JsonElement? result = await CallToolAsync("azmcp-bestpractices-get", new Dictionary<string, object?>());
 
         Assert.True(result.HasValue, "Tool call did not return a value.");
 
