@@ -21,8 +21,8 @@
     <PackageVersion Include="Azure.ResourceManager.Storage" Version="1.4.0" />
     <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="11.2.2" />
     <PackageVersion Include="Microsoft.Identity.Client.Broker" Version="4.67.2" />
-    <PackageVersion Include="ModelContextProtocol" Version="0.1.0-preview.11" />
-    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="0.1.0-preview.11" />
+    <PackageVersion Include="ModelContextProtocol" Version="0.1.0-preview.13" />
+    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="0.1.0-preview.13" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.48.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
