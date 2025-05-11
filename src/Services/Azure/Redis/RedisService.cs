@@ -120,7 +120,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
         AuthMethod? authMethod = null,
         RetryPolicyArguments? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(cacheName, resourceGroupName, subscriptionId);
 
         try
         {
@@ -227,7 +227,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
         AuthMethod? authMethod = null,
         RetryPolicyArguments? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(clusterName, resourceGroupName, subscriptionId);
 
         try
         {
