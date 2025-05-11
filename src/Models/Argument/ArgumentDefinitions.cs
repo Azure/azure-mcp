@@ -388,8 +388,8 @@ public static class ArgumentDefinitions
         
     public static class Redis
     {
-        public const string CacheName = "cache-name";
-        public const string ClusterName = "cluster-name";
+        public const string CacheName = "cache";
+        public const string ClusterName = "cluster";
 
         public static readonly ArgumentDefinition<string> Cache = new(
             CacheName,
