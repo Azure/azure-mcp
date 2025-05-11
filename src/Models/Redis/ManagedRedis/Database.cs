@@ -10,7 +10,6 @@ public class Database
 
     /// <summary> Name of the Redis cluster containing this database. </summary>
     public string? ClusterName { get; set; }
-
     /// <summary> Name of the resource group containing the Redis cluster that contains this database. </summary>
     public string? ResourceGroupName { get; set; }
 
