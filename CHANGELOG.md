@@ -10,6 +10,8 @@
 
 ### Other Changes
 
+- Updated to the latest ModelContextProtocol library. https://github.com/Azure/azure-mcp/pull/161
+
 ## 0.0.15 (2025-05-09)
 
 ### Features Added
