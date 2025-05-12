@@ -13,6 +13,8 @@ If you are contributing significant changes, or if the issue is already assigned
 2. Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions.
 3. Install [Node.js](https://nodejs.org/en/download) 20 or later
    * Ensure `node` and `npm` are in your path
+4. Install [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) 7.0 or later.
+   * Optional for coding but required for running build, test and resource deployment scripts
 
 ### Project Structure
 
@@ -95,19 +97,11 @@ After deploying test resources, you should have a `.testsettings.json` file with
 ./eng/scripts/Test-Code.ps1 -Live
 ```
 
-## Installing Git Hooks
-
-To ensure consistent code quality, the pre-commit hook is automatically installed before every build. This hook will ensure that your code adheres to the required standards.
-
-### Automatic Setup
-
-The pre-push hook is installed automatically when you build the project. You do not need to run any additional commands. The hook is located in the `eng/scripts/git-hooks/` directory and is copied to the `.git/hooks/` folder during the build process.
-
-Powershell is required for hook installation. For installation instructions, see [Installing PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell).
-
 ## Code Style
 
-Run `dotnet format src/AzureMcp.sln` before submitting.
+To ensure consistent code quality, code format checks will run during all PR and CI builds.
+
+To catch format errors early, run `dotnet format src/AzureMcp.sln` before submitting.
 
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)
@@ -116,6 +110,13 @@ Run `dotnet format src/AzureMcp.sln` before submitting.
 - Use proper error handling patterns
 - XML documentation for public APIs
 - Follow Model Context Protocol (MCP) patterns
+
+### Installing Git Hooks
+
+You can install our pre-push hook to catch code format issues by automatically running `dotnet format` before each `git push`.
+
+- `./eng/scripts/Install-GitHooks.ps1` - Installs the pre-push hook into your local repo
+- `./eng/scripts/Remove-GitHooks.ps1` - Disables any git hooks in your local repo
 
 ## Model Context Protocol (MCP)
 
