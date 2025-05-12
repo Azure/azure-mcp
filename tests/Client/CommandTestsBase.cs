@@ -17,21 +17,19 @@ public abstract class CommandTestsBase : IDisposable
     protected StringBuilder FailureOutput { get; } = new();
     protected ITestOutputHelper Output { get; }
 
-    public CommandTestsBase(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
+    public CommandTestsBase(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     {
-        Client = mcpClient.Client;
-        Settings = liveTestSettings.Settings;
+        Client = liveTestFixture.Client;
+        Settings = liveTestFixture.Settings;
         Output = output;
-
-        output.WriteLine($"Starting");
     }
 
     protected async Task<JsonElement?> CallToolAsync(string command, Dictionary<string, object?> parameters)
     {
         // Output will be streamed, so if we're not in debug mode, hold the debug output for logging in the failure case
         Action<string> writeOutput = Settings.DebugOutput
-        ? s => Output.WriteLine(s)
-        : s => FailureOutput.AppendLine(s);
+            ? s => Output.WriteLine(s)
+            : s => FailureOutput.AppendLine(s);
 
         writeOutput($"request: {JsonSerializer.Serialize(new { command, parameters })}");
 
@@ -61,8 +59,6 @@ public abstract class CommandTestsBase : IDisposable
 
     public void Dispose()
     {
-        Output.WriteLine("Ending");
-
         if (!Settings.DebugOutput && TestContext.Current.TestState?.Result == TestResult.Failed && FailureOutput.Length > 0)
         {
             Output.WriteLine(FailureOutput.ToString());

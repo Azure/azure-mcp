@@ -5,9 +5,9 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class KeyVaultCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
-    : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output),
+    IClassFixture<LiveTestFixture>
 {
     [Fact]
     [Trait("Category", "Live")]
