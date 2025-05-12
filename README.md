@@ -169,7 +169,7 @@ For a step-by-step installation, follow these instructions:
 For a step-by-step installation, follow these instructions:
 1. Clone repository
 2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
-3. Create an `.env` file with environment variables that [match one of the `EnvironmentalCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
+3. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
 ```json
 AZURE_TENANT_ID={YOUR_AZURE_TENANT_ID}
 AZURE_CLIENT_ID={YOUR_AZURE_CLIENT_ID}
