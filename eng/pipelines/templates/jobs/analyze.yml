@@ -10,7 +10,7 @@ jobs:
   dependsOn: []
   steps:
   - checkout: self
-  
+
   - task: UseDotNet@2
     displayName: "Use .NET SDK from global.json"
     retryCountOnTaskFailure: 3
@@ -27,12 +27,10 @@ jobs:
     parameters:
       ContinueOnError: false
 
-  # Link detection into private repos is not supported.
-  # TODO: Uncomment when the repo is public
-  # - template: /eng/common/pipelines/templates/steps/verify-links.yml
-  #   parameters:
-  #     Condition: succeededOrFailed()
-  #     Directory: ""
-  #     CheckLinkGuidance: $true
-  #     ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-  #       Urls: (eng/common/scripts/get-markdown-files-from-changed-files.ps1)
+  - template: /eng/common/pipelines/templates/steps/verify-links.yml
+    parameters:
+      Condition: succeededOrFailed()
+      Directory: ""
+      CheckLinkGuidance: $true
+      ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+        Urls: (eng/common/scripts/get-markdown-files-from-changed-files.ps1)
