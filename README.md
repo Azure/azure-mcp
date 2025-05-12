@@ -169,7 +169,13 @@ For a step-by-step installation, follow these instructions:
 For a step-by-step installation, follow these instructions:
 1. Clone repository
 2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
-3. Add `.vscode/mcp.json` or update existing MCP configuration
+3. Create an `.env` file with environment variables that [match one of the `EnvironmentalCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
+```json
+AZURE_TENANT_ID={YOUR_AZURE_TENANT_ID}
+AZURE_CLIENT_ID={YOUR_AZURE_CLIENT_ID}
+AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
+```
+1. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
 ```json
 {
   "servers": {
@@ -179,12 +185,16 @@ For a step-by-step installation, follow these instructions:
         "run",
         "-i",
         "--rm",
-        "azure/azuremcp"
+        "azure/azuremcp",
+        "--env-file",
+        "/full/path/to/.env"
       ]
     }
   }
 }
 ```
+
+Optionally, customers can use `--env` or `--volume` to pass authentication values.
 
 ## 🧪 Test the Azure MCP Server
 
