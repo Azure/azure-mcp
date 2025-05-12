@@ -47,8 +47,8 @@ The project is organized as follows:
 4. Follow the implementation guidelines in [src/Docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/src/Docs/new-command.md)
 
 5. Add documentation for new command:
-   - [azmcp-commands.md](./docs/azmcp-commands.md)
-   - [README.md](./README.md)
+   - [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
 
 6. Create a Pull Request:
    - Reference the issue you created

@@ -82,9 +82,9 @@ This error indicates that the targeted resource is configured to disallow access
 
 Azure MCP currently relies on **access key-based authentication** for some resources. However, many Azure services (e.g., **Cosmos DB**, **Azure Storage**) can be configured to enforce **Azure Entra ID** (formerly AAD) authentication only, thereby disabling local authorization mechanisms such as:
 
-- Primary or secondary access keys  
-- Shared access signatures (SAS)  
-- Connection strings containing embedded keys  
+- Primary or secondary access keys
+- Shared access signatures (SAS)
+- Connection strings containing embedded keys
 
 When these local authorization methods are disabled, any access attempt from Azure MCP using them will result in a `401 Unauthorized` error.
 
@@ -97,7 +97,7 @@ Support for **Azure Entra ID-based authentication** in these scenarios is to be 
 
 ### AADSTS500200 error: User account is a personal Microsoft account
 
-This error occurs because the Azure MCP server uses Azure Identity SDK's `DefaultAzureCredential` for authentication, which is specifically designed for Azure Active Directory (Azure Entra ID) authentication flows, as they're designed to work with Azure services that require Azure AD-based authentication and authorization. See the [Authentication](/README.md#-authentication) section in for more details.
+This error occurs because the Azure MCP server uses Azure Identity SDK's `DefaultAzureCredential` for authentication, which is specifically designed for Azure Active Directory (Azure Entra ID) authentication flows, as they're designed to work with Azure services that require Azure AD-based authentication and authorization. See the [Authentication](https://github.com/Azure/blob/main/README.md#-authentication) section in for more details.
 
 Personal Microsoft accounts (@hotmail.com, @outlook.com, or @live.com) use a different authentication system that isn't compatible with these flows.
 
