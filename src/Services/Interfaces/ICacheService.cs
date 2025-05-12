@@ -42,4 +42,17 @@ public interface ICacheService
     /// <param name="group">The group name.</param>
     /// <returns>A collection of keys in the specified group.</returns>
     ValueTask<IEnumerable<string>> GetGroupKeysAsync(string group);
+
+    /// <summary>
+    /// Clears all items from the cache.
+    /// </summary>
+    /// <returns>A ValueTask representing the asynchronous operation.</returns>
+    ValueTask ClearAsync();
+
+    /// <summary>
+    /// Clears all items from a specific group in the cache.
+    /// </summary>
+    /// <param name="group">The group name to clear.</param>
+    /// <returns>A ValueTask representing the asynchronous operation.</returns>
+    ValueTask ClearGroupAsync(string group);
 }

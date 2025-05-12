@@ -69,5 +69,40 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         return new ValueTask<IEnumerable<string>>(Array.Empty<string>());
     }
 
-    private static string GetGroupKey(string group, string key) => $"{group}_{key}";
+    public ValueTask ClearAsync()
+    {
+        // Clear all items from the memory cache
+        if (_memoryCache is MemoryCache memoryCache)
+        {
+            memoryCache.Compact(1.0);
+        }
+
+        // Clear all group tracking
+        _groupKeys.Clear();
+
+        return default;
+    }
+
+    public ValueTask ClearGroupAsync(string group)
+    {
+        // If this group doesn't exist, nothing to do
+        if (!_groupKeys.TryGetValue(group, out var keys))
+        {
+            return default;
+        }
+
+        // Remove each key in the group from the cache
+        foreach (var key in keys)
+        {
+            string cacheKey = GetGroupKey(group, key);
+            _memoryCache.Remove(cacheKey);
+        }
+
+        // Remove the group from tracking
+        _groupKeys.TryRemove(group, out _);
+
+        return default;
+    }
+
+    private static string GetGroupKey(string group, string key) => $"{group}:{key}";
 }
