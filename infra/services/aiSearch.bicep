@@ -35,6 +35,12 @@ resource search 'Microsoft.Search/searchServices@2025-02-01-preview' = {
     name: 'free'
   }
   properties: {
+    authOptions: {
+      aadOrApiKey: {
+        aadAuthFailureMode: 'http401WithBearerChallenge'
+      }
+    }
+    disableLocalAuth: true
     replicaCount: 1
     partitionCount: 1
     hostingMode: 'default'
