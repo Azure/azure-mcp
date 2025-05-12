@@ -236,7 +236,7 @@ The Azure MCP Server seamlessly integrates with your host operating system's aut
 6. **Azure Developer CLI** (`AzureDeveloperCliCredential`) - Uses your azd login
 7. **Interactive Browser** (`InteractiveBrowserCredential`) - Falls back to browser-based login if needed
 
-If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. 
+If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
 
 If you're running into any issues with authentication, visit our [troubleshooting guide](/TROUBLESHOOTING.md).
 
