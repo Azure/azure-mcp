@@ -11,3 +11,5 @@ node_modules
 .testsettings.json
 
 .env
+.env.local
+.env.*.local
