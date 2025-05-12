@@ -143,6 +143,13 @@ package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://de
 
 Only manual runs of the pipeline sign and publish packages.  Building `main` or `hotfix/*` will publish to `npmjs.com`, all other refs will publish to the [public dev feed](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js).
 
+Packages published to the npmjs.com will always use the `@latest` [dist-tag](https://docs.npmjs.com/downloading-and-installing-packages-locally#installing-a-package-with-dist-tags).
+
+Packages published to the dev feed will use:
+- `@latest` for the latest official/release build
+- `@dev` for the latest CI build of main
+- `@pre` for any arbitrary pipeline run or feature branch build
+
 ### PR Validation
 
 To run live tests for a PR, inspect the PR code for any suspicious changes, then add the comment `/azp run azure - mcp` to the pull request.  This will queue a PR triggered run which will build, run unit tests, deploy test resources and run live tests.
