@@ -13,7 +13,7 @@ If you are contributing significant changes, or if the issue is already assigned
 2. Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions.
 3. Install [Node.js](https://nodejs.org/en/download) 20 or later
    * Ensure `node` and `npm` are in your path
-4. Install [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) 7.0 or later.
+4. Install [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) 7.0 or later.
    * Optional for coding but required for running build, test and resource deployment scripts
 
 ### Project Structure

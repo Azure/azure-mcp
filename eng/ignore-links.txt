@@ -1,3 +1,9 @@
 # VS Code install links
-https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D
-https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D&quality=insiders
+https://insiders.vscode.dev/redirect/mcp/install?name=Azure MCP Server&amp;config={"command"%3A"npx"%2C"args"%3A%5B"-y"%2C"%40azure%2Fmcp%40latest"%2C"server"%2C"start"%5D}
+https://insiders.vscode.dev/redirect/mcp/install?name=Azure MCP Server&amp;config={"command"%3A"npx"%2C"args"%3A%5B"-y"%2C"%40azure%2Fmcp%40latest"%2C"server"%2C"start"%5D}&amp;quality=insiders
+
+# Internal devops project
+https://dev.azure.com/azure-sdk/internal/_build?definitionId=7571
+
+# Link check times out, but link is valid
+https://aka.ms/security.md/msrc/bounty
