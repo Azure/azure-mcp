@@ -36,6 +36,7 @@
         "MACVMIMAGE",
         "pscore",
         "resourcegroup",
+        "resourcegroups",
         "testsettings",
         "vectorizable",
         "Vectorizer",
