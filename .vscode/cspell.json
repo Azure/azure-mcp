@@ -18,12 +18,16 @@
     ],
     "words": [
         "1espt",
+        "ADMINPROVIDER",
         "appconfig",
         "azmcp",
         "azsdk",
         "azuresdk",
+        "cslschema",
         "codesign",
         "cvzf",
+        "kcsb",
+        "Kusto",
         "LINUXOS",
         "LINUXPOOL",
         "LINUXVMIMAGE",
@@ -31,10 +35,14 @@
         "MACPOOL",
         "MACVMIMAGE",
         "pscore",
+        "resourcegroup",
         "testsettings",
+        "vectorizable",
+        "Vectorizer",
         "vsts",
         "WINDOWSOS",
         "WINDOWSPOOL",
-        "WINDOWSVMIMAGE"
+        "WINDOWSVMIMAGE",
+        "Xunit"
     ]
 }
