@@ -12,6 +12,7 @@ public class SubscriptionService(ICacheService cacheService, ITenantService tena
     : BaseAzureService(tenantService), ISubscriptionService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private const string CACHE_GROUP = "subscription";
     private const string CACHE_KEY = "subscriptions";
     private const string SUBSCRIPTION_CACHE_KEY = "subscription";
     private static readonly TimeSpan CACHE_DURATION = TimeSpan.FromHours(12);
@@ -20,7 +21,7 @@ public class SubscriptionService(ICacheService cacheService, ITenantService tena
     {
         // Try to get from cache first
         var cacheKey = string.IsNullOrEmpty(tenant) ? CACHE_KEY : $"{CACHE_KEY}_{tenant}";
-        var cachedResults = await _cacheService.GetAsync<List<ArgumentOption>>(cacheKey, CACHE_DURATION);
+        var cachedResults = await _cacheService.GetAsync<List<ArgumentOption>>(CACHE_GROUP, cacheKey, CACHE_DURATION);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -41,7 +42,7 @@ public class SubscriptionService(ICacheService cacheService, ITenantService tena
         }
 
         // Cache the results
-        await _cacheService.SetAsync(cacheKey, results, CACHE_DURATION);
+        await _cacheService.SetAsync(CACHE_GROUP, cacheKey, results, CACHE_DURATION);
 
         return results;
     }
@@ -57,7 +58,7 @@ public class SubscriptionService(ICacheService cacheService, ITenantService tena
         var cacheKey = string.IsNullOrEmpty(tenant)
             ? $"{SUBSCRIPTION_CACHE_KEY}_{subscriptionId}"
             : $"{SUBSCRIPTION_CACHE_KEY}_{subscriptionId}_{tenant}";
-        var cachedSubscription = await _cacheService.GetAsync<SubscriptionResource>(cacheKey, CACHE_DURATION);
+        var cachedSubscription = await _cacheService.GetAsync<SubscriptionResource>(CACHE_GROUP, cacheKey, CACHE_DURATION);
         if (cachedSubscription != null)
         {
             return cachedSubscription;
@@ -71,7 +72,7 @@ public class SubscriptionService(ICacheService cacheService, ITenantService tena
         }
 
         // Cache the result using subscription ID
-        await _cacheService.SetAsync(cacheKey, response.Value, CACHE_DURATION);
+        await _cacheService.SetAsync(CACHE_GROUP, cacheKey, response.Value, CACHE_DURATION);
 
         return response.Value;
     }
