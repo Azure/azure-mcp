@@ -7,9 +7,9 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class CosmosCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
-    : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output),
+    IClassFixture<LiveTestFixture>
 {
     [Fact]
     [Trait("Category", "Live")]

@@ -84,20 +84,56 @@ Test requirements:
 
 ### Live Tests
 
-Before running live tests, install Azure Powershell, login, then run:
-```pwsh
-./eng/common/TestResources/New-TestResources.ps1 `
-  -SubscriptionId YourSubscriptionId `
-  -ResourceGroupName YourResourceGroupName `
-  -Verbose `
-  -Force
-```
+Before running live tests,
+- [Install Azure Powershell](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell)
+- [Install Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#install-manually)
+- Login to Azure-Powershell
+  - [`Connect-AzAccount`](https://learn.microsoft.com/en-us/powershell/azure/authenticate-interactive?view=azps-13.4.0)
+- Deploy test resources
+    ```pwsh
+    ./eng/common/TestResources/New-TestResources.ps1 `
+    -SubscriptionId YourSubscriptionId `
+    -ResourceGroupName YourResourceGroupName `
+    -Verbose `
+    -Force
+    ```
 
-Omitting the `-ResourceGroupName` parameter will default the name to a hash of your username. Omitting the `-SubscriptionId` parameter will deploy to your default subscription. Internal users omitting the `-SubscriptionId` parameter will deploy to the playground subscription.
+    Omitting the `-ResourceGroupName` parameter will default the resource group name to "rg-{username}".
 
-After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the root of the repo.  You can run live tests with:
+    Internal users can omit the `-SubscriptionId` parameter to default to the playground subscription.
+
+After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the root of the repo.
+
+You can run live tests with:
 ```pwsh
 ./eng/scripts/Test-Code.ps1 -Live
+```
+
+### `npx` live tests
+
+You can set the `TestPackage` parameter in `.testsettings.json` to have live tests run `npx` targeting an arbitrary Azure MCP package.
+
+```json
+{
+  "TenantId": "a20062a8-ff76-41c2-8a6d-5e843da7b051",
+  "TenantName": "Your Tenant",
+  "SubscriptionId": "cd27afdc-9976-4f08-96e9-cad120a91560",
+  "SubscriptionName": "Your Subscription",
+  "ResourceGroupName": "rg-abcdefg",
+  "ResourceBaseName": "t1234567890",
+  "TestPackage": "@azure/mcp@0.0.10"
+}
+```
+
+To run live tests against the local build of an npm module, as opposed to the bin folder's azmcp executable, run:
+```pwsh
+./eng/scripts/Build-Local.ps1
+```
+
+This will produce .tgz files in the `.dist` directory and set the `TestPackage` parameter in the `.testsettings.json` file.
+
+```json
+  "TestPackage": "file://D:\\repos\\azure-mcp\\.dist\\wrapper\\azure-mcp-0.0.12-alpha.1746488279.tgz"
 ```
 
 ## Code Style

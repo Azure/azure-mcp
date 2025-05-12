@@ -10,9 +10,9 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClientFixture>
+public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<LiveTestFixture>
 {
-    private readonly IMcpClient _client = fixture.Client;
+    private readonly IMcpClient _client = liveTestFixture.Client;
 
     [Fact]
     [Trait("Category", "Live")]

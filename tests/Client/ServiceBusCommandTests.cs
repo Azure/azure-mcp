@@ -10,8 +10,7 @@ using static AzureMcp.Models.Argument.ArgumentDefinitions;
 
 namespace AzureMcp.Tests.Client
 {
-    public class ServiceBusCommandTests : CommandTestsBase,
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+    public class ServiceBusCommandTests : CommandTestsBase, IClassFixture<LiveTestFixture>
     {
         private const string QUEUE_NAME = "queue1";
         private const string TOPIC_NAME = "topic1";
@@ -19,7 +18,7 @@ namespace AzureMcp.Tests.Client
 
         private readonly string _serviceBusNamespace;
 
-        public ServiceBusCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output) : base(mcpClient, liveTestSettings, output)
+        public ServiceBusCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : base(liveTestFixture, output)
         {
             _serviceBusNamespace = $"{Settings.ResourceBaseName}.servicebus.windows.net";
         }

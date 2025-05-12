@@ -55,6 +55,11 @@ jobs:
         Pool: $(Pool)
         ${{insert}}: ${{ parameters.EnvVars }}
 
+  - pwsh: |
+      ./eng/scripts/Build-Local.ps1
+    displayName: "Build local package"
+    workingDirectory: $(Build.SourcesDirectory)
+
   - task: AzurePowershell@5
     displayName: "Run tests - az pwsh"
     condition: and(succeeded(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))

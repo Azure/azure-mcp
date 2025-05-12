@@ -11,5 +11,7 @@ public class LiveTestSettings
     public string SubscriptionName { get; set; } = string.Empty;
     public string ResourceGroupName { get; set; } = string.Empty;
     public string ResourceBaseName { get; set; } = string.Empty;
+    public string SettingsDirectory { get; set; } = string.Empty;
+    public string TestPackage { get; set; } = string.Empty;
     public bool DebugOutput { get; set; }
 }

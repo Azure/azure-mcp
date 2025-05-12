@@ -1,37 +1,39 @@
+﻿using System.Text.Json;
+using Xunit;
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
-using Xunit;
-
-namespace AzureMcp.Tests.Client.Helpers;
-
-public class LiveTestSettingsFixture : IAsyncLifetime
+namespace AzureMcp.Tests.Client.Helpers
 {
-    public LiveTestSettings Settings { get; private set; } = new();
-
-    public async ValueTask InitializeAsync()
+    public class LiveTestSettingsFixture : IAsyncLifetime
     {
-        var testSettingsFileName = ".testsettings.json";
-        var directory = Path.GetDirectoryName(typeof(CommandTests).Assembly.Location);
-        while (!string.IsNullOrEmpty(directory))
+        public LiveTestSettings Settings { get; private set; } = new();
+
+        public virtual async ValueTask InitializeAsync()
         {
-            var testSettingsFilePath = Path.Combine(directory, testSettingsFileName);
-            if (File.Exists(testSettingsFilePath))
+            var testSettingsFileName = ".testsettings.json";
+            var directory = Path.GetDirectoryName(typeof(CommandTests).Assembly.Location);
+            while (!string.IsNullOrEmpty(directory))
             {
-                var content = await File.ReadAllTextAsync(testSettingsFilePath);
+                var testSettingsFilePath = Path.Combine(directory, testSettingsFileName);
+                if (File.Exists(testSettingsFilePath))
+                {
+                    var content = await File.ReadAllTextAsync(testSettingsFilePath);
 
-                Settings = JsonSerializer.Deserialize<LiveTestSettings>(content)
-                    ?? throw new Exception("Unable to deserialize live test settings");
+                    Settings = JsonSerializer.Deserialize<LiveTestSettings>(content)
+                        ?? throw new Exception("Unable to deserialize live test settings");
 
-                return;
+                    Settings.SettingsDirectory = directory;
+
+                    return;
+                }
+
+                directory = Path.GetDirectoryName(directory);
             }
 
-            directory = Path.GetDirectoryName(directory);
+            throw new FileNotFoundException($"Test settings file '{testSettingsFileName}' not found in the assembly directory or its parent directories.");
         }
 
-        throw new FileNotFoundException($"Test settings file '{testSettingsFileName}' not found in the assembly directory or its parent directories.");
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
