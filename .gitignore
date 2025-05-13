@@ -10,3 +10,6 @@ node_modules
 .npmrc
 .testsettings.json
 
+.env
+.env.local
+.env.*.local

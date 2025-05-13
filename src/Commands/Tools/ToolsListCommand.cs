@@ -44,24 +44,23 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
         }
     }
 
-    private static CommandInfo CreateCommand(string hyphenatedName, IBaseCommand command)
+    private static CommandInfo CreateCommand(string tokenizedName, IBaseCommand command)
     {
-        var argumentInfos = command.GetCommand().Options
-            ?.Where(arg => !arg.IsHidden)
-            ?.Select(arg =>
-            {
-                return new ArgumentInfo(
-                    name: arg.Name,
-                    description: arg.Description!,
-                    required: arg.IsRequired);
-            })
+        var commandDetails = command.GetCommand();
+
+        var argumentInfos = commandDetails.Options?
+            .Where(arg => !arg.IsHidden)
+            .Select(arg => new ArgumentInfo(
+                name: arg.Name,
+                description: arg.Description!,
+                required: arg.IsRequired))
             .ToList();
 
         return new CommandInfo
         {
-            Name = command.GetCommand().Name,
-            Description = command.GetCommand().Description ?? string.Empty,
-            Command = hyphenatedName.Replace('-', ' '),
+            Name = commandDetails.Name,
+            Description = commandDetails.Description ?? string.Empty,
+            Command = tokenizedName.Replace(CommandFactory.Separator, ' '),
             Arguments = argumentInfos,
         };
     }

@@ -293,7 +293,6 @@
                 "DOTNET_ENVIRONMENT": "Development"
             }
         },
-        
         {
             "name": "Debug Storage Table List",
             "type": "coreclr",
@@ -388,6 +387,30 @@
             "env": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        {
+            "name": "Debug Monitor TableType List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "monitor",
+                "table-type",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--workspace",
+                "${input:workspaceId}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
@@ -459,6 +482,12 @@
             "id": "cosmosContainerName",
             "type": "promptString",
             "description": "Cosmos DB Container Name",
+            "default": ""
+        },
+        {
+            "id": "resourceGroup",
+            "type": "promptString",
+            "description": "Azure Resource Group",
             "default": ""
         }
     ]

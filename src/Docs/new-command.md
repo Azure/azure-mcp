@@ -238,7 +238,16 @@ public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resourc
 
 ## Step 5: Register Command in CommandFactory
 
-Location: `src/Commands/CommandFactory.cs`
+After creating your new command, update CommandFactory to register it. For instance, if adding a "table-type list" command, add:
+
+```csharp
+// In RegisterMonitorCommands()
+var monitorTableType = new CommandGroup("table-type", "Log Analytics workspace table type operations - Commands for listing table types in Log Analytics workspaces.");
+monitor.AddSubGroup(monitorTableType);
+monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
+```
+
+This ensures future requests include registration updates.
 
 Commands must be registered in service-specific helper methods following these rules:
 

@@ -122,10 +122,12 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            return [.. tables
+            return tables
                 .Where(table => string.IsNullOrEmpty(tableType) || table.Data.Schema.TableType.ToString() == tableType)
-                .Select(table => table.Data.Name)
-                .OrderBy(name => name)];
+                .Select(table => table.Data.Name ?? string.Empty) // ensure non-null
+                .Where(name => !string.IsNullOrEmpty(name))
+                .OrderBy(name => name)
+                .ToList();
         }
         catch (Exception ex)
         {
@@ -222,6 +224,47 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
             };
 
             throw new Exception(errorMessage, ex);
+        }
+    }
+
+    public async Task<List<string>> ListTableTypes(
+        string subscription,
+        string resourceGroup,
+        string workspace,
+        string? tenant,
+        RetryPolicyArguments? retryPolicy)
+    {
+        ValidateRequiredParameters(subscription, resourceGroup, workspace);
+        try
+        {
+            var (_, resolvedWorkspaceName) = await GetWorkspaceInfo(workspace, subscription, tenant, retryPolicy);
+
+            var resourceGroupResource = await _resourceGroupService.GetResourceGroupResource(subscription, resourceGroup, tenant, retryPolicy)
+                ?? throw new Exception($"Resource group {resourceGroup} not found in subscription {subscription}");
+            var workspaceResponse = await resourceGroupResource.GetOperationalInsightsWorkspaceAsync(resolvedWorkspaceName)
+                .ConfigureAwait(false);
+
+            if (workspaceResponse?.Value == null)
+            {
+                throw new Exception($"Workspace {resolvedWorkspaceName} not found in resource group {resourceGroup}");
+            }
+
+            var workspaceResource = workspaceResponse.Value;
+            var tableOperations = workspaceResource.GetOperationalInsightsTables();
+            var tables = await tableOperations.GetAllAsync().ToListAsync().ConfigureAwait(false);
+
+            var tableTypes = tables
+                .Select(table => table.Data.Schema.TableType?.ToString() ?? string.Empty)
+                .Where(type => !string.IsNullOrEmpty(type))
+                .Distinct()
+                .OrderBy(type => type)
+                .ToList();
+
+            return tableTypes;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error listing table types: {ex.Message}", ex);
         }
     }
 

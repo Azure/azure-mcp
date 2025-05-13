@@ -66,7 +66,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourcesAsync(cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.ListResourcesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -75,7 +75,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Read_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ReadResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.ReadResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -84,7 +84,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Templates_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListResourceTemplatesAsync(cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.ListResourceTemplatesAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -93,7 +93,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Subscribe_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.SubscribeToResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.SubscribeToResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -102,7 +102,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Resources_Unsubscribe_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.UnsubscribeFromResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.UnsubscribeFromResourceAsync("test://resource", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -118,7 +118,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Prompts_List_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.ListPromptsAsync(cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.ListPromptsAsync(cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }
@@ -127,7 +127,7 @@ public class ClientToolTests(McpClientFixture fixture) : IClassFixture<McpClient
     [Trait("Category", "Live")]
     public async Task Should_Error_When_Prompts_Get_Not_Supported()
     {
-        var ex = await Assert.ThrowsAsync<McpException>(() => _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
+        var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
     }

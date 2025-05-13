@@ -18,7 +18,7 @@ resources:
     type: git
     name: internal/azure-sdk-build-tools
     ref: refs/tags/azure-sdk-build-tools_20250307.1
-    
+
 extends:
   template: /eng/pipelines/templates/1es-redirect.yml
   parameters:
@@ -36,6 +36,7 @@ extends:
       - template: /eng/pipelines/templates/jobs/initialize.yml
         parameters:
           ReleaseRun: ${{ parameters.ReleaseRun }}
+      - template: /eng/pipelines/templates/jobs/analyze.yml
       - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
         parameters:
           SparseCheckout: false
@@ -76,7 +77,7 @@ extends:
             CloudConfig:
               Cloud: Public
               ServiceConnection: azure-sdk-tests-public
-         
+
     # # All builds in the internal project get signing
     - stage: SignAndPack
       ${{ if parameters.SkipSigning }}:
@@ -93,7 +94,7 @@ extends:
       - template: /eng/pipelines/templates/jobs/sign-and-pack.yml
         parameters:
           SkipSigning: ${{ parameters.SkipSigning }}
-            
+
     - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release
