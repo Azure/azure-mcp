@@ -53,7 +53,7 @@ The project is organized as follows:
 6. Add CODEOWNERS entry for new command:
    - [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example PR)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
 
-8. Create a Pull Request:
+7. Create a Pull Request:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
