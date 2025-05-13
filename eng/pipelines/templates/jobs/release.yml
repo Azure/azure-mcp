@@ -78,10 +78,10 @@ jobs:
             MainPublisher: 'ESRPRELPACMANTEST'
             ProductState: latest
         - template: /eng/pipelines/templates/steps/publish-to-dev-feed.yml
-            parameters:
-              PathToArtifacts: $(Pipeline.Workspace)/$(PipelineArtifactName)_packed
-              Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
-              Tag: latest
+          parameters:
+            PathToArtifacts: $(Pipeline.Workspace)/$(PipelineArtifactName)_packed
+            Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
+            Tag: latest
 
 - job: UpdatePackageVersion
   displayName: "Update Package Versions"
