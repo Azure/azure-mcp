@@ -1,10 +1,16 @@
 # Release History
 
-## 0.0.16 (Unreleased)
+## 0.0.17 (Unreleased)
 
 ### Features Added
 
 ### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 0.0.16 (2025-05-13)
 
 ### Bugs Fixed
 

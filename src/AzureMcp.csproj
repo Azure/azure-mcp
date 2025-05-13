@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.0.16</Version>
+    <Version>0.0.17</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
