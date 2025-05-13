@@ -34,6 +34,7 @@
         "LINUXOS",
         "LINUXPOOL",
         "LINUXVMIMAGE",
+        "msal",
         "MACOS",
         "MACPOOL",
         "MACVMIMAGE",
