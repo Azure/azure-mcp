@@ -1,6 +1,6 @@
 # Release History
 
-## 0.0.12 (Unreleased)
+## 0.0.16 (Unreleased)
 
 ### Features Added
 
@@ -8,12 +8,52 @@
 
 ### Bugs Fixed
 
+- Fixed being able to pass args containing spaces through an npx call to the cli
+
 ### Other Changes
+
+- Updated to the latest ModelContextProtocol library. https://github.com/Azure/azure-mcp/pull/161
+
+## 0.0.15 (2025-05-09)
+
+### Features Added
+
+- Support for getting properties and runtime information for Azure Service Bus queues, topics, and subscriptions. https://github.com/Azure/azure-mcp/pull/150/
+- Support for peeking at Azure Service Bus messages from queues or subscriptions. https://github.com/Azure/azure-mcp/pull/144
+- Adds Best Practices tool that provides guidance to LLMs for effective code generation. https://github.com/Azure/azure-mcp/pull/153 https://github.com/Azure/azure-mcp/pull/156
+
+### Other Changes
+
+- Disabled Parallel testing in the ADO pipeline for Live Tests https://github.com/Azure/azure-mcp/pull/151
+
+## 0.0.14 (2025-05-07)
+
+### Features Added
+
+- Support for Azure Key Vault keys https://github.com/Azure/azure-mcp/pull/119
+- Support for Kusto (Azure Data Explorer).  https://github.com/Azure/azure-mcp/pull/21
+
+## 0.0.13 (2025-05-06)
+
+### Features Added
+
+- Support for Azure PostgreSQL. https://github.com/Azure/azure-mcp/pull/81
+
+## 0.0.12 (2025-05-05)
+
+### Features Added
+
+- Azure Search Tools https://github.com/Azure/azure-mcp/pull/83
+
+### Other Changes
+
+- Arguments no longer echoed in response: https://github.com/Azure/azure-mcp/pull/79
+- Editorconfig and gitattributes updated: https://github.com/Azure/azure-mcp/pull/91
 
 ## 0.0.11 (2025-04-29)
 
 ### Features Added
- 
+
 ### Breaking Changes
 
 ### Bugs Fixed
@@ -32,7 +72,7 @@
 - Support for Azure Resource Groups.
 - Support for Azure CLI.
 - Support for Azure Developer CLI (azd).
- 
+
 ### Breaking Changes
 
 ### Bugs Fixed

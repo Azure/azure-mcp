@@ -62,4 +62,22 @@ public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFix
 
         Assert.Equal(JsonValueKind.Array, result?.ValueKind);
     }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_list_monitor_table_types()
+    {
+        var result = await CallToolAsync(
+            "azmcp-monitor-table-type-list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "workspace", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName }
+            });
+
+        var tableTypesArray = result.AssertProperty("tableTypes");
+        Assert.Equal(JsonValueKind.Array, tableTypesArray.ValueKind);
+        Assert.NotEmpty(tableTypesArray.EnumerateArray());
+    }
 }

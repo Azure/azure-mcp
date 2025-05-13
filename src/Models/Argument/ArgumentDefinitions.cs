@@ -148,6 +148,52 @@ public static class ArgumentDefinitions
         );
     }
 
+    public static class Postgres
+    {
+        public const string UserName = "user-name";
+        public const string ServerName = "server";
+        public const string DatabaseName = "database";
+        public const string TableName = "table";
+        public const string QueryText = "query";
+        public const string ParamName = "param";
+
+        public static readonly ArgumentDefinition<string> User = new(
+            UserName,
+            "The user name to access PostgreSQL server.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Server = new(
+            ServerName,
+            "The PostgreSQL server to be accessed.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Database = new(
+            DatabaseName,
+            "The PostgreSQL database to be access.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Table = new(
+            TableName,
+            "The PostgreSQL table to be access.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Query = new(
+            QueryText,
+            "Query to be executed against a PostgreSQL database.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Param = new(
+            ParamName,
+            "The PostgreSQL parameter to be accessed.",
+            required: true
+        );
+    }
+
     public static class Search
     {
         public const string ServiceName = "service-name";
@@ -292,6 +338,54 @@ public static class ArgumentDefinitions
         }
     }
 
+    public static class Kusto
+    {
+        public const string ClusterName = "cluster-name";
+        public const string ClusterUriName = "cluster-uri";
+        public const string DatabaseName = "database-name";
+        public const string TableName = "table-name";
+        public const string LimitName = "limit";
+        public const string QueryText = "query";
+
+
+        public static readonly ArgumentDefinition<string> Cluster = new(
+            ClusterName,
+            "Kusto Cluster name.",
+            required: false
+        );
+
+        public static readonly ArgumentDefinition<string> ClusterUri = new(
+            ClusterUriName,
+            "Kusto Cluster URI.",
+            required: false
+        );
+
+        public static readonly ArgumentDefinition<string> Database = new(
+            DatabaseName,
+            "Kusto Database name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Table = new(
+            TableName,
+            "Kusto Table name.",
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<int> Limit = new(
+            LimitName,
+            "The maximum number of results to return.",
+            defaultValue: 10,
+            required: true
+        );
+
+        public static readonly ArgumentDefinition<string> Query = new(
+            QueryText,
+            "Kusto query to execute. Uses KQL syntax.",
+            required: true
+        );
+    }
+
     public static class Extension
     {
         public static class Az
@@ -315,5 +409,63 @@ public static class ArgumentDefinitions
                 required: true
             );
         }
+    }
+
+    public static class KeyVault
+    {
+        public const string VaultNameParam = "vault";
+        public const string KeyNameParam = "key";
+        public const string KeyTypeParam = "key-type";
+
+        public static readonly ArgumentDefinition<string> VaultName = new(
+            VaultNameParam,
+            "The name of the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyName = new(
+            KeyNameParam,
+            "The name of the key to retrieve/modify from the Key Vault.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> KeyType = new(
+            KeyTypeParam,
+            "The type of key to create (RSA, EC).",
+            required: true);
+    }
+
+    public static class ServiceBus
+    {
+        public const string NamespaceName = "namespace";
+        public const string QueueName = "queue-name";
+        public const string MaxMessagesName = "max-messages";
+        public const string TopicName = "topic-name";
+        public const string SubscriptionName = "subscription-name";
+
+        public static readonly ArgumentDefinition<string> Namespace = new(
+            NamespaceName,
+            "The Service Bus namespace name.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Queue = new(
+            QueueName,
+            "The queue name to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Subscription = new(
+            SubscriptionName,
+            "The name of subscription to peek messages from.",
+            required: true);
+
+        public static readonly ArgumentDefinition<string> Topic = new(
+            TopicName,
+            "The name of the topic containing the subscription.",
+            required: true);
+
+        public static readonly ArgumentDefinition<int> MaxMessages = new(
+            MaxMessagesName,
+            "The maximum number of messages to return.",
+            defaultValue: 1,
+            required: false
+        );
     }
 }

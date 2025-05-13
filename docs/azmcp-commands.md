@@ -29,17 +29,13 @@ azmcp server start [--transport <transport>]
 azmcp subscription list [--tenant-id <tenant-id>]
 ```
 
-<<<<<<< Updated upstream
-### Cosmos DB Operations
-=======
 ### Best Practices
 ```bash
 # Get secure, production-grade Azure SDK best practices for effective code generation.
 azmcp bestpractices get
 ```
 
-### Azure Cosmos DB Operations
->>>>>>> Stashed changes
+### Cosmos DB Operations
 ```bash
 # List Cosmos DB accounts in a subscription
 azmcp cosmos account list --subscription <subscription>

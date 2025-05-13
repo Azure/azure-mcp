@@ -11,6 +11,10 @@ If you are contributing significant changes, or if the issue is already assigned
    * [Stable release](https://code.visualstudio.com/download)
    * [Insiders release](https://code.visualstudio.com/insiders)
 2. Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions.
+3. Install [Node.js](https://nodejs.org/en/download) 20 or later
+   * Ensure `node` and `npm` are in your path
+4. Install [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) 7.0 or later.
+   * Optional for coding but required for running build, test and resource deployment scripts
 
 ### Project Structure
 
@@ -42,7 +46,11 @@ The project is organized as follows:
 
 4. Follow the implementation guidelines in [src/Docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/src/Docs/new-command.md)
 
-5. Create a Pull Request:
+5. Add documentation for new command:
+   - [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
+
+6. Create a Pull Request:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
@@ -89,19 +97,11 @@ After deploying test resources, you should have a `.testsettings.json` file with
 ./eng/scripts/Test-Code.ps1 -Live
 ```
 
-## Installing Git Hooks
-
-To ensure consistent code quality, the pre-commit hook is automatically installed before every build. This hook will ensure that your code adheres to the required standards.
-
-### Automatic Setup
-
-The pre-push hook is installed automatically when you build the project. You do not need to run any additional commands. The hook is located in the `eng/scripts/git-hooks/` directory and is copied to the `.git/hooks/` folder during the build process.
-
-Powershell is required for hook installation. For installation instructions, see [Installing PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell).
-
 ## Code Style
 
-Run `dotnet format src/AzureMcp.sln` before submitting.
+To ensure consistent code quality, code format checks will run during all PR and CI builds.
+
+To catch format errors early, run `dotnet format src/AzureMcp.sln` before submitting.
 
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)
@@ -110,6 +110,13 @@ Run `dotnet format src/AzureMcp.sln` before submitting.
 - Use proper error handling patterns
 - XML documentation for public APIs
 - Follow Model Context Protocol (MCP) patterns
+
+### Installing Git Hooks
+
+You can install our pre-push hook to catch code format issues by automatically running `dotnet format` before each `git push`.
+
+- `./eng/scripts/Install-GitHooks.ps1` - Installs the pre-push hook into your local repo
+- `./eng/scripts/Remove-GitHooks.ps1` - Disables any git hooks in your local repo
 
 ## Model Context Protocol (MCP)
 
@@ -128,13 +135,28 @@ The Azure MCP Server implements the [Model Context Protocol specification](https
 3. Reference the original issue
 4. Wait for review and address any feedback
 
-## Official builds and releases
+## Builds and releases (Internal)
 
 The internal pipeline [azure-mcp](https://dev.azure.com/azure-sdk/internal/_build?definitionId=7571) is used for all official
 releases and CI builds. On every merge to main, a build will run and will produce a dynamically named prerelease
 package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/Npm/@azure%2Fmcp/overview/0.0.10-beta.4799791).
 
-Only manual runs of the pipeline publish official versions to npmjs.com.
+Only manual runs of the pipeline sign and publish packages.  Building `main` or `hotfix/*` will publish to `npmjs.com`, all other refs will publish to the [public dev feed](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js).
+
+Packages published to the npmjs.com will always use the `@latest` [dist-tag](https://docs.npmjs.com/downloading-and-installing-packages-locally#installing-a-package-with-dist-tags).
+
+Packages published to the dev feed will use:
+- `@latest` for the latest official/release build
+- `@dev` for the latest CI build of main
+- `@pre` for any arbitrary pipeline run or feature branch build
+
+### PR Validation
+
+To run live tests for a PR, inspect the PR code for any suspicious changes, then add the comment `/azp run azure - mcp` to the pull request.  This will queue a PR triggered run which will build, run unit tests, deploy test resources and run live tests.
+
+If you would like to see the product of a PR as a package on the dev feed, after thoroughly inspecting the change, create a branch in the main repo and manually trigger an [azure - mcp](https://dev.azure.com/azure-sdk/internal/_build?definitionId=7571) pipeline run against that branch. This will queue a manually triggered run which will build, run unit tests, deploy test resources, run live tests, sign and publish the packages to the dev feed.
+
+Instructions for consuming the package from the dev feed can be found in the "Extensions" tab of the pipeline run page.
 
 ## Questions and Support
 

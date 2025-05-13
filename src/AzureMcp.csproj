@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.0.12</Version>
+    <Version>0.0.16</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
@@ -46,22 +46,27 @@
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Azure.Data.Tables" />
     <PackageReference Include="Azure.Identity.Broker" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" />
     <PackageReference Include="Azure.Monitor.Query" />
     <PackageReference Include="Azure.ResourceManager.AppConfiguration" />
+    <PackageReference Include="Azure.ResourceManager.Kusto" />
+    <PackageReference Include="Azure.ResourceManager.PostgreSql" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
     <PackageReference Include="Azure.ResourceManager.Search" />
     <PackageReference Include="Azure.ResourceManager.Storage" />
+    <PackageReference Include="Microsoft.Azure.Kusto.Data" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" ExcludeAssets="runtime;native" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" ExcludeAssets="native" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Npgsql" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Formats.Asn1" />
     <PackageReference Include="System.Linq.AsyncEnumerable" />
@@ -72,21 +77,15 @@
 	<PackageReference Include="Azure.Search.Documents" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\azure-best-practices.txt" />
+  </ItemGroup>
+
+  <!-- TODO: Remove after 5/19/25 -->
   <!-- Runs before every dotnet build -->
   <Target Name="InstallGitHooks" BeforeTargets="BeforeBuild">
-    <Message Text="Installing Git hooks..." Importance="high" />
-
-    <!-- Run the Install-GitHooks.ps1 script using PowerShell Core -->
-    <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildProjectDirectory)/../eng/scripts/Install-GitHooks.ps1&quot;"
-          ContinueOnError="true"
-          ConsoleToMsBuild="true"
-          IgnoreExitCode="true">
-      <Output TaskParameter="ExitCode" PropertyName="ExitCode"/>
-    </Exec>
-
-    <!-- Display informative message if pwsh fails -->
-    <Warning Text="Could not install Git hooks. PowerShell Core (pwsh) is required to install Git hooks:\nhttps://learn.microsoft.com/powershell/scripting/install/installing-powershell"
-             Condition="'$(ExitCode)' != '0'" />
+    <Message Text="To install git hooks, run 'eng/scripts/Install-GitHooks.ps1'" Importance="high" />
+    <Message Text="To remove git hooks, run 'eng/scripts/Remove-GitHooks.ps1'" Importance="high" />
   </Target>
 
   <!-- Remove Cosmos native files from the build output directory -->

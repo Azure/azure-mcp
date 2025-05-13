@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Cosmos;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
@@ -28,7 +27,7 @@ public class CommandFactory
     internal static readonly char Separator = '-';
 
     /// <summary>
-    /// Mapping of hyphenated command names to their <see cref="IBaseCommand" />
+    /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
 
@@ -69,19 +68,39 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
+
     private void RegisterCommandGroup()
     {
         // Register top-level command groups
+        RegisterBestPracticesCommand();
         RegisterCosmosCommands();
+        RegisterKustoCommands();
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
         RegisterSearchCommands();
+        RegisterPostgresCommands();
+        RegisterKeyVaultCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
         RegisterGroupCommands();
         RegisterMcpServerCommands();
+        RegisterServiceBusCommands();
+    }
+
+    private void RegisterBestPracticesCommand()
+    {
+        // Register Azure Best Practices command at the root level
+        var bestPractices = new CommandGroup(
+            "bestpractices",
+            "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code."
+        );
+        _rootGroup.AddSubGroup(bestPractices);
+        bestPractices.AddCommand(
+            "get",
+            new BestPractices.AzureBestPracticesGetCommand(GetLogger<BestPractices.AzureBestPracticesGetCommand>())
+        );
     }
 
     private void RegisterCosmosCommands()
@@ -105,10 +124,60 @@ public class CommandFactory
         cosmosContainer.AddSubGroup(cosmosItem);
 
         // Register Cosmos commands
-        databases.AddCommand("list", new DatabaseListCommand(GetLogger<DatabaseListCommand>()));
+        databases.AddCommand("list", new Cosmos.DatabaseListCommand(GetLogger<Cosmos.DatabaseListCommand>()));
         cosmosContainer.AddCommand("list", new Cosmos.ContainerListCommand(GetLogger<Cosmos.ContainerListCommand>()));
         cosmosAccount.AddCommand("list", new Cosmos.AccountListCommand(GetLogger<Cosmos.AccountListCommand>()));
-        cosmosItem.AddCommand("query", new ItemQueryCommand(GetLogger<ItemQueryCommand>()));
+        cosmosItem.AddCommand("query", new Cosmos.ItemQueryCommand(GetLogger<Cosmos.ItemQueryCommand>()));
+    }
+
+    private void RegisterKustoCommands()
+    {
+        // Create Kusto command group
+        var kusto = new CommandGroup("kusto", "Kusto operations - Commands for managing and querying Azure Kusto clusters.");
+        _rootGroup.AddSubGroup(kusto);
+
+        // Create Kusto cluster subgroups
+        var clusters = new CommandGroup("cluster", "Kusto cluster operations - Commands for listing clusters in your Azure subscription.");
+        kusto.AddSubGroup(clusters);
+
+        var databases = new CommandGroup("database", "Kusto database operations - Commands for listing databases in a cluster.");
+        kusto.AddSubGroup(databases);
+
+        var tables = new CommandGroup("table", "Kusto table operations - Commands for listing tables in a database.");
+        kusto.AddSubGroup(tables);
+
+        kusto.AddCommand("sample", new Kusto.SampleCommand(GetLogger<Kusto.SampleCommand>()));
+        kusto.AddCommand("query", new Kusto.QueryCommand(GetLogger<Kusto.QueryCommand>()));
+
+        clusters.AddCommand("list", new Kusto.ClusterListCommand(GetLogger<Kusto.ClusterListCommand>()));
+        clusters.AddCommand("get", new Kusto.ClusterGetCommand(GetLogger<Kusto.ClusterGetCommand>()));
+
+        databases.AddCommand("list", new Kusto.DatabaseListCommand(GetLogger<Kusto.DatabaseListCommand>()));
+
+        tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<Kusto.TableListCommand>()));
+        tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
+    }
+
+    private void RegisterPostgresCommands()
+    {
+        var pg = new CommandGroup("postgres", "PostgreSQL operations - Commands for listing and managing Azure Database for PostgreSQL - Flexible server.");
+        _rootGroup.AddSubGroup(pg);
+
+        var database = new CommandGroup("database", "PostgreSQL database operations");
+        pg.AddSubGroup(database);
+        database.AddCommand("list", new Postgres.Database.DatabaseListCommand(GetLogger<Postgres.Database.DatabaseListCommand>()));
+        database.AddCommand("query", new Postgres.Database.DatabaseQueryCommand(GetLogger<Postgres.Database.DatabaseQueryCommand>()));
+
+        var table = new CommandGroup("table", "PostgreSQL table operations");
+        pg.AddSubGroup(table);
+        table.AddCommand("list", new Postgres.Table.TableListCommand(GetLogger<Postgres.Table.TableListCommand>()));
+        table.AddCommand("schema", new Postgres.Table.GetSchemaCommand(GetLogger<Postgres.Table.GetSchemaCommand>()));
+
+        var server = new CommandGroup("server", "PostgreSQL server operations");
+        pg.AddSubGroup(server);
+        server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<Postgres.Server.ServerListCommand>()));
+        server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
+        server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
     }
 
     private void RegisterStorageCommands()
@@ -161,13 +230,15 @@ public class CommandFactory
         var monitorTable = new CommandGroup("table", "Log Analytics workspace table operations - Commands for listing tables in Log Analytics workspaces.");
         monitor.AddSubGroup(monitorTable);
 
+        var monitorTableType = new CommandGroup("type", "Log Analytics workspace table type operations - Commands for listing table types in Log Analytics workspaces.");
+        monitorTable.AddSubGroup(monitorTableType);
+
         // Register Monitor commands
-        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(
-            GetLogger<Monitor.Log.LogQueryCommand>()));
-        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(
-            GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
-        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(
-            GetLogger<Monitor.Table.TableListCommand>()));
+        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(GetLogger<Monitor.Log.LogQueryCommand>()));
+        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
+        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
+
+        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
     }
 
     private void RegisterAppConfigCommands()
@@ -206,6 +277,19 @@ public class CommandFactory
         index.AddCommand("list", new Search.Index.IndexListCommand(GetLogger<Search.Index.IndexListCommand>()));
         index.AddCommand("describe", new Search.Index.IndexDescribeCommand(GetLogger<Search.Index.IndexDescribeCommand>()));
         index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<Search.Index.IndexQueryCommand>()));
+    }
+
+    private void RegisterKeyVaultCommands()
+    {
+        var keyVault = new CommandGroup("keyvault", "Key Vault operations - Commands for managing and accessing Azure Key Vault resources.");
+        _rootGroup.AddSubGroup(keyVault);
+
+        var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
+        keyVault.AddSubGroup(keys);
+
+        keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
+        keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
+        keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
     }
 
     private void RegisterToolsCommands()
@@ -253,9 +337,31 @@ public class CommandFactory
         _rootGroup.AddSubGroup(mcpServer);
 
         // Register MCP Server commands
-        var startServer = new ServiceStartCommand(_serviceProvider);
+        var startServer = new ServiceStartCommand();
         mcpServer.AddCommand("start", startServer);
 
+    }
+
+    private void RegisterServiceBusCommands()
+    {
+        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources");
+        _rootGroup.AddSubGroup(serviceBus);
+
+        var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
+        queue.AddCommand("peek", new ServiceBus.Queue.QueuePeekCommand());
+        queue.AddCommand("details", new ServiceBus.Queue.QueueDetailsCommand());
+
+        var topic = new CommandGroup("topic", "Topic operations - Commands for using Azure Service Bus topics and subscriptions.");
+        topic.AddCommand("details", new ServiceBus.Topic.TopicDetailsCommand());
+
+        var subscription = new CommandGroup("subscription", "Subscription operations - Commands for using subscriptions within a Service Bus topic.");
+        subscription.AddCommand("peek", new ServiceBus.Topic.SubscriptionPeekCommand());
+        subscription.AddCommand("details", new ServiceBus.Topic.SubscriptionDetailsCommand());
+
+        serviceBus.AddSubGroup(queue);
+        serviceBus.AddSubGroup(topic);
+
+        topic.AddSubGroup(subscription);
     }
 
     private void ConfigureCommands(CommandGroup group)
@@ -354,9 +460,9 @@ public class CommandFactory
         return nextGroup != null ? FindCommandInGroup(nextGroup, nameParts) : null;
     }
 
-    public IBaseCommand? FindCommandByName(string hyphenatedName)
+    public IBaseCommand? FindCommandByName(string tokenizedName)
     {
-        return _commandMap.GetValueOrDefault(hyphenatedName);
+        return _commandMap.GetValueOrDefault(tokenizedName);
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)

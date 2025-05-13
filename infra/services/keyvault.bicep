@@ -36,11 +36,43 @@ resource secretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018
   name: '4633458b-17de-408a-b874-0445c86b69e6'
 }
 
+resource keyUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Key Vault Crypto Officer role.  Allows user to read/write/delete keys.
+  name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
+}
+
 resource vaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
   name: guid(secretsUserRoleDefinition.id, testApplicationOid, keyVault.id)
   scope: keyVault
   properties:{
     principalId: testApplicationOid
     roleDefinitionId: secretsUserRoleDefinition.id
+  }
+}
+
+resource vaultRoleAssignment2 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
+  name: guid(keyUserRoleDefinition.id, testApplicationOid, keyVault.id)
+  scope: keyVault
+  properties:{
+    principalId: testApplicationOid
+    roleDefinitionId: keyUserRoleDefinition.id
+  }
+}
+
+resource keyVaultKey 'Microsoft.KeyVault/vaults/keys@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'foo-bar'
+  properties: {
+    keySize: 2048
+    keyOps: [
+      'encrypt'
+      'decrypt'
+      'sign'
+      'verify'
+      'wrapKey'
+      'unwrapKey'
+    ]
+    kty: 'RSA'
   }
 }

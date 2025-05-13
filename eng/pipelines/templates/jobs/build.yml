@@ -51,7 +51,6 @@ jobs:
         -OperatingSystem '${{ parameters.OSName }}'
         -Architecture '$(Architecture)'
         -SelfContained
-        -ReadyToRun
 
   - task: Powershell@2
     displayName: "Run tests"

@@ -24,8 +24,6 @@
 /eng/                                  @Azure/azure-mcp @Azure/azure-sdk-eng
 /.github/                              @Azure/azure-mcp @Azure/azure-sdk-eng
 /.config/                              @Azure/azure-mcp @Azure/azure-sdk-eng
-<<<<<<< Updated upstream
-=======
 
 ##################
 # Services
@@ -70,4 +68,3 @@
 
 # ServiceLabel: %area-BestPractices
 # ServiceOwners: 
->>>>>>> Stashed changes

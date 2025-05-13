@@ -51,16 +51,3 @@ foreach ($file in $hookFiles) {
         & chmod +x $targetFile
     }
 }
-
-# TODO: Remove after 5/9/2025
-# remove existing pre-commit hook if it matches the pre-push hook
-$preCommitPath = Join-Path $gitHooksTargetDir "pre-commit"
-$prePushPath = Join-Path $gitHooksTargetDir "pre-push"
-if(Test-Path $preCommitPath) {
-    $prePushContent = Get-Content -Path $prePushPath -Raw
-    $preCommitContent = Get-Content -Path $preCommitPath -Raw
-    if($prePushContent -eq $preCommitContent) {
-        Write-Host "Removing stale pre-commit hook"
-        Remove-Item -Path $preCommitPath -Force -ErrorAction SilentlyContinue | Out-Null
-    }
-}
