@@ -15,7 +15,7 @@ public class McpClientFixture : IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath!, "azmcp.exe") : Path.Combine(testAssemblyPath!, "azmcp");
+        var executablePath = "C:\\Users\\vigera\\OneDrive - Microsoft\\Documents\\mcp\\azure-mcp\\src\\.dist\\azmcp.exe";
 
         if (!string.IsNullOrWhiteSpace(executablePath))
         {
