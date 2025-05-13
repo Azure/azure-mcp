@@ -49,8 +49,11 @@ The project is organized as follows:
 5. Add documentation for new command:
    - [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
    - [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
+  
+6. Add CODEOWNERS entry for new command:
+   - [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example PR)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
 
-6. Create a Pull Request:
+8. Create a Pull Request:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
