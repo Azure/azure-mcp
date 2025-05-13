@@ -14,19 +14,31 @@ $apiVersion = '2020-06-30'
 $token = Get-AzAccessToken -ResourceUrl https://search.azure.com -AsSecureString | Select-Object -ExpandProperty Token
 $uri = "https://$BaseName.search.windows.net"
 
-$indexDefinition = @{
+$indexDefinition = [ordered]@{
   name = "products"
   fields = @(
-    @{ name = "chunk_id"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true; sortable = $true; key = $true; analyzer = "keyword" }
-    @{ name = "parent_id"; type = "Edm.String"; filterable = $true; retrievable = $true; stored = $true }
-    @{ name = "chunk"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true }
-    @{ name = "title"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true }
-    @{ name = "header_1"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true }
-    @{ name = "header_2"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true }
-    @{ name = "header_3"; type = "Edm.String"; searchable = $true; retrievable = $true; stored = $true }
-    @{ name = "text_vector"; type = "Collection(Edm.Single)"; searchable = $true; retrievable = $true; stored = $true; dimensions = 1536; vectorSearchProfile = "products-azureOpenAi-text-profile" }
-    @{ name = "category"; type = "Edm.String"; searchable = $true; filterable = $true; retrievable = $true; stored = $true; facetable = $true }
+    @{ name = "chunk_id"; sortable = $true; key = $true; analyzer = "keyword" }
+    @{ name = "parent_id"; filterable = $true }
+    @{ name = "chunk" }
+    @{ name = "title" }
+    @{ name = "header_1" }
+    @{ name = "header_2" }
+    @{ name = "header_3" }
+    @{ name = "text_vector"; type = "Collection(Edm.Single)"; dimensions = 1536; vectorSearchProfile = "products-azureOpenAi-text-profile" }
+    @{ name = "category"; searchable = $false; filterable = $true; facetable = $true }
   )
+}
+
+# Set default values for index fields
+foreach($field in $indexDefinition.fields) {
+    $field.type ??= "Edm.String"
+    $field.stored ??= $true
+    $field.retrievable ??= $true
+    $field.searchable ??= $true
+
+    $field.filterable ??= $false
+    $field.facetable ??= $false
+    $field.sortable ??= $false
 }
 
 $dataSourceDefinition = @{
@@ -132,6 +144,18 @@ $indexerDefinition = @{
   )
   outputFieldMappings = @()
 }
+
+Write-Host "Index definition:" -ForegroundColor Yellow
+Write-Host "  $(($indexDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
+
+Write-Host "Datasource definition:" -ForegroundColor Yellow
+Write-Host "  $(($dataSourceDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
+
+Write-Host "Skillset definition:" -ForegroundColor Yellow
+Write-Host "  $(($skillsetDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
+
+Write-Host "Indexer definition:" -ForegroundColor Yellow
+Write-Host "  $(($indexerDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
 
 # Create the index
 Invoke-RestMethod `
