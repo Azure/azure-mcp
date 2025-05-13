@@ -116,7 +116,7 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - Support for template discovery, template initialization, provisioning and deployment
 - Cross-platform compatibility
 
-### Azure Best Practices
+### 🛡️ Azure Best Practices
 - Get secure, production-grade Azure SDK best practices for effective code generation.
 
 For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
