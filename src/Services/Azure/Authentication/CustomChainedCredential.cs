@@ -94,12 +94,12 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
         // Check for timeout value in the environment variable
         string? timeoutValue = Environment.GetEnvironmentVariable(BrowserAuhtenticationTimeoutEnvVarName);
-        if (int.TryParse(timeoutValue, out int timeoutSeconds) && timeoutSeconds > 0)
+        int timeoutSeconds = 300; // Default to 300 seconds (5 minutes)
+        if (!string.IsNullOrEmpty(timeoutValue) && int.TryParse(timeoutValue, out int parsedTimeout) && parsedTimeout > 0)
         {
-            // Wrap the browser credential in a TimeoutTokenCredential
-            return new TimeoutTokenCredential(browserCredential, TimeSpan.FromSeconds(timeoutSeconds));
+            timeoutSeconds = parsedTimeout;
         }
-        return browserCredential;
+        return new TimeoutTokenCredential(browserCredential, TimeSpan.FromSeconds(timeoutSeconds));
     }
 
     private static DefaultAzureCredential CreateDefaultCredential(string? tenantId)
