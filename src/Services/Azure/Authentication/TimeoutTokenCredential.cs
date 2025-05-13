@@ -25,7 +25,7 @@ public class TimeoutTokenCredential : TokenCredential
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new TimeoutException($"Authentication timed out after {_timeout.TotalMinutes} minutes.");
+            throw new TimeoutException($"Authentication timed out after {_timeout.TotalSeconds} seconds.");
         }
     }
 
@@ -40,7 +40,7 @@ public class TimeoutTokenCredential : TokenCredential
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new TimeoutException($"Authentication timed out after {_timeout.TotalMinutes} minutes.");
+            throw new TimeoutException($"Authentication timed out after {_timeout.TotalSeconds} seconds.");
         }
     }
 }
