@@ -118,6 +118,9 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 
 For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
 
+### Azure Best Practices
+- Get secure, production-grade Azure SDK best practices for effective code generation.
+
 ## 🔌 Getting Started
 
 The Azure MCP Server requires Node.js to install and run the server. If you don't have it installed, follow the instructions [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
