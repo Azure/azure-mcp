@@ -24,6 +24,7 @@
         "azsdk",
         "azuresdk",
         "codesign",
+        "CODEOWNERS",
         "cvzf",
         "esrp",
         "ESRPRELPACMANTEST",
