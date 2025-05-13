@@ -16,7 +16,7 @@ public class McpClientFixture : IAsyncLifetime
     {
         var testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath!, "azmcp.exe") : Path.Combine(testAssemblyPath!, "azmcp");
-        
+
         if (!string.IsNullOrWhiteSpace(executablePath))
         {
             var clientTransport = new StdioClientTransport(new StdioClientTransportOptions
