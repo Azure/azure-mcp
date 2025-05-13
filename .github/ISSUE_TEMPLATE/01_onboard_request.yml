@@ -34,7 +34,7 @@ body:
     attributes:
       label: Timeline
       description: May 2025, November 2025, TBD, etc.
-        Please provide your descired timeline
+        Please provide your desired timeline
       placeholder: TBD
     validations:
       required: true
