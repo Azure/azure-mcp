@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Fixed being able to pass args containing spaces through an npx call to the cli
+
 ### Other Changes
 
 - Updated to the latest ModelContextProtocol library. https://github.com/Azure/azure-mcp/pull/161

@@ -13,7 +13,7 @@ If you are contributing significant changes, or if the issue is already assigned
 2. Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions.
 3. Install [Node.js](https://nodejs.org/en/download) 20 or later
    * Ensure `node` and `npm` are in your path
-4. Install [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) 7.0 or later.
+4. Install [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) 7.0 or later.
    * Optional for coding but required for running build, test and resource deployment scripts
 
 ### Project Structure
@@ -47,8 +47,8 @@ The project is organized as follows:
 4. Follow the implementation guidelines in [src/Docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/src/Docs/new-command.md)
 
 5. Add documentation for new command:
-   - [azmcp-commands.md](./docs/azmcp-commands.md)
-   - [README.md](./README.md)
+   - [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
 
 6. Create a Pull Request:
    - Reference the issue you created
@@ -142,6 +142,13 @@ releases and CI builds. On every merge to main, a build will run and will produc
 package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/Npm/@azure%2Fmcp/overview/0.0.10-beta.4799791).
 
 Only manual runs of the pipeline sign and publish packages.  Building `main` or `hotfix/*` will publish to `npmjs.com`, all other refs will publish to the [public dev feed](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js).
+
+Packages published to the npmjs.com will always use the `@latest` [dist-tag](https://docs.npmjs.com/downloading-and-installing-packages-locally#installing-a-package-with-dist-tags).
+
+Packages published to the dev feed will use:
+- `@latest` for the latest official/release build
+- `@dev` for the latest CI build of main
+- `@pre` for any arbitrary pipeline run or feature branch build
 
 ### PR Validation
 

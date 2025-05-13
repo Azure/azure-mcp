@@ -27,7 +27,7 @@ public class CommandFactory
     internal static readonly char Separator = '-';
 
     /// <summary>
-    /// Mapping of hyphenated command names to their <see cref="IBaseCommand" />
+    /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
 
@@ -230,13 +230,15 @@ public class CommandFactory
         var monitorTable = new CommandGroup("table", "Log Analytics workspace table operations - Commands for listing tables in Log Analytics workspaces.");
         monitor.AddSubGroup(monitorTable);
 
+        var monitorTableType = new CommandGroup("type", "Log Analytics workspace table type operations - Commands for listing table types in Log Analytics workspaces.");
+        monitorTable.AddSubGroup(monitorTableType);
+
         // Register Monitor commands
-        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(
-            GetLogger<Monitor.Log.LogQueryCommand>()));
-        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(
-            GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
-        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(
-            GetLogger<Monitor.Table.TableListCommand>()));
+        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(GetLogger<Monitor.Log.LogQueryCommand>()));
+        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
+        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
+
+        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
     }
 
     private void RegisterAppConfigCommands()
@@ -458,9 +460,9 @@ public class CommandFactory
         return nextGroup != null ? FindCommandInGroup(nextGroup, nameParts) : null;
     }
 
-    public IBaseCommand? FindCommandByName(string hyphenatedName)
+    public IBaseCommand? FindCommandByName(string tokenizedName)
     {
-        return _commandMap.GetValueOrDefault(hyphenatedName);
+        return _commandMap.GetValueOrDefault(tokenizedName);
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)

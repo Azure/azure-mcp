@@ -3,7 +3,7 @@
 
 [![Install with NPX in VS Code](https://img.shields.io/badge/VS_Code-Install_Azure_MCP_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D) [![Install with NPX in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Azure_MCP_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D&quality=insiders)
 
-The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and key Azure services like Azure Storage, Cosmos DB, and more. 
+The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and key Azure services like Azure Storage, Cosmos DB, and more.
 
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
@@ -116,7 +116,7 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - Support for template discovery, template initialization, provisioning and deployment
 - Cross-platform compatibility
 
-For detailed command documentation and examples, see [Azure MCP Commands](docs/azmcp-commands.md).
+For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
 
 ## 🔌 Getting Started
 
@@ -131,7 +131,9 @@ The Azure MCP Server provides Azure SDK and Azure CLI developer tools. It can be
    * [💫 Stable release](https://code.visualstudio.com/download)
    * [🔮 Insiders release](https://code.visualstudio.com/insiders)
 2. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions
-3. Open VS Code in an empty folder
+3. Install [Node.js](https://nodejs.org/en/download) 20 or later
+   * Ensure `node` and `npm` are in your path
+4. Open VS Code in an empty folder
 
 ### Installation
 
@@ -232,7 +234,7 @@ More end-to-end MCP client/agent guides are coming soon!
 
 ## 📝 Troubleshooting
 
-See [Troubleshooting guide](/TROUBLESHOOTING.md) for help with common issues and logging.
+See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) for help with common issues and logging.
 
 ## 🔑 Authentication
 
@@ -248,7 +250,7 @@ The Azure MCP Server seamlessly integrates with your host operating system's aut
 
 If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
 
-If you're running into any issues with authentication, visit our [troubleshooting guide](/TROUBLESHOOTING.md).
+If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
 
 ### Production Credentials
 
@@ -270,7 +272,7 @@ MCP as a phenomenon is very novel and cutting-edge. As with all new technology s
 
 We welcome contributions to the Azure MCP Server! Whether you're fixing bugs, adding new features, or improving documentation, your contributions are welcome.
 
-Please read our [Contributing Guide](/CONTRIBUTING.md) for guidelines on:
+Please read our [Contributing Guide](https://github.com/Azure/azure-mcp/blob/main/CONTRIBUTING.md) for guidelines on:
 
 - 🛠️ Setting up your development environment
 - ✨ Adding new commands

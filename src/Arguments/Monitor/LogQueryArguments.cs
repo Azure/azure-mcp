@@ -6,10 +6,8 @@ using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Arguments.Monitor;
 
-public class LogQueryArguments : BaseMonitorArguments, IWorkspaceArguments
+public class LogQueryArguments : WorkspaceArguments
 {
-    [JsonPropertyName(ArgumentDefinitions.Monitor.WorkspaceIdOrName)]
-    public string? Workspace { get; set; }
     public string? Query { get; set; }
     public int? Hours { get; set; }
     public int? Limit { get; set; }
