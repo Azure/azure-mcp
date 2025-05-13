@@ -8,16 +8,16 @@ jobs:
   - download: current
     displayName: Download $(PipelineArtifactName)_packed
     artifact: $(PipelineArtifactName)_packed
-    
+
   - template: /eng/pipelines/templates/steps/publish-to-dev-feed.yml
     parameters:
       PathToArtifacts: $(Pipeline.Workspace)/$(PipelineArtifactName)_packed
       Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
       ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'IndividualCI')) }}:
-        Tag: latest
-      ${{ else }}:
         Tag: dev
-      
+      ${{ else }}:
+        Tag: pre
+
 # - job: PublishDocsToNightly
 #   displayName: "Update Package Versions"
 #   condition: and(succeeded(), or(eq(variables['SetDevVersion'], 'true'), and(eq(variables['Build.Reason'],'Schedule'), eq(variables['System.TeamProject'], 'internal'))))

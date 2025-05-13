@@ -14,7 +14,8 @@
         "**/.dist/**",
         "**/.work/**",
         "**/.git/**",
-        "**/.vscode/**"
+        "**/.vscode/**",
+        "**/.editorconfig"
     ],
     "words": [
         "1espt",
@@ -24,12 +25,16 @@
         "azuresdk",
         "codesign",
         "cvzf",
+        "esrp",
+        "ESRPRELPACMANTEST",
+        "jongio",
         "LINUXOS",
         "LINUXPOOL",
         "LINUXVMIMAGE",
         "MACOS",
         "MACPOOL",
         "MACVMIMAGE",
+        "npmjs",
         "pscore",
         "testsettings",
         "vsts",
