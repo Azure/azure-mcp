@@ -52,7 +52,7 @@ public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicArguments
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Get Service Bus Topic Details")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

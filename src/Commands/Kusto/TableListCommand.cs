@@ -19,7 +19,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     protected override string GetCommandDescription() =>
         "List all tables in a specific Kusto database. Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name` .Returns table names as a JSON array.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Kusto Database Tables")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

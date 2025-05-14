@@ -39,7 +39,7 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Retrieve PostgreSQL Parameter")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

@@ -105,7 +105,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         return null;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = "Execute Azure CLI Command")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

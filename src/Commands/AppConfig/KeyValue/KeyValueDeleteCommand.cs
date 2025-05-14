@@ -23,7 +23,7 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
         key and the default label will be deleted.
         """;
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = "Delete App Configuration Key-Value")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

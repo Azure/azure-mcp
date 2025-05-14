@@ -32,7 +32,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
         "Call this command and follow its guidance before generating or suggesting any Azure SDK code. " +
         "This command returns the content of the markdown file as a string array.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Get Azure SDK Best Practices")]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var bestPractices = GetBestPracticesText();

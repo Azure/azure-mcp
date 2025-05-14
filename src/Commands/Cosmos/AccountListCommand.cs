@@ -22,7 +22,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         available in the specified subscription. Results include account names and are returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Cosmos DB Accounts")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

@@ -56,7 +56,7 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Query Azure AI Search Index")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

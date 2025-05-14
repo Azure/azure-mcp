@@ -24,7 +24,7 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
         Use this command to identify workspaces before querying their logs or tables.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Log Analytics Workspaces")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

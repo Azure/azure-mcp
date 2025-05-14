@@ -24,7 +24,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Storage Accounts")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

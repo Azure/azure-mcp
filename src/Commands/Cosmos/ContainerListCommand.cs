@@ -24,7 +24,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         JSON array. You must specify both an account name and a database name.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Cosmos DB Containers")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

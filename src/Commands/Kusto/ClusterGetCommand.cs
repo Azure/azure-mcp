@@ -27,7 +27,7 @@ public sealed class ClusterGetCommand : BaseClusterCommand<ClusterGetArguments>
         The response includes the `clusterUri` property for use in subsequent commands.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Get Kusto Cluster")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

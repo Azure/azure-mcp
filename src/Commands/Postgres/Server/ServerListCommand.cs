@@ -19,7 +19,7 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
     protected override string GetCommandDescription() =>
         "Lists all PostgreSQL servers in the specified subscription.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List PostgreSQL Servers")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

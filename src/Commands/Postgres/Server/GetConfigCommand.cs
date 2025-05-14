@@ -16,7 +16,7 @@ public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseSer
     protected override string GetCommandDescription() =>
         "Retrieve the configuration of a PostgreSQL server.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Retrieve PostgreSQL Configuration")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

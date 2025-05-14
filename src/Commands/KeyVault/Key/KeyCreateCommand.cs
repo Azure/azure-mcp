@@ -82,7 +82,7 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = "Create Key Vault Key")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

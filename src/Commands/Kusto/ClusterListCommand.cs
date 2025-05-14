@@ -28,7 +28,7 @@ public sealed class ClusterListCommand : SubscriptionCommand<ClusterListArgument
         Result is a list of cluster names as a JSON array.
         """;
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = "List Kusto Clusters")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

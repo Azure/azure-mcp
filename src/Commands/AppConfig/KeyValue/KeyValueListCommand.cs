@@ -64,7 +64,7 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List App Configuration Key-Values")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

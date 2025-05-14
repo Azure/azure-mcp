@@ -39,7 +39,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         AddArgument(CreateResourceGroupArgument());
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Log Analytics Tables")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

@@ -54,7 +54,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Get Azure AI Search Definition")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

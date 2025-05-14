@@ -24,7 +24,7 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
         default label will be unlocked.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = "Unlock App Configuration Key-Value")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

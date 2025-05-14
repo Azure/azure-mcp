@@ -23,7 +23,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         Requires {Models.Argument.ArgumentDefinitions.Storage.AccountName}.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Storage Containers")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

@@ -51,7 +51,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
             .WithValueAccessor(args => args.Value ?? string.Empty)
             .WithIsRequired(ArgumentDefinitions.AppConfig.Value.Required);
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = "Set App Configuration Key-Value")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

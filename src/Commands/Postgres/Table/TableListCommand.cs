@@ -17,7 +17,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     protected override string GetCommandName() => "list";
     protected override string GetCommandDescription() => "Lists all tables in the PostgreSQL database.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List PostgreSQL Tables")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

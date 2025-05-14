@@ -58,7 +58,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Peek Service Bus Queue Messages")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

@@ -54,7 +54,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Key Vault Keys")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

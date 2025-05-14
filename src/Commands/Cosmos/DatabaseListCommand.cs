@@ -23,7 +23,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         in the specified Cosmos DB account. Results include database names and are returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Cosmos DB Databases")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

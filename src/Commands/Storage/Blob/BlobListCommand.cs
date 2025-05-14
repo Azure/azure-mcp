@@ -25,7 +25,7 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
         {Models.Argument.ArgumentDefinitions.Storage.ContainerName}.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Storage Container Blobs")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

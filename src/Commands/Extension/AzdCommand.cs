@@ -65,7 +65,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return args;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = "Execute Azure Developer CLI Command")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

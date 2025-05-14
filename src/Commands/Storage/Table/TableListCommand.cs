@@ -24,7 +24,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
         Use this command to explore your Storage resources or to verify table existence before performing operations on specific tables.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Storage Tables")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

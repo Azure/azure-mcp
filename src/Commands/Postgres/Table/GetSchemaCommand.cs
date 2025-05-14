@@ -39,7 +39,7 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Retrieve PostgreSQL Database Table Schema")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

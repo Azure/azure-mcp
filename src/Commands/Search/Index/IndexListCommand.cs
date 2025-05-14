@@ -45,7 +45,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Azure AI Search Indexes")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

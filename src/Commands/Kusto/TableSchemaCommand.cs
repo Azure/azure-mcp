@@ -20,7 +20,7 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
     protected override string GetCommandDescription() =>
         "Get the schema of a specific table in an Kusto database.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Get Kusto Database Schema")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

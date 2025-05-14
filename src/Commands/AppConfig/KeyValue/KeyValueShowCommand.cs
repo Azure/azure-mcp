@@ -23,7 +23,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         account name and key. Optionally, you can specify a label otherwise the setting with default label will be retrieved.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "Show App Configuration Key-Value")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

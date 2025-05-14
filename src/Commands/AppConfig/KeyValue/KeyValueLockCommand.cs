@@ -23,7 +23,7 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
         you can specify a label to lock a specific labeled version of the key-value.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = "Lock App Configuration Key-Value")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

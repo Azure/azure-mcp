@@ -35,7 +35,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List Log Analytics Table Types")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

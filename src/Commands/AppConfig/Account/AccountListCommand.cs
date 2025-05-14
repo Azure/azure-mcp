@@ -23,7 +23,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         stores available in the specified subscription. Results include store names returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = "List App Configuration Stores")]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

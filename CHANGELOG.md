@@ -10,6 +10,8 @@
 
 ### Other Changes
 
+- Added tool annotation titles. https://github.com/Azure/azure-mcp/pull/200
+
 ## 0.0.16 (2025-05-13)
 
 ### Bugs Fixed
