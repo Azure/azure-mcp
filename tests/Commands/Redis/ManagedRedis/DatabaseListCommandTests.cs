@@ -36,34 +36,34 @@ public class DatabaseListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsDatabases_WhenDatabasesExist()
     {
-        var expectedDatabases = new Database[] 
-        { 
-            new() 
-            { 
-                Name = "db1", 
-                ClusterName = "cluster1", 
-                ResourceGroupName = "rg1", 
-                SubscriptionId = "sub123", 
-                Port = 10000, 
-                ProvisioningState = "Succeeded" 
+        var expectedDatabases = new Database[]
+        {
+            new()
+            {
+                Name = "db1",
+                ClusterName = "cluster1",
+                ResourceGroupName = "rg1",
+                SubscriptionId = "sub123",
+                Port = 10000,
+                ProvisioningState = "Succeeded"
             },
-            new() 
-            { 
-                Name = "db2", 
-                ClusterName = "cluster1", 
-                ResourceGroupName = "rg1", 
-                SubscriptionId = "sub123", 
-                Port = 10001, 
-                ProvisioningState = "Succeeded" 
+            new()
+            {
+                Name = "db2",
+                ClusterName = "cluster1",
+                ResourceGroupName = "rg1",
+                SubscriptionId = "sub123",
+                Port = 10001,
+                ProvisioningState = "Succeeded"
             }
         };
-        
+
         _redisService.ListDatabasesAsync(
-            "cluster1", 
-            "rg1", 
-            "sub123", 
-            Arg.Any<string>(), 
-            Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            "cluster1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AzureMcp.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .Returns(expectedDatabases);
 
@@ -95,11 +95,11 @@ public class DatabaseListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoDatabases()
     {
         _redisService.ListDatabasesAsync(
-            "cluster1", 
-            "rg1", 
-            "sub123", 
-            Arg.Any<string>(), 
-            Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            "cluster1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AzureMcp.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .Returns([]);
 
@@ -118,11 +118,11 @@ public class DatabaseListCommandTests
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
         _redisService.ListDatabasesAsync(
-            "cluster1", 
-            "rg1", 
-            "sub123", 
-            Arg.Any<string>(), 
-            Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            "cluster1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AzureMcp.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .ThrowsAsync(new Exception("Test error"));
 
@@ -145,11 +145,14 @@ public class DatabaseListCommandTests
     public async Task ExecuteAsync_ReturnsError_WhenRequiredParameterIsMissing(string parameterToKeep)
     {
         var command = new DatabaseListCommand(_logger);
-        
+
         var args = new List<string>();
-        if (parameterToKeep == "--subscription") args.AddRange(["--subscription", "sub123"]);
-        if (parameterToKeep == "--resource-group") args.AddRange(["--resource-group", "rg1"]);
-        if (parameterToKeep == "--cluster") args.AddRange(["--cluster", "cluster1"]);
+        if (parameterToKeep == "--subscription")
+            args.AddRange(["--subscription", "sub123"]);
+        if (parameterToKeep == "--resource-group")
+            args.AddRange(["--resource-group", "rg1"]);
+        if (parameterToKeep == "--cluster")
+            args.AddRange(["--cluster", "cluster1"]);
 
         var parser = new Parser(command.GetCommand());
         var parseResult = parser.Parse(args.ToArray());

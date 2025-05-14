@@ -385,7 +385,7 @@ public static class ArgumentDefinitions
             required: true
         );
     }
-        
+
     public static class Redis
     {
         public const string CacheName = "cache";

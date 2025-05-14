@@ -18,7 +18,9 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
 {
     private readonly ILogger<DatabaseListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";    protected override string GetCommandDescription() =>
+    protected override string GetCommandName() => "list";
+
+    protected override string GetCommandDescription() =>
         $"""
         List the databases in the specified Redis Cluster resource. Returns an array of Redis database details.
         Use this command to explore which databases are available in your Redis Cluster.
