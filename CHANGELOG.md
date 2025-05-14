@@ -1,14 +1,9 @@
 # Release History
 
-## 0.0.17 (Unreleased)
-
-### Features Added
-
-### Breaking Changes
+## 0.0.17 (2025-05-13)
 
 ### Bugs Fixed
-
-### Other Changes
+- Added an opt-in timeout for browser-based authentication to handle cases where the process waits indefinitely if the user closes the browser. https://github.com/Azure/azure-mcp/pull/189
 
 ## 0.0.16 (2025-05-13)
 
