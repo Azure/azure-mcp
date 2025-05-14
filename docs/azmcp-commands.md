@@ -29,6 +29,12 @@ azmcp server start [--transport <transport>]
 azmcp subscription list [--tenant-id <tenant-id>]
 ```
 
+### Best Practices
+```bash
+# Get secure, production-grade Azure SDK best practices for effective code generation.
+azmcp bestpractices get
+```
+
 ### Azure Cosmos DB Operations
 ```bash
 # List Cosmos DB accounts in a subscription

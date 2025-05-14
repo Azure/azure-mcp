@@ -50,7 +50,10 @@ The project is organized as follows:
    - [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
    - [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
 
-6. Create a Pull Request:
+6. Add CODEOWNERS entry for new command:
+   - [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example PR)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
+
+7. Create a Pull Request:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
@@ -142,6 +145,13 @@ releases and CI builds. On every merge to main, a build will run and will produc
 package on the public dev feed, e.g. [@azure/mcp@0.0.10-beta.4799791](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js/Npm/@azure%2Fmcp/overview/0.0.10-beta.4799791).
 
 Only manual runs of the pipeline sign and publish packages.  Building `main` or `hotfix/*` will publish to `npmjs.com`, all other refs will publish to the [public dev feed](https://dev.azure.com/azure-sdk/public/_artifacts/feed/azure-sdk-for-js).
+
+Packages published to the npmjs.com will always use the `@latest` [dist-tag](https://docs.npmjs.com/downloading-and-installing-packages-locally#installing-a-package-with-dist-tags).
+
+Packages published to the dev feed will use:
+- `@latest` for the latest official/release build
+- `@dev` for the latest CI build of main
+- `@pre` for any arbitrary pipeline run or feature branch build
 
 ### PR Validation
 

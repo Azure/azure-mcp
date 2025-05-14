@@ -61,3 +61,10 @@
  
 # ServiceLabel: %area-ServiceBus
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
+
+# PRLabel: %area-BestPractices
+/src/Commands/AzureBestPractices/           @g2vinay @conniey 
+/src/Resources/azure-best-practices.txt     @g2vinay @conniey
+
+# ServiceLabel: %area-BestPractices
+# ServiceOwners:                            @g2vinay @conniey
