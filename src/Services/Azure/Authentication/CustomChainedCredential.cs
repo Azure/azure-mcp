@@ -35,6 +35,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
     }
 
     private const string AuthenticationRecordEnvVarName = "AZURE_MCP_AUTHENTICATION_RECORD";
+    private const string BrowserAuthenticationTimeoutEnvVarName = "AZURE_MCP_BROWSER_AUTH_TIMEOUT_SECONDS";
     private const string OnlyUseBrokerCredentialEnvVarName = "AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL";
     private const string ClientIdEnvVarName = "AZURE_MCP_CLIENT_ID";
     private const string IncludeProductionCredentialEnvVarName = "AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS";
@@ -67,7 +68,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     private static string TokenCacheName = "azure-mcp-msal.cache";
 
-    private static InteractiveBrowserCredential CreateBrowserCredential(string? tenantId, AuthenticationRecord? authRecord)
+    private static TokenCredential CreateBrowserCredential(string? tenantId, AuthenticationRecord? authRecord)
     {
         string? clientId = Environment.GetEnvironmentVariable(ClientIdEnvVarName);
 
@@ -89,7 +90,16 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             brokerOptions.ClientId = clientId;
         }
 
-        return new(brokerOptions);
+        var browserCredential = new InteractiveBrowserCredential(brokerOptions);
+
+        // Check for timeout value in the environment variable
+        string? timeoutValue = Environment.GetEnvironmentVariable(BrowserAuthenticationTimeoutEnvVarName);
+        int timeoutSeconds = 300; // Default to 300 seconds (5 minutes)
+        if (!string.IsNullOrEmpty(timeoutValue) && int.TryParse(timeoutValue, out int parsedTimeout) && parsedTimeout > 0)
+        {
+            timeoutSeconds = parsedTimeout;
+        }
+        return new TimeoutTokenCredential(browserCredential, TimeSpan.FromSeconds(timeoutSeconds));
     }
 
     private static DefaultAzureCredential CreateDefaultCredential(string? tenantId)
