@@ -154,6 +154,7 @@
         "LINUXOS",
         "LINUXPOOL",
         "LINUXVMIMAGE",
+        "LLM",
         "msal",
         "mysvc",
         "mycluster",

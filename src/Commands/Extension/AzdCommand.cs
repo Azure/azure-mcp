@@ -373,7 +373,8 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
                 """
             );
         }
-        else {
+        else
+        {
             contentResults.Add(
                 """
                 The command failed. Rerun the command with the '--help' flag to get more information about the command and its parameters.
