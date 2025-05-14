@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Include option to exclude managed keys. https://github.com/Azure/azure-mcp/pull/202
+
 ### Other Changes
 
 ## 0.0.16 (2025-05-13)
