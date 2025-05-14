@@ -1,5 +1,15 @@
 # Release History
 
+## 0.0.18 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
 ## 0.0.17 (Unreleased)
 
 ### Features Added
