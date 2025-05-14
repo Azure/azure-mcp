@@ -62,6 +62,14 @@
 # ServiceLabel: %area-ServiceBus
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
 
+# PRLabel: %area-Redis
+/src/Arguments/Redis/             @philon-msft @kasisevugan
+/src/Commands/Redis/              @philon-msft @kasisevugan
+/src/Services/Azure/Redis/        @philon-msft @kasisevugan
+
+# ServiceLabel: %area-Redis
+# ServiceOwners:                       @philon-msft @carldc
+
 # PRLabel: %area-BestPractices
 /src/Commands/AzureBestPractices/           @g2vinay @conniey 
 /src/Resources/azure-best-practices.txt     @g2vinay @conniey
