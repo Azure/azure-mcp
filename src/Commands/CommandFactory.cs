@@ -233,12 +233,19 @@ public class CommandFactory
         var monitorTableType = new CommandGroup("type", "Log Analytics workspace table type operations - Commands for listing table types in Log Analytics workspaces.");
         monitorTable.AddSubGroup(monitorTableType);
 
+        var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
+        monitor.AddSubGroup(health);
+
+        var entity = new CommandGroup("entity", "Entity operations - Commands for working with entities in Azure Monitor Health Models.");
+        health.AddSubGroup(entity);
+
         // Register Monitor commands
         logs.AddCommand("query", new Monitor.Log.LogQueryCommand(GetLogger<Monitor.Log.LogQueryCommand>()));
         workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
         monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
 
         monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
+        entity.AddCommand("get-health", new Monitor.Health.Entity.EntityGetHealthCommand());
     }
 
     private void RegisterAppConfigCommands()

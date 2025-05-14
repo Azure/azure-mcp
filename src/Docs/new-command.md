@@ -568,6 +568,10 @@ ArgumentDefinitions.Monitor
     .Query
     .Hours
     .Limit
+
+ArgumentDefinitions.Monitor.Health
+    .HealthModel
+    .Entity
 ```
 
 ### Best Practices for ArgumentDefinitions
