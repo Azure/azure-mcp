@@ -164,9 +164,9 @@ azmcp monitor log query --subscription <subscription> \
 #### Health Models
 ```bash
 # Get the health of an entity
-azmcp monitor-health entity get-health --subscription <subscription> \
+azmcp monitor healthmodels entity gethealth --subscription <subscription> \
                                        --resource-group <resource-group> \
-                                       --health-model-name <health-model-name> \
+                                       --model-name <health-model-name> \
                                        --entity <entity-id> 
 ```
 

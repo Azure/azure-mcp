@@ -1,29 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Azure;
 using Azure.Core;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Resources;
 using AzureMcp.Arguments;
 using AzureMcp.Models;
 using AzureMcp.Services.Interfaces;
 
 namespace AzureMcp.Services.Azure.Monitor;
 
-public class MonitorHealthModelService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+public class MonitorHealthModelService(ITenantService tenantService)
     : BaseAzureService(tenantService), IMonitorHealthModelService
 {
-    private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
-    private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true
-    };
-
     private static readonly string ManagementApiBaseUrl = "https://management.azure.com";
     private static readonly string HealthModelsDataApiScope = "https://data.healthmodels.azure.com";
     private static readonly string ApiVersion = "2023-10-01-preview";
@@ -64,7 +52,6 @@ public class MonitorHealthModelService(ISubscriptionService subscriptionService,
         string healthResponseString = await GetDataplaneResponseAsync(entityHealthUrl);
         return JsonNode.Parse(healthResponseString) ?? throw new Exception("Failed to parse health response to JSON.");
     }
-
 
     private async Task<string> GetDataplaneResponseAsync(string url)
     {
@@ -114,6 +101,7 @@ public class MonitorHealthModelService(ISubscriptionService subscriptionService,
             throw new Exception(errorMessage, ex);
         }
     }
+
     private async Task<string> GetControlPlaneTokenAsync()
     {
         return await GetCachedTokenAsync(

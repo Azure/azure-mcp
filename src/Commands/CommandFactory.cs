@@ -245,7 +245,14 @@ public class CommandFactory
         monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
 
         monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
-        entity.AddCommand("get-health", new Monitor.Health.Entity.EntityGetHealthCommand());
+
+        var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
+        monitor.AddSubGroup(health);
+
+        var entity = new CommandGroup("entity", "Entity operations - Commands for working with entities in Azure Monitor Health Models.");
+        health.AddSubGroup(entity);
+
+        entity.AddCommand("gethealth", new Monitor.HealthModels.Entity.EntityGetHealthCommand());
     }
 
     private void RegisterAppConfigCommands()

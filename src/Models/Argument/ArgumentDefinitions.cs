@@ -230,7 +230,7 @@ public static class ArgumentDefinitions
 
         // Health model arguments
         public const string EntityName = "entity";
-        public const string HealthModelName = "health-model-name";
+        public const string HealthModelName = "model-name";
 
         public static readonly ArgumentDefinition<string> Workspace = new(
             WorkspaceIdOrName,
@@ -273,21 +273,6 @@ public static class ArgumentDefinitions
             defaultValue: 20,
             required: true
         );
-
-        public static class Health
-        {
-            public static readonly ArgumentDefinition<string> Entity = new(
-                EntityName,
-                "The entity to get health for.",
-                required: true
-            );
-
-            public static readonly ArgumentDefinition<string> HealthModel = new(
-                HealthModelName,
-                "The name of the health model for which to get the health.",
-                required: true
-            );
-        }
     }
 
     public static class Service
