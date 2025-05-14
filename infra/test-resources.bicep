@@ -75,3 +75,13 @@ module servicebus 'services/servicebus.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
+module redis 'services/redis.bicep' = {
+  name: '${deploymentName}-redis'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
