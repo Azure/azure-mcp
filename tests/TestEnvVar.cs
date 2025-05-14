@@ -77,7 +77,7 @@ public abstract class DisposableConfig : IDisposable
         var acquired = _lock.Wait(TimeSpan.Zero);
         if (!acquired)
         {
-            throw new Exception($"Concurrent use of {nameof(TestEnvVar)}. Consider marking these tests as NonParallelizable.");
+            throw new Exception($"Concurrent use of {nameof(TestEnvVar)}. Consider marking these tests to not run in parallel.");
         }
 
         InitValues();
@@ -90,7 +90,7 @@ public abstract class DisposableConfig : IDisposable
         var acquired = _lock.Wait(TimeSpan.Zero);
         if (!acquired)
         {
-            throw new Exception($"Concurrent use of {nameof(TestEnvVar)}. Consider marking these tests as NonParallelizable.");
+            throw new Exception($"Concurrent use of {nameof(TestEnvVar)}. Consider marking these tests to not run in parallel.");
         }
 
         InitValues();
