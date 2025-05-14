@@ -36,18 +36,18 @@ public class AccessPolicyListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsAccessPolicyAssignments_WhenAssignmentsExist()
     {
-        var expectedAssignments = new AccessPolicyAssignment[] 
-        { 
+        var expectedAssignments = new AccessPolicyAssignment[]
+        {
             new() { AccessPolicyName = "policy1", IdentityName = "identity1", ProvisioningState = "Succeeded" },
             new() { AccessPolicyName = "policy2", IdentityName = "identity2", ProvisioningState = "Succeeded" }
         };
-        
+
         _redisService.ListAccessPolicyAssignmentsAsync(
-            "cache1", 
-            "rg1", 
-            "sub123", 
-            Arg.Any<string>(), 
-            Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            "cache1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AzureMcp.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .Returns(expectedAssignments);
 
@@ -79,11 +79,11 @@ public class AccessPolicyListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoAccessPolicyAssignments()
     {
         _redisService.ListAccessPolicyAssignmentsAsync(
-            "cache1", 
-            "rg1", 
-            "sub123", 
-            Arg.Any<string>(), 
-            Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            "cache1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AzureMcp.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .Returns([]);
 
@@ -102,11 +102,11 @@ public class AccessPolicyListCommandTests
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
         _redisService.ListAccessPolicyAssignmentsAsync(
-            cacheName: "cache1", 
-            resourceGroupName: "rg1", 
-            subscriptionId: "sub123", 
-            tenant: Arg.Any<string>(), 
-            authMethod: Arg.Any<AzureMcp.Models.AuthMethod>(), 
+            cacheName: "cache1",
+            resourceGroupName: "rg1",
+            subscriptionId: "sub123",
+            tenant: Arg.Any<string>(),
+            authMethod: Arg.Any<AzureMcp.Models.AuthMethod>(),
             retryPolicy: Arg.Any<AzureMcp.Arguments.RetryPolicyArguments>())
             .ThrowsAsync(new Exception("Test error"));
 
@@ -129,11 +129,14 @@ public class AccessPolicyListCommandTests
     public async Task ExecuteAsync_ReturnsError_WhenRequiredParameterIsMissing(string parameterToKeep)
     {
         var command = new AccessPolicyListCommand(_logger);
-        
+
         var args = new List<string>();
-        if (parameterToKeep == "--subscription") args.AddRange(["--subscription", "sub123"]);
-        if (parameterToKeep == "--resource-group") args.AddRange(["--resource-group", "rg1"]);
-        if (parameterToKeep == "--cache") args.AddRange(["--cache", "cache1"]);
+        if (parameterToKeep == "--subscription")
+            args.AddRange(["--subscription", "sub123"]);
+        if (parameterToKeep == "--resource-group")
+            args.AddRange(["--resource-group", "rg1"]);
+        if (parameterToKeep == "--cache")
+            args.AddRange(["--cache", "cache1"]);
 
         var parser = new Parser(command.GetCommand());
         var parseResult = parser.Parse(args.ToArray());

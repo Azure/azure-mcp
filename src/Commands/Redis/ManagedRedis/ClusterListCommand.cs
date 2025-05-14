@@ -18,7 +18,9 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
 {
     private readonly ILogger<ClusterListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";    protected override string GetCommandDescription() =>
+    protected override string GetCommandName() => "list";
+
+    protected override string GetCommandDescription() =>
         $"""
         List all Redis Cluster resources in a specified subscription. Returns an array of Redis Cluster details.
         Use this command to explore which Redis Cluster resources are available in your subscription.

@@ -21,13 +21,13 @@ public class Cluster
 
     /// <summary> SKU of the Redis cluster resource. </summary>
     public string? Sku { get; set; }
-    
+
     /// <summary> Provisioning status of the Redis cluster resource. </summary>
     public string? ProvisioningState { get; set; }
 
     /// <summary> Current status of the Redis cluster. </summary>
     public string? ResourceState { get; set; }
-    
+
     /// <summary> Version of Redis server supported by the cluster. </summary>
     public string? RedisVersion { get; set; }
 
