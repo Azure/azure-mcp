@@ -5,6 +5,11 @@
 ### Bugs Fixed
 
 - Fixes Service Bus host name parameter description. https://github.com/Azure/azure-mcp/pull/209/
+- Updates the usage patterns of Azure Developer CLI (azd) when invoked from MCP. https://github.com/Azure/azure-mcp/pull/203
+
+### Features Added
+
+### Other Changes
 
 ## 0.0.18 (2025-05-14)
 
