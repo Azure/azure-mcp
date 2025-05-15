@@ -10,9 +10,10 @@ $ErrorActionPreference = "Stop"
 # Get current subscription ID
 $subscriptionId = (Get-AzContext).Subscription.Id
 
-$apiVersion = '2020-06-30'
 $token = Get-AzAccessToken -ResourceUrl https://search.azure.com -AsSecureString | Select-Object -ExpandProperty Token
 $uri = "https://$BaseName.search.windows.net"
+
+$apiVersion = "2024-09-01-preview"
 
 $indexDefinition = [ordered]@{
   name = "products"
@@ -27,6 +28,67 @@ $indexDefinition = [ordered]@{
     @{ name = "text_vector"; type = "Collection(Edm.Single)"; dimensions = 1536; vectorSearchProfile = "products-azureOpenAi-text-profile" }
     @{ name = "category"; searchable = $false; filterable = $true; facetable = $true }
   )
+  scoringProfiles = @()
+  suggesters = @()
+  analyzers = @()
+  tokenizers = @()
+  tokenFilters = @()
+  charFilters = @()
+  similarity = @{
+    '@odata.type' = "#Microsoft.Azure.Search.BM25Similarity"
+  }
+  semantic = @{
+    defaultConfiguration = "products-semantic-configuration"
+    configurations = @(
+      @{
+        name = "products-semantic-configuration"
+        prioritizedFields = @{
+          titleField = @{
+            fieldName = "title"
+          }
+          prioritizedContentFields = @(
+            @{
+              fieldName = "chunk"
+            }
+          )
+          prioritizedKeywordsFields = @()
+        }
+      }
+    )
+  }
+  vectorSearch = @{
+    algorithms = @(
+      @{
+        name = "products-algorithm"
+        kind = "hnsw"
+        hnswParameters = @{
+          metric = "cosine"
+          m = 4
+          efConstruction = 400
+          efSearch = 500
+        }
+      }
+    )
+    profiles = @(
+      @{
+        name = "products-azureOpenAi-text-profile"
+        algorithm = "products-algorithm"
+        vectorizer = "products-azureOpenAi-text-vectorizer"
+      }
+    )
+    vectorizers = @(
+      @{
+        name = "products-azureOpenAi-text-vectorizer"
+        kind = "azureOpenAI"
+        azureOpenAIParameters = @{
+          resourceUri = "https://$BaseName.openai.azure.com"
+          deploymentId = "text-embedding-3-small"
+          modelName = "text-embedding-3-small"
+        }
+      }
+    )
+    compressions = @()
+  }
 }
 
 # Set default values for index fields
@@ -81,8 +143,7 @@ $skillsetDefinition = @{
         '@odata.type' = "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill"
         name = "#2"
         context = "/document/pages/*"
-        resourceUri = "https://$BaseName-ai.openai.azure.com"
-        apiKey = "<redacted>"
+        resourceUri = "https://$BaseName.openai.azure.com"
         deploymentId = "embedding-model"
         dimensions = 1536
         modelName = "text-embedding-3-small"
@@ -198,8 +259,10 @@ $context = New-AzStorageContext -StorageAccountName $BaseName -UseConnectedAccou
 $container = 'searchdocs'
 $categories = @('A', 'B', 'C')
 Write-Host "Uploading sample files to blob storage: $BaseName/$container" -ForegroundColor Yellow
-foreach ($file in Get-ChildItem -Path "$PSScriptRoot/../samples" -Filter '*.md') {
-    $category = $categories | Get-Random
+$files = Get-ChildItem -Path "$PSScriptRoot/../samples" -Filter '*.md'
+$i = 0;
+foreach ($file in $files) {
+    $category = $categories[$i++ % $categories.Count]
     Write-Host "  $($file.Name)`: { category: $category }" -ForegroundColor Yellow
-    Set-AzStorageBlobContent -File $file.FullName -Container $container -Blob $file.Name -Metadata @{ category = $category } -Context $context -Force -ProgressAction SilentlyContinue
+    Set-AzStorageBlobContent -File $file.FullName -Container $container -Blob $file.Name -Metadata @{ category = $category } -Context $context -Force -ProgressAction SilentlyContinue | Out-Null
 }

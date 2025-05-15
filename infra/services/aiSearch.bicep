@@ -35,11 +35,6 @@ resource search 'Microsoft.Search/searchServices@2025-02-01-preview' = {
     name: 'free'
   }
   properties: {
-    authOptions: {
-      aadOrApiKey: {
-        aadAuthFailureMode: 'http401WithBearerChallenge'
-      }
-    }
     disableLocalAuth: true
     replicaCount: 1
     partitionCount: 1
@@ -53,14 +48,14 @@ resource search 'Microsoft.Search/searchServices@2025-02-01-preview' = {
 
 // Azure OpenAI resource
 resource openai 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
-  name: '${take(baseName, 20)}-ai'
+  name: baseName
   location: location
   kind: 'OpenAI'
   sku: {
     name: 'S0'
   }
   properties: {
-    customSubDomainName: toLower('${take(baseName, 20)}-ai')
+    customSubDomainName: toLower(baseName)
     publicNetworkAccess: 'Enabled'
   }
 }
