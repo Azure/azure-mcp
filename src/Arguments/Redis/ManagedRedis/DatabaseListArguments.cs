@@ -3,5 +3,4 @@
 
 namespace AzureMcp.Arguments.Redis.ManagedRedis;
 
-public class DatabaseListArguments : BaseClusterArguments
-{ }
+public class DatabaseListArguments : BaseClusterArguments;
