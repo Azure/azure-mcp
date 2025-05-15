@@ -449,7 +449,7 @@ public static class ArgumentDefinitions
 
         public static readonly ArgumentDefinition<string> Namespace = new(
             NamespaceName,
-            "The Service Bus namespace name.",
+            "The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)",
             required: true);
 
         public static readonly ArgumentDefinition<string> Queue = new(

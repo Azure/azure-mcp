@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Fixes Service Bus host name parameter description. https://github.com/Azure/azure-mcp/pull/209/
+
 ### Other Changes
 
 ## 0.0.18 (2025-05-14)

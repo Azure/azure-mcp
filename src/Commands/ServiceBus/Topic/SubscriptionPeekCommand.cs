@@ -30,7 +30,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         Returns message content, properties, and metadata.  Messages remain in the subscription after peeking.
 
         Required arguments:
-        - namespace: Service Bus namespace name. (This is usually in the form <namespace>.servicebus.windows.net)
+        - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - topic-name: Topic name containing the subscription
         - subscription-name: Subscription name to peek messages from
         """;
