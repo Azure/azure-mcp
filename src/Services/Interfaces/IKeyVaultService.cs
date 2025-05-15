@@ -18,6 +18,7 @@ public interface IKeyVaultService
     /// <returns>List of key names in the vault.</returns>
     Task<List<string>> ListKeys(
         string vaultName,
+        bool includeManagedKeys,
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null);
