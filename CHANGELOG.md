@@ -1,5 +1,11 @@
 # Release History
 
+## 0.0.19 (Unreleased)
+
+### Bugs Fixed
+
+- Fixes Service Bus host name parameter description. https://github.com/Azure/azure-mcp/pull/209/
+
 ## 0.0.18 (2025-05-14)
 
 ### Bugs Fixed
