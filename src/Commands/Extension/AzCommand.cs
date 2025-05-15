@@ -20,7 +20,8 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
     private static string? _cachedAzPath;
-    private static bool _isAuthenticated = false;
+    private volatile bool _isAuthenticated = false;
+    private static readonly SemaphoreSlim _authSemaphore = new(1, 1);
 
     protected override string GetCommandName() => "az";
 
@@ -106,15 +107,22 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         return null;
     }
 
-    private static async Task<bool> AuthenticateWithAzureCredentialsAsync(IExternalProcessService processService, ILogger logger)
+    private async Task<bool> AuthenticateWithAzureCredentialsAsync(IExternalProcessService processService, ILogger logger)
     {
         if (_isAuthenticated)
         {
+            Console.WriteLine("Already authenticated with Azure CLI.1");
             return true;
         }
 
         try
         {
+            // Check if the semaphore is already acquired to avoid re-authentication
+            bool isAcquired = await _authSemaphore.WaitAsync(1000);
+            if (!isAcquired || _isAuthenticated)
+            {
+                return _isAuthenticated;
+            }
             var credentials = AuthenticationUtils.GetAzureCredentials(logger);
             if (credentials == null)
             {
@@ -141,6 +149,10 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         {
             logger.LogWarning(ex, "Error during service principal authentication. Command will proceed without authentication.");
             return false;
+        }
+        finally
+        {
+            _authSemaphore.Release();
         }
     }
 
