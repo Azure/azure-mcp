@@ -3,13 +3,12 @@
 
 using Azure.ResourceManager.Resources;
 using AzureMcp.Arguments;
-using AzureMcp.Models.Argument;
 
 namespace AzureMcp.Services.Interfaces;
 
 public interface ISubscriptionService
 {
-    Task<List<ArgumentOption>> GetSubscriptions(string? tenant = null, RetryPolicyArguments? retryPolicy = null);
+    Task<List<SubscriptionData>> GetSubscriptions(string? tenant = null, RetryPolicyArguments? retryPolicy = null);
     Task<SubscriptionResource> GetSubscription(string subscription, string? tenant = null, RetryPolicyArguments? retryPolicy = null);
     bool IsSubscriptionId(string subscription, string? tenant = null);
     Task<string> GetSubscriptionIdByName(string subscriptionName, string? tenant = null, RetryPolicyArguments? retryPolicy = null);

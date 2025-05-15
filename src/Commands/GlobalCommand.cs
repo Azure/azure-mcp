@@ -119,35 +119,11 @@ public abstract class GlobalCommand<
             .WithIsRequired(ArgumentDefinitions.Common.Tenant.Required);
     }
 
-    private static async Task<List<ArgumentOption>> GetTenantOptions(CommandContext context)
-    {
-        var tenantService = context.GetService<ITenantService>();
-        return await tenantService.GetTenants();
-    }
-
-    // Helper method to get auth method options
-    protected virtual async Task<List<ArgumentOption>> GetAuthMethodOptions(CommandContext context)
-    {
-        // Use the helper method from AuthMethodArgument
-        return AuthMethodArgument.GetAuthMethodOptions();
-    }
-
     protected ArgumentBuilder<TArgs> CreateResourceGroupArgument() =>
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Common.ResourceGroup.Name, ArgumentDefinitions.Common.ResourceGroup.Description)
             .WithValueAccessor(args => (args as SubscriptionArguments)?.ResourceGroup ?? string.Empty)
             .WithIsRequired(true);
-
-    protected async Task<List<ArgumentOption>> GetResourceGroupOptions(CommandContext context, string subscription, string tenant = "")
-    {
-        if (string.IsNullOrEmpty(subscription))
-            return [];
-
-        var resourceGroupService = context.GetService<IResourceGroupService>();
-        var resourceGroup = await resourceGroupService.GetResourceGroups(subscription, tenant);
-
-        return resourceGroup?.Select(rg => new ArgumentOption { Name = rg.Name, Id = rg.Id }).ToList() ?? [];
-    }
 
     // Helper to get the command path for examples
     protected virtual string GetCommandPath()

@@ -31,20 +31,6 @@ public abstract class BaseMonitorCommand<
         AddArgument(CreateWorkspaceArgument());
     }
 
-    protected async Task<List<ArgumentOption>> GetWorkspaceOptions(CommandContext context, string subscription)
-    {
-        if (string.IsNullOrEmpty(subscription))
-            return [];
-
-        var monitorService = context.GetService<IMonitorService>();
-        var workspaces = await monitorService.ListWorkspaces(subscription, null);
-        return [.. workspaces.Select(w => new ArgumentOption
-        {
-            Name = w.Name,
-            Id = w.CustomerId?.ToString() ?? string.Empty
-        })];
-    }
-
     protected virtual ArgumentBuilder<TArgs> CreateWorkspaceArgument() =>
         ArgumentBuilder<TArgs>
             .Create(ArgumentDefinitions.Monitor.Workspace.Name, ArgumentDefinitions.Monitor.Workspace.Description)

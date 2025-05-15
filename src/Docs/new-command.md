@@ -393,8 +393,8 @@ There are two ways to create arguments:
 1. Using base command helper methods (preferred):
 ```csharp
 RegisterArgumentChain(
-    CreateAccountArgument(GetAccountOptions()),
-    CreateContainerArgument(GetContainerOptions())
+    CreateAccountArgument(),
+    CreateContainerArgument()
 );
 ```
 
@@ -473,8 +473,8 @@ public class ContainersListCommand : BaseServiceCommand<ContainersListArguments>
     public ContainersListCommand() : base()
     {
         RegisterArgumentChain(
-            CreateAccountArgument(GetAccountOptions),
-            CreateContainerArgument(GetContainerOptions)
+            CreateAccountArgument(),
+            CreateContainerArgument()
         );
     }
 }
@@ -668,7 +668,7 @@ public class ContainersListCommand : BaseStorageCommand
     public ContainersListCommand() : base()
     {
         RegisterArgumentChain<ContainersListArguments>(
-            CreateAccountArgument<ContainersListArguments>(GetAccountOptions)
+            CreateAccountArgument<ContainersListArguments>()
         );
     }
 
@@ -764,7 +764,6 @@ public abstract class BaseAppConfigCommand<TArgs> : BaseCommand<TArgs>
             .Create(ArgumentDefinitions.AppConfig.Account.Name, ArgumentDefinitions.AppConfig.Account.Description)
             .WithValueAccessor(args => ((dynamic)args).Account ?? string.Empty)
             .WithCommandExample(ArgumentDefinitions.GetCommandExample(GetCommandPath(), ArgumentDefinitions.AppConfig.Account))
-            .WithValueLoader(async (context, args) => await GetAccountOptions(context, args.Subscription ?? string.Empty))
             .WithIsRequired(ArgumentDefinitions.AppConfig.Account.Required);
     }
 
@@ -1291,9 +1290,6 @@ public abstract class GlobalCommand<TArgs> : BaseCommand
             AddArgument(argument);
         }
     }
-
-    protected virtual async Task<List<ArgumentOption>> GetAuthMethodOptions(CommandContext context) =>
-        await Task.FromResult(AuthMethodArgument.GetAuthMethodOptions());
 }
 ```
 

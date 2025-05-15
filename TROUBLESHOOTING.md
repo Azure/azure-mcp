@@ -74,7 +74,7 @@ By default, VS Code logs informational, warning, and error level messages. To ge
 
 ## Authentication
 
-### 401 Unauthorized: Local authorization is disbaled.
+### 401 Unauthorized: Local authorization is disabled.
 
 This error indicates that the targeted resource is configured to disallow access using **Access Keys**, which are currently used by Azure MCP for authentication in certain scenarios.
 

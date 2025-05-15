@@ -76,7 +76,7 @@ public static class ArgumentDefinitions
         public static readonly ArgumentDefinition<RetryMode> Mode = new(
             ModeName,
             "Retry strategy to use. 'fixed' uses consistent delays, 'exponential' increases delay between attempts.",
-            defaultValue: Azure.Core.RetryMode.Exponential,
+            defaultValue: RetryMode.Exponential,
             required: false,
             hidden: true
         );
@@ -434,6 +434,7 @@ public static class ArgumentDefinitions
         public const string VaultNameParam = "vault";
         public const string KeyNameParam = "key";
         public const string KeyTypeParam = "key-type";
+        public const string IncludeManagedKeysParam = "include-managed";
 
         public static readonly ArgumentDefinition<string> VaultName = new(
             VaultNameParam,
@@ -449,6 +450,11 @@ public static class ArgumentDefinitions
             KeyTypeParam,
             "The type of key to create (RSA, EC).",
             required: true);
+
+        public static readonly ArgumentDefinition<bool> IncludeManagedKeys = new(
+            IncludeManagedKeysParam,
+            "Whether or not to include managed keys in results.",
+            required: false);
     }
 
     public static class ServiceBus

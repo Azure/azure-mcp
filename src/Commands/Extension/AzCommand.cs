@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using AzureMcp.Arguments.Extension;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
+using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
@@ -19,7 +20,8 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
     private static string? _cachedAzPath;
-
+    private volatile bool _isAuthenticated = false;
+    private static readonly SemaphoreSlim _authSemaphore = new(1, 1);
 
     protected override string GetCommandName() => "az";
 
@@ -105,6 +107,55 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         return null;
     }
 
+    private async Task<bool> AuthenticateWithAzureCredentialsAsync(IExternalProcessService processService, ILogger logger)
+    {
+        if (_isAuthenticated)
+        {
+            Console.WriteLine("Already authenticated with Azure CLI.1");
+            return true;
+        }
+
+        try
+        {
+            // Check if the semaphore is already acquired to avoid re-authentication
+            bool isAcquired = await _authSemaphore.WaitAsync(1000);
+            if (!isAcquired || _isAuthenticated)
+            {
+                return _isAuthenticated;
+            }
+            var credentials = AuthenticationUtils.GetAzureCredentials(logger);
+            if (credentials == null)
+            {
+                logger.LogWarning("Invalid AZURE_CREDENTIALS format. Skipping authentication. Ensure it contains clientId, clientSecret, and tenantId.");
+                return false;
+            }
+
+            var azPath = FindAzCliPath() ?? throw new FileNotFoundException("Azure CLI executable not found in PATH or common installation locations. Please ensure Azure CLI is installed.");
+
+            var loginCommand = $"login --service-principal -u {credentials.ClientId} -p {credentials.ClientSecret} --tenant {credentials.TenantId}";
+            var result = await processService.ExecuteAsync(azPath, loginCommand, 60);
+
+            if (result.ExitCode != 0)
+            {
+                logger.LogWarning("Failed to authenticate with Azure CLI. Error: {Error}", result.Error);
+                return false;
+            }
+
+            _isAuthenticated = true;
+            logger.LogInformation("Successfully authenticated with Azure CLI using service principal.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error during service principal authentication. Command will proceed without authentication.");
+            return false;
+        }
+        finally
+        {
+            _authSemaphore.Release();
+        }
+    }
+
     [McpServerTool(Destructive = true, ReadOnly = false)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -120,6 +171,9 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             ArgumentNullException.ThrowIfNull(args.Command);
             var command = args.Command;
             var processService = context.GetService<IExternalProcessService>();
+
+            // Try to authenticate, but continue even if it fails
+            await AuthenticateWithAzureCredentialsAsync(processService, _logger);
 
             var azPath = FindAzCliPath() ?? throw new FileNotFoundException("Azure CLI executable not found in PATH or common installation locations. Please ensure Azure CLI is installed.");
             var result = await processService.ExecuteAsync(azPath, command, _processTimeoutSeconds);

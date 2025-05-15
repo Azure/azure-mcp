@@ -51,7 +51,7 @@ public sealed class QueryCommandTests
     public async Task ExecuteAsync_ReturnsQueryResults(string cliArgs, bool useClusterUri)
     {
         // Arrange
-        var expectedJson = System.Text.Json.JsonDocument.Parse("[{\"foo\":42}]").RootElement.EnumerateArray().Select(e => e.Clone()).ToList();
+        var expectedJson = JsonDocument.Parse("[{\"foo\":42}]").RootElement.EnumerateArray().Select(e => e.Clone()).ToList();
         if (useClusterUri)
         {
             _kusto.QueryItems(
@@ -165,7 +165,7 @@ public sealed class QueryCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("Missing required", response.Message, System.StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Missing required", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class QueryResult

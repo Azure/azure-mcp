@@ -6,7 +6,7 @@ using System.Text.Json;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
-using AzureMcp.Models.Argument;
+using Azure.ResourceManager.Resources;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Interfaces;
@@ -78,8 +78,7 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
 
         return browserCredential;
     }
-
-    private void ValidateAndLogSubscriptions(List<ArgumentOption> subscriptions)
+    private void ValidateAndLogSubscriptions(List<SubscriptionData> subscriptions)
     {
         // Validate subscriptions
         Assert.NotNull(subscriptions);
@@ -88,10 +87,10 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         // Verify subscription data structure
         foreach (var subscription in subscriptions)
         {
-            Assert.NotNull(subscription.Id);
-            Assert.NotEmpty(subscription.Id);
-            Assert.NotNull(subscription.Name);
-            Assert.NotEmpty(subscription.Name);
+            Assert.NotNull(subscription.SubscriptionId);
+            Assert.NotEmpty(subscription.SubscriptionId);
+            Assert.NotNull(subscription.DisplayName);
+            Assert.NotEmpty(subscription.DisplayName);
         }
 
         // Output subscriptions for manual verification

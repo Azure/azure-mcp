@@ -187,7 +187,7 @@ azmcp appconfig kv delete --subscription <subscription> --account-name <account-
 ### Azure Key Vault Operations
 ```bash
 # Lists keys in vault
-azmcp keyvault key list --subscription <subscription> --vault <vault-name>
+azmcp keyvault key list --subscription <subscription> --vault <vault-name> --include-managed <true/false>
 
 # Gets a key in vault
 azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key <key-name>

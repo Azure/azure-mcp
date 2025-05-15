@@ -11,6 +11,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
 {
     public async Task<List<string>> ListKeys(
         string vaultName,
+        bool includeManagedKeys,
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyArguments? retryPolicy = null)
@@ -23,7 +24,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
 
         try
         {
-            await foreach (var key in client.GetPropertiesOfKeysAsync())
+            await foreach (var key in client.GetPropertiesOfKeysAsync().Where(x => x.Managed == includeManagedKeys))
             {
                 keys.Add(key.Name);
             }
