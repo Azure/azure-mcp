@@ -231,7 +231,7 @@ azmcp redis cluster database list --subscription <subscription> --resource-group
 azmcp redis cache list --subscription <subscription> 
 
 # Lists Access Policy Assignments in an Azure Redis Cache
-azmcp redis cache list accessPolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
+azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
 ```
 
 ### Azure Resource Group Operations

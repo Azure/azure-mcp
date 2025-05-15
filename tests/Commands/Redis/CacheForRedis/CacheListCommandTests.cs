@@ -34,7 +34,6 @@ public class CacheListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsCaches_WhenCachesExist()
     {
-        //var expectedCaches = new[] { "cache1", "cache2" };
         var expectedCaches = new CacheModel[] { new() { Name = "cache1" }, new() { Name = "cache2" } };
         _redisService.ListCachesAsync("sub123", Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyArguments>())
             .Returns(expectedCaches);
