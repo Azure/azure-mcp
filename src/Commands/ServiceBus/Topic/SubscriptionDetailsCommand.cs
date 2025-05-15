@@ -26,7 +26,7 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         Get details about a Service Bus subscription. Returns subscription runtime properties including message counts, delivery settings, and other metadata.
 
         Required arguments:
-        - namespace: The fully qualified Service Bus namespace hostname. (This is usually in the form <namespace>.servicebus.windows.net)
+        - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - topic-name: Topic name containing the subscription
         - subscription-name: Name of the subscription to get details for
         """;
