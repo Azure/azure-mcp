@@ -82,11 +82,15 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - List and query Storage tables
 - Get container properties and metadata
 
-### 📈 Azure Monitor (Log Analytics)
+### 📈 Azure Monitor 
+#### Log Analytics
 - List Log Analytics workspaces
 - Query logs using KQL
 - List available tables
 - Configure monitoring options
+
+#### Health Models
+- Get health of an entity
 
 ### ⚙️ Azure App Configuration
 - List App Configuration stores
