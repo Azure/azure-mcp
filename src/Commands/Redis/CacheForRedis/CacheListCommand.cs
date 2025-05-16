@@ -15,17 +15,20 @@ namespace AzureMcp.Commands.Redis.CacheForRedis;
 /// </summary>
 public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : SubscriptionCommand<CacheListArguments>()
 {
+    private const string _commandTitle = "List Redis Caches";
     private readonly ILogger<CacheListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all Redis Cache resources in a specified subscription. Returns an array of Redis Cache details.
         Use this command to explore which Redis Cache resources are available in your subscription.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try
