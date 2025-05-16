@@ -1,6 +1,10 @@
 # Release History
 
-## 0.0.19 (Unreleased)
+## 0.0.20 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
 
 ### Bugs Fixed
 
@@ -10,6 +14,12 @@
 ### Features Added
 
 ### Other Changes
+
+## 0.0.19 (2025-05-15)
+
+### Bugs Fixed
+
+- Fixes Service Bus host name parameter description. https://github.com/Azure/azure-mcp/pull/209/
 
 ## 0.0.18 (2025-05-14)
 
@@ -22,7 +32,6 @@
 ### Bugs Fixed
 
 - Added an opt-in timeout for browser-based authentication to handle cases where the process waits indefinitely if the user closes the browser. https://github.com/Azure/azure-mcp/pull/189
-
 
 ## 0.0.16 (2025-05-13)
 
