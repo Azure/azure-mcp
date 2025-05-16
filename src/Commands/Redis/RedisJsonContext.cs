@@ -10,5 +10,4 @@ namespace AzureMcp.Commands.Redis;
 [JsonSerializable(typeof(ClusterListCommand.ClusterListCommandResult))]
 [JsonSerializable(typeof(DatabaseListCommand.DatabaseListCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault)]
-internal sealed partial class RedisJsonContext : JsonSerializerContext
-{ }
+internal sealed partial class RedisJsonContext : JsonSerializerContext;
