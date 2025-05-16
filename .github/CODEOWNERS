@@ -63,9 +63,9 @@
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
 
 # PRLabel: %area-Redis
-/src/Arguments/Redis/             @philon-msft @kasisevugan
-/src/Commands/Redis/              @philon-msft @kasisevugan
-/src/Services/Azure/Redis/        @philon-msft @kasisevugan
+/src/Arguments/Redis/             @philon-msft @xiangyan99
+/src/Commands/Redis/              @philon-msft @xiangyan99
+/src/Services/Azure/Redis/        @philon-msft @xiangyan99
 
 # ServiceLabel: %area-Redis
 # ServiceOwners:                       @philon-msft @carldc
