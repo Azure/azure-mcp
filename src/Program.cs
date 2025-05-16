@@ -8,6 +8,7 @@ using AzureMcp.Extensions;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.AppConfig;
+using AzureMcp.Services.Azure.AzureISV.Datadog;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.KeyVault;
 using AzureMcp.Services.Azure.Kusto;
@@ -70,6 +71,7 @@ internal class Program
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<ICosmosService, CosmosService>();
         services.AddSingleton<IKustoService, KustoService>();
+        services.AddSingleton<IDatadogService, DatadogService>();
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();

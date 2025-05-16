@@ -45,6 +45,13 @@
 # ServiceLabel: %area-KeyVault
 # ServiceOwners:                       @conniey @JonathanCrd
 
+# PRLabel: %area-ISV
+/src/Arguments/AzureISV/               @jayanthjj @pachaturevedi
+/src/Commands/AzureISV/                @jayanthjj @pachaturevedi
+/src/Services/Azure/AzureISV/          @jayanthjj @pachaturevedi
+
+# ServiceLabel: %area-ISV
+# ServiceOwners:                       @jayanthjj @pachaturevedi
 
 # PRLabel: %area-CosmosDB
 /src/Arguments/Cosmos/               @sajeetharan @xiangyan99

@@ -214,6 +214,12 @@ azmcp servicebus topic subscription peek --subscription <subscription> --namespa
 azmcp servicebus topic subscription details --subscription <subscription> --namespace <service-bus-namespace> --topic-name <topic-name> --subscription-name <subscription-name>
 ```
 
+### Azure Native ISV Operations
+```bash
+# List monitored resources in Datadog
+azmcp datadog monitoredresources list --subscription <subscription> --resource-group <resource-group> --datadog-resource <datadog-resource>
+```
+
 ### Azure Resource Group Operations
 ```bash
 # List resource groups in a subscription
