@@ -69,5 +69,8 @@
 # ServiceLabel: %area-BestPractices
 # ServiceOwners:                            @g2vinay @conniey
 
-# ServiceLabel: %area-Monitor-HealthModels
-# ServiceOwners:                        @smritiy
+# ServiceLabel: %area-Monitor
+# ServiceOwners:                        @smritiy, @g2vinay
+/src/Arguments/Monitor/                     @smritiy @g2vinay
+/src/Commands/Monitor/                      @smritiy @g2vinay
+/src/Services/Azure/Monitor/                @smritiy @g2vinay

@@ -15,13 +15,14 @@ namespace AzureMcp.Commands.KeyVault.Key;
 
 public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionCommand<KeyGetArguments>
 {
+    private const string _commandTitle = "Get Key Vault Key";
     private readonly ILogger<KeyGetCommand> _logger = logger;
     private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName.ToOption();
     private readonly Option<string> _keyOption = ArgumentDefinitions.KeyVault.KeyName.ToOption();
 
-    protected override string GetCommandName() => "get";
+    public override string Name => "get";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Get a key from an Azure Key Vault. This command retrieves and displays details
         about a specific key in the specified vault.
@@ -31,6 +32,8 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         - vault
         - key
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -66,7 +69,7 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

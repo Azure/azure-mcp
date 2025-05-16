@@ -15,6 +15,7 @@ namespace AzureMcp.Commands.Kusto;
 
 public sealed class QueryCommand : BaseDatabaseCommand<QueryArguments>
 {
+    private const string _commandTitle = "Query Kusto Database";
     private readonly ILogger<QueryCommand> _logger;
 
     public QueryCommand(ILogger<QueryCommand> logger) : base()
@@ -49,16 +50,18 @@ public sealed class QueryCommand : BaseDatabaseCommand<QueryArguments>
         return args;
     }
 
-    protected override string GetCommandName() => "query";
+    public override string Name => "query";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Execute a KQL against items in a Kusto cluster.
         Requires `cluster-uri` (or `cluster-name` and `subscription`), `database-name`, and `query`. 
         Results are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

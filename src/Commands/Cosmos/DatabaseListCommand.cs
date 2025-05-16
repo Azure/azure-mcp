@@ -13,17 +13,20 @@ namespace AzureMcp.Commands.Cosmos;
 
 public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseCosmosCommand<DatabaseListArguments>()
 {
+    private const string _commandTitle = "List Cosmos DB Databases";
     private readonly ILogger<DatabaseListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         List all databases in a Cosmos DB account. This command retrieves and displays all databases available
         in the specified Cosmos DB account. Results include database names and are returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

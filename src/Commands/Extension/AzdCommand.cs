@@ -17,6 +17,7 @@ namespace AzureMcp.Commands.Extension;
 
 public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzdArguments>()
 {
+    private const string _commandTitle = "Azure Developer CLI Command";
     private readonly ILogger<AzdCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Azd.Command.ToOption();
@@ -51,9 +52,9 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         Path.Combine("usr", "local", "bin"),
     ];
 
-    protected override string GetCommandName() => "azd";
+    public override string Name => "azd";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Runs Azure Developer CLI (azd) commands.
         Agents and LLM's must always run this tool with the 'learn' parameter and empty 'command' on first use to learn more about 'azd' best practices and usage patterns.
@@ -75,6 +76,8 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
 
         If unsure about available commands or their parameters, run azd help or azd <group> --help in the command to discover them.
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -128,7 +131,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return args;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

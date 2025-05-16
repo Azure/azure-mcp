@@ -12,10 +12,11 @@ namespace AzureMcp.Services.Azure.Monitor;
 public class MonitorHealthModelService(ITenantService tenantService)
     : BaseAzureService(tenantService), IMonitorHealthModelService
 {
-    private static readonly string ManagementApiBaseUrl = "https://management.azure.com";
-    private static readonly string HealthModelsDataApiScope = "https://data.healthmodels.azure.com";
-    private static readonly string ApiVersion = "2023-10-01-preview";
-    private static readonly HttpClient SharedHttpClient = new HttpClient();
+    private const int _TokenExpirationBuffer = 300;
+    private const string _ManagementApiBaseUrl = "https://management.azure.com";
+    private const string _HealthModelsDataApiScope = "https://data.healthmodels.azure.com";
+    private const string _ApiVersion = "2023-10-01-preview";
+    private static readonly HttpClient _SharedHttpClient = new HttpClient();
 
     private string? _cachedDataplaneAccessToken;
     private string? _cachedControlPlaneAccessToken;
@@ -59,7 +60,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", dataplaneToken);
 
-        HttpResponseMessage healthResponse = await SharedHttpClient.SendAsync(request);
+        HttpResponseMessage healthResponse = await _SharedHttpClient.SendAsync(request);
         healthResponse.EnsureSuccessStatusCode();
 
         string healthResponseString = await healthResponse.Content.ReadAsStringAsync();
@@ -69,12 +70,12 @@ public class MonitorHealthModelService(ITenantService tenantService)
     private async Task<string> GetDataplaneEndpointAsync(string subscriptionId, string resourceGroupName, string healthModelName)
     {
         string token = await GetControlPlaneTokenAsync();
-        string healthModelUrl = $"{ManagementApiBaseUrl}/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CloudHealth/healthmodels/{healthModelName}?api-version={ApiVersion}";
+        string healthModelUrl = $"{_ManagementApiBaseUrl}/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CloudHealth/healthmodels/{healthModelName}?api-version={_ApiVersion}";
 
         using var request = new HttpRequestMessage(HttpMethod.Get, healthModelUrl);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-        HttpResponseMessage response = await SharedHttpClient.SendAsync(request);
+        HttpResponseMessage response = await _SharedHttpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
 
@@ -105,7 +106,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
     private async Task<string> GetControlPlaneTokenAsync()
     {
         return await GetCachedTokenAsync(
-            ManagementApiBaseUrl,
+            _ManagementApiBaseUrl,
             () => _cachedControlPlaneAccessToken,
             (token) => _cachedControlPlaneAccessToken = token,
             () => _controlPlaneTokenExpiryTime,
@@ -115,7 +116,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
     private async Task<string> GetDataplaneTokenAsync()
     {
         return await GetCachedTokenAsync(
-            HealthModelsDataApiScope,
+            _HealthModelsDataApiScope,
             () => _cachedDataplaneAccessToken,
             (token) => _cachedDataplaneAccessToken = token,
             () => _dataplaneTokenExpiryTime,
@@ -137,7 +138,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
 
         AccessToken accessToken = await GetEntraIdAccessTokenAsync(resource);
         setCachedToken(accessToken.Token);
-        setExpiryTime(accessToken.ExpiresOn.AddSeconds(-60)); // Subtract 60 seconds as a buffer.
+        setExpiryTime(accessToken.ExpiresOn.AddSeconds(-_TokenExpirationBuffer));
 
         return getCachedToken()!;
     }

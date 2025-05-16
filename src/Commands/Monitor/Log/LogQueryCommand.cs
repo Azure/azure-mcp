@@ -14,15 +14,16 @@ namespace AzureMcp.Commands.Monitor.Log;
 
 public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonitorCommand<LogQueryArguments>()
 {
+    private const string _commandTitle = "Query Log Analytics Workspace";
     private readonly ILogger<LogQueryCommand> _logger = logger;
     private readonly Option<string> _tableNameOption = ArgumentDefinitions.Monitor.TableName.ToOption();
     private readonly Option<string> _queryOption = ArgumentDefinitions.Monitor.Query.ToOption();
     private readonly Option<int> _hoursOption = ArgumentDefinitions.Monitor.Hours.ToOption();
     private readonly Option<int> _limitOption = ArgumentDefinitions.Monitor.Limit.ToOption();
 
-    protected override string GetCommandName() => "query";
+    public override string Name => "query";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         Execute a KQL query against a Log Analytics workspace. Requires {ArgumentDefinitions.Monitor.WorkspaceIdOrName}
         and resource group. Optional {ArgumentDefinitions.Monitor.HoursName}
@@ -30,6 +31,8 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         (default: {ArgumentDefinitions.Monitor.Limit.DefaultValue}) parameters.
         The {ArgumentDefinitions.Monitor.QueryTextName} parameter accepts KQL syntax.
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -51,7 +54,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         AddArgument(CreateResourceGroupArgument());
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

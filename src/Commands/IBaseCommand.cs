@@ -16,6 +16,21 @@ namespace AzureMcp.Commands;
 public interface IBaseCommand
 {
     /// <summary>
+    /// Gets the name of the command
+    /// </summary>
+    string Name { get; }
+
+    /// <summary>
+    /// Gets the description of the command
+    /// </summary>
+    string Description { get; }
+
+    /// <summary>
+    /// Gets the name of the command
+    /// </summary>
+    string Title { get; }
+
+    /// <summary>
     /// Gets the command definition
     /// </summary>
     Command GetCommand();

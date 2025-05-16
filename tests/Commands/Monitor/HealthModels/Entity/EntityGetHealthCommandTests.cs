@@ -45,7 +45,8 @@ public class EntityGetHealthCommandTests
             .AddSingleton(_monitorHealthService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new EntityGetHealthCommand();
+        _logger = Substitute.For<ILogger<EntityGetHealthCommand>>();
+        _command = new EntityGetHealthCommand(_logger);
         _context = new CommandContext(_serviceProvider);
         _parser = new Parser(_command.GetCommand());
     }
