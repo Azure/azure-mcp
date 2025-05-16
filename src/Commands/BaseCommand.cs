@@ -8,12 +8,19 @@ using AzureMcp.Models.Command;
 
 namespace AzureMcp.Commands;
 
+using AzureMcp.Arguments;
+
 public abstract class BaseCommand : IBaseCommand
 {
     protected readonly HashSet<string> _registeredArgumentNames = [];
     protected readonly List<ArgumentDefinition<string>> _arguments = [];
 
     private readonly Command? _command;
+
+    /// <summary>
+    /// The type of arguments this command expects. Defaults to BaseCommandArguments.
+    /// </summary>
+    public virtual Type ArgumentsType => typeof(BaseCommandArguments);
 
     protected BaseCommand()
     {
