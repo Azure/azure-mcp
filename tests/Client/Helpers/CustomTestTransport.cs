@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Channels;
-using ModelContextProtocol.Protocol.Messages;
-using ModelContextProtocol.Protocol.Transport;
+using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Tests.Client.Helpers;
 

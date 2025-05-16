@@ -5,7 +5,7 @@ using System.Text.Json;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
