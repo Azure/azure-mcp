@@ -24,7 +24,7 @@ namespace AzureMcp.Tests.Client
             _serviceBusNamespace = $"{Settings.ResourceBaseName}.servicebus.windows.net";
         }
 
-        [Fact]
+        [Fact(Skip = "The command for this test has been commented out until we know how to surface binary data.")]
         [Trait("Category", "Live")]
         public async Task Queue_peek_messages()
         {
@@ -47,7 +47,7 @@ namespace AzureMcp.Tests.Client
             Assert.Equal(numberOfMessages, messages.GetArrayLength());
         }
 
-        [Fact]
+        [Fact(Skip = "The command for this test has been commented out until we know how to surface binary data.")]
         [Trait("Category", "Live")]
         public async Task Topic_subscription_peek_messages()
         {

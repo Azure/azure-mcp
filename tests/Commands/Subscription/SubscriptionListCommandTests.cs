@@ -4,12 +4,13 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
+using Azure.ResourceManager.Resources;
 using AzureMcp.Arguments;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models;
-using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
@@ -47,10 +48,10 @@ public class SubscriptionListCommandTests
     public async Task ExecuteAsync_NoParameters_ReturnsSubscriptions()
     {
         // Arrange
-        var expectedSubscriptions = new List<ArgumentOption>
+        var expectedSubscriptions = new List<SubscriptionData>
         {
-            new() { Id = "sub1", Name = "Subscription 1" },
-            new() { Id = "sub2", Name = "Subscription 2" }
+            SubscriptionTestHelpers.CreateSubscriptionData("sub1", "Subscription 1"),
+            SubscriptionTestHelpers.CreateSubscriptionData("sub2", "Subscription 2")
         };
 
         _subscriptionService
@@ -66,6 +67,20 @@ public class SubscriptionListCommandTests
         Assert.NotNull(result);
         Assert.Equal(200, result.Status);
         Assert.NotNull(result.Results);
+
+        var jsonDoc = JsonDocument.Parse(JsonSerializer.Serialize(result.Results));
+        var subscriptionsArray = jsonDoc.RootElement.GetProperty("subscriptions");
+
+        Assert.Equal(2, subscriptionsArray.GetArrayLength());
+
+        var first = subscriptionsArray[0];
+        var second = subscriptionsArray[1];
+
+        Assert.Equal("sub1", first.GetProperty("subscriptionId").GetString());
+        Assert.Equal("Subscription 1", first.GetProperty("displayName").GetString());
+        Assert.Equal("sub2", second.GetProperty("subscriptionId").GetString());
+        Assert.Equal("Subscription 2", second.GetProperty("displayName").GetString());
+
         await _subscriptionService.Received(1).GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>());
     }
 
@@ -78,7 +93,7 @@ public class SubscriptionListCommandTests
 
         _subscriptionService
             .GetSubscriptions(Arg.Is<string>(x => x == tenantId), Arg.Any<RetryPolicyArguments>())
-            .Returns([new() { Id = "sub1", Name = "Sub1" }]);
+            .Returns([SubscriptionTestHelpers.CreateSubscriptionData("sub1", "Sub1")]);
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -117,7 +132,7 @@ public class SubscriptionListCommandTests
         var expectedError = "Test error message";
         _subscriptionService
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
-            .Returns(Task.FromException<List<ArgumentOption>>(new Exception(expectedError)));
+            .Returns(Task.FromException<List<SubscriptionData>>(new Exception(expectedError)));
 
         var args = _parser.Parse("");
 
@@ -139,7 +154,7 @@ public class SubscriptionListCommandTests
 
         _subscriptionService
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
-            .Returns([new() { Id = "sub1", Name = "Sub1" }]);
+            .Returns([SubscriptionTestHelpers.CreateSubscriptionData("sub1", "Sub1")]);
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -151,15 +166,15 @@ public class SubscriptionListCommandTests
             Arg.Any<string>(),
             Arg.Any<RetryPolicyArguments>());
     }
-
     [Fact]
     public async Task ExecuteAsync_GetBySubscriptionId_ReturnsMatchingSubscription()
     {
         // Arrange
         var expectedSubscriptionId = "test-subscription-id";
-        var expectedSubscriptions = new List<ArgumentOption>
+        var expectedDisplayName = "Test Subscription";
+        var expectedSubscriptions = new List<SubscriptionData>
         {
-            new() { Id = expectedSubscriptionId, Name = "Test Subscription" }
+            SubscriptionTestHelpers.CreateSubscriptionData(expectedSubscriptionId, expectedDisplayName)
         };
 
         _subscriptionService
@@ -176,32 +191,30 @@ public class SubscriptionListCommandTests
         Assert.Equal(200, result.Status);
         Assert.NotNull(result.Results);
 
-        var json = JsonSerializer.Serialize(result.Results);
-        var jsonDoc = JsonDocument.Parse(json);
-        var subscriptions = jsonDoc.RootElement
-            .GetProperty("subscriptions")
-            .Deserialize<List<ArgumentOption>>();
+        var jsonDoc = JsonDocument.Parse(JsonSerializer.Serialize(result.Results));
+        var subscriptionsArray = jsonDoc.RootElement.GetProperty("subscriptions");
 
-        Assert.NotNull(subscriptions);
-        Assert.Single(subscriptions);
-        Assert.Equal(expectedSubscriptionId, subscriptions[0].Id);
+        Assert.Equal(1, subscriptionsArray.GetArrayLength());
+        var subscription = subscriptionsArray[0];
+        Assert.Equal(expectedSubscriptionId, subscription.GetProperty("subscriptionId").GetString());
+        Assert.Equal(expectedDisplayName, subscription.GetProperty("displayName").GetString());
     }
-
     [Fact]
     public async Task ExecuteAsync_GetBySubscriptionName_ReturnsMatchingSubscription()
     {
         // Arrange
-        var expectedSubscriptionName = "Test Subscription";
-        var expectedSubscriptions = new List<ArgumentOption>
+        var expectedSubscriptionId = "test-subscription-id";
+        var expectedDisplayName = "Test Subscription";
+        var expectedSubscriptions = new List<SubscriptionData>
         {
-            new() { Id = "test-subscription-id", Name = expectedSubscriptionName }
+            SubscriptionTestHelpers.CreateSubscriptionData(expectedSubscriptionId, expectedDisplayName)
         };
 
         _subscriptionService
             .GetSubscriptions(Arg.Any<string>(), Arg.Any<RetryPolicyArguments>())
             .Returns(expectedSubscriptions);
 
-        var args = _parser.Parse($"--subscription {expectedSubscriptionName}");
+        var args = _parser.Parse($" --subscription {expectedDisplayName}");
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -211,14 +224,12 @@ public class SubscriptionListCommandTests
         Assert.Equal(200, result.Status);
         Assert.NotNull(result.Results);
 
-        var json = JsonSerializer.Serialize(result.Results);
-        var jsonDoc = JsonDocument.Parse(json);
-        var subscriptions = jsonDoc.RootElement
-            .GetProperty("subscriptions")
-            .Deserialize<List<ArgumentOption>>();
+        var jsonDoc = JsonDocument.Parse(JsonSerializer.Serialize(result.Results));
+        var subscriptionsArray = jsonDoc.RootElement.GetProperty("subscriptions");
 
-        Assert.NotNull(subscriptions);
-        Assert.Single(subscriptions);
-        Assert.Equal(expectedSubscriptionName, subscriptions[0].Name);
+        Assert.Equal(1, subscriptionsArray.GetArrayLength());
+        var subscription = subscriptionsArray[0];
+        Assert.Equal(expectedSubscriptionId, subscription.GetProperty("subscriptionId").GetString());
+        Assert.Equal(expectedDisplayName, subscription.GetProperty("displayName").GetString());
     }
 }

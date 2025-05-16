@@ -18,7 +18,8 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
-    private const string SEARCH_SERVICES_CACHE_KEY = "search_services";
+    private const string CACHE_GROUP = "search";
+    private const string SEARCH_SERVICES_CACHE_KEY = "services";
     private static readonly TimeSpan CACHE_DURATION_SERVICES = TimeSpan.FromHours(1);
 
     public async Task<List<string>> ListServices(
@@ -32,7 +33,7 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
             ? $"{SEARCH_SERVICES_CACHE_KEY}_{subscription}"
             : $"{SEARCH_SERVICES_CACHE_KEY}_{subscription}_{tenantId}";
 
-        var cachedServices = await _cacheService.GetAsync<List<string>>(cacheKey, CACHE_DURATION_SERVICES);
+        var cachedServices = await _cacheService.GetAsync<List<string>>(CACHE_GROUP, cacheKey, CACHE_DURATION_SERVICES);
         if (cachedServices != null)
         {
             return cachedServices;
@@ -50,7 +51,7 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
                 }
             }
 
-            await _cacheService.SetAsync(cacheKey, services, CACHE_DURATION_SERVICES);
+            await _cacheService.SetAsync(CACHE_GROUP, cacheKey, services, CACHE_DURATION_SERVICES);
         }
         catch (Exception ex)
         {

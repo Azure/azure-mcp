@@ -37,22 +37,6 @@ public abstract class SubscriptionCommand<
             .WithIsRequired(ArgumentDefinitions.Common.Subscription.Required);
     }
 
-    // Helper method to get subscription options
-    protected virtual async Task<List<ArgumentOption>> GetSubscriptionOptions(CommandContext context)
-    {
-        try
-        {
-            var subscriptionService = context.GetService<ISubscriptionService>();
-            var subscriptions = await subscriptionService.GetSubscriptions();
-            return subscriptions ?? [];
-        }
-        catch
-        {
-            // Silently handle subscription fetch failures
-            return [];
-        }
-    }
-
     protected override TArgs BindArguments(ParseResult parseResult)
     {
         var args = base.BindArguments(parseResult);

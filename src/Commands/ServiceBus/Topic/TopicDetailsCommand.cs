@@ -26,7 +26,7 @@ public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicArguments
         number of subscriptions, max message size, max topic size, number of scheduled messages, etc.
 
         Required arguments:
-        - namespace: Service Bus namespace name. (This is usually in the form <namespace>.servicebus.windows.net)
+        - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - topic-name: Topic name to get information about.
         """;
 

@@ -30,42 +30,6 @@ public abstract class BaseCosmosCommand<
         AddArgument(CreateAccountArgument());
     }
 
-    // Common method to get account options
-    protected async Task<List<ArgumentOption>> GetAccountOptions(CommandContext context, string subscription)
-    {
-        if (string.IsNullOrEmpty(subscription))
-            return [];
-
-        var cosmosService = context.GetService<ICosmosService>();
-        var accounts = await cosmosService.GetCosmosAccounts(subscription);
-
-        return accounts?.Select(a => new ArgumentOption { Name = a, Id = a }).ToList() ?? [];
-    }
-
-    // Common method to get database options
-    protected async Task<List<ArgumentOption>> GetDatabaseOptions(CommandContext context, string accountName, string subscription)
-    {
-        if (string.IsNullOrEmpty(accountName) || string.IsNullOrEmpty(subscription))
-            return [];
-
-        var cosmosService = context.GetService<ICosmosService>();
-        var databases = await cosmosService.ListDatabases(accountName, subscription);
-
-        return databases?.Select(d => new ArgumentOption { Name = d, Id = d }).ToList() ?? [];
-    }
-
-    // Common method to get container options
-    protected async Task<List<ArgumentOption>> GetContainerOptions(CommandContext context, string accountName, string databaseName, string subscription)
-    {
-        if (string.IsNullOrEmpty(accountName) || string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(subscription))
-            return [];
-
-        var cosmosService = context.GetService<ICosmosService>();
-        var containers = await cosmosService.ListContainers(accountName, databaseName, subscription);
-
-        return containers?.Select(c => new ArgumentOption { Name = c, Id = c }).ToList() ?? [];
-    }
-
     protected override string GetErrorMessage(Exception ex) => ex switch
     {
         CosmosException cosmosEx => cosmosEx.Message,

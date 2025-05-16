@@ -30,14 +30,4 @@ public class AuthMethodArgument
     /// Gets the default auth method
     /// </summary>
     public static AuthMethod GetDefaultAuthMethod() => AuthMethod.Credential;
-
-    /// <summary>
-    /// Gets all available auth methods as ArgumentOptions
-    /// </summary>
-    public static List<ArgumentOption> GetAuthMethodOptions() =>
-        [.. Enum.GetValues<AuthMethod>().Select(authMethod => new ArgumentOption
-        {
-            Name = GetDisplayName(authMethod),
-            Id = authMethod.ToString()
-        })];
 }

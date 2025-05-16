@@ -150,7 +150,7 @@ public sealed class DatabaseListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("Missing required", response.Message, System.StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Missing required", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public sealed class DatabaseListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("Missing required", response.Message, System.StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Missing required", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class DatabaseListResult

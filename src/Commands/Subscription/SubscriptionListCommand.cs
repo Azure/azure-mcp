@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using Azure.ResourceManager.Resources;
+using AzureMcp.Arguments;
 using AzureMcp.Arguments.Subscription;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
@@ -36,8 +38,7 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
             }
 
             var subscriptionService = context.GetService<ISubscriptionService>();
-            var subscriptions = await subscriptionService.GetSubscriptions(args.Tenant,
-                args.RetryPolicy);
+            var subscriptions = await subscriptionService.GetSubscriptions(args.Tenant, args.RetryPolicy);
 
             context.Response.Results = subscriptions?.Count > 0
                 ? ResponseResult.Create(
@@ -54,5 +55,5 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
         return context.Response;
     }
 
-    internal record SubscriptionListCommandResult(List<ArgumentOption> Subscriptions);
+    internal record SubscriptionListCommandResult(List<SubscriptionData> Subscriptions);
 }
