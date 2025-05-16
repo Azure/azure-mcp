@@ -16,7 +16,7 @@ public abstract class BaseCommand : IBaseCommand
     protected readonly List<ArgumentDefinition<string>> _arguments = [];
 
     private readonly Command? _command;
-    
+
     protected BaseCommand()
     {
         _command = new Command(Name, Description);
