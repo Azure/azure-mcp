@@ -130,6 +130,7 @@
     ],
     "words": [
         "1espt",
+        "accesspolicy",
         "ADMINPROVIDER",
         "alcoop",
         "appconfig",
@@ -145,6 +146,7 @@
         "CODEOWNERS",
         "cvzf",
         "kcsb",
+        "keyspace",
         "Kusto",
         "esrp",
         "ESRPRELPACMANTEST",
@@ -166,6 +168,7 @@
         "npmjs",
         "onboarded",
         "pscore",
+        "RediSearch",
         "resourcegroup",
         "resourcegroups",
         "servicebus",
