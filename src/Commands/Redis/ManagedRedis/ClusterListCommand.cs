@@ -16,17 +16,19 @@ namespace AzureMcp.Commands.Redis.ManagedRedis;
 /// </summary>
 public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : SubscriptionCommand<ClusterListArguments>()
 {
+    private const string _commandTitle = "List Redis Clusters";
     private readonly ILogger<ClusterListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all Redis Cluster resources in a specified subscription. Returns an array of Redis Cluster details.
         Use this command to explore which Redis Cluster resources are available in your subscription.
         """;
+    public override string Title => _commandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try
