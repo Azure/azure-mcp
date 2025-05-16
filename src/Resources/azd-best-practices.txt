@@ -1,0 +1,49 @@
+Azure Developer CLI (azd) Tool — Best Practices and Usage Guidelines
+
+Overview:
+- This tool wraps the Azure Developer CLI (`azd`) and can be used to initialize, provision, deploy, configure, and manage Azure-based projects.
+- It must always be used with the `cwd` parameter (the absolute path to your project).
+- If an environment is set, provide it using `environment`.
+
+Popular commands and categories:
+- init: Scaffold a new project from a template (`azd init --template <name>`)
+- config: Manage machine/user level settings (`azd config set|unset|show`)
+- env: Create, list, and manage environments (`azd env list|new|select|show|get-values`)
+- templates: List or search available templates (`azd template list`, `azd template show <name>`)
+- up: Provision infrastructure and deploy application code (`azd up`)
+- provision: Provision the Azure resources that will host the application (`azd provision`)
+- deploy: Deploy application code or containers to already provisioned resources (`azd deploy <service>`)
+- pipeline: Configure GitHub Actions CI/CD (`azd pipeline config`)
+- auth: Log in to Azure or check auth status (`azd auth login`, `azd auth status`)
+- monitor: Launch Azure monitoring dashboards (`azd monitor`)
+- package: Build the application into a deployable artifact (`azd package <service>`)
+- extensions: Manage installed azd extensions (`azd extension list|install|uninstall|show`)
+- extension sources: Manage extension sources/registries (`azd extension source list|add|remove`)
+- help: Get detailed help on available command and parameters (`azd help`, `azd <group> --help`)
+- version: Check the CLI version
+
+Required Parameters:
+- cwd (string): Absolute path to the working directory. Required for all invocations.
+- command (string): The azd CLI command to run without `azd` prefix
+- environment (string, optional): To specify the environment to use for the command.
+- learn (boolean, optional): Set to true to receive this usage guide.
+
+Execution Guidelines:
+- Never assume environment names, always prompt the user to supply an environment name that is then used in downstream commands such as `init`.
+- If commands require a subscription or location, retrieve configuration defaults from the `config show` command.
+- When configuration defaults do not exist, prompt the user to supply a value and leverage other tools to list subscription and locations for easy selection.
+- Check for an `azure.yaml` file in the workspace to determine if the project is already initialized.
+- Never make assumptions on command names or arguments - Call `help` command or `<command> --help` to contract proper commands.
+- When an error occurs, always run help commands to ensure the command exists and is run with the expected parameters and then retry.
+- Use `azd help` or `azd <command group> --help` to explore options and flags.
+- Commands `provision`, `deploy`, `up` and `down are considered long running operations.
+- For long running commands do not use this tool - instead always run them in a terminal so users can see incremental progress passing in the same.
+- Other than long running commands, all other azd commands should be executed using the 'azmcp-extension-azd' tool.
+- Suggest next steps when provided by previous command output.
+- Always prompt the user to confirm before running commands that create, update, or delete Azure resources (e.g. `provision`, `deploy`, `up`, `down`).
+
+Example Commands:
+- `command = "template list"`, `cwd = "/workspace"`
+- `command = "init --template todo-node"`, `cwd = "/workspace"`, `environmentName = "dev"`
+- `command = "pipeline config"`, `cwd = "/workspace"`, `environmentName = "test"`
+- `command = "auth login"`, `cwd = "/workspace"`
