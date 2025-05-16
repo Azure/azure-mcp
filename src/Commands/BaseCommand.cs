@@ -8,8 +8,6 @@ using AzureMcp.Models.Command;
 
 namespace AzureMcp.Commands;
 
-using AzureMcp.Arguments;
-
 public abstract class BaseCommand : IBaseCommand
 {
     protected readonly HashSet<string> _registeredArgumentNames = [];
