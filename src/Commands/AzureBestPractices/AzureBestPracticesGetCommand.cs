@@ -46,7 +46,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
     }
 
     // Dummy argument ensures OpenAPI generator emits a non-empty `parameters` schema
-        protected override void RegisterArguments()
+    protected override void RegisterArguments()
     {
         base.RegisterArguments();
 
