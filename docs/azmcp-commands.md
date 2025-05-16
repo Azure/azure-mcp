@@ -1,5 +1,10 @@
 # Azure MCP CLI Command Reference
 
+> [!IMPORTANT]
+> The Azure MCP Server uses a custom CLI called `azmcp` underneath. When the server is started, clients that use Azure MCP Server tools will automatically call this CLI.
+> **You will not need to call the `azmcp` CLI directly**. This document is published to share more details on what happens under the hood.
+
+
 ## Global Args
 
 The following args are available for all commands:
