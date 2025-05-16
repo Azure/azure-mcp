@@ -7,9 +7,8 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client
 {
-    public class StorageCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
-    : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+    public class StorageCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
     {
         private const string TenantNameReason = "Service principals cannot use TenantName for lookup";
 

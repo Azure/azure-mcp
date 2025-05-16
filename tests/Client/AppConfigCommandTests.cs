@@ -14,12 +14,11 @@ using Xunit;
 namespace AzureMcp.Tests.Client;
 
 public class AppConfigCommandTests : CommandTestsBase,
-    IClassFixture<McpClientFixture>,
-    IClassFixture<LiveTestSettingsFixture>
+    IClassFixture<LiveTestFixture>
 {
     private readonly AppConfigService _appConfigService;
 
-    public AppConfigCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output) : base(mcpClient, liveTestSettings, output)
+    public AppConfigCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : base(liveTestFixture, output)
     {
         var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
         var cacheService = new CacheService(memoryCache);

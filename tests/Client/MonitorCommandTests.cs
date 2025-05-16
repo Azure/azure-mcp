@@ -7,9 +7,9 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class MonitorCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
-    : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+public class MonitorCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output),
+    IClassFixture<LiveTestFixture>
 {
     [Fact(Skip = "Custom table not in bicep template")]
     [Trait("Category", "Live")]
