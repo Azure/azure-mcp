@@ -14,13 +14,14 @@ namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
 {
+    private const string _commandTitle = "Peek Messages from Service Bus Queue";
     private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
     private readonly Option<int> _maxMessagesOption = ArgumentDefinitions.ServiceBus.MaxMessages.ToOption();
     private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
 
-    protected override string GetCommandName() => "peek";
+    public override string Name => "peek";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Peek messages from a Service Bus queue without removing them.  Message browsing, or peeking, enables a
         Service Bus client to enumerate all messages in a queue, for diagnostic and debugging purposes.
@@ -32,6 +33,8 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekArguments>
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - queue: Queue name to peek messages from
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {

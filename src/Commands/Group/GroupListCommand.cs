@@ -14,18 +14,21 @@ namespace AzureMcp.Commands.Group;
 
 public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : SubscriptionCommand<BaseGroupArguments>()
 {
+    private const string _commandTitle = "List Resource Groups";
     private readonly ILogger<GroupListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all resource groups in a subscription. This command retrieves all resource groups available
         in the specified {ArgumentDefinitions.Common.SubscriptionName}. Results include resource group names and IDs,
         returned as a JSON array.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

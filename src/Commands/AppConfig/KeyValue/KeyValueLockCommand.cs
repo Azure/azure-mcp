@@ -12,18 +12,21 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : BaseKeyValueCommand<KeyValueLockArguments>()
 {
+    private const string _commandTitle = "Lock App Configuration Key-Value Setting";
     private readonly ILogger<KeyValueLockCommand> _logger = logger;
 
-    protected override string GetCommandName() => "lock";
+    public override string Name => "lock";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Lock a key-value in an App Configuration store. This command sets a key-value to read-only mode,
         preventing any modifications to its value. You must specify an account name and key. Optionally,
         you can specify a label to lock a specific labeled version of the key-value.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

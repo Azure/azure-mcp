@@ -17,15 +17,16 @@ public abstract class BaseCommand : IBaseCommand
 
     protected BaseCommand()
     {
-        _command = new Command(GetCommandName(), GetCommandDescription());
+        _command = new Command(Name, Description);
         RegisterOptions(_command);
         RegisterArguments();
     }
 
     public Command GetCommand() => _command ?? throw new InvalidOperationException("Command not initialized");
 
-    protected abstract string GetCommandName();
-    protected abstract string GetCommandDescription();
+    public abstract string Name { get; }
+    public abstract string Description { get; }
+    public abstract string Title { get; }
 
     protected virtual void RegisterOptions(Command command)
     {

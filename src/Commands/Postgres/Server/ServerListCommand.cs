@@ -14,12 +14,16 @@ namespace AzureMcp.Commands.Postgres.Server;
 
 public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BasePostgresCommand<ServerListArguments>(logger)
 {
-    protected override string GetCommandName() => "list";
+    private const string _commandTitle = "List PostgreSQL Servers";
 
-    protected override string GetCommandDescription() =>
+    public override string Name => "list";
+
+    public override string Description =>
         "Lists all PostgreSQL servers in the specified subscription.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

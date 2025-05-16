@@ -16,6 +16,7 @@ namespace AzureMcp.Commands.Extension;
 
 public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzArguments>()
 {
+    private const string _commandTitle = "Azure CLI Command";
     private readonly ILogger<AzCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
@@ -23,9 +24,9 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private volatile bool _isAuthenticated = false;
     private static readonly SemaphoreSlim _authSemaphore = new(1, 1);
 
-    protected override string GetCommandName() => "az";
+    public override string Name => "az";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
 Your job is to answer questions about an Azure environment by executing Azure CLI commands. You have the following rules:
 
@@ -38,6 +39,8 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 - You can delete or modify resources in your Azure environment. Always be cautious and include appropriate warnings when providing commands to users.
 - Be concise, professional and to the point. Do not give generic advice, always reply with detailed & contextual data sourced from the current Azure environment.
 """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -156,7 +159,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         }
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

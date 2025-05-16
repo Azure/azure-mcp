@@ -273,6 +273,21 @@ public static class ArgumentDefinitions
             defaultValue: 20,
             required: true
         );
+
+        public static class Health
+        {
+            public static readonly ArgumentDefinition<string> Entity = new(
+                EntityName,
+                "The entity to get health for.",
+                required: true
+            );
+
+            public static readonly ArgumentDefinition<string> HealthModel = new(
+                HealthModelName,
+                "The name of the health model for which to get the health.",
+                required: true
+            );
+        }
     }
 
     public static class Service

@@ -12,18 +12,21 @@ namespace AzureMcp.Commands.Storage.Blob.Container;
 
 public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) : BaseStorageCommand<ContainerListArguments>()
 {
+    private const string _commandTitle = "List Storage Containers";
     private readonly ILogger<ContainerListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all containers in a Storage account. This command retrieves and displays all containers available
         in the specified account. Results include container names and are returned as a JSON array.
         Requires {Models.Argument.ArgumentDefinitions.Storage.AccountName}.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

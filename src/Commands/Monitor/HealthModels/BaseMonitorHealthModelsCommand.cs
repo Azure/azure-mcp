@@ -36,9 +36,4 @@ public abstract class BaseMonitorHealthModelsCommand<
             .WithValueAccessor(args => args.HealthModelName ?? string.Empty)
             .WithIsRequired(ArgumentDefinitions.Monitor.Health.HealthModel.Required);
     }
-
-    protected override string GetCommandName() => "healthmodels";
-
-    protected override string GetCommandDescription() =>
-         "Azure Monitor Health Models operations.";
 }

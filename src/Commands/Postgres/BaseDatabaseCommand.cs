@@ -13,9 +13,9 @@ public abstract class BaseDatabaseCommand<
 {
     private readonly Option<string> _databaseOption = ArgumentDefinitions.Postgres.Database.ToOption();
 
-    protected override string GetCommandName() => "database";
+    public override string Name => "database";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         "Retrieves information about a PostgreSQL database.";
 
     protected override void RegisterOptions(Command command)

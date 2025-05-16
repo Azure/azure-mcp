@@ -13,11 +13,12 @@ namespace AzureMcp.Commands.Storage.Blob;
 
 public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseContainerCommand<BlobListArguments>()
 {
+    private const string _commandTitle = "List Storage Blobs";
     private readonly ILogger<BlobListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all blobs in a Storage container. This command retrieves and displays all blobs available
         in the specified container and Storage account. Results include blob names, sizes, and content types,
@@ -25,7 +26,9 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
         {Models.Argument.ArgumentDefinitions.Storage.ContainerName}.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

@@ -12,6 +12,7 @@ namespace AzureMcp.Commands.Kusto;
 
 public sealed class ClusterListCommand : SubscriptionCommand<ClusterListArguments>
 {
+    private const string _commandTitle = "List Kusto Clusters";
     private readonly ILogger<ClusterListCommand> _logger;
 
     public ClusterListCommand(ILogger<ClusterListCommand> logger) : base()
@@ -19,16 +20,18 @@ public sealed class ClusterListCommand : SubscriptionCommand<ClusterListArgument
         _logger = logger;
     }
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         List all Kusto clusters in a subscription. This command retrieves all clusters
         available in the specified subscription. Requires `cluster-name` and `subscription`.
         Result is a list of cluster names as a JSON array.
         """;
 
-    [McpServerTool(Destructive = true, ReadOnly = false)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

@@ -12,11 +12,12 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger) : BaseKeyValueCommand<KeyValueUnlockArguments>()
 {
+    private const string _commandTitle = "Unlock App Configuration Key-Value Setting";
     private readonly ILogger<KeyValueUnlockCommand> _logger = logger;
 
-    protected override string GetCommandName() => "unlock";
+    public override string Name => "unlock";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Unlock a key-value setting in an App Configuration store. This command removes the read-only mode from a
         key-value setting, allowing modifications to its value. You must specify an account name and key. Optionally,
@@ -24,7 +25,9 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
         default label will be unlocked.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = false)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

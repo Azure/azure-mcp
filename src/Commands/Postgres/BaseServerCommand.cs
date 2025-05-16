@@ -14,9 +14,9 @@ public abstract class BaseServerCommand<
 {
     private readonly Option<string> _serverOption = ArgumentDefinitions.Postgres.Server.ToOption();
 
-    protected override string GetCommandName() => "server";
+    public override string Name => "server";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         "Retrieves information about a PostgreSQL server.";
 
     protected override void RegisterOptions(Command command)

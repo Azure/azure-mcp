@@ -12,12 +12,15 @@ namespace AzureMcp.Commands.Postgres.Database;
 
 public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseServerCommand<DatabaseListArguments>(logger)
 {
+    private const string _commandTitle = "List PostgreSQL Databases";
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() => "Lists all databases in the PostgreSQL server.";
+    public override string Description => "Lists all databases in the PostgreSQL server.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

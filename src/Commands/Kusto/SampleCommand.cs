@@ -15,6 +15,7 @@ namespace AzureMcp.Commands.Kusto;
 
 public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableCommand<SampleArguments>
 {
+    private const string _commandTitle = "Sample Kusto Table Data";
     private readonly ILogger<SampleCommand> _logger = logger;
 
     private readonly Option<int> _limitOption = ArgumentDefinitions.Kusto.Limit.ToOption();
@@ -32,16 +33,18 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
         return args;
     }
 
-    protected override string GetCommandName() => "sample";
+    public override string Name => "sample";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Return a sample of rows from the specified table in an Kusto table.
         Requires `cluster-uri` (or `cluster-name`), `database-name`, and `table-name`. 
         Results are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

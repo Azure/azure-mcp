@@ -13,16 +13,20 @@ namespace AzureMcp.Commands.Tools;
 [HiddenCommand]
 public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()
 {
-    protected override string GetCommandName() => "list";
+    private const string _commandTitle = "List Available Tools";
 
-    protected override string GetCommandDescription() =>
+    public override string Name => "list";
+
+    public override string Description =>
         """
         List all available commands and their tools in a hierarchical structure. This command returns detailed information
         about each command, including its name, description, full command path, available subcommands, and all supported
         arguments. Use this to explore the CLI's functionality or to build interactive command interfaces.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

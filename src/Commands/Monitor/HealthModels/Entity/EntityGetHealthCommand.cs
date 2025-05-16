@@ -14,10 +14,10 @@ namespace AzureMcp.Commands.Monitor.HealthModels.Entity;
 
 public sealed class EntityGetHealthCommand : BaseMonitorHealthModelsCommand<EntityGetHealthArguments>
 {
-    protected override string GetCommandName() => "gethealth";
+    public override string Name => "gethealth";
 
-    protected override string GetCommandDescription() =>
-        $"""
+    public override string Description =>
+         $"""
         Gets the health of an entity from a specified Azure Monitor Health Model.
         Returns entity health information.
         
@@ -25,6 +25,8 @@ public sealed class EntityGetHealthCommand : BaseMonitorHealthModelsCommand<Enti
         - {ArgumentDefinitions.Monitor.Health.Entity.Name}: The entity to get health for
         - {ArgumentDefinitions.Monitor.Health.HealthModel.Name}: The health model name
         """;
+
+    public override string Title => "Get the health of an entity in a health model";
 
     protected override void RegisterOptions(Command command)
     {

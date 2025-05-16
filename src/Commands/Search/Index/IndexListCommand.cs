@@ -14,17 +14,20 @@ namespace AzureMcp.Commands.Search.Index;
 
 public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalCommand<IndexListArguments>()
 {
+    private const string _commandTitle = "List Azure AI Search Indexes";
     private readonly ILogger<IndexListCommand> _logger = logger;
     private readonly Option<string> _serviceOption = ArgumentDefinitions.Search.Service.ToOption();
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         List all indexes in an Azure AI Search service.
 
         Required arguments:
         - service-name
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -45,7 +48,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

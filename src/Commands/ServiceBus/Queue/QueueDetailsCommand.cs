@@ -15,12 +15,13 @@ namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments>
 {
+    private const string _commandTitle = "Get Service Bus Queue Details";
     private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
     private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
 
-    protected override string GetCommandName() => "details";
+    public override string Name => "details";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Get details about a Service Bus queue. Returns queue properties and runtime information. Properties returned include
         lock duration, max message size, queue size, creation date, status, current message counts, etc.
@@ -29,6 +30,8 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - queue-name: Queue name to get details and runtime information for.
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {

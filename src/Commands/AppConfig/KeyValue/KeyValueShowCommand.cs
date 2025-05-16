@@ -12,18 +12,21 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : BaseKeyValueCommand<KeyValueShowArguments>()
 {
+    private const string _commandTitle = "Show App Configuration Key-Value Setting";
     private readonly ILogger<KeyValueShowCommand> _logger = logger;
 
-    protected override string GetCommandName() => "show";
+    public override string Name => "show";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         Show a specific key-value setting in an App Configuration store. This command retrieves and displays the value,
         label, content type, ETag, last modified time, and lock status for a specific setting. You must specify an
         account name and key. Optionally, you can specify a label otherwise the setting with default label will be retrieved.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

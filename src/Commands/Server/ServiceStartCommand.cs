@@ -25,12 +25,13 @@ namespace AzureMcp.Commands.Server;
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
+    private const string _commandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = ArgumentDefinitions.Service.Transport.ToOption();
     private readonly Option<int> _portOption = ArgumentDefinitions.Service.Port.ToOption();
 
-    protected override string GetCommandName() => "start";
-
-    protected override string GetCommandDescription() => "Starts Azure MCP Server.";
+    public override string Name => "start";
+    public override string Description => "Starts Azure MCP Server.";
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {

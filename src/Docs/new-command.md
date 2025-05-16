@@ -166,11 +166,12 @@ namespace AzureMcp.Commands.{Service}.{SubService}.{Resource};
 
 public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resource}{Operation}Arguments>
 {
+    private const string _commandTitle = "{Resource} {Operation}";
     private readonly Option<string> _resourceOption = ArgumentDefinitions.{Service}.Resource.ToOption();
 
-    protected override string GetCommandName() => "{operation}";
+    public override string Name => "{operation}";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         {Detailed description of what the command does}.
         Returns {description of return format}.
@@ -178,6 +179,8 @@ public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resourc
         Required arguments:
         - {ArgumentDefinitions.{Service}.Resource.Name}
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -235,6 +238,35 @@ public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resourc
 > 1. Do not define literal string values for option names or descriptions in the command class. Always use ArgumentDefinitions.
 > 2. Register command examples using GetCommandExample() helper method from ArgumentDefinitions.
 > 3. Options must be initialized using ToOption() on the appropriate ArgumentDefinition.
+> 4. The Title property should be set as a constant at the class level and returned by the Title property. It should be a human-readable title that describes what the command does, used for display purposes in UIs and documentation.
+
+## Title Property Format
+
+The Title property should follow these guidelines:
+
+1. Define as a constant at the class level:
+```csharp
+private const string _commandTitle = "List Storage Containers";
+```
+
+2. Return in the Title property:
+```csharp
+public override string Title => _commandTitle;
+```
+
+3. Use in McpServerTool attribute:
+```csharp
+[McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
+```
+
+4. Follow title casing and use clear, descriptive phrases:
+- "Get App Configuration Setting"
+- "List Storage Containers"
+- "Query Log Analytics Workspace"
+- "Create Resource Group"
+
+5. Avoid technical terms or implementation details in titles
 
 ## Step 5: Register Command in CommandFactory
 
@@ -1228,10 +1260,44 @@ Here's the inheritance hierarchy and responsibility of each layer:
 ```csharp
 public interface IBaseCommand
 {
+    /// <summary>
+    /// Gets the name of the command used in the CLI (lowercase)
+    /// </summary>
+    string Name { get; }
+
+    /// <summary>
+    /// Gets the description of what the command does
+    /// </summary>
+    string Description { get; }
+
+    /// <summary>
+    /// Gets the human-readable title for the command
+    /// </summary>
+    string Title { get; }
+
+    /// <summary>
+    /// Gets the command definition
+    /// </summary>
     Command GetCommand();
+
+    /// <summary>
+    /// Executes the command
+    /// </summary>
     Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions);
+
+    /// <summary>
+    /// Gets the current arguments
+    /// </summary>
     IEnumerable<ArgumentDefinition<string>>? GetArguments();
+
+    /// <summary>
+    /// Clears the current arguments
+    /// </summary>
     void ClearArguments();
+
+    /// <summary>
+    /// Adds an argument to the command
+    /// </summary>
     void AddArgument(ArgumentDefinition<string> argument);
 }
 ```

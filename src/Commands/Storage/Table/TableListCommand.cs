@@ -13,18 +13,21 @@ namespace AzureMcp.Commands.Storage.Table;
 
 public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseStorageCommand<TableListArguments>()
 {
+    private const string _commandTitle = "List Storage Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         """
         List all tables in a Storage account. This command retrieves and displays all tables available in the specified Storage account.
         Results include table names and are returned as a JSON array. You must specify an account name and subscription ID.
         Use this command to explore your Storage resources or to verify table existence before performing operations on specific tables.
         """;
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions)
     {
         var args = BindArguments(commandOptions);

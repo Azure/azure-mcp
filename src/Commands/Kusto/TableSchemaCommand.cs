@@ -13,14 +13,17 @@ namespace AzureMcp.Commands.Kusto;
 
 public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : BaseTableCommand<TableSchemaArguments>
 {
+    private const string _commandTitle = "Get Kusto Table Schema";
     private readonly ILogger<TableSchemaCommand> _logger = logger;
 
-    protected override string GetCommandName() => "schema";
+    public override string Name => "schema";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         "Get the schema of a specific table in an Kusto database.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

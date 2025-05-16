@@ -14,16 +14,19 @@ namespace AzureMcp.Commands.Monitor.Table;
 
 public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMonitorCommand<TableListArguments>()
 {
+    private const string _commandTitle = "List Log Analytics Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
     private readonly Option<string> _tableTypeOption = ArgumentDefinitions.Monitor.TableType.ToOption();
 
-    protected override string GetCommandName() => "list";
+    public override string Name => "list";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         $"""
         List all tables in a Log Analytics workspace. Requires {ArgumentDefinitions.Monitor.WorkspaceIdOrName}.
         Returns table names and schemas that can be used for constructing KQL queries.
         """;
+
+    public override string Title => _commandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -39,7 +42,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         AddArgument(CreateResourceGroupArgument());
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var args = BindArguments(parseResult);

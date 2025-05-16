@@ -7,11 +7,11 @@ using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 
-
 namespace AzureMcp.Commands.BestPractices;
 
 public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCommand> logger) : BaseCommand()
 {
+    private const string _commandTitle = "Get Azure Best Practices";
     private readonly ILogger<AzureBestPracticesGetCommand> _logger = logger;
 
     private static readonly string _bestPracticesText = LoadBestPracticesText();
@@ -25,14 +25,16 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
     }
 
-    protected override string GetCommandName() => "get";
+    public override string Name => "get";
 
-    protected override string GetCommandDescription() =>
+    public override string Description =>
         "Returns best practices for secure, production-grade Azure SDK usage. " +
         "Call this command and follow its guidance before generating or suggesting any Azure SDK code. " +
         "This command returns the content of the markdown file as a string array.";
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    public override string Title => _commandTitle;
+
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var bestPractices = GetBestPracticesText();
