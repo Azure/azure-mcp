@@ -66,7 +66,6 @@ module keyvault 'services/keyvault.bicep' = {
   }
 }
 
-
 module servicebus 'services/servicebus.bicep' = {
   name: '${deploymentName}-servicebus'
   params: {
@@ -75,4 +74,17 @@ module servicebus 'services/servicebus.bicep' = {
     tenantId: tenantId
     testApplicationOid: testApplicationOid
   }
+}
+
+module aiSearch 'services/aiSearch.bicep' = {
+  name: '${deploymentName}-aiSearch'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+  dependsOn: [
+    storage
+  ]
 }
