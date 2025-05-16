@@ -14,7 +14,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;

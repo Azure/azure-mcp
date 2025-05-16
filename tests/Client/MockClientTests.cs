@@ -4,8 +4,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
-using ModelContextProtocol.Protocol.Messages;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using Xunit;
 

@@ -8,9 +8,9 @@ using System.Text.Json.Nodes;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
-using ModelContextProtocol.Utils.Json;
 
 namespace AzureMcp.Commands.Server;
 
