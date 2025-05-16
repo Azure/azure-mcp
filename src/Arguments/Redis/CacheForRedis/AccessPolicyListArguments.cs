@@ -3,5 +3,4 @@
 
 namespace AzureMcp.Arguments.Redis.CacheForRedis;
 
-public class AccessPolicyListArguments : BaseCacheArguments
-{ }
+public class AccessPolicyListArguments : BaseCacheArguments;
