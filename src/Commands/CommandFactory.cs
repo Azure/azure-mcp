@@ -87,6 +87,7 @@ public class CommandFactory
         RegisterGroupCommands();
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
+        RegisterRedisCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -362,6 +363,34 @@ public class CommandFactory
         serviceBus.AddSubGroup(topic);
 
         topic.AddSubGroup(subscription);
+    }
+
+    private void RegisterRedisCommands()
+    {
+        var redis = new CommandGroup("redis", "Redis Cache operations - Commands for managing and accessing Azure Redis Cache resources.");
+        _rootGroup.AddSubGroup(redis);
+
+        // Azure Cache for Redis
+        var cache = new CommandGroup("cache", "Redis Cache resource operations - Commands for listing and managing Redis Cache resources in your Azure subscription.");
+        redis.AddSubGroup(cache);
+
+        cache.AddCommand("list", new Redis.CacheForRedis.CacheListCommand(GetLogger<Redis.CacheForRedis.CacheListCommand>()));
+
+        var accessPolicy = new CommandGroup("accesspolicy", "Redis Cluster database operations - Commands for listing and managing Redis Cluster databases in your Azure subscription.");
+        cache.AddSubGroup(accessPolicy);
+
+        accessPolicy.AddCommand("list", new Redis.CacheForRedis.AccessPolicyListCommand(GetLogger<Redis.CacheForRedis.AccessPolicyListCommand>()));
+
+        // Azure Managed Redis
+        var cluster = new CommandGroup("cluster", "Redis Cluster resource operations - Commands for listing and managing Redis Cluster resources in your Azure subscription.");
+        redis.AddSubGroup(cluster);
+
+        cluster.AddCommand("list", new Redis.ManagedRedis.ClusterListCommand(GetLogger<Redis.ManagedRedis.ClusterListCommand>()));
+
+        var database = new CommandGroup("database", "Redis Cluster database operations - Commands for listing and managing Redis Cluster Databases in your Azure subscription.");
+        cluster.AddSubGroup(database);
+
+        database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)
