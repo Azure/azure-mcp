@@ -32,7 +32,7 @@ resource search 'Microsoft.Search/searchServices@2025-02-01-preview' = {
   name: baseName
   location: location
   sku: {
-    name: 'free'
+    name: 'basic'
   }
   properties: {
     disableLocalAuth: true
