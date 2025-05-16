@@ -16,12 +16,7 @@ public abstract class BaseCommand : IBaseCommand
     protected readonly List<ArgumentDefinition<string>> _arguments = [];
 
     private readonly Command? _command;
-
-    /// <summary>
-    /// The type of arguments this command expects. Defaults to BaseCommandArguments.
-    /// </summary>
-    public virtual Type ArgumentsType => typeof(BaseCommandArguments);
-
+    
     protected BaseCommand()
     {
         _command = new Command(Name, Description);
