@@ -1,9 +1,8 @@
 # Azure MCP CLI Command Reference
 
 > [!IMPORTANT]
-> The Azure MCP Server uses a custom CLI called `azmcp` underneath. When the server is started, clients that use Azure MCP Server tools will automatically call this CLI.
-> **You will not need to call the `azmcp` CLI directly**. This document is published to share more details on what happens under the hood.
-> In our documentation, you may see the term 'commands' and 'operations' used instead of 'tools'. Conceptually, with the Azure MCP Server, these are all the same. 
+
+> The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
 
 
 ## Global Args
