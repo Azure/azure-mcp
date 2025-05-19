@@ -614,7 +614,8 @@ try {
                     -ResourceGroupName $resourceGroup.ResourceGroupName `
                     -TemplateFile $templateFile.jsonFilePath `
                     -TemplateParameterObject $templateFileParameters `
-                    -Force:$Force
+                    -Force:$Force `
+                    -Debug
         }
         if ($deployment.ProvisioningState -ne 'Succeeded') {
             Write-Host "Deployment '$($deployment.DeploymentName)' has state '$($deployment.ProvisioningState)' with CorrelationId '$($deployment.CorrelationId)'. Exiting..."
