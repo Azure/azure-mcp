@@ -7,6 +7,16 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
+## 📑 Table of contents
+1. [🎯 Overview](#-overview)
+2. [🛠️ Currently Supported Tools](#%EF%B8%8F-currently-supported-tools)
+3. [🔌 Installation & Getting Started](#-getting-started)
+4. [🧪 Using Azure MCP Server](#-test-the-azure-mcp-server)
+5. [📝 Troubleshooting Issues](#-troubleshooting)
+6. [👥 Contributing to Azure MCP Server](#-contributing)
+
+
+
 ## 🎯 Overview
 
 ### ✨ What can you do with the Azure MCP Server?
