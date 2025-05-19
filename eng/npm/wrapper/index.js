@@ -4,7 +4,7 @@ const os = require('os')
 
 // Check if DEBUG environment variable is set
 const isDebugMode = process.env.DEBUG && (
-  process.env.DEBUG.toLowerCase() === 'true' || 
+  process.env.DEBUG.toLowerCase() === 'true' ||
   process.env.DEBUG.includes('azure-mcp') ||
   process.env.DEBUG === '*'
 )
@@ -12,7 +12,7 @@ const isDebugMode = process.env.DEBUG && (
 // Helper function for debug logging
 function debugLog(...args) {
   if (isDebugMode) {
-    console.log(...args)
+    console.error(...args)
   }
 }
 

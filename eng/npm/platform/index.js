@@ -14,7 +14,7 @@ const isDebugMode = process.env.DEBUG && (
 // Helper function for debug logging
 function debugLog(...args) {
   if (isDebugMode) {
-    console.log(...args)
+    console.error(...args)
   }
 }
 
