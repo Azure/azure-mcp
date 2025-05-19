@@ -20,13 +20,14 @@ resource redisCache 'Microsoft.Cache/Redis@2024-11-01' = {
   properties: {
     enableNonSslPort: false
     minimumTlsVersion: '1.2'
+    disableAccessKeyAuthentication: true
     sku: {
       capacity: 0
       family: 'C'
       name: 'Basic'
     }
     redisConfiguration: {
-      'aad-enabled': 'false'
+      'aad-enabled': 'true'
     }
   }
 }
