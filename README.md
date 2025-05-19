@@ -98,10 +98,8 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 
 ### 📦 Azure Resource Groups
 - List resource groups
-- Resource group management operations
 
 ### 🚌 Azure Service Bus
-- Peek at messages from subscriptions and queues
 - Examine properties and runtime information about queues, topics, and subscriptions
 
 ### 🔧 Azure CLI Extension
