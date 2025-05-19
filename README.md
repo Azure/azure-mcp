@@ -86,7 +86,6 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - List Log Analytics workspaces
 - Query logs using KQL
 - List available tables
-- Configure monitoring options
 
 ### ⚙️ Azure App Configuration
 - List App Configuration stores
