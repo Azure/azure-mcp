@@ -404,24 +404,6 @@ public static class ArgumentDefinitions
         );
     }
 
-    public static class Redis
-    {
-        public const string CacheName = "cache";
-        public const string ClusterName = "cluster";
-
-        public static readonly ArgumentDefinition<string> Cache = new(
-            CacheName,
-            "The name of the Redis cache (e.g., my-redis-cache).",
-            required: true
-        );
-
-        public static readonly ArgumentDefinition<string> Cluster = new(
-            ClusterName,
-            "The name of the Redis cluster (e.g., my-redis-cluster).",
-            required: true
-        );
-    }
-
     public static class Extension
     {
         public static class Az
