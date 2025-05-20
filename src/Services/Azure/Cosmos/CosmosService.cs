@@ -5,18 +5,22 @@ using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Arguments;
 using AzureMcp.Models;
+using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 
 namespace AzureMcp.Services.Azure.Cosmos;
 
-public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService)
+public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService)
     : BaseAzureService(tenantService), ICosmosService, IDisposable
 {
-    private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
-    private CosmosClient? _cosmosClient;
-    private bool _disposed;
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
+    private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
+    private const string CACHE_GROUP = "cosmos";
+    private const string COSMOS_CLIENTS_CACHE_KEY_PREFIX = "clients_";
+    private static readonly TimeSpan CACHE_DURATION_CLIENTS = TimeSpan.FromMinutes(15);
+    private bool _disposed;
 
     private async Task<CosmosDBAccountResource> GetCosmosAccountAsync(
         string subscriptionId,
@@ -55,22 +59,47 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             clientOptions.MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
         }
 
+        CosmosClient cosmosClient;
         switch (authMethod)
         {
             case AuthMethod.Key:
                 var cosmosAccount = await GetCosmosAccountAsync(subscriptionId, accountName, tenant);
                 var keys = await cosmosAccount.GetKeysAsync();
-                return new CosmosClient(
+                cosmosClient = new CosmosClient(
                     string.Format(CosmosBaseUri, accountName),
                     keys.Value.PrimaryMasterKey,
                     clientOptions);
+                break;
 
             case AuthMethod.Credential:
             default:
-                return new CosmosClient(
+                cosmosClient = new CosmosClient(
                     string.Format(CosmosBaseUri, accountName),
                     await GetCredential(tenant),
                     clientOptions);
+                break;
+        }
+
+        // Validate the client by performing a lightweight operation
+        await ValidateCosmosClientAsync(cosmosClient);
+
+        return cosmosClient;
+    }
+
+    private async Task ValidateCosmosClientAsync(CosmosClient client)
+    {
+        try
+        {
+            // Perform a lightweight operation to validate the client
+            await client.ReadAccountAsync();
+        }
+        catch (CosmosException ex)
+        {
+            throw new Exception($"Failed to validate CosmosClient: {ex.StatusCode} - {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Unexpected error while validating CosmosClient: {ex.Message}", ex);
         }
     }
 
@@ -83,34 +112,38 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        if (_cosmosClient != null)
-            return _cosmosClient;
+        var key = COSMOS_CLIENTS_CACHE_KEY_PREFIX + accountName;
+        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key, CACHE_DURATION_CLIENTS);
+        if (cosmosClient != null)
+            return cosmosClient;
 
         try
         {
             // First attempt with requested auth method
-            _cosmosClient = await CreateCosmosClientWithAuth(
+            cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 authMethod,
                 tenant,
                 retryPolicy);
 
-            return _cosmosClient;
+            await _cacheService.SetAsync(CACHE_GROUP, key, cosmosClient, CACHE_DURATION_CLIENTS);
+            return cosmosClient;
         }
         catch (Exception ex) when (
             authMethod == AuthMethod.Credential &&
             (ex.Message.Contains("401") || ex.Message.Contains("403")))
         {
             // If credential auth fails with 401/403, try key auth
-            _cosmosClient = await CreateCosmosClientWithAuth(
+            cosmosClient = await CreateCosmosClientWithAuth(
                 accountName,
                 subscriptionId,
                 AuthMethod.Key,
                 tenant,
                 retryPolicy);
 
-            return _cosmosClient;
+            await _cacheService.SetAsync(CACHE_GROUP, key, cosmosClient, CACHE_DURATION_CLIENTS);
+            return cosmosClient;
         }
 
         throw new Exception($"Failed to create Cosmos client for account '{accountName}' with any authentication method");
@@ -242,15 +275,40 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         {
             throw new Exception($"Error querying items: {ex.Message}", ex);
         }
-    }
-
-    protected virtual void Dispose(bool disposing)
+    }    protected virtual async void Dispose(bool disposing)
     {
         if (!_disposed)
         {
             if (disposing)
             {
-                _cosmosClient?.Dispose();
+                try
+                {
+                    // Get all cached client keys
+                    var keys = await _cacheService.GetGroupKeysAsync(CACHE_GROUP).ConfigureAwait(false);
+
+                    // Filter for client keys only (those that start with the client prefix)
+                    var clientKeys = keys.Where(k => k.StartsWith(COSMOS_CLIENTS_CACHE_KEY_PREFIX));
+
+                    // Retrieve and dispose each client
+                    foreach (var key in clientKeys)
+                    {
+                        try
+                        {
+                            var client = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key).ConfigureAwait(false);
+                            client?.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log or handle exception but continue disposing other clients
+                            System.Diagnostics.Debug.WriteLine($"Error disposing Cosmos client for key {key}: {ex.Message}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception but don't throw from Dispose
+                    System.Diagnostics.Debug.WriteLine($"Error during Cosmos clients disposal: {ex.Message}");
+                }
             }
             _disposed = true;
         }
