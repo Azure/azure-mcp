@@ -25,14 +25,12 @@ public class NpxTests : IClassFixture<LiveTestSettingsFixture>
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Version_command_should_return_version()
+    public async Task Help_command_should_return_help()
     {
-        var result = await RunCommand("--version");
-        Assert.NotEmpty(result.Output);
-        // get the assembly informational version
-        var assembly = typeof(BaseAzureService).Assembly;
-        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-        Assert.Equal(version, result.Output[0]);
+        var outputLines = await RunCommand("--help");
+        var concatenatedOutput = string.Join(Environment.NewLine, outputLines.Output);
+        Assert.NotEmpty(concatenatedOutput);
+        Assert.Contains("azmcp [command] [options]", concatenatedOutput);
     }
 
     private async Task<(string[] Output, string[] Error, int ExitCode)> RunCommand(params string[] arguments)
