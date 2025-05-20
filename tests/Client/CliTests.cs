@@ -29,7 +29,7 @@ public class NpxTests : IClassFixture<LiveTestSettingsFixture>
     {
         var result = await RunCommand("--version");
         Assert.NotEmpty(result.Output);
-        // get the assmebly informational version
+        // get the assembly informational version
         var assembly = typeof(BaseAzureService).Assembly;
         var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         Assert.Equal(version, result.Output[0]);
