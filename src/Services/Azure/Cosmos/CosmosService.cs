@@ -275,7 +275,9 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         {
             throw new Exception($"Error querying items: {ex.Message}", ex);
         }
-    }    protected virtual async void Dispose(bool disposing)
+    }
+
+    protected virtual async void Dispose(bool disposing)
     {
         if (!_disposed)
         {
