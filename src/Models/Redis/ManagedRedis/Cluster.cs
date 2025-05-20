@@ -21,7 +21,7 @@ public class Cluster
 
     /// <summary> SKU of the Redis cluster resource. </summary>
     public string? Sku { get; set; }
-    
+
     /// <summary> Provisioning status of the Redis cluster resource. </summary>
     public string? ProvisioningState { get; set; }
 
