@@ -85,10 +85,10 @@ Test requirements:
 ### Live Tests
 
 Before running live tests,
-- [Install Azure Powershell](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell)
-- [Install Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#install-manually)
+- [Install Azure Powershell](https://learn.microsoft.com/powershell/azure/install-azure-powershell)
+- [Install Azure Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/install#install-manually)
 - Login to Azure-Powershell
-  - [`Connect-AzAccount`](https://learn.microsoft.com/en-us/powershell/azure/authenticate-interactive?view=azps-13.4.0)
+  - [`Connect-AzAccount`](https://learn.microsoft.com/powershell/azure/authenticate-interactive?view=azps-13.4.0)
 - Deploy test resources
     ```pwsh
     ./eng/common/TestResources/New-TestResources.ps1 `
