@@ -37,6 +37,14 @@
 # ServiceOwners:                       @danield137
 
 
+# PRLabel: %area-Postgres
+/src/Arguments/Postgres/               @kk-src @xiangyan99
+/src/Commands/Postgres/                @kk-src @xiangyan99
+/src/Services/Azure/Postgres/          @kk-src @xiangyan99
+
+# ServiceLabel: %area-Postgres
+# ServiceOwners:                       @kk-src
+
 # PRLabel: %area-KeyVault
 /src/Arguments/KeyVault/               @conniey @JonathanCrd
 /src/Commands/KeyVault/                @conniey @JonathanCrd
@@ -44,7 +52,6 @@
 
 # ServiceLabel: %area-KeyVault
 # ServiceOwners:                       @conniey @JonathanCrd
-
 
 # PRLabel: %area-CosmosDB
 /src/Arguments/Cosmos/               @sajeetharan @xiangyan99
