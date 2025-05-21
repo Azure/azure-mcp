@@ -3,7 +3,6 @@
 
 using System.Reflection;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol.Transport;
 using Xunit;
 
 namespace AzureMcp.Tests.Client.Helpers;

@@ -1,15 +1,32 @@
 # Release History
 
-## 0.0.19 (Unreleased)
+## 0.0.21 (unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+- Updates the usage patterns of Azure Developer CLI (azd) when invoked from MCP. https://github.com/Azure/azure-mcp/pull/203
+- Fixes server binding issue when using SSE transport in Docker by replacing `ListenLocalhost` with `ListenAnyIP`, allowing external access via port mapping. https://github.com/Azure/azure-mcp/pull/233
+
+### Other Changes
+
+- Updated to the latest ModelContextProtocol library. https://github.com/Azure/azure-mcp/pull/220
+
+## 0.0.20 (2025-05-17)
+
+### Bugs Fixed
+
+- Improve the formatting in the ParseJsonOutput method and refactor it to utilize a ParseError record. https://github.com/Azure/azure-mcp/pull/218
+- Added dummy argument for best practices tool, so the schema is properly generated for Python Open API use cases. https://github.com/Azure/azure-mcp/pull/219
+
+## 0.0.19 (2025-05-15)
 
 ### Bugs Fixed
 
 - Fixes Service Bus host name parameter description. https://github.com/Azure/azure-mcp/pull/209/
-- Updates the usage patterns of Azure Developer CLI (azd) when invoked from MCP. https://github.com/Azure/azure-mcp/pull/203
-
-### Features Added
-
-### Other Changes
 
 ## 0.0.18 (2025-05-14)
 
@@ -22,7 +39,6 @@
 ### Bugs Fixed
 
 - Added an opt-in timeout for browser-based authentication to handle cases where the process waits indefinitely if the user closes the browser. https://github.com/Azure/azure-mcp/pull/189
-
 
 ## 0.0.16 (2025-05-13)
 

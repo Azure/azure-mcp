@@ -14,7 +14,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -75,7 +75,7 @@ public sealed class ServiceStartCommand : BaseCommand
             ConfigureMcpServer(builder.Services, serverArguments.Transport);
 
             builder.WebHost
-                .ConfigureKestrel(server => server.ListenLocalhost(serverArguments.Port))
+                .ConfigureKestrel(server => server.ListenAnyIP(serverArguments.Port))
                 .ConfigureLogging(logging =>
                 {
                     logging.AddEventSourceLogger();

@@ -5,6 +5,11 @@ labels: ["onboarding","needs-triage"]
 projects: ["Azure/812"]
 
 body:
+  - type: markdown
+    attributes:
+      value: |
+        **Microsoft Internal Developers Only:**  
+        Please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake) before submitting this request.
   - type: input
     id: library
     attributes:

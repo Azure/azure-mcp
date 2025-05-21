@@ -97,12 +97,11 @@ public class ExternalProcessService : IExternalProcessService
     {
         if (result.ExitCode != 0)
         {
-            var error = new
-            {
+            var error = new ParseError(
                 result.ExitCode,
                 result.Error,
                 result.Command
-            };
+            );
             return JsonSerializer.SerializeToElement(error, ServicesJsonContext.Default.ParseError);
         }
 

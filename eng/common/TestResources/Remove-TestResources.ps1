@@ -219,8 +219,10 @@ Log "Selected subscription '$subscriptionName'"
 if ($ServiceDirectory) {
     $root = "$PSScriptRoot/../../.."
     if($ServiceDirectory) {
-      $root = "$root/sdk/$ServiceDirectory" | Resolve-Path
+      $root = "$root/sdk/$ServiceDirectory"
     }
+    $root = $root | Resolve-Path
+    
     $preRemovalScript = Join-Path -Path $root -ChildPath "remove-$ResourceType-resources-pre.ps1"
     if (Test-Path $preRemovalScript) {
         Log "Invoking pre resource removal script '$preRemovalScript'"
@@ -234,6 +236,7 @@ if ($ServiceDirectory) {
 
     # Make sure environment files from New-TestResources -OutFile are removed.
     Get-ChildItem -Path $root -Filter "$ResourceType-resources.json.env" -Recurse | Remove-Item -Force:$Force
+    Get-ChildItem -Path $root -Filter ".env" -Recurse -Force | Remove-Item -Force
 }
 
 $verifyDeleteScript = {

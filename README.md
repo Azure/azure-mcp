@@ -7,6 +7,16 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
+## 📑 Table of contents
+1. [🎯 Overview](#-overview)
+2. [🛠️ Currently Supported Tools](#%EF%B8%8F-currently-supported-tools)
+3. [🔌 Installation & Getting Started](#-getting-started)
+4. [🧪 Using Azure MCP Server](#-test-the-azure-mcp-server)
+5. [📝 Troubleshooting Issues](#-troubleshooting)
+6. [👥 Contributing to Azure MCP Server](#-contributing)
+
+
+
 ## 🎯 Overview
 
 ### ✨ What can you do with the Azure MCP Server?
@@ -87,7 +97,6 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - List Log Analytics workspaces
 - Query logs using KQL
 - List available tables
-- Configure monitoring options
 
 #### Health Models
 - Get health of an entity
@@ -103,10 +112,8 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 
 ### 📦 Azure Resource Groups
 - List resource groups
-- Resource group management operations
 
 ### 🚌 Azure Service Bus
-- Peek at messages from subscriptions and queues
 - Examine properties and runtime information about queues, topics, and subscriptions
 
 ### 🔧 Azure CLI Extension

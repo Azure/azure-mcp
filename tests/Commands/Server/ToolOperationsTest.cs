@@ -5,7 +5,7 @@ using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NSubstitute;
 using Xunit;

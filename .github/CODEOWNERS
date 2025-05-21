@@ -28,13 +28,48 @@
 ##################
 # Services
 ##################
-# PRLabel: %area-Kusto
-/src/Arguments/Kusto/                  @danield137 @xiangyan99
-/src/Commands/Kusto/                   @danield137 @xiangyan99
-/src/Services/Azure/Kusto/             @danield137 @xiangyan99
+# PRLabel: %area-AppConfig
+/src/Arguments/AppConfig/              @JonathanCrd @conniey
+/src/Commands/AppConfig/               @JonathanCrd @conniey
+/src/Services/Azure/AppConfig/         @JonathanCrd @conniey
 
-# ServiceLabel: %area-Kusto
-# ServiceOwners:                       @danield137
+# ServiceLabel: %area-AppConfig
+# ServiceOwners:                       @shenmuxiaosen @avanigupta
+
+
+# PRLabel: %area-BestPractices
+/src/Commands/AzureBestPractices/           @g2vinay @conniey 
+/src/Resources/azure-best-practices.txt     @g2vinay @conniey
+
+# ServiceLabel: %area-BestPractices
+# ServiceOwners:                            @g2vinay @conniey
+
+
+# PRLabel: %area-CosmosDB
+/src/Arguments/Cosmos/               @sajeetharan @xiangyan99
+/src/Commands/Cosmos/                @sajeetharan @xiangyan99
+/src/Services/Azure/Cosmos/          @sajeetharan @xiangyan99
+
+# ServiceLabel: %area-CosmosDB
+# ServiceOwners:                       @sajeetharan @xiangyan99
+
+
+# PRLabel: %area-Azd
+/src/Arguments/Extension/               @wbreza @jongio
+/src/Commands/Extension/                @wbreza @jongio
+/src/Services/Azure/Extension/          @wbreza @jongio
+
+# ServiceLabel: %area-Azd
+# ServiceOwners:                        @wbreza @jongio
+
+
+# PRLabel: %area-ARM
+/src/Arguments/Group/                  @ArthurMa1978 @jongio
+/src/Commands/Group/                   @ArthurMa1978 @jongio
+/src/Services/Azure/Group/             @ArthurMa1978 @jongio
+
+# ServiceLabel: %area-ARM
+# ServiceOwners:                       @ArthurMa1978
 
 
 # PRLabel: %area-KeyVault
@@ -46,13 +81,32 @@
 # ServiceOwners:                       @conniey @JonathanCrd
 
 
-# PRLabel: %area-CosmosDB
-/src/Arguments/Cosmos/               @sajeetharan @xiangyan99
-/src/Commands/Cosmos/                @sajeetharan @xiangyan99
-/src/Services/Azure/Cosmos/          @sajeetharan @xiangyan99
+# PRLabel: %area-Kusto
+/src/Arguments/Kusto/                  @danield137 @xiangyan99
+/src/Commands/Kusto/                   @danield137 @xiangyan99
+/src/Services/Azure/Kusto/             @danield137 @xiangyan99
 
-# ServiceLabel: %area-CosmosDB
-# ServiceOwners:                       @sajeetharan @xiangyan99
+# ServiceLabel: %area-Kusto
+# ServiceOwners:                       @danield137
+
+
+# PRLabel: %area-Monitor
+/src/Arguments/Monitor/                @smritiy @srnagar @jongio
+/src/Commands/Monitor/                 @smritiy @srnagar @jongio
+/src/Services/Azure/Monitor/           @smritiy @srnagar @jongio
+
+# ServiceLabel: %area-Monitor
+# ServiceOwners:                       @smritiy @srnagar @jongio
+
+
+# PRLabel: %area-Search
+/src/Arguments/Search/                @pablocastro @jongio
+/src/Commands/Search/                 @pablocastro @jongio
+/src/Services/Azure/Search/           @pablocastro @jongio
+ 
+# ServiceLabel: %area-Search
+# ServiceOwners:                       @pablocastro
+
 
 # PRLabel: %area-ServiceBus
 /src/Arguments/ServiceBus/             @conniey @JonathanCrd
@@ -62,15 +116,11 @@
 # ServiceLabel: %area-ServiceBus
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
 
-# PRLabel: %area-BestPractices
-/src/Commands/AzureBestPractices/           @g2vinay @conniey 
-/src/Resources/azure-best-practices.txt     @g2vinay @conniey
 
-# ServiceLabel: %area-BestPractices
-# ServiceOwners:                            @g2vinay @conniey
-
-# ServiceLabel: %area-Monitor
-# ServiceOwners:                        @smritiy, @g2vinay
-/src/Arguments/Monitor/                     @smritiy @g2vinay
-/src/Commands/Monitor/                      @smritiy @g2vinay
-/src/Services/Azure/Monitor/                @smritiy @g2vinay
+# PRLabel: %area-Storage
+/src/Arguments/Storage/                @alzimmermsft @jongio
+/src/Commands/Storage/                 @alzimmermsft @jongio
+/src/Services/Azure/Storage/           @alzimmermsft @jongio
+ 
+# ServiceLabel: %area-Storage
+# ServiceOwners:                       @alzimmermsft  @jongio

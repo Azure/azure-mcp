@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Commands.Extension;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -159,6 +160,39 @@ public sealed class AzCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesNonJsonOutput_AndWrapsInParseOutput()
+    {
+        // Arrange
+        var command = new AzCommand(_logger);
+        var parser = new Parser(command.GetCommand());
+        var args = parser.Parse("--command \"group list --query name\"");
+        var context = new CommandContext(_serviceProvider);
+
+        var nonJsonOutput = "test-rg1\ntest-rg2";
+
+        _processService.ExecuteAsync(
+            Arg.Any<string>(),
+            "group list --query name",
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
+            .Returns(new ProcessResult(0, nonJsonOutput, string.Empty, "group list --query name"));
+        var expectedJsonOutput = JsonSerializer.SerializeToElement(
+            new { output = nonJsonOutput },
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+        _processService.ParseJsonOutput(Arg.Any<ProcessResult>())
+            .Returns(expectedJsonOutput);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
     }
 
     private sealed class AzResult
