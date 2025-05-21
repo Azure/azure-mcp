@@ -5,13 +5,13 @@ using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Arguments;
 using AzureMcp.Models;
-using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure.Cosmos;
 
-public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService)
+public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService, ILogger<CosmosService> logger)
     : BaseAzureService(tenantService), ICosmosService, IDisposable
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
@@ -21,6 +21,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     private const string COSMOS_CLIENTS_CACHE_KEY_PREFIX = "clients_";
     private static readonly TimeSpan CACHE_DURATION_CLIENTS = TimeSpan.FromMinutes(15);
     private bool _disposed;
+    private readonly ILogger<CosmosService> _logger = logger;
 
     private async Task<CosmosDBAccountResource> GetCosmosAccountAsync(
         string subscriptionId,
@@ -286,7 +287,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                 try
                 {
                     // Get all cached client keys
-                    var keys = await _cacheService.GetGroupKeysAsync(CACHE_GROUP).ConfigureAwait(false);
+                    var keys = await _cacheService.GetGroupKeysAsync(CACHE_GROUP);
 
                     // Filter for client keys only (those that start with the client prefix)
                     var clientKeys = keys.Where(k => k.StartsWith(COSMOS_CLIENTS_CACHE_KEY_PREFIX));
@@ -302,14 +303,14 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                         catch (Exception ex)
                         {
                             // Log or handle exception but continue disposing other clients
-                            System.Diagnostics.Debug.WriteLine($"Error disposing Cosmos client for key {key}: {ex.Message}");
+                            _logger.LogError($"Error disposing Cosmos client for key {key}: {ex.Message}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     // Log the exception but don't throw from Dispose
-                    System.Diagnostics.Debug.WriteLine($"Error during Cosmos clients disposal: {ex.Message}");
+                    _logger.LogError($"Error during Cosmos clients disposal: {ex.Message}");
                 }
             }
             _disposed = true;
