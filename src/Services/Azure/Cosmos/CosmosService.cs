@@ -297,7 +297,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                     {
                         try
                         {
-                            var client = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key).ConfigureAwait(false);
+                            var client = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key);
                             client?.Dispose();
                         }
                         catch (Exception ex)
