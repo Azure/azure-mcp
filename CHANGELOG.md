@@ -5,6 +5,7 @@
 ### Features Added
 
 - Support for Azure Redis Caches and Clusters https://github.com/Azure/azure-mcp/pull/198
+- Support for Azure Monitor Health Models https://github.com/Azure/azure-mcp/pull/208
 
 ### Bugs Fixed
 
