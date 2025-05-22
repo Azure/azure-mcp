@@ -1,12 +1,10 @@
 # Release History
 
-## 0.0.21 (unreleased)
+## 0.0.21 (2025-05-22)
 
 ### Features Added
 
 - Support for Azure Redis Caches and Clusters https://github.com/Azure/azure-mcp/pull/198
-
-### Breaking Changes
 
 ### Bugs Fixed
 
