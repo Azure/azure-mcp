@@ -172,6 +172,7 @@
         "Npgsql",
         "npmjs",
         "onboarded",
+        "oidc",
         "pscore",
         "RediSearch",
         "resourcegroup",
