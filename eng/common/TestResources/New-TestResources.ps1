@@ -608,13 +608,21 @@ try {
         }
         Log $msg
 
+        $debugLevel = if($env:SYSTEM_DEBUG -eq 'true') {
+            'All'
+        } else {
+            'None'
+        }
+
         $deployment = Retry {
             New-AzResourceGroupDeployment `
                     -Name $BaseName `
                     -ResourceGroupName $resourceGroup.ResourceGroupName `
                     -TemplateFile $templateFile.jsonFilePath `
                     -TemplateParameterObject $templateFileParameters `
-                    -Force:$Force
+                    -Force:$Force `
+                    -SkipTemplateParameterPrompt `
+                    -DeploymentDebugLogLevel $debugLevel
         }
         if ($deployment.ProvisioningState -ne 'Succeeded') {
             Write-Host "Deployment '$($deployment.DeploymentName)' has state '$($deployment.ProvisioningState)' with CorrelationId '$($deployment.CorrelationId)'. Exiting..."
