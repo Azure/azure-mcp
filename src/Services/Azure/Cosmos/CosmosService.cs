@@ -276,7 +276,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual async void Dispose(bool disposing)
     {
         if (!_disposed)
         {
