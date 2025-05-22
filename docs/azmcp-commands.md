@@ -141,7 +141,8 @@ azmcp storage blob container list --subscription <subscription> --account-name <
 azmcp storage blob container details --subscription <subscription> --account-name <account-name> --container-name <container-name>
 ```
 
-### Azure Monitor (Log Analytics) Operations
+### Azure Monitor Operations
+#### Log Analytics
 ```bash
 # List Log Analytics workspaces in a subscription
 azmcp monitor workspace list --subscription <subscription>
@@ -163,6 +164,15 @@ azmcp monitor log query --subscription <subscription> \
                         --workspace <workspace> \
                         --table-name "AppEvents_CL" \
                         --query "| order by TimeGenerated desc"
+```
+
+#### Health Models
+```bash
+# Get the health of an entity
+azmcp monitor healthmodels entity gethealth --subscription <subscription> \
+                                       --resource-group <resource-group> \
+                                       --model-name <health-model-name> \
+                                       --entity <entity-id> 
 ```
 
 ### Azure App Configuration Operations

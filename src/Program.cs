@@ -73,6 +73,7 @@ internal class Program
         services.AddSingleton<IKustoService, KustoService>();
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
+        services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
         services.AddSingleton<IAppConfigService, AppConfigService>();
         services.AddSingleton<ISearchService, SearchService>();

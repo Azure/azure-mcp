@@ -228,6 +228,10 @@ public static class ArgumentDefinitions
         public const string HoursName = "hours";
         public const string LimitName = "limit";
 
+        // Health model arguments
+        public const string EntityName = "entity";
+        public const string HealthModelName = "model-name";
+
         public static readonly ArgumentDefinition<string> Workspace = new(
             WorkspaceIdOrName,
             "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
@@ -269,6 +273,21 @@ public static class ArgumentDefinitions
             defaultValue: 20,
             required: true
         );
+
+        public static class Health
+        {
+            public static readonly ArgumentDefinition<string> Entity = new(
+                EntityName,
+                "The entity to get health for.",
+                required: true
+            );
+
+            public static readonly ArgumentDefinition<string> HealthModel = new(
+                HealthModelName,
+                "The name of the health model for which to get the health.",
+                required: true
+            );
+        }
     }
 
     public static class Service
