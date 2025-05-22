@@ -1,6 +1,8 @@
 #Requires -Version 7
 
 param(
+    [string] $TenantId,
+    [string] $TestApplicationId,
     [string] $ResourceGroupName,
     [string] $BaseName
 )
@@ -9,6 +11,11 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/../eng/common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
+
+Connect-AzAccount -ServicePrincipal `
+    -TenantId $TenantId `
+    -ApplicationId $TestApplicationId `
+    -FederatedToken $env:ARM_OIDC_TOKEN
 
 $context = Get-AzContext
 

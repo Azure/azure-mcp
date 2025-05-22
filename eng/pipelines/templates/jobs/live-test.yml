@@ -51,6 +51,7 @@ jobs:
       Location: ${{ parameters.CloudConfig.Location }}
       SubscriptionConfiguration: $(SubscriptionConfiguration)
       ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
+      PersistOidcToken: true
       EnvVars:
         Pool: $(Pool)
         ${{insert}}: ${{ parameters.EnvVars }}
