@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Azure.AI.Projects" Version="1.0.0-beta.9" />
     <PackageVersion Include="Azure.Bicep.Types" Version="0.5.110" />
     <PackageVersion Include="Azure.Bicep.Types.Az" Version="0.2.771" />
     <PackageVersion Include="Azure.Core" Version="1.46.2" />
@@ -16,6 +17,7 @@
     <PackageVersion Include="Azure.ResourceManager.AppConfiguration" Version="1.4.0" />
     <PackageVersion Include="Azure.ResourceManager.Authorization" Version="1.1.4" />
     <PackageVersion Include="Azure.ResourceManager.Kusto" Version="1.6.0" />
+    <PackageVersion Include="Azure.ResourceManager.CognitiveServices" Version="1.4.0" />
     <PackageVersion Include="Azure.ResourceManager.PostgreSql" Version="1.2.0" />
     <PackageVersion Include="Azure.ResourceManager.Redis" Version="1.5.0" />
     <PackageVersion Include="Azure.ResourceManager.RedisEnterprise" Version="1.1.0" />
