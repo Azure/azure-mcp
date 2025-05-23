@@ -1,14 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Search.Index;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Search.Index;
 
@@ -16,9 +12,9 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
 {
     private const string _commandTitle = "Query Azure AI Search Index";
     private readonly ILogger<IndexQueryCommand> _logger = logger;
-    private readonly Option<string> _serviceOption = ArgumentDefinitions.Search.Service.ToOption();
-    private readonly Option<string> _indexOption = ArgumentDefinitions.Search.Index.ToOption();
-    private readonly Option<string> _queryOption = ArgumentDefinitions.Search.Query.ToOption();
+    private readonly Option<string> _serviceOption = ArgumentDefinitions.Search.Service;
+    private readonly Option<string> _indexOption = ArgumentDefinitions.Search.Index;
+    private readonly Option<string> _queryOption = ArgumentDefinitions.Search.Query;
 
     public override string Name => "query";
 
@@ -42,17 +38,9 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         command.AddOption(_queryOption);
     }
 
-    protected override void RegisterArguments()
+    protected override IndexQueryArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateServiceArgument());
-        AddArgument(CreateIndexArgument());
-        AddArgument(CreateQueryArgument());
-    }
-
-    protected override IndexQueryArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Service = parseResult.GetValueForOption(_serviceOption);
         args.Index = parseResult.GetValueForOption(_indexOption);
         args.Query = parseResult.GetValueForOption(_queryOption);
@@ -62,12 +50,16 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
@@ -89,22 +81,4 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
 
         return context.Response;
     }
-
-    private static ArgumentBuilder<IndexQueryArguments> CreateServiceArgument() =>
-        ArgumentBuilder<IndexQueryArguments>
-            .Create(ArgumentDefinitions.Search.Service.Name, ArgumentDefinitions.Search.Service.Description)
-            .WithValueAccessor(args => args.Service ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Search.Service.Required);
-
-    private static ArgumentBuilder<IndexQueryArguments> CreateIndexArgument() =>
-        ArgumentBuilder<IndexQueryArguments>
-            .Create(ArgumentDefinitions.Search.Index.Name, ArgumentDefinitions.Search.Index.Description)
-            .WithValueAccessor(args => args.Index ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Search.Index.Required);
-
-    private static ArgumentBuilder<IndexQueryArguments> CreateQueryArgument() =>
-        ArgumentBuilder<IndexQueryArguments>
-            .Create(ArgumentDefinitions.Search.Query.Name, ArgumentDefinitions.Search.Query.Description)
-            .WithValueAccessor(args => args.Query ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Search.Query.Required);
 }

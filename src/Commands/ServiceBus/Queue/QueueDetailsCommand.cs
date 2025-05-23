@@ -1,23 +1,19 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Arguments.ServiceBus.Queue;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Models.ServiceBus;
 using AzureMcp.Services.Interfaces;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments>
 {
     private const string _commandTitle = "Get Service Bus Queue Details";
-    private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue.ToOption();
-    private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace.ToOption();
+    private readonly Option<string> _queueOption = ArgumentDefinitions.ServiceBus.Queue;
+    private readonly Option<string> _namespaceOption = ArgumentDefinitions.ServiceBus.Namespace;
 
     public override string Name => "details";
 
@@ -40,16 +36,9 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments
         command.AddOption(_queueOption);
     }
 
-    protected override void RegisterArguments()
+    protected override BaseQueueArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateQueueArgument());
-        AddArgument(CreateNamespaceArgument());
-    }
-
-    protected override BaseQueueArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Name = parseResult.GetValueForOption(_queueOption);
         args.Namespace = parseResult.GetValueForOption(_namespaceOption);
         return args;
@@ -58,12 +47,16 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments
     [McpServerTool(Destructive = false, ReadOnly = true)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
@@ -98,22 +91,6 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueArguments
         ServiceBusException sbEx when sbEx.Reason == ServiceBusFailureReason.MessagingEntityNotFound => 404,
         _ => base.GetStatusCode(ex)
     };
-
-    private static ArgumentBuilder<BaseQueueArguments> CreateQueueArgument()
-    {
-        return ArgumentBuilder<BaseQueueArguments>
-            .Create(ArgumentDefinitions.ServiceBus.Queue.Name, ArgumentDefinitions.ServiceBus.Queue.Description)
-            .WithValueAccessor(args => args.Name ?? string.Empty)
-            .WithIsRequired(true);
-    }
-
-    private static ArgumentBuilder<BaseQueueArguments> CreateNamespaceArgument()
-    {
-        return ArgumentBuilder<BaseQueueArguments>
-            .Create(ArgumentDefinitions.ServiceBus.Namespace.Name, ArgumentDefinitions.ServiceBus.Namespace.Description)
-            .WithValueAccessor(args => args.Namespace ?? string.Empty)
-            .WithIsRequired(true);
-    }
 
     internal record QueueDetailsCommandResult(QueueDetails QueueDetails);
 }

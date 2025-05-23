@@ -159,8 +159,8 @@ public class IndexDescribeCommandTests
 
         // Assert
         Assert.Equal("describe", cmd.Name);
-        Assert.NotNull(cmd.Description);
-        Assert.NotEmpty(cmd.Description);
+        Assert.NotNull(cmd.Description!);
+        Assert.NotEmpty(cmd.Description!);
 
         // Verify options
         var serviceOption = cmd.Options.FirstOrDefault(o => o.Name == "service-name");

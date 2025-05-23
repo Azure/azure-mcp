@@ -1,12 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.Text.Json;
+using System.CommandLine.Builder;
 using AzureMcp.Commands;
-using AzureMcp.Extensions;
-using AzureMcp.Models;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.KeyVault;
@@ -42,23 +38,47 @@ internal class Program
             });
 
             var serviceProvider = services.BuildServiceProvider();
-            var commandFactory = serviceProvider.GetRequiredService<CommandFactory>();
-            var rootCommand = commandFactory.RootCommand;
 
-            return await rootCommand.InvokeAsync(args);
+            var parser = BuildCommandLineParser(serviceProvider);
+            return await parser.InvokeAsync(args);
         }
         catch (Exception ex)
         {
-            CommandResponse response = new()
+            WriteResponse(new CommandResponse
             {
                 Status = 500,
                 Message = ex.Message,
                 Duration = 0
-            };
-
-            Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
+            });
             return 1;
         }
+    }
+
+    private static Parser BuildCommandLineParser(IServiceProvider serviceProvider)
+    {
+        var commandFactory = serviceProvider.GetRequiredService<CommandFactory>();
+        var rootCommand = commandFactory.RootCommand;
+        var builder = new CommandLineBuilder(rootCommand);
+
+        builder.AddMiddleware(async (context, next) =>
+        {
+            var commandContext = new CommandContext(serviceProvider);
+            if (!commandContext.Validate(context.ParseResult))
+            {
+                WriteResponse(commandContext.Response);
+                context.ExitCode = commandContext.Response.Status;
+                return;
+            }
+            await next(context);
+        });
+
+        builder.UseDefaults();
+        return builder.Build();
+    }
+
+    private static void WriteResponse(CommandResponse response)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
     }
 
     internal static void ConfigureServices(IServiceCollection services)

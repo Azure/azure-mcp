@@ -1,14 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Monitor;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Monitor.Table;
 
@@ -16,7 +12,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
 {
     private const string _commandTitle = "List Log Analytics Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
-    private readonly Option<string> _tableTypeOption = ArgumentDefinitions.Monitor.TableType.ToOption();
+    private readonly Option<string> _tableTypeOption = ArgumentDefinitions.Monitor.TableType;
 
     public override string Name => "list";
 
@@ -35,22 +31,19 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         command.AddOption(_resourceGroupOption);
     }
 
-    protected override void RegisterArguments()
-    {
-        base.RegisterArguments();
-        AddArgument(CreateTableTypeArgument());
-        AddArgument(CreateResourceGroupArgument());
-    }
-
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
@@ -76,21 +69,11 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         return context.Response;
     }
 
-    private static ArgumentBuilder<TableListArguments> CreateTableTypeArgument()
+    protected override TableListArguments BindOptions(ParseResult parseResult)
     {
-        var defaultValue = ArgumentDefinitions.Monitor.TableType.DefaultValue ?? "CustomLog";
-        return ArgumentBuilder<TableListArguments>
-            .Create(ArgumentDefinitions.Monitor.TableType.Name, ArgumentDefinitions.Monitor.TableType.Description)
-            .WithValueAccessor(args => args.TableType ?? defaultValue)
-            .WithDefaultValue(defaultValue)
-            .WithIsRequired(ArgumentDefinitions.Monitor.TableType.Required);
-    }
-
-    protected override TableListArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
-        args.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? ArgumentDefinitions.Monitor.TableType.DefaultValue;
-        args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? ArgumentDefinitions.Common.ResourceGroup.DefaultValue;
+        var args = base.BindOptions(parseResult);
+        args.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? ArgumentDefinitions.Monitor.TableType.GetDefaultValue();
+        args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? ArgumentDefinitions.Common.ResourceGroup.GetDefaultValue();
         return args;
     }
 

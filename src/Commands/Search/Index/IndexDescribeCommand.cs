@@ -1,16 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Search.Documents.Indexes.Models;
 using AzureMcp.Arguments.Search.Index;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Search.Index;
 
@@ -18,8 +14,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
 {
     private const string _commandTitle = "Get Azure AI Search Index Details";
     private readonly ILogger<IndexDescribeCommand> _logger = logger;
-    private readonly Option<string> _serviceOption = ArgumentDefinitions.Search.Service.ToOption();
-    private readonly Option<string> _indexOption = ArgumentDefinitions.Search.Index.ToOption();
+    private readonly Option<string> _serviceOption = ArgumentDefinitions.Search.Service;
+    private readonly Option<string> _indexOption = ArgumentDefinitions.Search.Index;
 
     public override string Name => "describe";
 
@@ -42,16 +38,9 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         command.AddOption(_indexOption);
     }
 
-    protected override void RegisterArguments()
+    protected override IndexDescribeArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateServiceArgument());
-        AddArgument(CreateIndexArgument());
-    }
-
-    protected override IndexDescribeArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Service = parseResult.GetValueForOption(_serviceOption);
         args.Index = parseResult.GetValueForOption(_indexOption);
         return args;
@@ -60,12 +49,16 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
     [McpServerTool(Destructive = false, ReadOnly = true)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
@@ -125,16 +118,4 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
             Fields = index.Fields.Select(field => new SearchFieldProxy(field)).ToList();
         }
     }
-
-    private static ArgumentBuilder<IndexDescribeArguments> CreateServiceArgument() =>
-        ArgumentBuilder<IndexDescribeArguments>
-            .Create(ArgumentDefinitions.Search.Service.Name, ArgumentDefinitions.Search.Service.Description)
-            .WithValueAccessor(args => args.Service ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Search.Service.Required);
-
-    private static ArgumentBuilder<IndexDescribeArguments> CreateIndexArgument() =>
-        ArgumentBuilder<IndexDescribeArguments>
-            .Create(ArgumentDefinitions.Search.Index.Name, ArgumentDefinitions.Search.Index.Description)
-            .WithValueAccessor(args => args.Index ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Search.Index.Required);
 }

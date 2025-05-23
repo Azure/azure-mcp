@@ -1,6 +1,5 @@
 
 using System.Text.Json.Serialization;
-using AzureMcp.Models.Command;
 
 namespace AzureMcp.Models;
 

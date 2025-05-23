@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using Azure;
 using Azure.ResourceManager.Search;
 using Azure.Search.Documents;

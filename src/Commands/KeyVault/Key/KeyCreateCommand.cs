@@ -1,15 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
-using Azure.Security.KeyVault.Keys;
 using AzureMcp.Arguments.KeyVault.Key;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.KeyVault.Key;
 
@@ -17,9 +12,9 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 {
     private const string _commandTitle = "Create Key Vault Key";
     private readonly ILogger<KeyCreateCommand> _logger = logger;
-    private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName.ToOption();
-    private readonly Option<string> _keyOption = ArgumentDefinitions.KeyVault.KeyName.ToOption();
-    private readonly Option<string> _keyTypeOption = ArgumentDefinitions.KeyVault.KeyType.ToOption();
+    private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName;
+    private readonly Option<string> _keyOption = ArgumentDefinitions.KeyVault.KeyName;
+    private readonly Option<string> _keyTypeOption = ArgumentDefinitions.KeyVault.KeyType;
 
     public override string Name => "create";
 
@@ -50,35 +45,9 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         command.AddOption(_keyTypeOption);
     }
 
-    protected override void RegisterArguments()
+    protected override KeyCreateArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateVaultArgument());
-        AddArgument(CreateKeyArgument());
-        AddArgument(CreateKeyTypeArgument());
-    }
-
-    private static ArgumentBuilder<KeyCreateArguments> CreateVaultArgument() =>
-        ArgumentBuilder<KeyCreateArguments>
-            .Create(ArgumentDefinitions.KeyVault.VaultName.Name, ArgumentDefinitions.KeyVault.VaultName.Description)
-            .WithValueAccessor(args => args.VaultName ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.KeyVault.VaultName.Required);
-
-    private static ArgumentBuilder<KeyCreateArguments> CreateKeyArgument() =>
-        ArgumentBuilder<KeyCreateArguments>
-            .Create(ArgumentDefinitions.KeyVault.KeyName.Name, ArgumentDefinitions.KeyVault.KeyName.Description)
-            .WithValueAccessor(args => args.KeyName ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.KeyVault.KeyName.Required);
-
-    private static ArgumentBuilder<KeyCreateArguments> CreateKeyTypeArgument() =>
-        ArgumentBuilder<KeyCreateArguments>
-            .Create(ArgumentDefinitions.KeyVault.KeyType.Name, ArgumentDefinitions.KeyVault.KeyType.Description)
-            .WithValueAccessor(args => args.KeyType ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.KeyVault.KeyType.Required);
-
-    protected override KeyCreateArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.VaultName = parseResult.GetValueForOption(_vaultOption);
         args.KeyName = parseResult.GetValueForOption(_keyOption);
         args.KeyType = parseResult.GetValueForOption(_keyTypeOption);
@@ -88,12 +57,16 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
     [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

@@ -110,7 +110,7 @@ public class CacheListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Equal($"Missing required arguments: {missingParameter.TrimStart('-')}", response.Message);
+        Assert.Equal($"Missing required arguments: {missingParameter}", response.Message);
     }
 
     private record CacheListResult(IEnumerable<CacheModel> Caches);

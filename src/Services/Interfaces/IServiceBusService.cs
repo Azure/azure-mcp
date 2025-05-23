@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using AzureMcp.Arguments;
 using AzureMcp.Models.ServiceBus;
 

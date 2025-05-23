@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Arguments.Cosmos;
 using AzureMcp.Models.Argument;
@@ -13,7 +11,7 @@ public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs>
     : BaseCosmosCommand<TArgs> where TArgs : BaseDatabaseArguments, new()
 {
-    protected readonly Option<string> _databaseOption = ArgumentDefinitions.Cosmos.Database.ToOption();
+    protected readonly Option<string> _databaseOption = ArgumentDefinitions.Cosmos.Database;
 
     protected override void RegisterOptions(Command command)
     {
@@ -21,23 +19,10 @@ public abstract class BaseDatabaseCommand<
         command.AddOption(_databaseOption);
     }
 
-    protected override void RegisterArguments()
+    protected override TArgs BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateDatabaseArgument());
-
-    }
-
-    protected override TArgs BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Database = parseResult.GetValueForOption(_databaseOption);
         return args;
     }
-
-    protected ArgumentBuilder<TArgs> CreateDatabaseArgument() =>
-        ArgumentBuilder<TArgs>
-            .Create(ArgumentDefinitions.Cosmos.Database.Name, ArgumentDefinitions.Cosmos.Database.Description)
-            .WithValueAccessor(args => args.Database ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Cosmos.Database.Required);
 }

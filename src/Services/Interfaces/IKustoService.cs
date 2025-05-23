@@ -1,7 +1,5 @@
-using System.Text.Json;
 using AzureMcp.Arguments;
 using AzureMcp.Commands.Kusto;
-using AzureMcp.Models;
 
 namespace AzureMcp.Services.Interfaces;
 

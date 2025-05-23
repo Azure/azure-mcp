@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Arguments;
 using AzureMcp.Commands.Cosmos;
+using AzureMcp.Extensions;
 using AzureMcp.Models.Argument;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
@@ -86,16 +87,8 @@ public class AccountListCommandTests
         // Arrange
         var expectedError = "Test error";
         var subscriptionId = "sub123";
-        var defaultRetryPolicy = new RetryPolicyArguments
-        {
-            DelaySeconds = ArgumentDefinitions.RetryPolicy.Delay.DefaultValue,
-            MaxDelaySeconds = ArgumentDefinitions.RetryPolicy.MaxDelay.DefaultValue,
-            MaxRetries = ArgumentDefinitions.RetryPolicy.MaxRetries.DefaultValue,
-            Mode = ArgumentDefinitions.RetryPolicy.Mode.DefaultValue,
-            NetworkTimeoutSeconds = ArgumentDefinitions.RetryPolicy.NetworkTimeout.DefaultValue
-        };
 
-        _cosmosService.GetCosmosAccounts(subscriptionId, null, defaultRetryPolicy)
+        _cosmosService.GetCosmosAccounts(subscriptionId, null, Arg.Any<RetryPolicyArguments>())
             .ThrowsAsync(new Exception(expectedError));
 
         var command = new AccountListCommand(_logger);

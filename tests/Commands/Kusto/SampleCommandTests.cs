@@ -37,15 +37,6 @@ public sealed class SampleCommandTests
         yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database-name db1 --table-name table1", true };
     }
 
-    [Fact]
-    public void Execute_ReturnsArguments()
-    {
-        var command = new SampleCommand(_logger);
-        var arguments = command.GetArguments();
-
-        Assert.Equal(12, arguments!.Count());
-    }
-
     [Theory]
     [MemberData(nameof(SampleArgumentMatrix))]
     public async Task ExecuteAsync_ReturnsSampleResults(string cliArgs, bool useClusterUri)

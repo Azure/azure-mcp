@@ -41,17 +41,9 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         command.AddOption(_resourceGroupOption);
     }
 
-    protected override void RegisterArguments()
+    protected override EntityGetHealthArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateEntityArgument());
-        AddArgument(CreateHealthModelArgument());
-        AddArgument(CreateResourceGroupArgument());
-    }
-
-    protected override EntityGetHealthArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Entity = parseResult.GetValueForOption(_entityOption);
         args.HealthModelName = parseResult.GetValueForOption(_healthModelOption);
         args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
@@ -61,12 +53,16 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle, Name = _commandName)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

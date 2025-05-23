@@ -1,16 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Runtime.InteropServices;
 using AzureMcp.Arguments.Extension;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Extension;
 
@@ -19,7 +15,7 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private const string _commandTitle = "Azure CLI Command";
     private readonly ILogger<AzCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
-    private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command.ToOption();
+    private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Az.Command;
     private static string? _cachedAzPath;
     private volatile bool _isAuthenticated = false;
     private static readonly SemaphoreSlim _authSemaphore = new(1, 1);
@@ -48,21 +44,9 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         command.AddOption(_commandOption);
     }
 
-    protected override void RegisterArguments()
+    protected override AzArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateCommandArgument());
-    }
-
-    private static ArgumentBuilder<AzArguments> CreateCommandArgument() =>
-        ArgumentBuilder<AzArguments>
-            .Create(ArgumentDefinitions.Extension.Az.Command.Name, ArgumentDefinitions.Extension.Az.Command.Description)
-            .WithValueAccessor(args => args.Command ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Extension.Az.Command.Required);
-
-    protected override AzArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Command = parseResult.GetValueForOption(_commandOption);
         return args;
     }
@@ -162,12 +146,16 @@ Your job is to answer questions about an Azure environment by executing Azure CL
     [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

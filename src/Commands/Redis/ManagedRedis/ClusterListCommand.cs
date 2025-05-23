@@ -31,12 +31,16 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
+        var args = BindOptions(parseResult);
+
         try
         {
-            var args = BindArguments(parseResult);
+            var validationResult = Validate(parseResult.CommandResult);
 
-            if (!await ProcessArguments(context, args))
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

@@ -13,7 +13,7 @@ public abstract class BaseClusterCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : SubscriptionCommand<T> where T : BaseClusterArguments, new()
 {
-    protected readonly Option<string> _clusterOption = ArgumentDefinitions.Redis.Cluster.ToOption();
+    protected readonly Option<string> _clusterOption = ArgumentDefinitions.Redis.Cluster;
 
     protected override void RegisterOptions(Command command)
     {
@@ -22,24 +22,11 @@ public abstract class BaseClusterCommand<
         command.AddOption(_resourceGroupOption);
     }
 
-    protected override void RegisterArguments()
+    protected override T BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateClusterArgument());
-        AddArgument(CreateResourceGroupArgument());
-    }
-
-    protected override T BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Cluster = parseResult.GetValueForOption(_clusterOption);
-        args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? ArgumentDefinitions.Common.ResourceGroup.DefaultValue;
+        args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? "";
         return args;
     }
-
-    protected ArgumentBuilder<T> CreateClusterArgument() =>
-        ArgumentBuilder<T>
-            .Create(ArgumentDefinitions.Redis.Cluster.Name, ArgumentDefinitions.Redis.Cluster.Description)
-            .WithValueAccessor(args => args.Cluster ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Redis.Cluster.Required);
 }

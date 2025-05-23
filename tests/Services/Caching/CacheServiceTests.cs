@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;

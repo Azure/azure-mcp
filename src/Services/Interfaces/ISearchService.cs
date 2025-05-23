@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
-using Azure.Search.Documents.Indexes.Models;
 using AzureMcp.Arguments;
 using static AzureMcp.Commands.Search.Index.IndexDescribeCommand;
 

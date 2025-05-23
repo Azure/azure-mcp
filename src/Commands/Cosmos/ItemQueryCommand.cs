@@ -1,16 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Text.Json.Nodes;
 using AzureMcp.Arguments.Cosmos;
-using AzureMcp.Models;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Cosmos;
 
@@ -20,7 +15,7 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
     private readonly ILogger<ItemQueryCommand> _logger = logger;
     private const string DefaultQuery = "SELECT * FROM c";
 
-    private readonly Option<string> _queryOption = ArgumentDefinitions.Cosmos.Query.ToOption();
+    private readonly Option<string> _queryOption = ArgumentDefinitions.Cosmos.Query;
 
     public override string Name => "query";
 
@@ -40,22 +35,9 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
         command.AddOption(_queryOption);
     }
 
-    protected override void RegisterArguments()
+    protected override ItemQueryArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateQueryArgument());
-    }
-
-    private static ArgumentBuilder<ItemQueryArguments> CreateQueryArgument() =>
-        ArgumentBuilder<ItemQueryArguments>
-            .Create(ArgumentDefinitions.Cosmos.Query.Name, ArgumentDefinitions.Cosmos.Query.Description)
-            .WithValueAccessor(args => args.Query ?? string.Empty)
-            .WithDefaultValue(ArgumentDefinitions.Cosmos.Query.DefaultValue ?? DefaultQuery)
-            .WithIsRequired(ArgumentDefinitions.Cosmos.Query.Required);
-
-    protected override ItemQueryArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Query = parseResult.GetValueForOption(_queryOption);
         return args;
     }
@@ -63,12 +45,16 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

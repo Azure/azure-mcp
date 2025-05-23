@@ -1,14 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine.Parsing;
-using Azure.ResourceManager.Resources.Models;
 using AzureMcp.Arguments.Postgres.Server;
-using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Postgres.Server;
 
@@ -28,9 +23,13 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
     {
         try
         {
-            var args = BindArguments(parseResult);
-            if (!await ProcessArguments(context, args))
+            var args = BindOptions(parseResult);
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

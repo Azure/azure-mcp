@@ -1,17 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 using Azure;
 using Azure.Core;
 using Azure.Identity;
 using AzureMcp.Arguments;
-using AzureMcp.Models;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
-using AzureMcp.Services.Interfaces;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
@@ -28,14 +23,14 @@ public abstract class GlobalCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TArgs> : BaseCommand
     where TArgs : GlobalArguments, new()
 {
-    protected readonly Option<string> _tenantOption = ArgumentDefinitions.Common.Tenant.ToOption();
-    protected readonly Option<AuthMethod> _authMethodOption = ArgumentDefinitions.Common.AuthMethod.ToOption();
-    protected readonly Option<string> _resourceGroupOption = ArgumentDefinitions.Common.ResourceGroup.ToOption();
-    protected readonly Option<int> _retryMaxRetries = ArgumentDefinitions.RetryPolicy.MaxRetries.ToOption();
-    protected readonly Option<double> _retryDelayOption = ArgumentDefinitions.RetryPolicy.Delay.ToOption();
-    protected readonly Option<double> _retryMaxDelayOption = ArgumentDefinitions.RetryPolicy.MaxDelay.ToOption();
-    protected readonly Option<RetryMode> _retryModeOption = ArgumentDefinitions.RetryPolicy.Mode.ToOption();
-    protected readonly Option<double> _retryNetworkTimeoutOption = ArgumentDefinitions.RetryPolicy.NetworkTimeout.ToOption();
+    protected readonly Option<string> _tenantOption = ArgumentDefinitions.Common.Tenant;
+    protected readonly Option<AuthMethod> _authMethodOption = ArgumentDefinitions.Common.AuthMethod;
+    protected readonly Option<string> _resourceGroupOption = ArgumentDefinitions.Common.ResourceGroup;
+    protected readonly Option<int> _retryMaxRetries = ArgumentDefinitions.RetryPolicy.MaxRetries;
+    protected readonly Option<double> _retryDelayOption = ArgumentDefinitions.RetryPolicy.Delay;
+    protected readonly Option<double> _retryMaxDelayOption = ArgumentDefinitions.RetryPolicy.MaxDelay;
+    protected readonly Option<RetryMode> _retryModeOption = ArgumentDefinitions.RetryPolicy.Mode;
+    protected readonly Option<double> _retryNetworkTimeoutOption = ArgumentDefinitions.RetryPolicy.NetworkTimeout;
 
     protected override void RegisterOptions(Command command)
     {
@@ -50,80 +45,6 @@ public abstract class GlobalCommand<
         command.AddOption(_retryModeOption);
         command.AddOption(_retryNetworkTimeoutOption);
     }
-
-    protected override void RegisterArguments()
-    {
-        // Must explicitly call base first
-        base.RegisterArguments();
-
-        // Register global arguments
-        AddArgument(CreateAuthMethodArgument());
-        AddArgument(CreateTenantArgument());
-        foreach (var argument in CreateRetryArguments())
-        {
-            AddArgument(argument);
-        }
-    }
-
-    protected ArgumentBuilder<TArgs>[] CreateRetryArguments()
-    {
-        return
-        [
-            ArgumentBuilder<TArgs>
-                .Create(ArgumentDefinitions.RetryPolicy.MaxRetries.Name, ArgumentDefinitions.RetryPolicy.MaxRetries.Description)
-                .WithValueAccessor(args => args.RetryPolicy == null ? string.Empty : args.RetryPolicy.MaxRetries.ToString())
-                .WithDefaultValue(ArgumentDefinitions.RetryPolicy.MaxRetries.DefaultValue.ToString())
-                .WithIsRequired(false),
-
-            ArgumentBuilder<TArgs>
-                .Create(ArgumentDefinitions.RetryPolicy.Delay.Name, ArgumentDefinitions.RetryPolicy.Delay.Description)
-                .WithValueAccessor(args => args.RetryPolicy == null ? string.Empty : args.RetryPolicy.DelaySeconds.ToString())
-                .WithDefaultValue(ArgumentDefinitions.RetryPolicy.Delay.DefaultValue.ToString())
-                .WithIsRequired(false),
-
-            ArgumentBuilder<TArgs>
-                .Create(ArgumentDefinitions.RetryPolicy.MaxDelay.Name, ArgumentDefinitions.RetryPolicy.MaxDelay.Description)
-                .WithValueAccessor(args => args.RetryPolicy == null ? string.Empty : args.RetryPolicy.MaxDelaySeconds.ToString())
-                .WithDefaultValue(ArgumentDefinitions.RetryPolicy.MaxDelay.DefaultValue.ToString())
-                .WithIsRequired(false),
-
-            ArgumentBuilder<TArgs>
-                .Create(ArgumentDefinitions.RetryPolicy.Mode.Name, ArgumentDefinitions.RetryPolicy.Mode.Description)
-                .WithValueAccessor(args => args.RetryPolicy == null ? string.Empty : args.RetryPolicy.Mode.ToString())
-                .WithDefaultValue(ArgumentDefinitions.RetryPolicy.Mode.DefaultValue.ToString())
-                .WithIsRequired(false),
-
-            ArgumentBuilder<TArgs>
-                .Create(ArgumentDefinitions.RetryPolicy.NetworkTimeout.Name, ArgumentDefinitions.RetryPolicy.NetworkTimeout.Description)
-                .WithValueAccessor(args => args.RetryPolicy == null ? string.Empty : args.RetryPolicy.NetworkTimeoutSeconds.ToString())
-                .WithDefaultValue(ArgumentDefinitions.RetryPolicy.NetworkTimeout.DefaultValue.ToString())
-                .WithIsRequired(false)
-        ];
-    }
-
-    // Helper methods to create common arguments
-    protected ArgumentBuilder<TArgs> CreateAuthMethodArgument()
-    {
-        return ArgumentBuilder<TArgs>
-            .Create(ArgumentDefinitions.Common.AuthMethod.Name, ArgumentDefinitions.Common.AuthMethod.Description)
-            .WithValueAccessor(args => args.AuthMethod?.ToString() ?? string.Empty)
-            .WithDefaultValue(AuthMethodArgument.GetDefaultAuthMethod().ToString())
-            .WithIsRequired(false);
-    }
-
-    protected ArgumentBuilder<TArgs> CreateTenantArgument()
-    {
-        return ArgumentBuilder<TArgs>
-            .Create(ArgumentDefinitions.Common.Tenant.Name, ArgumentDefinitions.Common.Tenant.Description)
-            .WithValueAccessor(args => args.Tenant ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Common.Tenant.Required);
-    }
-
-    protected ArgumentBuilder<TArgs> CreateResourceGroupArgument() =>
-        ArgumentBuilder<TArgs>
-            .Create(ArgumentDefinitions.Common.ResourceGroup.Name, ArgumentDefinitions.Common.ResourceGroup.Description)
-            .WithValueAccessor(args => (args as SubscriptionArguments)?.ResourceGroup ?? string.Empty)
-            .WithIsRequired(true);
 
     // Helper to get the command path for examples
     protected virtual string GetCommandPath()
@@ -164,99 +85,7 @@ public abstract class GlobalCommand<
         return commandPath;
     }
 
-    protected async Task<bool> ProcessArguments(CommandContext context, TArgs args)
-    {
-        var arguments = GetArguments();
-
-        // Ensure we have arguments to process
-        if (arguments == null || !arguments.Any())
-        {
-            return true;
-        }
-
-        // First, add all arguments to the response and apply default values if needed
-        foreach (var argDef in arguments)
-        {
-            if (argDef is ArgumentBuilder<TArgs> typedArgDef)
-            {
-                // Get the current value and handle "null" string case
-                string value = typedArgDef.ValueAccessor(args) ?? string.Empty;
-                value = value.Equals("null", StringComparison.OrdinalIgnoreCase) ? string.Empty : value;
-
-                // Special handling for subscription when it's "default"
-                if (typedArgDef.Name.Equals("subscription", StringComparison.OrdinalIgnoreCase) &&
-                    value.Equals("default", StringComparison.OrdinalIgnoreCase))
-                {
-                    value = string.Empty;
-                    // Update the args object if it's a subscription-based argument type
-                    if (args is SubscriptionArguments baseArgs)
-                    {
-                        baseArgs.Subscription = string.Empty;
-                    }
-                }
-
-                // If the value is empty but there's a default value, use the default value
-                if (string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(typedArgDef.DefaultValue))
-                {
-                    // Try to set the default value on the args object using reflection
-                    try
-                    {
-                        var prop = typeof(TArgs).GetProperty(typedArgDef.Name,
-                            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance |
-                            System.Reflection.BindingFlags.IgnoreCase);
-
-                        if (prop != null && prop.CanWrite)
-                        {
-                            prop.SetValue(args, typedArgDef.DefaultValue);
-                            value = typedArgDef.DefaultValue;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Silently handle reflection errors
-                    }
-                }
-            }
-        }
-
-        // Then, process required arguments that are missing values
-        bool allRequiredArgumentsProvided = true;
-        var missingArgs = new List<string>();
-
-        foreach (var argDef in arguments)
-        {
-            if (argDef is ArgumentBuilder<TArgs> typedArgDef && typedArgDef.Required)
-            {
-                // Get the current value
-                string value = typedArgDef.ValueAccessor(args) ?? string.Empty;
-
-                // If the value is missing and this is a required argument
-                if (string.IsNullOrEmpty(value))
-                {
-                    // Check if there's a default value
-                    if (!string.IsNullOrEmpty(typedArgDef.DefaultValue))
-                    {
-                        // We consider this argument as provided since it has a default value
-                        continue;
-                    }
-
-                    // Add to missing arguments list
-                    missingArgs.Add(typedArgDef.Name);
-                    allRequiredArgumentsProvided = false;
-                }
-            }
-        }
-
-        if (!allRequiredArgumentsProvided)
-        {
-            context.Response.Status = 400;
-            context.Response.Message = $"Missing required arguments: {string.Join(", ", missingArgs)}";
-        }
-
-        return allRequiredArgumentsProvided;
-    }
-
-    protected virtual TArgs BindArguments(ParseResult parseResult)
+    protected virtual TArgs BindOptions(ParseResult parseResult)
     {
         var args = new TArgs
         {

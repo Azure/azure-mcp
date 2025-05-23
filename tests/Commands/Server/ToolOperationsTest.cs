@@ -47,7 +47,7 @@ public class ToolOperationsTest
         {
             Assert.NotNull(tool);
             Assert.NotNull(tool.Name);
-            Assert.NotNull(tool.Description);
+            Assert.NotNull(tool.Description!);
         }
     }
 }

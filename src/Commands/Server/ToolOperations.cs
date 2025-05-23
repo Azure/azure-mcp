@@ -1,16 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
 using System.Reflection;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using AzureMcp.Models;
-using AzureMcp.Models.Command;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Server;
 
@@ -149,7 +144,8 @@ public class ToolOperations
             };
         }
 
-        var args = command.GetArguments()?.ToList();
+        var args = command.GetCommand().Options;
+
 
         var schema = new JsonObject
         {
@@ -163,13 +159,13 @@ public class ToolOperations
             {
                 arguments.Add(arg.Name, new JsonObject()
                 {
-                    ["type"] = arg.Type.ToLower(),
+                    ["type"] = arg.ValueType.ToString().ToLower(),
                     ["description"] = arg.Description,
                 });
             }
 
             schema["properties"] = arguments;
-            schema["required"] = new JsonArray(args.Where(p => p.Required).Select(p => (JsonNode)p.Name).ToArray());
+            schema["required"] = new JsonArray(args.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
         }
 
         var newOptions = new JsonSerializerOptions(McpJsonUtilities.DefaultOptions);

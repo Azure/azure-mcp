@@ -1,21 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Arguments.AppConfig.KeyValue;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : BaseKeyValueCommand<KeyValueSetArguments>()
 {
     private const string _commandTitle = "Set App Configuration Key-Value Setting";
-    private readonly Option<string> _valueOption = ArgumentDefinitions.AppConfig.Value.ToOption();
+    private readonly Option<string> _valueOption = ArgumentDefinitions.AppConfig.Value;
     private readonly ILogger<KeyValueSetCommand> _logger = logger;
 
     public override string Name => "set";
@@ -35,34 +31,26 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
         command.AddOption(_valueOption);
     }
 
-    protected override void RegisterArguments()
+    protected override KeyValueSetArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateValueArgument());
-    }
-
-    protected override KeyValueSetArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Value = parseResult.GetValueForOption(_valueOption);
         return args;
     }
 
-    private static ArgumentBuilder<KeyValueSetArguments> CreateValueArgument() =>
-        ArgumentBuilder<KeyValueSetArguments>
-            .Create(ArgumentDefinitions.AppConfig.Value.Name, ArgumentDefinitions.AppConfig.Value.Description)
-            .WithValueAccessor(args => args.Value ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.Value.Required);
-
     [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

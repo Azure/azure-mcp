@@ -1,15 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
-using System.Text.Json;
 using AzureMcp.Arguments.Kusto;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Kusto;
 
@@ -17,13 +12,12 @@ public sealed class QueryCommand : BaseDatabaseCommand<QueryArguments>
 {
     private const string _commandTitle = "Query Kusto Database";
     private readonly ILogger<QueryCommand> _logger;
+    private readonly Option<string> _queryOption = ArgumentDefinitions.Kusto.Query;
 
     public QueryCommand(ILogger<QueryCommand> logger) : base()
     {
         _logger = logger;
     }
-
-    private readonly Option<string> _queryOption = ArgumentDefinitions.Kusto.Query.ToOption();
 
     protected override void RegisterOptions(Command command)
     {
@@ -31,21 +25,9 @@ public sealed class QueryCommand : BaseDatabaseCommand<QueryArguments>
         command.AddOption(_queryOption);
     }
 
-    protected override void RegisterArguments()
+    protected override QueryArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateQueryArgument());
-    }
-
-    private static ArgumentBuilder<QueryArguments> CreateQueryArgument() =>
-        ArgumentBuilder<QueryArguments>
-            .Create(ArgumentDefinitions.Kusto.Query.Name, ArgumentDefinitions.Kusto.Query.Description)
-            .WithValueAccessor(args => args.Query ?? string.Empty)
-            .WithIsRequired(true);
-
-    protected override QueryArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Query = parseResult.GetValueForOption(_queryOption);
         return args;
     }
@@ -64,11 +46,19 @@ public sealed class QueryCommand : BaseDatabaseCommand<QueryArguments>
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
+
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
+            {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
+            }
+
 
             List<JsonElement> results = [];
             var kusto = context.GetService<IKustoService>();

@@ -1,11 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 
 namespace AzureMcp.Commands;
 
@@ -38,20 +34,7 @@ public interface IBaseCommand
     /// <summary>
     /// Executes the command
     /// </summary>
-    Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions);
+    Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult);
 
-    /// <summary>
-    /// Gets the current arguments
-    /// </summary>
-    IEnumerable<ArgumentDefinition<string>>? GetArguments();
-
-    /// <summary>
-    /// Clears the current arguments
-    /// </summary>
-    void ClearArguments();
-
-    /// <summary>
-    /// Adds an argument
-    /// </summary>
-    void AddArgument(ArgumentDefinition<string> argument);
+    ValidationResult Validate(CommandResult commandResult);
 }

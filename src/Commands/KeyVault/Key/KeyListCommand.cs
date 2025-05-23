@@ -1,15 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
-using AzureMcp.Arguments.KeyVault;
 using AzureMcp.Arguments.KeyVault.Key;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.KeyVault.Key;
 
@@ -17,8 +12,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
 {
     private const string _commandTitle = "List Key Vault Keys";
     private readonly ILogger<KeyListCommand> _logger = logger;
-    private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName.ToOption();
-    private readonly Option<bool> _includeManagedKeysOption = ArgumentDefinitions.KeyVault.IncludeManagedKeys.ToOption();
+    private readonly Option<string> _vaultOption = ArgumentDefinitions.KeyVault.VaultName;
+    private readonly Option<bool> _includeManagedKeysOption = ArgumentDefinitions.KeyVault.IncludeManagedKeys;
 
     public override string Name => "list";
 
@@ -41,28 +36,9 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         command.AddOption(_includeManagedKeysOption);
     }
 
-    protected override void RegisterArguments()
+    protected override KeyListArgument BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateVaultArgument());
-        AddArgument(CreateIncludeManagedArgument());
-    }
-
-    private ArgumentBuilder<KeyListArgument> CreateIncludeManagedArgument() =>
-        ArgumentBuilder<KeyListArgument>
-            .Create(ArgumentDefinitions.KeyVault.IncludeManagedKeys.Name, ArgumentDefinitions.KeyVault.IncludeManagedKeys.Description)
-            .WithValueAccessor(args => args.IncludeManagedKeys.ToString())
-            .WithIsRequired(ArgumentDefinitions.KeyVault.IncludeManagedKeys.Required);
-
-    private static ArgumentBuilder<KeyListArgument> CreateVaultArgument() =>
-        ArgumentBuilder<KeyListArgument>
-            .Create(ArgumentDefinitions.KeyVault.VaultName.Name, ArgumentDefinitions.KeyVault.VaultName.Description)
-            .WithValueAccessor(args => args.VaultName ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.KeyVault.VaultName.Required);
-
-    protected override KeyListArgument BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.VaultName = parseResult.GetValueForOption(_vaultOption);
         args.IncludeManagedKeys = parseResult.GetValueForOption(_includeManagedKeysOption);
         return args;
@@ -71,12 +47,16 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

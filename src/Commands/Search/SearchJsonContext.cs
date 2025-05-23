@@ -1,6 +1,4 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Search.Documents.Indexes.Models;
 using AzureMcp.Commands.Search.Index;
 using AzureMcp.Commands.Search.Service;
 

@@ -167,7 +167,7 @@ namespace AzureMcp.Commands.{Service}.{SubService}.{Resource};
 public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resource}{Operation}Arguments>
 {
     private const string _commandTitle = "{Resource} {Operation}";
-    private readonly Option<string> _resourceOption = ArgumentDefinitions.{Service}.Resource.ToOption();
+    private readonly Option<string> _resourceOption = ArgumentDefinitions.{Service}.Resource;
 
     public override string Name => "{operation}";
 
@@ -194,9 +194,9 @@ public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resourc
         AddArgument(Create{Resource}Argument());
     }
 
-    protected override {Resource}{Operation}Arguments BindArguments(ParseResult parseResult)
+    protected override {Resource}{Operation}Arguments BindOptions(ParseResult parseResult)
     {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Resource = parseResult.GetValueForOption(_resourceOption);
         return args;
     }
@@ -204,12 +204,16 @@ public sealed class {Resource}{Operation}Command : Base{Service}Command<{Resourc
     [McpServerTool(Destructive = false, ReadOnly = true)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
@@ -448,9 +452,9 @@ When implementing argument chains:
 protected ArgumentBuilder<TArgs> CreateResourceArgument()
 {
     return ArgumentBuilder<TArgs>
-        .Create(ArgumentDefinitions.Service.Resource.Name, ArgumentDefinitions.Service.Resource.Description)
+        .Create(ArgumentDefinitions.Service.Resource.Name, ArgumentDefinitions.Service.Resource.Description!)
         .WithValueAccessor(args => args.Resource ?? string.Empty)
-        .WithIsRequired(ArgumentDefinitions.Service.Resource.Required);
+        .WithIsRequired(ArgumentDefinitions.Service.Resource.IsRequired);
 }
 ```
 
@@ -488,7 +492,7 @@ public abstract class BaseServiceCommand<TArgs> : BaseCommand<TArgs>
 {
     protected BaseServiceCommand()
     {
-        _accountOption = ArgumentDefinitions.Service.Account.ToOption();
+        _accountOption = ArgumentDefinitions.Service.Account;
     }
 }
 
@@ -537,8 +541,8 @@ ArgumentDefinitions provide centralized definitions for all command arguments. T
 ```csharp
 protected BaseStorageCommand() : base()
 {
-    _accountOption = ArgumentDefinitions.Storage.Account.ToOption();
-    _containerOption = ArgumentDefinitions.Storage.Container.ToOption();
+    _accountOption = ArgumentDefinitions.Storage.Account;
+    _containerOption = ArgumentDefinitions.Storage.Container;
 }
 ```
 
@@ -549,7 +553,7 @@ protected ArgumentChain<TArgs> CreateAccountArgument()
     return ArgumentChain<TArgs>
         .Create(
             ArgumentDefinitions.Storage.Account.Name,
-            ArgumentDefinitions.Storage.Account.Description)
+            ArgumentDefinitions.Storage.Account.Description!)
         .WithValueAccessor(args => ((dynamic)args).Account ?? string.Empty)
         .WithIsRequired(true);
 }
@@ -606,7 +610,7 @@ ArgumentDefinitions.Monitor
 
 1. Always use ArgumentDefinitions instead of hardcoding names:
 ```csharp
-protected Option<string> _accountOption = ArgumentDefinitions.Storage.Account.ToOption();
+protected Option<string> _accountOption = ArgumentDefinitions.Storage.Account;
 ```
 
 2. Keep JSON property names consistent:
@@ -793,40 +797,40 @@ public abstract class BaseAppConfigCommand<TArgs> : BaseCommand<TArgs>
     protected ArgumentChain<TArgs> CreateAccountArgument()
     {
         return ArgumentChain<TArgs>
-            .Create(ArgumentDefinitions.AppConfig.Account.Name, ArgumentDefinitions.AppConfig.Account.Description)
+            .Create(ArgumentDefinitions.AppConfig.Account.Name, ArgumentDefinitions.AppConfig.Account.Description!)
             .WithValueAccessor(args => ((dynamic)args).Account ?? string.Empty)
             .WithCommandExample(ArgumentDefinitions.GetCommandExample(GetCommandPath(), ArgumentDefinitions.AppConfig.Account))
-            .WithIsRequired(ArgumentDefinitions.AppConfig.Account.Required);
+            .WithIsRequired(ArgumentDefinitions.AppConfig.Account.IsRequired);
     }
 
     // Helper method for creating key arguments
     protected ArgumentChain<TArgs> CreateKeyArgument()
     {
         return ArgumentChain<TArgs>
-            .Create(ArgumentDefinitions.AppConfig.Key.Name, ArgumentDefinitions.AppConfig.Key.Description)
+            .Create(ArgumentDefinitions.AppConfig.Key.Name, ArgumentDefinitions.AppConfig.Key.Description!)
             .WithCommandExample(ArgumentDefinitions.GetCommandExample(GetCommandPath(), ArgumentDefinitions.AppConfig.Key))
             .WithValueAccessor(args => ((dynamic)args).Key ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.Key.Required);
+            .WithIsRequired(ArgumentDefinitions.AppConfig.Key.IsRequired);
     }
 
     // Helper method for creating value arguments
     protected ArgumentChain<TArgs> CreateValueArgument()
     {
         return ArgumentChain<TArgs>
-            .Create(ArgumentDefinitions.AppConfig.Value.Name, ArgumentDefinitions.AppConfig.Value.Description)
+            .Create(ArgumentDefinitions.AppConfig.Value.Name, ArgumentDefinitions.AppConfig.Value.Description!)
             .WithCommandExample(ArgumentDefinitions.GetCommandExample(GetCommandPath(), ArgumentDefinitions.AppConfig.Value))
             .WithValueAccessor(args => ((dynamic)args).Value ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.Value.Required);
+            .WithIsRequired(ArgumentDefinitions.AppConfig.Value.IsRequired);
     }
 
     // Helper method for creating label arguments
     protected ArgumentChain<TArgs> CreateLabelArgument()
     {
         return ArgumentChain<TArgs>
-            .Create(ArgumentDefinitions.AppConfig.Label.Name, ArgumentDefinitions.AppConfig.Label.Description)
+            .Create(ArgumentDefinitions.AppConfig.Label.Name, ArgumentDefinitions.AppConfig.Label.Description!)
             .WithCommandExample(ArgumentDefinitions.GetCommandExample(GetCommandPath(), ArgumentDefinitions.AppConfig.Label))
             .WithValueAccessor(args => ((dynamic)args).Label ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.Label.Required);
+            .WithIsRequired(ArgumentDefinitions.AppConfig.Label.IsRequired);
     }
 }
 ```
@@ -870,7 +874,7 @@ This ensures proper type checking and inheritance from BaseArguments.
 
 3. **Option IsRequired Property**: Never set IsRequired directly on System.CommandLine.Option instances:
    ```csharp
-   protected Option<string> _workspaceOption = ArgumentDefinitions.Storage.Account.ToOption();
+   protected Option<string> _workspaceOption = ArgumentDefinitions.Storage.Account;
    ```
 
 4. **Argument Chain Registration**: Always register the chain even if only using base arguments:
@@ -1066,7 +1070,7 @@ public class ContainerListCommandTests
     {
         // Assert
         Assert.Equal("list", _command.GetCommand().Name);
-        Assert.NotEmpty(_command.GetCommand().Description);
+        Assert.NotEmpty(_command.GetCommand().Description!);
     }
 
     [Fact]
@@ -1155,7 +1159,7 @@ public class ContainersListCommand : BaseStorageCommand<ContainersListArguments>
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
@@ -1283,7 +1287,7 @@ public interface IBaseCommand
     /// <summary>
     /// Executes the command
     /// </summary>
-    Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult commandOptions);
+    Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult);
 
     /// <summary>
     /// Gets the current arguments
@@ -1335,8 +1339,8 @@ public abstract class BaseCommand : IBaseCommand
 public abstract class GlobalCommand<TArgs> : BaseCommand
     where TArgs : GlobalArguments, new()
 {
-    protected readonly Option<string> _tenantOption = ArgumentDefinitions.Common.Tenant.ToOption();
-    protected readonly Option<AuthMethod> _authMethodOption = ArgumentDefinitions.Common.AuthMethod.ToOption();
+    protected readonly Option<string> _tenantOption = ArgumentDefinitions.Common.Tenant;
+    protected readonly Option<AuthMethod> _authMethodOption = ArgumentDefinitions.Common.AuthMethod;
 
     protected override void RegisterOptions(Command command)
     {
@@ -1364,7 +1368,7 @@ public abstract class GlobalCommand<TArgs> : BaseCommand
 public abstract class BaseStorageCommand<T> : SubscriptionCommand<T>
     where T : BaseStorageArguments, new()
 {
-    protected readonly Option<string> _accountOption = ArgumentDefinitions.Storage.Account.ToOption();
+    protected readonly Option<string> _accountOption = ArgumentDefinitions.Storage.Account;
 
     protected override void RegisterOptions(Command command)
     {
@@ -1382,9 +1386,9 @@ public abstract class BaseStorageCommand<T> : SubscriptionCommand<T>
     {
         return ArgumentBuilder<T>
             .Create(ArgumentDefinitions.Storage.Account.Name,
-                   ArgumentDefinitions.Storage.Account.Description)
+                   ArgumentDefinitions.Storage.Account.Description!)
             .WithValueAccessor(args => args.Account ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.Storage.Account.Required);
+            .WithIsRequired(ArgumentDefinitions.Storage.Account.IsRequired);
     }
 }
 ```

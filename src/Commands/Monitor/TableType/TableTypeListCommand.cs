@@ -1,10 +1,6 @@
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Arguments.Monitor.TableType;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Monitor.TableType;
 
@@ -26,14 +22,9 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         command.AddOption(_resourceGroupOption); // inherited from base
     }
 
-    protected override void RegisterArguments()
+    protected override TableTypeListArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-    }
-
-    protected override TableTypeListArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return args;
     }
@@ -41,12 +32,16 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

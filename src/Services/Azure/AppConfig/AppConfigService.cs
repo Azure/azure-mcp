@@ -6,7 +6,6 @@ using Azure.Data.AppConfiguration;
 using Azure.ResourceManager.AppConfiguration;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Arguments;
-using AzureMcp.Models;
 using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Identity;
 using AzureMcp.Services.Interfaces;

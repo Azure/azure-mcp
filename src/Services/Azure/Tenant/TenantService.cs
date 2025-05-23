@@ -3,7 +3,6 @@
 
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Models.Argument;
 using AzureMcp.Services.Interfaces;
 
 namespace AzureMcp.Services.Azure.Tenant;

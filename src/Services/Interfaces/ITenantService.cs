@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace AzureMcp.Services.Interfaces;

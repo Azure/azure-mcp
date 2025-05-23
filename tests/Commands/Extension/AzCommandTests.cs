@@ -7,7 +7,6 @@ using System.Text.Json.Serialization;
 using AzureMcp.Commands.Extension;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
-using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -29,15 +28,6 @@ public sealed class AzCommandTests
         var collection = new ServiceCollection();
         collection.AddSingleton(_processService);
         _serviceProvider = collection.BuildServiceProvider();
-    }
-
-    [Fact]
-    public void Execute_ReturnsArguments()
-    {
-        var command = new AzCommand(_logger);
-        var arguments = command.GetArguments();
-
-        Assert.NotNull(arguments);
     }
 
     [Fact]

@@ -9,7 +9,6 @@ using Azure.ResourceManager.Storage.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Arguments;
-using AzureMcp.Models;
 using AzureMcp.Services.Interfaces;
 
 namespace AzureMcp.Services.Azure.Storage;

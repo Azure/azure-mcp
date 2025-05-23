@@ -1,8 +1,6 @@
-using System.Text.Json;
 using Azure.ResourceManager.Kusto;
 using AzureMcp.Arguments;
 using AzureMcp.Commands.Kusto;
-using AzureMcp.Models;
 using AzureMcp.Services.Interfaces;
 using Kusto.Cloud.Platform.Data;
 using Kusto.Data;

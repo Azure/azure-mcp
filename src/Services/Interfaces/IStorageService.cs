@@ -3,7 +3,6 @@
 
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Arguments;
-using AzureMcp.Models;
 
 namespace AzureMcp.Services.Interfaces;
 

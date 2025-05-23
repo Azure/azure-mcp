@@ -5,7 +5,6 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Arguments;
-using AzureMcp.Arguments.Kusto;
 using AzureMcp.Commands.Kusto;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
@@ -150,7 +149,7 @@ public sealed class DatabaseListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("Missing required", response.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Either --cluster-uri must be provided", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -165,7 +164,7 @@ public sealed class DatabaseListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("Missing required", response.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Either --cluster-uri must be provided", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class DatabaseListResult

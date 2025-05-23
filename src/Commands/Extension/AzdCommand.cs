@@ -1,17 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Runtime.InteropServices;
 using AzureMcp.Arguments.Extension;
 using AzureMcp.Helpers;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.Extension;
 
@@ -20,10 +16,10 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     private const string _commandTitle = "Azure Developer CLI Command";
     private readonly ILogger<AzdCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
-    private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Azd.Command.ToOption();
-    private readonly Option<string> _cwdOption = ArgumentDefinitions.Extension.Azd.Cwd.ToOption();
-    private readonly Option<string> _environmentOption = ArgumentDefinitions.Extension.Azd.Environment.ToOption();
-    private readonly Option<bool> _learnOption = ArgumentDefinitions.Extension.Azd.Learn.ToOption();
+    private readonly Option<string> _commandOption = ArgumentDefinitions.Extension.Azd.Command;
+    private readonly Option<string> _cwdOption = ArgumentDefinitions.Extension.Azd.Cwd;
+    private readonly Option<string> _environmentOption = ArgumentDefinitions.Extension.Azd.Environment;
+    private readonly Option<bool> _learnOption = ArgumentDefinitions.Extension.Azd.Learn;
     private static string? _cachedAzdPath;
 
     private readonly IEnumerable<string> longRunningCommands =
@@ -88,41 +84,9 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         command.AddOption(_learnOption);
     }
 
-    protected override void RegisterArguments()
+    protected override AzdArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        foreach (var arg in CreateArguments())
-        {
-            AddArgument(arg);
-        }
-    }
-
-    private static ArgumentBuilder<AzdArguments>[] CreateArguments() =>
-        [
-            ArgumentBuilder<AzdArguments>
-                .Create(ArgumentDefinitions.Extension.Azd.Command.Name, ArgumentDefinitions.Extension.Azd.Command.Description)
-                .WithValueAccessor(args => args.Command ?? string.Empty)
-                .WithIsRequired(ArgumentDefinitions.Extension.Azd.Command.Required),
-
-            ArgumentBuilder<AzdArguments>
-                .Create(ArgumentDefinitions.Extension.Azd.Cwd.Name, ArgumentDefinitions.Extension.Azd.Cwd.Description)
-                .WithValueAccessor(args => args.Cwd ?? string.Empty)
-                .WithIsRequired(ArgumentDefinitions.Extension.Azd.Cwd.Required),
-
-            ArgumentBuilder<AzdArguments>
-                .Create(ArgumentDefinitions.Extension.Azd.Environment.Name, ArgumentDefinitions.Extension.Azd.Environment.Description)
-                .WithValueAccessor(args => args.Environment ?? string.Empty)
-                .WithIsRequired(ArgumentDefinitions.Extension.Azd.Environment.Required),
-
-            ArgumentBuilder<AzdArguments>
-                .Create(ArgumentDefinitions.Extension.Azd.Learn.Name, ArgumentDefinitions.Extension.Azd.Learn.Description)
-                .WithValueAccessor(args => args.Learn.ToString())
-                .WithIsRequired(ArgumentDefinitions.Extension.Azd.Learn.Required),
-        ];
-
-    protected override AzdArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Command = parseResult.GetValueForOption(_commandOption);
         args.Cwd = parseResult.GetValueForOption(_cwdOption);
         args.Environment = parseResult.GetValueForOption(_environmentOption);
@@ -134,12 +98,16 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 

@@ -1,15 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Arguments.AppConfig.KeyValue;
 using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Argument;
-using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.AppConfig.KeyValue;
 
@@ -19,8 +15,8 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
     private readonly ILogger<KeyValueListCommand> _logger = logger;
 
     // KeyValueList has different key and label descriptions, which is why we are defining here instead of using BaseKeyValueCommand
-    private readonly Option<string> _keyOption = ArgumentDefinitions.AppConfig.KeyValueList.Key.ToOption();
-    private readonly Option<string> _labelOption = ArgumentDefinitions.AppConfig.KeyValueList.Label.ToOption();
+    private readonly Option<string> _keyOption = ArgumentDefinitions.AppConfig.KeyValueList.Key;
+    private readonly Option<string> _labelOption = ArgumentDefinitions.AppConfig.KeyValueList.Label;
 
     public override string Name => "list";
 
@@ -40,28 +36,9 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         command.AddOption(_labelOption);
     }
 
-    protected override void RegisterArguments()
+    protected override KeyValueListArguments BindOptions(ParseResult parseResult)
     {
-        base.RegisterArguments();
-        AddArgument(CreateListKeyArgument());
-        AddArgument(CreateListLabelArgument());
-    }
-
-    private static ArgumentBuilder<KeyValueListArguments> CreateListKeyArgument() =>
-        ArgumentBuilder<KeyValueListArguments>
-            .Create(ArgumentDefinitions.AppConfig.KeyValueList.Key.Name, ArgumentDefinitions.AppConfig.KeyValueList.Key.Description)
-            .WithValueAccessor(args => args.Key ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.KeyValueList.Key.Required);
-
-    private static ArgumentBuilder<KeyValueListArguments> CreateListLabelArgument() =>
-        ArgumentBuilder<KeyValueListArguments>
-            .Create(ArgumentDefinitions.AppConfig.KeyValueList.Label.Name, ArgumentDefinitions.AppConfig.KeyValueList.Label.Description)
-            .WithValueAccessor(args => args.Label ?? string.Empty)
-            .WithIsRequired(ArgumentDefinitions.AppConfig.KeyValueList.Label.Required);
-
-    protected override KeyValueListArguments BindArguments(ParseResult parseResult)
-    {
-        var args = base.BindArguments(parseResult);
+        var args = base.BindOptions(parseResult);
         args.Key = parseResult.GetValueForOption(_keyOption);
         args.Label = parseResult.GetValueForOption(_labelOption);
         return args;
@@ -70,12 +47,16 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var args = BindArguments(parseResult);
+        var args = BindOptions(parseResult);
 
         try
         {
-            if (!await ProcessArguments(context, args))
+            var validationResult = Validate(parseResult.CommandResult);
+
+            if (!validationResult.IsValid)
             {
+                context.Response.Status = 400;
+                context.Response.Message = validationResult.ErrorMessage!;
                 return context.Response;
             }
 
