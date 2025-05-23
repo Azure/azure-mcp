@@ -96,6 +96,16 @@ module kusto 'services/kusto.bicep' = {
   }
 }
 
+module foundry 'services/foundry.bicep' = {
+  name: '${deploymentName}-foundry'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
+
 // This module is conditionally deployed only for the specific tenant ID.
 module azureIsv 'services/azureIsv.bicep' = if (tenantId == '888d76fa-54b2-4ced-8ee5-aac1585adee7') {
   name: '${deploymentName}-azureIsv'
