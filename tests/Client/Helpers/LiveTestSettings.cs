@@ -5,6 +5,8 @@ namespace AzureMcp.Tests.Client.Helpers;
 
 public class LiveTestSettings
 {
+    public string PrincipalName { get; set; } = string.Empty;
+    public bool IsServicePrincipal { get; set; }
     public string TenantId { get; set; } = string.Empty;
     public string TenantName { get; set; } = string.Empty;
     public string SubscriptionId { get; set; } = string.Empty;

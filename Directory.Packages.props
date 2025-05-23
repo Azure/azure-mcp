@@ -33,6 +33,7 @@
     <PackageVersion Include="Npgsql" Version="9.0.3" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Formats.Asn1" Version="9.0.4" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.10.0" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.3.25171.5" />
     <PackageVersion Include="System.Net.ServerSentEvents" Version="10.0.0-preview.3.25171.5" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.2" />

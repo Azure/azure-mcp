@@ -60,10 +60,12 @@ public class RedisCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.Array, caches.ValueKind);
     }
 
-    [Fact(Skip = "It is by design that we cannot get tenant name in TME.")]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task Should_list_redis_caches_by_subscription_id_with_tenant_name()
     {
+        Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
         var result = await CallToolAsync(
             "azmcp-redis-cache-list",
             new()

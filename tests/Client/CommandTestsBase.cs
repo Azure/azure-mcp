@@ -12,6 +12,8 @@ namespace AzureMcp.Tests.Client;
 
 public abstract class CommandTestsBase : IDisposable
 {
+    protected const string TenantNameReason = "Service principals cannot use TenantName for lookup";
+
     protected IMcpClient Client { get; }
     protected LiveTestSettings Settings { get; }
     protected StringBuilder FailureOutput { get; } = new();

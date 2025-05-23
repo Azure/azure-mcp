@@ -10,8 +10,6 @@ namespace AzureMcp.Tests.Client
     public class StorageCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
     {
-        private const string TenantNameReason = "Service principals cannot use TenantName for lookup";
-
         [Fact]
         [Trait("Category", "Live")]
         public async Task Should_list_storage_accounts_by_subscription_id()
@@ -65,7 +63,8 @@ namespace AzureMcp.Tests.Client
         [Trait("Category", "Live")]
         public async Task Should_list_storage_accounts_by_subscription_name_with_tenant_name()
         {
-            Assert.SkipWhen(Extensions.IsRunningFromDotnetTest(), TenantNameReason);
+            Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
             var result = await CallToolAsync(
                 "azmcp-storage-account-list",
                 new()
@@ -157,7 +156,8 @@ namespace AzureMcp.Tests.Client
         [Trait("Category", "Live")]
         public async Task Should_list_storage_tables_with_tenant_name()
         {
-            Assert.SkipWhen(Extensions.IsRunningFromDotnetTest(), TenantNameReason);
+            Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
             var result = await CallToolAsync(
                 "azmcp-storage-table-list",
                 new()
