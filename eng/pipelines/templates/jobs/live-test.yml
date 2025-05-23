@@ -20,6 +20,7 @@ jobs:
   displayName: "Live test"
   dependsOn:
   - ${{ parameters.DependsOn }}
+  timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   strategy:
     matrix: $[ ${{ parameters.Matrix }} ]
   pool:
