@@ -95,3 +95,13 @@ module kusto 'services/kusto.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
+module foundry 'services/foundry.bicep' = {
+  name: '${deploymentName}-foundry'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}

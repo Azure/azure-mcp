@@ -5,6 +5,7 @@ using System.CommandLine.Builder;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Cosmos;
+using AzureMcp.Services.Azure.Foundry;
 using AzureMcp.Services.Azure.KeyVault;
 using AzureMcp.Services.Azure.Kusto;
 using AzureMcp.Services.Azure.Monitor;
@@ -106,6 +107,7 @@ internal class Program
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
         services.AddSingleton<IServiceBusService, ServiceBusService>();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<IFoundryService, FoundryService>();
         services.AddSingleton<CommandFactory>();
     }
 }
