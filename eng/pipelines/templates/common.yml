@@ -72,7 +72,7 @@ extends:
               GenerateVMJobs: true
             JobTemplatePath: /eng/pipelines/templates/jobs/live-test.yml
             AdditionalParameters:
-              TimeoutInMinutes: 60
+              TimeoutInMinutes: 90
               EnvVars: {}
             CloudConfig:
               Cloud: Public
