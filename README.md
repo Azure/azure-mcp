@@ -16,7 +16,6 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 6. [👥 Contributing to Azure MCP Server](#-contributing)
 
 
-
 ## 🎯 Overview
 
 ### ✨ What can you do with the Azure MCP Server?
@@ -214,6 +213,24 @@ AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
 
 Optionally, customers can use `--env` or `--volume` to pass authentication values.
 
+### 🔄️ Updates
+
+#### NPX
+
+If you use the default package spec of `@azure/mcp@latest`, npx will look for a new version on each server start. If you use just `@azure/mcp`, npx will continue to use its cached version until its cache is cleared.
+
+#### NPM
+
+If you globally install the cli via `npm install -g @azure/mcp` it will use the installed version until you manually update it with `npm update -g @azure/mcp`.
+
+#### Docker
+
+There is no version update built into the docker image.  To update, just pull the latest from the repo and repeat the [docker installation instructions](#docker-install).
+
+#### VS Code
+
+Installation in VS Code should be in one of the previous forms and the update instructions are the same. If you installed the mcp server with the `npx` command and  `-y @azure/mcp@latest` args, npx will check for package updates each time VS Code starts the server. Using a docker container in VS Code has the same no-update limitation described above.
+
 ## 🧪 Test the Azure MCP Server
 
 1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
@@ -227,7 +244,7 @@ You can easily configure your MCP client to use the Azure MCP Server. Have your 
 
 ### Using standard IO
 
-Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using VS Code, follow instructions in [One-Click Install](#-one-click-install) or [Manual Install](#-manual-install).
+Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using , follow instructions in [One-Click Install](#-one-click-install) or [Manual Install](#-manual-install).
 
 ### Using SSE
 
@@ -301,5 +318,5 @@ This project has adopted the
 [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information, see the
 [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
-or contact [opencode@microsoft.com](mailto:opencode@microsoft.com)
+or contact [open@microsoft.com](mailto:open@microsoft.com)
 with any additional questions or comments.
