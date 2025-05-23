@@ -60,7 +60,7 @@ public class RedisCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.Array, caches.ValueKind);
     }
 
-    [Fact]
+    [Fact(Skip = "It is by design that we cannot get tenant name in TME.")]
     [Trait("Category", "Live")]
     public async Task Should_list_redis_caches_by_subscription_id_with_tenant_name()
     {
