@@ -82,7 +82,7 @@ $indexDefinition = [ordered]@{
         kind = "azureOpenAI"
         azureOpenAIParameters = @{
           resourceUri = "https://$BaseName.openai.azure.com"
-          deploymentId = "text-embedding-3-small"
+          deploymentId = "embedding-model"
           modelName = "text-embedding-3-small"
         }
       }

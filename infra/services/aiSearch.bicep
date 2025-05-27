@@ -66,7 +66,7 @@ resource openaiDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023
   name: 'embedding-model'
   sku: {
     name: 'Standard'
-    capacity: 1
+    capacity: 100 // This is the Tokens Per Minute (TPM) capacity for the model
   }
   properties: {
     model: {
