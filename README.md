@@ -77,7 +77,7 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 - List and get schema for tables.
 - List, get configuration and get parameters for servers.
 
-### 🧮 Kusto (Azure Data Explorer)
+### 🧮 Azure Data Explorer
 - List Kusto clusters
 - List databases in a Kusto cluster
 - List tables in a Kusto database
