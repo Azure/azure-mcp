@@ -12,10 +12,13 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/../eng/common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
-Connect-AzAccount -ServicePrincipal `
-    -TenantId $TenantId `
-    -ApplicationId $TestApplicationId `
-    -FederatedToken $env:ARM_OIDC_TOKEN
+if($env:ARM_OIDC_TOKEN -and $TenantId -and $TestApplicationId) {
+    Write-Host "Using OIDC token for Azure Powershell authentication"
+    Connect-AzAccount -ServicePrincipal `
+        -TenantId $TenantId `
+        -ApplicationId $TestApplicationId `
+        -FederatedToken $env:ARM_OIDC_TOKEN
+}
 
 $context = Get-AzContext
 
