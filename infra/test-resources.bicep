@@ -95,3 +95,16 @@ module kusto 'services/kusto.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
+module aiSearch 'services/aiSearch.bicep' = {
+  name: '${deploymentName}-aiSearch'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+  dependsOn: [
+    storage
+  ]
+}

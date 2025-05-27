@@ -7,10 +7,12 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixture liveTestSettings, ITestOutputHelper output)
-    : CommandTestsBase(mcpClient, liveTestSettings, output),
-    IClassFixture<McpClientFixture>, IClassFixture<LiveTestSettingsFixture>
+public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output),
+    IClassFixture<LiveTestFixture>
 {
+    const string IndexName = "products";
+
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_list_search_services_by_subscription_id()
@@ -24,7 +26,7 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
                 { "subscription", Settings.SubscriptionId }
             });
 
-        Assert.True(result.TryGetProperty("services", out var services));
+        var services = result.AssertProperty("services");
         Assert.Equal(JsonValueKind.Array, services.ValueKind);
     }
 
@@ -32,8 +34,6 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_list_search_services_by_subscription_name()
     {
-        Assert.NotNull(Settings.SubscriptionName);
-
         var result = await CallToolAsync(
             "azmcp-search-service-list",
             new()
@@ -41,7 +41,7 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
                 { "subscription", Settings.SubscriptionName }
             });
 
-        Assert.True(result.TryGetProperty("services", out var services));
+        var services = result.AssertProperty("services");
         Assert.Equal(JsonValueKind.Array, services.ValueKind);
     }
 
@@ -49,16 +49,14 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_list_search_indexes_with_service_name()
     {
-        Assert.NotNull(Settings.SearchServiceName);
-
         var result = await CallToolAsync(
             "azmcp-search-index-list",
             new()
             {
-                { "service-name", Settings.SearchServiceName }
+                { "service-name", Settings.ResourceBaseName }
             });
 
-        Assert.True(result.TryGetProperty("indexes", out var indexes));
+        var indexes = result.AssertProperty("indexes");
         Assert.Equal(JsonValueKind.Array, indexes.ValueKind);
     }
 
@@ -66,40 +64,36 @@ public class SearchCommandTests(McpClientFixture mcpClient, LiveTestSettingsFixt
     [Trait("Category", "Live")]
     public async Task Should_get_index_details()
     {
-        Assert.NotNull(Settings.SearchServiceName);
-        Assert.NotNull(Settings.SearchIndexName);
-
         var result = await CallToolAsync(
             "azmcp-search-index-describe",
             new()
             {
-                { "service-name", Settings.SearchServiceName },
-                { "index-name", Settings.SearchIndexName }
+                { "service-name", Settings.ResourceBaseName },
+                { "index-name", IndexName }
             });
 
-        Assert.True(result.TryGetProperty("index", out var index));
+        var index = result.AssertProperty("index");
         Assert.Equal(JsonValueKind.Object, index.ValueKind);
-        Assert.True(index.TryGetProperty("Name", out var name));
-        Assert.Equal(Settings.SearchIndexName, name.GetString());
+
+        var name = index.AssertProperty("name");
+        Assert.Equal(IndexName, name.GetString());
     }
 
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_query_search_index()
     {
-        Assert.NotNull(Settings.SearchServiceName);
-        Assert.NotNull(Settings.SearchIndexName);
-
         var result = await CallToolAsync(
             "azmcp-search-index-query",
             new()
             {
-                { "service-name", Settings.SearchServiceName },
-                { "index-name", Settings.SearchIndexName },
+                { "service-name", Settings.ResourceBaseName },
+                { "index-name", IndexName },
                 { "query", "*" }
             });
 
-        Assert.Equal(JsonValueKind.Array, result.ValueKind);
-        Assert.True(result.GetArrayLength() > 0);
+        Assert.NotNull(result);
+        Assert.Equal(JsonValueKind.Array, result.Value.ValueKind);
+        Assert.True(result.Value.GetArrayLength() > 0);
     }
 }
