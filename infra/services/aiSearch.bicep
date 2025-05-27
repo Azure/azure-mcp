@@ -77,8 +77,9 @@ resource openaiDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023
 }
 
 // Role assignments:
-// Identity           | Resource        | Role
+// Identity           | Resource         | Role
 // -------------------------------------------------------------------------------
+// search service      | openai account  | Cognitive Services OpenAI Contributor
 // search service      | storage account | Storage Blob Data Reader
 // test application    | openai account  | Cognitive Services OpenAI Contributor
 // test application    | search service  | Search Index Data Reader
@@ -93,7 +94,7 @@ resource storageBlobDataReaderRoleDefinition 'Microsoft.Authorization/roleDefini
 }
 
 // Assign Storage Blob Data Reader role for Azure Search service identity on the storage account
-resource searchStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource search_Storage_RoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storageBlobDataReaderRoleDefinition.id, search.id, storageAccount.id)
   scope: storageAccount
   properties: {
@@ -111,11 +112,21 @@ resource openaiContributorRoleDefinition 'Microsoft.Authorization/roleDefinition
 }
 
 // Assign Cognitive Services OpenAI Contributor role to testApplicationOid
-resource openaiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource testApp_openAi_roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(openaiContributorRoleDefinition.id, testApplicationOid, openai.id)
   scope: openai
   properties: {
     principalId: testApplicationOid
+    roleDefinitionId: openaiContributorRoleDefinition.id
+  }
+}
+
+// Assign Cognitive Services OpenAI Contributor role to the search resource's identity
+resource search_openAi_roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(openaiContributorRoleDefinition.id, search.id, openai.id)
+  scope: openai
+  properties: {
+    principalId: search.identity.principalId
     roleDefinitionId: openaiContributorRoleDefinition.id
   }
 }
@@ -129,7 +140,7 @@ resource searchIndexDataReaderRoleDefinition 'Microsoft.Authorization/roleDefini
 }
 
 // Assign Search Index Data Reader role to testApplicationOid
-resource searchIndexDataReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource testApp_search_indexDataReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(searchIndexDataReaderRoleDefinition.id, testApplicationOid, search.id)
   scope: search
   properties: {
@@ -147,7 +158,7 @@ resource searchServiceContributorRoleDefinition 'Microsoft.Authorization/roleDef
 }
 
 // Assign Search Service Contributor role to testApplicationOid
-resource searchServiceContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource testApp_search_contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(searchServiceContributorRoleDefinition.id, testApplicationOid, search.id)
   scope: search
   properties: {
