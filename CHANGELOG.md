@@ -12,13 +12,9 @@
 
 ## 0.1.0 (2025-05-28)
 
-### Features Added
-
 ### Breaking Changes
 
 - `azmcp tool list` "args" changes to "options"
-
-### Bugs Fixed
 
 ### Other Changes
 
