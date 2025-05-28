@@ -1,6 +1,6 @@
 # Azure MCP Server Installation Guide
 
-This guide is specifically designed for AI agents install and configure the Azure MCP Server.
+This guide is specifically designed to help AI agents install and configure the Azure MCP Server.
 
 ## Prerequisites
 
