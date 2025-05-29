@@ -4,7 +4,8 @@
 [CmdletBinding()]
 param(
     [string] $TestResultsPath,
-    [switch] $Live
+    [switch] $Live,
+    [switch] $OpenReport = $false
 )
 
 $ErrorActionPreference = 'Stop'
@@ -74,10 +75,23 @@ if ($env:TF_BUILD) {
 
     # Open the report in default browser
     $reportPath = "$reportDirectory/index.html"
-    if (Test-Path $reportPath) {
-        Write-Host "Opening coverage report in browser..."
-        Start-Process $reportPath
-    } else {
+    if (-not (Test-Path $reportPath)) {
         Write-Error "Could not find coverage report at $reportPath"
+        exit 1
+    }
+
+    if ($OpenReport) {
+        # Open the report in default browser
+        Write-Host "Opening coverage report in browser..."
+        if ($IsMacOS) {
+            # On macOS, use 'open' command
+            Start-Process "open" -ArgumentList $reportPath
+        } elseif ($IsLinux) {
+            # On Linux, use 'xdg-open'
+            Start-Process "xdg-open" -ArgumentList $reportPath
+        } else {
+            # On Windows, use 'Start-Process'
+            Start-Process $reportPath
+        }
     }
 }

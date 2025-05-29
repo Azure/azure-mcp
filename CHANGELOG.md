@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+
 ### Breaking Changes
 
 ### Bugs Fixed

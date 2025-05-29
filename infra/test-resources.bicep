@@ -95,3 +95,10 @@ module kusto 'services/kusto.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
+module authorization 'services/authorization.bicep' = {
+  name: '${deploymentName}-authorization'
+  params: {
+    testApplicationOid: testApplicationOid
+  }
+}
