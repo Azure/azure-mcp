@@ -4,6 +4,7 @@
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
@@ -97,6 +98,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterAuthorizationCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -420,6 +422,22 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterAuthorizationCommands()
+    {
+        // Create Authorization RBAC role command group
+        var authorization = new CommandGroup("role",
+            "Authorization operations - Commands for managing Azure RBAC resources.");
+        _rootGroup.AddSubGroup(authorization);
+
+        // Create Role Assignment subgroup
+        var roleAssignment = new CommandGroup("assignment",
+            "Role assignment operations - Commands for listing and managing Azure RBAC role assignments for a given scope.");
+        authorization.AddSubGroup(roleAssignment);
+
+        // Register role assignment commands
+        roleAssignment.AddCommand("list", new RoleAssignmentListCommand(GetLogger<RoleAssignmentListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

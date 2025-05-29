@@ -147,3 +147,11 @@
  
 # ServiceLabel: %area-Storage
 # ServiceOwners:                       @alzimmermsft  @jongio
+
+# PRLabel: %area-Search
+/src/Options/Authorization/            @vurhanau @jongio @xiangyan99
+/src/Commands/Authorization/           @vurhanau @jongio @xiangyan99
+/src/Services/Azure/Authorization/     @vurhanau @jongio @xiangyan99
+
+# ServiceLabel: %area-Authorization
+# ServiceOwners:                       @vurhanau
