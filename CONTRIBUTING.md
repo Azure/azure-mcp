@@ -84,6 +84,8 @@ Test requirements:
 
 ### Live Tests
 
+> ⚠️ If you are a Microsoft employee with Azure source permissions then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake).  Team members can run live tests by adding this comment to the PR `/azp run azure - mcp` to start the run.
+
 Before running live tests,
 - [Install Azure Powershell](https://learn.microsoft.com/powershell/azure/install-azure-powershell)
 - [Install Azure Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/install#install-manually)
