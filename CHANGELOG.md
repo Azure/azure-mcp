@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+
 ### Breaking Changes
 
 - `azmcp tool list` "args" changes to "options"
