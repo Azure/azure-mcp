@@ -2,6 +2,10 @@
 
 ## 0.2.1 (2025-06-12)
 
+### Features Added
+
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+
 ### Bugs Fixed
 
 - Fixed the issue where queries containing double quotes failed to execute. https://github.com/Azure/azure-mcp/pull/338
