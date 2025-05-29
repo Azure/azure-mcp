@@ -109,6 +109,9 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 ### 🔑 Azure Key Vault
 - List, create, and get keys
 
+### 🎭 Azure Role-Based Access Control (RBAC)
+- List role assignments
+
 ### 📦 Azure Resource Groups
 - List resource groups
 

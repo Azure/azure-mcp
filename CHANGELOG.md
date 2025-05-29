@@ -1,5 +1,11 @@
 # Release History
 
+## 0.1.4 (Unreleased)
+
+### Features Added
+
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+
 ## 0.1.3 (2025-06-05)
 
 ### Bugs Fixed
