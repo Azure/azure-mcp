@@ -146,7 +146,6 @@ public class ToolOperations
 
         var options = command.GetCommand().Options;
 
-
         var schema = new JsonObject
         {
             ["type"] = "object"
@@ -159,7 +158,7 @@ public class ToolOperations
             {
                 arguments.Add(option.Name, new JsonObject()
                 {
-                    ["type"] = option.ValueType.ToString().ToLower(),
+                    ["type"] = option.ValueType.ToJsonType(),
                     ["description"] = option.Description,
                 });
             }
