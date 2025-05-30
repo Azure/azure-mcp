@@ -3,10 +3,11 @@
 ## 0.1.1 (Unreleased)
 
 ### Features Added
-
 ### Breaking Changes
 
 ### Bugs Fixed
+
+- Fixed return value of `tools/list` to use JSON object names. https://github.com/Azure/azure-mcp/pull/275
 
 ### Other Changes
 
