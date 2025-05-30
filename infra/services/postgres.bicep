@@ -8,7 +8,6 @@ param serverEdition string = 'GeneralPurpose'
 param skuSizeGB int = 128
 param dbInstanceType string = 'Standard_D4ds_v4'
 param haMode string = 'Disabled'
-param availabilityZone string = '1'
 param version string = '16'
 param virtualNetworkExternalId string = ''
 param subnetName string = ''
@@ -42,7 +41,6 @@ resource postgres_server 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' 
       backupRetentionDays: 7
       geoRedundantBackup: 'Disabled'
     }
-    availabilityZone: availabilityZone
   }
 }
 
