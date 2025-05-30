@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using System.Xml.Linq;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
