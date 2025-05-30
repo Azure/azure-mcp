@@ -13,6 +13,8 @@
 
 ## 0.1.0 (2025-05-28)
 
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+
 ### Breaking Changes
 
 - `azmcp tool list` "args" changes to "options"
