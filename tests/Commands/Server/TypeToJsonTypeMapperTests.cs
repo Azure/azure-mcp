@@ -155,7 +155,7 @@ public class TypeToJsonTypeMapperTests
         var result = typeof(TestEnum).ToJsonType();
 
         // Assert
-        Assert.Equal("string", result);
+        Assert.Equal("integer", result);
     }
 
     [Theory]
@@ -168,7 +168,7 @@ public class TypeToJsonTypeMapperTests
         var result = enumType.ToJsonType();
 
         // Assert
-        Assert.Equal("string", result);
+        Assert.Equal("integer", result);
     }
 
     public class CustomClass

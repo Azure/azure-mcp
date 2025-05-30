@@ -69,7 +69,7 @@ public static class TypeToJsonTypeMapper
 
         if (type.IsEnum)
         {
-            return "string"; // or integer
+            return "integer";
         }
 
         return "object";
