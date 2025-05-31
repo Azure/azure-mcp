@@ -10,21 +10,14 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public abstract class CommandTestsBase : IDisposable
+public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOutputHelper output) : IDisposable
 {
     protected const string TenantNameReason = "Service principals cannot use TenantName for lookup";
 
-    protected IMcpClient Client { get; }
-    protected LiveTestSettings Settings { get; }
+    protected IMcpClient Client { get; } = liveTestFixture.Client;
+    protected LiveTestSettings Settings { get; } = liveTestFixture.Settings;
     protected StringBuilder FailureOutput { get; } = new();
-    protected ITestOutputHelper Output { get; }
-
-    public CommandTestsBase(LiveTestFixture liveTestFixture, ITestOutputHelper output)
-    {
-        Client = liveTestFixture.Client;
-        Settings = liveTestFixture.Settings;
-        Output = output;
-    }
+    protected ITestOutputHelper Output { get; } = output;
 
     protected async Task<JsonElement?> CallToolAsync(string command, Dictionary<string, object?> parameters)
     {

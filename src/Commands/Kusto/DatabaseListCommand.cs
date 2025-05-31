@@ -7,15 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.Kusto;
 
-public sealed class DatabaseListCommand : BaseClusterCommand<DatabaseListOptions>
+public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseClusterCommand<DatabaseListOptions>()
 {
     private const string _commandTitle = "List Kusto Databases";
-    private readonly ILogger<DatabaseListCommand> _logger;
-
-    public DatabaseListCommand(ILogger<DatabaseListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<DatabaseListCommand> _logger = logger;
 
     public override string Name => "list";
 

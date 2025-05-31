@@ -3,16 +3,10 @@
 
 using Azure.Core;
 
-public class TimeoutTokenCredential : TokenCredential
+public class TimeoutTokenCredential(TokenCredential innerCredential, TimeSpan timeout) : TokenCredential
 {
-    private readonly TokenCredential _innerCredential;
-    private readonly TimeSpan _timeout;
-
-    public TimeoutTokenCredential(TokenCredential innerCredential, TimeSpan timeout)
-    {
-        _innerCredential = innerCredential;
-        _timeout = timeout;
-    }
+    private readonly TokenCredential _innerCredential = innerCredential;
+    private readonly TimeSpan _timeout = timeout;
 
     public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {

@@ -12,6 +12,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Azure.Monitor.Ingestion" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp">

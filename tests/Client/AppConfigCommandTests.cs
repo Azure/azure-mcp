@@ -8,7 +8,6 @@ using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Tests.Client.Helpers;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;

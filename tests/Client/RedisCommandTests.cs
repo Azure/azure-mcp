@@ -7,13 +7,9 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public class RedisCommandTests : CommandTestsBase,
+public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
 {
-    public RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
-        : base(liveTestFixture, output)
-    { }
-
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_list_redis_caches_by_subscription_id()

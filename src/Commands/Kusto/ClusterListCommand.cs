@@ -8,15 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.Kusto;
 
-public sealed class ClusterListCommand : SubscriptionCommand<ClusterListOptions>
+public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : SubscriptionCommand<ClusterListOptions>()
 {
     private const string _commandTitle = "List Kusto Clusters";
-    private readonly ILogger<ClusterListCommand> _logger;
-
-    public ClusterListCommand(ILogger<ClusterListCommand> logger) : base()
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ClusterListCommand> _logger = logger;
 
     public override string Name => "list";
 

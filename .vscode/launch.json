@@ -315,7 +315,7 @@
                 "DOTNET_ENVIRONMENT": "Development"
             }
         },
-        {
+        {            
             "name": "Debug Monitor Log Query",
             "type": "coreclr",
             "request": "launch",
@@ -330,7 +330,11 @@
                 "--workspace",
                 "${input:workspace}",
                 "--query",
-                "recent"
+                "recent",
+                "--table-name",
+                "${input:monitorTableName}",
+                "--resource-group",
+                "${input:resourceGroup}"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -403,7 +407,7 @@
                 "--resource-group",
                 "${input:resourceGroup}",
                 "--workspace",
-                "${input:workspaceId}"
+                "${input:workspace}"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -467,7 +471,7 @@
             "default": ""
         },
         {
-            "id": "workspaceId",
+            "id": "workspace",
             "type": "promptString",
             "description": "Log Analytics Workspace ID",
             "default": ""
@@ -483,11 +487,16 @@
             "type": "promptString",
             "description": "Cosmos DB Container Name",
             "default": ""
-        },
-        {
+        },        {
             "id": "resourceGroup",
             "type": "promptString",
             "description": "Azure Resource Group",
+            "default": ""
+        },
+        {
+            "id": "monitorTableName",
+            "type": "promptString",
+            "description": "Monitor Table Name",
             "default": ""
         }
     ]

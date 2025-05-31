@@ -7,15 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.Kusto;
 
-public sealed class ClusterGetCommand : BaseClusterCommand<ClusterGetOptions>
+public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseClusterCommand<ClusterGetOptions>
 {
     private const string _commandTitle = "Get Kusto Cluster Details";
-    private readonly ILogger<ClusterGetCommand> _logger;
-
-    public ClusterGetCommand(ILogger<ClusterGetCommand> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<ClusterGetCommand> _logger = logger;
 
     public override string Name => "get";
 
