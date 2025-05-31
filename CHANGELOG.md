@@ -16,6 +16,10 @@
 
 - Fixed return value of `tools/list` to use JSON object names. https://github.com/Azure/azure-mcp/pull/275
 
+### Other Changes
+
+- Update .NET SDK version to 9.0.300 https://github.com/Azure/azure-mcp/pull/278
+
 ## 0.1.0 (2025-05-28)
 
 ### Breaking Changes
