@@ -23,14 +23,14 @@ public class SecurityCommandTests
     public SecurityCommandTests()
     {
         var services = new ServiceCollection();
-        
+
         // Add logging
         services.AddLogging();
-        
+
         // Add mock services for testing
         services.AddSingleton(Substitute.For<ITenantService>());
         services.AddSingleton<ISecurityService, SecurityService>();
-        
+
         // Add command factory
         services.AddSingleton<CommandFactory>();
 
@@ -123,10 +123,10 @@ public class SecurityCommandTests
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await securityService.GetAlertAsync(null!, "alert-id", cancellationToken: TestContext.Current.CancellationToken));
-            
+
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await securityService.GetAlertAsync("subscription-id", null!, cancellationToken: TestContext.Current.CancellationToken));
-            
+
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await securityService.GetAlertAsync("subscription-id", "", cancellationToken: TestContext.Current.CancellationToken));
     }

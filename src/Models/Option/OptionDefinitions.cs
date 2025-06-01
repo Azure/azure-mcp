@@ -519,7 +519,8 @@ public static class OptionDefinitions
         {
             IsRequired = true
         };
-    }    public static class Security
+    }
+    public static class Security
     {
         public const string SystemAlertIdName = "system-alert-id";
 

@@ -64,7 +64,7 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-    
+
     private void RegisterCommandGroup()
     {
         // Register top-level command groups

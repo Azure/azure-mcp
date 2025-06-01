@@ -3,10 +3,10 @@
 
 using System.Text.Json;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Models.Option;
 using AzureMcp.Options.Security.Alert;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Commands.Security.Alert;
 
@@ -34,7 +34,8 @@ public sealed class AlertGetCommand(ILogger<AlertGetCommand> logger) : Subscript
     {
         base.RegisterOptions(command);
         command.AddOption(_alertIdOption);
-    }    protected override AlertGetOptions BindOptions(ParseResult parseResult)
+    }
+    protected override AlertGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.SystemAlertId = parseResult.GetValueForOption(_alertIdOption)!;
@@ -60,7 +61,8 @@ public sealed class AlertGetCommand(ILogger<AlertGetCommand> logger) : Subscript
                 context.Response.Status = 400;
                 context.Response.Message = "No subscription ID specified";
                 return context.Response;
-            }            _logger.LogInformation("Retrieving security alert {AlertId} from subscription {SubscriptionId}", options.SystemAlertId, subscriptionId);
+            }
+            _logger.LogInformation("Retrieving security alert {AlertId} from subscription {SubscriptionId}", options.SystemAlertId, subscriptionId);
 
             var alerts = await securityService.GetAlertAsync(
                 subscriptionId,
@@ -78,7 +80,8 @@ public sealed class AlertGetCommand(ILogger<AlertGetCommand> logger) : Subscript
             context.Response.Results = alerts.Count > 0
                 ? ResponseResult.Create(alerts, JsonSourceGenerationContext.Default.ListJsonElement)
                 : null;
-        }        catch (UnauthorizedAccessException ex)
+        }
+        catch (UnauthorizedAccessException ex)
         {
             _logger.LogError(ex, "Access denied when retrieving security alert {AlertId}", options.SystemAlertId);
             context.Response.Status = 403;
@@ -89,6 +92,7 @@ public sealed class AlertGetCommand(ILogger<AlertGetCommand> logger) : Subscript
             _logger.LogError(ex, "Failed to retrieve security alert {AlertId}", options.SystemAlertId);
             context.Response.Status = 500;
             context.Response.Message = $"Failed to retrieve security alert: {ex.Message}";
-        }return context.Response;
+        }
+        return context.Response;
     }
 }

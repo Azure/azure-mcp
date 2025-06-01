@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure;
 using Azure.Core;
@@ -42,7 +42,7 @@ public class SecurityService(
 
             // Build the Resource Graph query for security alerts
             var query = BuildSecurityAlertQuery(subscriptionId, systemAlertId, resourceGroupName);
-            
+
             var requestBody = new ResourceGraphRequest(query, [subscriptionId]);
 
             _logger.LogDebug("Executing Resource Graph query: {Query}", query);
@@ -53,7 +53,7 @@ public class SecurityService(
                 new TokenRequestContext(new[] { "https://management.azure.com/.default" }),
                 cancellationToken);
 
-            httpClient.DefaultRequestHeaders.Authorization = 
+            httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Token);
 
             var json = JsonSerializer.Serialize(requestBody, SecurityJsonContext.Default.ResourceGraphRequest);
@@ -100,8 +100,8 @@ public class SecurityService(
             throw;
         }
     }    /// <summary>
-    /// Builds a Resource Graph query to find security alerts
-    /// </summary>
+         /// Builds a Resource Graph query to find security alerts
+         /// </summary>
     private static string BuildSecurityAlertQuery(string subscriptionId, string systemAlertId, string? resourceGroupName)
     {
         var query = """
