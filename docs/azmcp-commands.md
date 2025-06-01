@@ -211,6 +211,12 @@ azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key 
 azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
 ```
 
+### Security Operations
+```bash
+# Get security alerts from Defender for Cloud using Azure Resource Graph
+azmcp security alert get --subscription <subscription> --system-alert-id <system-alert-id>
+```
+
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue

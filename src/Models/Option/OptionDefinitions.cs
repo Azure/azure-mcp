@@ -519,6 +519,17 @@ public static class OptionDefinitions
         {
             IsRequired = true
         };
+    }    public static class Security
+    {
+        public const string SystemAlertIdName = "system-alert-id";
+
+        public static readonly Option<string> SystemAlertId = new(
+            $"--{SystemAlertIdName}",
+            "The ID of the security alert to retrieve."
+        )
+        {
+            IsRequired = true
+        };
     }
 
     public static class Extension

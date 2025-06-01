@@ -11,6 +11,7 @@ namespace AzureMcp;
 [JsonSerializable(typeof(GroupListCommand.Result))]
 [JsonSerializable(typeof(BaseCommand.ExceptionResult))]
 [JsonSerializable(typeof(JsonElement))]
+[JsonSerializable(typeof(List<JsonElement>))]
 [JsonSerializable(typeof(List<string>))]
 [JsonSerializable(typeof(List<JsonNode>))]
 [JsonSerializable(typeof(AzureCredentials))]

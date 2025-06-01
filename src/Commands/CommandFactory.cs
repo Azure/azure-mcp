@@ -64,7 +64,7 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-
+    
     private void RegisterCommandGroup()
     {
         // Register top-level command groups
@@ -84,6 +84,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterSecurityCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -395,6 +396,17 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterSecurityCommands()
+    {
+        var security = new CommandGroup("security", "Security operations - Commands for managing and accessing Defender for Cloud resources.");
+        _rootGroup.AddSubGroup(security);
+
+        var alert = new CommandGroup("alert", "Security alert operations - Commands for retrieving and managing security alerts from Defender for Cloud.");
+        security.AddSubGroup(alert);
+
+        alert.AddCommand("get", new Security.Alert.AlertGetCommand(GetLogger<Security.Alert.AlertGetCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)
