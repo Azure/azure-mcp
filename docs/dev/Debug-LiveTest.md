@@ -45,9 +45,9 @@ To debug the `azmcp` process, it is necessary to:
 
 By default, [`/eng/scripts/Build-Local.ps1`](https://github.com/Azure/azure-mcp/blob/main/eng/scripts/Build-Local.ps1) builds the `azure-mcp-0.1.1-alpha.xxxxxxxxxx.tgz` package in Release mode. The script supports a `-DebugBuild` argument to build the `azmcp` package with debug symbols.
 
-The `azmcp` supports a `--debug` command-line argument. When this argument is provided and running in Debug mode, the server will wait for a debugger to attach before starting. The live test harness (`LiveTestFixture.cs`) is already configured to pass `--debug` when running in Debug mode.
+The `azmcp` supports a `--debug` command-line argument. When this argument is provided and running in Debug mode, the server will wait for a debugger to attach. The live test harness is already configured to pass `--debug` to `azmcp` when running in Debug mode.
 
-## Debugging the Test
+## Debugging the test
 
 1. Build the package with debug symbols by running `/eng/scripts/Build-Local.ps1 -DebugBuild`.
 2. Set a breakpoint in a command file (e.g., [`KeyValueListCommand.ExecuteAsync`](https://github.com/Azure/azure-mcp/blob/main/src/Commands/AppConfig/KeyValue/KeyValueListCommand.cs#L59)).
@@ -62,5 +62,5 @@ pgrep -fl azmcp
 Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id, ProcessName, Path
 ```
 5. Open the Command Palette (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows/Linux), select **Debug: Attach to .NET 5+ or .NET Core process**, and enter the `azmcp` process ID.
-6. The debugger should attach and hit the breakpoint.
+6. The debugger should attach to `azmcp` and hit the breakpoint in command file.
 
