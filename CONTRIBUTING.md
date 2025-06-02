@@ -138,6 +138,8 @@ This will produce .tgz files in the `.dist` directory and set the `TestPackage` 
   "TestPackage": "file://D:\\repos\\azure-mcp\\.dist\\wrapper\\azure-mcp-0.0.12-alpha.1746488279.tgz"
 ```
 
+For debugging live tests in VS Code refer the guide [Debug-LiveTest](./docs/dev/Debug-LiveTest.md).
+
 ## Code Style
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds.
