@@ -411,6 +411,28 @@
             "env": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        {
+            "name": "Debug Security Alert Get",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "security",
+                "alert",
+                "get",
+                "--subscription",
+                "${input:subscription}",
+                "--system-alert-id",
+                "${input:securitySystemAlertId}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
@@ -482,6 +504,12 @@
             "id": "cosmosContainerName",
             "type": "promptString",
             "description": "Cosmos DB Container Name",
+            "default": ""
+        },
+         {
+            "id": "securitySystemAlertId",
+            "type": "promptString",
+            "description": "SecurityAlert system alert ID",
             "default": ""
         },
         {
