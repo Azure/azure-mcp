@@ -10,6 +10,11 @@ $ErrorActionPreference = "Stop"
 # Get current subscription ID
 $subscriptionId = (Get-AzContext).Subscription.Id
 
+# Find the existing managed identity
+$managedIdentityResourceGroupName = "static-test-resources"
+$managedIdentityName = "azmcp-search-service-identity"
+$managedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName $managedIdentityResourceGroupName -Name $managedIdentityName
+
 $token = Get-AzAccessToken -ResourceUrl https://search.azure.com -AsSecureString | Select-Object -ExpandProperty Token
 $uri = "https://$BaseName.search.windows.net"
 
@@ -81,7 +86,7 @@ $indexDefinition = [ordered]@{
         name = "products-azureOpenAi-text-vectorizer"
         kind = "azureOpenAI"
         azureOpenAIParameters = @{
-          resourceUri = "https://$BaseName.openai.azure.com"
+          resourceUri = "https://azmcp-test.openai.azure.com"
           deploymentId = "embedding-model"
           modelName = "text-embedding-3-small"
         }
@@ -107,6 +112,10 @@ $dataSourceDefinition = @{
   name = "products-datasource"
   type = "azureblob"
   credentials = @{ connectionString = "ResourceId=/subscriptions/$subscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Storage/storageAccounts/$BaseName;" }
+  identity= @{
+    "@odata.type"= "#Microsoft.Azure.Search.DataUserAssignedIdentity"
+    userAssignedIdentity= $managedIdentity.Id
+  }
   container = @{ name = "searchdocs" }
 }
 
@@ -144,6 +153,10 @@ $skillsetDefinition = @{
         name = "#2"
         context = "/document/pages/*"
         resourceUri = "https://$BaseName.openai.azure.com"
+        authIdentity = @{
+            "@odata.type"= "#Microsoft.Azure.Search.DataUserAssignedIdentity"
+            userAssignedIdentity= $managedIdentity.Id
+        }
         deploymentId = "embedding-model"
         dimensions = 1536
         modelName = "text-embedding-3-small"
@@ -205,18 +218,6 @@ $indexerDefinition = @{
   )
   outputFieldMappings = @()
 }
-
-Write-Host "Index definition:" -ForegroundColor Yellow
-Write-Host "  $(($indexDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
-
-Write-Host "Datasource definition:" -ForegroundColor Yellow
-Write-Host "  $(($dataSourceDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
-
-Write-Host "Skillset definition:" -ForegroundColor Yellow
-Write-Host "  $(($skillsetDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
-
-Write-Host "Indexer definition:" -ForegroundColor Yellow
-Write-Host "  $(($indexerDefinition | ConvertTo-Json -Depth 10).Replace("`n", "`n  "))"
 
 # Create the index
 Invoke-RestMethod `
