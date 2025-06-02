@@ -43,13 +43,7 @@ To debug the `azmcp` process, it is necessary to:
 2. Start the MCP server in debug mode so it waits for the debugger to attach
 3. Ensure the MCP Client does not timeout while waiting to attach to the `azmcp` process
 
-By default, [`/eng/scripts/Build-Local.ps1`](https://github.com/Azure/azure-mcp/blob/main/eng/scripts/Build-Local.ps1) builds the `azure-mcp-0.1.1-alpha.xxxxxxxxxx.tgz` package in Release mode. To include debug symbols, use the `-DebugBuild` option:
-
-```sh
-pwsh ./eng/scripts/Build-Local.ps1 -DebugBuild
-```
-
-This will ensure the `azmcp` package is built with debug symbols.
+By default, [`/eng/scripts/Build-Local.ps1`](https://github.com/Azure/azure-mcp/blob/main/eng/scripts/Build-Local.ps1) builds the `azure-mcp-0.1.1-alpha.xxxxxxxxxx.tgz` package in Release mode. The script supports a `-DebugBuild` argument to build the `azmcp` package with debug symbols.
 
 The `azmcp` supports a `--debug` command-line argument. When this argument is provided and running in Debug mode, the server will wait for a debugger to attach before starting. The live test harness (`LiveTestFixture.cs`) is already configured to pass `--debug` when running in Debug mode.
 
@@ -58,6 +52,15 @@ The `azmcp` supports a `--debug` command-line argument. When this argument is pr
 1. Build the package with debug symbols by running `/eng/scripts/Build-Local.ps1 -DebugBuild`.
 2. Set a breakpoint in a command file (e.g., [`KeyValueListCommand.ExecuteAsync`](https://github.com/Azure/azure-mcp/blob/main/src/Commands/AppConfig/KeyValue/KeyValueListCommand.cs#L59)).
 3. In VS Code, right-click the test method (e.g., [`AppConfigCommandTests::Should_list_appconfig_kvs()`](https://github.com/Azure/azure-mcp/blob/main/tests/Client/AppConfigCommandTests.cs#L48)) and select **Debug Test** (🐞).
+4. Find the `azmcp` process ID 
+
+```shell
+pgrep -fl azmcp
+```
+
+```powershell
+Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id, ProcessName, Path
+```
 5. Open the Command Palette (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows/Linux), select **Debug: Attach to .NET 5+ or .NET Core process**, and enter the `azmcp` process ID.
 6. The debugger should attach and hit the breakpoint.
 
