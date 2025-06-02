@@ -91,7 +91,7 @@ azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> 
                            [--limit <limit>]
 
 ```
-                      
+
 ### Azure DB for PostgreSQL Operations
 
 ```bash
@@ -172,7 +172,7 @@ azmcp monitor log query --subscription <subscription> \
 azmcp monitor healthmodels entity gethealth --subscription <subscription> \
                                        --resource-group <resource-group> \
                                        --model-name <health-model-name> \
-                                       --entity <entity-id> 
+                                       --entity <entity-id>
 ```
 
 ### Azure App Configuration Operations
@@ -232,13 +232,13 @@ azmcp servicebus topic subscription details --subscription <subscription> --name
 ### Azure Redis Operations
 ```bash
 # Lists Redis Clusters in the Azure Managed Redis or Azure Redis Enterprise services
-azmcp redis cluster list --subscription <subscription> 
+azmcp redis cluster list --subscription <subscription>
 
 # Lists Databases in an Azure Redis Cluster
 azmcp redis cluster database list --subscription <subscription> --resource-group <resource-group> --cluster <cluster-name>
 
 # Lists Redis Caches in the Azure Cache for Redis service
-azmcp redis cache list --subscription <subscription> 
+azmcp redis cache list --subscription <subscription>
 
 # Lists Access Policy Assignments in an Azure Redis Cache
 azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
@@ -264,6 +264,22 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 
 # List virtual machines
 azmcp extension az --command "vm list --resource-group <resource-group>"
+```
+
+### Azure AI Search
+
+```bash
+# List AI Search accounts in a subscription
+azmcp search list --subscription <subscription>
+
+# List AI Search indexes in account
+azmcp search index list --subscription <subscription> --service-name <service-name>
+
+# Get AI Search index
+azmcp search index describe --subscription <subscription> --service-name <service-name> --index-name <index-name>
+
+# Query AI Search index
+azmcp search index query --subscription <subscription> --service-name <service-name> --index-name <index-name> --query <query>
 ```
 
 ## Response Format
