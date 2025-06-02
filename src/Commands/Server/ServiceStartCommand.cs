@@ -23,6 +23,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private const string _commandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
+    private readonly Option<bool> _debugOption = new Option<bool>("--debug", description: "Wait for debugger to attach before starting server.");
 
     public override string Name => "start";
     public override string Description => "Starts Azure MCP Server.";
@@ -33,10 +34,21 @@ public sealed class ServiceStartCommand : BaseCommand
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
+        command.AddOption(_debugOption);
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
+#if DEBUG
+        var waitForDebugger = parseResult.GetValueForOption(_debugOption);
+        if (waitForDebugger && !System.Diagnostics.Debugger.IsAttached)
+        {
+            while (!System.Diagnostics.Debugger.IsAttached)
+            {
+                Thread.Sleep(100);
+            }
+        }
+#endif
         var port = parseResult.GetValueForOption(_portOption) == default
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
