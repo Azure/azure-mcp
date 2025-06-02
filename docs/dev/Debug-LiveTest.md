@@ -1,10 +1,10 @@
 # Debugging Azure MCP Server Live Test in VS Code
 
-This guide provides step-by-step instructions for debugging the Azure MCP Server (`azmcp`) when running live tests in VS Code. The live test suites can be found in the [tests/Client](./../../tests/Client) directory of the repository.
+This guide provides step-by-step instructions for debugging the Azure MCP Server (`azmcp`) when running live tests in VS Code. The live test suites can be found in the [tests/Client](https://github.com/Azure/azure-mcp/tree/main/tests/Client) directory of the repository.
 
 ## Prerequisites
 
-Before proceeding, ensure you have deployed the required Azure test resources for live tests by running [`/eng/common/TestResources/New-TestResources.ps1`](../../eng/common/TestResources/New-TestResources.ps1). Running this script produces `.testsettings.json` file with your deployment information at the root of your local repository clone. For more details on deploying test resources, see the [Live Tests](https://github.com/Azure/azure-mcp/blob/main/CONTRIBUTING.md#live-tests) section in the CONTRIBUTING document.
+Before proceeding, ensure you have deployed the required Azure test resources for live tests by running [`/eng/common/TestResources/New-TestResources.ps1`](https://github.com/Azure/azure-mcp/blob/main/eng/common/TestResources/New-TestResources.ps1). Running this script produces `.testsettings.json` file with your deployment information at the root of your local repository clone. For more details on deploying test resources, see the [Live Tests](https://github.com/Azure/azure-mcp/blob/main/CONTRIBUTING.md#live-tests) section in the CONTRIBUTING document.
 
 ## Overview
 
@@ -40,7 +40,7 @@ flowchart TD
     D --> E["node azmcp server start"]
 ```
 
-> **Note:** The actual name of the package `azmcp.tz` may be something like `azure-mcp-0.1.1-alpha.1748757601.tgz` (step 4) is the package containing the `azmcp` server and its command implementations.
+> **Note:** The actual name of the package `azmcp.tz`  (in block 4) may be something like `azure-mcp-0.1.1-alpha.1748757601.tgz`, this is the package containing the `azmcp` server and its command implementations.
 
 To debug the `azmcp` process, it is necessary to:
 
