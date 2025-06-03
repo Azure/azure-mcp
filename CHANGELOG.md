@@ -8,8 +8,6 @@
 
 ### Bugs Fixed
 
-- Monitor Query Logs Failing.  Fixed with https://github.com/Azure/azure-mcp/pull/280
-
 ### Other Changes
 
 ## 0.1.2 (2025-06-03)
