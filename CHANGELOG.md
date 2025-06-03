@@ -10,15 +10,11 @@
 
 ### Other Changes
 
-## 0.1.2 (Unreleased)
-
-### Features Added
-
-### Breaking Changes
+## 0.1.2 (2025-06-03)
 
 ### Bugs Fixed
 
-### Other Changes
+- Monitor Query Logs Failing.  Fixed with https://github.com/Azure/azure-mcp/pull/280
 
 ## 0.1.1 (2025-05-30)
 
