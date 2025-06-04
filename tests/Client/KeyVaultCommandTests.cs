@@ -14,7 +14,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
 {
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_list_key_vaults_by_subscription_id()
+    public async Task Should_list_keys()
     {
         var result = await CallToolAsync(
             "azmcp-keyvault-key-list",
@@ -24,9 +24,9 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
                 { "vault", Settings.ResourceBaseName }
             });
 
-        var results = result.AssertProperty("keys");
-        Assert.Equal(JsonValueKind.Array, results.ValueKind);
-        Assert.NotEmpty(results.EnumerateArray());
+        var keys = result.AssertProperty("keys");
+        Assert.Equal(JsonValueKind.Array, keys.ValueKind);
+        Assert.NotEmpty(keys.EnumerateArray());
     }
 
     [Fact]
@@ -34,19 +34,23 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_get_key()
     {
         // Created in keyvault.bicep.
-        var existingKey = "foo-bar";
+        var knownKeyName = "foo-bar";
         var result = await CallToolAsync(
             "azmcp-keyvault-key-get",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "vault", Settings.ResourceBaseName },
-                { "key", existingKey}
+                { "key", knownKeyName}
             });
 
-        var results = result.AssertProperty("name");
-        Assert.Equal(JsonValueKind.String, results.ValueKind);
-        Assert.Equal(existingKey, results.GetString());
+        var keyName = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, keyName.ValueKind);
+        Assert.Equal(knownKeyName, keyName.GetString());
+
+        var keyType = result.AssertProperty("keyType");
+        Assert.Equal(JsonValueKind.String, keyType.ValueKind);
+        Assert.Equal(KeyType.Rsa.ToString(), keyType.GetString());
     }
 
     [Fact]
@@ -64,8 +68,12 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
                 { "key-type", KeyType.Rsa.ToString() }
             });
 
-        var results = result.AssertProperty("name");
-        Assert.Equal(JsonValueKind.String, results.ValueKind);
-        Assert.Equal(keyName, results.GetString());
+        var createdKeyName = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, createdKeyName.ValueKind);
+        Assert.Equal(keyName, createdKeyName.GetString());
+
+        var keyType = result.AssertProperty("keyType");
+        Assert.Equal(JsonValueKind.String, keyType.ValueKind);
+        Assert.Equal(KeyType.Rsa.ToString(), keyType.GetString());
     }
 }
