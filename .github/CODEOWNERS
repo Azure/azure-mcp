@@ -99,6 +99,15 @@
 # ServiceOwners:                       @smritiy @srnagar @jongio
 
 
+# PRLabel: %area-Postgres
+/src/Options/Postgres/                  @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
+/src/Commands/Postgres/                 @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
+/src/Services/Azure/Postgres/           @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
+ 
+# ServiceLabel: %area-Postgres
+# ServiceOwners:                       @kk-src @shreyaaithal @maxluk
+
+
 # PRLabel: %area-Search
 /src/Options/Search/                  @pablocastro @jongio @Azure/azure-mcp
 /src/Commands/Search/                 @pablocastro @jongio @Azure/azure-mcp
