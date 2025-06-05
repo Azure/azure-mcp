@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.KeyVault.Key;
@@ -24,6 +25,9 @@ public class KeyGetCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
     private readonly ILogger<KeyGetCommand> _logger;
+    private readonly KeyGetCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
     private readonly string _subscriptionId = "knownSubscription";
     private readonly string _vaultName = "knownVaultName";
     private readonly string _knownKeyName = "knownKeyName";
@@ -39,6 +43,9 @@ public class KeyGetCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
 
         _knownKeyVaultKey = new KeyVaultKey(_knownKeyName);
 
@@ -58,16 +65,16 @@ public class KeyGetCommandTests
     {
         // Arrange
         _keyVaultService.GetKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .Returns(_knownKeyVaultKey);
+            Arg.Any<RetryPolicyOptions>()).Returns(_knownKeyVaultKey);
 
-        var command = new KeyGetCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", _vaultName, "--key", _knownKeyName, "--subscription",
-            _subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", _vaultName,
+            "--key", _knownKeyName,
+            "--subscription", _subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -82,48 +89,20 @@ public class KeyGetCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsNull()
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsEmpty()
     {
         // Arrange
-        _keyVaultService.GetKey(Arg.Is(_vaultName), null!, Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .Returns(_knownKeyVaultKey);
+        _keyVaultService.GetKey(Arg.Is(_vaultName), "", Arg.Is(_subscriptionId), Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>()).ReturnsNull();
 
-        var command = new KeyGetCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", _vaultName, "--key", _knownKeyName, "--subscription",
-            _subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
-
-        // Act
-        var response = await command.ExecuteAsync(context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.Results);
-
-        var json = JsonSerializer.Serialize(response.Results);
-        var retrievedKey = JsonSerializer.Deserialize<KeyGetResult>(json);
-
-        Assert.NotNull(retrievedKey);
-        Assert.Null(retrievedKey.Name);
-        Assert.Null(retrievedKey.KeyType);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsInvalidObject_WhenKeyNotFound()
-    {
-        // Arrange
-        _keyVaultService.GetKey(Arg.Is(_vaultName), "unknownKeyName", Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .Returns(_knownKeyVaultKey);
-
-        var command = new KeyGetCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", _vaultName, "--key", _knownKeyName, "--subscription",
-            _subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", _vaultName,
+            "--key", "",
+            "--subscription", _subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -144,16 +123,16 @@ public class KeyGetCommandTests
         var expectedError = "Test error";
 
         _keyVaultService.GetKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .ThrowsAsync(new Exception(expectedError));
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
-        var command = new KeyGetCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", _vaultName, "--key", _knownKeyName, "--subscription",
-            _subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", _vaultName,
+            "--key", _knownKeyName,
+            "--subscription", _subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);

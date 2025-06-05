@@ -23,6 +23,9 @@ public class KeyListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
     private readonly ILogger<KeyListCommand> _logger;
+    private readonly KeyListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
 
     public KeyListCommandTests()
     {
@@ -33,6 +36,9 @@ public class KeyListCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new KeyListCommand(_logger);
+        _context = new CommandContext(_serviceProvider);
+        _parser = new Parser(_command.GetCommand());
     }
 
     [Fact]
@@ -44,15 +50,15 @@ public class KeyListCommandTests
         var expectedKeys = new List<string> { "key1", "key2" };
 
         _keyVaultService.ListKeys(Arg.Is(vaultName), Arg.Any<bool>(), Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .Returns(expectedKeys);
+            Arg.Any<RetryPolicyOptions>()).Returns(expectedKeys);
 
-        var command = new KeyListCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", vaultName, "--subscription", subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", vaultName,
+            "--subscription", subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -73,15 +79,15 @@ public class KeyListCommandTests
         var vaultName = "vault123";
 
         _keyVaultService.ListKeys(vaultName, Arg.Any<bool>(), Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .Returns([]);
+            Arg.Any<RetryPolicyOptions>()).Returns([]);
 
-        var command = new KeyListCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", vaultName, "--subscription", subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", vaultName,
+            "--subscription", subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -97,15 +103,15 @@ public class KeyListCommandTests
         var vaultName = "vault123";
 
         _keyVaultService.ListKeys(vaultName, Arg.Any<bool>(), Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-                .ThrowsAsync(new Exception(expectedError));
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
-        var command = new KeyListCommand(_logger);
-        var args = command.GetCommand().Parse(["--vault", vaultName, "--subscription", subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--vault", vaultName,
+            "--subscription", subscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
