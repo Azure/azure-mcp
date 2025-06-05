@@ -48,7 +48,7 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
             // Call service operation(s)
             var results = await service.GetLoadTestsForSubscriptionAsync(
                 options.Subscription!,
-                options.Tenant!,
+                options.Tenant,
                 options.RetryPolicy);
 
             // Set results if any were returned

@@ -8,6 +8,6 @@ namespace AzureMcp.Services.Interfaces;
 
 public interface ILoadTestingService
 {
-    Task<List<LoadTestResource>> GetLoadTestsForSubscriptionAsync(string subscriptionId, string tenant, RetryPolicyOptions? retryPolicy = null);
+    Task<List<LoadTestResource>> GetLoadTestsForSubscriptionAsync(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
 
 }
