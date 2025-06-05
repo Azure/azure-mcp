@@ -176,4 +176,34 @@ public class PostgresService : BaseAzureService, IPostgresService
         }
         return configResponse.Value.Data.Value;
     }
+
+        public async Task<string> SetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param, string value)
+    {
+        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
+        var armClient = await CreateArmClientAsync();
+        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
+
+        var configResponse = await pgServer.Value.GetPostgreSqlFlexibleServerConfigurationAsync(param);
+        if (configResponse?.Value?.Data == null)
+        {
+            throw new Exception($"Parameter '{param}' not found.");
+        }
+
+        var configData = new PostgreSqlFlexibleServerConfigurationData
+        {
+            Value = value, // Set the value to desired value
+            Source = PostgreSqlFlexibleServerConfigurationSource.User, // Set the source to User
+        };
+
+        var updateOperation = await configResponse.Value.UpdateAsync(WaitUntil.Completed, configData);
+        if (updateOperation.HasCompleted && updateOperation.HasValue)
+        {
+            return $"Parameter '{param}' updated successfully to '{value}'.";
+        }
+        else
+        {
+            throw new Exception($"Failed to update parameter '{param}' to value '{value}'.");
+        }
+    }
 }

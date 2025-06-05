@@ -175,6 +175,7 @@ public class CommandFactory
         server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<Postgres.Server.ServerListCommand>()));
         server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
         server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
+        server.AddCommand("set-param", new Postgres.Server.SetParamCommand(GetLogger<Postgres.Server.SetParamCommand>()));
     }
 
     private void RegisterStorageCommands()
