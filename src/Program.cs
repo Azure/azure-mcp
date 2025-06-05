@@ -17,6 +17,7 @@ using AzureMcp.Services.Azure.Storage;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
+using AzureMcp.Services.Azure.LoadTesting;
 using AzureMcp.Services.Interfaces;
 using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +107,7 @@ internal class Program
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
         services.AddSingleton<IServiceBusService, ServiceBusService>();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<ILoadTestingService, LoadTestingService>();
         services.AddSingleton<CommandFactory>();
     }
 }
