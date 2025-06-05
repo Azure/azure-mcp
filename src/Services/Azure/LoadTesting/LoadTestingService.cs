@@ -1,8 +1,8 @@
-using AzureMcp.Services.Interfaces;
+using Azure.Core;
 using AzureMcp.Models.LoadTesting;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using Azure.Core;
+using AzureMcp.Services.Interfaces;
 using Newtonsoft.Json;
 
 namespace AzureMcp.Services.Azure.LoadTesting;
@@ -22,7 +22,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
 
         var client = new HttpClient();
         var token = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://management.azure.com/.default" }), CancellationToken.None)).Token;
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token); 
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         client.DefaultRequestHeaders.Add("x-ms-client-request-id", Guid.NewGuid().ToString());
         // TODO: Log CID or get it from somewhere
         client.DefaultRequestHeaders.Add("User-Agent", UserAgent);

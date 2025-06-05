@@ -5,7 +5,7 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.LoadTesting.LoadTest;
-public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger) 
+public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
     : BaseLoadTestingCommand<LoadTestListOptions>
 {
     private const string _commandTitle = "Load Test List";
@@ -44,7 +44,7 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
 
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-            
+
             // Call service operation(s)
             var results = await service.GetLoadTestsForSubscriptionAsync(
                 options.Subscription!,

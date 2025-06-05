@@ -106,7 +106,7 @@ public class LoadTestListCommandTests
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);
     }
-    
+
     private class LoadTestListCommandResult
     {
         public List<LoadTestResource> LoadTests { get; set; } = [];

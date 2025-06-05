@@ -19,14 +19,14 @@ public class LoadTestingCommandTests : CommandTestsBase,
 
     [Theory]
     [InlineData(AuthMethod.Credential)]
-    [InlineData(AuthMethod.Key)] 
+    [InlineData(AuthMethod.Key)]
     [Trait("Category", "Live")]
     public async Task Should_List_LoadTests_WithAuth(AuthMethod authMethod)
     {
         // Arrange
         var result = await CallToolAsync(
             "azmcp-loadtesting-loadtest-list",
-            new() 
+            new()
             {
                 { "subscription", _subscriptionId },
                 { "tenant", Settings.TenantId },

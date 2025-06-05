@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options;
 using AzureMcp.Models.LoadTesting;
+using AzureMcp.Options;
 
 namespace AzureMcp.Services.Interfaces;
 
