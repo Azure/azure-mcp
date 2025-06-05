@@ -174,7 +174,7 @@ try {
         }
         Write-Verbose "Overriding test resources search directory to '$root'"
     }
-    
+
     $templateFiles = @()
 
     "$ResourceType-resources.json", "$ResourceType-resources.bicep" | ForEach-Object {
@@ -198,7 +198,7 @@ try {
 
     # returns empty string if $ServiceDirectory is not set
     $serviceName = GetServiceLeafDirectoryName $ServiceDirectory
-    
+
     # in ci, random names are used
     # in non-ci, without BaseName, ResourceGroupName or ServiceDirectory, all invocations will
     # generate the same resource group name and base name for a given user
@@ -305,7 +305,7 @@ try {
         }
     }
 
-    # This needs to happen after we set the TenantId but before we use the ResourceGroupName	
+    # This needs to happen after we set the TenantId but before we use the ResourceGroupName
     if ($wellKnownTMETenants.Contains($TenantId)) {
         # Add a prefix to the resource group name to avoid flagging the usages of local auth
         # See details at https://eng.ms/docs/products/onecert-certificates-key-vault-and-dsms/key-vault-dsms/certandsecretmngmt/credfreefaqs#how-can-i-disable-s360-reporting-when-testing-customer-facing-3p-features-that-depend-on-use-of-unsafe-local-auth
@@ -442,6 +442,7 @@ try {
         $TestApplicationOid = $userAccount.Id
         $TestApplicationId = $testApplicationOid
         $userAccountName = $userAccount.UserPrincipalName
+        $TestApplicationPrincipalType = $servicePrincipal.Type
         Log "User authentication with user '$userAccountName' ('$TestApplicationId') will be used."
     }
     # If user has specified -ServicePrincipalAuth
@@ -477,6 +478,7 @@ try {
 
         $TestApplicationId = $servicePrincipal.AppId
         $TestApplicationOid = $servicePrincipal.Id
+        $TestApplicationPrincipalType = $servicePrincipal.Type
         $TestApplicationSecret = (ConvertFrom-SecureString $servicePrincipal.Secret -AsPlainText)
     }
 
@@ -505,6 +507,7 @@ try {
     # Make sure pre- and post-scripts are passed formerly required arguments.
     $PSBoundParameters['TestApplicationId'] = $TestApplicationId
     $PSBoundParameters['TestApplicationOid'] = $TestApplicationOid
+    $PSBoundParameters['TestApplicationPrincipalType'] = $TestApplicationPrincipalType
     if ($ServicePrincipalAuth) {
         $PSBoundParameters['TestApplicationSecret'] = $TestApplicationSecret
     }
@@ -547,6 +550,7 @@ try {
         baseName = $BaseName
         testApplicationId = $TestApplicationId
         testApplicationOid = "$TestApplicationOid"
+        testApplicationPrincipalType = $TestApplicationPrincipalType
     }
     if ($ProvisionerApplicationOid) {
         $templateParameters["provisionerApplicationOid"] = "$ProvisionerApplicationOid"
