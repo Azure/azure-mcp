@@ -46,7 +46,7 @@ public class ContainerDetailsCommandTests
     public async Task ExecuteAsync_ReturnsContainerDetails()
     {
         // Arrange
-// Use reflection to create an instance of BlobContainerProperties since it has no public constructor
+        // Use reflection to create an instance of BlobContainerProperties since it has no public constructor
         var expectedProperties = (BlobContainerProperties)Activator.CreateInstance(
             typeof(BlobContainerProperties),
             nonPublic: true
