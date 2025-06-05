@@ -28,11 +28,22 @@ public class LiveTestFixture : LiveTestSettingsFixture
         {
             Environment.CurrentDirectory = Settings.SettingsDirectory;
             transportOptions.Command = "npx";
+#if DEBUG
+            transportOptions.Arguments = ["-y", Settings.TestPackage, "server", "start", "--debug"];
+#else
             transportOptions.Arguments = ["-y", Settings.TestPackage, "server", "start"];
+#endif
         }
 
         var clientTransport = new StdioClientTransport(transportOptions);
-
+#if DEBUG
+        var clientOptions = new McpClientOptions
+        {
+            InitializationTimeout = TimeSpan.FromMinutes(60)
+        };
+        Client = await McpClientFactory.CreateAsync(clientTransport, clientOptions);
+#else
         Client = await McpClientFactory.CreateAsync(clientTransport);
+#endif
     }
 }

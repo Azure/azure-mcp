@@ -175,6 +175,7 @@
         "npmjs",
         "onboarded",
         "oidc",
+        "pgrep",
         "pscore",
         "RediSearch",
         "resourcegroup",
