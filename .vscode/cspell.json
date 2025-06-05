@@ -187,6 +187,8 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
-        "Xunit"
+        "Xunit",
+        "monitoredresources",
+        "payg"
     ]
 }

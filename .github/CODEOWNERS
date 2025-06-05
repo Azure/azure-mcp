@@ -80,6 +80,13 @@
 # ServiceLabel: %area-KeyVault
 # ServiceOwners:                       @vcolin7 @JonathanCrd
 
+# PRLabel: %area-ISV
+/src/Arguments/AzureIsv/               @jayanthjj @pachaturevedi
+/src/Commands/AzureIsv/                @jayanthjj @pachaturevedi
+/src/Services/Azure/AzureIsv/          @jayanthjj @pachaturevedi
+
+# ServiceLabel: %area-ISV
+# ServiceOwners:                       @jayanthjj @pachaturevedi
 
 # PRLabel: %area-Kusto
 /src/Options/Kusto/                    @danield137 @xiangyan99 @Azure/azure-mcp
