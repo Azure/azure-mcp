@@ -166,6 +166,11 @@ public class ToolOperations
             schema["properties"] = arguments;
             schema["required"] = new JsonArray(options.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
         }
+        else
+        {
+            var arguments = new JsonObject();
+            schema["properties"] = arguments;
+        }
 
         var newOptions = new JsonSerializerOptions(McpJsonUtilities.DefaultOptions);
 
