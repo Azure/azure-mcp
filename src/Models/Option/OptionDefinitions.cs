@@ -189,6 +189,7 @@ public static class OptionDefinitions
         public const string TableName = "table";
         public const string QueryText = "query";
         public const string ParamName = "param";
+        public const string ValueName = "value";
 
         public static readonly Option<string> User = new(
             $"--{UserName}",
@@ -233,6 +234,14 @@ public static class OptionDefinitions
         public static readonly Option<string> Param = new(
             $"--{ParamName}",
             "The PostgreSQL parameter to be accessed."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> Value = new(
+            $"--{ValueName}",
+            "The value to set for the PostgreSQL parameter."
         )
         {
             IsRequired = true
