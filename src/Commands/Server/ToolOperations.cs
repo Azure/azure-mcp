@@ -13,6 +13,7 @@ public class ToolOperations
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly CommandFactory _commandFactory;
+    private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
     private readonly ILogger<ToolOperations> _logger;
 
     public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ILogger<ToolOperations> logger)
@@ -30,16 +31,21 @@ public class ToolOperations
 
     public ToolsCapability ToolsCapability { get; }
 
+    public string? CommandGroup { get; set; }
+
     private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext,
         CancellationToken cancellationToken)
     {
-        var allCommands = _commandFactory.AllCommands;
-        if (allCommands.Count == 0)
+        if (string.IsNullOrWhiteSpace(CommandGroup))
         {
-            return ValueTask.FromResult(new ListToolsResult { Tools = [] });
+            _toolCommands = _commandFactory.AllCommands;
+        }
+        else
+        {
+            _toolCommands = _commandFactory.GroupCommands(CommandGroup);
         }
 
-        var tools = CommandFactory.GetVisibleCommands(allCommands)
+        var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
             .ToList();
 
@@ -69,7 +75,7 @@ public class ToolOperations
             };
         }
 
-        var command = _commandFactory.FindCommandByName(parameters.Params.Name);
+        var command = _toolCommands.GetValueOrDefault(parameters.Params.Name);
         if (command == null)
         {
             var content = new Content
