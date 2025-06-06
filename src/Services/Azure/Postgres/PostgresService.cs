@@ -6,6 +6,7 @@ using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Services.Interfaces;
 using Npgsql;
+using Azure;
 
 namespace AzureMcp.Services.Azure.Postgres;
 
@@ -177,7 +178,7 @@ public class PostgresService : BaseAzureService, IPostgresService
         return configResponse.Value.Data.Value;
     }
 
-        public async Task<string> SetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param, string value)
+    public async Task<string> SetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param, string value)
     {
         ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
         var armClient = await CreateArmClientAsync();
@@ -192,8 +193,8 @@ public class PostgresService : BaseAzureService, IPostgresService
 
         var configData = new PostgreSqlFlexibleServerConfigurationData
         {
-            Value = value, // Set the value to desired value
-            Source = PostgreSqlFlexibleServerConfigurationSource.User, // Set the source to User
+            Value = value,
+            Source = configResponse.Value.Data.Source
         };
 
         var updateOperation = await configResponse.Value.UpdateAsync(WaitUntil.Completed, configData);
