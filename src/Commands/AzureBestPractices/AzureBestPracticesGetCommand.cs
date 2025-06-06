@@ -22,6 +22,15 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
     }
 
+    private static readonly Option<string> _dummyOption = new(
+        "--_dummy",
+        "Placeholder argument to ensure OpenAPI schema is valid."
+    )
+    {
+        IsRequired = false,
+        IsHidden = true
+    };
+
     public override string Name => "get";
 
     public override string Description =>
@@ -31,6 +40,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
 
     public override string Title => _commandTitle;
 
+
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -39,5 +49,10 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
         context.Response.Results = ResponseResult.Create(new List<string> { bestPractices }, JsonSourceGenerationContext.Default.ListString);
         context.Response.Message = string.Empty;
         return Task.FromResult(context.Response);
+    }
+
+    protected override void RegisterOptions(Command command)
+    {
+        command.AddOption(_dummyOption);
     }
 }
