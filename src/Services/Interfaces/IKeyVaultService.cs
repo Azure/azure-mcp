@@ -56,4 +56,20 @@ public interface IKeyVaultService
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    /// <summary>
+    /// Gets a secret from a Key Vault.
+    /// </summary>
+    /// <param name="vaultName">The name of the Key Vault</param>
+    /// <param name="secretName">The name of the secret to retrieve</param>
+    /// <param name="subscriptionId">The subscription ID or name</param>
+    /// <param name="tenantId">Optional tenant ID for cross-tenant operations</param>
+    /// <param name="retryPolicy">Optional retry policy for the operation</param>
+    /// <returns>The secret value</returns>
+    Task<string> GetSecret(
+        string vaultName,
+        string secretName,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

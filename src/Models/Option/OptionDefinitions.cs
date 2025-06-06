@@ -607,6 +607,7 @@ public static class OptionDefinitions
         public const string KeyNameParam = "key";
         public const string KeyTypeParam = "key-type";
         public const string IncludeManagedKeysParam = "include-managed";
+        public const string SecretNameParam = "secret";
 
         public static readonly Option<string> VaultName = new(
             $"--{VaultNameParam}",
@@ -638,6 +639,14 @@ public static class OptionDefinitions
         )
         {
             IsRequired = false
+        };
+
+        public static readonly Option<string> SecretName = new(
+            $"--{SecretNameParam}",
+            "The name of the secret."
+        )
+        {
+            IsRequired = true
         };
     }
 

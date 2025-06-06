@@ -5,6 +5,7 @@
 ### Features Added
 
 - Support for launching smaller service level MCP servers. https://github.com/Azure/azure-mcp/pull/324
+- Added support for Key Vault Secrets. https://github.com/Azure/azure-mcp/pull/173
 
 ## 0.1.3 (2025-06-05)
 

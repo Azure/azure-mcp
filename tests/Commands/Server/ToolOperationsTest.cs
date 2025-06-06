@@ -4,7 +4,9 @@
 using System.Text.Json;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
+using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
@@ -28,6 +30,7 @@ public class ToolOperationsTest
 
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IKeyVaultService _keyVaultService;
     private readonly ILogger<ToolOperations> _logger;
     private readonly ILogger<CommandFactory> _commandFactoryLogger;
     private readonly IMcpServer _server;
@@ -37,7 +40,12 @@ public class ToolOperationsTest
         _logger = Substitute.For<ILogger<ToolOperations>>();
         _commandFactoryLogger = Substitute.For<ILogger<CommandFactory>>();
         _server = Substitute.For<IMcpServer>();
-        _serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        _keyVaultService = Substitute.For<IKeyVaultService>();
+
+        var collection = new ServiceCollection();
+        collection.AddSingleton(_ => _keyVaultService);
+
+        _serviceProvider = collection.AddLogging().BuildServiceProvider();
         _commandFactory = new CommandFactory(_serviceProvider, _commandFactoryLogger);
     }
 
