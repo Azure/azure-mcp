@@ -21,7 +21,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
         const string resourceName = "AzureMcp.Resources.azure-best-practices.txt";
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
     }
-    
+
     public override string Name => "get";
 
     public override string Description =>
