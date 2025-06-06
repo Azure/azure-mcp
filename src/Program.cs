@@ -7,6 +7,7 @@ using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.KeyVault;
 using AzureMcp.Services.Azure.Kusto;
+using AzureMcp.Services.Azure.LoadTesting;
 using AzureMcp.Services.Azure.Monitor;
 using AzureMcp.Services.Azure.Postgres;
 using AzureMcp.Services.Azure.Redis;
@@ -106,6 +107,7 @@ internal class Program
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
         services.AddSingleton<IServiceBusService, ServiceBusService>();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<ILoadTestingService, LoadTestingService>();
         services.AddSingleton<CommandFactory>();
     }
 }
