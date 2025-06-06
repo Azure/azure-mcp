@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
 using AzureMcp.Options.Server;
 using Microsoft.AspNetCore.Builder;
@@ -102,8 +103,14 @@ public sealed class ServiceStartCommand : BaseCommand
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
+        services.AddSingleton<McpClientProvider>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
         services.AddHostedService<OtelService>();
+
+        if (options.Service == "azure")
+        {
+            services.AddSingleton<McpServerTool, AzureProxyTool>();
+        }
 
         services.AddOptions<McpServerOptions>()
             .Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
@@ -118,11 +125,14 @@ public sealed class ServiceStartCommand : BaseCommand
                     Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
                 };
 
-                toolOperations.CommandGroup = options.Service;
-                mcpServerOptions.Capabilities = new ServerCapabilities
+                if (options.Service != "azure")
                 {
-                    Tools = toolOperations.ToolsCapability
-                };
+                    toolOperations.CommandGroup = options.Service;
+                    mcpServerOptions.Capabilities = new ServerCapabilities
+                    {
+                        Tools = toolOperations.ToolsCapability
+                    };
+                }
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
             });
