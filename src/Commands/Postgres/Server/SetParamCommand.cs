@@ -8,14 +8,15 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.Postgres.Server;
 
-public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServerCommand<GetParamOptions>(logger)
+public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServerCommand<SetParamOptions>(logger)
 {
-    private const string _commandTitle = "Get PostgreSQL Server Parameter";
+    private const string _commandTitle = "Set PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = OptionDefinitions.Postgres.Param;
-    public override string Name => "param";
+    private readonly Option<string> _valueOption = OptionDefinitions.Postgres.Value;
+    public override string Name => "set-param";
 
     public override string Description =>
-        "Retrieves a specific parameter of a PostgreSQL server.";
+        "Sets a specific parameter of a PostgreSQL server to a certain value.";
 
     public override string Title => _commandTitle;
 
@@ -23,16 +24,18 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
     {
         base.RegisterOptions(command);
         command.AddOption(_paramOption);
+        command.AddOption(_valueOption);
     }
 
-    protected override GetParamOptions BindOptions(ParseResult parseResult)
+    protected override SetParamOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
+        options.Value = parseResult.GetValueForOption(_valueOption);
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try
@@ -45,20 +48,20 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
             }
 
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
-            var parameterValue = await pgService.GetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!);
-            context.Response.Results = parameterValue?.Length > 0 ?
+            var result = await pgService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);
+            context.Response.Results = !string.IsNullOrEmpty(result) ?
                 ResponseResult.Create(
-                    new GetParamCommandResult(parameterValue),
-                    PostgresJsonContext.Default.GetParamCommandResult) :
+                    new SetParamCommandResult(result, options.Param!, options.Value!),
+                    PostgresJsonContext.Default.SetParamCommandResult) :
                 null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred retrieving the parameter.");
+            _logger.LogError(ex, "An exception occurred setting the parameter.");
             HandleException(context.Response, ex);
         }
         return context.Response;
     }
 
-    internal record GetParamCommandResult(string ParameterValue);
+    internal record SetParamCommandResult(string Message, string Parameter, string Value);
 }
