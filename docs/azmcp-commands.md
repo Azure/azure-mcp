@@ -244,6 +244,12 @@ azmcp redis cache list --subscription <subscription>
 azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
 ```
 
+### Azure RBAC Operations
+```bash
+# List Azure RBAC role assignments
+azmcp role assignment list --subscription <subscription> --scope <scope>
+```
+
 ### Azure Resource Group Operations
 ```bash
 # List resource groups in a subscription
