@@ -21,6 +21,7 @@ public class ToolOperations
         _serviceProvider = serviceProvider;
         _commandFactory = commandFactory;
         _logger = logger;
+        _toolCommands = new Dictionary<string, IBaseCommand>(StringComparer.OrdinalIgnoreCase);
 
         ToolsCapability = new ToolsCapability
         {
