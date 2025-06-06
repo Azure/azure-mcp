@@ -3,10 +3,8 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using Xunit;
 using AzureMcp.Models.Option;
-using AzureMcp.Models.Command;
-using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace AzureMcp.Commands.Server.Tests;
 
