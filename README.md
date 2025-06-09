@@ -200,9 +200,9 @@ AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
         "run",
         "-i",
         "--rm",
-        "azure/azuremcp",
         "--env-file",
         "/full/path/to/.env"
+        "azure/azuremcp",
       ]
     }
   }
