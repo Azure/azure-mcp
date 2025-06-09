@@ -11,9 +11,9 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
     private const string CommandTitle = "Get Azure Best Practices";
     private readonly ILogger<AzureBestPracticesGetCommand> _logger = logger;
 
-    private static readonly string _bestPracticesText = LoadBestPracticesText();
+    private static readonly string s_bestPracticesText = LoadBestPracticesText();
 
-    private static string GetBestPracticesText() => _bestPracticesText;
+    private static string GetBestPracticesText() => s_bestPracticesText;
 
     private static string LoadBestPracticesText()
     {

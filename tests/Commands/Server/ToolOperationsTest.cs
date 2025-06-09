@@ -15,7 +15,7 @@ namespace AzureMcp.Tests.Commands.Server;
 public class ToolOperationsTest
 {
     // https://json-schema.org/understanding-json-schema/reference/type
-    private static readonly HashSet<string> _jsonSchemaDataTypes = new()
+    private static readonly HashSet<string> s_jsonSchemaDataTypes = new()
     {
         "string",
         "integer",
@@ -83,7 +83,7 @@ public class ToolOperationsTest
                     var value = argumentType.GetString();
 
                     Assert.NotNull(value);
-                    Assert.Contains(value, _jsonSchemaDataTypes);
+                    Assert.Contains(value, s_jsonSchemaDataTypes);
                 }
             }
         }

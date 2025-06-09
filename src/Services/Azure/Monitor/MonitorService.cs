@@ -19,7 +19,7 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
 
     private const string TablePlaceholder = "{tableName}";
 
-    private static readonly Dictionary<string, string> _predefinedQueries = new()
+    private static readonly Dictionary<string, string> s_predefinedQueries = new()
     {
         ["recent"] = """
             {tableName}
@@ -179,9 +179,9 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
         var (workspaceId, _) = await GetWorkspaceInfo(workspace, subscription, tenant, retryPolicy);
 
         // Check if the query is a predefined query name
-        if (!string.IsNullOrEmpty(query) && _predefinedQueries.ContainsKey(query.Trim().ToLower()))
+        if (!string.IsNullOrEmpty(query) && s_predefinedQueries.ContainsKey(query.Trim().ToLower()))
         {
-            query = _predefinedQueries[query.Trim().ToLower()];
+            query = s_predefinedQueries[query.Trim().ToLower()];
             // Replace table placeholder with actual table name
             query = query.Replace(TablePlaceholder, table);
         }

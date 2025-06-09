@@ -15,7 +15,7 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private const string CacheGroup = "resourcegroup";
     private const string CacheKey = "resourcegroups";
-    private static readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
     public async Task<List<ResourceGroupInfo>> GetResourceGroups(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
@@ -26,7 +26,7 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
 
         // Try to get from cache first
         var cacheKey = $"{CacheKey}_{subscriptionId}_{tenant ?? "default"}";
-        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, _cacheDuration);
+        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -44,7 +44,7 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
                 .ToListAsync();
 
             // Cache the results
-            await _cacheService.SetAsync(CacheGroup, cacheKey, resourceGroups, _cacheDuration);
+            await _cacheService.SetAsync(CacheGroup, cacheKey, resourceGroups, s_cacheDuration);
 
             return resourceGroups;
         }
@@ -63,7 +63,7 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
 
         // Try to get from cache first
         var cacheKey = $"{CacheKey}_{subscriptionId}_{tenant ?? "default"}";
-        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, _cacheDuration);
+        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults.FirstOrDefault(rg => rg.Name.Equals(resourceGroupName, StringComparison.OrdinalIgnoreCase));

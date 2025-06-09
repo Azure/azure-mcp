@@ -10,7 +10,7 @@ namespace AzureMcp.Services.Caching;
 public class CacheService(IMemoryCache memoryCache) : ICacheService
 {
     private readonly IMemoryCache _memoryCache = memoryCache;
-    private static readonly ConcurrentDictionary<string, HashSet<string>> _groupKeys = new();
+    private static readonly ConcurrentDictionary<string, HashSet<string>> s_groupKeys = new();
 
     public ValueTask<T?> GetAsync<T>(string group, string key, TimeSpan? expiration = null)
     {
@@ -33,7 +33,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         _memoryCache.Set(cacheKey, data, options);
 
         // Track the key in the group
-        _groupKeys.AddOrUpdate(
+        s_groupKeys.AddOrUpdate(
             group,
             new HashSet<string> { key },
             (_, keys) =>
@@ -51,7 +51,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         _memoryCache.Remove(cacheKey);
 
         // Remove from group tracking
-        if (_groupKeys.TryGetValue(group, out var keys))
+        if (s_groupKeys.TryGetValue(group, out var keys))
         {
             keys.Remove(key);
         }
@@ -61,7 +61,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
 
     public ValueTask<IEnumerable<string>> GetGroupKeysAsync(string group)
     {
-        if (_groupKeys.TryGetValue(group, out var keys))
+        if (s_groupKeys.TryGetValue(group, out var keys))
         {
             return new ValueTask<IEnumerable<string>>(keys.AsEnumerable());
         }
@@ -78,7 +78,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         }
 
         // Clear all group tracking
-        _groupKeys.Clear();
+        s_groupKeys.Clear();
 
         return default;
     }
@@ -86,7 +86,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
     public ValueTask ClearGroupAsync(string group)
     {
         // If this group doesn't exist, nothing to do
-        if (!_groupKeys.TryGetValue(group, out var keys))
+        if (!s_groupKeys.TryGetValue(group, out var keys))
         {
             return default;
         }
@@ -99,7 +99,7 @@ public class CacheService(IMemoryCache memoryCache) : ICacheService
         }
 
         // Remove the group from tracking
-        _groupKeys.TryRemove(group, out _);
+        s_groupKeys.TryRemove(group, out _);
 
         return default;
     }

@@ -15,7 +15,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
     private const string ManagementApiBaseUrl = "https://management.azure.com";
     private const string HealthModelsDataApiScope = "https://data.healthmodels.azure.com";
     private const string ApiVersion = "2023-10-01-preview";
-    private static readonly HttpClient _sharedHttpClient = new HttpClient();
+    private static readonly HttpClient s_sharedHttpClient = new HttpClient();
 
     private string? _cachedDataplaneAccessToken;
     private string? _cachedControlPlaneAccessToken;
@@ -59,7 +59,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", dataplaneToken);
 
-        HttpResponseMessage healthResponse = await _sharedHttpClient.SendAsync(request);
+        HttpResponseMessage healthResponse = await s_sharedHttpClient.SendAsync(request);
         healthResponse.EnsureSuccessStatusCode();
 
         string healthResponseString = await healthResponse.Content.ReadAsStringAsync();
@@ -74,7 +74,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
         using var request = new HttpRequestMessage(HttpMethod.Get, healthModelUrl);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-        HttpResponseMessage response = await _sharedHttpClient.SendAsync(request);
+        HttpResponseMessage response = await s_sharedHttpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
 

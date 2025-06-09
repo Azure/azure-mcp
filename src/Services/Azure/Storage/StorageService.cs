@@ -19,7 +19,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string CacheGroup = "storage";
     private const string StorageAccountsCacheKey = "accounts";
-    private static readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
     public async Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
@@ -31,7 +31,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             : $"{StorageAccountsCacheKey}_{subscriptionId}_{tenant}";
 
         // Try to get from cache first
-        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, _cacheDuration);
+        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedAccounts != null)
         {
             return cachedAccounts;
@@ -50,7 +50,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             // Cache the results
-            await _cacheService.SetAsync(CacheGroup, cacheKey, accounts, _cacheDuration);
+            await _cacheService.SetAsync(CacheGroup, cacheKey, accounts, s_cacheDuration);
         }
         catch (Exception ex)
         {

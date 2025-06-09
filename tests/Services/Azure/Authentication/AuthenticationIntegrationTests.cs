@@ -94,10 +94,10 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         }
 
         // Output subscriptions for manual verification
-        var jsonString = JsonSerializer.Serialize(subscriptions, _writeIndentedOptions);
+        var jsonString = JsonSerializer.Serialize(subscriptions, s_writeIndentedOptions);
         _output.WriteLine($"Retrieved {subscriptions.Count} subscriptions:");
         _output.WriteLine(jsonString);
     }
 
-    private static readonly JsonSerializerOptions _writeIndentedOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions s_writeIndentedOptions = new() { WriteIndented = true };
 }

@@ -31,7 +31,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         "down",
     ];
 
-    private static readonly string _bestPracticesText = LoadBestPracticesText();
+    private static readonly string s_bestPracticesText = LoadBestPracticesText();
 
     private static string LoadBestPracticesText()
     {
@@ -40,7 +40,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
     }
 
-    private static readonly string[] _azdCliPaths =
+    private static readonly string[] s_azdCliPaths =
     [
         // Windows
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Programs", "Azure Dev CLI"),
@@ -110,7 +110,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             // If the agent is asking for help, return the best practices text
             if (options.Learn && string.IsNullOrWhiteSpace(options.Command))
             {
-                context.Response.Message = _bestPracticesText;
+                context.Response.Message = s_bestPracticesText;
                 context.Response.Status = 200;
                 return context.Response;
             }
@@ -162,7 +162,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             var processService = context.GetService<IExternalProcessService>();
             processService.SetEnvironmentVariables(new Dictionary<string, string>
             {
-                ["AZURE_DEV_USER_AGENT"] = BaseAzureService.DefaultUserAgent,
+                ["AZURE_DEV_USER_AGENT"] = BaseAzureService.s_defaultUserAgent,
             });
 
             var azdPath = FindAzdCliPath() ?? throw new FileNotFoundException("Azure Developer CLI executable not found in PATH or common installation locations. Please ensure Azure Developer CLI is installed.");
@@ -204,7 +204,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             searchPaths.AddRange(pathDirs);
         }
 
-        searchPaths.AddRange(_azdCliPaths);
+        searchPaths.AddRange(s_azdCliPaths);
 
         foreach (var dir in searchPaths.Where(d => !string.IsNullOrEmpty(d)))
         {

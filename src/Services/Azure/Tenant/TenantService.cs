@@ -13,12 +13,12 @@ public class TenantService(ICacheService cacheService)
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string CacheGroup = "tenant";
     private const string CacheKey = "tenants";
-    private static readonly TimeSpan _cacheDuration = TimeSpan.FromHours(12);
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(12);
 
     public async Task<List<TenantResource>> GetTenants()
     {
         // Try to get from cache first
-        var cachedResults = await _cacheService.GetAsync<List<TenantResource>>(CacheGroup, CacheKey, _cacheDuration);
+        var cachedResults = await _cacheService.GetAsync<List<TenantResource>>(CacheGroup, CacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -36,7 +36,7 @@ public class TenantService(ICacheService cacheService)
         }
 
         // Cache the results
-        await _cacheService.SetAsync(CacheGroup, CacheKey, results, _cacheDuration);
+        await _cacheService.SetAsync(CacheGroup, CacheKey, results, s_cacheDuration);
         return results;
     }
 

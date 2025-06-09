@@ -20,7 +20,7 @@ public class CommandFactory
     private readonly CommandGroup _rootGroup;
     private readonly ModelsJsonContext _srcGenWithOptions;
 
-    internal static readonly char Separator = '-';
+    internal static readonly char s_separator = '-';
 
     /// <summary>
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
@@ -546,7 +546,7 @@ public class CommandFactory
 
     private static string GetPrefix(string currentPrefix, string additional) => string.IsNullOrEmpty(currentPrefix)
         ? additional
-        : currentPrefix + Separator + additional;
+        : currentPrefix + s_separator + additional;
 
     public static IEnumerable<KeyValuePair<string, IBaseCommand>> GetVisibleCommands(IEnumerable<KeyValuePair<string, IBaseCommand>> commands)
     {
