@@ -35,6 +35,7 @@ public sealed class QueryCommandTests
     {
         yield return new object[] { "--subscription sub1 --cluster-name mycluster --database-name db1 --query \"StormEvents | take 1\"", false };
         yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database-name db1 --query \"StormEvents | take 1\"", true };
+        yield return new object[] { "--subscription sub1 --cluster-name mycluster --database-name db1 --query \"'StormEvents | take 1'\"", false };
     }
 
     [Theory]

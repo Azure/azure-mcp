@@ -23,7 +23,8 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
     protected override QueryOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.Query = parseResult.GetValueForOption(_queryOption);
+        var kqlQuery = parseResult.GetValueForOption(_queryOption);
+        options.Query = TrimQuotes(kqlQuery ?? string.Empty);
         return options;
     }
 
@@ -86,6 +87,11 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
             HandleException(context.Response, ex);
         }
         return context.Response;
+    }
+
+    private static string TrimQuotes(string inputString)
+    {
+        return inputString.Trim('\'');
     }
 
     internal record QueryCommandResult(List<JsonElement> Items);
