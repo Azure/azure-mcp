@@ -3,7 +3,7 @@
 The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
-### ⚙️ Getting Started Install Steps
+### ⚙️ VS Code Install Steps (Recommended)
 
 1. Install either the stable or Insiders release of VS Code:
    * [💫 Stable release](https://code.visualstudio.com/download)
@@ -15,22 +15,48 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 5. Install Azure MCP Server for either the stable or Insiders release of VS Code:
    * [![Install with NPX in VS Code](https://img.shields.io/badge/VS_Code-Install_Azure_MCP_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D) 
    * [![Install with NPX in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Azure_MCP_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20MCP%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D&quality=insiders)
-6. From VS Code
-   * If prompted, select `Install Server`
-   * Select `GitHub Copilot Agent Mode`
-   * Click `refresh` on the tools list.
-   * To learn more about Agent Mode, visit the [VS Code Documentation](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode).
-8. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
+6. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
+7. Click `refresh` on the tools list.
 
-#### ▶️ Getting Started Video
-Here's a short (16 seconds) video to help you get the Azure MCP Server installed in VS Code.
 
-<video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
+###  ▶️ Getting Started
+1. Here's a short (16 seconds) video to help you get the Azure MCP Server installed in VS Code.
+   <video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
+2. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
+3. You should see the Azure MCP Server in the list of tools
+4. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
+5. The agent should be able to use the Azure MCP Server tools to complete your query
+6. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
 
-#### 🐋 Docker Install (Optional)
+
+## 🔄️ Upgrading Existing Installs to the Latest Version
+
 <details>
+<summary>How to stay current with releases of Azure MCP Server</summary>
+    
+#### NPX
 
-<summary>For a step-by-step Docker installation, follow these instructions:</summary>
+If you use the default package spec of `@azure/mcp@latest`, npx will look for a new version on each server start. If you use just `@azure/mcp`, npx will continue to use its cached version until its cache is cleared.
+
+#### NPM
+
+If you globally install the cli via `npm install -g @azure/mcp` it will use the installed version until you manually update it with `npm update -g @azure/mcp`.
+
+#### Docker
+
+There is no version update built into the docker image.  To update, just pull the latest from the repo and repeat the [docker installation instructions](#docker-install).
+
+#### VS Code
+
+Installation in VS Code should be in one of the previous forms and the update instructions are the same. If you installed the mcp server with the `npx` command and  `-y @azure/mcp@latest` args, npx will check for package updates each time VS Code starts the server. Using a docker container in VS Code has the same no-update limitation described above.
+</details>
+
+## ⚙️ Advanced Install Scenarios (Optional)
+<details>
+<summary>Docker containers, custom MCP clients, and manual install options</summary>
+
+#### 🐋 Docker Install Steps (Optional)
+For a step-by-step Docker installation, follow these instructions:
 
 1. Clone repository
 2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
@@ -60,16 +86,12 @@ AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
 ```
 
 Optionally, customers can use `--env` or `--volume` to pass authentication values.
-</details>
 
-#### 🤖 Custom MCP Client Install (Optional)
-<details>
-<summary>You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.</summary>
+#### 🤖 Custom MCP Client Install Steps (Optional)
+You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.
 
-#### 🔧 Manual Install (Optional)
-
-<details>
-<summary>For a step-by-step installation, follow these instructions:</summary>
+#### 🔧 Manual Install Steps (Optional)
+For a step-by-step installation, follow these instructions:
 
 1. Add `.vscode/mcp.json`:
 ```json
@@ -87,7 +109,6 @@ Optionally, customers can use `--env` or `--volume` to pass authentication value
   }
 }
 ```
-</details>
 
 ### Using standard IO
 
@@ -113,36 +134,10 @@ Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. Fo
 More end-to-end MCP client/agent guides are coming soon!
 </details>
 
-#### 🔄️ Upgrading to the latest version
-
-<details>
-<summary>Install Updates</summary>
-    
-#### NPX
-
-If you use the default package spec of `@azure/mcp@latest`, npx will look for a new version on each server start. If you use just `@azure/mcp`, npx will continue to use its cached version until its cache is cleared.
-
-#### NPM
-
-If you globally install the cli via `npm install -g @azure/mcp` it will use the installed version until you manually update it with `npm update -g @azure/mcp`.
-
-#### Docker
-
-There is no version update built into the docker image.  To update, just pull the latest from the repo and repeat the [docker installation instructions](#docker-install).
-
-#### VS Code
-
-Installation in VS Code should be in one of the previous forms and the update instructions are the same. If you installed the mcp server with the `npx` command and  `-y @azure/mcp@latest` args, npx will check for package updates each time VS Code starts the server. Using a docker container in VS Code has the same no-update limitation described above.
-</details>
 
 ## ✨ What can you do with the Azure MCP Server?
 
 The Azure MCP Server supercharges your agents with Azure context. Here are some cool prompts you can try:
-
-1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
-2. You should see the Azure MCP Server in the list of tools
-3. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
-4. The agent should be able to use the Azure MCP Server tools to complete your query
 
 ### 🔍 Explore Your Azure Resources
 
@@ -172,8 +167,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 
 ## 🛠️ Currently Supported Tools
-
-The Azure MCP Server provides tools for interacting with the following Azure services:
+<details>
+<summary>The Azure MCP Server provides tools for interacting with the following Azure services</summary>
 
 ### 🔎 Azure AI Search (search engine/vector database)
 - List Azure AI Search services
@@ -244,6 +239,7 @@ Agents and models can discover and learn best practices and usage guidelines for
 
 ### 🛡️ Azure Best Practices
 - Get secure, production-grade Azure SDK best practices for effective code generation.
+</details>
 
 For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
 
