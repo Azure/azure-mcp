@@ -138,5 +138,5 @@
 /src/Commands/Storage/                 @nishtha489 @johnsta @Azure/azure-mcp
 /src/Services/Azure/Storage/           @nishtha489 @johnsta @Azure/azure-mcp
  
-# ServiceLabel: %area-Storage
+# ServiceLabel: %area-LoadTesting
 # ServiceOwners:                       @nishtha489  @johnsta
