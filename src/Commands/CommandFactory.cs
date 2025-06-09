@@ -406,7 +406,7 @@ public class CommandFactory
         _rootGroup.AddSubGroup(service);
 
         var resource = new CommandGroup(
-            "loadTest",
+            "loadtest",
             "Load test operations - Commands for listing, creating and managing Azure load tests.");
         service.AddSubGroup(resource);
 

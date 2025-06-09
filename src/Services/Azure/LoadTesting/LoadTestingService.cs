@@ -18,7 +18,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         ValidateRequiredParameters(subscriptionId);
 
         var credential = await GetCredential(tenant);
-        var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/loadtests?api-version={ControlPlaneApiVersion}&maxpagesize=10";
+        var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/loadtests?api-version={ControlPlaneApiVersion}";
 
         var client = new HttpClient();
         var token = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://management.azure.com/.default" }), CancellationToken.None)).Token;

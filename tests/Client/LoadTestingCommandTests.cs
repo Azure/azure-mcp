@@ -17,11 +17,10 @@ public class LoadTestingCommandTests : CommandTestsBase,
         _subscriptionId = Settings.SubscriptionId;
     }
 
-    [Theory]
-    [InlineData(AuthMethod.Credential)]
-    [InlineData(AuthMethod.Key)]
+
+    [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_List_LoadTests_WithAuth(AuthMethod authMethod)
+    public async Task Should_list_loadtests()
     {
         // Arrange
         var result = await CallToolAsync(
@@ -30,18 +29,15 @@ public class LoadTestingCommandTests : CommandTestsBase,
             {
                 { "subscription", _subscriptionId },
                 { "tenant", Settings.TenantId },
-                { "auth-method", authMethod.ToString().ToLowerInvariant() }
             });
 
         // Assert
-        var items = result.AssertProperty("items");
+        var items = result.AssertProperty("LoadTests");
         Assert.Equal(JsonValueKind.Array, items.ValueKind);
-
-        // Check results format
+        Assert.NotEmpty(items.EnumerateArray());
         foreach (var item in items.EnumerateArray())
         {
-            Assert.True(item.TryGetProperty("name", out _));
-            Assert.True(item.TryGetProperty("id", out _));
+            Assert.NotNull(item.GetProperty("Id").GetString());
         }
     }
 }

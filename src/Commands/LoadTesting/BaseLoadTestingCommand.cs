@@ -11,7 +11,7 @@ public abstract class BaseLoadTestingCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseLoadTestingOptions, new()
 {
-    public override string Name => "loadTest";
+    public override string Name => "loadtest";
 
     protected readonly Option<string> _loadTestOption = OptionDefinitions.LoadTesting.LoadTest;
 
