@@ -33,7 +33,7 @@ Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extensi
 #### ▶️ Getting Started Video
 Here's a short (16 seconds) video to help you get the Azure MCP Server installed in VS Code.
 
-https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92
+<video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
 
 #### 🐋 Docker Install
 <details>
