@@ -1,11 +1,11 @@
 # 🌟 Azure MCP Server
 
-The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
-> [!NOTE]
-> This project is in Public Preview and implementation may significantly change prior to our General Availability.
+The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.  This project is in Public Preview and implementation may significantly change prior to our General Availability.
+
+Here's a short (16 seconds) video to help you get the Azure MCP Server installed in VS Code.
+<video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
 
 ### ⚙️ VS Code Install Steps (Recommended)
-
 1. Install either the stable or Insiders release of VS Code:
    * [💫 Stable release](https://code.visualstudio.com/download)
    * [🔮 Insiders release](https://code.visualstudio.com/insiders)
@@ -21,120 +21,11 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 
 
 ###  ▶️ Getting Started
-1. Here's a short (16 seconds) video to help you get the Azure MCP Server installed in VS Code.
-   <video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
-2. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
-3. You should see the Azure MCP Server in the list of tools
-4. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
-5. The agent should be able to use the Azure MCP Server tools to complete your query
-6. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
-
-
-## 🔄️ Upgrading Existing Installs to the Latest Version
-
-<details>
-<summary>How to stay current with releases of Azure MCP Server</summary>
-    
-#### NPX
-
-If you use the default package spec of `@azure/mcp@latest`, npx will look for a new version on each server start. If you use just `@azure/mcp`, npx will continue to use its cached version until its cache is cleared.
-
-#### NPM
-
-If you globally install the cli via `npm install -g @azure/mcp` it will use the installed version until you manually update it with `npm update -g @azure/mcp`.
-
-#### Docker
-
-There is no version update built into the docker image.  To update, just pull the latest from the repo and repeat the [docker installation instructions](#docker-install).
-
-#### VS Code
-
-Installation in VS Code should be in one of the previous forms and the update instructions are the same. If you installed the mcp server with the `npx` command and  `-y @azure/mcp@latest` args, npx will check for package updates each time VS Code starts the server. Using a docker container in VS Code has the same no-update limitation described above.
-</details>
-
-## ⚙️ Advanced Install Scenarios (Optional)
-<details>
-<summary>Docker containers, custom MCP clients, and manual install options</summary>
-
-#### 🐋 Docker Install Steps (Optional)
-For a step-by-step Docker installation, follow these instructions:
-
-1. Clone repository
-2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
-3. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
-```json
-AZURE_TENANT_ID={YOUR_AZURE_TENANT_ID}
-AZURE_CLIENT_ID={YOUR_AZURE_CLIENT_ID}
-AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
-```
-1. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
-```json
-{
-  "servers": {
-    "Azure MCP Server": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "azure/azuremcp",
-        "--env-file",
-        "/full/path/to/.env"
-      ]
-    }
-  }
-}
-```
-
-Optionally, customers can use `--env` or `--volume` to pass authentication values.
-
-#### 🤖 Custom MCP Client Install Steps (Optional)
-You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.
-
-#### 🔧 Manual Install Steps (Optional)
-For a step-by-step installation, follow these instructions:
-
-1. Add `.vscode/mcp.json`:
-```json
-{
-  "servers": {
-    "Azure MCP Server": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@azure/mcp@latest",
-        "server",
-        "start"
-      ]
-    }
-  }
-}
-```
-
-### Using standard IO
-
-Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using , follow instructions in [Quick install with VS Code](#-quick-install-with-vs-code) or [Manual Install](#-manual-install).
-
-### Using SSE
-
-1. Open a terminal window and execute: `npx -y @azure/mcp@latest server start --transport sse`
-2. The server starts up and is hosted at: http://localhost:5008.  To use another port, append `--port {YOUR-PORT-NUMBER}`.
-3. Open your MCP client and add the SSE configuration value.  This may differ between MCP clients.  In VS Code, it will look like:
-   ```json
-   {
-      "servers": {
-        "Azure MCP Server": {
-          "type": "sse",
-          "url": "http://localhost:5008/sse"
-        }
-      }
-    }
-   ```
-
-
-More end-to-end MCP client/agent guides are coming soon!
-</details>
-
+1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
+2. You should see the Azure MCP Server in the list of tools
+3. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
+4. The agent should be able to use the Azure MCP Server tools to complete your query
+5. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
 
 ## ✨ What can you do with the Azure MCP Server?
 
@@ -243,6 +134,113 @@ Agents and models can discover and learn best practices and usage guidelines for
 </details>
 
 For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
+
+## 🔄️ Upgrading Existing Installs to the Latest Version
+
+<details>
+<summary>How to stay current with releases of Azure MCP Server</summary>
+    
+#### NPX
+
+If you use the default package spec of `@azure/mcp@latest`, npx will look for a new version on each server start. If you use just `@azure/mcp`, npx will continue to use its cached version until its cache is cleared.
+
+#### NPM
+
+If you globally install the cli via `npm install -g @azure/mcp` it will use the installed version until you manually update it with `npm update -g @azure/mcp`.
+
+#### Docker
+
+There is no version update built into the docker image.  To update, just pull the latest from the repo and repeat the [docker installation instructions](#docker-install).
+
+#### VS Code
+
+Installation in VS Code should be in one of the previous forms and the update instructions are the same. If you installed the mcp server with the `npx` command and  `-y @azure/mcp@latest` args, npx will check for package updates each time VS Code starts the server. Using a docker container in VS Code has the same no-update limitation described above.
+</details>
+
+## ⚙️ Advanced Install Scenarios (Optional)
+<details>
+<summary>Docker containers, custom MCP clients, and manual install options</summary>
+
+#### 🐋 Docker Install Steps (Optional)
+For a step-by-step Docker installation, follow these instructions:
+
+1. Clone repository
+2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
+3. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
+```json
+AZURE_TENANT_ID={YOUR_AZURE_TENANT_ID}
+AZURE_CLIENT_ID={YOUR_AZURE_CLIENT_ID}
+AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
+```
+1. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
+```json
+{
+  "servers": {
+    "Azure MCP Server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "azure/azuremcp",
+        "--env-file",
+        "/full/path/to/.env"
+      ]
+    }
+  }
+}
+```
+
+Optionally, customers can use `--env` or `--volume` to pass authentication values.
+
+#### 🤖 Custom MCP Client Install Steps (Optional)
+You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.
+
+#### 🔧 Manual Install Steps (Optional)
+For a step-by-step installation, follow these instructions:
+
+1. Add `.vscode/mcp.json`:
+```json
+{
+  "servers": {
+    "Azure MCP Server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure/mcp@latest",
+        "server",
+        "start"
+      ]
+    }
+  }
+}
+```
+
+### Using standard IO
+
+Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using , follow instructions in [Quick install with VS Code](#-quick-install-with-vs-code) or [Manual Install](#-manual-install).
+
+### Using SSE
+
+1. Open a terminal window and execute: `npx -y @azure/mcp@latest server start --transport sse`
+2. The server starts up and is hosted at: http://localhost:5008.  To use another port, append `--port {YOUR-PORT-NUMBER}`.
+3. Open your MCP client and add the SSE configuration value.  This may differ between MCP clients.  In VS Code, it will look like:
+   ```json
+   {
+      "servers": {
+        "Azure MCP Server": {
+          "type": "sse",
+          "url": "http://localhost:5008/sse"
+        }
+      }
+    }
+   ```
+
+
+More end-to-end MCP client/agent guides are coming soon!
+</details>
+
+
 
 ## 📝 Troubleshooting
 
