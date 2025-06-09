@@ -123,7 +123,7 @@ azmcp postgres server config --subscription <subscription> --resource-group <res
 azmcp postgres server param --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server set_param --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter> --value <value>
+azmcp postgres server setparam --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter> --value <value>
 ```
 
 ### Azure Storage Operations
