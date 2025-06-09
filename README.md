@@ -7,7 +7,7 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 - 💡 Intelligent parameter suggestions and auto-completion
 - ⚡ Consistent error handling that makes sense
 
-Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code. If you're interested in broad developer support across a variety of Azure development scenarios not included in the Azure MCP Server, such as searching documentation on Microsoft Learn, we recommend this extension as well.
+Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
