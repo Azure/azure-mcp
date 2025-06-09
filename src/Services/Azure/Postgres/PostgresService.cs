@@ -12,13 +12,13 @@ namespace AzureMcp.Services.Azure.Postgres;
 
 public class PostgresService : BaseAzureService, IPostgresService
 {
-
+    private readonly IResourceGroupService _resourceGroupService;
     private string? _cachedEntraIdAccessToken;
     private DateTime _tokenExpiryTime;
 
-    public PostgresService()
+    public PostgresService(IResourceGroupService resourceGroupService)
     {
-
+        _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
     }
 
     private async Task<string> GetEntraIdAccessTokenAsync()
@@ -180,9 +180,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<string> SetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param, string value)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
 
         var configResponse = await pgServer.Value.GetPostgreSqlFlexibleServerConfigurationAsync(param);

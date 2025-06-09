@@ -13,7 +13,7 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
     private const string _commandTitle = "Set PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = OptionDefinitions.Postgres.Param;
     private readonly Option<string> _valueOption = OptionDefinitions.Postgres.Value;
-    public override string Name => "set-param";
+    public override string Name => "set_param";
 
     public override string Description =>
         "Sets a specific parameter of a PostgreSQL server to a certain value.";
