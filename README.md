@@ -1,14 +1,6 @@
 # 🌟 Azure MCP Server
 
-The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services through:
-
-- 🔄 Smart JSON communication that AI agents understand
-- 🏗️ Natural language commands that get translated to Azure operations
-- 💡 Intelligent parameter suggestions and auto-completion
-- ⚡ Consistent error handling that makes sense
-
-Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
-
+The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 > Please note that this project is in Public Preview and implementation may significantly change prior to our General Availability.
 
 ### ⚙️ Getting Started Install Steps
@@ -35,10 +27,10 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 
 <video src="https://github.com/user-attachments/assets/535f393c-0ed2-479d-9b24-5ca933293c92" width="1080" height="1920" controls></video>
 
-#### 🐋 Docker Install
+#### 🐋 Docker Install (Optional)
 <details>
 
-<summary>For a step-by-step installation, follow these instructions:</summary>
+<summary>For a step-by-step Docker installation, follow these instructions:</summary>
 
 1. Clone repository
 2. From repository root, build Docker image: `docker build -t azure/azuremcp .`
@@ -70,11 +62,11 @@ AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
 Optionally, customers can use `--env` or `--volume` to pass authentication values.
 </details>
 
-#### 🤖 Custom MCP Client Install
+#### 🤖 Custom MCP Client Install (Optional)
 <details>
 <summary>You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.</summary>
 
-#### 🔧 Manual Install
+#### 🔧 Manual Install (Optional)
 
 <details>
 <summary>For a step-by-step installation, follow these instructions:</summary>
