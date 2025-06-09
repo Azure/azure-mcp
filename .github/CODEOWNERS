@@ -124,10 +124,19 @@
 # ServiceLabel: %area-Redis
 # ServiceOwners:                       @philon-msft @carldc
 
+# PRLabel: %area-LoadTesting
+/src/Options/LoadTesting/                  @alzimmermsft @jongio @Azure/azure-mcp
+/src/Commands/LoadTesting/                 @alzimmermsft @jongio @Azure/azure-mcp
+/src/Services/Azure/LoadTesting/           @alzimmermsft @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-LoadTesting
+# ServiceOwners:                       @alzimmermsft  @jongio
+
+
 # PRLabel: %area-Storage
-/src/Options/Storage/                  @alzimmermsft @jongio @Azure/azure-mcp
-/src/Commands/Storage/                 @alzimmermsft @jongio @Azure/azure-mcp
-/src/Services/Azure/Storage/           @alzimmermsft @jongio @Azure/azure-mcp
+/src/Options/Storage/                  @nishtha489 @johnsta @Azure/azure-mcp
+/src/Commands/Storage/                 @nishtha489 @johnsta @Azure/azure-mcp
+/src/Services/Azure/Storage/           @nishtha489 @johnsta @Azure/azure-mcp
  
 # ServiceLabel: %area-Storage
-# ServiceOwners:                       @alzimmermsft  @jongio
+# ServiceOwners:                       @nishtha489  @johnsta
