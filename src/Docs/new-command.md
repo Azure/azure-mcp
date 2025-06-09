@@ -85,7 +85,7 @@ IMPORTANT:
 public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger) 
     : Base{Service}Command<{Resource}{Operation}Options>
 {
-    private const string _commandTitle = "Human Readable Title";
+    private const string CommandTitle = "Human Readable Title";
     private readonly ILogger<{Resource}{Operation}Command> _logger = logger;
     
     // Define options from OptionDefinitions
@@ -101,7 +101,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
         - list required options
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -119,7 +119,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     [McpServerTool(
         Destructive = false,     // Set to true for commands that modify resources
         ReadOnly = true,        // Set to false for commands that modify resources
-        Title = _commandTitle)]  // Display name shown in UI
+        Title = CommandTitle)]  // Display name shown in UI
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

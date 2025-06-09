@@ -11,7 +11,7 @@ namespace AzureMcp.Commands.KeyVault.Key;
 
 public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : SubscriptionCommand<KeyListOptions>
 {
-    private const string _commandTitle = "List Key Vault Keys";
+    private const string CommandTitle = "List Key Vault Keys";
     private readonly ILogger<KeyListCommand> _logger = logger;
     private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
     private readonly Option<bool> _includeManagedKeysOption = OptionDefinitions.KeyVault.IncludeManagedKeys;
@@ -28,7 +28,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         - vault
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -45,7 +45,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

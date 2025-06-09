@@ -12,7 +12,7 @@ namespace AzureMcp.Commands.ServiceBus.Topic;
 
 public sealed class SubscriptionDetailsCommand : SubscriptionCommand<SubscriptionDetailsOptions>
 {
-    private const string _commandTitle = "Get Service Bus Topic Subscription Details";
+    private const string CommandTitle = "Get Service Bus Topic Subscription Details";
     private readonly Option<string> _namespaceOption = OptionDefinitions.ServiceBus.Namespace;
     private readonly Option<string> _topicOption = OptionDefinitions.ServiceBus.Topic;
     private readonly Option<string> _subscriptionNameOption = OptionDefinitions.ServiceBus.Subscription;
@@ -29,7 +29,7 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         - subscription-name: Name of the subscription to get details for
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -50,7 +50,7 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

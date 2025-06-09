@@ -13,7 +13,7 @@ namespace AzureMcp.Commands.Extension;
 
 public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzdOptions>()
 {
-    private const string _commandTitle = "Azure Developer CLI Command";
+    private const string CommandTitle = "Azure Developer CLI Command";
     private readonly ILogger<AzdCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = OptionDefinitions.Extension.Azd.Command;
@@ -36,11 +36,11 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     private static string LoadBestPracticesText()
     {
         var assembly = typeof(AzdCommand).Assembly;
-        const string resourceName = "AzureMcp.Resources.azd-best-practices.txt";
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
+        const string ResourceName = "AzureMcp.Resources.azd-best-practices.txt";
+        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
     }
 
-    private static readonly string[] AzdCliPaths =
+    private static readonly string[] _azdCliPaths =
     [
         // Windows
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Programs", "Azure Dev CLI"),
@@ -73,7 +73,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         If unsure about available commands or their parameters, run azd help or azd <group> --help in the command to discover them.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -95,7 +95,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return options;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -204,7 +204,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             searchPaths.AddRange(pathDirs);
         }
 
-        searchPaths.AddRange(AzdCliPaths);
+        searchPaths.AddRange(_azdCliPaths);
 
         foreach (var dir in searchPaths.Where(d => !string.IsNullOrEmpty(d)))
         {

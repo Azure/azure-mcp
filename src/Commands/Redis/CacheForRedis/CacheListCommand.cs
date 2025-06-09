@@ -13,7 +13,7 @@ namespace AzureMcp.Commands.Redis.CacheForRedis;
 /// </summary>
 public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : SubscriptionCommand<CacheListOptions>()
 {
-    private const string _commandTitle = "List Redis Caches";
+    private const string CommandTitle = "List Redis Caches";
     private readonly ILogger<CacheListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -24,9 +24,9 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
         Use this command to explore which Redis Cache resources are available in your subscription.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

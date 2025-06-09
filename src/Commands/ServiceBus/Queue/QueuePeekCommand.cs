@@ -11,7 +11,7 @@ namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
 {
-    private const string _commandTitle = "Peek Messages from Service Bus Queue";
+    private const string CommandTitle = "Peek Messages from Service Bus Queue";
     private readonly Option<string> _queueOption = OptionDefinitions.ServiceBus.Queue;
     private readonly Option<int> _maxMessagesOption = OptionDefinitions.ServiceBus.MaxMessages;
     private readonly Option<string> _namespaceOption = OptionDefinitions.ServiceBus.Namespace;
@@ -31,7 +31,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         - queue: Queue name to peek messages from
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -51,7 +51,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

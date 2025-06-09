@@ -13,7 +13,7 @@ namespace AzureMcp.Services.Azure;
 
 public abstract class BaseAzureService(ITenantService? tenantService = null)
 {
-    private static readonly UserAgentPolicy SharedUserAgentPolicy;
+    private static readonly UserAgentPolicy _sharedUserAgentPolicy;
     internal static readonly string DefaultUserAgent;
 
     private CustomChainedCredential? _credential;
@@ -31,7 +31,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
         var platform = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
 
         DefaultUserAgent = $"azmcp/{version} ({framework}; {platform})";
-        SharedUserAgentPolicy = new UserAgentPolicy(DefaultUserAgent);
+        _sharedUserAgentPolicy = new UserAgentPolicy(DefaultUserAgent);
     }
 
     protected string UserAgent { get; } = DefaultUserAgent;
@@ -68,7 +68,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
     protected static T AddDefaultPolicies<T>(T clientOptions) where T : ClientOptions
     {
-        clientOptions.AddPolicy(SharedUserAgentPolicy, HttpPipelinePosition.BeforeTransport);
+        clientOptions.AddPolicy(_sharedUserAgentPolicy, HttpPipelinePosition.BeforeTransport);
 
         return clientOptions;
     }

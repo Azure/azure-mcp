@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : BaseKeyValueCommand<KeyValueSetOptions>()
 {
-    private const string _commandTitle = "Set App Configuration Key-Value Setting";
+    private const string CommandTitle = "Set App Configuration Key-Value Setting";
     private readonly Option<string> _valueOption = OptionDefinitions.AppConfig.Value;
     private readonly ILogger<KeyValueSetCommand> _logger = logger;
 
@@ -23,7 +23,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
         label otherwise the default label will be used.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -38,7 +38,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

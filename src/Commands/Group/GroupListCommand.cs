@@ -12,7 +12,7 @@ namespace AzureMcp.Commands.Group;
 
 public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : SubscriptionCommand<BaseGroupOptions>()
 {
-    private const string _commandTitle = "List Resource Groups";
+    private const string CommandTitle = "List Resource Groups";
     private readonly ILogger<GroupListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -24,9 +24,9 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
         returned as a JSON array.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

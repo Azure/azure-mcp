@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Storage.Blob.Container;
 
 public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) : BaseStorageCommand<ContainerListOptions>()
 {
-    private const string _commandTitle = "List Storage Containers";
+    private const string CommandTitle = "List Storage Containers";
     private readonly ILogger<ContainerListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -22,9 +22,9 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         Requires {OptionDefinitions.Storage.AccountName}.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

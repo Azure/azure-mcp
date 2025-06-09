@@ -9,7 +9,7 @@ namespace AzureMcp.Commands.Tools;
 [HiddenCommand]
 public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()
 {
-    private const string _commandTitle = "List Available Tools";
+    private const string CommandTitle = "List Available Tools";
 
     public override string Name => "list";
 
@@ -20,9 +20,9 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
         arguments. Use this to explore the CLI's functionality or to build interactive command interfaces.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

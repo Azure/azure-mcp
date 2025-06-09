@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Monitor.Table;
 
 public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMonitorCommand<TableListOptions>()
 {
-    private const string _commandTitle = "List Log Analytics Tables";
+    private const string CommandTitle = "List Log Analytics Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
     private readonly Option<string> _tableTypeOption = OptionDefinitions.Monitor.TableType;
 
@@ -22,7 +22,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         Returns table names and schemas that can be used for constructing KQL queries.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -31,7 +31,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         command.AddOption(_resourceGroupOption);
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

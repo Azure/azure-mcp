@@ -9,7 +9,7 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : BaseKeyValueCommand<KeyValueShowOptions>()
 {
-    private const string _commandTitle = "Show App Configuration Key-Value Setting";
+    private const string CommandTitle = "Show App Configuration Key-Value Setting";
     private readonly ILogger<KeyValueShowCommand> _logger = logger;
 
     public override string Name => "show";
@@ -21,9 +21,9 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         account name and key. Optionally, you can specify a label otherwise the setting with default label will be retrieved.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -11,7 +11,7 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : BaseAppConfigCommand<KeyValueListOptions>()
 {
-    private const string _commandTitle = "List App Configuration Key-Value Settings";
+    private const string CommandTitle = "List App Configuration Key-Value Settings";
     private readonly ILogger<KeyValueListCommand> _logger = logger;
 
     // KeyValueList has different key and label descriptions, which is why we are defining here instead of using BaseKeyValueCommand
@@ -27,7 +27,7 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         time, and lock status.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -44,7 +44,7 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

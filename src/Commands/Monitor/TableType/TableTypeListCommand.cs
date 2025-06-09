@@ -9,7 +9,7 @@ namespace AzureMcp.Commands.Monitor.TableType;
 
 public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) : BaseMonitorCommand<TableTypeListOptions>()
 {
-    private const string _commandTitle = "List Log Analytics Table Types";
+    private const string CommandTitle = "List Log Analytics Table Types";
     private readonly ILogger<TableTypeListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -17,7 +17,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
     public override string Description =>
         "List available table types in a Log Analytics workspace. Returns table type names.";
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -32,7 +32,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

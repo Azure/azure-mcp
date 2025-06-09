@@ -13,7 +13,7 @@ namespace AzureMcp.Commands.Redis.ManagedRedis;
 /// </summary>
 public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseClusterCommand<DatabaseListOptions>()
 {
-    private const string _commandTitle = "List Redis Cluster Databases";
+    private const string CommandTitle = "List Redis Cluster Databases";
     private readonly ILogger<DatabaseListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -23,9 +23,9 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         List the databases in the specified Redis Cluster resource. Returns an array of Redis database details.
         Use this command to explore which databases are available in your Redis Cluster.
         """;
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

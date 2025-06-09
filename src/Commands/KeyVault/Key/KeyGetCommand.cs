@@ -11,7 +11,7 @@ namespace AzureMcp.Commands.KeyVault.Key;
 
 public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionCommand<KeyGetOptions>
 {
-    private const string _commandTitle = "Get Key Vault Key";
+    private const string CommandTitle = "Get Key Vault Key";
     private readonly ILogger<KeyGetCommand> _logger = logger;
     private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
     private readonly Option<string> _keyOption = OptionDefinitions.KeyVault.KeyName;
@@ -29,7 +29,7 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         - key
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -46,7 +46,7 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

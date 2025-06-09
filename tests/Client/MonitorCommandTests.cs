@@ -114,10 +114,10 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         // Start time for query window - use the current time
         var testStartTime = DateTime.UtcNow;
         Output.WriteLine($"Starting to query for new log (max wait: 60s)...");
-        const int maxWaitTimeSeconds = 60; // Reduced from 120s since we have optimized querying
+        const int MaxWaitTimeSeconds = 60; // Reduced from 120s since we have optimized querying
         var attemptCount = 0;
 
-        while ((DateTime.UtcNow - testStartTime).TotalSeconds < maxWaitTimeSeconds)
+        while ((DateTime.UtcNow - testStartTime).TotalSeconds < MaxWaitTimeSeconds)
         {
             // More aggressive polling at start (1s, 2s, 4s, 8s, 15s...)
             var delaySeconds = Math.Min(Math.Pow(2, attemptCount), 15);
@@ -156,7 +156,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             await Task.Delay(TimeSpan.FromSeconds(delaySeconds), TestContext.Current.CancellationToken);
         }
 
-        Assert.Fail($"No logs found in {TestLogType} table after waiting {maxWaitTimeSeconds} seconds");
+        Assert.Fail($"No logs found in {TestLogType} table after waiting {MaxWaitTimeSeconds} seconds");
     }
 
     [Fact]

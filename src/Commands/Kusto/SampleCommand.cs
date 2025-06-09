@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Kusto;
 
 public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableCommand<SampleOptions>
 {
-    private const string _commandTitle = "Sample Kusto Table Data";
+    private const string CommandTitle = "Sample Kusto Table Data";
     private readonly ILogger<SampleCommand> _logger = logger;
 
     private readonly Option<int> _limitOption = OptionDefinitions.Kusto.Limit;
@@ -37,9 +37,9 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
         Results are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
