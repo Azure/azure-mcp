@@ -12,6 +12,7 @@ using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server;
+
 public class ToolOperationsTest
 {
     // https://json-schema.org/understanding-json-schema/reference/type
@@ -126,15 +127,15 @@ public class ToolOperationsTest
     [Fact]
     public async Task GetsNoToolsForUnknownCommandGroup()
     {
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
-        {
-            CommandGroup = "unknown-group"
-        };
-        var requestContext = new RequestContext<ListToolsRequestParams>(_server);
-        var handler = operations.ToolsCapability.ListToolsHandler;
-        Assert.NotNull(handler);
         var ex = await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
+            var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+            {
+                CommandGroup = "unknown-group"
+            };
+            var requestContext = new RequestContext<ListToolsRequestParams>(_server);
+            var handler = operations.ToolsCapability.ListToolsHandler;
+            Assert.NotNull(handler);
             await handler(requestContext, CancellationToken.None);
         });
         Assert.Contains("unknown-group", ex.Message);
