@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Fixed the issue where queries containing double quotes failed to execute. https://github.com/Azure/azure-mcp/pull/338
+
 ### Other Changes
 
 ## 0.2.0 (Unreleased)
