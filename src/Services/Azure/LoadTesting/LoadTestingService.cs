@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using Azure.Core;
 using Azure.Developer.LoadTesting;
 using AzureMcp.Models.LoadTesting.LoadTest;
