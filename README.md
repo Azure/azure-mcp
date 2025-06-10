@@ -189,7 +189,7 @@ Once you've installed the Azure MCP Server(s), make sure you select GitHub Copil
 
 For a step-by-step installation, follow these instructions:
 
-1. Add `.vscode/mcp.json`:
+- Add `.vscode/mcp.json`:
 ```json
 {
   "servers": {
@@ -207,6 +207,25 @@ For a step-by-step installation, follow these instructions:
 ```
 
 You can optionally set the `--service <service>` flag to install tools for the specified Azure product or service.
+
+- Add `.vscode/mcp.json`:
+```json
+{
+  "servers": {
+    "Azure Best Practices": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure/mcp@latest",
+        "server",
+        "start",
+        "--service",
+        "bestpractices" // Any of the above services can be referenced here
+      ]
+    }
+  }
+}
+```
 
 #### 🐋 Docker Install
 
