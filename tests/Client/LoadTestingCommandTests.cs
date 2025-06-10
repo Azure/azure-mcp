@@ -29,6 +29,7 @@ public class LoadTestingCommandTests : CommandTestsBase,
             {
                 { "subscription", _subscriptionId },
                 { "tenant", Settings.TenantId },
+                { "resource-group", Settings.ResourceGroupName }
             });
 
         // Assert

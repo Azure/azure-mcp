@@ -274,7 +274,7 @@ azmcp loadtesting az --command "<command>"
 
 # Examples:
 # List load tests
-azmcp loadtesting loadtest list --subscription <subscription>
+azmcp loadtesting loadtest list --subscription <subscription> --resource-group <resource-group>
 ```
 
 ### Azure AI Search

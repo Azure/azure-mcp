@@ -13,12 +13,19 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private const string ARMEndpoint = "https://management.azure.com";
     private const string ControlPlaneApiVersion = "2022-12-01";
-    public async Task<List<LoadTestResource>> GetLoadTestsForSubscriptionAsync(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<LoadTestResource>> GetLoadTestsForSubscriptionAsync(string subscriptionId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId);
 
         var credential = await GetCredential(tenant);
-        var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/loadtests?api-version={ControlPlaneApiVersion}";
+        var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}";
+
+        if (!string.IsNullOrEmpty(resourceGroup))
+        {
+            endpoint += $"/resourceGroups/{resourceGroup}";
+        }
+
+        endpoint += $"/providers/Microsoft.LoadTestService/loadTests?api-version={ControlPlaneApiVersion}";
 
         var client = new HttpClient();
         var token = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://management.azure.com/.default" }), CancellationToken.None)).Token;
