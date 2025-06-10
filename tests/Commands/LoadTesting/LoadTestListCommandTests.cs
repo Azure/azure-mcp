@@ -1,11 +1,9 @@
 using System.CommandLine;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AzureMcp.Commands.LoadTesting.LoadTest;
 using AzureMcp.Models.Command;
-using AzureMcp.Models.LoadTesting;
+using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Options;
-using AzureMcp.Options.LoadTesting.LoadTest;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

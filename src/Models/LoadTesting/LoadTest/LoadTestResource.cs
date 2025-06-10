@@ -1,5 +1,5 @@
-namespace AzureMcp.Models.LoadTesting;
 
+namespace AzureMcp.Models.LoadTesting.LoadTest;
 public class LoadTestResource
 {
     public string Id { get; set; } = string.Empty;

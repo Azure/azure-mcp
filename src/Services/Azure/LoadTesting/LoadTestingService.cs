@@ -1,5 +1,6 @@
 using Azure.Core;
-using AzureMcp.Models.LoadTesting;
+using AzureMcp.Models.LoadTesting.LoadTest;
+using AzureMcp.Models.LoadTesting.LoadTestRun;
 using AzureMcp.Options;
 using Azure.Developer.LoadTesting;
 using AzureMcp.Services.Interfaces;
@@ -62,22 +63,30 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         return JsonConvert.DeserializeObject<List<LoadTestResource>>(valueElement.GetRawText()) ?? new List<LoadTestResource>();
     }
 
-    // public async Task<LoadTestRun?> GetLoadTestRunsAsync(string subscription, string testRunId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
-    // {
-    //     ValidateRequiredParameters(subscription, testRunId);
+    public async Task<LoadTestRunResource> GetLoadTestRunAsync(string subscriptionId, string loadTestName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
+        var loadTestResource = await GetLoadTestsAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        if (loadTestResource.Count == 0)
+        {
+            throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+        }
+        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        if (string.IsNullOrEmpty(dataPlaneUri))
+        {
+            throw new Exception($"Data Plane URI for Load Test '{loadTestName}' is not available.");
+        }
+        
+        var credential = await GetCredential(tenant);
+        var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
 
-    //     var credential = await GetCredential(tenant);
-    //     var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}";
+        var loadTestRunResponse = await loadTestClient.GetTestRunAsync(testRunId);
+        if (loadTestRunResponse == null || loadTestRunResponse.IsError)
+        {
+            throw new Exception($"Failed to retrieve Azure Load Test Run: {loadTestRunResponse}");
+        }
 
-    //     if (!string.IsNullOrEmpty(resourceGroup))
-    //     {
-    //         endpoint += $"/resourceGroups/{resourceGroup}";
-    //     }
-
-    //     endpoint += $"/providers/Microsoft.LoadTestService/loadTests/{loadTestName}?api-version={ControlPlaneApiVersion}";
-
-    //     var client = new LoadTestRunClient();
-    //     var token = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://management.azure.com/.default" }), CancellationToken.None)).Token;
-    //     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-    //     client.DefaultRequestHeaders.Add("x-ms-client-request-id", Guid.NewGuid().ToString());
+        var loadTestRun = loadTestRunResponse.Content.ToString();
+        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun);
+    }
 }

@@ -1,5 +1,5 @@
 using AzureMcp.Commands.LoadTesting;
-using AzureMcp.Models.LoadTesting;
+using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Options.LoadTesting.LoadTest;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -20,10 +20,9 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
         
         Required arguments:
         - subscription
-        - tenant
+        - resource-group
 
         Optional arguments:
-        - resource-group
         - load-test-name
         """;
 

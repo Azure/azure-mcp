@@ -1,5 +1,5 @@
 
-namespace AzureMcp.Models.LoadTesting;
+namespace AzureMcp.Models.LoadTesting.LoadTest;
 
 public class LoadTestProperties
 {

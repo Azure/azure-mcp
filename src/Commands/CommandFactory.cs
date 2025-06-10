@@ -424,6 +424,14 @@ public class CommandFactory
 
         resource.AddCommand("list", new LoadTesting.LoadTest.LoadTestListCommand(
             GetLogger<LoadTesting.LoadTest.LoadTestListCommand>()));
+
+        resource = new CommandGroup(
+            "loadtestrun",
+            "Load test run operations - Commands for listing, creating and managing Azure load test runs.");
+        service.AddSubGroup(resource);
+
+        resource.AddCommand("get", new LoadTesting.LoadTestRun.LoadTestRunGetCommand(
+            GetLogger<LoadTesting.LoadTestRun.LoadTestRunGetCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

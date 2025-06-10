@@ -10,6 +10,9 @@ public class LoadTestingCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {
     private readonly string _subscriptionId;
+    private const string LoadTestName = "LoadTestName";
+    private const string LoadTestRunId = "LoadTestRunId";
+
 
     public LoadTestingCommandTests(LiveTestFixture fixture, ITestOutputHelper output)
         : base(fixture, output)
