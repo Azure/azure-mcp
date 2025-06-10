@@ -135,9 +135,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<List<string>> ListServersAsync(string subscriptionId, string resourceGroup, string user)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var serverList = new List<string>();
         await foreach (PostgreSqlFlexibleServerResource server in rg.GetPostgreSqlFlexibleServers().GetAllAsync())
         {
@@ -148,9 +150,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<string> GetServerConfigAsync(string subscriptionId, string resourceGroup, string user, string server)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
         var pgServerData = pgServer.Value.Data;
         var result = $"Server Name: {pgServerData.Name}\n" +
@@ -165,9 +169,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<string> GetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
 
         var configResponse = await pgServer.Value.GetPostgreSqlFlexibleServerConfigurationAsync(param);
