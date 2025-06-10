@@ -28,7 +28,7 @@ public abstract class BaseLoadTestingCommand<
     {
         var options = base.BindOptions(parseResult);
         options.LoadTestName = parseResult.GetValueForOption(_loadTestOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);   
+        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 }

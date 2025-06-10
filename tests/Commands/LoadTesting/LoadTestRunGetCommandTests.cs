@@ -96,7 +96,7 @@ public class LoadTestRunGetCommandTests
         // Assert
         Assert.Equal(400, response.Status);
     }
-    
+
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {

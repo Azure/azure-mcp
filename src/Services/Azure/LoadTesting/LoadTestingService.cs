@@ -1,8 +1,8 @@
 using Azure.Core;
+using Azure.Developer.LoadTesting;
 using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Models.LoadTesting.LoadTestRun;
 using AzureMcp.Options;
-using Azure.Developer.LoadTesting;
 using AzureMcp.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -76,7 +76,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         {
             throw new Exception($"Data Plane URI for Load Test '{loadTestName}' is not available.");
         }
-        
+
         var credential = await GetCredential(tenant);
         var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
 
