@@ -123,6 +123,7 @@ The Azure MCP Server provides tools for interacting with the following Azure ser
 
 ### 📦 Azure Load Testing
 - List load tests
+- Get load test run
 
 ### 🚀 Azure Developer CLI (azd) Extension
 - Execute Azure Developer CLI commands directly
