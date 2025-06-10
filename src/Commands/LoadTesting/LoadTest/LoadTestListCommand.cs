@@ -24,6 +24,7 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
 
         Optional arguments:
         - resource-group
+        - load-test-name
         """;
 
     public override string Title => _commandTitle;
@@ -49,9 +50,10 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
             var service = context.GetService<ILoadTestingService>();
 
             // Call service operation(s)
-            var results = await service.GetLoadTestsForSubscriptionAsync(
+            var results = await service.GetLoadTestsAsync(
                 options.Subscription!,
                 options.ResourceGroup,
+                options.LoadTestName,
                 options.Tenant,
                 options.RetryPolicy);
 

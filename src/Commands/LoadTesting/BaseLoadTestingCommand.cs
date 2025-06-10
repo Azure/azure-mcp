@@ -27,7 +27,7 @@ public abstract class BaseLoadTestingCommand<
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.LoadTestId = parseResult.GetValueForOption(_loadTestOption);
+        options.LoadTestName = parseResult.GetValueForOption(_loadTestOption);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);   
         return options;
     }

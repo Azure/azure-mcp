@@ -6,7 +6,7 @@ namespace AzureMcp.Options.LoadTesting;
 public class BaseLoadTestingOptions : SubscriptionOptions
 {
     /// <summary>
-    /// The ID of the load testing resource.
+    /// The name of the load testing resource.
     /// </summary>
-    public string? LoadTestId { get; set; }
+    public string? LoadTestName { get; set; }
 }

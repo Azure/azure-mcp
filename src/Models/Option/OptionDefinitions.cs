@@ -683,10 +683,10 @@ public static class OptionDefinitions
 
     public static class LoadTesting
     {
-        public const string LoadTestId = "load-test-id";
+        public const string LoadTestName = "load-test-name";
         public static readonly Option<string> LoadTest = new(
-            $"--{LoadTestId}",
-            "The ID of the load test for which you want to fetch the details."
+            $"--{LoadTestName}",
+            "The name of the load test for which you want to fetch the details."
         )
         {
             IsRequired = false
