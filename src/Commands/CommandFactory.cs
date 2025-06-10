@@ -64,6 +64,18 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
+    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string groupName)
+    {
+        foreach (CommandGroup group in _rootGroup.SubGroup)
+        {
+            if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
+            {
+                return CreateCommmandDictionary(group, string.Empty);
+            }
+        }
+
+        throw new KeyNotFoundException($"Group '{groupName}' not found in command groups.");
+    }
 
     private void RegisterCommandGroup()
     {

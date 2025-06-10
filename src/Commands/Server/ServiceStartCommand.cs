@@ -23,6 +23,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private const string _commandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
+    private readonly Option<string?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
 
     public override string Name => "start";
     public override string Description => "Starts Azure MCP Server.";
@@ -33,6 +34,7 @@ public sealed class ServiceStartCommand : BaseCommand
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
+        command.AddOption(_serviceTypeOption);
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -41,10 +43,15 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
+        var service = parseResult.GetValueForOption(_serviceTypeOption) == default
+            ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
+            : parseResult.GetValueForOption(_serviceTypeOption);
+
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
-            Port = port
+            Port = port,
+            Service = service,
         };
 
         using var host = CreateHost(serverOptions);
@@ -60,7 +67,7 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             var builder = WebApplication.CreateBuilder([]);
             Program.ConfigureServices(builder.Services);
-            ConfigureMcpServer(builder.Services, serverOptions.Transport);
+            ConfigureMcpServer(builder.Services, serverOptions);
 
             builder.WebHost
                 .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
@@ -86,13 +93,13 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureServices(services =>
                 {
                     Program.ConfigureServices(services);
-                    ConfigureMcpServer(services, serverOptions.Transport);
+                    ConfigureMcpServer(services, serverOptions);
                 })
                 .Build();
         }
     }
 
-    private static void ConfigureMcpServer(IServiceCollection services, string transport)
+    private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
@@ -111,18 +118,18 @@ public sealed class ServiceStartCommand : BaseCommand
                     Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
                 };
 
+                toolOperations.CommandGroup = options.Service;
                 mcpServerOptions.Capabilities = new ServerCapabilities
                 {
                     Tools = toolOperations.ToolsCapability
                 };
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
-
             });
 
         var mcpServerBuilder = services.AddMcpServer();
 
-        if (transport != TransportTypes.Sse)
+        if (options.Transport != TransportTypes.Sse)
         {
             mcpServerBuilder.WithStdioServerTransport();
         }
