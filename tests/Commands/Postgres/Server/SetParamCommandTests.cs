@@ -35,7 +35,7 @@ public class SetParamCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsSuccessMessage_WhenParamIsSet()
     {
-        var expectedMessage  = "Parameter 'param123' updated successfully to 'newvalue'.";
+        var expectedMessage = "Parameter 'param123' updated successfully to 'newvalue'.";
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "newvalue").Returns(expectedMessage);
 
         var command = new SetParamCommand(_logger);
@@ -109,7 +109,7 @@ public class SetParamCommandTests
         var command = new SetParamCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "max_connections", "--value", "200"]);
         var context = new CommandContext(_serviceProvider);
-        
+
         await command.ExecuteAsync(context, args);
 
         await _postgresService.Received(1).SetServerParameterAsync("sub123", "rg1", "user1", "server123", "max_connections", "200");

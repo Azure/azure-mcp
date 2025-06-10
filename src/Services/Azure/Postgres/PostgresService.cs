@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using Azure.Core;
 using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Services.Interfaces;
 using Npgsql;
-using Azure;
 
 namespace AzureMcp.Services.Azure.Postgres;
 
