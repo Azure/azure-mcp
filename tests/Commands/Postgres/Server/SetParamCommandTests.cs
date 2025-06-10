@@ -35,11 +35,11 @@ public class SetParamCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsSuccessMessage_WhenParamIsSet()
     {
-        var expectedMessage = "Parameter 'param123' updated successfully to 'newvalue'.";
-        _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "newvalue").Returns(expectedMessage);
+        var expectedMessage = "Parameter 'param123' updated successfully to 'value123'.";
+        _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns(expectedMessage);
 
         var command = new SetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "newvalue"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -54,15 +54,15 @@ public class SetParamCommandTests
         Assert.NotNull(result);
         Assert.Equal(expectedMessage, result.Message);
         Assert.Equal("param123", result.Parameter);
-        Assert.Equal("newvalue", result.Value);
+        Assert.Equal("value123", result.Value);
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsNull_WhenParamDoesNotExist()
     {
-        _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "newvalue").Returns("");
+        _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns("");
         var command = new SetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "newvalue"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -89,7 +89,7 @@ public class SetParamCommandTests
             missingParameter == "--user-name" ? "" : "--user-name", "user1",
             missingParameter == "--server" ? "" : "--server", "server123",
             missingParameter == "--param" ? "" : "--param", "param123",
-            missingParameter == "--value" ? "" : "--value", "newvalue"
+            missingParameter == "--value" ? "" : "--value", "value123"
         });
 
         var context = new CommandContext(_serviceProvider);

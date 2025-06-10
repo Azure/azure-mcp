@@ -180,6 +180,7 @@
         "resourcegroup",
         "resourcegroups",
         "servicebus",
+        "setparam",
         "testsettings",
         "vectorizable",
         "Vectorizer",
