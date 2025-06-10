@@ -1,5 +1,4 @@
 {
-    // cspell configuration file
     "version": "0.2",
     "language": "en",
     "dictionaries": [
@@ -23,7 +22,7 @@
         "**/obj/**",
         "**/bin/**",
         "**/.work/**",
-        "**/.dist/**",
+        "**/.dist/**"
     ],
     "dictionaryDefinitions": [
         {
