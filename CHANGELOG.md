@@ -1,6 +1,6 @@
 # Release History
 
-## 0.1.3 (Unreleased)
+## 0.2.1 (Unreleased)
 
 ### Features Added
 
@@ -8,9 +8,19 @@
 
 ### Bugs Fixed
 
-- Fixed failure starting Docker image. https://github.com/Azure/azure-mcp/pull/301
-
 ### Other Changes
+
+## 0.2.0 (Unreleased)
+
+### Features Added
+
+- Support for launching smaller service level MCP servers. https://github.com/Azure/azure-mcp/pull/324
+
+## 0.1.3 (2025-06-05)
+
+### Bugs Fixed
+
+- Fixed failure starting Docker image. https://github.com/Azure/azure-mcp/pull/301
 
 ## 0.1.2 (2025-06-03)
 

@@ -360,6 +360,7 @@ public static class OptionDefinitions
     {
         public const string TransportName = "transport";
         public const string PortName = "port";
+        public const string ServiceName = "service";
 
         public static readonly Option<string> Transport = new(
             $"--{TransportName}",
@@ -377,6 +378,15 @@ public static class OptionDefinitions
         )
         {
             IsRequired = false
+        };
+
+        public static readonly Option<string?> ServiceType = new(
+            $"--{ServiceName}",
+            () => null,
+            "The service to expose on the MCP server."
+        )
+        {
+            IsRequired = false,
         };
     }
 

@@ -31,6 +31,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
 
     public override string Title => _commandTitle;
 
+
     [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {

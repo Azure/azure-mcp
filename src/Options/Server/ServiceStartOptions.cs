@@ -12,4 +12,7 @@ public class ServiceStartOptions
 
     [JsonPropertyName("port")]
     public int Port { get; set; }
+
+    [JsonPropertyName("service")]
+    public string? Service { get; set; } = null;
 }

@@ -25,10 +25,15 @@ This document provides a comprehensive guide for implementing commands in Azure 
      └── BaseCommand
          └── GlobalCommand<TOptions>
              └── SubscriptionCommand<TOptions>
-                 └── Service-specific base commands
-                     └── Resource-specific commands
-     ```   - Commands use primary constructors with ILogger injection and optional parameters (e.g., timeouts)
+                 └── Service-specific base commands (e.g., BaseSqlCommand)
+                     └── Resource-specific commands (e.g., SqlIndexRecommendCommand)
+     ```
+
+   IMPORTANT:
+   - Commands use primary constructors with ILogger injection
    - Classes are always sealed unless explicitly intended for inheritance
+   - Commands inheriting from SubscriptionCommand must handle subscription parameters
+   - Service-specific base commands should add service-wide options
    - Commands are marked with [McpServerTool] attribute to define their characteristics
 
 3. **Command Pattern**
@@ -78,6 +83,12 @@ IMPORTANT:
 - Inherit from appropriate base class (BaseServiceOptions, GlobalOptions, etc.)
 - Never redefine properties from base classes 
 - Make properties nullable if not required
+- Use consistent parameter names across services:
+  - Use `subscription` instead of `subscriptionId`
+  - Use `resourceGroup` instead of `resourceGroupName`
+  - Use singular nouns for resource names (e.g., `server` not `serverName`)
+  - Keep parameter names consistent with Azure SDK parameters when possible
+  - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
 ### 2. Command Class
 
@@ -111,13 +122,13 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     
     protected override {Resource}{Operation}Options BindOptions(ParseResult parseResult)
     {
-        var args = base.BindOptions(parseResult);
-        args.NewOption = parseResult.GetValueForOption(_newOption);
-        return args;
+        var options = base.BindOptions(parseResult);
+        options.NewOption = parseResult.GetValueForOption(_newOption);
+        return options;
     }
 
     [McpServerTool(
-        Destructive = false,     // Set to true for commands that modify resources
+        Destructive = false,     // Set to true for commands that modify resources 
         ReadOnly = true,        // Set to false for commands that modify resources
         Title = _commandTitle)]  // Display name shown in UI
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -126,7 +137,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
 
         try
         {
-            // Required validation step using the base Validate method
+            // Required validation step
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
             {
                 return context.Response;
@@ -135,65 +146,72 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
             // Get the appropriate service from DI
             var service = context.GetService<I{Service}Service>();
             
-            // Call service operation(s)
+            // Call service operation(s) with required parameters
             var results = await service.{Operation}(
-                options.RequiredParam!,
-                options.OptionalParam,
-                options.Subscription!,
-                options.Tenant,
-                options.RetryPolicy);
+                options.RequiredParam!,  // Required parameters end with !
+                options.OptionalParam,   // Optional parameters are nullable
+                options.Subscription!,   // From SubscriptionCommand
+                options.RetryPolicy);    // From GlobalCommand
 
             // Set results if any were returned
             context.Response.Results = results?.Count > 0 ? 
                 ResponseResult.Create(
-                    // Use a strongly-typed result record
                     new {Operation}CommandResult(results),
-                    // Use source generated JsonContext
                     {Service}JsonContext.Default.{Operation}CommandResult) : 
                 null;
         }
         catch (Exception ex)
         {
-            // Log error with context information
-            _logger.LogError(ex, "Error in {Operation}. Options: {Options}", Name, args);
-            // Let base class handle standard error processing
+            // Log error with all relevant context
+            _logger.LogError(ex, 
+                "Error in {Operation}. Required: {Required}, Optional: {Optional}, Options: {@Options}", 
+                Name, options.RequiredParam, options.OptionalParam, options);
             HandleException(context.Response, ex);
         }
 
         return context.Response;
     }
 
-    // Optional: Override HandleException to handle service-specific errors
+    // Implementation-specific error handling
     protected override string GetErrorMessage(Exception ex) => ex switch
     {
-        // Service-specific errors
         ResourceNotFoundException => "Resource not found. Verify the resource exists and you have access.",
         AuthorizationException authEx => 
             $"Authorization failed accessing the resource. Details: {authEx.Message}",
         ServiceException svcEx => svcEx.Message,
-        // Fall back to base handler
         _ => base.GetErrorMessage(ex)
     };
 
     protected override int GetStatusCode(Exception ex) => ex switch  
     {
-        // Map exceptions to HTTP status codes
         ResourceNotFoundException => 404,
         AuthorizationException => 403,
         ServiceException svcEx => svcEx.Status,
-        // Fall back to base handler
         _ => base.GetStatusCode(ex)
     };
 
+    // Strongly-typed result records
     internal record {Resource}{Operation}CommandResult(List<ResultType> Results);
 }
-```
 
 ### 3. Base Service Command Classes
 
 Each service has its own hierarchy of base command classes that inherit from `GlobalCommand` or `SubscriptionCommand`. For example:
 
 ```csharp
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Commands.Subscription;
+using AzureMcp.Models.Option;
+using AzureMcp.Options.{Service};
+using Azure.Core;
+using AzureMcp.Models;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.Commands.{Service};
+
 // Base command for all service commands
 public abstract class Base{Service}Command<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> 
@@ -201,17 +219,39 @@ public abstract class Base{Service}Command<
 {
     protected readonly Option<string> _commonOption = OptionDefinitions.Service.CommonOption;
     protected readonly Option<string> _resourceGroupOption = OptionDefinitions.Common.ResourceGroup;
+    protected virtual bool RequiresResourceGroup => true;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_commonOption);
+
+        // Add resource group option if required
+        if (RequiresResourceGroup)
+        {
+            command.AddOption(_resourceGroupOption);
+        }
+    }
+
+    protected override TOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.CommonOption = parseResult.GetValueForOption(_commonOption);
+
+        if (RequiresResourceGroup)
+        {
+            options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
+        }
+
+        return options;
     }
 }
 
 // Base command for resource-specific commands
-public abstract class Base{Resource}Command<TOptions> : Base{Service}Command<TOptions>
-    where TOptions : Base{Resource}Options, new() 
+public abstract class Base{Resource}Command<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> 
+    : Base{Service}Command<TOptions>
+    where TOptions : Base{Resource}Options, new()
 {
     protected readonly Option<string> _resourceOption = OptionDefinitions.Service.Resource;
     
@@ -219,6 +259,13 @@ public abstract class Base{Resource}Command<TOptions> : Base{Service}Command<TOp
     {
         base.RegisterOptions(command);
         command.AddOption(_resourceOption);
+    }
+
+    protected override TOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.Resource = parseResult.GetValueForOption(_resourceOption);
+        return options;
     }
 }
 ```
