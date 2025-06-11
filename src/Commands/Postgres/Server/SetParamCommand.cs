@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Postgres.Server;
 
 public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServerCommand<SetParamOptions>(logger)
 {
-    private const string _commandTitle = "Set PostgreSQL Server Parameter";
+    private const string CommandTitle = "Set PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = OptionDefinitions.Postgres.Param;
     private readonly Option<string> _valueOption = OptionDefinitions.Postgres.Value;
     public override string Name => "setparam";
@@ -18,7 +18,7 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
     public override string Description =>
         "Sets a specific parameter of a PostgreSQL server to a certain value.";
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -35,7 +35,7 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
         return options;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try
