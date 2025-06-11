@@ -100,7 +100,7 @@ This error indicates that the access token used for authentication does not have
 - **Incorrect Subscription or Tenant Context**  
     Verify that the subscription and tenant where the resource resides are properly specified during the request. When using an LLM (e.g., via Copilot Chat), provide explicit context such as:
 
-    > List all my storage accounts in subscription <subscription-id-or-name>, located in tenant <tenant-id-or-name>.
+    > List all my storage accounts in subscription `<subscription-id-or-name>`, located in tenant `<tenant-id-or-name>`.
 
     This ensures the correct token is fetched for the intended tenant and subscription.
 
