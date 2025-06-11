@@ -6,22 +6,23 @@ using ModelContextProtocol.Client;
 /// <summary>
 /// Represents a command group that provides metadata and MCP client creation.
 /// </summary>
-public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvider
+public sealed class McpCommandGroup(CommandGroup commandGroup, string? entryPoint = null) : IMcpClientProvider
 {
     private readonly CommandGroup _commandGroup = commandGroup;
-    private static readonly string EntryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
-        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
+    private readonly string _entryPoint = entryPoint
+            ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+            ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
 
     /// <summary>
     /// Creates an MCP client from a command group.
-    /// /// </summary>
+    /// </summary>
     public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
         var arguments = new[] { "server", "start", "--service", _commandGroup.Name };
         var transportOptions = new StdioClientTransportOptions
         {
             Name = _commandGroup.Name,
-            Command = EntryPoint,
+            Command = _entryPoint,
             Arguments = arguments,
         };
 

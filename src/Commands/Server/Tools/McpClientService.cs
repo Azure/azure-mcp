@@ -24,7 +24,7 @@ public class McpServerMetadata
 /// <summary>
 /// Provides MCP client instances for various server providers.
 /// </summary>
-public sealed class McpClientProvider : IDisposable
+public sealed class McpClientService : IMcpClientService, IDisposable
 {
     public readonly CommandFactory _commandFactory;
     private readonly Dictionary<string, IMcpClientProvider> _providerMap = new(StringComparer.OrdinalIgnoreCase);
@@ -32,15 +32,15 @@ public sealed class McpClientProvider : IDisposable
     private bool _disposed = false;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="McpClientProvider"/> class.
+    /// Initializes a new instance of the <see cref="McpClientService"/> class.
     /// </summary>
     /// <param name="commandFactory">The command factory used to discover command groups.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="commandFactory"/> is null.</exception>
-    public McpClientProvider(CommandFactory commandFactory)
+    public McpClientService(CommandFactory commandFactory, string entryPoint = "")
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
 
-        var commandGroups = ListCommandGroupProviders();
+        var commandGroups = ListCommandGroupProviders(entryPoint);
         foreach (var provider in commandGroups)
         {
             var meta = provider.CreateMetadata();
@@ -109,12 +109,12 @@ public sealed class McpClientProvider : IDisposable
     /// Discovers all command group providers from the command factory.
     /// </summary>
     /// <returns>A list of <see cref="IMcpClientProvider"/>.</returns>
-    private List<IMcpClientProvider> ListCommandGroupProviders()
+    private List<IMcpClientProvider> ListCommandGroupProviders(string entryPoint = "")
     {
         var results = new List<IMcpClientProvider>();
         foreach (var commandGroup in _commandFactory.RootGroup.SubGroup)
         {
-            results.Add(new McpCommandGroup(commandGroup));
+            results.Add(new McpCommandGroup(commandGroup, entryPoint));
         }
         return results;
     }

@@ -4,6 +4,7 @@ using ModelContextProtocol.Client;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.Server.Tools;
 
 namespace AzureMcp.Commands.Server.Tools;
 
@@ -27,7 +28,7 @@ internal partial class AzureProxyToolSerializationContext : JsonSerializerContex
 /// <param name="mcpClientProvider"></param>
 /// <exception cref="ArgumentNullException"></exception>
 [McpServerToolType]
-public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, McpClientProvider mcpClientProvider) : McpServerTool
+public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientService mcpClientProvider) : McpServerTool
 {
     private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
         .Type(SchemaValueType.Object)
@@ -75,7 +76,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, McpClientProv
 
     private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, AzureProxyToolSerializationContext.Default.JsonSchema);
     private readonly ILogger<AzureProxyTool> _logger = logger;
-    private readonly McpClientProvider _mcpClientProvider = mcpClientProvider;
+    private readonly IMcpClientService _mcpClientProvider = mcpClientProvider;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 

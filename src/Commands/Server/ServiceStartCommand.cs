@@ -103,7 +103,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
-        services.AddSingleton<McpClientProvider>();
+        services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
         services.AddHostedService<OtelService>();
 
