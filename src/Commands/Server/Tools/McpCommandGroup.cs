@@ -9,9 +9,10 @@ using ModelContextProtocol.Client;
 public sealed class McpCommandGroup(CommandGroup commandGroup, string? entryPoint = null) : IMcpClientProvider
 {
     private readonly CommandGroup _commandGroup = commandGroup;
-    private readonly string _entryPoint = entryPoint
-            ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
-            ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
+    private readonly string _entryPoint = string.IsNullOrWhiteSpace(entryPoint)
+        ? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.")
+        : entryPoint;
 
     /// <summary>
     /// Creates an MCP client from a command group.
