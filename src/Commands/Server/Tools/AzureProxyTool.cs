@@ -1,10 +1,10 @@
-using ModelContextProtocol.Protocol;
-using Json.Schema;
-using ModelContextProtocol.Client;
-using Microsoft.Extensions.Logging;
-using ModelContextProtocol;
 using System.Text.Json.Serialization;
 using AzureMcp.Commands.Server.Tools;
+using Json.Schema;
+using Microsoft.Extensions.Logging;
+using ModelContextProtocol;
+using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Commands.Server.Tools;
 

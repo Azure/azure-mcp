@@ -1,8 +1,8 @@
 using AzureMcp.Commands;
-using ModelContextProtocol.Client;
-using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Client;
+using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server.Tools
 {
