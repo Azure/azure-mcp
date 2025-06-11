@@ -92,7 +92,7 @@ To run the Azure MCP server from source for local development:
 Navigate to the MCP server source directory and build the project using the .NET CLI:
 
 ```bash
-dotnet build src
+dotnet build
 ```
 
 #### 2. Configure mcp.json in IDE

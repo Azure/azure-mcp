@@ -95,14 +95,24 @@ This error indicates that the access token used for authentication does not have
 #### Possible Causes and Resolutions
 
 - **Insufficient RBAC Permissions**  
-  Ensure that the service principal or user principal being used for authentication has the appropriate **Role-Based Access Control (RBAC)** permissions assigned at the correct scope (e.g., resource group, subscription, or resource level).
+    Ensure that the service principal or user principal being used for authentication has the appropriate **Role-Based Access Control (RBAC)** permissions assigned at the correct scope (e.g., resource group, subscription, or resource level).
 
 - **Incorrect Subscription or Tenant Context**  
-  Verify that the subscription and tenant where the resource resides are properly specified during the request. When using an LLM (e.g., via Copilot Chat), provide explicit context such as:
+    Verify that the subscription and tenant where the resource resides are properly specified during the request. When using an LLM (e.g., via Copilot Chat), provide explicit context such as:
 
     > List all my storage accounts in subscription <subscription-id-or-name>, located in tenant <tenant-id-or-name>.
 
-  This ensures the correct token is fetched for the intended tenant and subscription.
+    This ensures the correct token is fetched for the intended tenant and subscription.
+
+- **Unintended Account Being Used for Authentication**  
+    If you have multiple accounts signed in to your development environment, it's possible that the authentication process is using a different account than intended.  
+    To ensure the correct account is used, set the following environment variable and restart both your IDE and the MCP server:
+
+    ```bash
+    AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL=true
+    ```
+
+    This will prompt you to select your desired account and use that to authenticate. 
 
 #### Upcoming Enhancement
 
