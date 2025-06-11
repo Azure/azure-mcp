@@ -12,16 +12,15 @@ using Xunit;
 namespace AzureMcp.Tests.Commands.Server;
 
 public class McpServerToolAttributeTests
-{
-    [Fact]
-    public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveTitleProperty()
+{    [Fact]
+    public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveValidTitle()
     {
         // Arrange
         var logger = Substitute.For<ILogger<CommandFactory>>();
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var commandFactory = new CommandFactory(serviceProvider, logger);
 
-        var commandsWithMissingTitles = new List<string>();
+        var titleValidationErrors = new List<string>();
 
         // Act - Get all command types and check their ExecuteAsync methods
         foreach (var (commandName, command) in commandFactory.AllCommands)
@@ -38,108 +37,42 @@ public class McpServerToolAttributeTests
             if (mcpServerToolAttribute == null)
                 continue;
 
-            // If it has the attribute, check if Title property is set
+            var commandTypeName = command.GetType().FullName;
+
+            // Check 1: Title property must not be null or whitespace
             if (string.IsNullOrWhiteSpace(mcpServerToolAttribute.Title))
             {
-                commandsWithMissingTitles.Add($"{command.GetType().FullName}: ExecuteAsync method decorated with McpServerTool attribute but missing Title property");
+                titleValidationErrors.Add($"{commandTypeName}: Missing or empty Title property");
+                continue; // Skip further validation if title is null/empty
             }
-        }
 
-        // Assert
-        Assert.True(commandsWithMissingTitles.Count == 0,
-            $"The following commands have ExecuteAsync methods decorated with McpServerTool attribute but are missing the Title property:\n" +
-            string.Join("\n", commandsWithMissingTitles));
-    }
+            var title = mcpServerToolAttribute.Title.Trim();
 
-    [Fact]
-    public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveNonEmptyTitle()
-    {
-        // Arrange
-        var logger = Substitute.For<ILogger<CommandFactory>>();
-        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
-        var commandFactory = new CommandFactory(serviceProvider, logger);
-
-        var commandsWithEmptyTitles = new List<string>();
-
-        // Act - Get all command types and check their ExecuteAsync methods
-        foreach (var (commandName, command) in commandFactory.AllCommands)
-        {
-            // Get the ExecuteAsync method
-            var executeAsyncMethod = command.GetType().GetMethod("ExecuteAsync");
-
-            if (executeAsyncMethod == null)
-                continue;
-
-            // Check if the method has the McpServerTool attribute
-            var mcpServerToolAttribute = executeAsyncMethod.GetCustomAttribute<McpServerToolAttribute>();
-
-            if (mcpServerToolAttribute == null)
-                continue;
-
-            // If it has the attribute and Title is set, check if it's meaningful (not just whitespace)
-            if (!string.IsNullOrWhiteSpace(mcpServerToolAttribute.Title) &&
-                mcpServerToolAttribute.Title.Trim().Length == 0)
+            // Check 2: Title must not be just whitespace after trimming
+            if (title.Length == 0)
             {
-                commandsWithEmptyTitles.Add($"{command.GetType().FullName}: ExecuteAsync method has McpServerTool attribute with empty or whitespace-only Title");
+                titleValidationErrors.Add($"{commandTypeName}: Title contains only whitespace");
+                continue;
             }
-        }
 
-        // Assert
-        Assert.True(commandsWithEmptyTitles.Count == 0,
-            $"The following commands have ExecuteAsync methods with McpServerTool attribute but empty or whitespace-only Title:\n" +
-            string.Join("\n", commandsWithEmptyTitles));
-    }
-
-    [Fact]
-    public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveMeaningfulTitle()
-    {
-        // Arrange
-        var logger = Substitute.For<ILogger<CommandFactory>>();
-        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
-        var commandFactory = new CommandFactory(serviceProvider, logger);
-
-        var commandsWithGenericTitles = new List<string>();
-
-        // Act - Get all command types and check their ExecuteAsync methods
-        foreach (var (commandName, command) in commandFactory.AllCommands)
-        {
-            // Get the ExecuteAsync method
-            var executeAsyncMethod = command.GetType().GetMethod("ExecuteAsync");
-
-            if (executeAsyncMethod == null)
-                continue;
-
-            // Check if the method has the McpServerTool attribute
-            var mcpServerToolAttribute = executeAsyncMethod.GetCustomAttribute<McpServerToolAttribute>();
-
-            if (mcpServerToolAttribute == null)
-                continue;
-
-            // If it has the attribute and Title is set, check if it's meaningful
-            if (!string.IsNullOrWhiteSpace(mcpServerToolAttribute.Title))
+            // Check 3: Title should be reasonably descriptive (at least 5 characters)
+            if (title.Length < 5)
             {
-                var title = mcpServerToolAttribute.Title.Trim();
+                titleValidationErrors.Add($"{commandTypeName}: Title too short ('{title}') - should be at least 5 characters");
+            }
 
-                // Check for generic/placeholder titles that should be avoided
-                var genericTitles = new[] { "TODO", "PLACEHOLDER", "FIXME", "TBD", "Command", "Tool" };
-
-                if (genericTitles.Any(generic => title.Equals(generic, StringComparison.OrdinalIgnoreCase)))
-                {
-                    commandsWithGenericTitles.Add($"{command.GetType().FullName}: ExecuteAsync method has McpServerTool attribute with generic Title: '{title}'");
-                }
-
-                // Title should be reasonably descriptive (at least 5 characters)
-                if (title.Length < 5)
-                {
-                    commandsWithGenericTitles.Add($"{command.GetType().FullName}: ExecuteAsync method has McpServerTool attribute with very short Title: '{title}' (should be at least 5 characters)");
-                }
+            // Check 4: Title should not be generic/placeholder
+            var genericTitles = new[] { "TODO", "PLACEHOLDER", "FIXME", "TBD", "Command", "Tool" };
+            if (genericTitles.Any(generic => title.Equals(generic, StringComparison.OrdinalIgnoreCase)))
+            {
+                titleValidationErrors.Add($"{commandTypeName}: Title is generic placeholder ('{title}')");
             }
         }
 
         // Assert
-        Assert.True(commandsWithGenericTitles.Count == 0,
-            $"The following commands have ExecuteAsync methods with McpServerTool attribute but generic or very short Title:\n" +
-            string.Join("\n", commandsWithGenericTitles));
+        Assert.True(titleValidationErrors.Count == 0,
+            $"The following commands have ExecuteAsync methods with invalid McpServerTool Title properties:\n" +
+            string.Join("\n", titleValidationErrors));
     }
 
     [Fact]
