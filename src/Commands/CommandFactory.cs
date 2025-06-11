@@ -96,6 +96,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterLoadTestingCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -407,6 +408,30 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterLoadTestingCommands()
+    {
+        var service = new CommandGroup(
+            "loadtesting",
+            "Load Testing operations - Commands for managing Azure Load Testing resources.");
+        _rootGroup.AddSubGroup(service);
+
+        var resource = new CommandGroup(
+            "loadtest",
+            "Load test operations - Commands for listing, creating and managing Azure load tests.");
+        service.AddSubGroup(resource);
+
+        resource.AddCommand("list", new LoadTesting.LoadTest.LoadTestListCommand(
+            GetLogger<LoadTesting.LoadTest.LoadTestListCommand>()));
+
+        resource = new CommandGroup(
+            "loadtestrun",
+            "Load test run operations - Commands for listing, creating and managing Azure load test runs.");
+        service.AddSubGroup(resource);
+
+        resource.AddCommand("get", new LoadTesting.LoadTestRun.LoadTestRunGetCommand(
+            GetLogger<LoadTesting.LoadTestRun.LoadTestRunGetCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

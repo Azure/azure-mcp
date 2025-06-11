@@ -266,6 +266,20 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+
+### Azure Load Testing Operations
+```bash
+# Execute load test command to get all the commands details
+azmcp loadtesting loadtest
+
+# Examples:
+# List load tests
+azmcp loadtesting loadtest list --subscription <subscription> --resource-group <resource-group> --load-test-name <load-test-name>
+
+# Get load test run
+azmcp loadtesting loadtestrun get --subscription <subscription> --resource-group <resource-group> --load-test-name <load-test-name> --load-testrun-id <load-testrun-id>
+```
+
 ### Azure AI Search
 
 ```bash

@@ -86,6 +86,16 @@ module redis 'services/redis.bicep' = {
   }
 }
 
+module loadtesting 'services/loadtesting.bicep' = {
+  name: '${deploymentName}-loadtesting'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
+
 module kusto 'services/kusto.bicep' = {
   name: '${deploymentName}-kusto'
   params: {
