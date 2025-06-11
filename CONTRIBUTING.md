@@ -65,7 +65,8 @@ The project is organized as follows:
 2. Create a feature branch
 3. Make your changes
 4. Write or update tests
-5. Submit a pull request
+5. Test Locally
+6. Submit a pull request
 
 ## Testing
 
@@ -81,6 +82,45 @@ Test requirements:
 - Tests should cover success and error scenarios
 - Mock external service calls
 - Test argument validation
+
+### Testing Local Build with VS Code
+
+To run the Azure MCP server from source for local development:
+
+#### 1. Build the Server
+
+Navigate to the MCP server source directory and build the project using the .NET CLI:
+
+```bash
+dotnet build src
+```
+
+#### 2. Configure mcp.json in IDE
+
+Update your mcp.json to point to the locally built azmcp executable. This setup uses stdio as the communication transport.
+
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start"
+      ]
+    }
+  }
+}
+```
+
+> **Note:** Replace `<absolute-path-to>` with the full path to your built executable.  
+> On **Windows**, use `azmcp.exe`.  
+> On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
+
+#### 3. Start from IDE or Tooling
+
+With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.  
 
 ### Live Tests
 

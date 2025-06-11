@@ -88,6 +88,22 @@ Azure MCP currently relies on **access key-based authentication** for some resou
 
 When these local authorization methods are disabled, any access attempt from Azure MCP using them will result in a `401 Unauthorized` error.
 
+### 403 Forbidden: Authorization Failure
+
+This error indicates that the access token used for authentication does not have sufficient permissions to access the requested resource.
+
+#### Possible Causes and Resolutions
+
+- **Insufficient RBAC Permissions**  
+  Ensure that the service principal or user principal being used for authentication has the appropriate **Role-Based Access Control (RBAC)** permissions assigned at the correct scope (e.g., resource group, subscription, or resource level).
+
+- **Incorrect Subscription or Tenant Context**  
+  Verify that the subscription and tenant where the resource resides are properly specified during the request. When using an LLM (e.g., via Copilot Chat), provide explicit context such as:
+
+    > List all my storage accounts in subscription <subscription-id-or-name>, located in tenant <tenant-id-or-name>.
+
+  This ensures the correct token is fetched for the intended tenant and subscription.
+
 #### Upcoming Enhancement
 
 Support for **Azure Entra ID-based authentication** in these scenarios is to be added in an upcoming release of Azure MCP. This will allow the MCP server to authenticate using federated identity or managed identity flows.
