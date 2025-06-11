@@ -12,7 +12,8 @@ using Xunit;
 namespace AzureMcp.Tests.Commands.Server;
 
 public class McpServerToolAttributeTests
-{    [Fact]
+{
+    [Fact]
     public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveValidTitle()
     {
         // Arrange
