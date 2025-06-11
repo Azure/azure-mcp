@@ -1,34 +1,40 @@
+using Azure.Core;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
 using ModelContextProtocol.Client;
 
-public class McpCommandGroup : IMcpClientProvider
+/// <summary>
+/// Represents a command group that provides metadata and MCP client creation.
+/// </summary>
+public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvider
 {
-    public McpCommandGroup(CommandGroup commandGroup)
-    {
-        _commandGroup = commandGroup ?? throw new ArgumentNullException(nameof(commandGroup));
-    }
+    private readonly CommandGroup _commandGroup = commandGroup;
+    private static readonly string EntryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
 
-    private readonly CommandGroup _commandGroup;
-
-    public async Task<IMcpClient> CreateClientAsync()
+    /// <summary>
+    /// Creates an MCP client from a command group.
+    /// /// </summary>
+    public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
         var arguments = new[] { "server", "start", "--service", _commandGroup.Name };
         var transportOptions = new StdioClientTransportOptions
         {
             Name = _commandGroup.Name,
-            Command = "azmcp",
+            Command = EntryPoint,
             Arguments = arguments,
         };
 
         var clientTransport = new StdioClientTransport(transportOptions);
-        var clientOptions = new McpClientOptions { };
         return await McpClientFactory.CreateAsync(clientTransport, clientOptions);
     }
 
-    public ClientMetadata CreateMetadata()
+    /// <summary>
+    /// Creates metadata for the MCP server provider based on the command group.
+    /// </summary>
+    public McpServerMetadata CreateMetadata()
     {
-        return new ClientMetadata
+        return new McpServerMetadata
         {
             Id = _commandGroup.Name,
             Name = _commandGroup.Name,

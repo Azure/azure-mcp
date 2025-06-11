@@ -1,27 +1,64 @@
 using ModelContextProtocol.Protocol;
 using Json.Schema;
-using Json.More;
 using ModelContextProtocol.Client;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
-using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace AzureMcp.Commands.Server.Tools;
 
-[McpServerToolType]
-[UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
-[UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "<Pending>")]
-public class AzureProxyTool : McpServerTool
+[JsonSerializable(typeof(JsonSchema))]
+[JsonSerializable(typeof(ListToolsResult))]
+[JsonSerializable(typeof(List<McpClientTool>))]
+[JsonSerializable(typeof(Dictionary<string, object?>))]
+[JsonSourceGenerationOptions(
+    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+    WriteIndented = true
+)]
+internal partial class AzureProxyToolSerializationContext : JsonSerializerContext
 {
-    public AzureProxyTool(ILogger<AzureProxyTool> logger, McpClientProvider mcpClientProvider)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _mcpClientProvider = mcpClientProvider ?? throw new ArgumentNullException(nameof(mcpClientProvider));
+}
 
-        _logger.LogInformation("AzureTool initialized.");
-    }
+/// <summary>
+/// Initializes a new instance of the <see cref="AzureProxyTool"/> class.
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="mcpClientProvider"></param>
+/// <exception cref="ArgumentNullException"></exception>
+[McpServerToolType]
+public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, McpClientProvider mcpClientProvider) : McpServerTool
+{
+    private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
+        .Type(SchemaValueType.Object)
+        .Properties(
+            ("intent", new JsonSchemaBuilder()
+                .Type(SchemaValueType.String)
+                .Required()
+                .Description("The intent of the azure operation to perform.")
+            ),
+            ("tool", new JsonSchemaBuilder()
+                .Type(SchemaValueType.String)
+                .Description("The azure tool to use to execute the operation.")
+            ),
+            ("command", new JsonSchemaBuilder()
+                .Type(SchemaValueType.String)
+                .Description("The command to execute against the specified tool.")
+            ),
+            ("parameters", new JsonSchemaBuilder()
+                .Type(SchemaValueType.Object)
+                .Description("The parameters to pass to the tool command.")
+            ),
+            ("learn", new JsonSchemaBuilder()
+                .Type(SchemaValueType.Boolean)
+                .Description("To learn about the tool and its supported child tools and parameters.")
+                .Default(false)
+            )
+        )
+        .AdditionalProperties(false)
+        .Build();
 
-    private static readonly JsonElement ToolCallSchema = new JsonSchemaBuilder()
+    private static readonly JsonSchema ToolCallProxySchema = new JsonSchemaBuilder()
         .Type(SchemaValueType.Object)
         .Properties(
             ("tool", new JsonSchemaBuilder()
@@ -33,62 +70,19 @@ public class AzureProxyTool : McpServerTool
                 .Description("A key/value pair of parameters names nad values to pass to the tool call command.")
             )
         )
-        .Build()
-        .ToJsonDocument()
-        .RootElement;
+        .AdditionalProperties(false)
+        .Build();
 
-    private static readonly string ToolCallSchemaJson = JsonSerializer.Serialize(ToolCallSchema, new JsonSerializerOptions { WriteIndented = true });
-    private readonly ILogger<AzureProxyTool> _logger;
-    private readonly McpClientProvider _mcpClientProvider;
+    private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, AzureProxyToolSerializationContext.Default.JsonSchema);
+    private readonly ILogger<AzureProxyTool> _logger = logger;
+    private readonly McpClientProvider _mcpClientProvider = mcpClientProvider;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 
-    private string GetRootToolsJson()
-    {
-        if (this._cachedRootToolsJson != null)
-        {
-            return this._cachedRootToolsJson;
-        }
-
-        var providerMetadataList = _mcpClientProvider.ListProviderMetadata();
-        var tools = new List<Tool>();
-        foreach (var meta in providerMetadataList)
-        {
-            tools.Add(new Tool
-            {
-                Name = meta.Id,
-                Description = meta.Description,
-            });
-        }
-        var toolsResult = new ListToolsResult { Tools = tools };
-        var toolsJson = JsonSerializer.Serialize(toolsResult, new JsonSerializerOptions { WriteIndented = true });
-        this._cachedRootToolsJson = toolsJson;
-
-        return toolsJson;
-    }
-
-    private async Task<string> GetToolListJsonAsync(string tool)
-    {
-        if (this._cachedToolListsJson.TryGetValue(tool, out var cachedJson))
-        {
-            return cachedJson;
-        }
-
-        var client = await _mcpClientProvider.GetProviderClientAsync(tool);
-        if (client == null)
-        {
-            return string.Empty;
-        }
-
-        var listTools = await client.ListToolsAsync();
-        var toolsJson = JsonSerializer.Serialize(listTools, new JsonSerializerOptions { WriteIndented = true });
-        this._cachedToolListsJson[tool] = toolsJson;
-        return toolsJson;
-    }
-
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "<Pending>")]
-    public override Tool ProtocolTool => new Tool
+    /// <summary>
+    /// Gets the protocol tool definition for Azure operations.
+    /// </summary>
+    public override Tool ProtocolTool => new()
     {
         Name = "azure",
         Description = """
@@ -102,38 +96,15 @@ public class AzureProxyTool : McpServerTool
             Always include the "intent" parameter to specify the operation you want to perform.
         """,
         Annotations = new ToolAnnotations(),
-        InputSchema = new JsonSchemaBuilder()
-            .Type(SchemaValueType.Object)
-            .Properties(
-                ("intent", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Required()
-                    .Description("The intent of the azure operation to perform.")
-                ),
-                ("tool", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The azure tool to use to execute the operation.")
-                ),
-                ("command", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.String)
-                    .Description("The command to execute against the specified tool.")
-                ),
-                ("parameters", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Object)
-                    .Description("The parameters to pass to the tool command.")
-                ),
-                ("learn", new JsonSchemaBuilder()
-                    .Type(SchemaValueType.Boolean)
-                    .Description("To learn about the tool and its supported child tools and parameters.")
-                    .Default(false)
-                )
-            )
-            .AdditionalProperties(false)
-            .Build()
-            .ToJsonDocument()
-            .RootElement
+        InputSchema = JsonSerializer.SerializeToElement(ToolSchema, AzureProxyToolSerializationContext.Default.JsonSchema),
     };
 
+    /// <summary>
+    /// Handles invocation of the Azure proxy tool, routing requests to the correct Azure tool or command.
+    /// </summary>
+    /// <param name="request">The request context containing parameters and metadata.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A <see cref="CallToolResponse"/> representing the result of the operation.</returns>
     public override async ValueTask<CallToolResponse> InvokeAsync(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
     {
         var args = request.Params?.Arguments;
@@ -167,13 +138,6 @@ public class AzureProxyTool : McpServerTool
             learn = true;
         }
 
-        _logger.LogDebug("InvokeAsync called: Intent={Intent}, Learn={Learn}, Tool={Tool}, Command={Command}",
-            intent,
-            learn,
-            tool,
-            command
-        );
-
         if (learn && string.IsNullOrEmpty(tool) && string.IsNullOrEmpty(command))
         {
             return await RootLearnModeAsync(request, intent ?? "", cancellationToken);
@@ -204,6 +168,51 @@ public class AzureProxyTool : McpServerTool
         };
     }
 
+    private string GetRootToolsJson()
+    {
+        if (_cachedRootToolsJson != null)
+        {
+            return _cachedRootToolsJson;
+        }
+
+        var providerMetadataList = _mcpClientProvider.ListProviderMetadata();
+        var tools = new List<Tool>();
+        foreach (var meta in providerMetadataList)
+        {
+            tools.Add(new Tool
+            {
+                Name = meta.Id,
+                Description = meta.Description,
+            });
+        }
+        var toolsResult = new ListToolsResult { Tools = tools };
+        var toolsJson = JsonSerializer.Serialize(toolsResult, AzureProxyToolSerializationContext.Default.ListToolsResult);
+        _cachedRootToolsJson = toolsJson;
+
+        return toolsJson;
+    }
+
+    private async Task<string> GetToolListJsonAsync(RequestContext<CallToolRequestParams> request, string tool)
+    {
+        if (_cachedToolListsJson.TryGetValue(tool, out var cachedJson))
+        {
+            return cachedJson;
+        }
+
+        var clientOptions = CreateClientOptions(request.Server);
+        var client = await _mcpClientProvider.GetProviderClientAsync(tool, clientOptions);
+        if (client == null)
+        {
+            return string.Empty;
+        }
+
+        var listTools = await client.ListToolsAsync();
+        var toolsJson = JsonSerializer.Serialize(listTools, AzureProxyToolSerializationContext.Default.ListMcpClientTool);
+        _cachedToolListsJson[tool] = toolsJson;
+
+        return toolsJson;
+    }
+
     private async Task<CallToolResponse> RootLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, CancellationToken cancellationToken)
     {
         var toolsJson = GetRootToolsJson();
@@ -223,7 +232,7 @@ public class AzureProxyTool : McpServerTool
             ]
         };
         var response = learnResponse;
-        if (SupportsSampling(request) && !string.IsNullOrWhiteSpace(intent))
+        if (SupportsSampling(request.Server) && !string.IsNullOrWhiteSpace(intent))
         {
             var toolName = await GetToolNameFromIntentAsync(request, intent, toolsJson, cancellationToken);
             if (toolName != null)
@@ -231,12 +240,13 @@ public class AzureProxyTool : McpServerTool
                 response = await ToolLearnModeAsync(request, intent, toolName, cancellationToken);
             }
         }
+
         return response;
     }
 
     private async Task<CallToolResponse> ToolLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, CancellationToken cancellationToken)
     {
-        var toolsJson = await GetToolListJsonAsync(tool);
+        var toolsJson = await GetToolListJsonAsync(request, tool);
         if (string.IsNullOrEmpty(toolsJson))
         {
             return await RootLearnModeAsync(request, intent, cancellationToken);
@@ -258,8 +268,9 @@ public class AzureProxyTool : McpServerTool
                 }
             ]
         };
+
         var response = learnResponse;
-        if (SupportsSampling(request) && !string.IsNullOrWhiteSpace(intent))
+        if (SupportsSampling(request.Server) && !string.IsNullOrWhiteSpace(intent))
         {
             var (commandName, parameters) = await GetCommandAndParametersFromIntentAsync(request, intent, tool, toolsJson, cancellationToken);
             if (commandName != null)
@@ -276,14 +287,17 @@ public class AzureProxyTool : McpServerTool
 
         try
         {
-            client = await _mcpClientProvider.GetProviderClientAsync(tool);
+            var clientOptions = CreateClientOptions(request.Server);
+            client = await _mcpClientProvider.GetProviderClientAsync(tool, clientOptions);
             if (client == null)
             {
+                _logger.LogError("Failed to get provider client for tool: {Tool}", tool);
                 return await RootLearnModeAsync(request, intent, cancellationToken);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Exception thrown while getting provider client for tool: {Tool}", tool);
             return await RootLearnModeAsync(request, intent, cancellationToken);
         }
 
@@ -304,6 +318,7 @@ public class AzureProxyTool : McpServerTool
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
             return new CallToolResponse
             {
                 Content =
@@ -323,10 +338,9 @@ public class AzureProxyTool : McpServerTool
         }
     }
 
-    // --- Private helper methods moved to bottom ---
-    private static bool SupportsSampling(RequestContext<CallToolRequestParams> request)
+    private static bool SupportsSampling(IMcpServer server)
     {
-        return request.Server?.ClientCapabilities?.Sampling != null;
+        return server?.ClientCapabilities?.Sampling != null;
     }
 
     private async Task<string?> GetToolNameFromIntentAsync(RequestContext<CallToolRequestParams> request, string intent, string toolsJson, CancellationToken cancellationToken)
@@ -338,7 +352,7 @@ public class AzureProxyTool : McpServerTool
             new ProgressNotificationValue
             {
                 Progress = 0f,
-                Message = $"Learning about azure capabilities...",
+                Message = $"Learning about Azure capabilities...",
             }, cancellationToken);
         }
 
@@ -379,12 +393,12 @@ public class AzureProxyTool : McpServerTool
         }
         catch
         {
-            // ignore and return null
+            _logger.LogError("Failed to get tool name from intent: {Intent}", intent);
         }
+
         return null;
     }
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
     private async Task<(string? commandName, Dictionary<string, object?> parameters)> GetCommandAndParametersFromIntentAsync(
         RequestContext<CallToolRequestParams> request,
         string intent,
@@ -404,7 +418,7 @@ public class AzureProxyTool : McpServerTool
         }
 
         var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, new JsonSerializerOptions { WriteIndented = true });
+        var toolParamsJson = JsonSerializer.Serialize(toolParams, AzureProxyToolSerializationContext.Default.DictionaryStringObject);
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -426,7 +440,7 @@ public class AzureProxyTool : McpServerTool
                             - If no command matches, return JSON schema with "Unknown" tool name.
 
                             Result Schema:
-                            {ToolCallSchemaJson}
+                            {ToolCallProxySchemaJson}
 
                             Intent:
                             {intent}
@@ -446,7 +460,7 @@ public class AzureProxyTool : McpServerTool
             var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
             var toolCallJson = samplingResponse.Content.Text?.Trim();
             string? commandName = null;
-            Dictionary<string, object?> parameters = new();
+            Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))
             {
                 using var doc = JsonDocument.Parse(toolCallJson);
@@ -457,7 +471,7 @@ public class AzureProxyTool : McpServerTool
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize<Dictionary<string, object?>>(paramsProp.GetRawText()) ?? new();
+                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), AzureProxyToolSerializationContext.Default.DictionaryStringObject) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -467,19 +481,30 @@ public class AzureProxyTool : McpServerTool
         }
         catch
         {
-            // ignore and return default
+            _logger.LogError("Failed to get command and parameters from intent: {Intent} for tool: {Tool}", intent, tool);
         }
+
         return (null, new Dictionary<string, object?>());
     }
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
     private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize<Dictionary<string, object?>>(parametersElem.GetRawText()) ?? new();
+            return JsonSerializer.Deserialize(parametersElem.GetRawText(), AzureProxyToolSerializationContext.Default.DictionaryStringObject) ?? [];
         }
 
-        return new Dictionary<string, object?>();
+        return [];
+    }
+
+    private McpClientOptions CreateClientOptions(IMcpServer server)
+    {
+        var clientOptions = new McpClientOptions
+        {
+            ClientInfo = server.ClientInfo,
+            Capabilities = new ClientCapabilities(),
+        };
+
+        return clientOptions;
     }
 }
