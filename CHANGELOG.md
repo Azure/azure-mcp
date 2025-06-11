@@ -10,13 +10,11 @@
 
 ### Other Changes
 
-## 0.2.0 (Unreleased)
+## 0.2.0 (2025-06-09)
 
 ### Features Added
 
 - Support for launching smaller service level MCP servers. https://github.com/Azure/azure-mcp/pull/324
-
-## 0.1.3 (2025-06-05)
 
 ### Bugs Fixed
 

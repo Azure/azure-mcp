@@ -15,12 +15,14 @@ public class ToolOperations
     private readonly CommandFactory _commandFactory;
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
     private readonly ILogger<ToolOperations> _logger;
+    private string _commandGroup = string.Empty;
 
     public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ILogger<ToolOperations> logger)
     {
         _serviceProvider = serviceProvider;
         _commandFactory = commandFactory;
         _logger = logger;
+        _toolCommands = _commandFactory.AllCommands;
 
         ToolsCapability = new ToolsCapability
         {
@@ -31,20 +33,26 @@ public class ToolOperations
 
     public ToolsCapability ToolsCapability { get; }
 
-    public string? CommandGroup { get; set; }
+    public string? CommandGroup
+    {
+        get => _commandGroup;
+        set
+        {
+            _commandGroup = value ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(_commandGroup))
+            {
+                _toolCommands = _commandFactory.AllCommands;
+            }
+            else
+            {
+                _toolCommands = _commandFactory.GroupCommands(_commandGroup);
+            }
+        }
+    }
 
     private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(CommandGroup))
-        {
-            _toolCommands = _commandFactory.AllCommands;
-        }
-        else
-        {
-            _toolCommands = _commandFactory.GroupCommands(CommandGroup);
-        }
-
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
             .ToList();
