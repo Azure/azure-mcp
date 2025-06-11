@@ -202,7 +202,7 @@ public class PostgresService : BaseAzureService, IPostgresService
         var configData = new PostgreSqlFlexibleServerConfigurationData
         {
             Value = value,
-            Source = configResponse.Value.Data.Source
+            Source = "user-override"
         };
 
         var updateOperation = await configResponse.Value.UpdateAsync(WaitUntil.Completed, configData);
