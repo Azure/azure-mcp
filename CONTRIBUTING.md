@@ -114,13 +114,40 @@ Update your mcp.json to point to the locally built azmcp executable. This setup 
 }
 ```
 
-> **Note:** Replace `<absolute-path-to>` with the full path to your built executable.  
-> On **Windows**, use `azmcp.exe`.  
+An optional `--service` parameter can also be set to minimize the number of loaded tools for the MCP server.
+
+
+
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "<service-name>"
+      ]
+    }
+  }
+}
+```
+
+> **Note:** Replace `<absolute-path-to>` with the full path to your built executable.
+> On **Windows**, use `azmcp.exe`.
 > On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
+
+> **Note:** Replace `<service-name>` with an available top level command group.
+> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+>
+> To enable single tool proxy mode set `--service` parameter to `azure`.
+> This will enable `azdmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
 
 #### 3. Start from IDE or Tooling
 
-With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.  
+With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.
 
 ### Live Tests
 

@@ -25,8 +25,17 @@ The following options are available for all commands:
 ### Server Operations
 ```bash
 # Start the MCP Server
-azmcp server start [--transport <transport>]
+azmcp server start \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--service <service-name>]
 ```
+
+> **Note:** Replace `<service-name>` with an available top level command group.
+> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+>
+> To enable single tool proxy mode set `--service` parameter to `azure`.
+> This will enable `azdmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
 
 ### Subscription Management
 ```bash

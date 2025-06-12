@@ -94,25 +94,25 @@ This error indicates that the access token used for authentication does not have
 
 #### Possible Causes and Resolutions
 
-- **Insufficient RBAC Permissions**  
+- **Insufficient RBAC Permissions**
     Ensure that the service principal or user principal being used for authentication has the appropriate **Role-Based Access Control (RBAC)** permissions assigned at the correct scope (e.g., resource group, subscription, or resource level).
 
-- **Incorrect Subscription or Tenant Context**  
+- **Incorrect Subscription or Tenant Context**
     Verify that the subscription and tenant where the resource resides are properly specified during the request. When using an LLM (e.g., via Copilot Chat), provide explicit context such as:
 
     > List all my storage accounts in subscription `<subscription-id-or-name>`, located in tenant `<tenant-id-or-name>`.
 
     This ensures the correct token is fetched for the intended tenant and subscription.
 
-- **Unintended Account Being Used for Authentication**  
-    If you have multiple accounts signed in to your development environment, it's possible that the authentication process is using a different account than intended.  
+- **Unintended Account Being Used for Authentication**
+    If you have multiple accounts signed in to your development environment, it's possible that the authentication process is using a different account than intended.
     To ensure the correct account is used, set the following environment variable and restart both your IDE and the MCP server:
 
     ```bash
     AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL=true
     ```
 
-    This will prompt you to select your desired account and use that to authenticate. 
+    This will prompt you to select your desired account and use that to authenticate.
 
 #### Upcoming Enhancement
 
@@ -142,3 +142,42 @@ To resolve this issue, you can:
 
 By default, Azure MCP Server communicates with MCP Clients via standard I/O. Any logs output to standard I/O are subject to interpretation from the MCP Client. See [Logging](#logging) on how to view logs.
 
+### Can I select what tools to load in the MCP server?
+
+Yes, you can enable multiple MCP servers only loading in the services you care most about.
+In this example 2 MCP servers are registered that only expose `storage` and `keyvault` tools.
+
+```json
+{
+  "servers": {
+    "Azure Storage": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "storage"
+      ]
+    },
+    "Azure KeyVault": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "keyvault"
+      ]
+    }
+  }
+}
+```
+
+### Why does VS Code only show a subset of tools available?
+
+The Azure MCP Server can be run in multiple modes. Review your MCP configuration to ensure the it matches your expectations.
+
+- `azmcp server start` - Launches an MCP server with all tools enabled.
+- `azmcp server start --service <service-name>` - Launches and MCP server with tools for the specified service, ex) `storage`, `keyvault`
+- `azmcp server start --service azure` - Launches an MCP server with a single `azure` tool which perform internal dynamic proxy and tool selection.
