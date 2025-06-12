@@ -46,8 +46,10 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 
             // Use the built azmcp.exe as the entry point for testing (should be in the same directory as the test exe)
             var testBinDir = AppContext.BaseDirectory;
-            var entryPoint = Path.Combine(testBinDir, "azmcp.exe");
-            Assert.True(File.Exists(entryPoint), $"azmcp.exe not found at {entryPoint}");
+            var exeName = OperatingSystem.IsWindows() ? "azmcp.exe" : "azmcp";
+            var entryPoint = Path.Combine(testBinDir, exeName);
+            Assert.True(File.Exists(entryPoint), $"{exeName} not found at {entryPoint}");
+
             var mcpCommandGroup = new McpCommandGroup(storageGroup, entryPoint);
             var options = new McpClientOptions();
 

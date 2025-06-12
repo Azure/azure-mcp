@@ -22,7 +22,8 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             _commandFactory = new CommandFactory(services, logger);
 
             var testBinDir = AppContext.BaseDirectory;
-            _entryPoint = Path.Combine(testBinDir, "azmcp.exe");
+            var exeName = OperatingSystem.IsWindows() ? "azmcp.exe" : "azmcp";
+            _entryPoint = Path.Combine(testBinDir, exeName);
         }
 
         [Fact]
