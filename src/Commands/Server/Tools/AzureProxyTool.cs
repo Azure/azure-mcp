@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using AzureMcp.Commands.Server.Tools;
 using Json.Schema;
@@ -25,10 +28,10 @@ internal partial class AzureProxyToolSerializationContext : JsonSerializerContex
 /// Initializes a new instance of the <see cref="AzureProxyTool"/> class.
 /// </summary>
 /// <param name="logger"></param>
-/// <param name="mcpClientProvider"></param>
+/// <param name="mcpClientService"></param>
 /// <exception cref="ArgumentNullException"></exception>
 [McpServerToolType]
-public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientService mcpClientProvider) : McpServerTool
+public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientService mcpClientService) : McpServerTool
 {
     private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
         .Type(SchemaValueType.Object)
@@ -76,7 +79,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
 
     private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, AzureProxyToolSerializationContext.Default.JsonSchema);
     private readonly ILogger<AzureProxyTool> _logger = logger;
-    private readonly IMcpClientService _mcpClientProvider = mcpClientProvider;
+    private readonly IMcpClientService _mcpClientProvider = mcpClientService;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 

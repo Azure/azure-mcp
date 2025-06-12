@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
 using Microsoft.Extensions.DependencyInjection;
