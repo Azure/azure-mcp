@@ -35,7 +35,7 @@ azmcp server start \
 > Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
 >
 > To enable single tool proxy mode set `--service` parameter to `azure`.
-> This will enable `azdmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
+> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
 
 ### Subscription Management
 ```bash
