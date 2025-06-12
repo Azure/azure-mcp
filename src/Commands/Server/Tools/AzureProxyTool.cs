@@ -177,7 +177,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         }
 
         var providerMetadataList = _mcpClientProvider.ListProviderMetadata();
-        var tools = new List<Tool>();
+        var tools = new List<Tool>(providerMetadataList.Count);
         foreach (var meta in providerMetadataList)
         {
             tools.Add(new Tool
@@ -304,17 +304,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
 
         try
         {
-            var progressToken = request.Params?.Meta?.ProgressToken;
-            if (progressToken != null)
-            {
-                await request.Server.NotifyProgressAsync(progressToken.Value,
-                new ProgressNotificationValue
-                {
-                    Progress = 0f,
-                    Message = $"Calling {tool} {command}...",
-                }, cancellationToken);
-            }
-
+            await NotifyProgressAsync(request, $"Calling {tool} {command}...", cancellationToken);
             return await client.CallToolAsync(command, parameters, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
@@ -344,18 +334,25 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         return server?.ClientCapabilities?.Sampling != null;
     }
 
-    private async Task<string?> GetToolNameFromIntentAsync(RequestContext<CallToolRequestParams> request, string intent, string toolsJson, CancellationToken cancellationToken)
+    private static async Task NotifyProgressAsync(RequestContext<CallToolRequestParams> request, string message, CancellationToken cancellationToken)
     {
         var progressToken = request.Params?.Meta?.ProgressToken;
-        if (progressToken != null)
+        if (progressToken == null)
         {
-            await request.Server.NotifyProgressAsync(progressToken.Value,
+            return;
+        }
+
+        await request.Server.NotifyProgressAsync(progressToken.Value,
             new ProgressNotificationValue
             {
                 Progress = 0f,
-                Message = $"Learning about Azure capabilities...",
+                Message = message,
             }, cancellationToken);
-        }
+    }
+
+    private async Task<string?> GetToolNameFromIntentAsync(RequestContext<CallToolRequestParams> request, string intent, string toolsJson, CancellationToken cancellationToken)
+    {
+        await NotifyProgressAsync(request, "Learning about Azure capabilities...", cancellationToken);
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -407,16 +404,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         string toolsJson,
         CancellationToken cancellationToken)
     {
-        var progressToken = request.Params?.Meta?.ProgressToken;
-        if (progressToken != null)
-        {
-            await request.Server.NotifyProgressAsync(progressToken.Value,
-            new ProgressNotificationValue
-            {
-                Progress = 0f,
-                Message = $"Learning about {tool} capabilities...",
-            }, cancellationToken);
-        }
+        await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
         var toolParams = GetParametersDictionary(request.Params?.Arguments);
         var toolParamsJson = JsonSerializer.Serialize(toolParams, AzureProxyToolSerializationContext.Default.DictionaryStringObject);
