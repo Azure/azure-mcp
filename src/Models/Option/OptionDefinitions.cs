@@ -695,6 +695,7 @@ public static class OptionDefinitions
     {
         public const string LoadTestName = "load-test-name";
         public const string LoadTestRunId = "load-testrun-id";
+        public const string TestId = "load-test-id";
         public static readonly Option<string> LoadTest = new(
             $"--{LoadTestName}",
             "The name of the load test for which you want to fetch the details."
@@ -706,6 +707,13 @@ public static class OptionDefinitions
         public static readonly Option<string> LoadTestRun = new(
             $"--{LoadTestRunId}",
             "The ID of the load test run for which you want to fetch the details."
+        )
+        {
+            IsRequired = true
+        };
+        public static readonly Option<string> LoadTestId = new(
+            $"--{TestId}",
+            "The ID of the load test for which you want to fetch the details."
         )
         {
             IsRequired = true

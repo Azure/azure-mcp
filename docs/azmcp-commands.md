@@ -278,6 +278,9 @@ azmcp loadtesting loadtest list --subscription <subscription> --resource-group <
 
 # Get load test run
 azmcp loadtesting loadtestrun get --subscription <subscription> --resource-group <resource-group> --load-test-name <load-test-name> --load-testrun-id <load-testrun-id>
+
+# Create load test run
+azmcp loadtesting loadtestrun create --subscription <subscription> --resource-group <resource-group> --load-test-name <load-test-name> --load-test-id <load-test-id> --load-testrun-id <load-testrun-id>
 ```
 
 ### Azure AI Search

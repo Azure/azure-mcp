@@ -90,6 +90,40 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         }
 
         var loadTestRun = loadTestRunResponse.Content.ToString();
-        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun);
+        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun) ?? new LoadTestRunResource();
+    }
+    
+    public async Task<LoadTestRunResource> CreateLoadTestRunAsync(string subscriptionId, string loadTestName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
+        var loadTestResource = await GetLoadTestsAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        if (loadTestResource.Count == 0)
+        {
+            throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+        }
+        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        if (string.IsNullOrEmpty(dataPlaneUri))
+        {
+            throw new Exception($"Data Plane URI for Load Test '{loadTestName}' is not available.");
+        }
+
+        var credential = await GetCredential(tenant);
+        var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
+
+        LoadTestRunCreateRequest createRequest = new LoadTestRunCreateRequest
+        {
+            TestId = testId,
+            DisplayName = "TestRun_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
+        };
+
+        RequestContent content = RequestContent.Create(JsonConvert.SerializeObject(createRequest));
+        var loadTestRunResponse = await loadTestClient.BeginTestRunAsync(0, testRunId, content);
+        if (loadTestRunResponse == null)
+        {
+            throw new Exception($"Failed to retrieve Azure Load Test Run: {loadTestRunResponse}");
+        }
+
+        var loadTestRun = loadTestRunResponse.Value.ToString();
+        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun) ?? new LoadTestRunResource();
     }
 }
