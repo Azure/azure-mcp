@@ -9,6 +9,7 @@
 ### Bugs Fixed
 
 - Fixed the issue where queries containing double quotes failed to execute. https://github.com/Azure/azure-mcp/pull/338
+- Enables dynamic proxy mode within single "azure" tool. https://github.com/Azure/azure-mcp/pull/325
 
 ### Other Changes
 
