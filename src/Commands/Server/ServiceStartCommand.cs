@@ -103,39 +103,54 @@ public sealed class ServiceStartCommand : BaseCommand
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
+        services.AddSingleton<ProxyToolOperations>();
         services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
         services.AddHostedService<OtelService>();
 
-        if (options.Service == "azure")
+        var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var assemblyName = entryAssembly?.GetName();
+        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+
+        mcpServerOptionsBuilder.Configure(mcpServerOptions =>
         {
-            services.AddSingleton<McpServerTool, AzureProxyTool>();
-        }
-
-        services.AddOptions<McpServerOptions>()
-            .Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
+            mcpServerOptions.ProtocolVersion = "2024-11-05";
+            mcpServerOptions.ServerInfo = new Implementation
             {
-                var entryAssembly = Assembly.GetEntryAssembly();
-                var assemblyName = entryAssembly?.GetName();
-                var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+                Name = serverName,
+                Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
+            };
+        });
 
-                mcpServerOptions.ServerInfo = new Implementation
-                {
-                    Name = serverName,
-                    Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
-                };
+        if (options.Service == "proxy")
+        {
+            mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
+            {
 
-                if (options.Service != "azure")
+                mcpServerOptions.Capabilities = new ServerCapabilities
                 {
-                    toolOperations.CommandGroup = options.Service;
-                    mcpServerOptions.Capabilities = new ServerCapabilities
+                    Tools = new ToolsCapability()
                     {
-                        Tools = toolOperations.ToolsCapability
-                    };
-                }
+                        CallToolHandler = toolOperations.CallToolHandler,
+                        ListToolsHandler = toolOperations.ListToolsHandler,
+                    }
+                };
+            });
+        }
+        else
+        {
+            mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
+            {
+                toolOperations.CommandGroup = options.Service;
+                mcpServerOptions.Capabilities = new ServerCapabilities
+                {
+                    Tools = toolOperations.ToolsCapability
+                };
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
             });
+        }
 
         var mcpServerBuilder = services.AddMcpServer();
 

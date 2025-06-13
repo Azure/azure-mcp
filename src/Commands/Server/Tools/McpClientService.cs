@@ -44,10 +44,16 @@ public sealed class McpClientService : IMcpClientService, IDisposable
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
 
         var commandGroups = ListCommandGroupProviders(entryPoint);
-        foreach (var provider in commandGroups)
+        var remoteMcpServers = ListRemoteMcpServers();
+
+        var allProviders = new List<IMcpClientProvider>();
+        allProviders.AddRange(commandGroups);
+        allProviders.AddRange(remoteMcpServers);
+
+        foreach (var provider in allProviders)
         {
-            var meta = provider.CreateMetadata();
-            _providerMap[meta.Id] = provider;
+            var metadata = provider.CreateMetadata();
+            _providerMap[metadata.Id] = provider;
         }
     }
 
@@ -114,11 +120,27 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// <returns>A list of <see cref="IMcpClientProvider"/>.</returns>
     private List<IMcpClientProvider> ListCommandGroupProviders(string entryPoint = "")
     {
-        var results = new List<IMcpClientProvider>();
-        foreach (var commandGroup in _commandFactory.RootGroup.SubGroup)
+        var ignoreCommandGroups = new List<string> { "extension", "server", "tools" };
+
+        return _commandFactory.RootGroup.SubGroup
+            .Where(group => !ignoreCommandGroups.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
+            .Select(group => new McpCommandGroup(group, entryPoint))
+            .Cast<IMcpClientProvider>()
+            .ToList();
+    }
+
+    private List<IMcpClientProvider> ListRemoteMcpServers()
+    {
+        var results = new List<IMcpClientProvider>
         {
-            results.Add(new McpCommandGroup(commandGroup, entryPoint));
-        }
+            new RemoteMcpServer(new RemoveMcpServerMetadata
+            {
+                Name = "learn",
+                Description = "Finds relevant documentation from Microsoft Learn for Azure.",
+                Endpoint = "https://learn.microsoft.com/api/mcp",
+            })
+        };
+
         return results;
     }
 }

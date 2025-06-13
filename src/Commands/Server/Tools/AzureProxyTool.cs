@@ -79,7 +79,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
 
     private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, AzureProxyToolSerializationContext.Default.JsonSchema);
     private readonly ILogger<AzureProxyTool> _logger = logger;
-    private readonly IMcpClientService _mcpClientProvider = mcpClientService;
+    private readonly IMcpClientService _mcpClientService = mcpClientService;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 
@@ -179,7 +179,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
             return _cachedRootToolsJson;
         }
 
-        var providerMetadataList = _mcpClientProvider.ListProviderMetadata();
+        var providerMetadataList = _mcpClientService.ListProviderMetadata();
         var tools = new List<Tool>(providerMetadataList.Count);
         foreach (var meta in providerMetadataList)
         {
@@ -204,7 +204,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         }
 
         var clientOptions = CreateClientOptions(request.Server);
-        var client = await _mcpClientProvider.GetProviderClientAsync(tool, clientOptions);
+        var client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
         if (client == null)
         {
             return string.Empty;
@@ -292,7 +292,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         try
         {
             var clientOptions = CreateClientOptions(request.Server);
-            client = await _mcpClientProvider.GetProviderClientAsync(tool, clientOptions);
+            client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
             if (client == null)
             {
                 _logger.LogError("Failed to get provider client for tool: {Tool}", tool);
