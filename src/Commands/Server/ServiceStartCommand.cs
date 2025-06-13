@@ -111,41 +111,56 @@ public sealed class ServiceStartCommand : BaseCommand
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
+        services.AddSingleton<ProxyToolOperations>();
         services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
         services.AddHostedService<OtelService>();
 
-        if (options.Service == "azure")
-        {
-            services.AddSingleton<McpServerTool, AzureProxyTool>();
-        }
-
-        services.AddOptions<McpServerOptions>()
-            .Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
-            {
-                var entryAssembly = Assembly.GetEntryAssembly();
-                var assemblyName = entryAssembly?.GetName();
-                var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+        var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var assemblyName = entryAssembly?.GetName();
+        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
 
                 toolOperations.ReadOnly = options.ReadOnly ?? false;
 
-                mcpServerOptions.ServerInfo = new Implementation
-                {
-                    Name = serverName,
-                    Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
-                };
+        mcpServerOptionsBuilder.Configure(mcpServerOptions =>
+        {
+            mcpServerOptions.ProtocolVersion = "2024-11-05";
+            mcpServerOptions.ServerInfo = new Implementation
+            {
+                Name = serverName,
+                Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
+            };
+        });
 
-                if (options.Service != "azure")
+        if (options.Service == "proxy")
+        {
+            mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
+            {
+
+                mcpServerOptions.Capabilities = new ServerCapabilities
                 {
-                    toolOperations.CommandGroup = options.Service;
-                    mcpServerOptions.Capabilities = new ServerCapabilities
+                    Tools = new ToolsCapability()
                     {
-                        Tools = toolOperations.ToolsCapability
-                    };
-                }
+                        CallToolHandler = toolOperations.CallToolHandler,
+                        ListToolsHandler = toolOperations.ListToolsHandler,
+                    }
+                };
+            });
+        }
+        else
+        {
+            mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
+            {
+                toolOperations.CommandGroup = options.Service;
+                mcpServerOptions.Capabilities = new ServerCapabilities
+                {
+                    Tools = toolOperations.ToolsCapability
+                };
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
             });
+        }
 
         var mcpServerBuilder = services.AddMcpServer();
 

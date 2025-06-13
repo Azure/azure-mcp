@@ -65,11 +65,17 @@ public sealed class McpClientService : IMcpClientService, IDisposable
             return;
         }
 
+        var remoteMcpServers = ListRemoteMcpServers();
         var commandGroups = ListCommandGroupProviders();
-        foreach (var provider in commandGroups)
+
+        var allProviders = new List<IMcpClientProvider>();
+        allProviders.AddRange(commandGroups);
+        allProviders.AddRange(remoteMcpServers);
+
+        foreach (var provider in allProviders)
         {
-            var meta = provider.CreateMetadata();
-            _providerMap[meta.Id] = provider;
+            var metadata = provider.CreateMetadata();
+            _providerMap[metadata.Id] = provider;
         }
 
         _initialized = true;
@@ -151,17 +157,30 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// <returns>A list of <see cref="IMcpClientProvider"/>.</returns>
     private List<IMcpClientProvider> ListCommandGroupProviders()
     {
-        var results = new List<IMcpClientProvider>();
+        var ignoreCommandGroups = new List<string> { "extension", "server", "tools" };
 
-        foreach (var group in _commandFactory.RootGroup.SubGroup)
-        {
-            var commandGroup = new McpCommandGroup(group)
+        return _commandFactory.RootGroup.SubGroup
+            .Where(group => !ignoreCommandGroups.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
+            .Select(group => new McpCommandGroup(group)
             {
                 ReadOnly = ReadOnly,
                 EntryPoint = EntryPoint,
-            };
-            results.Add(commandGroup);
-        }
+            })
+            .Cast<IMcpClientProvider>()
+            .ToList();
+    }
+
+    private List<IMcpClientProvider> ListRemoteMcpServers()
+    {
+        var results = new List<IMcpClientProvider>
+        {
+            new RemoteMcpServer(new RemoveMcpServerMetadata
+            {
+                Name = "learn",
+                Description = "Finds relevant documentation from Microsoft Learn for Azure.",
+                Endpoint = "https://learn.microsoft.com/api/mcp",
+            })
+        };
 
         return results;
     }
