@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -82,13 +83,13 @@ public class CommandFactory
         // Register top-level command groups
         RegisterBestPracticesCommand();
         RegisterCosmosCommands();
+        RegisterKeyVaultCommands();
         RegisterKustoCommands();
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
-        RegisterKeyVaultCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -305,9 +306,15 @@ public class CommandFactory
         var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
         keyVault.AddSubGroup(keys);
 
+        var secret = new CommandGroup("secret", "Key Vault secret operations - Commands for managing and accessing secrets in Azure Key Vault.");
+        keyVault.AddSubGroup(secret);
+
         keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
         keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
         keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
+
+        secret.AddCommand("get", new KeyVault.Secret.SecretGetCommand(GetLogger<KeyVault.Secret.SecretGetCommand>(),
+            _serviceProvider.GetRequiredService<IKeyVaultService>()));
     }
 
     private void RegisterToolsCommands()
