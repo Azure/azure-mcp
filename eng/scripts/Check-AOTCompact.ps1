@@ -19,32 +19,7 @@ if (-not $Runtime) {
     $runtime = $Runtime
 }
 
-Write-Host "Running AOT compatibility (trimming) analysis for runtime: $runtime ..."
 
-$artifactsDir = "$root/artifacts"
-if (!(Test-Path $artifactsDir)) {
-    New-Item -ItemType Directory -Path $artifactsDir | Out-Null
-}
-
-$projectObjDir = Join-Path (Split-Path $projectFile) "obj"
-if (Test-Path $projectObjDir) {
-    Write-Host "Deleting project obj directory: $projectObjDir"
-    Remove-Item -Path $projectObjDir -Recurse -Force -ErrorAction SilentlyContinue
-}
-
-$publishArgs = @(
-    'publish', $projectFile,
-    '--configuration', $Configuration,
-    '--runtime', $runtime,
-    '--self-contained', 'true',
-    '/p:PublishTrimmed=true',
-    '/p:TrimmerSingleWarn=false'
-)
-
-Write-Host "Executing: dotnet $($publishArgs -join ' ')"
-
-$output = & dotnet @publishArgs 2>&1
-$output | Out-File -FilePath $reportPath -Encoding utf8
 
 function Get-DllNameSet {
     param(
@@ -98,6 +73,35 @@ function Find-BestDllMatch {
     return $null
 }
 
+## Main program.
+
+Write-Host "Running AOT compatibility (trimming) analysis for runtime: $runtime ..."
+
+$artifactsDir = "$root/artifacts"
+if (!(Test-Path $artifactsDir)) {
+    New-Item -ItemType Directory -Path $artifactsDir | Out-Null
+}
+
+$projectObjDir = Join-Path (Split-Path $projectFile) "obj"
+if (Test-Path $projectObjDir) {
+    Write-Host "Deleting project obj directory: $projectObjDir"
+    Remove-Item -Path $projectObjDir -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+$publishArgs = @(
+    'publish', $projectFile,
+    '--configuration', $Configuration,
+    '--runtime', $runtime,
+    '--self-contained', 'true',
+    '/p:PublishTrimmed=true',
+    '/p:TrimmerSingleWarn=false'
+)
+
+Write-Host "Executing: dotnet $($publishArgs -join ' ')"
+
+$output = & dotnet @publishArgs 2>&1
+$output | Out-File -FilePath $reportPath -Encoding utf8
+
 $dllNameSet = Get-DllNameSet -projectFile $projectFile
 
 $warnings = $output | Select-String 'warning IL'
@@ -109,12 +113,20 @@ if ($warnings.Count -gt 0) {
     # Create JSON report object grouped by DLL
     $reportObject = @{}
     
+    # Create cache of type names to DLL so we don't do O(n) lookups
+    $dllMatchCache = @{}
+    
     foreach ($w in $warnings) {
         $line = $w.Line
         $dllName = $null
         $typeName = Extract-TypeNameFromILWarningLine -line $line
         if ($typeName) {
-            $dllName = Find-BestDllMatch -typeName $typeName -dllNames $dllNameSet
+            if ($dllMatchCache.ContainsKey($typeName)) {
+                $dllName = $dllMatchCache[$typeName]
+            } else {
+                $dllName = Find-BestDllMatch -typeName $typeName -dllNames $dllNameSet
+                $dllMatchCache[$typeName] = $dllName
+            }
         }
         
         $dllKey = if ($dllName) { "$dllName.dll" } else { "unknown" }
