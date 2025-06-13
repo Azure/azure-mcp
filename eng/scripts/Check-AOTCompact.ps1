@@ -106,8 +106,8 @@ if ($warnings.Count -gt 0) {
     Write-Host "AOT compatibility analysis complete. See $reportPath for detailed warnings."
     Write-Host "\nSummary of warnings (with DLL mapping):"
     
-    # For JSON reporting.
-    $reportArray = @()
+    # Create JSON report object grouped by DLL
+    $reportObject = @{}
     
     foreach ($w in $warnings) {
         $line = $w.Line
@@ -117,30 +117,26 @@ if ($warnings.Count -gt 0) {
             $dllName = Find-BestDllMatch -typeName $typeName -dllNames $dllNameSet
         }
         
-        $reportObject = [PSCustomObject]@{
-            dllName = if ($dllName) { "$dllName.dll" } else { "unknown" }
-            warn = $line
-        }
-        $reportArray += $reportObject
+        $dllKey = if ($dllName) { "$dllName.dll" } else { "unknown" }
         
-        if ($dllName) {
-            Write-Host "$line [DLL: $dllName.dll]" -ForegroundColor Yellow
-        } else {
-            Write-Host "$line [DLL: unknown]" -ForegroundColor Yellow
+        if (-not $reportObject.ContainsKey($dllKey)) {
+            $reportObject[$dllKey] = @()
         }
+        
+        $reportObject[$dllKey] += $line
     }
     
     # Write JSON report to file
     $jsonReportPath = "$root/artifacts/aot-compact-report.json"
-    $reportArray | ConvertTo-Json -Depth 2 | Out-File -FilePath $jsonReportPath -Encoding utf8
+    $reportObject | ConvertTo-Json -Depth 3 | Out-File -FilePath $jsonReportPath -Encoding utf8
     Write-Host "JSON report written to: $jsonReportPath" -ForegroundColor Green
     
     exit 1
 } else {
     Write-Host "AOT compatibility analysis complete. No trimmer/AOT warnings found. See $reportPath."
-    # Write empty JSON array, let's generate the file always.
+    # Write empty JSON object for consistency
     $jsonReportPath = "$root/artifacts/aot-compact-report.json"
-    @() | ConvertTo-Json | Out-File -FilePath $jsonReportPath -Encoding utf8
+    @{} | ConvertTo-Json | Out-File -FilePath $jsonReportPath -Encoding utf8
     Write-Host "Empty JSON report written to: $jsonReportPath" -ForegroundColor Green
     exit 0
 }
