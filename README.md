@@ -43,7 +43,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 2. You should see the Azure MCP Server in the list of tools
 3. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
 4. The agent should be able to use the Azure MCP Server tools to complete your query
-5. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
+5. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md)
 
 ## ✨ What can you do with the Azure MCP Server?
 
@@ -280,7 +280,6 @@ More end-to-end MCP client/agent guides are coming soon!
 </details>
 
 
-
 ## 📝 Troubleshooting
 
 See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) for help with common issues and logging.
@@ -330,6 +329,12 @@ Please read our [Contributing Guide](https://github.com/Azure/azure-mcp/blob/mai
 - ✨ Adding new commands
 - 📝 Code style and testing requirements
 - 🔄 Making pull requests
+
+## 💬 Feedback
+
+We're building this in the open.  Your feedback is much appreciated, and will help us shape the future of the Azure MCP server.
+
+👉 [Open an issue in the public repository](https://github.com/Azure/azure-mcp/issues/new/choose).
 
 ## 🤝 Code of Conduct
 
