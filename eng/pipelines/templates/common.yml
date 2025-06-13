@@ -73,7 +73,8 @@ extends:
             JobTemplatePath: /eng/pipelines/templates/jobs/live-test.yml
             AdditionalParameters:
               TimeoutInMinutes: 90
-              EnvVars: {}
+              EnvVars:
+                AZURE_POD_IDENTITY_AUTHORITY_HOST: "FakeAuthorityHost"
             CloudConfig:
               Cloud: Public
               ServiceConnection: azure-sdk-tests-public
