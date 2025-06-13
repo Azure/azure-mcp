@@ -104,7 +104,11 @@ $warnings = $output | Select-String 'warning IL'
 
 if ($warnings.Count -gt 0) {
     Write-Host "AOT compatibility analysis complete. See $reportPath for detailed warnings."
-    Write-Host "\nSummary of warnings (with DLL from obj):"
+    Write-Host "\nSummary of warnings (with DLL mapping):"
+    
+    # For JSON reporting.
+    $reportArray = @()
+    
     foreach ($w in $warnings) {
         $line = $w.Line
         $dllName = $null
@@ -112,14 +116,31 @@ if ($warnings.Count -gt 0) {
         if ($typeName) {
             $dllName = Find-BestDllMatch -typeName $typeName -dllNames $dllNameSet
         }
+        
+        $reportObject = [PSCustomObject]@{
+            dllName = if ($dllName) { "$dllName.dll" } else { "unknown" }
+            warn = $line
+        }
+        $reportArray += $reportObject
+        
         if ($dllName) {
             Write-Host "$line [DLL: $dllName.dll]" -ForegroundColor Yellow
         } else {
             Write-Host "$line [DLL: unknown]" -ForegroundColor Yellow
         }
     }
+    
+    # Write JSON report to file
+    $jsonReportPath = "$root/artifacts/aot-compact-report.json"
+    $reportArray | ConvertTo-Json -Depth 2 | Out-File -FilePath $jsonReportPath -Encoding utf8
+    Write-Host "JSON report written to: $jsonReportPath" -ForegroundColor Green
+    
     exit 1
 } else {
     Write-Host "AOT compatibility analysis complete. No trimmer/AOT warnings found. See $reportPath."
+    # Write empty JSON array, let's generate the file always.
+    $jsonReportPath = "$root/artifacts/aot-compact-report.json"
+    @() | ConvertTo-Json | Out-File -FilePath $jsonReportPath -Encoding utf8
+    Write-Host "Empty JSON report written to: $jsonReportPath" -ForegroundColor Green
     exit 0
 }
