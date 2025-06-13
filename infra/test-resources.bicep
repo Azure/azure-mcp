@@ -95,3 +95,12 @@ module kusto 'services/kusto.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+module postgres 'services/postgres.bicep' = {
+  name: '${deploymentName}-postgres'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
