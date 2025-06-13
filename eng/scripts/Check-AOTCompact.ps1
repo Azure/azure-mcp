@@ -26,6 +26,12 @@ if (!(Test-Path $artifactsDir)) {
     New-Item -ItemType Directory -Path $artifactsDir | Out-Null
 }
 
+$projectObjDir = Join-Path (Split-Path $projectFile) "obj"
+if (Test-Path $projectObjDir) {
+    Write-Host "Deleting project obj directory: $projectObjDir"
+    Remove-Item -Path $projectObjDir -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 $publishArgs = @(
     'publish', $projectFile,
     '--configuration', $Configuration,
