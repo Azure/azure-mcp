@@ -100,7 +100,7 @@ public class ToolOperations
             };
         }
 
-        var commandContext = new CommandContext(_serviceProvider);
+        var commandContext = new CommandContext(_serviceProvider, parameters.Server);
 
         var args = parameters.Params.Arguments != null
             ? string.Join(" ", parameters.Params.Arguments.Select(kvp => $"--{kvp.Key} \"{(kvp.Value).ToString().Replace("\"", "'")}\""))

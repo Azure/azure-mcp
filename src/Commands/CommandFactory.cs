@@ -248,7 +248,12 @@ public class CommandFactory
         workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
         monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
 
-        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
+        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));        // Application Insights commands
+        var appInsights = new CommandGroup("app", "Application Insights operations - Commands for working with Application Insights resources.");
+        monitor.AddSubGroup(appInsights);
+        
+        appInsights.AddCommand("diagnose", new Monitor.ApplicationInsights.AppDiagnoseCommand(GetLogger<Monitor.ApplicationInsights.AppDiagnoseCommand>()));
+        appInsights.AddCommand("trace", new Monitor.ApplicationInsights.AppTraceCommand(GetLogger<Monitor.ApplicationInsights.AppTraceCommand>()));
 
         var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
         monitor.AddSubGroup(health);
@@ -456,7 +461,7 @@ public class CommandFactory
         {
             _logger.LogTrace("Executing '{Command}'.", command.Name);
 
-            var cmdContext = new CommandContext(_serviceProvider);
+            var cmdContext = new CommandContext(_serviceProvider, null);
             var startTime = DateTime.UtcNow;
             try
             {
