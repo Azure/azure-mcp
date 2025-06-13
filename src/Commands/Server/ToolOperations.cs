@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using AzureMcp.Commands.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
@@ -99,14 +101,10 @@ public class ToolOperations
                 IsError = true,
             };
         }
-
         var commandContext = new CommandContext(_serviceProvider);
 
-        var args = parameters.Params.Arguments != null
-            ? string.Join(" ", parameters.Params.Arguments.Select(kvp => $"--{kvp.Key} \"{(kvp.Value).ToString().Replace("\"", "'")}\""))
-            : string.Empty;
         var realCommand = command.GetCommand();
-        var commandOptions = realCommand.Parse(args);
+        var commandOptions = realCommand.ParseFromDictionary(parameters.Params.Arguments);
 
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
 
