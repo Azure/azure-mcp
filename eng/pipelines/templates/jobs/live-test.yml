@@ -87,11 +87,3 @@ jobs:
       testRunTitle: "live-${{ parameters.OSName }}"
       testResultsFormat: "VSTest"
       mergeTestResults: true
-
-  - template: /eng/common/TestResources/remove-test-resources.yml
-    parameters:
-      SubscriptionConfiguration: $(SubscriptionConfiguration)
-      ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
-      EnvVars:
-        Pool: $(Pool)
-        ${{insert}}: ${{ parameters.EnvVars }}

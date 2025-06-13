@@ -26,30 +26,23 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
 
     public async ValueTask InitializeAsync()
     {
-        try
-        {
-            var credentials = new DefaultAzureCredential();
-            await Client.PingAsync();
-            var clusterInfo = await CallToolAsync(
-                "azmcp-kusto-cluster-get",
-                new()
-                {
-                { "subscription", Settings.SubscriptionId },
-                { "cluster-name", Settings.ResourceBaseName }
-                });
-            var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            var kcsb = new KustoConnectionStringBuilder(clusterUri)
-                .WithAadAzureTokenCredentialsAuthentication(credentials);
-            using var adminClient = KustoClientFactory.CreateCslAdminProvider(kcsb);
-            using var resp = await adminClient.ExecuteControlCommandAsync(
-                TestDatabaseName,
-                ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]");
-            resp.Consume();
-        }
-        catch
-        {
-            Assert.Skip("Skipping until auth fixed for Kusto");
-        }
+        var credentials = new DefaultAzureCredential();
+        await Client.PingAsync();
+        var clusterInfo = await CallToolAsync(
+            "azmcp-kusto-cluster-get",
+            new()
+            {
+            { "subscription", Settings.SubscriptionId },
+            { "cluster-name", Settings.ResourceBaseName }
+            });
+        var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
+        var kcsb = new KustoConnectionStringBuilder(clusterUri)
+            .WithAadAzureTokenCredentialsAuthentication(credentials);
+        using var adminClient = KustoClientFactory.CreateCslAdminProvider(kcsb);
+        using var resp = await adminClient.ExecuteControlCommandAsync(
+            TestDatabaseName,
+            ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]");
+        resp.Consume();
     }
 
     [Fact]
