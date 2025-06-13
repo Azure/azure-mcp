@@ -101,4 +101,8 @@
       <ContentWithTargetPath Remove="@(FilesToRemove)" />
     </ItemGroup>
   </Target>
+
+  <PropertyGroup>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
 </Project>
