@@ -114,12 +114,6 @@ This error indicates that the access token used for authentication does not have
 
     This will prompt you to select your desired account and use that to authenticate.
 
-#### Upcoming Enhancement
-
-Support for **Azure Entra ID-based authentication** in these scenarios is to be added in an upcoming release of Azure MCP. This will allow the MCP server to authenticate using federated identity or managed identity flows.
-
-> ℹ️ **Until Entra ID support is available**, ensure that local authorization is enabled for the target resource being accessed by Azure MCP. The latest status can be tracked in this [issue](https://github.com/Azure/azure-mcp/issues/27)
-
 
 ### AADSTS500200 error: User account is a personal Microsoft account
 
