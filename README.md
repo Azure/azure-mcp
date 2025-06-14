@@ -287,7 +287,7 @@ See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLE
 ### 🔑 Authentication
 
 <details>
-<summary>We use Azure Identity SDK under the hood via DefaultAzureCredential, which tries these credentials in order:</summary>
+<summary>Authentication options including DefaultAzureCredential flow, RBAC permissions, troubleshooting, and production credentials</summary>
 
 The Azure MCP Server seamlessly integrates with your host operating system's authentication mechanisms, making it super easy to get started! We use Azure Identity under the hood via [`DefaultAzureCredential`](https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac), which tries these credentials in order:
 
@@ -302,6 +302,8 @@ The Azure MCP Server seamlessly integrates with your host operating system's aut
 If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
 
 If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
+
+For advanced authentication scenarios including protected resources, firewall restrictions, and enterprise environments, see our [detailed Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md).
 
 ### Production Credentials
 
