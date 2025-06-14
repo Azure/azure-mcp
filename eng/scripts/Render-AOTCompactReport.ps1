@@ -2,11 +2,24 @@
 #Requires -Version 7
 
 param(
-    [string]$JsonReportPath = "$PSScriptRoot/../../.work/aotCompactReport/aot-compact-report.json",
-    [string]$OutputPath = "$PSScriptRoot/../../.work/aotCompactReport/aot-compact-report.html"
+    [string]$JsonReportPath,
+    [string]$OutputPath
 )
 
 $ErrorActionPreference = "Stop"
+
+. "$PSScriptRoot/../common/scripts/common.ps1"
+$root = $RepoRoot.Path.Replace('\', '/')
+# Base directory for all AOT compatibility reports
+$aotReportDir = "$root/.work/aotCompactReport"
+
+# Set default paths if not provided
+if (-not $JsonReportPath) {
+    $JsonReportPath = "$aotReportDir/aot-compact-report.json"
+}
+if (-not $OutputPath) {
+    $OutputPath = "$aotReportDir/aot-compact-report.html"
+}
 
 if (-not (Test-Path $JsonReportPath)) {
     Write-Error "JSON report not found at: $JsonReportPath"
