@@ -1,4 +1,6 @@
 parameters:
+- name: conditionExpression
+  type: string
 - name: runtime
   type: string
 - name: sourceDirectory
@@ -7,7 +9,8 @@ parameters:
 
 steps:
   - task: PowerShell@2
-    displayName: "Run AOT Compatibility analysis"
+    displayName: "Run AOT Compatibility Analysis"
+    condition: ${{ parameters.conditionExpression }}
     inputs:
       pwsh: true
       filePath: ${{ parameters.sourceDirectory }}/eng/scripts/Analyze-AOT-Compact.ps1
@@ -21,4 +24,4 @@ steps:
     parameters:
       ArtifactPath: ${{ parameters.sourceDirectory }}/.work/aotCompactReport
       ArtifactName: AOTCompatibilityReport
-      CustomCondition: always()
+      CustomCondition: ${{ parameters.conditionExpression }}
