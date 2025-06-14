@@ -2,7 +2,8 @@
 #Requires -Version 7
 
 param(
-    [string]$Runtime
+    [string]$Runtime,
+    [bool]$GenerateHtml = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -148,7 +149,7 @@ $dllNameSet = Get-DllNameSet -projectFile $projectFile
 $warnings = $output | Select-String 'warning IL'
 
 if ($warnings.Count -gt 0) {
-    Write-Host "AOT compatibility analysis complete. See $reportPath for detailed warnings."
+    Write-Host "AOT compatibility analysis complete. See $reportPath for detailed AOT raw warnings."
     
     $reportObject = @{}
     $dllMatchCache = @{}
@@ -174,10 +175,11 @@ if ($warnings.Count -gt 0) {
     
     # Write JSON report to file
     $reportObject | ConvertTo-Json -Depth 3 | Out-File -FilePath $jsonReportPath -Encoding utf8
-    Write-Host "JSON report written to: $jsonReportPath" -ForegroundColor Green
+    Write-Host "See $jsonReportPath for AOT warnings in JSON format." -ForegroundColor Green
     
-    # Generate HTML report
-    Invoke-HTMLReportGeneration -jsonReportPath $jsonReportPath -aotReportDir $aotReportDir
+    if ($GenerateHtml) {
+        Invoke-HTMLReportGeneration -jsonReportPath $jsonReportPath -aotReportDir $aotReportDir
+    }
     
     exit 1
 } else {
@@ -185,8 +187,9 @@ if ($warnings.Count -gt 0) {
     @{} | ConvertTo-Json | Out-File -FilePath $jsonReportPath -Encoding utf8
     Write-Host "Empty JSON report written to: $jsonReportPath" -ForegroundColor Green
     
-    # Generate HTML report for the clean case as well
-    Invoke-HTMLReportGeneration -jsonReportPath $jsonReportPath -aotReportDir $aotReportDir
+    if ($GenerateHtml) {
+        Invoke-HTMLReportGeneration -jsonReportPath $jsonReportPath -aotReportDir $aotReportDir
+    }
     
     exit 0
 }
