@@ -6,7 +6,7 @@ using AzureMcp.Options.Server;
 
 namespace AzureMcp.Models.Option;
 
-public static class OptionDefinitions
+public static partial class OptionDefinitions
 {
     public static class Common
     {

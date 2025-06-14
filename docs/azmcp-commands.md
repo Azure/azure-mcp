@@ -278,6 +278,46 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure SQL Operations
+```bash
+# List SQL servers in a subscription
+azmcp sql server list --subscription <subscription>
+
+# List databases in a SQL server
+azmcp sql db list --subscription <subscription> --server <server-name> --resource-group <resource-group>
+
+# Get SQL database advisor recommendations for performance optimization
+azmcp sql db advise --subscription <subscription> \
+                    --server <server-name> \
+                    --resource-group <resource-group> \
+                    --database <database-name> \
+                    [--table <table-name>] \
+                    [--minimum-impact <impact-threshold>] \
+                    [--advisor-type <advisor-type>]
+
+# Examples:
+# Get all recommendations for a database
+azmcp sql db advise --subscription <subscription> \
+                    --server <server-name> \
+                    --resource-group <resource-group> \
+                    --database <database-name>
+
+# Get CreateIndex recommendations with minimum impact of 50
+azmcp sql db advise --subscription <subscription> \
+                    --server <server-name> \
+                    --resource-group <resource-group> \
+                    --database <database-name> \
+                    --advisor-type "CreateIndex" \
+                    --minimum-impact 50
+
+# Get recommendations for a specific table
+azmcp sql db advise --subscription <subscription> \
+                    --server <server-name> \
+                    --resource-group <resource-group> \
+                    --database <database-name> \
+                    --table "Users"
+```
+
 ### Azure AI Search
 
 ```bash
