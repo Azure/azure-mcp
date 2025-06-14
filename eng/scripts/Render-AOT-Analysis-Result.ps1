@@ -2,24 +2,18 @@
 #Requires -Version 7
 
 param(
-    [string]$JsonReportPath,
-    [string]$OutputPath
+    [Parameter(Mandatory=$false)]
+    [ValidateSet('Html', 'Console')]
+    [string]$OutputFormat = 'Html'
 )
 
 $ErrorActionPreference = "Stop"
 
-. "$PSScriptRoot/../common/scripts/common.ps1"
-$root = $RepoRoot.Path.Replace('\', '/')
-# Base directory for all AOT compatibility reports
-$aotReportDir = "$root/.work/aotCompactReport"
+. "$PSScriptRoot/AOT-Config.ps1"
+$config = Get-AOTConfig
 
-# Set default paths if not provided
-if (-not $JsonReportPath) {
-    $JsonReportPath = "$aotReportDir/aot-compact-report.json"
-}
-if (-not $OutputPath) {
-    $OutputPath = "$aotReportDir/aot-compact-report.html"
-}
+$JsonReportPath = $config.JsonReportPath
+$OutputPath = $config.HtmlReportPath
 
 if (-not (Test-Path $JsonReportPath)) {
     Write-Error "JSON report not found at: $JsonReportPath"
@@ -50,7 +44,28 @@ if ($jsonContent -is [PSCustomObject]) {
 # Sort DLLs by warning count (descending)
 $dllStats = $dllStats | Sort-Object WarningCount -Descending
 
-# Generate HTML
+if ($OutputFormat -eq 'Console') {
+    # Render to console (Useful for CI/CD pipelines).
+    Write-Host "##[section]AOT Compatibility Analysis Results"
+    Write-Host "Total AOT/Trimming Warnings: $totalWarnings"
+    Write-Host "Affected DLLs: $($dllStats.Count)"
+    
+    if ($totalWarnings -gt 0) {
+        Write-Host ""
+        Write-Host "##[section]Full AOT Analysis Report (JSON):"
+        $jsonContent | ConvertTo-Json -Depth 5 | Write-Host
+        
+        Write-Host ""
+        Write-Host "##[warning]AOT compatibility issues found. See artifacts for details."
+        Write-Host "##vso[task.logissue type=warning]$totalWarnings AOT/trimming warnings found across $($dllStats.Count) DLLs"
+    } else {
+        Write-Host "##[section]✅ No AOT compatibility issues found!"
+    }
+    return
+}
+
+# $OutputFormat -eq 'Html'
+# Generate HTML (Useful for local development).
 $html = @"
 <!DOCTYPE html>
 <html lang="en">

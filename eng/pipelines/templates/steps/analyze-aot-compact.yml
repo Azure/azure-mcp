@@ -6,60 +6,17 @@ parameters:
   default: $(Build.SourcesDirectory)
 
 steps:
-  # Generate AOT Compatibility Analysis Report.
   - task: PowerShell@2
-    displayName: "Generate AOT Compatibility Report"
+    displayName: "Run AOT Compatibility analysis"
     inputs:
       pwsh: true
       filePath: ${{ parameters.sourceDirectory }}/eng/scripts/Analyze-AOT-Compact.ps1
       arguments: >
         -Runtime '${{ parameters.runtime }}'
-        -GenerateHtml:$false
+        -OutputFormat Console
       workingDirectory: ${{ parameters.sourceDirectory }}
     continueOnError: true
 
-  # Render AOT Analysis Results in Console.
-  - task: PowerShell@2
-    displayName: "Display AOT Analysis Report"
-    condition: always()
-    inputs:
-      pwsh: true
-      targetType: 'inline'
-      script: |
-        $jsonPath = "${{ parameters.sourceDirectory }}/.work/aotCompactReport/aot-compact-report.json"
-        
-        if (Test-Path $jsonPath) {
-          $jsonContent = Get-Content $jsonPath -Raw
-          $jsonObject = $jsonContent | ConvertFrom-Json
-          $totalWarnings = 0
-          $dllCount = 0
-          
-          if ($jsonObject -is [PSCustomObject]) {
-            foreach ($property in $jsonObject.PSObject.Properties) {
-              $dllCount++
-              $totalWarnings += $property.Value.Count
-            }
-          }
-          
-          Write-Host "##[section]AOT Compatibility Analysis Results"
-          Write-Host "Total AOT/Trimming Warnings: $totalWarnings"
-          Write-Host "Affected DLLs: $dllCount"
-          Write-Host ""
-          Write-Host "##[section]Full AOT Analysis Report (JSON):"
-          Write-Host $jsonContent
-          
-          if ($totalWarnings -gt 0) {
-            Write-Host ""
-            Write-Host "##[warning]AOT compatibility issues found. See artifacts for details."
-            Write-Host "##vso[task.logissue type=warning]$totalWarnings AOT/trimming warnings found across $dllCount DLLs"
-          } else {
-            Write-Host "##[section]✅ No AOT compatibility issues found!"
-          }
-        } else {
-          Write-Host "##[error]AOT analysis report not found"
-        }
-
-  # Publish AOT Analysis Artifacts
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: ${{ parameters.sourceDirectory }}/.work/aotCompactReport
