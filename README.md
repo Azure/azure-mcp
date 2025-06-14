@@ -134,6 +134,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🚌 Azure Service Bus
 - Examine properties and runtime information about queues, topics, and subscriptions
 
+### ⚙️ Azure Native ISV Services
+- List Monitored Resources in a Datadog Monitor
+
 ### 🔧 Azure CLI Extension
 - Execute Azure CLI commands directly
 - Support for all Azure CLI functionality

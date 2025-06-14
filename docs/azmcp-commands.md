@@ -256,6 +256,12 @@ azmcp redis cache list --subscription <subscription>
 azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
 ```
 
+### Azure Native ISV Operations
+```bash
+# List monitored resources in Datadog
+azmcp datadog monitoredresources list --subscription <subscription> --resource-group <resource-group> --datadog-resource <datadog-resource>
+```
+
 ### Azure Resource Group Operations
 ```bash
 # List resource groups in a subscription
