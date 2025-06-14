@@ -76,6 +76,65 @@ jobs:
     inputs:
       summaryFileLocation: $(CoverageFile)
 
+  # AOT Compatibility Analysis - only run on Linux x64 to avoid redundancy
+  - task: PowerShell@2
+    displayName: "Generate AOT Compatibility Report"
+    condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'x64'))
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Generate-AOTCompactReport.ps1
+      arguments: >
+        -Runtime 'linux-x64'
+        -GenerateHtml:$false
+      workingDirectory: $(Build.SourcesDirectory)
+    continueOnError: true
+
+  - task: PowerShell@2
+    displayName: "Display AOT Analysis Report"
+    condition: and(always(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'x64'))
+    inputs:
+      pwsh: true
+      targetType: 'inline'
+      script: |
+        $jsonPath = "$(Build.SourcesDirectory)/.work/aotCompactReport/aot-compact-report.json"
+        
+        if (Test-Path $jsonPath) {
+          $jsonContent = Get-Content $jsonPath -Raw
+          $jsonObject = $jsonContent | ConvertFrom-Json
+          $totalWarnings = 0
+          $dllCount = 0
+          
+          if ($jsonObject -is [PSCustomObject]) {
+            foreach ($property in $jsonObject.PSObject.Properties) {
+              $dllCount++
+              $totalWarnings += $property.Value.Count
+            }
+          }
+          
+          Write-Host "##[section]AOT Compatibility Analysis Results"
+          Write-Host "Total AOT/Trimming Warnings: $totalWarnings"
+          Write-Host "Affected DLLs: $dllCount"
+          Write-Host ""
+          Write-Host "##[section]Full AOT Analysis Report (JSON):"
+          Write-Host $jsonContent
+          
+          if ($totalWarnings -gt 0) {
+            Write-Host ""
+            Write-Host "##[warning]AOT compatibility issues found. See artifacts for details."
+            Write-Host "##vso[task.logissue type=warning]$totalWarnings AOT/trimming warnings found across $dllCount DLLs"
+          } else {
+            Write-Host "##[section]✅ No AOT compatibility issues found!"
+          }
+        } else {
+          Write-Host "##[error]AOT analysis report not found"
+        }
+
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: $(Build.SourcesDirectory)/.work/aotCompactReport
+      ArtifactName: AOTCompatibilityReport
+      CustomCondition: and(always(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'x64'))
+
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)
