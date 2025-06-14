@@ -219,6 +219,29 @@ To catch format errors early, run `dotnet format src/AzureMcp.sln` before submit
 - XML documentation for public APIs
 - Follow Model Context Protocol (MCP) patterns
 
+## AOT Compatibility Analysis
+
+The AOT compatibility analysis helps identify potential issues that might prevent the Azure MCP Server from working correctly when compiled with AOT or when trimming is enabled.
+
+### Running the Analysis
+
+To run the AOT compatibility analysis locally:
+
+```pwsh
+./eng/scripts/Analyze-AOT-Compact.ps1
+```
+
+The HTML report will be generated at `.work/aotCompactReport/aot-compact-report.html` and automatically opened in your default browser.
+
+To output the report to console, run the analysis with `-OutputFormat Console` argument.
+
+AOT compatibility warnings typically indicate:
+
+- Use of reflection without proper annotations
+- Serialization of types that might be trimmed
+- Dynamic code generation
+- Use of `RequiresUnreferencedCodeAttribute` methods without proper precautions
+
 ### Installing Git Hooks
 
 You can install our pre-push hook to catch code format issues by automatically running `dotnet format` before each `git push`.
