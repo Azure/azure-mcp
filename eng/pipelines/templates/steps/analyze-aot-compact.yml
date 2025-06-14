@@ -11,7 +11,7 @@ steps:
     displayName: "Generate AOT Compatibility Report"
     inputs:
       pwsh: true
-      filePath: ${{ parameters.sourceDirectory }}/eng/scripts/Generate-AOTCompactReport.ps1
+      filePath: ${{ parameters.sourceDirectory }}/eng/scripts/Analyze-AOT-Compact.ps1
       arguments: >
         -Runtime '${{ parameters.runtime }}'
         -GenerateHtml:$false

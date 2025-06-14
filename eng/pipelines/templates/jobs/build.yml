@@ -76,7 +76,7 @@ jobs:
     inputs:
       summaryFileLocation: $(CoverageFile)
 
-  - template: /eng/pipelines/templates/steps/analyze-and-render-aot-compact.yml
+  - template: /eng/pipelines/templates/steps/analyze-aot-compact.yml
     parameters:
       runtime: 'linux-x64'
       sourceDirectory: $(Build.SourcesDirectory)

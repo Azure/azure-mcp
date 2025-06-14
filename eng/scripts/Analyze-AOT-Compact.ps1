@@ -104,7 +104,7 @@ function Invoke-HTMLReportGeneration {
     
     $htmlReportPath = "$aotReportDir/aot-compact-report.html"
     try {
-        & "$PSScriptRoot/Render-AOTCompactReport.ps1" -JsonReportPath $jsonReportPath -OutputPath $htmlReportPath
+        & "$PSScriptRoot/Render-AOT-Analysis-Result.ps1" -JsonReportPath $jsonReportPath -OutputPath $htmlReportPath
         Write-Host "HTML report generated: $htmlReportPath" -ForegroundColor Green
     } catch {
         Write-Warning "Failed to generate HTML report: $_"
