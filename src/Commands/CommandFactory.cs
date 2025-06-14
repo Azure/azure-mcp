@@ -96,6 +96,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterFoundryCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -408,6 +409,23 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterFoundryCommands()
+    {
+        var foundry = new CommandGroup("foundry", "Foundry service operations - Commands for listing and managing services and resources in AI Foundry.");
+        _rootGroup.AddSubGroup(foundry);
+
+        var models = new CommandGroup("models", "Foundry models operations - Commands for listing and managing models in AI Foundry.");
+        foundry.AddSubGroup(models);
+
+        var deployments = new CommandGroup("deployments", "Foundry models operations - Commands for listing and managing models deployments in AI Foundry.");
+        models.AddSubGroup(deployments);
+
+        deployments.AddCommand("list", new Foundry.Models.DeploymentsListCommand());
+
+        models.AddCommand("list", new Foundry.Models.ModelsListCommand());
+        models.AddCommand("deploy", new Foundry.Models.ModelDeploymentCommand());
     }
 
     private void ConfigureCommands(CommandGroup group)
