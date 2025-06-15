@@ -21,12 +21,18 @@ public class CommandContext
     public CommandResponse Response { get; }
 
     /// <summary>
+    /// The server instance that is executing the command. May be null.
+    /// </summary>
+    public IMcpServer? Server { get; }
+
+    /// <summary>
     /// Creates a new command context
     /// </summary>
     /// <param name="serviceProvider">The service provider for dependency injection</param>
-    public CommandContext(IServiceProvider serviceProvider)
+    public CommandContext(IServiceProvider serviceProvider, IMcpServer? server = null)
     {
         _serviceProvider = serviceProvider;
+        Server = server;
         Response = new CommandResponse
         {
             Status = 200,

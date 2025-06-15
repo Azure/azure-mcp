@@ -62,7 +62,7 @@ internal class Program
 
         builder.AddMiddleware(async (context, next) =>
         {
-            var commandContext = new CommandContext(serviceProvider);
+            var commandContext = new CommandContext(serviceProvider, null);
             var command = context.ParseResult.CommandResult.Command;
             if (command.Handler is IBaseCommand baseCommand)
             {
@@ -99,6 +99,8 @@ internal class Program
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
+        services.AddSingleton<IApplicationInsightsService, ApplicationInsightsService>();
+        services.AddSingleton<ILogsQueryService, LogsQueryService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
         services.AddSingleton<IAppConfigService, AppConfigService>();
         services.AddSingleton<ISearchService, SearchService>();
