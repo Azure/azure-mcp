@@ -89,6 +89,7 @@ public class CommandFactory
         RegisterSearchCommands();
         RegisterPostgresCommands();
         RegisterKeyVaultCommands();
+        RegisterDatadogCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -165,6 +166,17 @@ public class CommandFactory
 
         tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<Kusto.TableListCommand>()));
         tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
+    }
+
+    private void RegisterDatadogCommands()
+    {
+        var datadog = new CommandGroup("datadog", "Datadog operations - Commands for managing and querying Datadog resources.");
+        _rootGroup.AddSubGroup(datadog);
+
+        var monitoredResources = new CommandGroup("monitoredresources", "Datadog monitored resources operations - Commands for listing monitored resources in a specific Datadog monitor.");
+        datadog.AddSubGroup(monitoredResources);
+
+        monitoredResources.AddCommand("list", new AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand(GetLogger<AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand>()));
     }
 
     private void RegisterPostgresCommands()
