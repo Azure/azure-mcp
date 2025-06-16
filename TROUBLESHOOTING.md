@@ -20,9 +20,6 @@ MCP clients have a limitation of 128 tools maximum per request. When you combine
 ### Workarounds
 
 **Option 1: Use Selective Tool Loading (Recommended)**
-Instead of loading all tools, configure each MCP server to only load the specific services you need:
-
-**Option 1: Use Selective Tool Loading (Recommended)**
 Instead of loading all tools, configure targeted MCP servers for your specific needs:
 
 ```json
