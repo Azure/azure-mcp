@@ -1,5 +1,69 @@
 # Troubleshooting
 
+## ⚠️ Known Issue: "You may not include more than 128 tools in your request"
+
+### Problem
+When configuring Azure MCP with 'all' toolsets for convenience, you may encounter the following error:
+
+```
+You may not include more than 128 tools in your request.
+```
+or
+
+```
+Starting server Azure All Services (Warning: High Tool Count)
+```
+
+### Root Cause
+MCP clients have a limitation of 128 tools maximum per request. When you combine multiple comprehensive toolsets (like GitHub MCP 'all' + Azure MCP 'all'), the total number of available tools exceeds this limit.
+
+### Workarounds
+
+**Option 1: Use Selective Tool Loading (Recommended)**
+Instead of loading all tools, configure each MCP server to only load the specific services you need:
+
+**Option 1: Use Selective Tool Loading (Recommended)**
+Instead of loading all tools, configure targeted MCP servers for your specific needs:
+
+```json
+{
+  "servers": {
+    "Azure Storage": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "storage"]
+    },
+    "Azure KeyVault": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "keyvault"]
+    }
+  }
+}
+```
+
+**Option 2: Use Dynamic Tool Selection (Alternative Approach)**
+Use Azure MCP's dynamic proxy mode - exposes one tool that internally routes to all Azure services:
+
+```json
+{
+  "servers": {
+    "Azure Dynamic": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "azure"]
+    }
+  }
+}
+```
+
+⚠️ **Note**: This still counts as 1 tool toward the 128 limit, but that 1 tool can access all Azure services. However, if you're combining with GitHub MCP "all" or other comprehensive toolsets, you may still hit the 128-tool limit.
+
+### Future Considerations
+We are exploring options for tool consolidation under shared namespaces or aliases to simplify usage while staying within the 128-tool limitation.
+
+---
+
 ## Observability with OpenTelemetry
 
 The server supports observability with [OpenTelemetry](https://opentelemetry.io/).
