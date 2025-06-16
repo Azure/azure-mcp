@@ -106,3 +106,10 @@ module azureIsv 'services/azureIsv.bicep' = if (tenantId == '888d76fa-54b2-4ced-
     testApplicationOid: testApplicationOid
   }
 }
+
+module authorization 'services/authorization.bicep' = {
+  name: '${deploymentName}-authorization'
+  params: {
+    testApplicationOid: testApplicationOid
+  }
+}

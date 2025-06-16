@@ -262,6 +262,12 @@ azmcp redis cache list accesspolicy --subscription <subscription>  --resource-gr
 azmcp datadog monitoredresources list --subscription <subscription> --resource-group <resource-group> --datadog-resource <datadog-resource>
 ```
 
+### Azure RBAC Operations
+```bash
+# List Azure RBAC role assignments
+azmcp role assignment list --subscription <subscription> --scope <scope>
+```
+
 ### Azure Resource Group Operations
 ```bash
 # List resource groups in a subscription
