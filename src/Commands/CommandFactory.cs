@@ -97,6 +97,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterSqlCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -420,6 +421,24 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+    private void RegisterSqlCommands()
+    {
+        // Create Sql command group
+        var sql = new CommandGroup("sql", "Sql operations - Commands for managing and querying Azure Sql resources.");
+        _rootGroup.AddSubGroup(sql);
+
+        // Create Sql database subgroups
+        var databases = new CommandGroup("db", "Sql database operations - Commands for listing, creating, and managing Sql databases in your Azure subscription.");
+        sql.AddSubGroup(databases);
+
+        var sqlServer = new CommandGroup("server", "Sql server operations - Commands for listing and managing Sql servers in your Azure subscription.");
+        sql.AddSubGroup(sqlServer);
+
+        // Register SQL commands
+        databases.AddCommand("list", new Sql.Db.DbListCommand(GetLogger<Sql.Db.DbListCommand>()));
+        databases.AddCommand("advise", new Sql.Db.DbAdviseCommand(GetLogger<Sql.Db.DbAdviseCommand>()));
+        sqlServer.AddCommand("list", new Sql.Server.ServerListCommand(GetLogger<Sql.Server.ServerListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

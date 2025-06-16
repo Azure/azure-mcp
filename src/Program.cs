@@ -14,6 +14,7 @@ using AzureMcp.Services.Azure.Redis;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Search;
 using AzureMcp.Services.Azure.ServiceBus;
+using AzureMcp.Services.Azure.Sql;
 using AzureMcp.Services.Azure.Storage;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
@@ -108,6 +109,7 @@ internal class Program
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
         services.AddSingleton<IServiceBusService, ServiceBusService>();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<ISqlService, SqlService>();
         services.AddSingleton<CommandFactory>();
     }
 }

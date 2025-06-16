@@ -186,6 +186,7 @@
         "servicebus",
         "setparam",
         "testsettings",
+        "NONCLUSTERED",
         "vectorizable",
         "Vectorizer",
         "vsts",

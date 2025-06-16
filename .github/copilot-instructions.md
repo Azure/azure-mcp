@@ -6,6 +6,7 @@ Always use System.Text.Json over Newtonsoft
 Always put new classes and interfaces in separate files
 Always make members static if they can be
 All generated code needs to be AOT safe
+Use this when mocking Azure SDK https://learn.microsoft.com/dotnet/azure/sdk/unit-testing-mocking
 
 ## Engineering System
 

@@ -15,7 +15,7 @@
                 "${input:subscription}",
                 "--account-name",
                 "${input:cosmosAccountName}",
-                "--retry-max-retries", 
+                "--retry-max-retries",
                 "0"
             ],
             "cwd": "${workspaceFolder}",
@@ -315,7 +315,7 @@
                 "DOTNET_ENVIRONMENT": "Development"
             }
         },
-        {            
+        {
             "name": "Debug Monitor Log Query",
             "type": "coreclr",
             "request": "launch",
@@ -415,12 +415,43 @@
             "env": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        {
+            "name": "Debug SQL DB Advise",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "sql",
+                "db",
+                "advise",
+                "--subscription",
+                "${input:subscription}",
+                "--database",
+                "${input:sqlDatabaseName}",
+                "--server-name",
+                "${input:sqlServerName}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--minimum-impact",
+                "10"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
         {
             "name": "Debug MCP Server",
-            "configurations": ["Launch MCP Server", "Attach to MCP Server"]
+            "configurations": [
+                "Launch MCP Server",
+                "Attach to MCP Server"
+            ]
         }
     ],
     "inputs": [
@@ -487,7 +518,8 @@
             "type": "promptString",
             "description": "Cosmos DB Container Name",
             "default": ""
-        },        {
+        },
+        {
             "id": "resourceGroup",
             "type": "promptString",
             "description": "Azure Resource Group",
@@ -497,6 +529,24 @@
             "id": "monitorTableName",
             "type": "promptString",
             "description": "Monitor Table Name",
+            "default": ""
+        },
+        {
+            "id": "sqlServerName",
+            "type": "promptString",
+            "description": "SQL Server Name",
+            "default": ""
+        },
+        {
+            "id": "sqlDatabaseName",
+            "type": "promptString",
+            "description": "SQL Database Name",
+            "default": ""
+        },
+        {
+            "id": "sqlTableName",
+            "type": "promptString",
+            "description": "SQL Table Name (optional for index recommendations)",
             "default": ""
         }
     ]
