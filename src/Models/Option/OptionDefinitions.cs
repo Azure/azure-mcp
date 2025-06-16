@@ -286,7 +286,13 @@ public static class OptionDefinitions
         public const string TableTypeName = "table-type";
         public const string QueryTextName = "query";
         public const string HoursName = "hours";
-        public const string LimitName = "limit";
+        public const string LimitName = "limit";        
+        public const string AppIdName = "app-id";
+        public const string StartTimeName = "start-time";
+        public const string EndTimeName = "end-time";
+        public const string SymptomsName = "symptoms";
+        public const string TraceIdName = "trace-id";
+        public const string SpanIdName = "span-id";
 
         public const string EntityName = "entity";
         public const string HealthModelName = "model-name";
@@ -340,6 +346,56 @@ public static class OptionDefinitions
             $"--{LimitName}",
             () => 20,
             "The maximum number of results to return."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> AppId = new(
+            $"--{AppIdName}",
+            "The Application Insights Instrumentation Key, App ID or name. This can be either the Application Insights instrumentation key, the unique identifier (GUID) or the display name of your Application Insights resource."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> StartTime = new(
+            $"--{StartTimeName}",
+            () => DateTime.UtcNow.AddHours(-24).ToString("o"),
+            "The start time of the investigation in ISO format (e.g., 2023-01-01T00:00:00Z)"
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> EndTime = new(
+            $"--{EndTimeName}",
+            () => DateTime.UtcNow.ToString("o"),
+            "The end time of the investigation in ISO format (e.g., 2023-01-01T00:00:00Z)"
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> Symptoms = new(
+            $"--{SymptomsName}",
+            "Description of the symptoms the application is experiencing. This should be a concise description of the issue with details of the symptoms. (e.g. 'requests are failing with 500 errors')"
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> TraceId = new(
+            $"--{TraceIdName}",
+            "The trace ID of the distributed trace to retrieve from Application Insights."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> SpanId = new(
+            $"--{SpanIdName}",
+            "The span ID of the distributed trace to retrieve from Application Insights."
         )
         {
             IsRequired = true
