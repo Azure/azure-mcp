@@ -316,7 +316,7 @@ This error occurs when trying to authenticate with a personal Microsoft account 
 
 Azure MCP Server uses the Azure Identity SDK's `DefaultAzureCredential` for authentication, which requires **Microsoft Entra ID (formerly Azure AD)** credentials to access Azure resources. Personal Microsoft accounts use a different authentication system that isn't compatible with Azure resource access patterns.
 
-See the [Authentication guide](docs/Authentication.md) for detailed information about supported authentication methods.
+See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md) for detailed information about supported authentication methods.
 
 #### Resolution Options
 
@@ -342,7 +342,7 @@ See the [Authentication guide](docs/Authentication.md) for detailed information 
 
 #### Next Steps
 1. Choose the option that best fits your scenario
-2. Complete the authentication setup as described in the [Authentication guide](docs/Authentication.md)
+2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
 
 ## Common issues
