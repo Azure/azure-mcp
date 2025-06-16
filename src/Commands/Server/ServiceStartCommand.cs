@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
 using AzureMcp.Options.Server;
 using Microsoft.AspNetCore.Builder;
@@ -20,14 +21,14 @@ namespace AzureMcp.Commands.Server;
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
-    private const string _commandTitle = "Start MCP Server";
+    private const string CommandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
 
     public override string Name => "start";
     public override string Description => "Starts Azure MCP Server.";
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -102,8 +103,14 @@ public sealed class ServiceStartCommand : BaseCommand
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<ToolOperations>();
+        services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
         services.AddHostedService<OtelService>();
+
+        if (options.Service == "azure")
+        {
+            services.AddSingleton<McpServerTool, AzureProxyTool>();
+        }
 
         services.AddOptions<McpServerOptions>()
             .Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
@@ -118,11 +125,14 @@ public sealed class ServiceStartCommand : BaseCommand
                     Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
                 };
 
-                toolOperations.CommandGroup = options.Service;
-                mcpServerOptions.Capabilities = new ServerCapabilities
+                if (options.Service != "azure")
                 {
-                    Tools = toolOperations.ToolsCapability
-                };
+                    toolOperations.CommandGroup = options.Service;
+                    mcpServerOptions.Capabilities = new ServerCapabilities
+                    {
+                        Tools = toolOperations.ToolsCapability
+                    };
+                }
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
             });

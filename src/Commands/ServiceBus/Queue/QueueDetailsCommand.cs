@@ -12,7 +12,7 @@ namespace AzureMcp.Commands.ServiceBus.Queue;
 
 public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
 {
-    private const string _commandTitle = "Get Service Bus Queue Details";
+    private const string CommandTitle = "Get Service Bus Queue Details";
     private readonly Option<string> _queueOption = OptionDefinitions.ServiceBus.Queue;
     private readonly Option<string> _namespaceOption = OptionDefinitions.ServiceBus.Namespace;
 
@@ -28,7 +28,7 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         - queue-name: Queue name to get details and runtime information for.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -45,7 +45,7 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Monitor.Log;
 
 public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonitorCommand<LogQueryOptions>()
 {
-    private const string _commandTitle = "Query Log Analytics Workspace";
+    private const string CommandTitle = "Query Log Analytics Workspace";
     private readonly ILogger<LogQueryCommand> _logger = logger;
     private readonly Option<string> _tableNameOption = OptionDefinitions.Monitor.TableName;
     private readonly Option<string> _queryOption = OptionDefinitions.Monitor.Query;
@@ -28,7 +28,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         The {OptionDefinitions.Monitor.QueryTextName} parameter accepts KQL syntax.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -40,7 +40,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         command.AddOption(_resourceGroupOption);
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

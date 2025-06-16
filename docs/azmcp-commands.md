@@ -25,8 +25,17 @@ The following options are available for all commands:
 ### Server Operations
 ```bash
 # Start the MCP Server
-azmcp server start [--transport <transport>]
+azmcp server start \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--service <service-name>]
 ```
+
+> **Note:** Replace `<service-name>` with an available top level command group.
+> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+>
+> To enable single tool proxy mode set `--service` parameter to `azure`.
+> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
 
 ### Subscription Management
 ```bash
@@ -121,6 +130,9 @@ azmcp postgres server config --subscription <subscription> --resource-group <res
 
 # Retrieve a specific parameter of a PostgreSQL server
 azmcp postgres server param --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter>
+
+# Set a specific parameter of a PostgreSQL server to a specific value
+azmcp postgres server setparam --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter> --value <value>
 ```
 
 ### Azure Storage Operations
@@ -242,6 +254,18 @@ azmcp redis cache list --subscription <subscription>
 
 # Lists Access Policy Assignments in an Azure Redis Cache
 azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
+```
+
+### Azure Native ISV Operations
+```bash
+# List monitored resources in Datadog
+azmcp datadog monitoredresources list --subscription <subscription> --resource-group <resource-group> --datadog-resource <datadog-resource>
+```
+
+### Azure RBAC Operations
+```bash
+# List Azure RBAC role assignments
+azmcp role assignment list --subscription <subscription> --scope <scope>
 ```
 
 ### Azure Resource Group Operations

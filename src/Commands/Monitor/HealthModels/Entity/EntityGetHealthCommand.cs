@@ -11,9 +11,9 @@ namespace AzureMcp.Commands.Monitor.HealthModels.Entity;
 
 public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logger) : BaseMonitorHealthModelsCommand<EntityGetHealthOptions>
 {
-    private const string _commandTitle = "Get the health of an entity in a health model";
-    private const string _commandName = "gethealth";
-    public override string Name => _commandName;
+    private const string CommandTitle = "Get the health of an entity in a health model";
+    private const string CommandName = "gethealth";
+    public override string Name => CommandName;
 
     public override string Description =>
          $"""
@@ -25,7 +25,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         - {OptionDefinitions.Monitor.Health.HealthModel.Name}: The health model name
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     private readonly ILogger<EntityGetHealthCommand> _logger = logger;
 
@@ -46,7 +46,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle, Name = _commandName)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle, Name = CommandName)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Search.Index;
 
 public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalCommand<IndexListOptions>()
 {
-    private const string _commandTitle = "List Azure AI Search Indexes";
+    private const string CommandTitle = "List Azure AI Search Indexes";
     private readonly ILogger<IndexListCommand> _logger = logger;
     private readonly Option<string> _serviceOption = OptionDefinitions.Search.Service;
     public override string Name => "list";
@@ -23,7 +23,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         - service-name
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -38,7 +38,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

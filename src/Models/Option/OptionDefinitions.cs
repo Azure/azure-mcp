@@ -189,6 +189,7 @@ public static class OptionDefinitions
         public const string TableName = "table";
         public const string QueryText = "query";
         public const string ParamName = "param";
+        public const string ValueName = "value";
 
         public static readonly Option<string> User = new(
             $"--{UserName}",
@@ -233,6 +234,14 @@ public static class OptionDefinitions
         public static readonly Option<string> Param = new(
             $"--{ParamName}",
             "The PostgreSQL parameter to be accessed."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> Value = new(
+            $"--{ValueName}",
+            "The value to set for the PostgreSQL parameter."
         )
         {
             IsRequired = true
@@ -531,6 +540,19 @@ public static class OptionDefinitions
         };
     }
 
+    public static class Authorization
+    {
+        public const string ScopeName = "scope";
+
+        public static readonly Option<string> Scope = new(
+            $"--{ScopeName}",
+            "Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM."
+        )
+        {
+            IsRequired = true,
+        };
+    }
+
     public static class Extension
     {
         public static class Az
@@ -599,6 +621,19 @@ public static class OptionDefinitions
                 IsRequired = false
             };
         }
+    }
+
+    public static class Datadog
+    {
+        public const string DatadogResourceParam = "datadog-resource";
+
+        public static readonly Option<string> DatadogResourceName = new(
+            $"--{DatadogResourceParam}",
+            "The name of the Datadog resource to use. This is the unique name you chose for your Datadog resource in Azure."
+        )
+        {
+            IsRequired = true
+        };
     }
 
     public static class KeyVault

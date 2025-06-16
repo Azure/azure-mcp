@@ -4,6 +4,7 @@
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
@@ -21,7 +22,7 @@ public class CommandFactory
     private readonly CommandGroup _rootGroup;
     private readonly ModelsJsonContext _srcGenWithOptions;
 
-    internal static readonly char Separator = '-';
+    internal const char Separator = '-';
 
     /// <summary>
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
@@ -90,6 +91,8 @@ public class CommandFactory
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
+        RegisterKeyVaultCommands();
+        RegisterDatadogCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -97,6 +100,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterAuthorizationCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -168,6 +172,17 @@ public class CommandFactory
         tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
     }
 
+    private void RegisterDatadogCommands()
+    {
+        var datadog = new CommandGroup("datadog", "Datadog operations - Commands for managing and querying Datadog resources.");
+        _rootGroup.AddSubGroup(datadog);
+
+        var monitoredResources = new CommandGroup("monitoredresources", "Datadog monitored resources operations - Commands for listing monitored resources in a specific Datadog monitor.");
+        datadog.AddSubGroup(monitoredResources);
+
+        monitoredResources.AddCommand("list", new AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand(GetLogger<AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand>()));
+    }
+
     private void RegisterPostgresCommands()
     {
         var pg = new CommandGroup("postgres", "PostgreSQL operations - Commands for listing and managing Azure Database for PostgreSQL - Flexible server.");
@@ -188,6 +203,7 @@ public class CommandFactory
         server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<Postgres.Server.ServerListCommand>()));
         server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
         server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
+        server.AddCommand("setparam", new Postgres.Server.SetParamCommand(GetLogger<Postgres.Server.SetParamCommand>()));
     }
 
     private void RegisterStorageCommands()
@@ -414,6 +430,22 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterAuthorizationCommands()
+    {
+        // Create Authorization RBAC role command group
+        var authorization = new CommandGroup("role",
+            "Authorization operations - Commands for managing Azure RBAC resources.");
+        _rootGroup.AddSubGroup(authorization);
+
+        // Create Role Assignment subgroup
+        var roleAssignment = new CommandGroup("assignment",
+            "Role assignment operations - Commands for listing and managing Azure RBAC role assignments for a given scope.");
+        authorization.AddSubGroup(roleAssignment);
+
+        // Register role assignment commands
+        roleAssignment.AddCommand("list", new RoleAssignmentListCommand(GetLogger<RoleAssignmentListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

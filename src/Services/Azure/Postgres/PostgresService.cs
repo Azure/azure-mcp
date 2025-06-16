@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using Azure.Core;
 using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.Resources;
@@ -11,13 +12,13 @@ namespace AzureMcp.Services.Azure.Postgres;
 
 public class PostgresService : BaseAzureService, IPostgresService
 {
-
+    private readonly IResourceGroupService _resourceGroupService;
     private string? _cachedEntraIdAccessToken;
     private DateTime _tokenExpiryTime;
 
-    public PostgresService()
+    public PostgresService(IResourceGroupService resourceGroupService)
     {
-
+        _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
     }
 
     private async Task<string> GetEntraIdAccessTokenAsync()
@@ -134,9 +135,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<List<string>> ListServersAsync(string subscriptionId, string resourceGroup, string user)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var serverList = new List<string>();
         await foreach (PostgreSqlFlexibleServerResource server in rg.GetPostgreSqlFlexibleServers().GetAllAsync())
         {
@@ -147,9 +150,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<string> GetServerConfigAsync(string subscriptionId, string resourceGroup, string user, string server)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
         var pgServerData = pgServer.Value.Data;
         var result = $"Server Name: {pgServerData.Name}\n" +
@@ -164,9 +169,11 @@ public class PostgresService : BaseAzureService, IPostgresService
 
     public async Task<string> GetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param)
     {
-        ResourceIdentifier resourceGroupId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
-        var armClient = await CreateArmClientAsync();
-        var rg = armClient.GetResourceGroupResource(resourceGroupId);
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
         var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
 
         var configResponse = await pgServer.Value.GetPostgreSqlFlexibleServerConfigurationAsync(param);
@@ -175,5 +182,37 @@ public class PostgresService : BaseAzureService, IPostgresService
             throw new Exception($"Parameter '{param}' not found.");
         }
         return configResponse.Value.Data.Value;
+    }
+
+    public async Task<string> SetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param, string value)
+    {
+        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
+        if (rg == null)
+        {
+            throw new Exception($"Resource group '{resourceGroup}' not found.");
+        }
+        var pgServer = await rg.GetPostgreSqlFlexibleServerAsync(server);
+
+        var configResponse = await pgServer.Value.GetPostgreSqlFlexibleServerConfigurationAsync(param);
+        if (configResponse?.Value?.Data == null)
+        {
+            throw new Exception($"Parameter '{param}' not found.");
+        }
+
+        var configData = new PostgreSqlFlexibleServerConfigurationData
+        {
+            Value = value,
+            Source = "user-override"
+        };
+
+        var updateOperation = await configResponse.Value.UpdateAsync(WaitUntil.Completed, configData);
+        if (updateOperation.HasCompleted && updateOperation.HasValue)
+        {
+            return $"Parameter '{param}' updated successfully to '{value}'.";
+        }
+        else
+        {
+            throw new Exception($"Failed to update parameter '{param}' to value '{value}'.");
+        }
     }
 }

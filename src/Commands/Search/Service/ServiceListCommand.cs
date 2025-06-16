@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Search.Service;
 
 public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : SubscriptionCommand<ServiceListOptions>()
 {
-    private const string _commandTitle = "List Azure AI Search Services";
+    private const string CommandTitle = "List Azure AI Search Services";
     private readonly ILogger<ServiceListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -23,9 +23,9 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
         - subscription
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

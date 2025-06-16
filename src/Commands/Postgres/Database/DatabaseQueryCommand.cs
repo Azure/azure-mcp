@@ -10,13 +10,13 @@ namespace AzureMcp.Commands.Postgres.Database;
 
 public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) : BaseDatabaseCommand<DatabaseQueryOptions>(logger)
 {
-    private const string _commandTitle = "Query PostgreSQL Database";
+    private const string CommandTitle = "Query PostgreSQL Database";
     private readonly Option<string> _queryOption = OptionDefinitions.Postgres.Query;
     public override string Name => "query";
 
     public override string Description => "Executes a query on the PostgreSQL database.";
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -32,7 +32,7 @@ public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) :
     }
 
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

@@ -9,7 +9,7 @@ namespace AzureMcp.Commands.AppConfig.KeyValue;
 
 public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : BaseKeyValueCommand<KeyValueLockOptions>()
 {
-    private const string _commandTitle = "Lock App Configuration Key-Value Setting";
+    private const string CommandTitle = "Lock App Configuration Key-Value Setting";
     private readonly ILogger<KeyValueLockCommand> _logger = logger;
 
     public override string Name => "lock";
@@ -21,9 +21,9 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
         you can specify a label to lock a specific labeled version of the key-value.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

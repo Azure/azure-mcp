@@ -11,7 +11,7 @@ namespace AzureMcp.Commands.AppConfig.Account;
 
 public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : SubscriptionCommand<AccountListOptions>()
 {
-    private const string _commandTitle = "List App Configuration Stores";
+    private const string CommandTitle = "List App Configuration Stores";
     private readonly ILogger<AccountListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -22,9 +22,9 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         stores available in the specified subscription. Results include store names returned as a JSON array.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

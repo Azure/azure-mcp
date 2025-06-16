@@ -14,7 +14,7 @@ namespace AzureMcp.Commands.Redis.ManagedRedis;
 /// </summary>
 public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : SubscriptionCommand<ClusterListOptions>()
 {
-    private const string _commandTitle = "List Redis Clusters";
+    private const string CommandTitle = "List Redis Clusters";
     private readonly ILogger<ClusterListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -24,9 +24,9 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
         List all Redis Cluster resources in a specified subscription. Returns an array of Redis Cluster details.
         Use this command to explore which Redis Cluster resources are available in your subscription.
         """;
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

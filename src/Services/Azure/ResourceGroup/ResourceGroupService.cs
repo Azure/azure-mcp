@@ -13,9 +13,9 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
-    private const string CACHE_GROUP = "resourcegroup";
-    private const string CACHE_KEY = "resourcegroups";
-    private static readonly TimeSpan CACHE_DURATION = TimeSpan.FromHours(1);
+    private const string CacheGroup = "resourcegroup";
+    private const string CacheKey = "resourcegroups";
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
     public async Task<List<ResourceGroupInfo>> GetResourceGroups(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
@@ -25,8 +25,8 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
         var subscriptionId = subscriptionResource.Data.SubscriptionId;
 
         // Try to get from cache first
-        var cacheKey = $"{CACHE_KEY}_{subscriptionId}_{tenant ?? "default"}";
-        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CACHE_GROUP, cacheKey, CACHE_DURATION);
+        var cacheKey = $"{CacheKey}_{subscriptionId}_{tenant ?? "default"}";
+        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -44,7 +44,7 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
                 .ToListAsync();
 
             // Cache the results
-            await _cacheService.SetAsync(CACHE_GROUP, cacheKey, resourceGroups, CACHE_DURATION);
+            await _cacheService.SetAsync(CacheGroup, cacheKey, resourceGroups, s_cacheDuration);
 
             return resourceGroups;
         }
@@ -62,8 +62,8 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
         var subscriptionId = subscriptionResource.Data.SubscriptionId;
 
         // Try to get from cache first
-        var cacheKey = $"{CACHE_KEY}_{subscriptionId}_{tenant ?? "default"}";
-        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CACHE_GROUP, cacheKey, CACHE_DURATION);
+        var cacheKey = $"{CacheKey}_{subscriptionId}_{tenant ?? "default"}";
+        var cachedResults = await _cacheService.GetAsync<List<ResourceGroupInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults.FirstOrDefault(rg => rg.Name.Equals(resourceGroupName, StringComparison.OrdinalIgnoreCase));

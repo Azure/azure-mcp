@@ -76,6 +76,13 @@ jobs:
     inputs:
       summaryFileLocation: $(CoverageFile)
 
+  # Run AOT analysis only on Linux x64
+  - template: /eng/pipelines/templates/steps/analyze-aot-compact.yml
+    parameters:
+      conditionExpression: "and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'x64'))"
+      runtime: 'linux-x64'
+      sourceDirectory: $(Build.SourcesDirectory)
+
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)

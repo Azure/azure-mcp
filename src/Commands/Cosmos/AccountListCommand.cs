@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Cosmos;
 
 public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : SubscriptionCommand<AccountListOptions>()
 {
-    private const string _commandTitle = "List Cosmos DB Accounts";
+    private const string CommandTitle = "List Cosmos DB Accounts";
     private readonly ILogger<AccountListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -21,9 +21,9 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         available in the specified subscription. Results include account names and are returned as a JSON array.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

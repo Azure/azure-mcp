@@ -13,8 +13,8 @@ namespace AzureMcp.Services.Azure;
 
 public abstract class BaseAzureService(ITenantService? tenantService = null)
 {
-    private static readonly UserAgentPolicy SharedUserAgentPolicy;
-    internal static readonly string DefaultUserAgent;
+    private static readonly UserAgentPolicy s_sharedUserAgentPolicy;
+    internal static readonly string s_defaultUserAgent;
 
     private CustomChainedCredential? _credential;
     private string? _lastTenantId;
@@ -30,11 +30,11 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
         var framework = assembly.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
         var platform = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
 
-        DefaultUserAgent = $"azmcp/{version} ({framework}; {platform})";
-        SharedUserAgentPolicy = new UserAgentPolicy(DefaultUserAgent);
+        s_defaultUserAgent = $"azmcp/{version} ({framework}; {platform})";
+        s_sharedUserAgentPolicy = new UserAgentPolicy(s_defaultUserAgent);
     }
 
-    protected string UserAgent { get; } = DefaultUserAgent;
+    protected string UserAgent { get; } = s_defaultUserAgent;
 
     protected async Task<string?> ResolveTenantIdAsync(string? tenant)
     {
@@ -68,7 +68,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
     protected static T AddDefaultPolicies<T>(T clientOptions) where T : ClientOptions
     {
-        clientOptions.AddPolicy(SharedUserAgentPolicy, HttpPipelinePosition.BeforeTransport);
+        clientOptions.AddPolicy(s_sharedUserAgentPolicy, HttpPipelinePosition.BeforeTransport);
 
         return clientOptions;
     }

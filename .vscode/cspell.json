@@ -1,5 +1,4 @@
 {
-    // cspell configuration file
     "version": "0.2",
     "language": "en",
     "dictionaries": [
@@ -23,7 +22,7 @@
         "**/obj/**",
         "**/bin/**",
         "**/.work/**",
-        "**/.dist/**",
+        "**/.dist/**"
     ],
     "dictionaryDefinitions": [
         {
@@ -95,6 +94,7 @@
                 "kcsb",
                 "LASTEXITCODE",
                 "locproj",
+                "logissue",
                 "LPUTF8Str",
                 "maxdepth",
                 "mkdirp",
@@ -116,6 +116,8 @@
                 "reporttypes",
                 "resourcegroups",
                 "resx",
+                "Roboto",
+                "Segoe",
                 "setvariable",
                 "stylecop",
                 "targetdir",
@@ -164,6 +166,7 @@
         "LINUXPOOL",
         "LINUXVMIMAGE",
         "LLM",
+        "monitoredresources",
         "msal",
         "mysvc",
         "mycluster",
@@ -175,15 +178,18 @@
         "npmjs",
         "onboarded",
         "oidc",
+        "payg",
         "pscore",
         "RediSearch",
         "resourcegroup",
         "resourcegroups",
         "servicebus",
+        "setparam",
         "testsettings",
         "vectorizable",
         "Vectorizer",
         "vsts",
+        "westus",
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",

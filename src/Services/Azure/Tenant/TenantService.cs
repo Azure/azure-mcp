@@ -11,14 +11,14 @@ public class TenantService(ICacheService cacheService)
     : BaseAzureService, ITenantService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
-    private const string CACHE_GROUP = "tenant";
-    private const string CACHE_KEY = "tenants";
-    private static readonly TimeSpan CACHE_DURATION = TimeSpan.FromHours(12);
+    private const string CacheGroup = "tenant";
+    private const string CacheKey = "tenants";
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(12);
 
     public async Task<List<TenantResource>> GetTenants()
     {
         // Try to get from cache first
-        var cachedResults = await _cacheService.GetAsync<List<TenantResource>>(CACHE_GROUP, CACHE_KEY, CACHE_DURATION);
+        var cachedResults = await _cacheService.GetAsync<List<TenantResource>>(CacheGroup, CacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -36,7 +36,7 @@ public class TenantService(ICacheService cacheService)
         }
 
         // Cache the results
-        await _cacheService.SetAsync(CACHE_GROUP, CACHE_KEY, results, CACHE_DURATION);
+        await _cacheService.SetAsync(CacheGroup, CacheKey, results, s_cacheDuration);
         return results;
     }
 

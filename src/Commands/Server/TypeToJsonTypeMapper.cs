@@ -10,7 +10,7 @@ namespace AzureMcp.Commands.Server;
 /// </summary>
 public static class TypeToJsonTypeMapper
 {
-    private static readonly Dictionary<Type, string> TypeToJsonMap = new()
+    private static readonly Dictionary<Type, string> s_typeToJsonMap = new()
     {
         // String types
         { typeof(string), "string" },
@@ -57,7 +57,7 @@ public static class TypeToJsonTypeMapper
             return "null";
         }
 
-        if (TypeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
+        if (s_typeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
         {
             return jsonType;
         }

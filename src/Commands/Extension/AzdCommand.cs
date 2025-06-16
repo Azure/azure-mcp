@@ -13,7 +13,7 @@ namespace AzureMcp.Commands.Extension;
 
 public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzdOptions>()
 {
-    private const string _commandTitle = "Azure Developer CLI Command";
+    private const string CommandTitle = "Azure Developer CLI Command";
     private readonly ILogger<AzdCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = OptionDefinitions.Extension.Azd.Command;
@@ -31,16 +31,16 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         "down",
     ];
 
-    private static readonly string _bestPracticesText = LoadBestPracticesText();
+    private static readonly string s_bestPracticesText = LoadBestPracticesText();
 
     private static string LoadBestPracticesText()
     {
         var assembly = typeof(AzdCommand).Assembly;
-        const string resourceName = "AzureMcp.Resources.azd-best-practices.txt";
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
+        const string ResourceName = "AzureMcp.Resources.azd-best-practices.txt";
+        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
     }
 
-    private static readonly string[] AzdCliPaths =
+    private static readonly string[] s_azdCliPaths =
     [
         // Windows
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Programs", "Azure Dev CLI"),
@@ -73,7 +73,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         If unsure about available commands or their parameters, run azd help or azd <group> --help in the command to discover them.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -95,7 +95,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return options;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -110,7 +110,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             // If the agent is asking for help, return the best practices text
             if (options.Learn && string.IsNullOrWhiteSpace(options.Command))
             {
-                context.Response.Message = _bestPracticesText;
+                context.Response.Message = s_bestPracticesText;
                 context.Response.Status = 200;
                 return context.Response;
             }
@@ -162,7 +162,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             var processService = context.GetService<IExternalProcessService>();
             processService.SetEnvironmentVariables(new Dictionary<string, string>
             {
-                ["AZURE_DEV_USER_AGENT"] = BaseAzureService.DefaultUserAgent,
+                ["AZURE_DEV_USER_AGENT"] = BaseAzureService.s_defaultUserAgent,
             });
 
             var azdPath = FindAzdCliPath() ?? throw new FileNotFoundException("Azure Developer CLI executable not found in PATH or common installation locations. Please ensure Azure Developer CLI is installed.");
@@ -204,7 +204,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             searchPaths.AddRange(pathDirs);
         }
 
-        searchPaths.AddRange(AzdCliPaths);
+        searchPaths.AddRange(s_azdCliPaths);
 
         foreach (var dir in searchPaths.Where(d => !string.IsNullOrEmpty(d)))
         {

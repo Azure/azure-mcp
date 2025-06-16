@@ -15,9 +15,9 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
-    private const string CACHE_GROUP = "cosmos";
-    private const string COSMOS_CLIENTS_CACHE_KEY_PREFIX = "clients_";
-    private static readonly TimeSpan CACHE_DURATION_CLIENTS = TimeSpan.FromMinutes(15);
+    private const string CacheGroup = "cosmos";
+    private const string CosmosClientsCacheKeyPrefix = "clients_";
+    private static readonly TimeSpan s_cacheDurationClients = TimeSpan.FromMinutes(15);
     private bool _disposed;
 
     private async Task<CosmosDBAccountResource> GetCosmosAccountAsync(
@@ -110,8 +110,8 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        var key = COSMOS_CLIENTS_CACHE_KEY_PREFIX + accountName;
-        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key, CACHE_DURATION_CLIENTS);
+        var key = CosmosClientsCacheKeyPrefix + accountName;
+        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(CacheGroup, key, s_cacheDurationClients);
         if (cosmosClient != null)
             return cosmosClient;
 
@@ -125,7 +125,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                 tenant,
                 retryPolicy);
 
-            await _cacheService.SetAsync(CACHE_GROUP, key, cosmosClient, CACHE_DURATION_CLIENTS);
+            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationClients);
             return cosmosClient;
         }
         catch (Exception ex) when (
@@ -140,7 +140,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                 tenant,
                 retryPolicy);
 
-            await _cacheService.SetAsync(CACHE_GROUP, key, cosmosClient, CACHE_DURATION_CLIENTS);
+            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationClients);
             return cosmosClient;
         }
 
@@ -282,15 +282,15 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             if (disposing)
             {
                 // Get all cached client keys
-                var keys = await _cacheService.GetGroupKeysAsync(CACHE_GROUP);
+                var keys = await _cacheService.GetGroupKeysAsync(CacheGroup);
 
                 // Filter for client keys only (those that start with the client prefix)
-                var clientKeys = keys.Where(k => k.StartsWith(COSMOS_CLIENTS_CACHE_KEY_PREFIX));
+                var clientKeys = keys.Where(k => k.StartsWith(CosmosClientsCacheKeyPrefix));
 
                 // Retrieve and dispose each client
                 foreach (var key in clientKeys)
                 {
-                    var client = await _cacheService.GetAsync<CosmosClient>(CACHE_GROUP, key);
+                    var client = await _cacheService.GetAsync<CosmosClient>(CacheGroup, key);
                     client?.Dispose();
                 }
                 _disposed = true;

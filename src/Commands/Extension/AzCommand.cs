@@ -12,13 +12,13 @@ namespace AzureMcp.Commands.Extension;
 
 public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzOptions>()
 {
-    private const string _commandTitle = "Azure CLI Command";
+    private const string CommandTitle = "Azure CLI Command";
     private readonly ILogger<AzCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = OptionDefinitions.Extension.Az.Command;
     private static string? _cachedAzPath;
     private volatile bool _isAuthenticated = false;
-    private static readonly SemaphoreSlim _authSemaphore = new(1, 1);
+    private static readonly SemaphoreSlim s_authSemaphore = new(1, 1);
 
     public override string Name => "az";
 
@@ -36,7 +36,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 - Be concise, professional and to the point. Do not give generic advice, always reply with detailed & contextual data sourced from the current Azure environment.
 """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -105,7 +105,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         try
         {
             // Check if the semaphore is already acquired to avoid re-authentication
-            bool isAcquired = await _authSemaphore.WaitAsync(1000);
+            bool isAcquired = await s_authSemaphore.WaitAsync(1000);
             if (!isAcquired || _isAuthenticated)
             {
                 return _isAuthenticated;
@@ -139,11 +139,11 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         }
         finally
         {
-            _authSemaphore.Release();
+            s_authSemaphore.Release();
         }
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = _commandTitle)]
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

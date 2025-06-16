@@ -10,12 +10,12 @@ namespace AzureMcp.Commands.Postgres.Table;
 
 public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDatabaseCommand<GetSchemaOptions>(logger)
 {
-    private const string _commandTitle = "Get PostgreSQL Table Schema";
+    private const string CommandTitle = "Get PostgreSQL Table Schema";
     private readonly Option<string> _tableOption = OptionDefinitions.Postgres.Table;
 
     public override string Name => "schema";
     public override string Description => "Retrieves the schema of a specified table in a PostgreSQL database.";
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -30,7 +30,7 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

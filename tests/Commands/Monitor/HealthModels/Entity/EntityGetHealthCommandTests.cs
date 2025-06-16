@@ -260,8 +260,8 @@ public class EntityGetHealthCommandTests
     {
         // Arrange
         var mockResponse = JsonNode.Parse(@"{""entityId"": ""entity123"", ""health"": ""Healthy""}") ?? "";
-        const double retryDelay = 3;
-        const int maxRetries = 5;
+        const double RetryDelay = 3;
+        const int MaxRetries = 5;
 
         _monitorHealthService
             .GetEntityHealth(
@@ -271,10 +271,10 @@ public class EntityGetHealthCommandTests
                 TestSubscription,
                 Arg.Any<AuthMethod?>(),
                 Arg.Any<string>(),
-                Arg.Is<RetryPolicyOptions>(r => r.DelaySeconds == retryDelay && r.MaxRetries == maxRetries))
+                Arg.Is<RetryPolicyOptions>(r => r.DelaySeconds == RetryDelay && r.MaxRetries == MaxRetries))
             .Returns(mockResponse);
 
-        var args = _parser.Parse($"--entity {TestEntity} --model-name {TestHealthModel} --resource-group {TestResourceGroup} --subscription {TestSubscription} --retry-delay {retryDelay} --retry-max-retries {maxRetries}");
+        var args = _parser.Parse($"--entity {TestEntity} --model-name {TestHealthModel} --resource-group {TestResourceGroup} --subscription {TestSubscription} --retry-delay {RetryDelay} --retry-max-retries {MaxRetries}");
 
         // Act
         var result = await _command.ExecuteAsync(_context, args);
@@ -290,6 +290,6 @@ public class EntityGetHealthCommandTests
             TestSubscription,
             Arg.Any<AuthMethod?>(),
             Arg.Any<string>(),
-            Arg.Is<RetryPolicyOptions>(r => r.DelaySeconds == retryDelay && r.MaxRetries == maxRetries));
+            Arg.Is<RetryPolicyOptions>(r => r.DelaySeconds == RetryDelay && r.MaxRetries == MaxRetries));
     }
 }

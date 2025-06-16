@@ -12,9 +12,9 @@ namespace AzureMcp.Tests.Client
 {
     public class ServiceBusCommandTests : CommandTestsBase, IClassFixture<LiveTestFixture>
     {
-        private const string QUEUE_NAME = "queue1";
-        private const string TOPIC_NAME = "topic1";
-        private const string SUBSCRIPTION_NAME = "subscription1";
+        private const string QueueName = "queue1";
+        private const string TopicName = "topic1";
+        private const string SubscriptionName = "subscription1";
 
         private readonly string _serviceBusNamespace;
 
@@ -29,14 +29,14 @@ namespace AzureMcp.Tests.Client
         {
             var numberOfMessages = 2;
 
-            await SendTestMessages(QUEUE_NAME, numberOfMessages);
+            await SendTestMessages(QueueName, numberOfMessages);
 
             var result = await CallToolAsync(
                 "azmcp-servicebus-queue-peek",
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, QUEUE_NAME },
+                    { ServiceBus.QueueName, QueueName },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                     { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
                 });
@@ -52,7 +52,7 @@ namespace AzureMcp.Tests.Client
         {
             var numberOfMessages = 2;
 
-            await SendTestMessages(TOPIC_NAME, numberOfMessages);
+            await SendTestMessages(TopicName, numberOfMessages);
 
             var result = await CallToolAsync(
                 "azmcp-servicebus-topic-subscription-peek",
@@ -60,8 +60,8 @@ namespace AzureMcp.Tests.Client
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
-                    { ServiceBus.TopicName, TOPIC_NAME },
-                    { ServiceBus.SubscriptionName, SUBSCRIPTION_NAME },
+                    { ServiceBus.TopicName, TopicName },
+                    { ServiceBus.SubscriptionName, SubscriptionName },
                     { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
                 });
 
@@ -79,7 +79,7 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, QUEUE_NAME },
+                    { ServiceBus.QueueName, QueueName },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                 });
 
@@ -96,7 +96,7 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.TopicName, TOPIC_NAME },
+                    { ServiceBus.TopicName, TopicName },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                 });
 
@@ -113,8 +113,8 @@ namespace AzureMcp.Tests.Client
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.TopicName, TOPIC_NAME },
-                    { ServiceBus.SubscriptionName, SUBSCRIPTION_NAME },
+                    { ServiceBus.TopicName, TopicName },
+                    { ServiceBus.SubscriptionName, SubscriptionName },
                     { ServiceBus.NamespaceName, _serviceBusNamespace},
                 });
 

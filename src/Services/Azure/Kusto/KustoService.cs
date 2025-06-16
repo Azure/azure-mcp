@@ -20,15 +20,15 @@ public sealed class KustoService(
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
 
-    private const string CACHE_GROUP = "kusto";
-    private const string KUSTO_CLUSTERS_CACHE_KEY = "clusters";
-    private const string KUSTO_ADMINPROVIDER_CACHE_KEY = "adminprovider";
-    private static readonly TimeSpan CACHE_DURATION = TimeSpan.FromHours(1);
-    private static readonly TimeSpan PROVIDER_CACHE_DURATION = TimeSpan.FromHours(2);
+    private const string CacheGroup = "kusto";
+    private const string KustoClustersCacheKey = "clusters";
+    private const string KustoAdminProviderCacheKey = "adminprovider";
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_providerCacheDuration = TimeSpan.FromHours(2);
 
     // Provider cache key generator
     private static string GetProviderCacheKey(KustoConnectionStringBuilder kcsb)
-        => $"{KUSTO_ADMINPROVIDER_CACHE_KEY}_{kcsb.DataSource}_{kcsb.InitialCatalog}_{kcsb.Authority}_{kcsb.ToString()}";
+        => $"{KustoAdminProviderCacheKey}_{kcsb.DataSource}_{kcsb.InitialCatalog}_{kcsb.Authority}_{kcsb.ToString()}";
 
     private ClientRequestProperties CreateClientRequestProperties()
     {
@@ -48,11 +48,11 @@ public sealed class KustoService(
 
         // Create cache key
         var cacheKey = string.IsNullOrEmpty(tenant)
-            ? $"{KUSTO_CLUSTERS_CACHE_KEY}_{subscriptionId}"
-            : $"{KUSTO_CLUSTERS_CACHE_KEY}_{subscriptionId}_{tenant}";
+            ? $"{KustoClustersCacheKey}_{subscriptionId}"
+            : $"{KustoClustersCacheKey}_{subscriptionId}_{tenant}";
 
         // Try to get from cache first
-        var cachedClusters = await _cacheService.GetAsync<List<string>>(CACHE_GROUP, cacheKey, CACHE_DURATION);
+        var cachedClusters = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedClusters != null)
         {
             return cachedClusters;
@@ -68,7 +68,7 @@ public sealed class KustoService(
                 clusters.Add(cluster.Data.Name);
             }
         }
-        await _cacheService.SetAsync(CACHE_GROUP, cacheKey, clusters, CACHE_DURATION);
+        await _cacheService.SetAsync(CacheGroup, cacheKey, clusters, s_cacheDuration);
 
         return clusters;
     }
@@ -300,11 +300,11 @@ public sealed class KustoService(
     private async Task<ICslAdminProvider> GetOrCreateCslAdminProvider(KustoConnectionStringBuilder kcsb)
     {
         var providerCacheKey = GetProviderCacheKey(kcsb);
-        var cslAdminProvider = await _cacheService.GetAsync<ICslAdminProvider>(CACHE_GROUP, providerCacheKey, PROVIDER_CACHE_DURATION);
+        var cslAdminProvider = await _cacheService.GetAsync<ICslAdminProvider>(CacheGroup, providerCacheKey, s_providerCacheDuration);
         if (cslAdminProvider == null)
         {
             cslAdminProvider = KustoClientFactory.CreateCslAdminProvider(kcsb);
-            await _cacheService.SetAsync(CACHE_GROUP, providerCacheKey, cslAdminProvider, PROVIDER_CACHE_DURATION);
+            await _cacheService.SetAsync(CacheGroup, providerCacheKey, cslAdminProvider, s_providerCacheDuration);
         }
 
         return cslAdminProvider;
@@ -313,11 +313,11 @@ public sealed class KustoService(
     private async Task<ICslQueryProvider> GetOrCreateCslQueryProvider(KustoConnectionStringBuilder kcsb)
     {
         var providerCacheKey = GetProviderCacheKey(kcsb) + "_query";
-        var cslQueryProvider = await _cacheService.GetAsync<ICslQueryProvider>(CACHE_GROUP, providerCacheKey, PROVIDER_CACHE_DURATION);
+        var cslQueryProvider = await _cacheService.GetAsync<ICslQueryProvider>(CacheGroup, providerCacheKey, s_providerCacheDuration);
         if (cslQueryProvider == null)
         {
             cslQueryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
-            await _cacheService.SetAsync(CACHE_GROUP, providerCacheKey, cslQueryProvider, PROVIDER_CACHE_DURATION);
+            await _cacheService.SetAsync(CacheGroup, providerCacheKey, cslQueryProvider, s_providerCacheDuration);
         }
 
         return cslQueryProvider;

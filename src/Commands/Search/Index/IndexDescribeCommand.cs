@@ -12,7 +12,7 @@ namespace AzureMcp.Commands.Search.Index;
 
 public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) : GlobalCommand<IndexDescribeOptions>()
 {
-    private const string _commandTitle = "Get Azure AI Search Index Details";
+    private const string CommandTitle = "Get Azure AI Search Index Details";
     private readonly ILogger<IndexDescribeCommand> _logger = logger;
     private readonly Option<string> _serviceOption = OptionDefinitions.Search.Service;
     private readonly Option<string> _indexOption = OptionDefinitions.Search.Index;
@@ -29,7 +29,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         - index-name: The name of the search index to retrieve
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -46,7 +46,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

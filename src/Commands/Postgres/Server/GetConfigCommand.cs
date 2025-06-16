@@ -9,14 +9,14 @@ namespace AzureMcp.Commands.Postgres.Server;
 
 public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseServerCommand<GetConfigOptions>(logger)
 {
-    private const string _commandTitle = "Get PostgreSQL Server Configuration";
+    private const string CommandTitle = "Get PostgreSQL Server Configuration";
     public override string Name => "config";
     public override string Description =>
         "Retrieve the configuration of a PostgreSQL server.";
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

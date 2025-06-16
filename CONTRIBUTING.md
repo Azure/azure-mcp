@@ -65,7 +65,8 @@ The project is organized as follows:
 2. Create a feature branch
 3. Make your changes
 4. Write or update tests
-5. Submit a pull request
+5. Test Locally
+6. Submit a pull request
 
 ## Testing
 
@@ -81,6 +82,72 @@ Test requirements:
 - Tests should cover success and error scenarios
 - Mock external service calls
 - Test argument validation
+
+### Testing Local Build with VS Code
+
+To run the Azure MCP server from source for local development:
+
+#### 1. Build the Server
+
+Navigate to the MCP server source directory and build the project using the .NET CLI:
+
+```bash
+dotnet build
+```
+
+#### 2. Configure mcp.json in IDE
+
+Update your mcp.json to point to the locally built azmcp executable. This setup uses stdio as the communication transport.
+
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start"
+      ]
+    }
+  }
+}
+```
+
+An optional `--service` parameter can also be set to minimize the number of loaded tools for the MCP server.
+
+
+
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "<service-name>"
+      ]
+    }
+  }
+}
+```
+
+> **Note:** Replace `<absolute-path-to>` with the full path to your built executable.
+> On **Windows**, use `azmcp.exe`.
+> On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
+
+> **Note:** Replace `<service-name>` with an available top level command group.
+> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+>
+> To enable single tool proxy mode set `--service` parameter to `azure`.
+> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
+
+#### 3. Start from IDE or Tooling
+
+With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.
 
 ### Live Tests
 
@@ -151,6 +218,29 @@ To catch format errors early, run `dotnet format src/AzureMcp.sln` before submit
 - Use proper error handling patterns
 - XML documentation for public APIs
 - Follow Model Context Protocol (MCP) patterns
+
+## AOT Compatibility Analysis
+
+The AOT compatibility analysis helps identify potential issues that might prevent the Azure MCP Server from working correctly when compiled with AOT or when trimming is enabled.
+
+### Running the Analysis
+
+To run the AOT compatibility analysis locally:
+
+```pwsh
+./eng/scripts/Analyze-AOT-Compact.ps1
+```
+
+The HTML report will be generated at `.work/aotCompactReport/aot-compact-report.html` and automatically opened in your default browser.
+
+To output the report to console, run the analysis with `-OutputFormat Console` argument.
+
+AOT compatibility warnings typically indicate:
+
+- Use of reflection without proper annotations
+- Serialization of types that might be trimmed
+- Dynamic code generation
+- Use of `RequiresUnreferencedCodeAttribute` methods without proper precautions
 
 ### Installing Git Hooks
 

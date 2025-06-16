@@ -14,10 +14,10 @@ public class UserAgentPolicyTests
     public void Constructor_SetsUserAgent()
     {
         // Arrange
-        const string expectedUserAgent = "TestUserAgent/1.0";
+        const string ExpectedUserAgent = "TestUserAgent/1.0";
 
         // Act
-        var policy = new UserAgentPolicy(expectedUserAgent);
+        var policy = new UserAgentPolicy(ExpectedUserAgent);
 
         // Assert - Implicit test that constructor doesn't throw
         Assert.NotNull(policy);
@@ -33,8 +33,8 @@ public class UserAgentPolicyTests
     public void OnSendingRequest_SetsUserAgentHeader()
     {
         // Arrange
-        const string expectedUserAgent = "TestUserAgent/1.0";
-        var policy = new UserAgentPolicy(expectedUserAgent);
+        const string ExpectedUserAgent = "TestUserAgent/1.0";
+        var policy = new UserAgentPolicy(ExpectedUserAgent);
         var request = new MockHttpRequest();
         var message = new HttpMessage(request, new MockResponseClassifier());
 
@@ -49,15 +49,15 @@ public class UserAgentPolicyTests
 
         var actual = headers.Single();
         Assert.Equal(UserAgentPolicy.UserAgentHeader, actual.Name);
-        Assert.Equal(expectedUserAgent, actual.Value);
+        Assert.Equal(ExpectedUserAgent, actual.Value);
     }
 
     [Fact]
     public void OnSendingRequest_CallsBaseMethod()
     {
         // Arrange
-        const string userAgent = "TestUserAgent/1.0";
-        var derivedPolicy = new TestableUserAgentPolicy(userAgent);
+        const string UserAgent = "TestUserAgent/1.0";
+        var derivedPolicy = new TestableUserAgentPolicy(UserAgent);
         var request = new MockHttpRequest();
         var message = new HttpMessage(request, new MockResponseClassifier());
 

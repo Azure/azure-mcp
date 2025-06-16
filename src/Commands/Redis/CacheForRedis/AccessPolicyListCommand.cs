@@ -13,7 +13,7 @@ namespace AzureMcp.Commands.Redis.CacheForRedis;
 /// </summary>
 public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> logger) : BaseCacheCommand<AccessPolicyListOptions>()
 {
-    private const string _commandTitle = "List Redis Cache Access Policy Assignments";
+    private const string CommandTitle = "List Redis Cache Access Policy Assignments";
     private readonly ILogger<AccessPolicyListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -23,9 +23,9 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
         Use this command to explore which Access Policies have been assigned to which identities for your Redis cache.
         """;
 
-    public override string Title => _commandTitle;
+    public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

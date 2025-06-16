@@ -17,9 +17,9 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
-    private const string CACHE_GROUP = "storage";
-    private const string STORAGE_ACCOUNTS_CACHE_KEY = "accounts";
-    private static readonly TimeSpan CACHE_DURATION = TimeSpan.FromHours(1);
+    private const string CacheGroup = "storage";
+    private const string StorageAccountsCacheKey = "accounts";
+    private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
     public async Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
@@ -27,11 +27,11 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         // Create cache key
         var cacheKey = string.IsNullOrEmpty(tenant)
-            ? $"{STORAGE_ACCOUNTS_CACHE_KEY}_{subscriptionId}"
-            : $"{STORAGE_ACCOUNTS_CACHE_KEY}_{subscriptionId}_{tenant}";
+            ? $"{StorageAccountsCacheKey}_{subscriptionId}"
+            : $"{StorageAccountsCacheKey}_{subscriptionId}_{tenant}";
 
         // Try to get from cache first
-        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CACHE_GROUP, cacheKey, CACHE_DURATION);
+        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedAccounts != null)
         {
             return cachedAccounts;
@@ -50,7 +50,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             // Cache the results
-            await _cacheService.SetAsync(CACHE_GROUP, cacheKey, accounts, CACHE_DURATION);
+            await _cacheService.SetAsync(CacheGroup, cacheKey, accounts, s_cacheDuration);
         }
         catch (Exception ex)
         {
