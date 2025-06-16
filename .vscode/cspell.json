@@ -191,6 +191,7 @@
         "servicebus",
         "setparam",
         "testsettings",
+        "toolsets",
         "vectorizable",
         "Vectorizer",
         "vsts",
