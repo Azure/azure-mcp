@@ -92,9 +92,9 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
                 { "secret", secretName }
             });
 
-        var results = result.AssertProperty("name");
-        Assert.Equal(JsonValueKind.String, results.ValueKind);
-        Assert.Equal(secretName, results.GetString());
+        var name = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, name.ValueKind);
+        Assert.Equal(secretName, name.GetString());
 
         var value = result.AssertProperty("value");
         Assert.Equal(JsonValueKind.String, value.ValueKind);
