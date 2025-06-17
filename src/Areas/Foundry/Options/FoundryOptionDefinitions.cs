@@ -22,6 +22,8 @@ public static class FoundryOptionDefinitions
     public const string SkuCapacity = "sku-capacity";
     public const string ScaleType = "scale-type";
     public const string ScaleCapacity = "scale-capacity";
+    public const string AgentId = "agent-id";
+    public const string Query = "query";
 
     public static readonly Option<string> EndpointOption = new(
         $"--{Endpoint}",
@@ -113,4 +115,20 @@ public static class FoundryOptionDefinitions
         $"--{ScaleCapacity}",
         "The scale capacity for the deployment."
     );
+
+    public static readonly Option<string> AgentIdOption = new(
+        $"--{AgentId}",
+        "The agent id in Agents."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> QueryOption = new(
+        $"--{Query}",
+        "The agent id in Agents."
+    )
+    {
+        IsRequired = true
+    };
 }

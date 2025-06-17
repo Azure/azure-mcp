@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.AI.Agents.Persistent;
 using Azure.AI.Projects;
 using Azure.ResourceManager.CognitiveServices;
 using AzureMcp.Areas.Foundry.Models;
@@ -39,4 +40,35 @@ public interface IFoundryService
         int? scaleCapacity = null,
         RetryPolicyOptions? retryPolicy = null
     );
+
+    Task<List<PersistentAgent>> ListAgents(string endpoint, string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    Task<Dictionary<string, object>> ConnectAgent(
+        string agentId,
+        string query,
+        string endpoint,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    // Task<Dictionary<string, object>> QueryAndEvaluateAgent(
+    //     string agentId,
+    //     string query,
+    //     string endpoint,
+    //     string? tenantId = null,
+    //     List<string>? evaluatorNames = null,
+    //     bool includeStudioUrl = false,
+    //     RetryPolicyOptions? retryPolicy = null);
+    //
+    // Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinition, RetryPolicyOptions? retryPolicy = null);
+    //
+    // Task<Dictionary<string, object>> EvaluateText(
+    //     List<string>? evaluatorNames = null,
+    //     string? filePath = null,
+    //     string? content = null,
+    //     bool includeStudioUrl = true,
+    //     bool returnRowResults = false,
+    //     string? endpoint = null,
+    //     string? tenantId = null,
+    //     RetryPolicyOptions? retryPolicy = null);
 }
