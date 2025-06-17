@@ -37,6 +37,8 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var searchService = context.GetService<ISearchService>();
 
             var services = await searchService.ListServices(
