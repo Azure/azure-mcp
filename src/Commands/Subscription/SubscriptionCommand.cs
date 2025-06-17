@@ -33,16 +33,21 @@ public abstract class SubscriptionCommand<
         return options;
     }
 
-    protected Activity? AddSubscriptionInformation(Activity? activity, TOptions options)
+    protected void AddSubscriptionInformation(Activity? activity, TOptions options)
     {
-        return activity?.AddTag(TelemetryConstants.SubscriptionGuid, options.Subscription);
+        activity?.AddTag(TelemetryConstants.SubscriptionGuid, options.Subscription);
     }
 
-    protected Activity? AddResourceInformation(Activity? activity, string resourceId)
+    protected void AddResourceInformation(Activity? activity, string? resourceId)
     {
+        if (string.IsNullOrEmpty(resourceId))
+        {
+            return;
+        }
+
         var bytes = s_sHA256.ComputeHash(s_encoding.GetBytes(resourceId));
         var hashedString = string.Join(string.Empty, bytes.Select(x => x.ToString("x2")));
 
-        return activity?.AddTag(TelemetryConstants.ResourceHash, hashedString);
+        activity?.AddTag(TelemetryConstants.ResourceHash, hashedString);
     }
 }
