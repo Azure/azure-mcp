@@ -32,6 +32,7 @@ public class ToolOperationsTest
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
+    private readonly ITelemetryService _telemetry;
     private readonly ILogger<ToolOperations> _logger;
     private readonly ILogger<CommandFactory> _commandFactoryLogger;
     private readonly IMcpServer _server;
@@ -44,6 +45,7 @@ public class ToolOperationsTest
         _server = Substitute.For<IMcpServer>();
         _telemetryService = Substitute.For<ITelemetryService>();
         _keyVaultService = Substitute.For<IKeyVaultService>();
+        _telemetry = Substitute.For<ITelemetryService>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_ => _keyVaultService);

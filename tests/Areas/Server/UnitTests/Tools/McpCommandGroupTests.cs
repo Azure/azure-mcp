@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using AzureMcp.Commands;
 using ModelContextProtocol.Client;
 using Xunit;
@@ -129,6 +130,18 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
 
             // Assert
             Assert.Equal(customEntryPoint, mcpCommandGroup.EntryPoint);
+        }
+    }
+
+    public class NoOpTelemetryService : ITelemetryService
+    {
+        public void Dispose()
+        {
+        }
+
+        public Activity? StartActivity(string activityName)
+        {
+            return null;
         }
     }
 }

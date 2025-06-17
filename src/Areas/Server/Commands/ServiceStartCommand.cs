@@ -9,10 +9,8 @@ using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
 using AzureMcp.Options.Server;
-using AzureMcp.Services.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -26,8 +24,9 @@ namespace AzureMcp.Areas.Server.Commands;
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
+    public const string DefaultName = "Azure.Mcp.Server";
+
     private const string CommandTitle = "Start MCP Server";
-    private const string DefaultAssemblyName = "Azure.Mcp.Server";
     private const string DefaultServerName = "Azure MCP Server";
 
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
@@ -123,14 +122,6 @@ public sealed class ServiceStartCommand : BaseCommand
         services.AddSingleton<ToolOperations>();
         services.AddSingleton<ProxyToolOperations>();
         services.AddSingleton<IMcpClientService, McpClientService>();
-        services.AddSingleton<AzureEventSourceLogForwarder>();
-        services.AddSingleton<ITelemetryService>(sp =>
-        {
-            return new TelemetryService(
-                sp.GetRequiredService<AzureEventSourceLogForwarder>(),
-                assemblyName?.Name ?? DefaultAssemblyName,
-                assemblyVersion);
-        });
 
         var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
         var entryAssembly = Assembly.GetEntryAssembly();
