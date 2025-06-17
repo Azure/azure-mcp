@@ -35,6 +35,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var tables = await storageService.ListTables(
                 options.Account!,

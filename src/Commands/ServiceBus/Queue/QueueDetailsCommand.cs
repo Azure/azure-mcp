@@ -57,6 +57,8 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetQueueDetails(
                 options.Namespace!,

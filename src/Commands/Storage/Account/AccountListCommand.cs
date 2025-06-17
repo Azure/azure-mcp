@@ -37,6 +37,8 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var accounts = await storageService.GetStorageAccounts(
                 options.Subscription!,
