@@ -54,18 +54,26 @@ public static class OpenTelemetryExtensions
 
     private static bool TryEnableAzureMonitor(this IServiceCollection services)
     {
-        var appInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
-        if (!string.IsNullOrEmpty(appInsightsConnectionString))
+        var collectTelemetry = Environment.GetEnvironmentVariable("AZURE_MCP_COLLECT_TELEMETRY");
+
+        if (bool.TryParse(collectTelemetry, out var isEnabled) && !isEnabled)
         {
-            services
-                .ConfigureOpenTelemetryTracerProvider((_, b) => b.AddSource("*"))
-                .ConfigureOpenTelemetryMeterProvider((_, b) => b.AddMeter("*"))
-                .AddOpenTelemetry()
-                    .ConfigureResource(r => r.AddService("azmcp", serviceVersion: Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString()))
-                    .UseAzureMonitor();
-            return true;
+            return false;
         }
 
-        return false;
+        var appInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+
+        if (string.IsNullOrEmpty(appInsightsConnectionString))
+        {
+            return false;
+        }
+
+        services
+            .ConfigureOpenTelemetryTracerProvider((_, b) => b.AddSource("*"))
+            .ConfigureOpenTelemetryMeterProvider((_, b) => b.AddMeter("*"))
+            .AddOpenTelemetry()
+                .ConfigureResource(r => r.AddService("azmcp", serviceVersion: Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString()))
+                .UseAzureMonitor();
+        return true;
     }
 }
