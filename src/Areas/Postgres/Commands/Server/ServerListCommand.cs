@@ -43,7 +43,7 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred while listing servers");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

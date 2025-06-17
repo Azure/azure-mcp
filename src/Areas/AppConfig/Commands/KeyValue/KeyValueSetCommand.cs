@@ -71,7 +71,7 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred setting value. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

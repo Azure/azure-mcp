@@ -53,7 +53,7 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred unlocking key. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -53,7 +53,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing containers. Account: {Account}.", options.Account);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

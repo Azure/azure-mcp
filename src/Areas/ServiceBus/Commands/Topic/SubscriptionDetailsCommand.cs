@@ -79,7 +79,7 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

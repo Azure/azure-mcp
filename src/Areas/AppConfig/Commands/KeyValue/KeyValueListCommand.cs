@@ -77,7 +77,7 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError("An exception occurred processing command. Exception: {Exception}", ex);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

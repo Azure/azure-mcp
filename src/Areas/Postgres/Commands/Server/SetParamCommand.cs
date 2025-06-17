@@ -61,7 +61,7 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred setting the parameter.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

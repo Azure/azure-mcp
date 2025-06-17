@@ -181,7 +181,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred executing command. Command: {Command}.", options.Command);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

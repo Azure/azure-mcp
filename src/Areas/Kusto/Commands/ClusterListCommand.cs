@@ -52,7 +52,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing Kusto clusters. Subscription: {Subscription}.", options.Subscription);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

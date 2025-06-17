@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 
+using System.Diagnostics;
+
 namespace AzureMcp.Commands;
 
 public abstract class BaseCommand : IBaseCommand
@@ -26,8 +28,11 @@ public abstract class BaseCommand : IBaseCommand
 
     public abstract Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult);
 
-    protected virtual void HandleException(CommandResponse response, Exception ex)
+    protected virtual void HandleException(CommandContext context, Exception ex)
     {
+        context.Activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
+
+        var response = context.Response;
         var result = new ExceptionResult(
             Message: ex.Message,
             StackTrace: ex.StackTrace,

@@ -69,7 +69,7 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while executing the command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

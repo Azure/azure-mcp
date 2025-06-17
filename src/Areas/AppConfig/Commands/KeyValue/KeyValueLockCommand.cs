@@ -55,7 +55,7 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred locking value. Key: {Key}, Label: {Label}", options.Key, options.Label);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

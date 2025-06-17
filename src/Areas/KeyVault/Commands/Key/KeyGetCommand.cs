@@ -76,7 +76,7 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting key {KeyName} from vault {VaultName}", options.KeyName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

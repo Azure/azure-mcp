@@ -54,7 +54,7 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing search services");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

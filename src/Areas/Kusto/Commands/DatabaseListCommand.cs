@@ -67,7 +67,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing databases. Cluster: {Cluster}.", options.ClusterUri ?? options.ClusterName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

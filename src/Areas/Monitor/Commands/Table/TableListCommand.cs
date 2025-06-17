@@ -62,7 +62,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing tables.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

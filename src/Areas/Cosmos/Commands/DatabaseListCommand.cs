@@ -52,7 +52,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing databases. Account: {Account}.", options.Account);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
