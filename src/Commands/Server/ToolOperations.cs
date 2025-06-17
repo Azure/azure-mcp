@@ -144,9 +144,9 @@ public class ToolOperations
             Description = underlyingCommand.Description,
         };
 
-        // Get the GetCommand method info to check for McpServerToolAttribute
-        var getCommandMethod = command.GetType().GetMethod(nameof(IBaseCommand.GetCommand));
-        if (getCommandMethod?.GetCustomAttribute<McpServerToolAttribute>() is { } mcpServerToolAttr)
+        // Get the ExecuteAsync method info to check for McpServerToolAttribute
+        var executeAsyncMethod = command.GetType().GetMethod(nameof(IBaseCommand.ExecuteAsync));
+        if (executeAsyncMethod?.GetCustomAttribute<McpServerToolAttribute>() is { } mcpServerToolAttr)
         {
             tool.Annotations = new ToolAnnotations()
             {
