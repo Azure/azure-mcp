@@ -37,6 +37,8 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var kusto = context.GetService<IKustoService>();
             var clusterNames = await kusto.ListClusters(
                 options.Subscription!,

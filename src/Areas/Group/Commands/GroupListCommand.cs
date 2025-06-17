@@ -38,6 +38,8 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var resourceGroupService = context.GetService<IResourceGroupService>();
             var groups = await resourceGroupService.GetResourceGroups(
                 options.Subscription!,

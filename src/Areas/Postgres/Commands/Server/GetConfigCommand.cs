@@ -28,6 +28,8 @@ public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseSer
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             var config = await pgService.GetServerConfigAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);
             context.Response.Results = config?.Length > 0 ?

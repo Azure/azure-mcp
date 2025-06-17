@@ -30,6 +30,8 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> servers = await pgService.ListServersAsync(options.Subscription!, options.ResourceGroup!, options.User!);
             context.Response.Results = servers?.Count > 0 ?

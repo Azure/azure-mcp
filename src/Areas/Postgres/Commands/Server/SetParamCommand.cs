@@ -48,6 +48,8 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             var result = await pgService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);
             context.Response.Results = !string.IsNullOrEmpty(result) ?
