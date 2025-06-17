@@ -347,6 +347,58 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 
 ## Common issues
 
+### Platform Package Installation Issues
+
+If you encounter errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this typically indicates an incomplete installation.
+
+#### Error Examples:
+- `Failed to load platform specific package '@azure/mcp-linux-x64'`
+- `Cannot find module '@azure/mcp-linux-x64'`
+- `'@azure/mcp-linux-x64' module is missing`
+
+#### Resolution Steps:
+
+1. **Clear npm cache and reinstall:**
+   ```bash
+   npm cache clean --force
+   npm uninstall -g @azure/mcp
+   npm install -g @azure/mcp@latest
+   ```
+
+2. **If using npx, clear the cache:**
+   ```bash
+   npx clear-npx-cache
+   npx -y @azure/mcp@latest server start
+   ```
+
+3. **Manually install the platform package:**
+   ```bash
+   npm install @azure/mcp-linux-x64@latest  # Linux x64
+   npm install @azure/mcp-darwin-x64@latest # macOS x64
+   npm install @azure/mcp-win32-x64@latest  # Windows x64
+   ```
+
+4. **Check your internet connection and try again**
+
+5. **Verify Node.js and npm versions:**
+   ```bash
+   node --version  # Should be 18.0.0 or later
+   npm --version
+   ```
+
+#### Common Causes:
+- **Network connectivity issues** during package installation
+- **npm cache corruption** preventing proper package resolution
+- **Incomplete installation** due to interrupted download
+- **Disk space issues** preventing package extraction
+- **Corporate firewall/proxy** blocking npm registry access
+
+#### For Enterprise Users:
+If you're behind a corporate firewall, you may need to:
+- Configure npm proxy settings
+- Whitelist npm registry domains (`*.npmjs.org`, `registry.npmjs.org`)
+- Work with IT to ensure npm can download packages
+
 ### Console window is empty when running Azure MCP Server
 
 By default, Azure MCP Server communicates with MCP Clients via standard I/O. Any logs output to standard I/O are subject to interpretation from the MCP Client. See [Logging](#logging) on how to view logs.
