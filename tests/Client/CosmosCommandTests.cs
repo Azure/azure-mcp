@@ -120,7 +120,9 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 
         // The agent will choose one, for this test we're going to take the first one
         var firstDatabase = dbEnum.First();
-        string dbName = firstDatabase.ValueKind == JsonValueKind.Object
+        string dbName = firstDatabase.ValueKind == JsonValueKind.String
+            ? firstDatabase.GetString()!
+            : firstDatabase.ValueKind == JsonValueKind.Object
             ? firstDatabase.GetProperty("name").GetString()!
             : throw new InvalidOperationException($"Unexpected database element ValueKind: {firstDatabase.ValueKind}");
         Assert.False(string.IsNullOrEmpty(dbName));
@@ -140,7 +142,9 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 
         // The agent will choose one, for this test we're going to take the first one
         var firstContainer = contEnum.First();
-        string containerName = firstContainer.ValueKind == JsonValueKind.Object
+        string containerName = firstContainer.ValueKind == JsonValueKind.String
+            ? firstContainer.GetString()!
+            : firstContainer.ValueKind == JsonValueKind.Object
             ? firstContainer.GetProperty("name").GetString()!
             : throw new InvalidOperationException($"Unexpected container element ValueKind: {firstContainer.ValueKind}");
         Assert.False(string.IsNullOrEmpty(containerName));
@@ -175,12 +179,13 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
         Assert.Equal(JsonValueKind.Array, databases.ValueKind);
         var databasesEnum = databases.EnumerateArray();
         Assert.True(databasesEnum.Any());
-
         foreach (var db in databasesEnum)
         {
-            string dbName = db.ValueKind == JsonValueKind.Object
+            string dbName = db.ValueKind == JsonValueKind.String
+                ? db.GetString()!
+                : db.ValueKind == JsonValueKind.Object
                 ? db.GetProperty("name").GetString()!
-                : db.GetString()!;
+                : throw new InvalidOperationException($"Unexpected database element ValueKind: {db.ValueKind}");
             Assert.False(string.IsNullOrEmpty(dbName));
 
             var containerResult = await CallToolAsync(
@@ -189,10 +194,11 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             var containers = containerResult.AssertProperty("containers");
             Assert.Equal(JsonValueKind.Array, containers.ValueKind);
             var contEnum = containers.EnumerateArray();
-
             foreach (var container in contEnum)
             {
-                string containerName = container.ValueKind == JsonValueKind.Object
+                string containerName = container.ValueKind == JsonValueKind.String
+                    ? container.GetString()!
+                    : container.ValueKind == JsonValueKind.Object
                     ? container.GetProperty("name").GetString()!
                     : throw new InvalidOperationException($"Unexpected container element ValueKind: {container.ValueKind}");
                 Assert.False(string.IsNullOrEmpty(containerName));

@@ -1,0 +1,27 @@
+parameters:
+- name: conditionExpression
+  type: string
+- name: runtime
+  type: string
+- name: sourceDirectory
+  type: string
+  default: $(Build.SourcesDirectory)
+
+steps:
+  - task: PowerShell@2
+    displayName: "Run AOT Compatibility Analysis"
+    condition: ${{ parameters.conditionExpression }}
+    inputs:
+      pwsh: true
+      filePath: ${{ parameters.sourceDirectory }}/eng/scripts/Analyze-AOT-Compact.ps1
+      arguments: >
+        -Runtime '${{ parameters.runtime }}'
+        -OutputFormat Console
+      workingDirectory: ${{ parameters.sourceDirectory }}
+    continueOnError: true
+
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: ${{ parameters.sourceDirectory }}/.work/aotCompactReport
+      ArtifactName: AOTCompatibilityReport
+      CustomCondition: ${{ parameters.conditionExpression }}

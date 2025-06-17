@@ -76,4 +76,28 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.Equal(JsonValueKind.String, keyType.ValueKind);
         Assert.Equal(KeyType.Rsa.ToString(), keyType.GetString());
     }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_get_secret()
+    {
+        // Created in keyvault.bicep.
+        var secretName = "foo-bar-secret";
+        var result = await CallToolAsync(
+            "azmcp-keyvault-secret-get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName },
+                { "secret", secretName }
+            });
+
+        var name = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, name.ValueKind);
+        Assert.Equal(secretName, name.GetString());
+
+        var value = result.AssertProperty("value");
+        Assert.Equal(JsonValueKind.String, value.ValueKind);
+        Assert.NotNull(value.GetString());
+    }
 }

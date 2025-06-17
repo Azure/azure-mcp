@@ -1,6 +1,6 @@
 # Release History
 
-## 0.2.2 (Unreleased)
+## 0.2.3 (Unreleased)
 
 ### Features Added
 
@@ -8,7 +8,18 @@
 
 ### Bugs Fixed
 
+- MCP tools now expose annotations to clients https://github.com/Azure/azure-mcp/pull/388
+
 ### Other Changes
+
+## 0.2.2 (2025-06-17)
+
+### Features Added
+
+- Support for Azure ISV Services https://github.com/Azure/azure-mcp/pull/199/
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+- Support for Key Vault Secrets https://github.com/Azure/azure-mcp/pull/173
+
 
 ## 0.2.1 (2025-06-12)
 

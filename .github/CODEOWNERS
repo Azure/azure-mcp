@@ -80,6 +80,13 @@
 # ServiceLabel: %area-KeyVault
 # ServiceOwners:                       @vcolin7 @JonathanCrd
 
+# PRLabel: %area-ISV
+/src/Arguments/AzureIsv/               @jayanthjj @pachaturevedi
+/src/Commands/AzureIsv/                @jayanthjj @pachaturevedi
+/src/Services/Azure/AzureIsv/          @jayanthjj @pachaturevedi
+
+# ServiceLabel: %area-ISV
+# ServiceOwners:                       @jayanthjj @pachaturevedi
 
 # PRLabel: %area-Kusto
 /src/Options/Kusto/                    @danield137 @xiangyan99 @Azure/azure-mcp
@@ -103,7 +110,7 @@
 /src/Options/Postgres/                  @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
 /src/Commands/Postgres/                 @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
 /src/Services/Azure/Postgres/           @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
- 
+
 # ServiceLabel: %area-Postgres
 # ServiceOwners:                       @kk-src @shreyaaithal @maxluk
 
@@ -112,7 +119,7 @@
 /src/Options/Search/                  @pablocastro @jongio @Azure/azure-mcp
 /src/Commands/Search/                 @pablocastro @jongio @Azure/azure-mcp
 /src/Services/Azure/Search/           @pablocastro @jongio @Azure/azure-mcp
- 
+
 # ServiceLabel: %area-Search
 # ServiceOwners:                       @pablocastro
 
@@ -121,7 +128,7 @@
 /src/Options/ServiceBus/               @anuchandy @conniey @Azure/azure-mcp
 /src/Commands/ServiceBus/              @anuchandy @conniey @Azure/azure-mcp
 /src/Services/Azure/ServiceBus/        @anuchandy @conniey @Azure/azure-mcp
- 
+
 # ServiceLabel: %area-ServiceBus
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
 
@@ -137,6 +144,14 @@
 /src/Options/Storage/                  @alzimmermsft @jongio @Azure/azure-mcp
 /src/Commands/Storage/                 @alzimmermsft @jongio @Azure/azure-mcp
 /src/Services/Azure/Storage/           @alzimmermsft @jongio @Azure/azure-mcp
- 
+
 # ServiceLabel: %area-Storage
 # ServiceOwners:                       @alzimmermsft  @jongio
+
+# PRLabel: %area-Authorization
+/src/Options/Authorization/            @vurhanau @jongio @xiangyan99 @Azure/azure-mcp
+/src/Commands/Authorization/           @vurhanau @jongio @xiangyan99 @Azure/azure-mcp
+/src/Services/Azure/Authorization/     @vurhanau @jongio @xiangyan99 @Azure/azure-mcp
+
+# ServiceLabel: %area-Authorization
+# ServiceOwners:                       @vurhanau

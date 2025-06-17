@@ -74,6 +74,8 @@ By default, VS Code logs informational, warning, and error level messages. To ge
 
 ## Authentication
 
+For comprehensive authentication guidance including advanced scenarios for protected resources, firewall restrictions, and enterprise environments, see our [detailed Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md).
+
 ### 401 Unauthorized: Local authorization is disabled.
 
 This error indicates that the targeted resource is configured to disallow access using **Access Keys**, which are currently used by Azure MCP for authentication in certain scenarios.
@@ -87,6 +89,25 @@ Azure MCP currently relies on **access key-based authentication** for some resou
 - Connection strings containing embedded keys
 
 When these local authorization methods are disabled, any access attempt from Azure MCP using them will result in a `401 Unauthorized` error.
+
+#### Working with Resource Administrators
+
+If you encounter this error in an enterprise environment, work with your resource administrator to:
+
+1. **Verify RBAC Permissions**: Ensure your account has the appropriate data plane roles:
+   - For Storage: `Storage Blob Data Reader`, `Storage Blob Data Contributor`, or `Storage Blob Data Owner`
+   - For Cosmos DB: `Cosmos DB Built-in Data Reader`, `Cosmos DB Built-in Data Contributor`
+   - For Key Vault: `Key Vault Secrets User`, `Key Vault Crypto User`
+
+2. **Confirm Authentication Method**: Ask your administrator:
+   - "Is local authentication disabled on this resource?"
+   - "What RBAC roles are available for data plane access?"
+   - "Should I use user authentication or a service principal?"
+
+3. **Network Considerations**: If the resource is behind a firewall or uses private endpoints:
+   - "Are there network restrictions I need to be aware of?"
+   - "Do I need VPN access to reach private endpoints?"
+   - "What IP addresses should be allowlisted for access?"
 
 ### 403 Forbidden: Authorization Failure
 
@@ -115,20 +136,214 @@ This error indicates that the access token used for authentication does not have
     This will prompt you to select your desired account and use that to authenticate.
 
 
+### Network and Firewall Restrictions
+
+Azure MCP Server requires network connectivity to Azure services and authentication endpoints. In enterprise environments with strict network controls, additional configuration may be needed.
+
+#### Common Network Issues
+
+1. **Corporate Firewall Blocking Azure Endpoints**
+   - Authentication fails with connection timeout errors
+   - Unable to reach `login.microsoftonline.com` or `management.azure.com`
+
+2. **Proxy Server Configuration**
+   - HTTP/HTTPS proxy not configured for Azure MCP Server
+   - Corporate proxy certificates not trusted
+
+3. **Private Endpoint Connectivity**
+   - Resources configured with private endpoints require VPN or ExpressRoute access
+   - DNS resolution issues for private endpoint addresses
+
+#### Working with Network Administrators
+
+**Essential Information to Provide:**
+
+1. **Required Endpoints for Authentication:**
+   ```
+   login.microsoftonline.com:443
+   login.windows.net:443
+   management.azure.com:443
+   graph.microsoft.com:443
+   ```
+
+2. **Resource-Specific Endpoints:**
+   ```
+   Storage: *.blob.core.windows.net:443, *.table.core.windows.net:443
+   Key Vault: *.vault.azure.net:443
+   Cosmos DB: *.documents.azure.com:443
+   Service Bus: *.servicebus.windows.net:443
+   ```
+
+3. **Proxy Configuration (if applicable):**
+   ```bash
+   # Set these environment variables if using a corporate proxy
+   export HTTP_PROXY=http://proxy.company.com:8080
+   export HTTPS_PROXY=http://proxy.company.com:8080
+   export NO_PROXY=localhost,127.0.0.1
+   ```
+
+#### Troubleshooting Network Connectivity
+
+1. **Test Basic Connectivity:**
+   ```bash
+   # Test authentication endpoint
+   curl -I https://login.microsoftonline.com
+   
+   # Test resource management endpoint
+   curl -I https://management.azure.com
+   ```
+
+2. **Check Private Endpoint DNS Resolution:**
+   ```bash
+   # Should resolve to private IP (10.x.x.x) if using private endpoints
+   nslookup mystorageaccount.blob.core.windows.net
+   ```
+
+3. **Verify Certificate Trust:**
+   ```bash
+   # Check if corporate certificates are trusted
+   openssl s_client -connect login.microsoftonline.com:443 -servername login.microsoftonline.com
+   ```
+
+#### Questions to Ask Your Network Administrator
+
+- Are there firewall rules blocking outbound HTTPS traffic to Azure endpoints?
+- Is a corporate proxy server required for internet access?
+- Are there any Conditional Access policies affecting network access?
+- Do Azure resources use private endpoints that require VPN access?
+- Are corporate CA certificates properly installed and trusted?
+
+
+### Enterprise Environment Scenarios
+
+Many enterprise environments have additional security controls that can affect Azure MCP Server authentication and operation.
+
+#### Service Principal Authentication for Restricted Environments
+
+In environments where interactive authentication isn't suitable or allowed:
+
+1. **Request Service Principal Creation:**
+   Ask your Azure administrator to create a service principal with the following information:
+   ```
+   Application Name: Azure MCP Server - [Your Name/Team]
+   Required Permissions: 
+   - Reader role at subscription/resource group level
+   - Data plane roles for specific resources (e.g., Storage Blob Data Reader)
+   Justification: Development/testing with Azure MCP Server
+   ```
+
+2. **Configuration:**
+   Once the service principal is created, configure these environment variables:
+   ```bash
+   export AZURE_CLIENT_ID="service-principal-client-id"
+   export AZURE_CLIENT_SECRET="service-principal-secret"
+   export AZURE_TENANT_ID="your-tenant-id"
+   ```
+
+3. **Certificate-Based Authentication (Preferred):**
+   For enhanced security, request certificate-based authentication:
+   ```bash
+   export AZURE_CLIENT_ID="service-principal-client-id"
+   export AZURE_CLIENT_CERTIFICATE_PATH="/path/to/certificate.pem"
+   export AZURE_TENANT_ID="your-tenant-id"
+   ```
+
+#### Conditional Access Policy Compliance
+
+Organizations may enforce Conditional Access policies that affect authentication:
+
+**Common Policy Requirements:**
+- Device compliance (Azure AD joined devices)
+- Multi-factor authentication (MFA)
+- Location-based restrictions
+- Application-specific controls
+
+**Working with Identity Administrators:**
+
+1. **Check Policy Impact:**
+   ```
+   Questions to ask:
+   - Are there Conditional Access policies affecting my authentication?
+   - Is my device compliant with organizational policies?
+   - Do I need to use a specific authentication method?
+   - Can I get an exception for development scenarios?
+   ```
+
+2. **Policy Compliance Steps:**
+   - Ensure your device is Azure AD joined or hybrid joined
+   - Complete device compliance enrollment if required
+   - Use compliant authentication methods (avoid saved credentials in non-compliant browsers)
+   - Connect from approved network locations if location policies exist
+
+#### Resource Access in Locked-Down Environments
+
+When resources are heavily restricted:
+
+1. **Minimum Required Information to Gather:**
+   ```
+   Resource Details:
+   - Resource names and types
+   - Resource group and subscription
+   - Whether private endpoints are used
+   - Network restrictions (IP allowlists, VNet integration)
+   
+   Access Requirements:
+   - Required RBAC roles
+   - Network access requirements
+   - Authentication method preferences
+   ```
+
+2. **Escalation Path:**
+   ```
+   Level 1: Resource Administrator
+   - Resource-specific permissions
+   - RBAC role assignments
+   
+   Level 2: Network Administrator  
+   - Firewall rules and network access
+   - Private endpoint connectivity
+   
+   Level 3: Identity Administrator
+   - Conditional Access policies
+   - Service principal creation
+   ```
+
 ### AADSTS500200 error: User account is a personal Microsoft account
 
-This error occurs because the Azure MCP server uses Azure Identity SDK's `DefaultAzureCredential` for authentication, which is specifically designed for Azure Active Directory (Azure Entra ID) authentication flows, as they're designed to work with Azure services that require Azure AD-based authentication and authorization. See the [Authentication](https://github.com/Azure/azure-mcp/blob/main/README.md#-authentication) section in for more details.
+This error occurs when trying to authenticate with a personal Microsoft account (@hotmail.com, @outlook.com, @live.com, @gmail.com, etc.) against Azure resources.
 
-Personal Microsoft accounts (@hotmail.com, @outlook.com, or @live.com) use a different authentication system that isn't compatible with these flows.
+#### Why This Happens
 
-To resolve this issue, you can:
-- Use a work or school account that's part of an Azure AD tenant.
-- Request access to an Azure subscription with your existing organizational account.
-    - Learn more: [Add organization users and manage access](https://learn.microsoft.com/azure/devops/organizations/accounts/add-organization-users?view=azure-devops&tabs=browser).
-- Create a new Azure subscription and associated Azure AD tenant.
-    - Learn more: [Associate or add an Azure subscription to your Microsoft Entra tenant](https://learn.microsoft.com/entra/fundamentals/how-subscriptions-associated-directory).
-- If you must use a personal account, first create an Azure AD tenant for your Azure subscription, then authenticate using that tenant.
-    - Learn more: [Quickstart: Create a new tenant in Microsoft Entra ID](https://learn.microsoft.com/entra/fundamentals/create-new-tenant), [Set up a new Microsoft Entra tenant](https://learn.microsoft.com/entra/identity-platform/quickstart-create-new-tenant).
+Azure MCP Server uses the Azure Identity SDK's `DefaultAzureCredential` for authentication, which requires **Microsoft Entra ID (formerly Azure AD)** credentials to access Azure resources. Personal Microsoft accounts use a different authentication system that isn't compatible with Azure resource access patterns.
+
+See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md) for detailed information about supported authentication methods.
+
+#### Resolution Options
+
+**Option 1: Use an Organizational Account (Recommended)**
+- Switch to a work or school account that's already part of a Microsoft Entra ID tenant
+- Contact your organization's IT administrator to gain access to your company's Azure subscription
+
+**Option 2: Request Access to Existing Azure Subscription**
+- Ask your organization to add your existing work account to their Azure subscription
+- Learn more: [Add organization users and manage access](https://learn.microsoft.com/azure/devops/organizations/accounts/add-organization-users?view=azure-devops&tabs=browser)
+
+**Option 3: Create a New Azure Subscription with Entra ID Tenant**
+- Create a new Azure subscription, which automatically creates a Microsoft Entra ID tenant
+- This gives you full control but requires setting up your own Azure environment
+- Learn more: [Associate or add an Azure subscription to your Microsoft Entra tenant](https://learn.microsoft.com/entra/fundamentals/how-subscriptions-associated-directory)
+
+**Option 4: Create a Microsoft Entra ID Tenant for Your Personal Account**
+- If you must use a personal account, create a new Microsoft Entra ID tenant first
+- Then associate your Azure subscription with this tenant
+- Learn more: 
+  - [Quickstart: Create a new tenant in Microsoft Entra ID](https://learn.microsoft.com/entra/fundamentals/create-new-tenant)
+  - [Set up a new Microsoft Entra tenant](https://learn.microsoft.com/entra/identity-platform/quickstart-create-new-tenant)
+
+#### Next Steps
+1. Choose the option that best fits your scenario
+2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
+3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
 
 ## Common issues
 

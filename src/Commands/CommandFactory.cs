@@ -4,9 +4,11 @@
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -82,13 +84,14 @@ public class CommandFactory
         // Register top-level command groups
         RegisterBestPracticesCommand();
         RegisterCosmosCommands();
+        RegisterKeyVaultCommands();
         RegisterKustoCommands();
         RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
-        RegisterKeyVaultCommands();
+        RegisterDatadogCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
         RegisterSubscriptionCommands();
@@ -96,6 +99,7 @@ public class CommandFactory
         RegisterMcpServerCommands();
         RegisterServiceBusCommands();
         RegisterRedisCommands();
+        RegisterAuthorizationCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -165,6 +169,17 @@ public class CommandFactory
 
         tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<Kusto.TableListCommand>()));
         tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
+    }
+
+    private void RegisterDatadogCommands()
+    {
+        var datadog = new CommandGroup("datadog", "Datadog operations - Commands for managing and querying Datadog resources.");
+        _rootGroup.AddSubGroup(datadog);
+
+        var monitoredResources = new CommandGroup("monitoredresources", "Datadog monitored resources operations - Commands for listing monitored resources in a specific Datadog monitor.");
+        datadog.AddSubGroup(monitoredResources);
+
+        monitoredResources.AddCommand("list", new AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand(GetLogger<AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand>()));
     }
 
     private void RegisterPostgresCommands()
@@ -305,9 +320,14 @@ public class CommandFactory
         var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");
         keyVault.AddSubGroup(keys);
 
+        var secret = new CommandGroup("secret", "Key Vault secret operations - Commands for managing and accessing secrets in Azure Key Vault.");
+        keyVault.AddSubGroup(secret);
+
         keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
         keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
         keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
+
+        secret.AddCommand("get", new KeyVault.Secret.SecretGetCommand(GetLogger<KeyVault.Secret.SecretGetCommand>()));
     }
 
     private void RegisterToolsCommands()
@@ -408,6 +428,22 @@ public class CommandFactory
         cluster.AddSubGroup(database);
 
         database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+    }
+
+    private void RegisterAuthorizationCommands()
+    {
+        // Create Authorization RBAC role command group
+        var authorization = new CommandGroup("role",
+            "Authorization operations - Commands for managing Azure RBAC resources.");
+        _rootGroup.AddSubGroup(authorization);
+
+        // Create Role Assignment subgroup
+        var roleAssignment = new CommandGroup("assignment",
+            "Role assignment operations - Commands for listing and managing Azure RBAC role assignments for a given scope.");
+        authorization.AddSubGroup(roleAssignment);
+
+        // Register role assignment commands
+        roleAssignment.AddCommand("list", new RoleAssignmentListCommand(GetLogger<RoleAssignmentListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

@@ -4,6 +4,8 @@
 using System.CommandLine.Builder;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.AppConfig;
+using AzureMcp.Services.Azure.Authorization;
+using AzureMcp.Services.Azure.AzureIsv.Datadog;
 using AzureMcp.Services.Azure.Cosmos;
 using AzureMcp.Services.Azure.KeyVault;
 using AzureMcp.Services.Azure.Kusto;
@@ -96,6 +98,7 @@ internal class Program
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<ICosmosService, CosmosService>();
         services.AddSingleton<IKustoService, KustoService>();
+        services.AddSingleton<IDatadogService, DatadogService>();
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
@@ -106,6 +109,7 @@ internal class Program
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
         services.AddSingleton<IServiceBusService, ServiceBusService>();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<CommandFactory>();
     }
 }

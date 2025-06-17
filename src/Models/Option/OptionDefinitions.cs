@@ -540,6 +540,19 @@ public static class OptionDefinitions
         };
     }
 
+    public static class Authorization
+    {
+        public const string ScopeName = "scope";
+
+        public static readonly Option<string> Scope = new(
+            $"--{ScopeName}",
+            "Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM."
+        )
+        {
+            IsRequired = true,
+        };
+    }
+
     public static class Extension
     {
         public static class Az
@@ -610,12 +623,26 @@ public static class OptionDefinitions
         }
     }
 
+    public static class Datadog
+    {
+        public const string DatadogResourceParam = "datadog-resource";
+
+        public static readonly Option<string> DatadogResourceName = new(
+            $"--{DatadogResourceParam}",
+            "The name of the Datadog resource to use. This is the unique name you chose for your Datadog resource in Azure."
+        )
+        {
+            IsRequired = true
+        };
+    }
+
     public static class KeyVault
     {
         public const string VaultNameParam = "vault";
         public const string KeyNameParam = "key";
         public const string KeyTypeParam = "key-type";
         public const string IncludeManagedKeysParam = "include-managed";
+        public const string SecretNameParam = "secret";
 
         public static readonly Option<string> VaultName = new(
             $"--{VaultNameParam}",
@@ -647,6 +674,14 @@ public static class OptionDefinitions
         )
         {
             IsRequired = false
+        };
+
+        public static readonly Option<string> SecretName = new(
+            $"--{SecretNameParam}",
+            "The name of the secret."
+        )
+        {
+            IsRequired = true
         };
     }
 
