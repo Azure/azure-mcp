@@ -9,6 +9,8 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
+using AzureMcp.Services.Telemetry;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -109,6 +111,19 @@ internal class Program
     internal static void ConfigureServices(IServiceCollection services)
     {
         services.ConfigureOpenTelemetry();
+        services.AddSingleton<AzureEventSourceLogForwarder>();
+        services.AddSingleton<ITelemetryService>(sp =>
+        {
+            var entryAssembly = Assembly.GetEntryAssembly();
+            var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
+            var assemblyVersion = assemblyName?.Version?.ToString() ?? "1.0.0-beta";
+
+            return new TelemetryService(
+                sp.GetRequiredService<AzureEventSourceLogForwarder>(),
+                assemblyName?.Name ?? ServiceStartCommand.DefaultName,
+                assemblyVersion);
+        });
+
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IExternalProcessService, ExternalProcessService>();
