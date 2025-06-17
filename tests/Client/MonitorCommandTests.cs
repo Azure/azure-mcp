@@ -50,7 +50,8 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             {
                 { "subscription", Settings.SubscriptionId },
                 { "workspace", Settings.ResourceBaseName },
-                { "resource-group", Settings.ResourceGroupName }
+                { "resource-group", Settings.ResourceGroupName },
+                { "table-type", "Microsoft" }
             });
 
         var tablesArray = result.AssertProperty("tables");

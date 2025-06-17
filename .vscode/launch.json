@@ -15,7 +15,7 @@
                 "${input:subscription}",
                 "--account-name",
                 "${input:cosmosAccountName}",
-                "--retry-max-retries", 
+                "--retry-max-retries",
                 "0"
             ],
             "cwd": "${workspaceFolder}",
@@ -285,6 +285,10 @@
                 "list",
                 "--subscription",
                 "${input:subscription}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--workspace",
+                "${input:workspace}"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -315,7 +319,7 @@
                 "DOTNET_ENVIRONMENT": "Development"
             }
         },
-        {            
+        {
             "name": "Debug Monitor Log Query",
             "type": "coreclr",
             "request": "launch",
@@ -420,7 +424,10 @@
     "compounds": [
         {
             "name": "Debug MCP Server",
-            "configurations": ["Launch MCP Server", "Attach to MCP Server"]
+            "configurations": [
+                "Launch MCP Server",
+                "Attach to MCP Server"
+            ]
         }
     ],
     "inputs": [
@@ -487,7 +494,8 @@
             "type": "promptString",
             "description": "Cosmos DB Container Name",
             "default": ""
-        },        {
+        },
+        {
             "id": "resourceGroup",
             "type": "promptString",
             "description": "Azure Resource Group",
