@@ -49,6 +49,13 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         var options = BindOptions(parseResult);
         try
         {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(
                 options.ResourceGroup!,
@@ -62,9 +69,9 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while executing the command.");
-            context.Response.Status = 500;
-            context.Response.Message = ex.Message;
+            HandleException(context.Response, ex);
         }
+
         return context.Response;
     }
 
