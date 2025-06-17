@@ -52,6 +52,8 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var authService = context.GetService<IAuthorizationService>();
             var assignments = await authService.ListRoleAssignments(
                 options.Scope,
