@@ -43,7 +43,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 2. You should see the Azure MCP Server in the list of tools
 3. Try a prompt that tells the agent to use the Azure MCP Server, such as "List my Azure Storage containers"
 4. The agent should be able to use the Azure MCP Server tools to complete your query
-5. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md)
+5. For help with common issues see [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#128-tool-limit-issue)
 
 ## ✨ What can you do with the Azure MCP Server?
 
@@ -288,7 +288,7 @@ More end-to-end MCP client/agent guides are coming soon!
 
 ## 📝 Troubleshooting
 
-See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) for help with common issues and logging.
+See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#128-tool-limit-issue) for help with common issues and logging.
 
 ### 🔑 Authentication
 
@@ -307,7 +307,7 @@ The Azure MCP Server seamlessly integrates with your host operating system's aut
 
 If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
 
-If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
+If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#authentication).
 
 For enterprise authentication scenarios including network restrictions, security policies, and protected resources, see our [Authentication and Security guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md).
 
