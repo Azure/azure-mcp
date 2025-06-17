@@ -60,6 +60,8 @@ public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicOptions>
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetTopicDetails(
                 options.Namespace!,
