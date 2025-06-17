@@ -51,6 +51,8 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var kusto = context.GetService<IKustoService>();
             List<JsonElement> results;
             var query = $"{options.Table} | sample {options.Limit}";

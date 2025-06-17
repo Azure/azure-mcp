@@ -43,6 +43,8 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> schema = await pgService.GetTableSchemaAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!, options.Table!);
             context.Response.Results = schema?.Count > 0 ?

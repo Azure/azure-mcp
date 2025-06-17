@@ -68,6 +68,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IKeyVaultService>();
             var key = await service.CreateKey(
                 options.VaultName!,
