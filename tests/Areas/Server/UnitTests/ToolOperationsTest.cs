@@ -35,12 +35,14 @@ public class ToolOperationsTest
     private readonly ILogger<ToolOperations> _logger;
     private readonly ILogger<CommandFactory> _commandFactoryLogger;
     private readonly IMcpServer _server;
+    private readonly ITelemetryService _telemetryService;
 
     public ToolOperationsTest()
     {
         _logger = Substitute.For<ILogger<ToolOperations>>();
         _commandFactoryLogger = Substitute.For<ILogger<CommandFactory>>();
         _server = Substitute.For<IMcpServer>();
+        _telemetryService = Substitute.For<ITelemetryService>();
         _keyVaultService = Substitute.For<IKeyVaultService>();
 
         var collection = new ServiceCollection();
