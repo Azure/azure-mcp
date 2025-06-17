@@ -67,6 +67,8 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IServiceBusService>();
             var messages = await service.PeekSubscriptionMessages(
                 options.Namespace!,

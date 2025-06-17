@@ -63,6 +63,8 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetSubscriptionDetails(
                 options.Namespace!,
