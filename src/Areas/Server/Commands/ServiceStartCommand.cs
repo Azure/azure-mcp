@@ -8,6 +8,8 @@ using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
+using AzureMcp.Options.Server;
+using AzureMcp.Services.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
@@ -25,6 +27,9 @@ namespace AzureMcp.Areas.Server.Commands;
 public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
+    private const string DefaultAssemblyName = "Azure.Mcp.Server";
+    private const string DefaultServerName = "Azure MCP Server";
+
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
@@ -111,11 +116,20 @@ public sealed class ServiceStartCommand : BaseCommand
 
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
+        var assemblyVersion = assemblyName?.Version?.ToString() ?? "1.0.0-beta";
+
         services.AddSingleton<ToolOperations>();
         services.AddSingleton<ProxyToolOperations>();
         services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
-        services.AddHostedService<OtelService>();
+        services.AddSingleton<ITelemetryService>(sp => {
+            return new TelemetryService(
+                sp.GetRequiredService<AzureEventSourceLogForwarder>(),
+                assemblyName?.Name ?? DefaultAssemblyName,
+                assemblyVersion);
+        });
 
         var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -186,35 +200,5 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         /// <inheritdoc />
         protected override Task ExecuteAsync(CancellationToken stoppingToken) => session.RunAsync(stoppingToken);
-    }
-
-    /// <summary>
-    /// Resolves (and starts) the OpenTelemetry services.
-    /// </summary>
-    private sealed class OtelService : BackgroundService
-    {
-        private readonly MeterProvider? _meterProvider;
-        private readonly TracerProvider? _tracerProvider;
-        private readonly LoggerProvider? _loggerProvider;
-        private readonly AzureEventSourceLogForwarder _logForwarder;
-
-        public OtelService(IServiceProvider provider)
-        {
-            _meterProvider = provider.GetService<MeterProvider>();
-            _tracerProvider = provider.GetService<TracerProvider>();
-            _loggerProvider = provider.GetService<LoggerProvider>();
-            _logForwarder = provider.GetRequiredService<AzureEventSourceLogForwarder>();
-            _logForwarder.Start();
-        }
-
-        protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
-
-        public override void Dispose()
-        {
-            _meterProvider?.Dispose();
-            _tracerProvider?.Dispose();
-            _loggerProvider?.Dispose();
-            _logForwarder.Dispose();
-        }
     }
 }
