@@ -53,7 +53,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         var options = BindOptions(parseResult);
 
         try
-        {            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+        {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
             {
                 return context.Response;
             }
