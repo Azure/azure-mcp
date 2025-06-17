@@ -91,7 +91,6 @@ public class CommandFactory
         RegisterAppConfigCommands();
         RegisterSearchCommands();
         RegisterPostgresCommands();
-        RegisterKeyVaultCommands();
         RegisterDatadogCommands();
         RegisterToolsCommands();
         RegisterExtensionCommands();
