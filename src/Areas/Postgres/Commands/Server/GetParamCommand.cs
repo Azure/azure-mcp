@@ -58,7 +58,7 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred retrieving the parameter.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

@@ -65,7 +65,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing table types.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

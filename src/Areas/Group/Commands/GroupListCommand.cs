@@ -53,7 +53,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing resource groups.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

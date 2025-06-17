@@ -59,7 +59,7 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
         {
             _logger.LogError(ex, "Failed to list Redis Caches");
 
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

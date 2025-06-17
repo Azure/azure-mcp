@@ -53,7 +53,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred getting value. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -80,7 +80,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
                 options.Subscription,
                 options.AuthMethod,
                 options.Tenant);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

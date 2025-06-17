@@ -58,7 +58,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to list Redis Databases");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

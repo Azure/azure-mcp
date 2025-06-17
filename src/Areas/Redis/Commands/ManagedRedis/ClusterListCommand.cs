@@ -57,7 +57,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to list Redis Clusters");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

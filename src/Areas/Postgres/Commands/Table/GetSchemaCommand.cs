@@ -56,7 +56,7 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred retrieving the schema for table");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -56,7 +56,7 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to list Redis Access Policy Assignments");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -55,7 +55,7 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing workspaces.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

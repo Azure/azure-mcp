@@ -73,7 +73,7 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

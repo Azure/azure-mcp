@@ -41,7 +41,7 @@ public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseSer
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred retrieving server configuration.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

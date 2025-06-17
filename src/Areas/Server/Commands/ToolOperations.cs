@@ -232,9 +232,4 @@ public class ToolOperations
             .AddTag(TelemetryConstants.ClientName, clientInfo.Name)
             .AddTag(TelemetryConstants.ClientVersion, clientInfo.Version);
     }
-
-    private static bool IsSuccessStatusCode(int statusCode)
-    {
-        return (statusCode >= 200) && (statusCode <= 299);
-    }
 }

@@ -86,7 +86,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
