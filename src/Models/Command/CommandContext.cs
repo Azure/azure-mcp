@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureMcp.Models.Command;
@@ -21,12 +22,18 @@ public class CommandContext
     public CommandResponse Response { get; }
 
     /// <summary>
+    /// Current telemetry context if there is one available.
+    /// </summary>
+    public Activity? Activity { get; }
+
+    /// <summary>
     /// Creates a new command context
     /// </summary>
     /// <param name="serviceProvider">The service provider for dependency injection</param>
-    public CommandContext(IServiceProvider serviceProvider)
+    public CommandContext(IServiceProvider serviceProvider, Activity? activity = default)
     {
         _serviceProvider = serviceProvider;
+        Activity = activity;
         Response = new CommandResponse
         {
             Status = 200,

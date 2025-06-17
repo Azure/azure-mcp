@@ -5,6 +5,7 @@ using System.Text.Json;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -53,7 +54,7 @@ public class ToolOperationsTest
     [Fact]
     public async Task GetsAllTools()
     {
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger);
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger);
         var requestContext = new RequestContext<ListToolsRequestParams>(_server);
 
         var handler = operations.ToolsCapability.ListToolsHandler;
@@ -105,7 +106,7 @@ public class ToolOperationsTest
     [InlineData("group")]
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
         {
             CommandGroup = commandGroup
         };
@@ -137,7 +138,7 @@ public class ToolOperationsTest
     {
         var ex = await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
-            var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+            var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
             {
                 CommandGroup = "unknown-group"
             };
