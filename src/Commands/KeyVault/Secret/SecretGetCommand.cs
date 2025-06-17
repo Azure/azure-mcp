@@ -9,11 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.KeyVault.Secret;
 
-public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger, IKeyVaultService keyVaultService) : SubscriptionCommand<SecretGetOptions>
+public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : SubscriptionCommand<SecretGetOptions>
 {
     private const string _commandTitle = "Get Key Vault Secret";
     private readonly ILogger<SecretGetCommand> _logger = logger;
-    private readonly IKeyVaultService _keyVaultService = keyVaultService;
     private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
     private readonly Option<string> _secretOption = OptionDefinitions.KeyVault.SecretName;
 
@@ -59,7 +58,8 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger, IKeyVault
                 return context.Response;
             }
 
-            var result = await _keyVaultService.GetSecret(
+            var keyVaultService = context.GetService<IKeyVaultService>();
+            var result = await keyVaultService.GetSecret(
                 options.VaultName!,
                 options.SecretName!,
                 options.Subscription!,
