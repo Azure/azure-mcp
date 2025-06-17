@@ -113,7 +113,8 @@ public sealed class ServiceStartCommand : BaseCommand
         services.AddSingleton<ToolOperations>();
         services.AddSingleton<IMcpClientService, McpClientService>();
         services.AddSingleton<AzureEventSourceLogForwarder>();
-        services.AddSingleton<ITelemetryService>(sp => {
+        services.AddSingleton<ITelemetryService>(sp =>
+        {
             return new TelemetryService(
                 sp.GetRequiredService<AzureEventSourceLogForwarder>(),
                 assemblyName?.Name ?? DefaultAssemblyName,
