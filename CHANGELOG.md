@@ -16,6 +16,8 @@
 
 - Support for Azure ISV Services https://github.com/Azure/azure-mcp/pull/199/
 - Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+- Support for Key Vault Secrets https://github.com/Azure/azure-mcp/pull/173
+
 
 ## 0.2.1 (2025-06-12)
 
@@ -29,7 +31,6 @@
 ### Features Added
 
 - Support for launching smaller service level MCP servers. https://github.com/Azure/azure-mcp/pull/324
-- Added support for Key Vault Secrets. https://github.com/Azure/azure-mcp/pull/173
 
 ### Bugs Fixed
 
