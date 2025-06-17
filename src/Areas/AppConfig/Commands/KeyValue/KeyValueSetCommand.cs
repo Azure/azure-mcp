@@ -51,6 +51,8 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.SetKeyValue(
                 options.Account!,
