@@ -4,8 +4,8 @@
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Authorization;
 using AzureMcp.Areas;
+using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Interfaces;

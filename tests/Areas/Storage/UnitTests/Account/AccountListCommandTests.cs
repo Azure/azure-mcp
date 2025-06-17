@@ -4,8 +4,8 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Areas.Storage.Commands.Account;
+using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;
