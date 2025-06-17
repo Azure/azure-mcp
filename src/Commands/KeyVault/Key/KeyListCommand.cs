@@ -57,6 +57,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var keyVaultService = context.GetService<IKeyVaultService>();
             var keys = await keyVaultService.ListKeys(
                 options.VaultName!,

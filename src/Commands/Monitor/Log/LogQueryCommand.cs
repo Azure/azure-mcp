@@ -52,6 +52,8 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var monitorService = context.GetService<IMonitorService>();
             var results = await monitorService.QueryLogs(
                 options.Subscription!,

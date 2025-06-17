@@ -50,6 +50,8 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             List<JsonElement> results = [];
             var kusto = context.GetService<IKustoService>();
 
