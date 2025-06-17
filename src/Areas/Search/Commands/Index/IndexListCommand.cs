@@ -46,7 +46,8 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         var options = BindOptions(parseResult);
 
         try
-        {            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+        {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
             {
                 return context.Response;
             }

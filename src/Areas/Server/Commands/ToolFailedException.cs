@@ -1,4 +1,7 @@
-﻿namespace AzureMcp.Commands.Server;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Commands.Server;
 
 public class ToolFailedException : Exception
 {
