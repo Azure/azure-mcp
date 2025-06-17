@@ -135,12 +135,6 @@ public class ToolOperations
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
-            if (!IsSuccessStatusCode(commandResponse.Status))
-            {
-                activity?.SetStatus(ActivityStatusCode.Error)
-                    ?.AddException(new ToolFailedException(toolName, commandResponse.Message));
-            }
-
             return new CallToolResponse
             {
                 Content = [
@@ -232,10 +226,5 @@ public class ToolOperations
         activity
             .AddTag(TelemetryConstants.ClientName, clientInfo.Name)
             .AddTag(TelemetryConstants.ClientVersion, clientInfo.Version);
-    }
-
-    private static bool IsSuccessStatusCode(int statusCode)
-    {
-        return (statusCode >= 200) && (statusCode <= 299);
     }
 }
