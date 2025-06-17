@@ -56,7 +56,7 @@ public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred while executing the query.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

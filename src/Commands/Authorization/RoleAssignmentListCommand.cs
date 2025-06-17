@@ -69,7 +69,7 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing role assignments.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

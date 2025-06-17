@@ -74,7 +74,7 @@ public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicOptions>
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

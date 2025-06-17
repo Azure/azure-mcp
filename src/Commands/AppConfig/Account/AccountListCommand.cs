@@ -53,7 +53,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing accounts.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

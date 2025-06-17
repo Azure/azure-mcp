@@ -81,7 +81,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

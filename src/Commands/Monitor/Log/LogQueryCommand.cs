@@ -70,7 +70,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing log query command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
