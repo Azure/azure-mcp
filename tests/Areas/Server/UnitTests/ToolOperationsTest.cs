@@ -53,7 +53,7 @@ public class ToolOperationsTest
     [Fact]
     public async Task GetsAllTools()
     {
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger);
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger);
         var requestContext = new RequestContext<ListToolsRequestParams>(_server);
 
         var handler = operations.ToolsCapability.ListToolsHandler;
@@ -108,7 +108,7 @@ public class ToolOperationsTest
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
         string[]? groupArray = commandGroup == null ? null : commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
         {
             CommandGroup = groupArray
         };
@@ -140,7 +140,7 @@ public class ToolOperationsTest
     {
         var ex = await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
-            var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+            var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
             {
                 CommandGroup = new[] { "unknown-group" }
             };
