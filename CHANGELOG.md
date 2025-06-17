@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- MCP tools now expose annotations to clients https://github.com/Azure/azure-mcp/pull/388
+
 ### Other Changes
 
 ## 0.2.2 (2025-06-17)
