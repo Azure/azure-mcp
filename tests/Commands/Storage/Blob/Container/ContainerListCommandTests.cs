@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -27,7 +26,6 @@ public class ContainerListCommandTests
     private readonly Parser _parser;
     private readonly string _knownAccountName = "account123";
     private readonly string _knownSubscriptionId = "sub123";
-    private readonly string _knownTenantId = "tenant123";
 
     public ContainerListCommandTests()
     {
