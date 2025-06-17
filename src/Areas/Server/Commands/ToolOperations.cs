@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Server;
 using AzureMcp.Services.Telemetry;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
@@ -112,8 +112,8 @@ public class ToolOperations
                 Text = $"Could not find command: {toolName}",
             };
 
-            activity?.SetStatus(ActivityStatusCode.Error);
-            activity?.AddException(new ArgumentException(content.Text));
+            activity?.SetStatus(ActivityStatusCode.Error)
+                ?.AddException(new ArgumentException(content.Text));
 
             return new CallToolResult
             {
@@ -134,6 +134,12 @@ public class ToolOperations
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
+            if (!IsSuccessStatusCode(commandResponse.Status))
+            {
+                activity?.SetStatus(ActivityStatusCode.Error)
+                    ?.AddException(new ToolFailedException(toolName, commandResponse.Message));
+            }
+
             return new CallToolResult
             {
                 Content =
@@ -146,8 +152,8 @@ public class ToolOperations
         {
             _logger.LogError(ex, "An exception occurred running '{Tool}'. ", realCommand.Name);
 
-            activity?.SetStatus(ActivityStatusCode.Error);
-            activity?.AddException(ex);
+            activity?.SetStatus(ActivityStatusCode.Error)
+                ?.AddException(ex);
             throw;
         }
         finally
@@ -225,5 +231,10 @@ public class ToolOperations
         activity
             .AddTag(TelemetryConstants.ClientName, clientInfo.Name)
             .AddTag(TelemetryConstants.ClientVersion, clientInfo.Version);
+    }
+
+    private static bool IsSuccessStatusCode(int statusCode)
+    {
+        return (statusCode >= 200) && (statusCode <= 299);
     }
 }
