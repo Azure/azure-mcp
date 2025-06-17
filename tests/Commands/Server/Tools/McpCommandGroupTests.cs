@@ -1,7 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using AzureMcp.Commands;
+using AzureMcp.Extensions;
+using AzureMcp.Services.Telemetry;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
@@ -14,9 +18,18 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         private readonly CommandFactory _commandFactory;
         public McpCommandGroupTests()
         {
-            var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+            var collection = new ServiceCollection()
+                .AddSingleton<ITelemetryService, NoOpTelemetryService>()
+                .AddSingleton<AzureEventSourceLogForwarder>()
+                .AddLogging();
+            collection.AddOpenTelemetry();
+            collection.ConfigureOpenTelemetry();
+
+            var services = collection
+                .BuildServiceProvider();
             var logger = services.GetRequiredService<ILogger<CommandFactory>>();
-            _commandFactory = new CommandFactory(services, logger);
+            var telemetryService = services.GetRequiredService<ITelemetryService>();
+            _commandFactory = new CommandFactory(services, telemetryService, logger);
         }
 
         [Fact]
@@ -58,6 +71,18 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 
             // Assert
             Assert.NotNull(client);
+        }
+    }
+
+    public class NoOpTelemetryService : ITelemetryService
+    {
+        public void Dispose()
+        {
+        }
+
+        public Activity? StartActivity(string activityName)
+        {
+            return null;
         }
     }
 }

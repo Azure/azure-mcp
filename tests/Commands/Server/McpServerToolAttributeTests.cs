@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
@@ -18,8 +19,9 @@ public class McpServerToolAttributeTests
     {
         // Arrange
         var logger = Substitute.For<ILogger<CommandFactory>>();
+        var telemetry = Substitute.For<ITelemetryService>();
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
-        var commandFactory = new CommandFactory(serviceProvider, logger);
+        var commandFactory = new CommandFactory(serviceProvider, telemetry, logger);
 
         var titleValidationErrors = new List<string>();
 
