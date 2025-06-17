@@ -39,6 +39,8 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var blobs = await storageService.ListBlobs(
                 options.Account!,
