@@ -74,7 +74,7 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting secret {SecretName} from vault {VaultName}", options.SecretName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
