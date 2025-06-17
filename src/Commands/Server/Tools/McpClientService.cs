@@ -161,7 +161,7 @@ public sealed class McpClientService : IMcpClientService, IDisposable
 
         return _commandFactory.RootGroup.SubGroup
             .Where(group => !ignoreCommandGroups.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
-            .Select(group => new McpCommandGroup(group)
+            .Select(group => new CommandGroupMcpClientProvider(group)
             {
                 ReadOnly = ReadOnly,
                 EntryPoint = EntryPoint,

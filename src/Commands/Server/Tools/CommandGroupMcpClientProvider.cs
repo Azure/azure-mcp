@@ -9,7 +9,7 @@ using ModelContextProtocol.Client;
 /// <summary>
 /// Represents a command group that provides metadata and MCP client creation.
 /// </summary>
-public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvider
+public sealed class CommandGroupMcpClientProvider(CommandGroup commandGroup) : IMcpClientProvider
 {
     private readonly CommandGroup _commandGroup = commandGroup;
     private string? _entryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;

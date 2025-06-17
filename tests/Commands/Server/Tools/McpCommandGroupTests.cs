@@ -50,7 +50,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             var entryPoint = Path.Combine(testBinDir, exeName);
             Assert.True(File.Exists(entryPoint), $"{exeName} not found at {entryPoint}");
 
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
             mcpCommandGroup.EntryPoint = entryPoint;
             var options = new McpClientOptions();
 
@@ -68,7 +68,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
 
             // Act
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
 
             // Assert
             Assert.False(mcpCommandGroup.ReadOnly);
@@ -79,7 +79,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
 
             // Act
             mcpCommandGroup.ReadOnly = true;
@@ -93,7 +93,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
             var originalEntryPoint = mcpCommandGroup.EntryPoint;
             // Act
             mcpCommandGroup.EntryPoint = null!;
@@ -108,7 +108,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
             var originalEntryPoint = mcpCommandGroup.EntryPoint;
 
             // Act
@@ -124,7 +124,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
             var customEntryPoint = "/custom/path/to/executable";
 
             // Act
