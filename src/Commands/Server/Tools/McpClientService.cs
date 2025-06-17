@@ -65,12 +65,12 @@ public sealed class McpClientService : IMcpClientService, IDisposable
             return;
         }
 
-        var remoteMcpServers = ListRemoteMcpServers();
+        var registryProviders = ListRegistryProviders();
         var commandGroups = ListCommandGroupProviders();
 
         var allProviders = new List<IMcpClientProvider>();
+        allProviders.AddRange(registryProviders);
         allProviders.AddRange(commandGroups);
-        allProviders.AddRange(remoteMcpServers);
 
         foreach (var provider in allProviders)
         {
@@ -170,18 +170,20 @@ public sealed class McpClientService : IMcpClientService, IDisposable
             .ToList();
     }
 
-    private List<IMcpClientProvider> ListRemoteMcpServers()
+    private List<IMcpClientProvider> ListRegistryProviders()
     {
-        var results = new List<IMcpClientProvider>
+        var registryProviders = new List<IMcpClientProvider>();
+        var registry = RegistryLoader.LoadRegistryAsync().GetAwaiter().GetResult();
+        if (registry?.Servers != null)
         {
-            new RemoteMcpServer(new RemoveMcpServerMetadata
+            foreach (var kvp in registry.Servers)
             {
-                Name = "learn",
-                Description = "Finds relevant documentation from Microsoft Learn for Azure.",
-                Endpoint = "https://learn.microsoft.com/api/mcp",
-            })
-        };
-
-        return results;
+                if (kvp.Value != null)
+                {
+                    registryProviders.Add(new RegistryMcpClientProvider(kvp.Key, kvp.Value));
+                }
+            }
+        }
+        return registryProviders;
     }
 }

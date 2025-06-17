@@ -86,6 +86,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\azure-best-practices.txt" />
     <EmbeddedResource Include="Resources\azd-best-practices.txt" />
+    <EmbeddedResource Include="Resources\registry.json" />
   </ItemGroup>
 
   <!-- TODO: Remove after 5/19/25 -->

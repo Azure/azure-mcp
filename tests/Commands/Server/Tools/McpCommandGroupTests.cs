@@ -25,7 +25,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             // Arrange
             // For testGroup, CommandFactory does not have it by default, so fallback to direct instantiation
             var commandGroup = new CommandGroup("testGroup", "Test Description");
-            var mcpCommandGroup = new McpCommandGroup(commandGroup);
+            var mcpCommandGroup = new CommandGroupMcpClientProvider(commandGroup);
 
             // Act
             var metadata = mcpCommandGroup.CreateMetadata();

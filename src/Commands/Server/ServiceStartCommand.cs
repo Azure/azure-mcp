@@ -121,8 +121,6 @@ public sealed class ServiceStartCommand : BaseCommand
         var assemblyName = entryAssembly?.GetName();
         var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
 
-                toolOperations.ReadOnly = options.ReadOnly ?? false;
-
         mcpServerOptionsBuilder.Configure(mcpServerOptions =>
         {
             mcpServerOptions.ProtocolVersion = "2024-11-05";
@@ -137,6 +135,7 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
             {
+                toolOperations.ReadOnly = options.ReadOnly ?? false;
 
                 mcpServerOptions.Capabilities = new ServerCapabilities
                 {
@@ -152,7 +151,9 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
             {
+                toolOperations.ReadOnly = options.ReadOnly ?? false;
                 toolOperations.CommandGroup = options.Service;
+
                 mcpServerOptions.Capabilities = new ServerCapabilities
                 {
                     Tools = toolOperations.ToolsCapability
