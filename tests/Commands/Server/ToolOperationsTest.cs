@@ -33,13 +33,11 @@ public class ToolOperationsTest
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
     private readonly ILogger<ToolOperations> _logger;
-    private readonly ILogger<CommandFactory> _commandFactoryLogger;
     private readonly IMcpServer _server;
 
     public ToolOperationsTest()
     {
         _logger = Substitute.For<ILogger<ToolOperations>>();
-        _commandFactoryLogger = Substitute.For<ILogger<CommandFactory>>();
         _server = Substitute.For<IMcpServer>();
         _keyVaultService = Substitute.For<IKeyVaultService>();
 
@@ -47,7 +45,7 @@ public class ToolOperationsTest
         collection.AddSingleton(_ => _keyVaultService);
 
         _serviceProvider = collection.AddLogging().BuildServiceProvider();
-        _commandFactory = new CommandFactory(_serviceProvider, _commandFactoryLogger);
+        _commandFactory = CommandFactoryHelpers.CreateCommandFactory(_serviceProvider);
     }
 
     [Fact]

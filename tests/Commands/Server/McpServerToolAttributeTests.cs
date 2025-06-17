@@ -2,11 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
-using AzureMcp.Commands;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
-using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server;
@@ -17,9 +13,7 @@ public class McpServerToolAttributeTests
     public void AllExecuteAsyncMethodsWithMcpServerToolAttribute_ShouldHaveValidTitle()
     {
         // Arrange
-        var logger = Substitute.For<ILogger<CommandFactory>>();
-        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
-        var commandFactory = new CommandFactory(serviceProvider, logger);
+        var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
 
         var titleValidationErrors = new List<string>();
 

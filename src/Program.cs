@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using AzureMcp.Areas;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.AppConfig;
 using AzureMcp.Services.Azure.Authorization;
@@ -15,7 +16,6 @@ using AzureMcp.Services.Azure.Redis;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Search;
 using AzureMcp.Services.Azure.ServiceBus;
-using AzureMcp.Services.Azure.Storage;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
@@ -26,11 +26,14 @@ using Microsoft.Extensions.Logging;
 
 internal class Program
 {
+    private static IAreaSetup[] Areas = RegisterAreas();
+
     private static async Task<int> Main(string[] args)
     {
         try
         {
             ServiceCollection services = new();
+
             ConfigureServices(services);
 
             services.AddLogging(builder =>
@@ -54,6 +57,13 @@ internal class Program
             });
             return 1;
         }
+    }
+
+    private static IAreaSetup[] RegisterAreas()
+    {
+        return [
+            new AzureMcp.Areas.Storage.StorageSetup(),
+        ];
     }
 
     private static Parser BuildCommandLineParser(IServiceProvider serviceProvider)
@@ -99,7 +109,6 @@ internal class Program
         services.AddSingleton<ICosmosService, CosmosService>();
         services.AddSingleton<IKustoService, KustoService>();
         services.AddSingleton<IDatadogService, DatadogService>();
-        services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
@@ -111,5 +120,11 @@ internal class Program
         services.AddSingleton<IRedisService, RedisService>();
         services.AddSingleton<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<CommandFactory>();
+
+        foreach (var area in Areas)
+        {
+            services.AddSingleton(area);
+            area.ConfigureServices(services);
+        }
     }
 }

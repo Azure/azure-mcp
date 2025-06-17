@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Commands;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using Xunit;
 
@@ -11,13 +9,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 {
     public class McpCommandGroupTests
     {
-        private readonly CommandFactory _commandFactory;
-        public McpCommandGroupTests()
-        {
-            var services = new ServiceCollection().AddLogging().BuildServiceProvider();
-            var logger = services.GetRequiredService<ILogger<CommandFactory>>();
-            _commandFactory = new CommandFactory(services, logger);
-        }
+        private readonly CommandFactory _commandFactory = CommandFactoryHelpers.CreateCommandFactory();
 
         [Fact]
         public void CreateMetadata_ReturnsExpectedMetadata()

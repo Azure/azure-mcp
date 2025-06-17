@@ -28,7 +28,10 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync() {
+        base.Dispose();
+        return ValueTask.CompletedTask;
+    }
 
     private static IMonitorService GetMonitorService()
     {

@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using AzureMcp.Commands.Authorization;
+using AzureMcp.Areas;
 using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +16,7 @@ namespace AzureMcp.Commands;
 
 public class CommandFactory
 {
+    private readonly IAreaSetup[] _serviceAreas;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<CommandFactory> _logger;
     private readonly RootCommand _rootCommand;
@@ -44,8 +45,9 @@ public class CommandFactory
         }
     }
 
-    public CommandFactory(IServiceProvider serviceProvider, ILogger<CommandFactory> logger)
+    public CommandFactory(IServiceProvider serviceProvider, IEnumerable<IAreaSetup> serviceAreas, ILogger<CommandFactory> logger)
     {
+        _serviceAreas = serviceAreas?.ToArray() ?? throw new ArgumentNullException(nameof(serviceAreas));
         _serviceProvider = serviceProvider;
         _logger = logger;
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
@@ -86,7 +88,6 @@ public class CommandFactory
         RegisterCosmosCommands();
         RegisterKeyVaultCommands();
         RegisterKustoCommands();
-        RegisterStorageCommands();
         RegisterMonitorCommands();
         RegisterAppConfigCommands();
         RegisterSearchCommands();
@@ -100,6 +101,12 @@ public class CommandFactory
         RegisterServiceBusCommands();
         RegisterRedisCommands();
         RegisterAuthorizationCommands();
+
+        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+        foreach (var area in _serviceAreas)
+        {
+            area.RegisterCommands(_rootGroup, loggerFactory);
+        }
     }
 
     private void RegisterBestPracticesCommand()
@@ -203,40 +210,6 @@ public class CommandFactory
         server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
         server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
         server.AddCommand("setparam", new Postgres.Server.SetParamCommand(GetLogger<Postgres.Server.SetParamCommand>()));
-    }
-
-    private void RegisterStorageCommands()
-    {
-        // Create Storage command group
-        var storage = new CommandGroup("storage", "Storage operations - Commands for managing and accessing Azure Storage resources. Includes operations for containers, blobs, and tables.");
-        _rootGroup.AddSubGroup(storage);
-
-        // Create Storage subgroups
-        var storageAccount = new CommandGroup("account", "Storage account operations - Commands for listing and managing Storage account in your Azure subscription.");
-        storage.AddSubGroup(storageAccount);
-
-        var tables = new CommandGroup("table", "Storage table operations - Commands for working with Azure Table Storage, including listing and querying table.");
-        storage.AddSubGroup(tables);
-
-        var blobs = new CommandGroup("blob", "Storage blob operations - Commands for uploading, downloading, and managing blob in your Azure Storage accounts.");
-        storage.AddSubGroup(blobs);
-
-        // Create a containers subgroup under blobs
-        var blobContainer = new CommandGroup("container", "Storage blob container operations - Commands for managing blob container in your Azure Storage accounts.");
-        blobs.AddSubGroup(blobContainer);
-
-        // Register Storage commands
-        storageAccount.AddCommand("list", new Storage.Account.AccountListCommand(
-            GetLogger<Storage.Account.AccountListCommand>()));
-        tables.AddCommand("list", new Storage.Table.TableListCommand(
-            GetLogger<Storage.Table.TableListCommand>()));
-
-        blobs.AddCommand("list", new BlobListCommand(GetLogger<BlobListCommand>()));
-
-        blobContainer.AddCommand("list", new Storage.Blob.Container.ContainerListCommand(
-            GetLogger<Storage.Blob.Container.ContainerListCommand>()));
-        blobContainer.AddCommand("details", new Storage.Blob.Container.ContainerDetailsCommand(
-            GetLogger<Storage.Blob.Container.ContainerDetailsCommand>()));
     }
 
     private void RegisterMonitorCommands()
