@@ -131,12 +131,17 @@ public sealed class ServiceStartCommand : BaseCommand
             };
         });
 
-        if (options.Service == "proxy")
+        // The "azure" mode contains a single "azure" tools that performs internal tool discovery and proxying.
+        if (options.Service == "azure")
+        {
+            services.AddSingleton<McpServerTool, AzureProxyTool>();
+        }
+        // The "proxy" mode exposes a single tool per service/namespace and performs internal tool discovery and proxying.
+        else if (options.Service == "proxy")
         {
             mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
             {
                 toolOperations.ReadOnly = options.ReadOnly ?? false;
-
                 mcpServerOptions.Capabilities = new ServerCapabilities
                 {
                     Tools = new ToolsCapability()
@@ -147,6 +152,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 };
             });
         }
+        // The default mode loads all tools from the default ToolOperations service.
         else
         {
             mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
