@@ -185,6 +185,7 @@
         "oidc",
         "payg",
         "pgrep",
+        "proxying",
         "pscore",
         "RediSearch",
         "resourcegroup",
