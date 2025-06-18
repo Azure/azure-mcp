@@ -28,7 +28,8 @@ The following options are available for all commands:
 azmcp server start \
     [--transport <transport>] \
     [--port <port>] \
-    [--service <service-name>]
+    [--service <service-name>] \
+    [--read-only]
 ```
 
 > **Note:** Replace `<service-name>` with an available top level command group.
@@ -36,6 +37,8 @@ azmcp server start \
 >
 > To enable single tool proxy mode set `--service` parameter to `azure`.
 > This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
+>
+> When launched with the `--read-only` flag the tool list will be filtered to only contain tools that provide read only tool annotation.
 
 ### Subscription Management
 ```bash
