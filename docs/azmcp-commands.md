@@ -190,6 +190,55 @@ azmcp monitor healthmodels entity gethealth --subscription <subscription> \
                                        --entity <entity-id>
 ```
 
+#### Metrics
+```bash
+# Query Azure Monitor metrics for a resource
+azmcp monitor metrics query --subscription <subscription> \
+                           --resource-name <resource-name> \
+                           --metric-namespace <metric-namespace> \
+                           --metric-names <metric-names> \
+                           [--resource-group <resource-group>] \
+                           [--resource-type <resource-type>] \
+                           [--start-time <start-time>] \
+                           [--end-time <end-time>] \
+                           [--interval <interval>] \
+                           [--aggregation <aggregation>] \
+                           [--filter <filter>] \
+                           [--max-buckets <max-buckets>]
+
+# List available metric definitions for a resource
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 [--resource-group <resource-group>] \
+                                 [--resource-type <resource-type>] \
+                                 [--metric-namespace <metric-namespace>] \
+                                 [--search-string <search-string>] \
+                                 [--limit <limit>]
+
+# Examples:
+# Query CPU and memory metrics for a virtual machine
+azmcp monitor metrics query --subscription <subscription> \
+                           --resource-name <resource-name> \
+                           --resource-group <resource-group> \
+                           --metric-namespace "microsoft.compute/virtualmachines" \
+                           --resource-type "Microsoft.Compute/virtualMachines" \
+                           --metric-names "Percentage CPU,Available Memory Bytes" \
+                           --start-time "2024-01-01T00:00:00Z" \
+                           --end-time "2024-01-01T23:59:59Z" \
+                           --interval "PT1H" \
+                           --aggregation "Average"
+
+# List all available metrics for a storage account
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 --resource-type "Microsoft.Storage/storageAccounts"
+
+# Find metrics related to transactions
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 --search-string "transaction"
+```
+
 ### Azure App Configuration Operations
 ```bash
 # List App Configuration stores in a subscription

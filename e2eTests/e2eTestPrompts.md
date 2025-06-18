@@ -47,6 +47,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-table-list | List all tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-type-list | List available table types in my Log Analytics workspace <workspace_name> |
 | azmcp-monitor-workspace-list | List Log Analytics workspaces in my subscription |
+| azmcp-monitor-metrics-definitions | What metric definitions are available for the Application Insights resource <resource_name> |
+| azmcp-monitor-metrics-definitions | Show me all available metrics and their definitions for storage account <account_name> |
+| azmcp-monitor-metrics-definitions | Get metric definitions for <resource_type> <resource_name> from the namespace |
+| azmcp-monitor-metrics-query | Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period> |
+| azmcp-monitor-metrics-query | Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period> |
+| azmcp-monitor-metrics-query | What's the request per second rate for my Application Insights resource <resource_name> over the last <time_period> |
+| azmcp-monitor-metrics-query | Investigate error rates and failed requests for Application Insights resource <resource_name> for the last <time_period> |
+| azmcp-monitor-metrics-query | Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period> |
+| azmcp-monitor-metrics-query | Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period> |
+| azmcp-monitor-metrics-query | Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with  intervals |
 
 ## PostgreSQL
 

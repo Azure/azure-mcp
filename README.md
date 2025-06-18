@@ -120,6 +120,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 #### Health Models
 - Get health of an entity
 
+#### Metrics
+- Query Azure Monitor metrics for resources with time series data
+- List available metric definitions for resources
+
 ### ⚙️ Azure App Configuration
 - List App Configuration stores
 - Manage key-value pairs
