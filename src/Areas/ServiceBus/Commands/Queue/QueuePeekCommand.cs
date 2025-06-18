@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using AzureMcp.Areas.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Options;
 using AzureMcp.Areas.ServiceBus.Options.Queue;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.ServiceBus.Services;
 using AzureMcp.Commands.ServiceBus;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.ServiceBus.Commands.Queue;
@@ -13,9 +14,9 @@ namespace AzureMcp.Areas.ServiceBus.Commands.Queue;
 public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
 {
     private const string CommandTitle = "Peek Messages from Service Bus Queue";
-    private readonly Option<string> _queueOption = OptionDefinitions.ServiceBus.Queue;
-    private readonly Option<int> _maxMessagesOption = OptionDefinitions.ServiceBus.MaxMessages;
-    private readonly Option<string> _namespaceOption = OptionDefinitions.ServiceBus.Namespace;
+    private readonly Option<string> _queueOption = ServiceBusOptionDefinitions.Queue;
+    private readonly Option<int> _maxMessagesOption = ServiceBusOptionDefinitions.MaxMessages;
+    private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
 
     public override string Name => "peek";
 

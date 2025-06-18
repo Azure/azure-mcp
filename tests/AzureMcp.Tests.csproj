@@ -43,4 +43,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Extension\LiveTests\" />
+    <Folder Include="Areas\Postgres\LiveTests\" />
+    <Folder Include="Areas\Search\LiveTests\" />
+  </ItemGroup>
+
 </Project>

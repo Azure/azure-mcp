@@ -9,12 +9,12 @@ namespace AzureMcp.Areas.Postgres.Options;
 
 public class BasePostgresOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Postgres.UserName)]
+    [JsonPropertyName(PostgresOptionDefinitions.UserName)]
     public string? User { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Postgres.ServerName)]
+    [JsonPropertyName(PostgresOptionDefinitions.ServerName)]
     public string? Server { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Postgres.DatabaseName)]
+    [JsonPropertyName(PostgresOptionDefinitions.DatabaseName)]
     public string? Database { get; set; }
 }

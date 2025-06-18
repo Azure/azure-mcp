@@ -3,8 +3,8 @@
 
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;

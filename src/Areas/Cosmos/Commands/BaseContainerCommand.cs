@@ -12,7 +12,7 @@ public abstract class BaseContainerCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : BaseDatabaseCommand<TOptions> where TOptions : BaseContainerOptions, new()
 {
-    private readonly Option<string> _containerOption = OptionDefinitions.Cosmos.Container;
+    private readonly Option<string> _containerOption = CosmosOptionDefinitions.Container;
 
     protected override void RegisterOptions(Command command)
     {

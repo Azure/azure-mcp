@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Kusto.Options;
 
 public class QueryOptions : BaseDatabaseOptions
 {
-    [JsonPropertyName(OptionDefinitions.Kusto.QueryText)]
+    [JsonPropertyName(KustoOptionDefinitions.QueryText)]
     public string? Query { get; set; }
 }

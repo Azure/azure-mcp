@@ -31,6 +31,11 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Services\Azure\Storage\**" />
+    <EmbeddedResource Remove="Services\Azure\Storage\**" />
+    <None Remove="Services\Azure\Storage\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -89,7 +94,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Azure\Storage\" />
+    <Folder Include="Areas\Core\" />
   </ItemGroup>
 
   <!-- Remove Cosmos native files from the build output directory -->

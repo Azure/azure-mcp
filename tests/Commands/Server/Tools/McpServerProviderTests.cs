@@ -1,8 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Services.Mcp;
 using ModelContextProtocol.Client;
 using Xunit;
 

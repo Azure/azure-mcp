@@ -3,7 +3,7 @@
 
 using AzureMcp.Areas.Storage.Options.Account;
 using AzureMcp.Areas.Storage.Services;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 

@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Cosmos.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Azure.Cosmos;
 
@@ -14,7 +14,7 @@ public abstract class BaseCosmosCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseCosmosOptions, new()
 {
-    protected readonly Option<string> _accountOption = OptionDefinitions.Cosmos.Account;
+    protected readonly Option<string> _accountOption = CosmosOptionDefinitions.Account;
 
     protected override void RegisterOptions(Command command)
     {

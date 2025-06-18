@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Search.Options.Index;
 
 public class BaseIndexOptions : BaseSearchOptions
 {
-    [JsonPropertyName(OptionDefinitions.Search.IndexName)]
+    [JsonPropertyName(SearchOptionDefinitions.IndexName)]
     public string? Index { get; set; }
 }

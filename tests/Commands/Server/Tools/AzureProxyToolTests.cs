@@ -4,6 +4,7 @@
 using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Services.Mcp;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;

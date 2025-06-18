@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Cosmos.Options;
 
 public class BaseDatabaseOptions : BaseCosmosOptions
 {
-    [JsonPropertyName(OptionDefinitions.Cosmos.DatabaseName)]
+    [JsonPropertyName(CosmosOptionDefinitions.DatabaseName)]
     public string? Database { get; set; }
 }

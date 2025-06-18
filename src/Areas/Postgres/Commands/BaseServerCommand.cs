@@ -14,7 +14,7 @@ public abstract class BaseServerCommand<
     : BasePostgresCommand<TOptions>(logger) where TOptions : BasePostgresOptions, new()
 
 {
-    private readonly Option<string> _serverOption = OptionDefinitions.Postgres.Server;
+    private readonly Option<string> _serverOption = PostgresOptionDefinitions.Server;
 
     public override string Name => "server";
 

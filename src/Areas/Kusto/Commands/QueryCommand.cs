@@ -13,7 +13,7 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
 {
     private const string CommandTitle = "Query Kusto Database";
     private readonly ILogger<QueryCommand> _logger = logger;
-    private readonly Option<string> _queryOption = OptionDefinitions.Kusto.Query;
+    private readonly Option<string> _queryOption = KustoOptionDefinitions.Query;
 
     protected override void RegisterOptions(Command command)
     {

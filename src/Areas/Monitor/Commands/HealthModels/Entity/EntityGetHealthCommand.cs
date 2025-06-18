@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Areas.Monitor.Commands.HealthModels;
+using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.HealthModels.Entity;
+using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -22,8 +23,8 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         Returns entity health information.
         
         Required arguments:
-        - {OptionDefinitions.Monitor.Health.Entity.Name}: The entity to get health for
-        - {OptionDefinitions.Monitor.Health.HealthModel.Name}: The health model name
+        - {MonitorOptionDefinitions.Health.Entity.Name}: The entity to get health for
+        - {MonitorOptionDefinitions.Health.HealthModel.Name}: The health model name
         """;
 
     public override string Title => CommandTitle;

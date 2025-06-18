@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Search.Documents.Indexes.Models;
 using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Options;
 using AzureMcp.Areas.Search.Options.Index;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -15,8 +16,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
 {
     private const string CommandTitle = "Get Azure AI Search Index Details";
     private readonly ILogger<IndexDescribeCommand> _logger = logger;
-    private readonly Option<string> _serviceOption = OptionDefinitions.Search.Service;
-    private readonly Option<string> _indexOption = OptionDefinitions.Search.Index;
+    private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
+    private readonly Option<string> _indexOption = SearchOptionDefinitions.Index;
 
     public override string Name => "describe";
 

@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Postgres.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +14,7 @@ public abstract class BasePostgresCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BasePostgresCommand<TOptions>> logger)
     : SubscriptionCommand<TOptions> where TOptions : BasePostgresOptions, new()
 {
-    protected readonly Option<string> _userOption = OptionDefinitions.Postgres.User;
+    protected readonly Option<string> _userOption = PostgresOptionDefinitions.User;
 
     protected readonly ILogger<BasePostgresCommand<TOptions>> _logger = logger;
 

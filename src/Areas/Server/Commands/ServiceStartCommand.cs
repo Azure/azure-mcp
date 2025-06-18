@@ -4,9 +4,11 @@
 using System.Reflection;
 using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Areas.Server.Options;
+using AzureMcp.Areas.Service.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Mcp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
@@ -24,9 +26,9 @@ namespace AzureMcp.Areas.Server.Commands;
 public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
-    private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
-    private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
-    private readonly Option<string?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
+    private readonly Option<string> _transportOption = ServiceOptionDefinitions.Transport;
+    private readonly Option<int> _portOption = ServiceOptionDefinitions.Port;
+    private readonly Option<string?> _serviceTypeOption = ServiceOptionDefinitions.ServiceType;
 
     public override string Name => "start";
     public override string Description => "Starts Azure MCP Server.";
@@ -43,11 +45,11 @@ public sealed class ServiceStartCommand : BaseCommand
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var port = parseResult.GetValueForOption(_portOption) == default
-            ? OptionDefinitions.Service.Port.GetDefaultValue()
+            ? ServiceOptionDefinitions.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
         var service = parseResult.GetValueForOption(_serviceTypeOption) == default
-            ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
+            ? ServiceOptionDefinitions.ServiceType.GetDefaultValue()
             : parseResult.GetValueForOption(_serviceTypeOption);
 
         var serverOptions = new ServiceStartOptions

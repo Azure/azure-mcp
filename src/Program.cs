@@ -3,29 +3,9 @@
 
 using System.CommandLine.Builder;
 using AzureMcp.Areas;
-using AzureMcp.Areas.AppConfig;
-using AzureMcp.Areas.AppConfig.Services;
-using AzureMcp.Areas.Authorization;
-using AzureMcp.Areas.Authorization.Services;
-using AzureMcp.Areas.AzureIsv;
-using AzureMcp.Areas.AzureIsv.Services.Datadog;
-using AzureMcp.Areas.Cosmos;
-using AzureMcp.Areas.Cosmos.Services;
-using AzureMcp.Areas.KeyVault.Services;
-using AzureMcp.Areas.Kusto.Services;
-using AzureMcp.Areas.Monitor;
-using AzureMcp.Areas.Monitor.Services;
-using AzureMcp.Areas.Postgres;
-using AzureMcp.Areas.Postgres.Services;
-using AzureMcp.Areas.Redis;
-using AzureMcp.Areas.Redis.Services;
-using AzureMcp.Areas.Search;
-using AzureMcp.Areas.Search.Services;
-using AzureMcp.Areas.ServiceBus;
-using AzureMcp.Areas.ServiceBus.Services;
-using AzureMcp.Areas.Subscription.Services;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.ResourceGroup;
+using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.Interfaces;
@@ -71,6 +51,21 @@ internal class Program
     private static IAreaSetup[] RegisterAreas()
     {
         return [
+            new AzureMcp.Areas.AppConfig.AppConfigSetup(),
+            new AzureMcp.Areas.Authorization.AuthorizationSetup(),
+            new AzureMcp.Areas.AzureBestPractices.AzureBestPracticesSetup(),
+            new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
+            new AzureMcp.Areas.Cosmos.CosmosSetup(),
+            new AzureMcp.Areas.Extension.ExtensionSetup(),
+            new AzureMcp.Areas.Group.GroupSetup(),
+            new AzureMcp.Areas.KeyVault.KeyVaultSetup(),
+            new AzureMcp.Areas.Kusto.KustoSetup(),
+            new AzureMcp.Areas.Monitor.MonitorSetup(),
+            new AzureMcp.Areas.Postgres.PostgresSetup(),
+            new AzureMcp.Areas.Redis.RedisSetup(),
+            new AzureMcp.Areas.Search.SearchSetup(),
+            new AzureMcp.Areas.Server.ServerSetup(),
+            new AzureMcp.Areas.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Areas.Storage.StorageSetup(),
         ];
     }
@@ -115,19 +110,7 @@ internal class Program
         services.AddSingleton<IExternalProcessService, ExternalProcessService>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
         services.AddSingleton<ITenantService, TenantService>();
-        services.AddSingleton<ICosmosService, CosmosService>();
-        services.AddSingleton<IKustoService, KustoService>();
-        services.AddSingleton<IDatadogService, DatadogService>();
-        services.AddSingleton<IMonitorService, MonitorService>();
-        services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
-        services.AddSingleton<IAppConfigService, AppConfigService>();
-        services.AddSingleton<ISearchService, SearchService>();
-        services.AddSingleton<IPostgresService, PostgresService>();
-        services.AddSingleton<IKeyVaultService, KeyVaultService>();
-        services.AddSingleton<IServiceBusService, ServiceBusService>();
-        services.AddSingleton<IRedisService, RedisService>();
-        services.AddSingleton<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<CommandFactory>();
 
         foreach (var area in Areas)

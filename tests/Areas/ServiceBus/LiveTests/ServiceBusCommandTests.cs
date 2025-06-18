@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Options;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
@@ -38,9 +39,9 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, QueueName },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
-                    { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
+                    { ServiceBusOptionDefinitions.QueueName, QueueName },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.MaxMessagesName, numberOfMessages.ToString() }
                 });
 
             var messages = result.AssertProperty("messages");
@@ -61,10 +62,10 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
-                    { ServiceBus.TopicName, TopicName },
-                    { ServiceBus.SubscriptionName, SubscriptionName },
-                    { ServiceBus.MaxMessagesName, numberOfMessages.ToString() }
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.TopicName, TopicName },
+                    { ServiceBusOptionDefinitions.SubscriptionName, SubscriptionName },
+                    { ServiceBusOptionDefinitions.MaxMessagesName, numberOfMessages.ToString() }
                 });
 
             var messages = result.AssertProperty("messages");
@@ -81,8 +82,8 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.QueueName, QueueName },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.QueueName, QueueName },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
                 });
 
             var details = result.AssertProperty("queueDetails");
@@ -98,8 +99,8 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.TopicName, TopicName },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.TopicName, TopicName },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
                 });
 
             var details = result.AssertProperty("topicDetails");
@@ -115,9 +116,9 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
                 new()
                 {
                     { Common.SubscriptionName, Settings.SubscriptionId },
-                    { ServiceBus.TopicName, TopicName },
-                    { ServiceBus.SubscriptionName, SubscriptionName },
-                    { ServiceBus.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.TopicName, TopicName },
+                    { ServiceBusOptionDefinitions.SubscriptionName, SubscriptionName },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
                 });
 
             var details = result.AssertProperty("subscriptionDetails");

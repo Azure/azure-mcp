@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Areas.Monitor.Commands;
 using AzureMcp.Areas.Monitor.Options;
+using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -13,20 +13,20 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
 {
     private const string CommandTitle = "Query Log Analytics Workspace";
     private readonly ILogger<LogQueryCommand> _logger = logger;
-    private readonly Option<string> _tableNameOption = OptionDefinitions.Monitor.TableName;
-    private readonly Option<string> _queryOption = OptionDefinitions.Monitor.Query;
-    private readonly Option<int> _hoursOption = OptionDefinitions.Monitor.Hours;
-    private readonly Option<int> _limitOption = OptionDefinitions.Monitor.Limit;
+    private readonly Option<string> _tableNameOption = MonitorOptionDefinitions.TableName;
+    private readonly Option<string> _queryOption = MonitorOptionDefinitions.Query;
+    private readonly Option<int> _hoursOption = MonitorOptionDefinitions.Hours;
+    private readonly Option<int> _limitOption = MonitorOptionDefinitions.Limit;
 
     public override string Name => "query";
 
     public override string Description =>
         $"""
-        Execute a KQL query against a Log Analytics workspace. Requires {OptionDefinitions.Monitor.WorkspaceIdOrName}
-        and resource group. Optional {OptionDefinitions.Monitor.HoursName}
-        (default: {OptionDefinitions.Monitor.Hours.GetDefaultValue()}) and {OptionDefinitions.Monitor.LimitName}
-        (default: {OptionDefinitions.Monitor.Limit.GetDefaultValue()}) parameters.
-        The {OptionDefinitions.Monitor.QueryTextName} parameter accepts KQL syntax.
+        Execute a KQL query against a Log Analytics workspace. Requires {MonitorOptionDefinitions.WorkspaceIdOrName}
+        and resource group. Optional {MonitorOptionDefinitions.HoursName}
+        (default: {MonitorOptionDefinitions.Hours.GetDefaultValue()}) and {MonitorOptionDefinitions.LimitName}
+        (default: {MonitorOptionDefinitions.Limit.GetDefaultValue()}) parameters.
+        The {MonitorOptionDefinitions.QueryTextName} parameter accepts KQL syntax.
         """;
 
     public override string Title => CommandTitle;

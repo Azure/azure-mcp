@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Cosmos.Options;
 
 public class ItemQueryOptions : BaseContainerOptions
 {
-    [JsonPropertyName(OptionDefinitions.Cosmos.QueryText)]
+    [JsonPropertyName(CosmosOptionDefinitions.QueryText)]
     public string? Query { get; set; }
 }

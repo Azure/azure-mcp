@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Redis;
 using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Areas.Redis.Options.ManagedRedis;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.Redis.Services;
 using AzureMcp.Commands.Redis;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;

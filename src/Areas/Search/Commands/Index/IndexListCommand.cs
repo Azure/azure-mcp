@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Options;
 using AzureMcp.Areas.Search.Options.Index;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -13,7 +14,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
 {
     private const string CommandTitle = "List Azure AI Search Indexes";
     private readonly ILogger<IndexListCommand> _logger = logger;
-    private readonly Option<string> _serviceOption = OptionDefinitions.Search.Service;
+    private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
     public override string Name => "list";
 
     public override string Description =>

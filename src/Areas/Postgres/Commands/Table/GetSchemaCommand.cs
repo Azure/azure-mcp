@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Postgres;
 using AzureMcp.Areas.Postgres.Commands;
+using AzureMcp.Areas.Postgres.Options;
 using AzureMcp.Areas.Postgres.Options.Table;
+using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace AzureMcp.Areas.Postgres.Commands.Table;
 public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDatabaseCommand<GetSchemaOptions>(logger)
 {
     private const string CommandTitle = "Get PostgreSQL Table Schema";
-    private readonly Option<string> _tableOption = OptionDefinitions.Postgres.Table;
+    private readonly Option<string> _tableOption = PostgresOptionDefinitions.Table;
 
     public override string Name => "schema";
     public override string Description => "Retrieves the schema of a specified table in a PostgreSQL database.";

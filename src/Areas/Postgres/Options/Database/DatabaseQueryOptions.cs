@@ -9,7 +9,7 @@ namespace AzureMcp.Areas.Postgres.Options.Database;
 
 public class DatabaseQueryOptions : BasePostgresOptions
 {
-    [JsonPropertyName(OptionDefinitions.Postgres.QueryText)]
+    [JsonPropertyName(PostgresOptionDefinitions.QueryText)]
     public string? Query { get; set; }
 
 }

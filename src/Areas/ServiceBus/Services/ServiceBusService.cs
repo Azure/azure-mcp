@@ -3,7 +3,6 @@
 
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using AzureMcp.Areas.ServiceBus;
 using AzureMcp.Areas.ServiceBus.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;

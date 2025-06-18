@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.AppConfig;
 using AzureMcp.Areas.AppConfig.Commands;
 using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
+using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,8 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
     private readonly ILogger<KeyValueListCommand> _logger = logger;
 
     // KeyValueList has different key and label descriptions, which is why we are defining here instead of using BaseKeyValueCommand
-    private readonly Option<string> _keyOption = OptionDefinitions.AppConfig.KeyValueList.Key;
-    private readonly Option<string> _labelOption = OptionDefinitions.AppConfig.KeyValueList.Label;
+    private readonly Option<string> _keyOption = AppConfigOptionDefinitions.KeyValueList.Key;
+    private readonly Option<string> _labelOption = AppConfigOptionDefinitions.KeyValueList.Label;
 
     public override string Name => "list";
 

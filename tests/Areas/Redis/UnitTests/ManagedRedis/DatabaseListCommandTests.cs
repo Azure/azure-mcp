@@ -4,9 +4,9 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Areas.Redis;
 using AzureMcp.Areas.Redis.Commands.ManagedRedis;
 using AzureMcp.Areas.Redis.Models.ManagedRedis;
+using AzureMcp.Areas.Redis.Services;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

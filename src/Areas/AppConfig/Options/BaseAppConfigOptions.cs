@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.AppConfig.Options;
 
 public class BaseAppConfigOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.AppConfig.AccountName)]
+    [JsonPropertyName(AppConfigOptionDefinitions.AccountName)]
     public string? Account { get; set; }
 }

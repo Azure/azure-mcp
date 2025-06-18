@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Extension.Options;
 
 public class AzOptions : GlobalOptions
 {
-    [JsonPropertyName(OptionDefinitions.Extension.Az.CommandName)]
+    [JsonPropertyName(ExtensionOptionDefinitions.Az.CommandName)]
     public string? Command { get; set; }
 }

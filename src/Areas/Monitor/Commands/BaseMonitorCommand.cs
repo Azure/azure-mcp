@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Monitor.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 
@@ -15,7 +15,7 @@ public abstract class BaseMonitorCommand<
     : SubscriptionCommand<TOptions>
     where TOptions : SubscriptionOptions, IWorkspaceOptions, new()
 {
-    protected readonly Option<string> _workspaceOption = OptionDefinitions.Monitor.Workspace;
+    protected readonly Option<string> _workspaceOption = MonitorOptionDefinitions.Workspace;
 
     protected override void RegisterOptions(Command command)
     {

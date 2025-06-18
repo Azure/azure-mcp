@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Kusto.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -13,8 +13,8 @@ public abstract class BaseClusterCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseClusterOptions, new()
 {
-    protected readonly Option<string> _clusterNameOption = OptionDefinitions.Kusto.Cluster;
-    protected readonly Option<string> _clusterUriOption = OptionDefinitions.Kusto.ClusterUri;
+    protected readonly Option<string> _clusterNameOption = KustoOptionDefinitions.Cluster;
+    protected readonly Option<string> _clusterUriOption = KustoOptionDefinitions.ClusterUri;
 
     protected static bool UseClusterUri(BaseClusterOptions options) => !string.IsNullOrEmpty(options.ClusterUri);
 

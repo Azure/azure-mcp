@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.AppConfig.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.AppConfig.Commands;
@@ -13,7 +13,7 @@ public abstract class BaseAppConfigCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : SubscriptionCommand<T> where T : BaseAppConfigOptions, new()
 {
-    protected readonly Option<string> _accountOption = OptionDefinitions.AppConfig.Account;
+    protected readonly Option<string> _accountOption = AppConfigOptionDefinitions.Account;
 
     protected override void RegisterOptions(Command command)
     {

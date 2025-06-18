@@ -5,7 +5,7 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;

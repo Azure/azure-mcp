@@ -17,10 +17,10 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     private const string CommandTitle = "Azure Developer CLI Command";
     private readonly ILogger<AzdCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
-    private readonly Option<string> _commandOption = OptionDefinitions.Extension.Azd.Command;
-    private readonly Option<string> _cwdOption = OptionDefinitions.Extension.Azd.Cwd;
-    private readonly Option<string> _environmentOption = OptionDefinitions.Extension.Azd.Environment;
-    private readonly Option<bool> _learnOption = OptionDefinitions.Extension.Azd.Learn;
+    private readonly Option<string> _commandOption = ExtensionOptionDefinitions.Azd.Command;
+    private readonly Option<string> _cwdOption = ExtensionOptionDefinitions.Azd.Cwd;
+    private readonly Option<string> _environmentOption = ExtensionOptionDefinitions.Azd.Environment;
+    private readonly Option<bool> _learnOption = ExtensionOptionDefinitions.Azd.Learn;
     private static string? _cachedAzdPath;
 
     private readonly IEnumerable<string> longRunningCommands =

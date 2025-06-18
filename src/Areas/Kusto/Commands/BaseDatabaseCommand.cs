@@ -12,7 +12,7 @@ public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : BaseClusterCommand<TOptions> where TOptions : BaseDatabaseOptions, new()
 {
-    protected readonly Option<string> _databaseOption = OptionDefinitions.Kusto.Database;
+    protected readonly Option<string> _databaseOption = KustoOptionDefinitions.Database;
 
     protected override void RegisterOptions(Command command)
     {

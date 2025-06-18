@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -12,7 +13,7 @@ public abstract class BaseContainerCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : BaseStorageCommand<TOptions> where TOptions : BaseContainerOptions, new()
 {
-    protected readonly Option<string> _containerOption = OptionDefinitions.Storage.Container;
+    protected readonly Option<string> _containerOption = StorageOptionDefinitions.Container;
 
     protected BaseContainerCommand()
     {

@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
-using AzureMcp.Areas.Cosmos;
 using AzureMcp.Areas.Cosmos.Options;
+using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -16,15 +16,15 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
     private readonly ILogger<ItemQueryCommand> _logger = logger;
     private const string DefaultQuery = "SELECT * FROM c";
 
-    private readonly Option<string> _queryOption = OptionDefinitions.Cosmos.Query;
+    private readonly Option<string> _queryOption = CosmosOptionDefinitions.Query;
 
     public override string Name => "query";
 
     public override string Description =>
         $"""
-        Execute a SQL query against items in a Cosmos DB container. Requires {OptionDefinitions.Cosmos.AccountName},
-        {OptionDefinitions.Cosmos.DatabaseName}, and {OptionDefinitions.Cosmos.ContainerName}.
-        The {OptionDefinitions.Cosmos.QueryText} parameter accepts SQL query syntax. Results are returned as a
+        Execute a SQL query against items in a Cosmos DB container. Requires {CosmosOptionDefinitions.AccountName},
+        {CosmosOptionDefinitions.DatabaseName}, and {CosmosOptionDefinitions.ContainerName}.
+        The {CosmosOptionDefinitions.QueryText} parameter accepts SQL query syntax. Results are returned as a
         JSON array of documents.
         """;
 

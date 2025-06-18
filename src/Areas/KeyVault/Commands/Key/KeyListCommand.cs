@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.KeyVault.Options;
 using AzureMcp.Areas.KeyVault.Options.Key;
 using AzureMcp.Areas.KeyVault.Services;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands.KeyVault;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -14,8 +15,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
 {
     private const string CommandTitle = "List Key Vault Keys";
     private readonly ILogger<KeyListCommand> _logger = logger;
-    private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
-    private readonly Option<bool> _includeManagedKeysOption = OptionDefinitions.KeyVault.IncludeManagedKeys;
+    private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
+    private readonly Option<bool> _includeManagedKeysOption = KeyVaultOptionDefinitions.IncludeManagedKeys;
 
     public override string Name => "list";
 

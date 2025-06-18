@@ -3,7 +3,7 @@
 
 using AzureMcp.Areas.Search;
 using AzureMcp.Areas.Search.Options.Service;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Search.Commands.Service;

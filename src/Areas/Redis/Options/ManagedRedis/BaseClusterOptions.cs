@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Redis.Options.ManagedRedis;
 
 public class BaseClusterOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Redis.ClusterName)]
+    [JsonPropertyName(RedisOptionDefinitions.ClusterName)]
     public string? Cluster { get; set; }
 }

@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Postgres;
 using AzureMcp.Areas.Postgres.Commands;
+using AzureMcp.Areas.Postgres.Options;
 using AzureMcp.Areas.Postgres.Options.Server;
+using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace AzureMcp.Areas.Postgres.Commands.Server;
 public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServerCommand<GetParamOptions>(logger)
 {
     private const string CommandTitle = "Get PostgreSQL Server Parameter";
-    private readonly Option<string> _paramOption = OptionDefinitions.Postgres.Param;
+    private readonly Option<string> _paramOption = PostgresOptionDefinitions.Param;
     public override string Name => "param";
 
     public override string Description =>

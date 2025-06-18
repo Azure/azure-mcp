@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Authorization;
 using AzureMcp.Areas.Authorization.Models;
 using AzureMcp.Areas.Authorization.Options;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.Authorization.Services;
 using AzureMcp.Commands.Authorization;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +26,7 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
 
     public override string Title => _commandTitle;
 
-    private readonly Option<string> _scopeOption = OptionDefinitions.Authorization.Scope;
+    private readonly Option<string> _scopeOption = AuthorizationOptionDefinitions.Scope;
 
     protected override void RegisterOptions(Command command)
     {

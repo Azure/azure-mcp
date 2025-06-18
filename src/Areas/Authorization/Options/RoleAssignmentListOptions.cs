@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Authorization.Options;
 
 public class RoleAssignmentListOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Authorization.ScopeName)]
+    [JsonPropertyName(AuthorizationOptionDefinitions.ScopeName)]
     public string? Scope { get; set; }
 }

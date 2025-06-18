@@ -2,8 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 
@@ -14,8 +15,8 @@ public abstract class BaseMonitorHealthModelsCommand<
     : SubscriptionCommand<TOptions>
     where TOptions : SubscriptionOptions, new()
 {
-    protected readonly Option<string> _entityOption = OptionDefinitions.Monitor.Health.Entity;
-    protected readonly Option<string> _healthModelOption = OptionDefinitions.Monitor.Health.HealthModel;
+    protected readonly Option<string> _entityOption = MonitorOptionDefinitions.Health.Entity;
+    protected readonly Option<string> _healthModelOption = MonitorOptionDefinitions.Health.HealthModel;
 
     protected BaseMonitorHealthModelsCommand() : base()
     {

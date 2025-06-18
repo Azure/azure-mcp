@@ -16,7 +16,7 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private const string CommandTitle = "Azure CLI Command";
     private readonly ILogger<AzCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
-    private readonly Option<string> _commandOption = OptionDefinitions.Extension.Az.Command;
+    private readonly Option<string> _commandOption = ExtensionOptionDefinitions.Az.Command;
     private static string? _cachedAzPath;
     private volatile bool _isAuthenticated = false;
     private static readonly SemaphoreSlim s_authSemaphore = new(1, 1);

@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.AppConfig;
+using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
+using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
 public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : BaseKeyValueCommand<KeyValueSetOptions>()
 {
     private const string CommandTitle = "Set App Configuration Key-Value Setting";
-    private readonly Option<string> _valueOption = OptionDefinitions.AppConfig.Value;
+    private readonly Option<string> _valueOption = AppConfigOptionDefinitions.Value;
     private readonly ILogger<KeyValueSetCommand> _logger = logger;
 
     public override string Name => "set";

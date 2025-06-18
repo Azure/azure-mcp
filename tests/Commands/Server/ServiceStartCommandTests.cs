@@ -4,6 +4,7 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Service.Options;
 using AzureMcp.Models.Option;
 using Xunit;
 
@@ -37,9 +38,9 @@ public class ServiceStartCommandTests
         var parseResult = CreateParseResult(inputService);
 
         // Act
-        var actualService = parseResult.GetValueForOption(OptionDefinitions.Service.ServiceType);
-        var actualPort = parseResult.GetValueForOption(OptionDefinitions.Service.Port);
-        var actualTransport = parseResult.GetValueForOption(OptionDefinitions.Service.Transport);
+        var actualService = parseResult.GetValueForOption(ServiceOptionDefinitions.ServiceType);
+        var actualPort = parseResult.GetValueForOption(ServiceOptionDefinitions.Port);
+        var actualTransport = parseResult.GetValueForOption(ServiceOptionDefinitions.Transport);
 
         // Assert
         Assert.Equal(expectedService, actualService ?? "");
@@ -51,9 +52,9 @@ public class ServiceStartCommandTests
     {
         var root = new RootCommand
         {
-            OptionDefinitions.Service.ServiceType,
-            OptionDefinitions.Service.Port,
-            OptionDefinitions.Service.Transport
+            ServiceOptionDefinitions.ServiceType,
+            ServiceOptionDefinitions.Port,
+            ServiceOptionDefinitions.Transport
         };
         var args = new List<string>();
         if (!string.IsNullOrEmpty(serviceValue))

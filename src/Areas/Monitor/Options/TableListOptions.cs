@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Monitor.Options;
 
 public class TableListOptions : WorkspaceOptions
 {
-    [JsonPropertyName(OptionDefinitions.Monitor.TableTypeName)]
+    [JsonPropertyName(MonitorOptionDefinitions.TableTypeName)]
     public string? TableType { get; set; }
 }

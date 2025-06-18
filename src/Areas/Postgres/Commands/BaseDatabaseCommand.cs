@@ -13,7 +13,7 @@ public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BasePostgresCommand<TOptions>> logger)
     : BaseServerCommand<TOptions>(logger) where TOptions : BasePostgresOptions, new()
 {
-    private readonly Option<string> _databaseOption = OptionDefinitions.Postgres.Database;
+    private readonly Option<string> _databaseOption = PostgresOptionDefinitions.Database;
 
     public override string Name => "database";
 

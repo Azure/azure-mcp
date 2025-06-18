@@ -4,17 +4,18 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.Kusto.Commands;
+using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Kusto;
+namespace AzureMcp.Tests.Areas.Kusto.UnitTests;
 
 public sealed class ClusterGetCommandTests
 {

@@ -14,7 +14,7 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
     private const string CommandTitle = "Sample Kusto Table Data";
     private readonly ILogger<SampleCommand> _logger = logger;
 
-    private readonly Option<int> _limitOption = OptionDefinitions.Kusto.Limit;
+    private readonly Option<int> _limitOption = KustoOptionDefinitions.Limit;
 
     protected override void RegisterOptions(Command command)
     {

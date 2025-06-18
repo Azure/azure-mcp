@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Services.Mcp;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Tools;

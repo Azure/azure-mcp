@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Storage.Options;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Storage.Commands;
@@ -14,7 +14,7 @@ public abstract class BaseStorageCommand<
     : SubscriptionCommand<T>
     where T : BaseStorageOptions, new()
 {
-    protected readonly Option<string> _accountOption = OptionDefinitions.Storage.Account;
+    protected readonly Option<string> _accountOption = StorageOptionDefinitions.Account;
 
     protected override void RegisterOptions(Command command)
     {

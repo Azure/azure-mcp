@@ -3,7 +3,6 @@
 
 using System.Text.Json.Nodes;
 using Azure.Core;
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;

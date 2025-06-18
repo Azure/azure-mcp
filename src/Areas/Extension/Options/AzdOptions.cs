@@ -9,15 +9,15 @@ namespace AzureMcp.Areas.Extension.Options;
 
 public class AzdOptions : GlobalOptions
 {
-    [JsonPropertyName(OptionDefinitions.Extension.Azd.CommandName)]
+    [JsonPropertyName(ExtensionOptionDefinitions.Azd.CommandName)]
     public string? Command { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Extension.Azd.CwdName)]
+    [JsonPropertyName(ExtensionOptionDefinitions.Azd.CwdName)]
     public string? Cwd { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Extension.Azd.EnvironmentName)]
+    [JsonPropertyName(ExtensionOptionDefinitions.Azd.EnvironmentName)]
     public string? Environment { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Extension.Azd.LearnName)]
+    [JsonPropertyName(ExtensionOptionDefinitions.Azd.LearnName)]
     public bool Learn { get; set; }
 }

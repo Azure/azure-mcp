@@ -9,9 +9,9 @@ namespace AzureMcp.Areas.AppConfig.Options.KeyValue;
 
 public class BaseKeyValueOptions : BaseAppConfigOptions
 {
-    [JsonPropertyName(OptionDefinitions.AppConfig.KeyName)]
+    [JsonPropertyName(AppConfigOptionDefinitions.KeyName)]
     public string? Key { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.AppConfig.LabelName)]
+    [JsonPropertyName(AppConfigOptionDefinitions.LabelName)]
     public string? Label { get; set; }
 }

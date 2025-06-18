@@ -11,6 +11,6 @@ public class LogQueryOptions : WorkspaceOptions
     public string? Query { get; set; }
     public int? Hours { get; set; }
     public int? Limit { get; set; }
-    [JsonPropertyName(OptionDefinitions.Monitor.TableNameName)]
+    [JsonPropertyName(MonitorOptionDefinitions.TableNameName)]
     public string? TableName { get; set; }
 }

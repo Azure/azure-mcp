@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.KeyVault.Options;
 using AzureMcp.Areas.KeyVault.Options.Key;
 using AzureMcp.Areas.KeyVault.Services;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands.KeyVault;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -14,9 +15,9 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 {
     private const string CommandTitle = "Create Key Vault Key";
     private readonly ILogger<KeyCreateCommand> _logger = logger;
-    private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
-    private readonly Option<string> _keyOption = OptionDefinitions.KeyVault.KeyName;
-    private readonly Option<string> _keyTypeOption = OptionDefinitions.KeyVault.KeyType;
+    private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
+    private readonly Option<string> _keyOption = KeyVaultOptionDefinitions.KeyName;
+    private readonly Option<string> _keyTypeOption = KeyVaultOptionDefinitions.KeyType;
 
     public override string Name => "create";
 

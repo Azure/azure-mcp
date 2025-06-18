@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Group.Options;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using AzureMcp.Models.ResourceGroup;
 using AzureMcp.Services.Interfaces;

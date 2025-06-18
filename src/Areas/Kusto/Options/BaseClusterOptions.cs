@@ -9,9 +9,9 @@ namespace AzureMcp.Areas.Kusto.Options;
 
 public class BaseClusterOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Kusto.ClusterName)]
+    [JsonPropertyName(KustoOptionDefinitions.ClusterName)]
     public string? ClusterName { get; set; }
 
-    [JsonPropertyName(OptionDefinitions.Kusto.ClusterUriName)]
+    [JsonPropertyName(KustoOptionDefinitions.ClusterUriName)]
     public string? ClusterUri { get; set; }
 }

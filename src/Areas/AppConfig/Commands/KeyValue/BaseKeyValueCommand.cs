@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.AppConfig.Commands;
+using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -13,8 +14,8 @@ public abstract class BaseKeyValueCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : BaseAppConfigCommand<T> where T : BaseKeyValueOptions, new()
 {
-    protected readonly Option<string> _keyOption = OptionDefinitions.AppConfig.Key;
-    protected readonly Option<string> _labelOption = OptionDefinitions.AppConfig.Label;
+    protected readonly Option<string> _keyOption = AppConfigOptionDefinitions.Key;
+    protected readonly Option<string> _labelOption = AppConfigOptionDefinitions.Label;
 
     protected override void RegisterOptions(Command command)
     {

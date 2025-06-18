@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob.Container;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Models.Option;
@@ -19,7 +20,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         $"""
         List all containers in a Storage account. This command retrieves and displays all containers available
         in the specified account. Results include container names and are returned as a JSON array.
-        Requires {OptionDefinitions.Storage.AccountName}.
+        Requires {StorageOptionDefinitions.AccountName}.
         """;
 
     public override string Title => CommandTitle;

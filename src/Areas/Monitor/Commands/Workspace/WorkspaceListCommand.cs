@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Areas.Monitor.Options;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Workspace;

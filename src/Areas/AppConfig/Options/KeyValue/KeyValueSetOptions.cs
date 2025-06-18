@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.AppConfig.Options.KeyValue;
 
 public class KeyValueSetOptions : BaseKeyValueOptions
 {
-    [JsonPropertyName(OptionDefinitions.AppConfig.ValueName)]
+    [JsonPropertyName(AppConfigOptionDefinitions.ValueName)]
     public string? Value { get; set; }
 }

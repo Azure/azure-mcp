@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Postgres.Options.Server;
 
 public class GetParamOptions : BasePostgresOptions
 {
-    [JsonPropertyName(OptionDefinitions.Postgres.ParamName)]
+    [JsonPropertyName(PostgresOptionDefinitions.ParamName)]
     public string? Param { get; set; }
 }

@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Areas.Monitor;
-using AzureMcp.Services.Azure.Monitor;
+using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;

@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Areas.Monitor.Commands;
 using AzureMcp.Areas.Monitor.Options;
+using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
@@ -14,13 +14,13 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
 {
     private const string CommandTitle = "List Log Analytics Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
-    private readonly Option<string> _tableTypeOption = OptionDefinitions.Monitor.TableType;
+    private readonly Option<string> _tableTypeOption = MonitorOptionDefinitions.TableType;
 
     public override string Name => "list";
 
     public override string Description =>
         $"""
-        List all tables in a Log Analytics workspace. Requires {OptionDefinitions.Monitor.WorkspaceIdOrName}.
+        List all tables in a Log Analytics workspace. Requires {MonitorOptionDefinitions.WorkspaceIdOrName}.
         Returns table names and schemas that can be used for constructing KQL queries.
         """;
 
@@ -70,7 +70,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
     protected override TableListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? OptionDefinitions.Monitor.TableType.GetDefaultValue();
+        options.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? MonitorOptionDefinitions.TableType.GetDefaultValue();
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? OptionDefinitions.Common.ResourceGroup.GetDefaultValue();
         return options;
     }

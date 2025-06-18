@@ -3,6 +3,7 @@
 
 using System.Text.Json.Serialization;
 using Azure.Storage.Blobs.Models;
+using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob.Container;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Models.Option;
@@ -20,7 +21,7 @@ public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> log
     public override string Description =>
         $"""
         Get detailed properties of a storage container including metadata, lease status, and access level.
-        Requires {OptionDefinitions.Storage.AccountName} and {OptionDefinitions.Storage.ContainerName}.
+        Requires {StorageOptionDefinitions.AccountName} and {StorageOptionDefinitions.ContainerName}.
         """;
 
     public override string Title => CommandTitle;

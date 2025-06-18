@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Storage.Options.Blob;
 
 public class BaseContainerOptions : BaseStorageOptions
 {
-    [JsonPropertyName(OptionDefinitions.Storage.ContainerName)]
+    [JsonPropertyName(StorageOptionDefinitions.ContainerName)]
     public string? Container { get; set; }
 }

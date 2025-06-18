@@ -4,7 +4,6 @@
 using Azure.Core;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Authorization;
-using AzureMcp.Areas.Authorization;
 using AzureMcp.Areas.Authorization.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;

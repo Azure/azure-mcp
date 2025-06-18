@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Search.Options;
 
 public class BaseSearchOptions : GlobalOptions
 {
-    [JsonPropertyName(OptionDefinitions.Search.ServiceName)]
+    [JsonPropertyName(SearchOptionDefinitions.ServiceName)]
     public string? Service { get; set; }
 }

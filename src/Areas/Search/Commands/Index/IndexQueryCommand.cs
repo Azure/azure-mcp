@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Options;
 using AzureMcp.Areas.Search.Options.Index;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -13,9 +14,9 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
 {
     private const string CommandTitle = "Query Azure AI Search Index";
     private readonly ILogger<IndexQueryCommand> _logger = logger;
-    private readonly Option<string> _serviceOption = OptionDefinitions.Search.Service;
-    private readonly Option<string> _indexOption = OptionDefinitions.Search.Index;
-    private readonly Option<string> _queryOption = OptionDefinitions.Search.Query;
+    private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
+    private readonly Option<string> _indexOption = SearchOptionDefinitions.Index;
+    private readonly Option<string> _queryOption = SearchOptionDefinitions.Query;
 
     public override string Name => "query";
 

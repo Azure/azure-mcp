@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Postgres.Options.Table;
 
 public class GetSchemaOptions : BasePostgresOptions
 {
-    [JsonPropertyName(OptionDefinitions.Postgres.TableName)]
+    [JsonPropertyName(PostgresOptionDefinitions.TableName)]
     public string? Table { get; set; }
 }

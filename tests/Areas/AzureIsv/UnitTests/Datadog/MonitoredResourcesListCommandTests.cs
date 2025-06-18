@@ -4,8 +4,8 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.AzureIsv;
-using AzureMcp.Areas.AzureIsv.Commands.Datadog;
+using AzureMcp.Areas.AzureIsv.Datadog.Commands;
+using AzureMcp.Areas.AzureIsv.Datadog.Services;
 using AzureMcp.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Cosmos;
 using AzureMcp.Areas.Cosmos.Options;
+using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
 using Microsoft.Extensions.Logging;
 

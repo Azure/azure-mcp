@@ -5,7 +5,6 @@ using System.Text.Json.Nodes;
 using Azure;
 using Azure.Monitor.Query;
 using Azure.ResourceManager.OperationalInsights;
-using AzureMcp.Areas.Monitor;
 using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;

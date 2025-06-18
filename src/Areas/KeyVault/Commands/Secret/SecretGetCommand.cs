@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.KeyVault.Options;
 using AzureMcp.Areas.KeyVault.Options.Secret;
 using AzureMcp.Areas.KeyVault.Services;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands.KeyVault;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -14,8 +15,8 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
 {
     private const string _commandTitle = "Get Key Vault Secret";
     private readonly ILogger<SecretGetCommand> _logger = logger;
-    private readonly Option<string> _vaultOption = OptionDefinitions.KeyVault.VaultName;
-    private readonly Option<string> _secretOption = OptionDefinitions.KeyVault.SecretName;
+    private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
+    private readonly Option<string> _secretOption = KeyVaultOptionDefinitions.SecretName;
 
     public override string Name => "get";
 

@@ -4,7 +4,6 @@
 using Azure.ResourceManager.Redis;
 using Azure.ResourceManager.Redis.Models;
 using Azure.ResourceManager.RedisEnterprise;
-using AzureMcp.Areas.Redis;
 using AzureMcp.Areas.Redis.Models.CacheForRedis;
 using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Models.Identity;

@@ -12,7 +12,7 @@ public abstract class BaseTableCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : BaseDatabaseCommand<TOptions> where TOptions : BaseTableOptions, new()
 {
-    protected readonly Option<string> _tableOption = OptionDefinitions.Kusto.Table;
+    protected readonly Option<string> _tableOption = KustoOptionDefinitions.Table;
 
     protected override void RegisterOptions(Command command)
     {

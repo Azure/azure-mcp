@@ -5,7 +5,6 @@ using Azure;
 using Azure.Core;
 using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Areas.Postgres;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 using Npgsql;

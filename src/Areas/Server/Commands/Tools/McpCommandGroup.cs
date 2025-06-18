@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using Azure.Core;
-using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Commands;
+using AzureMcp.Services.Mcp;
 using ModelContextProtocol.Client;
 
 /// <summary>

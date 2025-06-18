@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Kusto.Options;
 
 public class BaseDatabaseOptions : BaseClusterOptions
 {
-    [JsonPropertyName(OptionDefinitions.Kusto.DatabaseName)]
+    [JsonPropertyName(KustoOptionDefinitions.DatabaseName)]
     public string? Database { get; set; }
 }

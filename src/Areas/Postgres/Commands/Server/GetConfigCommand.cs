@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Postgres;
 using AzureMcp.Areas.Postgres.Commands;
 using AzureMcp.Areas.Postgres.Options.Server;
+using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
 using Microsoft.Extensions.Logging;
 

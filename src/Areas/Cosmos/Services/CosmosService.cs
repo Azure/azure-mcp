@@ -3,7 +3,6 @@
 
 using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
-using AzureMcp.Areas.Cosmos;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;

@@ -447,6 +447,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                 }
             ],
         };
+
         try
         {
             var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);

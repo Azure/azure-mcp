@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.Redis.Options;
 using AzureMcp.Areas.Redis.Options.CacheForRedis;
-using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Redis.Commands.CacheForRedis;
@@ -13,7 +14,7 @@ public abstract class BaseCacheCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : SubscriptionCommand<T> where T : BaseCacheOptions, new()
 {
-    protected readonly Option<string> _cacheOption = OptionDefinitions.Redis.Cache;
+    protected readonly Option<string> _cacheOption = RedisOptionDefinitions.Cache;
 
     protected override void RegisterOptions(Command command)
     {

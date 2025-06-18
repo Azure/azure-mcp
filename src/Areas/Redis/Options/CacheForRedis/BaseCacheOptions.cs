@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Redis.Options.CacheForRedis;
 
 public class BaseCacheOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Redis.CacheName)]
+    [JsonPropertyName(RedisOptionDefinitions.CacheName)]
     public string? Cache { get; set; }
 }

@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using AzureMcp.Areas.ServiceBus;
 using AzureMcp.Areas.ServiceBus.Models;
+using AzureMcp.Areas.ServiceBus.Options;
 using AzureMcp.Areas.ServiceBus.Options.Topic;
-using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.ServiceBus.Services;
 using AzureMcp.Commands.ServiceBus;
+using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.ServiceBus.Commands.Topic;
@@ -14,8 +15,8 @@ namespace AzureMcp.Areas.ServiceBus.Commands.Topic;
 public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicOptions>
 {
     private const string CommandTitle = "Get Service Bus Topic Details";
-    private readonly Option<string> _topicOption = OptionDefinitions.ServiceBus.Topic;
-    private readonly Option<string> _namespaceOption = OptionDefinitions.ServiceBus.Namespace;
+    private readonly Option<string> _topicOption = ServiceBusOptionDefinitions.Topic;
+    private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
 
     public override string Name => "details";
 

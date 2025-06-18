@@ -8,6 +8,6 @@ namespace AzureMcp.Areas.Kusto.Options;
 
 public class BaseTableOptions : BaseDatabaseOptions
 {
-    [JsonPropertyName(OptionDefinitions.Kusto.TableName)]
+    [JsonPropertyName(KustoOptionDefinitions.TableName)]
     public string? Table { get; set; }
 }

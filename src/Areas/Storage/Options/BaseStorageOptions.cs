@@ -9,6 +9,6 @@ namespace AzureMcp.Areas.Storage.Options;
 
 public class BaseStorageOptions : SubscriptionOptions
 {
-    [JsonPropertyName(OptionDefinitions.Storage.AccountName)]
+    [JsonPropertyName(StorageOptionDefinitions.AccountName)]
     public string? Account { get; set; }
 }
