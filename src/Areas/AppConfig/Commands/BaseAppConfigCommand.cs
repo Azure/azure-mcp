@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.AppConfig.Options;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.AppConfig;
 
-namespace AzureMcp.Commands.AppConfig;
+namespace AzureMcp.Areas.AppConfig.Commands;
 
 public abstract class BaseAppConfigCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>

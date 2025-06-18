@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.KeyVault;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.KeyVault.Options;
 
 public class BaseKeyVaultOptions : SubscriptionOptions
 {

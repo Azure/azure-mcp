@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Areas.KeyVault.Services;
+using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;

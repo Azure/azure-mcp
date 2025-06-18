@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Postgres.Database;
-using AzureMcp.Commands.Postgres.Server;
-using AzureMcp.Commands.Postgres.Table;
+using AzureMcp.Areas.Postgres.Commands.Database;
+using AzureMcp.Areas.Postgres.Commands.Server;
+using AzureMcp.Areas.Postgres.Commands.Table;
 
 namespace AzureMcp.Commands.Postgres;
 

@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.ServiceBus.Queue;
-using AzureMcp.Commands.ServiceBus.Topic;
+using AzureMcp.Areas.ServiceBus.Commands.Queue;
+using AzureMcp.Areas.ServiceBus.Commands.Topic;
 
 namespace AzureMcp.Commands.ServiceBus;
 

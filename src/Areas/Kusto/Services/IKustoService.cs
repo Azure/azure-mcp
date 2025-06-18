@@ -4,7 +4,7 @@
 using AzureMcp.Commands.Kusto;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Kusto.Services;
 
 public interface IKustoService
 {

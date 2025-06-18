@@ -5,11 +5,13 @@ using System.Text.Json.Nodes;
 using Azure;
 using Azure.Monitor.Query;
 using Azure.ResourceManager.OperationalInsights;
-using AzureMcp.Models.Monitor;
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Services.Azure.Monitor;
+namespace AzureMcp.Areas.Monitor.Services;
 
 public class MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
     : BaseAzureService(tenantService), IMonitorService

@@ -5,9 +5,32 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas;
-using AzureMcp.Commands.Authorization;
+using AzureMcp.Areas.AppConfig.Commands.Account;
+using AzureMcp.Areas.AppConfig.Commands.KeyValue;
+using AzureMcp.Areas.Authorization.Commands;
+using AzureMcp.Areas.AzureBestPractices.Commands;
+using AzureMcp.Areas.AzureIsv.Commands.Datadog;
+using AzureMcp.Areas.Cosmos.Commands;
+using AzureMcp.Areas.Extension.Commands;
+using AzureMcp.Areas.Group.Commands;
+using AzureMcp.Areas.KeyVault.Commands.Key;
+using AzureMcp.Areas.KeyVault.Commands.Secret;
+using AzureMcp.Areas.Kusto.Commands;
+using AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;
+using AzureMcp.Areas.Monitor.Commands.Log;
+using AzureMcp.Areas.Monitor.Commands.Table;
+using AzureMcp.Areas.Monitor.Commands.TableType;
+using AzureMcp.Areas.Monitor.Commands.Workspace;
+using AzureMcp.Areas.Postgres.Commands.Database;
+using AzureMcp.Areas.Postgres.Commands.Server;
+using AzureMcp.Areas.Postgres.Commands.Table;
+using AzureMcp.Areas.Redis.Commands.CacheForRedis;
+using AzureMcp.Areas.Redis.Commands.ManagedRedis;
+using AzureMcp.Areas.Search.Commands.Index;
+using AzureMcp.Areas.Search.Commands.Service;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Areas.Tools.Commands;
 using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -119,7 +142,7 @@ public class CommandFactory
         _rootGroup.AddSubGroup(bestPractices);
         bestPractices.AddCommand(
             "get",
-            new BestPractices.AzureBestPracticesGetCommand(GetLogger<BestPractices.AzureBestPracticesGetCommand>())
+            new BestPractices.AzureBestPracticesGetCommand(GetLogger<AzureBestPracticesGetCommand>())
         );
     }
 
@@ -144,10 +167,10 @@ public class CommandFactory
         cosmosContainer.AddSubGroup(cosmosItem);
 
         // Register Cosmos commands
-        databases.AddCommand("list", new Cosmos.DatabaseListCommand(GetLogger<Cosmos.DatabaseListCommand>()));
-        cosmosContainer.AddCommand("list", new Cosmos.ContainerListCommand(GetLogger<Cosmos.ContainerListCommand>()));
-        cosmosAccount.AddCommand("list", new Cosmos.AccountListCommand(GetLogger<Cosmos.AccountListCommand>()));
-        cosmosItem.AddCommand("query", new Cosmos.ItemQueryCommand(GetLogger<Cosmos.ItemQueryCommand>()));
+        databases.AddCommand("list", new Cosmos.DatabaseListCommand(GetLogger<DatabaseListCommand>()));
+        cosmosContainer.AddCommand("list", new Cosmos.ContainerListCommand(GetLogger<ContainerListCommand>()));
+        cosmosAccount.AddCommand("list", new Cosmos.AccountListCommand(GetLogger<AccountListCommand>()));
+        cosmosItem.AddCommand("query", new Cosmos.ItemQueryCommand(GetLogger<ItemQueryCommand>()));
     }
 
     private void RegisterKustoCommands()
@@ -166,16 +189,16 @@ public class CommandFactory
         var tables = new CommandGroup("table", "Kusto table operations - Commands for listing tables in a database.");
         kusto.AddSubGroup(tables);
 
-        kusto.AddCommand("sample", new Kusto.SampleCommand(GetLogger<Kusto.SampleCommand>()));
-        kusto.AddCommand("query", new Kusto.QueryCommand(GetLogger<Kusto.QueryCommand>()));
+        kusto.AddCommand("sample", new Kusto.SampleCommand(GetLogger<SampleCommand>()));
+        kusto.AddCommand("query", new Kusto.QueryCommand(GetLogger<QueryCommand>()));
 
-        clusters.AddCommand("list", new Kusto.ClusterListCommand(GetLogger<Kusto.ClusterListCommand>()));
-        clusters.AddCommand("get", new Kusto.ClusterGetCommand(GetLogger<Kusto.ClusterGetCommand>()));
+        clusters.AddCommand("list", new Kusto.ClusterListCommand(GetLogger<ClusterListCommand>()));
+        clusters.AddCommand("get", new Kusto.ClusterGetCommand(GetLogger<ClusterGetCommand>()));
 
-        databases.AddCommand("list", new Kusto.DatabaseListCommand(GetLogger<Kusto.DatabaseListCommand>()));
+        databases.AddCommand("list", new Kusto.DatabaseListCommand(GetLogger<Areas.Kusto.Commands.DatabaseListCommand>()));
 
-        tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<Kusto.TableListCommand>()));
-        tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<Kusto.TableSchemaCommand>()));
+        tables.AddCommand("list", new Kusto.TableListCommand(GetLogger<TableListCommand>()));
+        tables.AddCommand("schema", new Kusto.TableSchemaCommand(GetLogger<TableSchemaCommand>()));
     }
 
     private void RegisterDatadogCommands()
@@ -186,7 +209,7 @@ public class CommandFactory
         var monitoredResources = new CommandGroup("monitoredresources", "Datadog monitored resources operations - Commands for listing monitored resources in a specific Datadog monitor.");
         datadog.AddSubGroup(monitoredResources);
 
-        monitoredResources.AddCommand("list", new AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand(GetLogger<AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand>()));
+        monitoredResources.AddCommand("list", new AzureIsv.Datadog.MonitoredResources.MonitoredResourcesListCommand(GetLogger<MonitoredResourcesListCommand>()));
     }
 
     private void RegisterPostgresCommands()
@@ -196,20 +219,20 @@ public class CommandFactory
 
         var database = new CommandGroup("database", "PostgreSQL database operations");
         pg.AddSubGroup(database);
-        database.AddCommand("list", new Postgres.Database.DatabaseListCommand(GetLogger<Postgres.Database.DatabaseListCommand>()));
-        database.AddCommand("query", new Postgres.Database.DatabaseQueryCommand(GetLogger<Postgres.Database.DatabaseQueryCommand>()));
+        database.AddCommand("list", new Postgres.Database.DatabaseListCommand(GetLogger<Areas.Postgres.Commands.Database.DatabaseListCommand>()));
+        database.AddCommand("query", new Postgres.Database.DatabaseQueryCommand(GetLogger<DatabaseQueryCommand>()));
 
         var table = new CommandGroup("table", "PostgreSQL table operations");
         pg.AddSubGroup(table);
-        table.AddCommand("list", new Postgres.Table.TableListCommand(GetLogger<Postgres.Table.TableListCommand>()));
-        table.AddCommand("schema", new Postgres.Table.GetSchemaCommand(GetLogger<Postgres.Table.GetSchemaCommand>()));
+        table.AddCommand("list", new Postgres.Table.TableListCommand(GetLogger<Areas.Postgres.Commands.Table.TableListCommand>()));
+        table.AddCommand("schema", new Postgres.Table.GetSchemaCommand(GetLogger<GetSchemaCommand>()));
 
         var server = new CommandGroup("server", "PostgreSQL server operations");
         pg.AddSubGroup(server);
-        server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<Postgres.Server.ServerListCommand>()));
-        server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<Postgres.Server.GetConfigCommand>()));
-        server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<Postgres.Server.GetParamCommand>()));
-        server.AddCommand("setparam", new Postgres.Server.SetParamCommand(GetLogger<Postgres.Server.SetParamCommand>()));
+        server.AddCommand("list", new Postgres.Server.ServerListCommand(GetLogger<ServerListCommand>()));
+        server.AddCommand("config", new Postgres.Server.GetConfigCommand(GetLogger<GetConfigCommand>()));
+        server.AddCommand("param", new Postgres.Server.GetParamCommand(GetLogger<GetParamCommand>()));
+        server.AddCommand("setparam", new Postgres.Server.SetParamCommand(GetLogger<SetParamCommand>()));
     }
 
     private void RegisterMonitorCommands()
@@ -232,11 +255,11 @@ public class CommandFactory
         monitorTable.AddSubGroup(monitorTableType);
 
         // Register Monitor commands
-        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(GetLogger<Monitor.Log.LogQueryCommand>()));
-        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<Monitor.Workspace.WorkspaceListCommand>()));
-        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Monitor.Table.TableListCommand>()));
+        logs.AddCommand("query", new Monitor.Log.LogQueryCommand(GetLogger<LogQueryCommand>()));
+        workspaces.AddCommand("list", new Monitor.Workspace.WorkspaceListCommand(GetLogger<WorkspaceListCommand>()));
+        monitorTable.AddCommand("list", new Monitor.Table.TableListCommand(GetLogger<Areas.Monitor.Commands.Table.TableListCommand>()));
 
-        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<Monitor.TableType.TableTypeListCommand>()));
+        monitorTableType.AddCommand("list", new Monitor.TableType.TableTypeListCommand(GetLogger<TableTypeListCommand>()));
 
         var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
         monitor.AddSubGroup(health);
@@ -244,7 +267,7 @@ public class CommandFactory
         var entity = new CommandGroup("entity", "Entity operations - Commands for working with entities in Azure Monitor Health Models.");
         health.AddSubGroup(entity);
 
-        entity.AddCommand("gethealth", new Monitor.HealthModels.Entity.EntityGetHealthCommand(GetLogger<Monitor.HealthModels.Entity.EntityGetHealthCommand>()));
+        entity.AddCommand("gethealth", new Monitor.HealthModels.Entity.EntityGetHealthCommand(GetLogger<EntityGetHealthCommand>()));
     }
 
     private void RegisterAppConfigCommands()
@@ -258,13 +281,13 @@ public class CommandFactory
         var keyValue = new CommandGroup("kv", "App Configuration key-value setting operations - Commands for managing complete configuration settings including values, labels, and metadata");
         appConfig.AddSubGroup(keyValue);
 
-        accounts.AddCommand("list", new AppConfig.Account.AccountListCommand(GetLogger<AppConfig.Account.AccountListCommand>()));
-        keyValue.AddCommand("list", new AppConfig.KeyValue.KeyValueListCommand(GetLogger<AppConfig.KeyValue.KeyValueListCommand>()));
-        keyValue.AddCommand("lock", new AppConfig.KeyValue.KeyValueLockCommand(GetLogger<AppConfig.KeyValue.KeyValueLockCommand>()));
-        keyValue.AddCommand("unlock", new AppConfig.KeyValue.KeyValueUnlockCommand(GetLogger<AppConfig.KeyValue.KeyValueUnlockCommand>()));
-        keyValue.AddCommand("set", new AppConfig.KeyValue.KeyValueSetCommand(GetLogger<AppConfig.KeyValue.KeyValueSetCommand>()));
-        keyValue.AddCommand("show", new AppConfig.KeyValue.KeyValueShowCommand(GetLogger<AppConfig.KeyValue.KeyValueShowCommand>()));
-        keyValue.AddCommand("delete", new AppConfig.KeyValue.KeyValueDeleteCommand(GetLogger<AppConfig.KeyValue.KeyValueDeleteCommand>()));
+        accounts.AddCommand("list", new AppConfig.Account.AccountListCommand(GetLogger<Areas.AppConfig.Commands.Account.AccountListCommand>()));
+        keyValue.AddCommand("list", new AppConfig.KeyValue.KeyValueListCommand(GetLogger<KeyValueListCommand>()));
+        keyValue.AddCommand("lock", new AppConfig.KeyValue.KeyValueLockCommand(GetLogger<KeyValueLockCommand>()));
+        keyValue.AddCommand("unlock", new AppConfig.KeyValue.KeyValueUnlockCommand(GetLogger<KeyValueUnlockCommand>()));
+        keyValue.AddCommand("set", new AppConfig.KeyValue.KeyValueSetCommand(GetLogger<KeyValueSetCommand>()));
+        keyValue.AddCommand("show", new AppConfig.KeyValue.KeyValueShowCommand(GetLogger<KeyValueShowCommand>()));
+        keyValue.AddCommand("delete", new AppConfig.KeyValue.KeyValueDeleteCommand(GetLogger<KeyValueDeleteCommand>()));
     }
 
     private void RegisterSearchCommands()
@@ -275,14 +298,14 @@ public class CommandFactory
         var service = new CommandGroup("service", "Azure AI Search service operations - Commands for listing and managing search services in your Azure subscription.");
         search.AddSubGroup(service);
 
-        service.AddCommand("list", new Search.Service.ServiceListCommand(GetLogger<Search.Service.ServiceListCommand>()));
+        service.AddCommand("list", new Search.Service.ServiceListCommand(GetLogger<ServiceListCommand>()));
 
         var index = new CommandGroup("index", "Azure AI Search index operations - Commands for listing and managing search indexes in a specific search service.");
         search.AddSubGroup(index);
 
-        index.AddCommand("list", new Search.Index.IndexListCommand(GetLogger<Search.Index.IndexListCommand>()));
-        index.AddCommand("describe", new Search.Index.IndexDescribeCommand(GetLogger<Search.Index.IndexDescribeCommand>()));
-        index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<Search.Index.IndexQueryCommand>()));
+        index.AddCommand("list", new Search.Index.IndexListCommand(GetLogger<IndexListCommand>()));
+        index.AddCommand("describe", new Search.Index.IndexDescribeCommand(GetLogger<IndexDescribeCommand>()));
+        index.AddCommand("query", new Search.Index.IndexQueryCommand(GetLogger<IndexQueryCommand>()));
     }
 
     private void RegisterKeyVaultCommands()
@@ -296,11 +319,11 @@ public class CommandFactory
         var secret = new CommandGroup("secret", "Key Vault secret operations - Commands for managing and accessing secrets in Azure Key Vault.");
         keyVault.AddSubGroup(secret);
 
-        keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyVault.Key.KeyListCommand>()));
-        keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyVault.Key.KeyGetCommand>()));
-        keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyVault.Key.KeyCreateCommand>()));
+        keys.AddCommand("list", new KeyVault.Key.KeyListCommand(GetLogger<KeyListCommand>()));
+        keys.AddCommand("get", new KeyVault.Key.KeyGetCommand(GetLogger<KeyGetCommand>()));
+        keys.AddCommand("create", new KeyVault.Key.KeyCreateCommand(GetLogger<KeyCreateCommand>()));
 
-        secret.AddCommand("get", new KeyVault.Secret.SecretGetCommand(GetLogger<KeyVault.Secret.SecretGetCommand>()));
+        secret.AddCommand("get", new KeyVault.Secret.SecretGetCommand(GetLogger<SecretGetCommand>()));
     }
 
     private void RegisterToolsCommands()
@@ -309,7 +332,7 @@ public class CommandFactory
         var tools = new CommandGroup("tools", "CLI tools operations - Commands for discovering and exploring the functionality available in this CLI tool.");
         _rootGroup.AddSubGroup(tools);
 
-        tools.AddCommand("list", new Tools.ToolsListCommand(GetLogger<Tools.ToolsListCommand>()));
+        tools.AddCommand("list", new Tools.ToolsListCommand(GetLogger<ToolsListCommand>()));
     }
 
     private void RegisterExtensionCommands()
@@ -317,8 +340,8 @@ public class CommandFactory
         var extension = new CommandGroup("extension", "Extension commands for additional functionality");
         _rootGroup.AddSubGroup(extension);
 
-        extension.AddCommand("az", new Extension.AzCommand(GetLogger<Extension.AzCommand>()));
-        extension.AddCommand("azd", new Extension.AzdCommand(GetLogger<Extension.AzdCommand>()));
+        extension.AddCommand("az", new Extension.AzCommand(GetLogger<AzCommand>()));
+        extension.AddCommand("azd", new Extension.AzdCommand(GetLogger<AzdCommand>()));
     }
 
     private void RegisterSubscriptionCommands()
@@ -338,7 +361,7 @@ public class CommandFactory
         _rootGroup.AddSubGroup(group);
 
         // Register Group commands
-        group.AddCommand("list", new Group.GroupListCommand(GetLogger<Group.GroupListCommand>()));
+        group.AddCommand("list", new Group.GroupListCommand(GetLogger<GroupListCommand>()));
     }
 
     private void RegisterMcpServerCommands()
@@ -384,23 +407,23 @@ public class CommandFactory
         var cache = new CommandGroup("cache", "Redis Cache resource operations - Commands for listing and managing Redis Cache resources in your Azure subscription.");
         redis.AddSubGroup(cache);
 
-        cache.AddCommand("list", new Redis.CacheForRedis.CacheListCommand(GetLogger<Redis.CacheForRedis.CacheListCommand>()));
+        cache.AddCommand("list", new Redis.CacheForRedis.CacheListCommand(GetLogger<CacheListCommand>()));
 
         var accessPolicy = new CommandGroup("accesspolicy", "Redis Cluster database operations - Commands for listing and managing Redis Cluster databases in your Azure subscription.");
         cache.AddSubGroup(accessPolicy);
 
-        accessPolicy.AddCommand("list", new Redis.CacheForRedis.AccessPolicyListCommand(GetLogger<Redis.CacheForRedis.AccessPolicyListCommand>()));
+        accessPolicy.AddCommand("list", new Redis.CacheForRedis.AccessPolicyListCommand(GetLogger<AccessPolicyListCommand>()));
 
         // Azure Managed Redis
         var cluster = new CommandGroup("cluster", "Redis Cluster resource operations - Commands for listing and managing Redis Cluster resources in your Azure subscription.");
         redis.AddSubGroup(cluster);
 
-        cluster.AddCommand("list", new Redis.ManagedRedis.ClusterListCommand(GetLogger<Redis.ManagedRedis.ClusterListCommand>()));
+        cluster.AddCommand("list", new Redis.ManagedRedis.ClusterListCommand(GetLogger<Areas.Redis.Commands.ManagedRedis.ClusterListCommand>()));
 
         var database = new CommandGroup("database", "Redis Cluster database operations - Commands for listing and managing Redis Cluster Databases in your Azure subscription.");
         cluster.AddSubGroup(database);
 
-        database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Redis.ManagedRedis.DatabaseListCommand>()));
+        database.AddCommand("list", new Redis.ManagedRedis.DatabaseListCommand(GetLogger<Areas.Redis.Commands.ManagedRedis.DatabaseListCommand>()));
     }
 
     private void RegisterAuthorizationCommands()

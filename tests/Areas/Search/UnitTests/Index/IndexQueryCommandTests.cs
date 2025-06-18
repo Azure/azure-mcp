@@ -4,10 +4,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Commands.Search.Index;
+using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Commands.Index;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

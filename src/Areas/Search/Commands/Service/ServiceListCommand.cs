@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Options.Search.Service;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Options.Service;
+using AzureMcp.Areas.Subscription.Commands;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Search.Service;
+namespace AzureMcp.Areas.Search.Commands.Service;
 
 public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : SubscriptionCommand<ServiceListOptions>()
 {

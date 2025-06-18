@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Options;
 
 public class BaseDatabaseOptions : BaseCosmosOptions
 {

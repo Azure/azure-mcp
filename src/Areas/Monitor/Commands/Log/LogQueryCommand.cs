@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Commands;
+using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Monitor;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Monitor.Log;
+namespace AzureMcp.Areas.Monitor.Commands.Log;
 
 public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonitorCommand<LogQueryOptions>()
 {

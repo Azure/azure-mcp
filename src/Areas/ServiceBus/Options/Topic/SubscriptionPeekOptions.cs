@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.ServiceBus.Subscription;
+namespace AzureMcp.Areas.ServiceBus.Options.Topic;
 
 public class SubscriptionPeekOptions : BaseTopicOptions
 {

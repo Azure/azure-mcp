@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Cosmos;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.Cosmos.Options;
 
 public class AccountListOptions : SubscriptionOptions;

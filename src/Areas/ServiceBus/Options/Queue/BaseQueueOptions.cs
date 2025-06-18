@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.ServiceBus.Queue
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.ServiceBus.Options.Queue
 {
     public class BaseQueueOptions : SubscriptionOptions
     {

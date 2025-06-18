@@ -4,11 +4,11 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json.Nodes;
-using AzureMcp.Commands.Monitor.HealthModels.Entity;
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;
 using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;

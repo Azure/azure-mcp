@@ -1,7 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.Redis.ManagedRedis;
+
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Areas.Redis.Models.ManagedRedis;
 
 public class Database
 {

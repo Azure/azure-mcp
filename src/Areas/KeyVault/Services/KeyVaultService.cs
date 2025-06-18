@@ -4,9 +4,9 @@
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure;
 
-namespace AzureMcp.Services.Azure.KeyVault;
+namespace AzureMcp.Areas.KeyVault.Services;
 
 public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
 {

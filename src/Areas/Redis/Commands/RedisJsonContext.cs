@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Redis.CacheForRedis;
-using AzureMcp.Commands.Redis.ManagedRedis;
+using AzureMcp.Areas.Redis.Commands.CacheForRedis;
+using AzureMcp.Areas.Redis.Commands.ManagedRedis;
 
 namespace AzureMcp.Commands.Redis;
 

@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Search.Index;
+namespace AzureMcp.Areas.Search.Options.Index;
 
 public class IndexQueryOptions : BaseIndexOptions
 {

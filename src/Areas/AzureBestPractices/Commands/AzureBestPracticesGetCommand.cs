@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Commands;
 using AzureMcp.Helpers;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.BestPractices;
+namespace AzureMcp.Areas.AzureBestPractices.Commands;
 
 public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCommand> logger) : BaseCommand()
 {

@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Commands;
 using ModelContextProtocol.Client;
 
-namespace AzureMcp.Commands.Server.Tools;
+namespace AzureMcp.Areas.Server.Commands.Tools;
 
 /// <summary>
 /// Providers metadata and MCP client creation for a discovered MCP server.

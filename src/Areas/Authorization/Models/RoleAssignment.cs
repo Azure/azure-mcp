@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.Authorization;
+namespace AzureMcp.Areas.Authorization.Models;
 
 public class RoleAssignment
 {

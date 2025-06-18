@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
+using AzureMcp.Areas.Cosmos;
+using AzureMcp.Areas.Cosmos.Options;
+using AzureMcp.Commands.Cosmos;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Cosmos;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Commands;
 
 public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseContainerCommand<ItemQueryOptions>()
 {

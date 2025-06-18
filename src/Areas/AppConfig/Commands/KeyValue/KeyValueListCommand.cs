@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.AppConfig;
+using AzureMcp.Areas.AppConfig;
+using AzureMcp.Areas.AppConfig.Commands;
+using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Options.KeyValue;
+using AzureMcp.Commands.AppConfig;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.AppConfig.KeyValue;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.AppConfig.KeyValue;
+namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
 
 public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : BaseAppConfigCommand<KeyValueListOptions>()
 {

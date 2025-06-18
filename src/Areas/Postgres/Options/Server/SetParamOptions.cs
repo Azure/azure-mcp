@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.Postgres.Options;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Postgres.Server;
+namespace AzureMcp.Areas.Postgres.Options.Server;
 
 public class SetParamOptions : BasePostgresOptions
 {

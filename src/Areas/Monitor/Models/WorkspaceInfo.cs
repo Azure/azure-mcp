@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.Monitor;
+namespace AzureMcp.Areas.Monitor.Models;
 
 public class WorkspaceInfo
 {

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.ServiceBus.Queue;
+namespace AzureMcp.Areas.ServiceBus.Options.Queue;
 
 public class QueuePeekOptions : BaseQueueOptions
 {

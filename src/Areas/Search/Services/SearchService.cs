@@ -7,11 +7,13 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
+using AzureMcp.Areas.Search;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
-using static AzureMcp.Commands.Search.Index.IndexDescribeCommand;
+using static AzureMcp.Areas.Search.Commands.Index.IndexDescribeCommand;
 
-namespace AzureMcp.Services.Azure.Search;
+namespace AzureMcp.Areas.Search.Services;
 
 public sealed class SearchService(ISubscriptionService subscriptionService, ICacheService cacheService) : BaseAzureService, ISearchService
 {

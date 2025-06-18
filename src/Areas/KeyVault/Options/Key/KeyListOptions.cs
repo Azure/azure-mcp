@@ -1,7 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.KeyVault.Key
+
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Areas.KeyVault.Options;
+
+namespace AzureMcp.Areas.KeyVault.Options.Key
 {
     public class KeyListOptions : BaseKeyVaultOptions
     {

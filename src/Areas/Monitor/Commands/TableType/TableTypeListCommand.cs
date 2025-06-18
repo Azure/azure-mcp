@@ -1,11 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.Monitor.TableType;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Commands;
+using AzureMcp.Areas.Monitor.Options.TableType;
+using AzureMcp.Commands.Monitor;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Monitor.TableType;
+namespace AzureMcp.Areas.Monitor.Commands.TableType;
 
 public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) : BaseMonitorCommand<TableTypeListOptions>()
 {

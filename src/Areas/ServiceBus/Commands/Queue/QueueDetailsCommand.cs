@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Models;
+using AzureMcp.Areas.ServiceBus.Options.Queue;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.ServiceBus;
 using AzureMcp.Models.Option;
-using AzureMcp.Models.ServiceBus;
-using AzureMcp.Options.ServiceBus.Queue;
-using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Commands.ServiceBus.Queue;
+namespace AzureMcp.Areas.ServiceBus.Commands.Queue;
 
 public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
 {

@@ -1,11 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.AppConfig.KeyValue;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.AppConfig;
+using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Options.KeyValue;
+using AzureMcp.Commands.AppConfig;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.AppConfig.KeyValue;
+namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
 
 public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : BaseKeyValueCommand<KeyValueShowOptions>()
 {
@@ -57,5 +59,5 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         return context.Response;
     }
 
-    internal record KeyValueShowResult(Models.AppConfig.KeyValueSetting Setting);
+    internal record KeyValueShowResult(KeyValueSetting Setting);
 }

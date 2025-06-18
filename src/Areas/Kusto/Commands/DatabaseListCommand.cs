@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.Kusto;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Kusto.Options;
+using AzureMcp.Areas.Kusto.Services;
+using AzureMcp.Commands.Kusto;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Kusto;
+namespace AzureMcp.Areas.Kusto.Commands;
 
 public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseClusterCommand<DatabaseListOptions>()
 {

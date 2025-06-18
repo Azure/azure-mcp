@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.AppConfig.Account;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.AppConfig.Options.Account;
 
 public class AccountListOptions : SubscriptionOptions;

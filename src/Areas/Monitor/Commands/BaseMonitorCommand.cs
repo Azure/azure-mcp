@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Monitor.Options;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
-using AzureMcp.Options.Monitor;
 
-namespace AzureMcp.Commands.Monitor;
+namespace AzureMcp.Areas.Monitor.Commands;
 
 public abstract class BaseMonitorCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>

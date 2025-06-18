@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Redis.Options.CacheForRedis;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Redis.CacheForRedis;
 
-namespace AzureMcp.Commands.Redis.CacheForRedis;
+namespace AzureMcp.Areas.Redis.Commands.CacheForRedis;
 
 public abstract class BaseCacheCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>

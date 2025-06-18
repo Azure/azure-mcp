@@ -4,7 +4,7 @@
 using System.Text.Json.Nodes;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Cosmos;
 
 public interface ICosmosService : IDisposable
 {

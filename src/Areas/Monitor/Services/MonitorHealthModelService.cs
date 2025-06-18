@@ -3,10 +3,12 @@
 
 using System.Text.Json.Nodes;
 using Azure.Core;
+using AzureMcp.Areas.Monitor;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Services.Azure.Monitor;
+namespace AzureMcp.Areas.Monitor.Services;
 
 public class MonitorHealthModelService(ITenantService tenantService)
     : BaseAzureService(tenantService), IMonitorHealthModelService

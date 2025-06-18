@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.ServiceBus.Subscription;
 
-namespace AzureMcp.Options.ServiceBus.Topic;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Areas.ServiceBus.Options.Topic;
 
 public class SubscriptionDetailsOptions : BaseTopicOptions
 {

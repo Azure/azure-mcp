@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.Redis.CacheForRedis;
+namespace AzureMcp.Areas.Redis.Models.CacheForRedis;
 
 public class AccessPolicyAssignment
 {

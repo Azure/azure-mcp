@@ -4,16 +4,16 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Commands.Redis.ManagedRedis;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Commands.ManagedRedis;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
-using ClusterModel = AzureMcp.Models.Redis.ManagedRedis.Cluster;
+using ClusterModel = AzureMcp.Areas.Redis.Models.ManagedRedis.Cluster;
 
 namespace AzureMcp.Tests.Areas.Redis.UnitTests.ManagedRedis;
 

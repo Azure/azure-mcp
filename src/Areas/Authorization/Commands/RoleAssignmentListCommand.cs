@@ -1,14 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Authorization;
+using AzureMcp.Areas.Authorization;
+using AzureMcp.Areas.Authorization.Models;
+using AzureMcp.Areas.Authorization.Options;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Authorization;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Authorization;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Authorization;
+namespace AzureMcp.Areas.Authorization.Commands;
 
 public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand> logger) : SubscriptionCommand<RoleAssignmentListOptions>
 {

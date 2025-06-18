@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Options;
-using static AzureMcp.Commands.Search.Index.IndexDescribeCommand;
+using static AzureMcp.Areas.Search.Commands.Index.IndexDescribeCommand;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Search;
 
 public interface ISearchService
 {

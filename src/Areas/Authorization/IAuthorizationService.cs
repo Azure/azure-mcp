@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Authorization;
+using AzureMcp.Areas.Authorization.Models;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Authorization;
 
 public interface IAuthorizationService
 {

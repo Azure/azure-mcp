@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Commands.HealthModels;
+using AzureMcp.Areas.Monitor.Options.HealthModels.Entity;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Monitor.HealthModels.Entity;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Monitor.HealthModels.Entity;
+namespace AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;
 
 public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logger) : BaseMonitorHealthModelsCommand<EntityGetHealthOptions>
 {
@@ -68,7 +69,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create<JsonNode>(result, JsonSourceGenerationContext.Default.JsonNode);
+            context.Response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.JsonNode);
         }
         catch (Exception ex)
         {

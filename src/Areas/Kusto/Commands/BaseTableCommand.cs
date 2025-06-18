@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.Kusto.Options;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Kusto;
 
-namespace AzureMcp.Commands.Kusto;
+namespace AzureMcp.Areas.Kusto.Commands;
 
 public abstract class BaseTableCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>

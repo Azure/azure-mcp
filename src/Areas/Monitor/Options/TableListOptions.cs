@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Monitor;
+namespace AzureMcp.Areas.Monitor.Options;
 
 public class TableListOptions : WorkspaceOptions
 {

@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using AzureMcp.Areas.Server.Commands.Tools;
+using AzureMcp.Areas.Server.Options;
+using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
@@ -16,7 +18,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-namespace AzureMcp.Commands.Server;
+namespace AzureMcp.Areas.Server.Commands;
 
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand

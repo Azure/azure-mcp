@@ -1,11 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.Postgres.Server;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Postgres;
+using AzureMcp.Areas.Postgres.Commands;
+using AzureMcp.Areas.Postgres.Options.Server;
+using AzureMcp.Commands.Postgres;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Postgres.Server;
+namespace AzureMcp.Areas.Postgres.Commands.Server;
 
 public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BasePostgresCommand<ServerListOptions>(logger)
 {

@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Group.Options;
+using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Models.Option;
 using AzureMcp.Models.ResourceGroup;
-using AzureMcp.Options.Group;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Group;
+namespace AzureMcp.Areas.Group.Commands;
 
 public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : SubscriptionCommand<BaseGroupOptions>()
 {

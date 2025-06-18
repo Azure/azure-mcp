@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.AppConfig;
-using AzureMcp.Options.AppConfig.Account;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.AppConfig;
+using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Options.Account;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.AppConfig;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.AppConfig.Account;
+namespace AzureMcp.Areas.AppConfig.Commands.Account;
 
 public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : SubscriptionCommand<AccountListOptions>()
 {

@@ -4,7 +4,7 @@
 using Azure.Security.KeyVault.Keys;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.KeyVault.Services;
 
 public interface IKeyVaultService
 {

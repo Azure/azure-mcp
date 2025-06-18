@@ -3,9 +3,10 @@
 
 using Azure.ResourceManager.Resources;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Services.Azure.Subscription;
+namespace AzureMcp.Areas.Subscription.Services;
 
 public class SubscriptionService(ICacheService cacheService, ITenantService tenantService)
     : BaseAzureService(tenantService), ISubscriptionService

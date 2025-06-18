@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.Search.Options;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Search.Index;
+namespace AzureMcp.Areas.Search.Options.Index;
 
 public class BaseIndexOptions : BaseSearchOptions
 {

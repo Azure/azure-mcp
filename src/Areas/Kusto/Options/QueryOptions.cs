@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
 
-namespace AzureMcp.Options.Kusto;
+namespace AzureMcp.Areas.Kusto.Options;
 
 public class QueryOptions : BaseDatabaseOptions
 {

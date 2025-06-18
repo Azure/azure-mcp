@@ -4,10 +4,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Commands.Redis.CacheForRedis;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Commands.CacheForRedis;
+using AzureMcp.Areas.Redis.Models.CacheForRedis;
 using AzureMcp.Models.Command;
-using AzureMcp.Models.Redis.CacheForRedis;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

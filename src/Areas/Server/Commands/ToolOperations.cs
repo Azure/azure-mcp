@@ -3,11 +3,12 @@
 
 using System.Reflection;
 using System.Text.Json.Nodes;
+using AzureMcp.Commands;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
 
-namespace AzureMcp.Commands.Server;
+namespace AzureMcp.Areas.Server.Commands;
 
 public class ToolOperations
 {
@@ -103,7 +104,7 @@ public class ToolOperations
         var commandContext = new CommandContext(_serviceProvider);
 
         var args = parameters.Params.Arguments != null
-            ? string.Join(" ", parameters.Params.Arguments.Select(kvp => $"--{kvp.Key} \"{(kvp.Value).ToString().Replace("\"", "'")}\""))
+            ? string.Join(" ", parameters.Params.Arguments.Select(kvp => $"--{kvp.Key} \"{kvp.Value.ToString().Replace("\"", "'")}\""))
             : string.Empty;
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.Parse(args);

@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Kusto.Options;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Kusto;
 
-namespace AzureMcp.Commands.Kusto;
+namespace AzureMcp.Areas.Kusto.Commands;
 
 public abstract class BaseClusterCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>

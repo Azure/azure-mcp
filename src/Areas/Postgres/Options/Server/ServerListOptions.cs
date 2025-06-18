@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Postgres.Server;
+namespace AzureMcp.Areas.Postgres.Options.Server;
 
 public class ServerListOptions : BasePostgresOptions;

@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Postgres;
+using AzureMcp.Areas.Postgres.Commands;
+using AzureMcp.Areas.Postgres.Options.Table;
+using AzureMcp.Commands.Postgres;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Postgres.Table;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Postgres.Table;
+namespace AzureMcp.Areas.Postgres.Commands.Table;
 
 public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDatabaseCommand<GetSchemaOptions>(logger)
 {

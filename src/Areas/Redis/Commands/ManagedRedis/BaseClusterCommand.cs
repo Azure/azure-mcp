@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Redis.Options.ManagedRedis;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Redis.ManagedRedis;
 
-namespace AzureMcp.Commands.Redis.ManagedRedis;
+namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
 
 public abstract class BaseClusterCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>

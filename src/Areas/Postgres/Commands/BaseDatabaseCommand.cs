@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.Postgres.Options;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Postgres;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Postgres;
+namespace AzureMcp.Areas.Postgres.Commands;
 
 public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BasePostgresCommand<TOptions>> logger)

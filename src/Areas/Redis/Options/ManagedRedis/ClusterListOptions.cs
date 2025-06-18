@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Redis.ManagedRedis;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.Redis.Options.ManagedRedis;
 
 public class ClusterListOptions : SubscriptionOptions;

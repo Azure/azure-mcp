@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Redis.CacheForRedis;
-using AzureMcp.Models.Redis.ManagedRedis;
+using AzureMcp.Areas.Redis.Models.CacheForRedis;
+using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Redis;
 
 public interface IRedisService
 {
@@ -17,7 +17,7 @@ public interface IRedisService
     /// <param name="authMethod">Authentication method to use</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <returns>List of Redis Cache details</returns>
-    /// <exception cref="System.Exception">When the service request fails</exception>
+    /// <exception cref="Exception">When the service request fails</exception>
     Task<IEnumerable<Cache>> ListCachesAsync(
         string subscription,
         string? tenant = null,
@@ -33,7 +33,7 @@ public interface IRedisService
     /// <param name="authMethod">Authentication method to use</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <returns>List of Redis Cluster details</returns>
-    /// <exception cref="System.Exception">When the service request fails</exception>
+    /// <exception cref="Exception">When the service request fails</exception>
     Task<IEnumerable<Cluster>> ListClustersAsync(
         string subscription,
         string? tenant = null,
@@ -50,7 +50,7 @@ public interface IRedisService
     /// <param name="authMethod">Authentication method to use</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <returns>List of database details</returns>
-    /// <exception cref="System.Exception">When the service request fails</exception>
+    /// <exception cref="Exception">When the service request fails</exception>
     Task<IEnumerable<Database>> ListDatabasesAsync(
         string clusterName,
         string resourceGroupName,
@@ -69,7 +69,7 @@ public interface IRedisService
     /// <param name="authMethod">Authentication method to use</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <returns>List of access policy assignments</returns>
-    /// <exception cref="System.Exception">When the service request fails</exception>
+    /// <exception cref="Exception">When the service request fails</exception>
     Task<IEnumerable<AccessPolicyAssignment>> ListAccessPolicyAssignmentsAsync(
         string cacheName,
         string resourceGroupName,

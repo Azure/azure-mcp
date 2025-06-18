@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Kusto.Options;
+using AzureMcp.Areas.Kusto.Services;
+using AzureMcp.Commands.Kusto;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Kusto;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Kusto;
+namespace AzureMcp.Areas.Kusto.Commands;
 
 public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCommand<QueryOptions>()
 {

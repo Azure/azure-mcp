@@ -3,8 +3,9 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
+using AzureMcp.Options;
 
-namespace AzureMcp.Options.Postgres;
+namespace AzureMcp.Areas.Postgres.Options;
 
 public class BasePostgresOptions : SubscriptionOptions
 {

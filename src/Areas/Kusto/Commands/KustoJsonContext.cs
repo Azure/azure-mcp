@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Azure.ResourceManager.Kusto;
+using AzureMcp.Areas.Kusto.Commands;
 
 namespace AzureMcp.Commands.Kusto;
 

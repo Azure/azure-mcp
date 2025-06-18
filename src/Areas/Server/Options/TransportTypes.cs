@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Server;
+namespace AzureMcp.Areas.Server.Options;
 
 internal static class TransportTypes
 {

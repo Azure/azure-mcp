@@ -4,7 +4,7 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Extension;
+using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;

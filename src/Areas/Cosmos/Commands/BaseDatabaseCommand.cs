@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.Cosmos.Options;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Cosmos;
 
-namespace AzureMcp.Commands.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Commands;
 
 public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>

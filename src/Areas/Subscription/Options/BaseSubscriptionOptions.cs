@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Subscription;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.Subscription.Options;
 
 public class BaseSubscriptionOptions : GlobalOptions;

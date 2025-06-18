@@ -3,7 +3,7 @@
 
 using ModelContextProtocol.Client;
 
-namespace AzureMcp.Commands.Server.Tools;
+namespace AzureMcp.Areas.Server.Commands.Tools;
 
 /// <summary>
 /// Interface for providing MCP client instances for various server providers.

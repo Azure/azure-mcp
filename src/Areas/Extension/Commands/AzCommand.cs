@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using AzureMcp.Areas.Extension.Options;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Extension;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Extension;
+namespace AzureMcp.Areas.Extension.Commands;
 
 public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzOptions>()
 {

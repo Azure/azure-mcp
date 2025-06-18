@@ -3,8 +3,9 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
+using AzureMcp.Options;
 
-namespace AzureMcp.Options.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Options;
 
 public class BaseCosmosOptions : SubscriptionOptions
 {

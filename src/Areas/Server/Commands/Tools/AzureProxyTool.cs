@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Areas.Server.Commands.Tools;
 using Json.Schema;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;

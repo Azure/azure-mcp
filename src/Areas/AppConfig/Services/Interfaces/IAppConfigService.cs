@@ -4,7 +4,7 @@
 using AzureMcp.Areas.AppConfig.Models;
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.AppConfig;
+namespace AzureMcp.Areas.AppConfig.Services.Interfaces;
 
 public interface IAppConfigService
 {

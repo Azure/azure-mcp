@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Xunit;
 
-namespace AzureMcp.Tests.Client
+namespace AzureMcp.Tests.Areas.Storage.LiveTests
 {
     public class StorageCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>

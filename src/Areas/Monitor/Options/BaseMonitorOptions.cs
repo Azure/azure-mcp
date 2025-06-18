@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Monitor;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.Monitor.Options;
 
 public class BaseMonitorOptions : SubscriptionOptions;

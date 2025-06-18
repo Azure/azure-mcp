@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Search.Service;
+using AzureMcp.Options;
+
+namespace AzureMcp.Areas.Search.Options.Service;
 
 public class ServiceListOptions : SubscriptionOptions;

@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.AppConfig.Commands;
+using AzureMcp.Areas.AppConfig.Options.KeyValue;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.AppConfig.KeyValue;
 
-namespace AzureMcp.Commands.AppConfig.KeyValue;
+namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
 
 public abstract class BaseKeyValueCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>

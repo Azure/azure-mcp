@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.KeyVault.Options.Secret;
+using AzureMcp.Areas.KeyVault.Services;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.KeyVault;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.KeyVault.Secret;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.KeyVault.Secret;
+namespace AzureMcp.Areas.KeyVault.Commands.Secret;
 
 public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : SubscriptionCommand<SecretGetOptions>
 {

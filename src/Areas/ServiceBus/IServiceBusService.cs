@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using AzureMcp.Models.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Models;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.ServiceBus;
 
 public interface IServiceBusService
 {

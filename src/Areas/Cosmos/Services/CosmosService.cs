@@ -3,11 +3,13 @@
 
 using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
+using AzureMcp.Areas.Cosmos;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 
-namespace AzureMcp.Services.Azure.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Services;
 
 public class CosmosService(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService)
     : BaseAzureService(tenantService), ICosmosService, IDisposable

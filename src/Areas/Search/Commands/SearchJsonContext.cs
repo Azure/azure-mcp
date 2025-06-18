@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Search.Index;
-using AzureMcp.Commands.Search.Service;
+using AzureMcp.Areas.Search.Commands.Index;
+using AzureMcp.Areas.Search.Commands.Service;
 
 [JsonSerializable(typeof(ServiceListCommand.ServiceListCommandResult))]
 [JsonSerializable(typeof(IndexListCommand.IndexListCommandResult))]

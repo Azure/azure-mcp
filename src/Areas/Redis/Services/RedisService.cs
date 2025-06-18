@@ -4,13 +4,15 @@
 using Azure.ResourceManager.Redis;
 using Azure.ResourceManager.Redis.Models;
 using Azure.ResourceManager.RedisEnterprise;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Models.CacheForRedis;
+using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Models.Identity;
-using AzureMcp.Models.Redis.CacheForRedis;
-using AzureMcp.Models.Redis.ManagedRedis;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Services.Azure.Redis;
+namespace AzureMcp.Areas.Redis.Services;
 
 public class RedisService(ISubscriptionService _subscriptionService, IResourceGroupService _resourceGroupService, ITenantService tenantService)
     : BaseAzureService(tenantService), IRedisService
@@ -92,7 +94,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                         MaxMemoryPolicy = cache.RedisConfiguration.MaxMemoryPolicy,
                         MaxMemoryReserved = cache.RedisConfiguration.MaxMemoryReserved,
                         MaxMemoryDelta = cache.RedisConfiguration.MaxMemoryDelta,
-                        MaxClients = int.TryParse(cache.RedisConfiguration.MaxClients.ToString(), out var maxClients) ? maxClients : (int?)null,
+                        MaxClients = int.TryParse(cache.RedisConfiguration.MaxClients.ToString(), out var maxClients) ? maxClients : null,
                         NotifyKeyspaceEvents = cache.RedisConfiguration.NotifyKeyspaceEvents,
                         PreferredDataArchiveAuthMethod = cache.RedisConfiguration.PreferredDataArchiveAuthMethod,
                         PreferredDataPersistenceAuthMethod = cache.RedisConfiguration.PreferredDataPersistenceAuthMethod,

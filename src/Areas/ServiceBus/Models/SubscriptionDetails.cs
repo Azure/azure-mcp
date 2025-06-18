@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.ServiceBus;
+namespace AzureMcp.Areas.ServiceBus.Models;
 
 public class SubscriptionDetails
 {

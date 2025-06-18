@@ -3,11 +3,12 @@
 
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using AzureMcp.Models.ServiceBus;
+using AzureMcp.Areas.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Models;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure;
 
-namespace AzureMcp.Services.Azure.ServiceBus;
+namespace AzureMcp.Areas.ServiceBus.Services;
 
 public class ServiceBusService : BaseAzureService, IServiceBusService
 {

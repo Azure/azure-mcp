@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Tools;
+namespace AzureMcp.Areas.Tools.Commands;
 
 [HiddenCommand]
 public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCommand()

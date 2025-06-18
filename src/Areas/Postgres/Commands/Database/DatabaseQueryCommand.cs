@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Postgres;
+using AzureMcp.Areas.Postgres.Commands;
+using AzureMcp.Areas.Postgres.Options.Database;
+using AzureMcp.Commands.Postgres;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Postgres.Database;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Postgres.Database;
+namespace AzureMcp.Areas.Postgres.Commands.Database;
 
 public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) : BaseDatabaseCommand<DatabaseQueryOptions>(logger)
 {

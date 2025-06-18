@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.Redis.ManagedRedis;
+namespace AzureMcp.Areas.Redis.Models.ManagedRedis;
 
 public class Module
 {

@@ -3,7 +3,7 @@
 
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace AzureMcp.Models.ServiceBus;
+namespace AzureMcp.Areas.ServiceBus.Models;
 
 public class QueueDetails
 {

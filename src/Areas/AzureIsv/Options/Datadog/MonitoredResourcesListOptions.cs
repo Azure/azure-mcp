@@ -3,8 +3,9 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
+using AzureMcp.Options;
 
-namespace AzureMcp.Options.AzureIsv.Datadog;
+namespace AzureMcp.Areas.AzureIsv.Options.Datadog;
 
 public class MonitoredResourcesListOptions : SubscriptionOptions
 {

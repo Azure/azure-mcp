@@ -3,12 +3,13 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Azure.Search.Documents.Indexes.Models;
+using AzureMcp.Areas.Search;
+using AzureMcp.Areas.Search.Options.Index;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Search.Index;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Search.Index;
+namespace AzureMcp.Areas.Search.Commands.Index;
 
 public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) : GlobalCommand<IndexDescribeOptions>()
 {

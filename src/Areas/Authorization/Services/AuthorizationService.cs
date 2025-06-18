@@ -4,11 +4,13 @@
 using Azure.Core;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Authorization;
-using AzureMcp.Models.Authorization;
+using AzureMcp.Areas.Authorization;
+using AzureMcp.Areas.Authorization.Models;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Services.Azure.Authorization;
+namespace AzureMcp.Areas.Authorization.Services;
 
 public class AuthorizationService(ITenantService tenantService)
     : BaseAzureService(tenantService), IAuthorizationService

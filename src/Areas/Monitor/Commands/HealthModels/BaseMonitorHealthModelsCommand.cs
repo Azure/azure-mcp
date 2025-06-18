@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 
-namespace AzureMcp.Commands.Monitor.HealthModels;
+namespace AzureMcp.Areas.Monitor.Commands.HealthModels;
 
 public abstract class BaseMonitorHealthModelsCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>

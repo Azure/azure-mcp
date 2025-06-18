@@ -3,7 +3,7 @@
 
 using System.Collections;
 
-namespace AzureMcp.Commands.Server;
+namespace AzureMcp.Areas.Server.Commands;
 
 /// <summary>
 /// Gets the JSON object type based on its C# type.

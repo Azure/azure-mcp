@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Redis.ManagedRedis;
-using AzureMcp.Options.Redis.ManagedRedis;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Models.ManagedRedis;
+using AzureMcp.Areas.Redis.Options.ManagedRedis;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Redis;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Redis.ManagedRedis;
+namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
 
 /// <summary>
 /// Lists Azure Managed Redis cluster resources (`Balanced`, `MemoryOptimized`, `ComputeOptimized`, and `FlashOptimized` tiers) and Azure Redis Enterprise cluster resources (`Enterprise` and `EnterpriseFlash` tiers) in the specified subscription.

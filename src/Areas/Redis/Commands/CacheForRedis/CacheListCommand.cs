@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Options.Redis.CacheForRedis;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Models.CacheForRedis;
+using AzureMcp.Areas.Redis.Options.CacheForRedis;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Redis;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Redis.CacheForRedis;
+namespace AzureMcp.Areas.Redis.Commands.CacheForRedis;
 
 /// <summary>
 /// Lists Azure Cache for Redis resources (Basic, Standard, and Premium tier caches) in the specified subscription.
@@ -61,5 +63,5 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
         return context.Response;
     }
 
-    internal record CacheListCommandResult(IEnumerable<Models.Redis.CacheForRedis.Cache> Caches);
+    internal record CacheListCommandResult(IEnumerable<Cache> Caches);
 }

@@ -4,13 +4,14 @@
 using Azure.ResourceManager.Kusto;
 using AzureMcp.Commands.Kusto;
 using AzureMcp.Options;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 using Kusto.Cloud.Platform.Data;
 using Kusto.Data;
 using Kusto.Data.Common;
 using Kusto.Data.Net.Client;
 
-namespace AzureMcp.Services.Azure.Kusto;
+namespace AzureMcp.Areas.Kusto.Services;
 
 public sealed class KustoService(
     ISubscriptionService subscriptionService,

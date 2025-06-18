@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.Cosmos;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Cosmos;
+using AzureMcp.Areas.Cosmos.Options;
+using AzureMcp.Commands.Cosmos;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Cosmos;
+namespace AzureMcp.Areas.Cosmos.Commands;
 
 public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : BaseCosmosCommand<DatabaseListOptions>()
 {

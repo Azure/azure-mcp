@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.KeyVault.Options.Key;
+using AzureMcp.Areas.KeyVault.Services;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.KeyVault;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.KeyVault.Key;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.KeyVault.Key;
+namespace AzureMcp.Areas.KeyVault.Commands.Key;
 
 public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : SubscriptionCommand<KeyCreateOptions>
 {

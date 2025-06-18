@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Redis.ManagedRedis;
-using AzureMcp.Options.Redis.ManagedRedis;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Redis;
+using AzureMcp.Areas.Redis.Models.ManagedRedis;
+using AzureMcp.Areas.Redis.Options.ManagedRedis;
+using AzureMcp.Commands.Redis;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Redis.ManagedRedis;
+namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
 
 /// <summary>
 /// Lists the databases in the specified Azure Managed Redis or Azure Redis Enterprise cluster.

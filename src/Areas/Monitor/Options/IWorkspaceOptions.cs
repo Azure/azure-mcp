@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Monitor;
+namespace AzureMcp.Areas.Monitor.Options;
 
 public interface IWorkspaceOptions
 {

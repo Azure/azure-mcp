@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
-using AzureMcp.Models.Monitor;
+using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Areas.Monitor;
 
 public interface IMonitorService
 {

@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Monitor;
-using AzureMcp.Options.Monitor;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Monitor;
+using AzureMcp.Areas.Monitor.Models;
+using AzureMcp.Areas.Monitor.Options;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.Monitor;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Monitor.Workspace;
+namespace AzureMcp.Areas.Monitor.Commands.Workspace;
 
 public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) : SubscriptionCommand<WorkspaceListOptions>()
 {

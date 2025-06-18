@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.ServiceBus;
+using AzureMcp.Areas.ServiceBus.Options.Topic;
+using AzureMcp.Areas.Subscription.Commands;
+using AzureMcp.Commands.ServiceBus;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.ServiceBus.Subscription;
-using AzureMcp.Services.Interfaces;
 
-namespace AzureMcp.Commands.ServiceBus.Topic;
+namespace AzureMcp.Areas.ServiceBus.Commands.Topic;
 
 public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPeekOptions>
 {

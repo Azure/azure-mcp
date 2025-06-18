@@ -5,10 +5,12 @@ using Azure;
 using Azure.Core;
 using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.Resources;
+using AzureMcp.Areas.Postgres;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Interfaces;
 using Npgsql;
 
-namespace AzureMcp.Services.Azure.Postgres;
+namespace AzureMcp.Areas.Postgres.Services;
 
 public class PostgresService : BaseAzureService, IPostgresService
 {

@@ -3,7 +3,7 @@
 
 using AzureMcp.Models.Identity;
 
-namespace AzureMcp.Models.AppConfig;
+namespace AzureMcp.Areas.AppConfig.Models;
 
 public class AppConfigurationAccount
 {

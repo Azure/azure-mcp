@@ -3,8 +3,9 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Models.Option;
+using AzureMcp.Options;
 
-namespace AzureMcp.Options.Authorization;
+namespace AzureMcp.Areas.Authorization.Options;
 
 public class RoleAssignmentListOptions : SubscriptionOptions
 {

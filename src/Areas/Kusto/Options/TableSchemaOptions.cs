@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Options.Kusto;
+namespace AzureMcp.Areas.Kusto.Options;
 
 public class TableSchemaOptions : BaseTableOptions;
