@@ -4,7 +4,7 @@
 
 ### Features Added
 
-- Adds support to launch MCP server in readonly - https://github.com/Azure/azure-mcp/pull/410
+- Adds support to launch MCP server in readonly mode - https://github.com/Azure/azure-mcp/pull/410
 
 ### Breaking Changes
 
