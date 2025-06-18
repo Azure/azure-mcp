@@ -50,7 +50,8 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             var entryPoint = Path.Combine(testBinDir, exeName);
             Assert.True(File.Exists(entryPoint), $"{exeName} not found at {entryPoint}");
 
-            var mcpCommandGroup = new McpCommandGroup(storageGroup, entryPoint);
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            mcpCommandGroup.EntryPoint = entryPoint;
             var options = new McpClientOptions();
 
             // Act
@@ -58,6 +59,79 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 
             // Assert
             Assert.NotNull(client);
+        }
+
+        [Fact]
+        public void ReadOnly_Property_DefaultsToFalse()
+        {
+            // Arrange
+            var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
+
+            // Act
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+
+            // Assert
+            Assert.False(mcpCommandGroup.ReadOnly);
+        }
+
+        [Fact]
+        public void ReadOnly_Property_CanBeSet()
+        {
+            // Arrange
+            var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+
+            // Act
+            mcpCommandGroup.ReadOnly = true;
+
+            // Assert
+            Assert.True(mcpCommandGroup.ReadOnly);
+        }
+
+        [Fact]
+        public void EntryPoint_SetToNull_UsesDefault()
+        {
+            // Arrange
+            var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var originalEntryPoint = mcpCommandGroup.EntryPoint;
+            // Act
+            mcpCommandGroup.EntryPoint = null!;
+
+            // Assert
+            Assert.Equal(originalEntryPoint, mcpCommandGroup.EntryPoint);
+            Assert.False(string.IsNullOrWhiteSpace(mcpCommandGroup.EntryPoint));
+        }
+
+        [Fact]
+        public void EntryPoint_SetToEmpty_UsesDefault()
+        {
+            // Arrange
+            var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var originalEntryPoint = mcpCommandGroup.EntryPoint;
+
+            // Act
+            mcpCommandGroup.EntryPoint = "";
+
+            // Assert
+            Assert.Equal(originalEntryPoint, mcpCommandGroup.EntryPoint);
+            Assert.False(string.IsNullOrWhiteSpace(mcpCommandGroup.EntryPoint));
+        }
+
+        [Fact]
+        public void EntryPoint_SetToValidValue_UsesProvidedValue()
+        {
+            // Arrange
+            var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
+            var mcpCommandGroup = new McpCommandGroup(storageGroup);
+            var customEntryPoint = "/custom/path/to/executable";
+
+            // Act
+            mcpCommandGroup.EntryPoint = customEntryPoint;
+
+            // Assert
+            Assert.Equal(customEntryPoint, mcpCommandGroup.EntryPoint);
         }
     }
 }

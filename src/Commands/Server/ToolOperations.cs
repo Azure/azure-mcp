@@ -33,6 +33,8 @@ public class ToolOperations
 
     public ToolsCapability ToolsCapability { get; }
 
+    public bool ReadOnly { get; set; } = false;
+
     public string? CommandGroup
     {
         get => _commandGroup;
@@ -49,12 +51,11 @@ public class ToolOperations
             }
         }
     }
-
-    private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext,
-        CancellationToken cancellationToken)
+    private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext, CancellationToken cancellationToken)
     {
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
+            .Where(tool => !ReadOnly || (tool.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         var listToolsResult = new ListToolsResult { Tools = tools };

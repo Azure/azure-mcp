@@ -33,22 +33,43 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     private readonly Dictionary<string, IMcpClientProvider> _providerMap = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, IMcpClient> _clientCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _disposed = false;
+    private bool _initialized = false;
+
+    /// <summary>
+    /// Gets or sets whether the MCP server should run in read-only mode.
+    /// </summary>
+    public bool ReadOnly { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the entry point executable path for MCP servers.
+    /// </summary>
+    public string? EntryPoint { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="McpClientService"/> class.
     /// </summary>
     /// <param name="commandFactory">The command factory used to discover command groups.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="commandFactory"/> is null.</exception>
-    public McpClientService(CommandFactory commandFactory, string entryPoint = "")
+    public McpClientService(CommandFactory commandFactory)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
+    }
 
-        var commandGroups = ListCommandGroupProviders(entryPoint);
+    private void Initialize()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        var commandGroups = ListCommandGroupProviders();
         foreach (var provider in commandGroups)
         {
             var meta = provider.CreateMetadata();
             _providerMap[meta.Id] = provider;
         }
+
+        _initialized = true;
     }
 
     /// <summary>
@@ -57,6 +78,8 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// <returns>A list of <see cref="McpServerMetadata"/> for all providers.</returns>
     public List<McpServerMetadata> ListProviderMetadata()
     {
+        Initialize();
+
         var result = new List<McpServerMetadata>();
         foreach (var provider in _providerMap.Values)
         {
@@ -73,6 +96,8 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// <exception cref="KeyNotFoundException">Thrown if no provider is found for the given name.</exception>
     public async Task<IMcpClient?> GetProviderClientAsync(string name, McpClientOptions clientOptions)
     {
+        Initialize();
+
         if (_clientCache.TryGetValue(name, out var cached))
         {
             return cached;
@@ -112,13 +137,20 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// Discovers all command group providers from the command factory.
     /// </summary>
     /// <returns>A list of <see cref="IMcpClientProvider"/>.</returns>
-    private List<IMcpClientProvider> ListCommandGroupProviders(string entryPoint = "")
+    private List<IMcpClientProvider> ListCommandGroupProviders()
     {
         var results = new List<IMcpClientProvider>();
-        foreach (var commandGroup in _commandFactory.RootGroup.SubGroup)
+
+        foreach (var group in _commandFactory.RootGroup.SubGroup)
         {
-            results.Add(new McpCommandGroup(commandGroup, entryPoint));
+            var commandGroup = new McpCommandGroup(group)
+            {
+                ReadOnly = ReadOnly,
+                EntryPoint = EntryPoint,
+            };
+            results.Add(commandGroup);
         }
+
         return results;
     }
 }

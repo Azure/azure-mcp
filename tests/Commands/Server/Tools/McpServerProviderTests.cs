@@ -51,7 +51,10 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public async Task GetProviderClientAsync_ReturnsClientForValidProvider()
         {
-            var service = new McpClientService(_commandFactory, _entryPoint);
+            var service = new McpClientService(_commandFactory)
+            {
+                EntryPoint = _entryPoint
+            };
             var firstMeta = service.ListProviderMetadata()[0];
             var options = new McpClientOptions();
             var client = await service.GetProviderClientAsync(firstMeta.Id, options);
@@ -67,6 +70,34 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             {
                 await service.GetProviderClientAsync("not-a-real-provider", options);
             });
+        }
+
+        [Fact]
+        public void EntryPoint_SetToValidValue_ReturnsSetValue()
+        {
+            var service = new McpClientService(_commandFactory);
+            var customEntryPoint = "/custom/path/to/executable";
+
+            service.EntryPoint = customEntryPoint;
+
+            Assert.Equal(customEntryPoint, service.EntryPoint);
+        }
+
+        [Fact]
+        public void ReadOnly_DefaultValue_IsFalse()
+        {
+            var service = new McpClientService(_commandFactory);
+            Assert.False(service.ReadOnly);
+        }
+
+        [Fact]
+        public void ReadOnly_SetToTrue_ReturnsTrue()
+        {
+            var service = new McpClientService(_commandFactory);
+
+            service.ReadOnly = true;
+
+            Assert.True(service.ReadOnly);
         }
     }
 }

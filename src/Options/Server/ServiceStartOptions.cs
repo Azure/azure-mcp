@@ -15,4 +15,7 @@ public class ServiceStartOptions
 
     [JsonPropertyName("service")]
     public string? Service { get; set; } = null;
+
+    [JsonPropertyName("readOnly")]
+    public bool? ReadOnly { get; set; } = null;
 }

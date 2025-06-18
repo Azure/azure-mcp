@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Core;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
 using ModelContextProtocol.Client;
@@ -9,25 +8,46 @@ using ModelContextProtocol.Client;
 /// <summary>
 /// Represents a command group that provides metadata and MCP client creation.
 /// </summary>
-public sealed class McpCommandGroup(CommandGroup commandGroup, string? entryPoint = null) : IMcpClientProvider
+public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvider
 {
-    private readonly CommandGroup _commandGroup = commandGroup;
-    private readonly string _entryPoint = string.IsNullOrWhiteSpace(entryPoint)
-        ? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
-        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.")
-        : entryPoint;
+    private readonly CommandGroup _commandGroup = commandGroup; private string _entryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
+
+    /// <summary>
+    /// Gets or sets the entry point executable path for the MCP server.
+    /// If set to null or empty, defaults to the current process executable.
+    /// </summary>
+    public string EntryPoint
+    {
+        get => _entryPoint;
+        set => _entryPoint = string.IsNullOrWhiteSpace(value)
+            ? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+                ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.")
+            : value;
+    }
+
+    /// <summary>
+    /// Gets or sets whether the MCP server should run in read-only mode.
+    /// </summary>
+    public bool ReadOnly { get; set; } = false;
 
     /// <summary>
     /// Creates an MCP client from a command group.
     /// </summary>
     public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
-        var arguments = new[] { "server", "start", "--service", _commandGroup.Name };
+        var arguments = new List<string> { "server", "start", "--service", _commandGroup.Name };
+
+        if (ReadOnly)
+        {
+            arguments.Add("--read-only");
+        }
+
         var transportOptions = new StdioClientTransportOptions
         {
             Name = _commandGroup.Name,
-            Command = _entryPoint,
-            Arguments = arguments,
+            Command = EntryPoint,
+            Arguments = arguments.ToArray(),
         };
 
         var clientTransport = new StdioClientTransport(transportOptions);

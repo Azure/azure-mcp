@@ -370,6 +370,7 @@ public static class OptionDefinitions
         public const string TransportName = "transport";
         public const string PortName = "port";
         public const string ServiceName = "service";
+        public const string ReadOnlyName = "read-only";
 
         public static readonly Option<string> Transport = new(
             $"--{TransportName}",
@@ -397,6 +398,12 @@ public static class OptionDefinitions
         {
             IsRequired = false,
         };
+
+        public static readonly Option<bool?> ReadOnly = new(
+            $"--{ReadOnlyName}",
+            () => null,
+            "Whether the MCP server should be read-only. If true, no write operations will be allowed."
+        );
     }
 
     public static class AppConfig

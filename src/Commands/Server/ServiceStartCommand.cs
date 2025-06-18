@@ -26,6 +26,8 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
 
+    private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
+
     public override string Name => "start";
     public override string Description => "Starts Azure MCP Server.";
     public override string Title => CommandTitle;
@@ -36,6 +38,7 @@ public sealed class ServiceStartCommand : BaseCommand
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
         command.AddOption(_serviceTypeOption);
+        command.AddOption(_readOnlyOption);
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -48,11 +51,16 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
             : parseResult.GetValueForOption(_serviceTypeOption);
 
+        var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
+            ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
+            : parseResult.GetValueForOption(_readOnlyOption);
+
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
             Service = service,
+            ReadOnly = readOnly,
         };
 
         using var host = CreateHost(serverOptions);
@@ -118,6 +126,8 @@ public sealed class ServiceStartCommand : BaseCommand
                 var entryAssembly = Assembly.GetEntryAssembly();
                 var assemblyName = entryAssembly?.GetName();
                 var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+
+                toolOperations.ReadOnly = options.ReadOnly ?? false;
 
                 mcpServerOptions.ServerInfo = new Implementation
                 {
