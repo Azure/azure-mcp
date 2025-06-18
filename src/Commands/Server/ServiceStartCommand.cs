@@ -164,8 +164,6 @@ public sealed class ServiceStartCommand : BaseCommand
                 {
                     Tools = toolOperations.ToolsCapability
                 };
-
-                mcpServerOptions.ProtocolVersion = "2024-11-05";
             });
         }
 
