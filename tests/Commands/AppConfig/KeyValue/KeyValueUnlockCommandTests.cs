@@ -41,8 +41,8 @@ public class KeyValueUnlockCommandTests
         // Arrange
         var command = new KeyValueUnlockCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
             "--key", "mykey"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -53,15 +53,18 @@ public class KeyValueUnlockCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).UnlockKeyValue(
-            "account1", 
-            "mykey", 
-            "sub123", 
-            null, 
-            Arg.Any<RetryPolicyOptions>(),            null);
-
+            "account1",
+            "mykey",
+            "sub123",
+            null,
+            Arg.Any<RetryPolicyOptions>(),
+            null);
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json);
-        
+        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
         Assert.NotNull(result);
         Assert.Equal("mykey", result.Key);
     }
@@ -72,8 +75,8 @@ public class KeyValueUnlockCommandTests
         // Arrange
         var command = new KeyValueUnlockCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
             "--key", "mykey",
             "--label", "prod"
         ]);
@@ -85,15 +88,18 @@ public class KeyValueUnlockCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).UnlockKeyValue(
-            "account1", 
-            "mykey", 
-            "sub123",            null, 
-            Arg.Any<RetryPolicyOptions>(), 
+            "account1",
+            "mykey",
+            "sub123",
+            null,
+            Arg.Any<RetryPolicyOptions>(),
             "prod");
-
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json);
-        
+        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
         Assert.NotNull(result);
         Assert.Equal("mykey", result.Key);
         Assert.Equal("prod", result.Label);
@@ -114,8 +120,8 @@ public class KeyValueUnlockCommandTests
 
         var command = new KeyValueUnlockCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
             "--key", "mykey"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -126,7 +132,8 @@ public class KeyValueUnlockCommandTests
         // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Failed to unlock key-value", response.Message);
-    }    [Theory]
+    }
+    [Theory]
     [InlineData("--account-name", "account1", "--key", "mykey")] // Missing subscription
     [InlineData("--subscription", "sub123", "--key", "mykey")] // Missing account-name
     [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key
@@ -149,10 +156,10 @@ public class KeyValueUnlockCommandTests
     {
         [JsonPropertyName("key")]
         public string Key { get; set; } = string.Empty;
-        
+
         [JsonPropertyName("label")]
         public string? Label { get; set; }
-        
+
         [JsonPropertyName("isLocked")]
         public bool IsLocked { get; set; }
     }

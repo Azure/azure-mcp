@@ -41,9 +41,9 @@ public class KeyValueSetCommandTests
         // Arrange
         var command = new KeyValueSetCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
-            "--key", "mykey", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "mykey",
             "--value", "myvalue"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -54,16 +54,16 @@ public class KeyValueSetCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).SetKeyValue(
-            "account1", 
-            "mykey", 
-            "myvalue", 
-            "sub123",            null, 
-            Arg.Any<RetryPolicyOptions>(), 
+            "account1",
+            "mykey",
+            "myvalue",
+            "sub123", null,
+            Arg.Any<RetryPolicyOptions>(),
             null);
 
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetResult>(json);
-        
+
         Assert.NotNull(result);
         Assert.Equal("mykey", result.Key);
         Assert.Equal("myvalue", result.Value);
@@ -75,9 +75,9 @@ public class KeyValueSetCommandTests
         // Arrange
         var command = new KeyValueSetCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
-            "--key", "mykey", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "mykey",
             "--value", "myvalue",
             "--label", "prod"
         ]);
@@ -89,21 +89,20 @@ public class KeyValueSetCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).SetKeyValue(
-            "account1", 
-            "mykey", 
-            "myvalue", 
-            "sub123", 
-            null, 
-            Arg.Any<RetryPolicyOptions>(), 
-            "prod");        var json = JsonSerializer.Serialize(response.Results);
+            "account1",
+            "mykey",
+            "myvalue", "sub123", null,
+            Arg.Any<RetryPolicyOptions>(),
+            "prod");
+
+        var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetResult>(json);
-        
+
         Assert.NotNull(result);
         Assert.Equal("mykey", result.Key);
         Assert.Equal("myvalue", result.Value);
         Assert.Equal("prod", result.Label);
     }
-
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
@@ -120,9 +119,9 @@ public class KeyValueSetCommandTests
 
         var command = new KeyValueSetCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
-            "--key", "mykey", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "mykey",
             "--value", "myvalue"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -133,7 +132,9 @@ public class KeyValueSetCommandTests
         // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Failed to set key-value", response.Message);
-    }    [Theory]
+    }
+
+    [Theory]
     [InlineData("")]
     [InlineData("--subscription sub123")]
     [InlineData("--subscription sub123 --account-name account1")]
@@ -146,9 +147,7 @@ public class KeyValueSetCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, parsedArgs);
-
-        // Assert
+        var response = await command.ExecuteAsync(context, parsedArgs);        // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
     }
@@ -157,10 +156,10 @@ public class KeyValueSetCommandTests
     {
         [JsonPropertyName("key")]
         public string Key { get; set; } = string.Empty;
-        
+
         [JsonPropertyName("value")]
         public string Value { get; set; } = string.Empty;
-        
+
         [JsonPropertyName("label")]
         public string? Label { get; set; }
     }

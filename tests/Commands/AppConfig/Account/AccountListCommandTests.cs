@@ -43,7 +43,8 @@ public class AccountListCommandTests
         {
             new() { Name = "account1", Location = "East US", Endpoint = "https://account1.azconfig.io" },
             new() { Name = "account2", Location = "West US", Endpoint = "https://account2.azconfig.io" }
-        };        _appConfigService.GetAppConfigAccounts("sub123", Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
+        };
+        _appConfigService.GetAppConfigAccounts("sub123", Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedAccounts);
 
         var command = new AccountListCommand(_logger);
@@ -51,15 +52,16 @@ public class AccountListCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
-
-        // Assert
+        var response = await command.ExecuteAsync(context, args);        // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<AccountListResult>(json);
-        
+        var result = JsonSerializer.Deserialize<AccountListResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
         Assert.NotNull(result);
         Assert.Equal(2, result.Accounts.Count);
         Assert.Equal("account1", result.Accounts[0].Name);
@@ -71,7 +73,7 @@ public class AccountListCommandTests
     {
         // Arrange
         var expectedAccounts = new List<AppConfigurationAccount>();
-        
+
         _appConfigService.GetAppConfigAccounts(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedAccounts);
 
@@ -83,7 +85,8 @@ public class AccountListCommandTests
         var response = await command.ExecuteAsync(context, args);        // Assert
         Assert.Equal(200, response.Status);
         Assert.Null(response.Results);
-    }    [Fact]
+    }
+    [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
         // Arrange
@@ -98,7 +101,8 @@ public class AccountListCommandTests
         var response = await command.ExecuteAsync(context, args);        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Service error", response.Message);
-    }    [Fact]
+    }
+    [Fact]
     public async Task ExecuteAsync_Returns400_WhenSubscriptionIsMissing()
     {
         // Arrange

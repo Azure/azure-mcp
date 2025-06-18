@@ -45,7 +45,8 @@ public class KeyValueShowCommandTests
             Value = "myvalue",
             Label = "prod",
             ContentType = "text/plain",
-            Locked = false        };
+            Locked = false
+        };
         _appConfigService.GetKeyValue(
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -57,23 +58,24 @@ public class KeyValueShowCommandTests
 
         var command = new KeyValueShowCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
-            "--key", "mykey", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "mykey",
             "--label", "prod"
         ]);
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
-
-        // Assert
+        var response = await command.ExecuteAsync(context, args);        // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueShowResult>(json);
-        
+        var result = JsonSerializer.Deserialize<KeyValueShowResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
         Assert.NotNull(result);
         Assert.Equal("mykey", result.Setting.Key);
         Assert.Equal("myvalue", result.Setting.Value);
@@ -92,7 +94,7 @@ public class KeyValueShowCommandTests
             ContentType = "text/plain",
             Locked = false
         };
-          _appConfigService.GetKeyValue(
+        _appConfigService.GetKeyValue(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -103,8 +105,8 @@ public class KeyValueShowCommandTests
 
         var command = new KeyValueShowCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
             "--key", "mykey"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -116,7 +118,6 @@ public class KeyValueShowCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).GetKeyValue("account1", "mykey", "sub123", null, Arg.Any<RetryPolicyOptions>(), null);
     }
-
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
@@ -132,8 +133,8 @@ public class KeyValueShowCommandTests
 
         var command = new KeyValueShowCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123", 
-            "--account-name", "account1", 
+            "--subscription", "sub123",
+            "--account-name", "account1",
             "--key", "mykey"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -144,7 +145,9 @@ public class KeyValueShowCommandTests
         // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Setting not found", response.Message);
-    }    [Theory]
+    }
+
+    [Theory]
     [InlineData("--account-name", "account1", "--key", "mykey")] // Missing subscription
     [InlineData("--subscription", "sub123", "--key", "mykey")] // Missing account-name  
     [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key

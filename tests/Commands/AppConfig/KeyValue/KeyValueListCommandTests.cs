@@ -44,29 +44,30 @@ public class KeyValueListCommandTests
             new() { Key = "key1", Value = "value1", Label = "prod" },
             new() { Key = "key2", Value = "value2", Label = "dev" }
         };
-          _appConfigService.ListKeyValues(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedSettings);
+        _appConfigService.ListKeyValues(
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<RetryPolicyOptions>())
+          .Returns(expectedSettings);
 
         var command = new KeyValueListCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--account-name", "account1"]);
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
-
-        // Assert
+        var response = await command.ExecuteAsync(context, args);        // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueListResult>(json);
-        
+        var result = JsonSerializer.Deserialize<KeyValueListResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
         Assert.NotNull(result);
         Assert.Equal(2, result.Settings.Count);
         Assert.Equal("key1", result.Settings[0].Key);
@@ -81,14 +82,14 @@ public class KeyValueListCommandTests
         {
             new() { Key = "key1", Value = "value1", Label = "prod" }
         };
-          _appConfigService.ListKeyValues(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedSettings);
+        _appConfigService.ListKeyValues(
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<RetryPolicyOptions>())
+          .Returns(expectedSettings);
 
         var command = new KeyValueListCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--account-name", "account1", "--key", "key1"]);
@@ -110,14 +111,14 @@ public class KeyValueListCommandTests
         {
             new() { Key = "key1", Value = "value1", Label = "prod" }
         };
-          _appConfigService.ListKeyValues(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedSettings);
+        _appConfigService.ListKeyValues(
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<string>(),
+          Arg.Any<RetryPolicyOptions>())
+          .Returns(expectedSettings);
 
         var command = new KeyValueListCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--account-name", "account1", "--label", "prod"]);
@@ -135,11 +136,11 @@ public class KeyValueListCommandTests
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
         // Arrange
-        _appConfigService.ListKeyValues(            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+        _appConfigService.ListKeyValues(Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<KeyValueSetting>>(new Exception("Service error")));
 
@@ -153,7 +154,8 @@ public class KeyValueListCommandTests
         // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Service error", response.Message);
-    }    [Theory]
+    }
+    [Theory]
     [InlineData("--account-name", "account1")] // Missing subscription
     [InlineData("--subscription", "sub123")] // Missing account-name
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
