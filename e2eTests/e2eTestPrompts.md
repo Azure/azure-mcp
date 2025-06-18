@@ -1,4 +1,4 @@
-This file contains prompts used for end-to-end testing to ensure each tool is called properly. This table is organized by alphabetical order of the tool names.
+This file contains prompts used for end-to-end testing to ensure each tool is invoked properly by LLM. This table is organized by alphabetical order of the tool names.
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
