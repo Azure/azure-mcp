@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Commands.Server.Tools;
@@ -30,6 +31,7 @@ public class McpServerMetadata
 public sealed class McpClientService : IMcpClientService, IDisposable
 {
     public readonly CommandFactory _commandFactory;
+    public readonly ILogger<McpClientService> _logger;
     private readonly Dictionary<string, IMcpClientProvider> _providerMap = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, IMcpClient> _clientCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _disposed = false;
@@ -50,9 +52,10 @@ public sealed class McpClientService : IMcpClientService, IDisposable
     /// </summary>
     /// <param name="commandFactory">The command factory used to discover command groups.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="commandFactory"/> is null.</exception>
-    public McpClientService(CommandFactory commandFactory)
+    public McpClientService(CommandFactory commandFactory, ILogger<McpClientService> logger)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     private void Initialize()
@@ -105,9 +108,18 @@ public sealed class McpClientService : IMcpClientService, IDisposable
 
         if (_providerMap.TryGetValue(name, out var provider))
         {
-            var client = await provider.CreateClientAsync(clientOptions);
-            _clientCache[name] = client;
-            return client;
+            try
+            {
+                var client = await provider.CreateClientAsync(clientOptions);
+                _clientCache[name] = client;
+
+                return client;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Failed to create MCP client for provider '{Name}'.", name);
+                throw;
+            }
         }
 
         throw new KeyNotFoundException($"No provider found for name '{name}'.");

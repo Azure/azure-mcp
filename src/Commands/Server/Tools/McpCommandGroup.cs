@@ -3,6 +3,7 @@
 
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Models.Option;
 using ModelContextProtocol.Client;
 
 /// <summary>
@@ -10,19 +11,18 @@ using ModelContextProtocol.Client;
 /// </summary>
 public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvider
 {
-    private readonly CommandGroup _commandGroup = commandGroup; private string _entryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
-        ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.");
+    private readonly CommandGroup _commandGroup = commandGroup;
+    private string? _entryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
 
     /// <summary>
     /// Gets or sets the entry point executable path for the MCP server.
     /// If set to null or empty, defaults to the current process executable.
     /// </summary>
-    public string EntryPoint
+    public string? EntryPoint
     {
         get => _entryPoint;
         set => _entryPoint = string.IsNullOrWhiteSpace(value)
             ? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
-                ?? throw new InvalidOperationException("Could not determine the entry point executable for the current process.")
             : value;
     }
 
@@ -36,11 +36,16 @@ public sealed class McpCommandGroup(CommandGroup commandGroup) : IMcpClientProvi
     /// </summary>
     public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
+        if (string.IsNullOrWhiteSpace(EntryPoint))
+        {
+            throw new InvalidOperationException("EntryPoint must be set before creating the MCP client.");
+        }
+
         var arguments = new List<string> { "server", "start", "--service", _commandGroup.Name };
 
         if (ReadOnly)
         {
-            arguments.Add("--read-only");
+            arguments.Add($"--${OptionDefinitions.Service.ReadOnlyName}");
         }
 
         var transportOptions = new StdioClientTransportOptions

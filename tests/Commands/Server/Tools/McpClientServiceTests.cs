@@ -14,12 +14,14 @@ namespace AzureMcp.Tests.Commands.Server.Tools
     {
         private readonly CommandFactory _commandFactory;
         private readonly string _entryPoint;
+        private readonly ILogger<McpClientService> _mcpClientServiceLogger;
 
         public McpClientServiceTests()
         {
             var services = new ServiceCollection().AddLogging().BuildServiceProvider();
-            var logger = services.GetRequiredService<ILogger<CommandFactory>>();
-            _commandFactory = new CommandFactory(services, logger);
+            var commandFactoryLogger = services.GetRequiredService<ILogger<CommandFactory>>();
+            _commandFactory = new CommandFactory(services, commandFactoryLogger);
+            _mcpClientServiceLogger = services.GetRequiredService<ILogger<McpClientService>>();
 
             var testBinDir = AppContext.BaseDirectory;
             var exeName = OperatingSystem.IsWindows() ? "azmcp.exe" : "azmcp";
@@ -29,7 +31,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public void Constructor_PopulatesProviders()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
             var metadata = service.ListProviderMetadata();
             Assert.NotEmpty(metadata);
             // Should match the number of subgroups in the root group
@@ -39,7 +41,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public void ListProviderMetadata_ReturnsAllMetadata()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
             var metadata = service.ListProviderMetadata();
             Assert.All(metadata, m =>
             {
@@ -51,7 +53,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public async Task GetProviderClientAsync_ReturnsClientForValidProvider()
         {
-            var service = new McpClientService(_commandFactory)
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger)
             {
                 EntryPoint = _entryPoint
             };
@@ -64,7 +66,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public async Task GetProviderClientAsync_ThrowsForInvalidProvider()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
             var options = new McpClientOptions();
             await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
             {
@@ -75,7 +77,7 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public void EntryPoint_SetToValidValue_ReturnsSetValue()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
             var customEntryPoint = "/custom/path/to/executable";
 
             service.EntryPoint = customEntryPoint;
@@ -86,14 +88,14 @@ namespace AzureMcp.Tests.Commands.Server.Tools
         [Fact]
         public void ReadOnly_DefaultValue_IsFalse()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
             Assert.False(service.ReadOnly);
         }
 
         [Fact]
         public void ReadOnly_SetToTrue_ReturnsTrue()
         {
-            var service = new McpClientService(_commandFactory);
+            var service = new McpClientService(_commandFactory, _mcpClientServiceLogger);
 
             service.ReadOnly = true;
 
