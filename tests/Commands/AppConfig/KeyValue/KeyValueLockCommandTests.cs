@@ -43,7 +43,7 @@ public class KeyValueLockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -54,7 +54,7 @@ public class KeyValueLockCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).LockKeyValue(
             "account1",
-            "mykey",
+            "my-key",
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(), null);
@@ -63,7 +63,7 @@ public class KeyValueLockCommandTests
         var result = JsonSerializer.Deserialize<KeyValueLockResult>(json);
 
         Assert.NotNull(result);
-        Assert.Equal("mykey", result.Key);
+        Assert.Equal("my-key", result.Key);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class KeyValueLockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey",
+            "--key", "my-key",
             "--label", "prod"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -86,7 +86,7 @@ public class KeyValueLockCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).LockKeyValue(
             "account1",
-            "mykey",
+            "my-key",
             "sub123", null,
             Arg.Any<RetryPolicyOptions>(),
             "prod");
@@ -95,7 +95,7 @@ public class KeyValueLockCommandTests
         var result = JsonSerializer.Deserialize<KeyValueLockResult>(json);
 
         Assert.NotNull(result);
-        Assert.Equal("mykey", result.Key);
+        Assert.Equal("my-key", result.Key);
         Assert.Equal("prod", result.Label);
     }
 
@@ -116,7 +116,7 @@ public class KeyValueLockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 

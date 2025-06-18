@@ -43,7 +43,7 @@ public class KeyValueUnlockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -54,7 +54,7 @@ public class KeyValueUnlockCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).UnlockKeyValue(
             "account1",
-            "mykey",
+            "my-key",
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
@@ -66,7 +66,7 @@ public class KeyValueUnlockCommandTests
         });
 
         Assert.NotNull(result);
-        Assert.Equal("mykey", result.Key);
+        Assert.Equal("my-key", result.Key);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class KeyValueUnlockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey",
+            "--key", "my-key",
             "--label", "prod"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -89,7 +89,7 @@ public class KeyValueUnlockCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).UnlockKeyValue(
             "account1",
-            "mykey",
+            "my-key",
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
@@ -101,7 +101,7 @@ public class KeyValueUnlockCommandTests
         });
 
         Assert.NotNull(result);
-        Assert.Equal("mykey", result.Key);
+        Assert.Equal("my-key", result.Key);
         Assert.Equal("prod", result.Label);
     }
 
@@ -122,7 +122,7 @@ public class KeyValueUnlockCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -134,8 +134,8 @@ public class KeyValueUnlockCommandTests
         Assert.Contains("Failed to unlock key-value", response.Message);
     }
     [Theory]
-    [InlineData("--account-name", "account1", "--key", "mykey")] // Missing subscription
-    [InlineData("--subscription", "sub123", "--key", "mykey")] // Missing account-name
+    [InlineData("--account-name", "account1", "--key", "my-key")] // Missing subscription
+    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name
     [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {

@@ -41,8 +41,8 @@ public class KeyValueShowCommandTests
         // Arrange
         var expectedSetting = new KeyValueSetting
         {
-            Key = "mykey",
-            Value = "myvalue",
+            Key = "my-key",
+            Value = "my-value",
             Label = "prod",
             ContentType = "text/plain",
             Locked = false
@@ -60,7 +60,7 @@ public class KeyValueShowCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey",
+            "--key", "my-key",
             "--label", "prod"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -77,8 +77,8 @@ public class KeyValueShowCommandTests
         });
 
         Assert.NotNull(result);
-        Assert.Equal("mykey", result.Setting.Key);
-        Assert.Equal("myvalue", result.Setting.Value);
+        Assert.Equal("my-key", result.Setting.Key);
+        Assert.Equal("my-value", result.Setting.Value);
         Assert.Equal("prod", result.Setting.Label);
     }
 
@@ -88,8 +88,8 @@ public class KeyValueShowCommandTests
         // Arrange
         var expectedSetting = new KeyValueSetting
         {
-            Key = "mykey",
-            Value = "myvalue",
+            Key = "my-key",
+            Value = "my-value",
             Label = "",
             ContentType = "text/plain",
             Locked = false
@@ -107,7 +107,7 @@ public class KeyValueShowCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -116,7 +116,7 @@ public class KeyValueShowCommandTests
 
         // Assert
         Assert.Equal(200, response.Status);
-        await _appConfigService.Received(1).GetKeyValue("account1", "mykey", "sub123", null, Arg.Any<RetryPolicyOptions>(), null);
+        await _appConfigService.Received(1).GetKeyValue("account1", "my-key", "sub123", null, Arg.Any<RetryPolicyOptions>(), null);
     }
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
@@ -135,7 +135,7 @@ public class KeyValueShowCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
-            "--key", "mykey"
+            "--key", "my-key"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -148,8 +148,8 @@ public class KeyValueShowCommandTests
     }
 
     [Theory]
-    [InlineData("--account-name", "account1", "--key", "mykey")] // Missing subscription
-    [InlineData("--subscription", "sub123", "--key", "mykey")] // Missing account-name  
+    [InlineData("--account-name", "account1", "--key", "my-key")] // Missing subscription
+    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name  
     [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {
