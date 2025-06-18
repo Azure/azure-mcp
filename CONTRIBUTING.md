@@ -70,14 +70,24 @@ The project is organized as follows:
 
 ## Testing
 
-All commands must have corresponding tests in the `/tests` folder. To run tests:
+Command authors must provide both of the following test types:
+- End-to-end test prompts
+- Unit tests
+
+### End-to-end test
+
+End-to-end tests are currently performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to `/e2eTests/e2eTestPrompts.md`.
+
+### Unit tests
+
+Unit tests live under the `/tests` folder. To run tests:
 
 ```pwsh
 # Run tests with coverage
 ./eng/scripts/Test-Code.ps1
 ```
 
-Test requirements:
+Unit test requirements:
 - Each command should have unit tests
 - Tests should cover success and error scenarios
 - Mock external service calls
