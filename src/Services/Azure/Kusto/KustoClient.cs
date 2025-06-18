@@ -11,9 +11,9 @@ public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredenti
     private readonly string _userAgent = userAgent;
     private static readonly string s_application = "AzureMCP";
     private static readonly string s_clientRequestIdPrefix = "AzMcp";
-    private static readonly string s_default_scope = "https://kusto.dev.kusto.windows.net/.default";
+    private static readonly string s_default_scope = "https://kusto.kusto.windows.net/.default";
 
-    public Task<KustoResult> ExecuteQueryAsync(string database, string text, CancellationToken cancellationToken)
+    public Task<KustoResult> ExecuteQueryCommandAsync(string database, string text, CancellationToken cancellationToken)
         => ExecuteCommandAsync("/v1/rest/query", database, text, cancellationToken);
 
     public Task<KustoResult> ExecuteControlCommandAsync(string database, string text, CancellationToken cancellationToken)
@@ -39,7 +39,6 @@ public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredenti
         var accessToken = await _tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken);
         httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", accessToken.Token);
         httpRequest.Headers.Add("User-Agent", _userAgent);
-
         httpRequest.Headers.Add("x-ms-client-request-id", clientRequestId);
         httpRequest.Headers.Add("x-ms-app", s_application);
         httpRequest.Headers.Add("x-ms-client-version", "Kusto.Client.Light");
@@ -52,7 +51,7 @@ public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredenti
         };
         var properties = new JsonObject
         {
-            { "ClientRequestId", clientRequestId } // TODO: Also add this as a header?
+            { "ClientRequestId", clientRequestId }
         };
         body.Add("properties", properties);
         var bodyStr = body.ToJsonString();

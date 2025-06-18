@@ -165,7 +165,7 @@ public sealed class KustoService(
         ValidateRequiredParameters(clusterUri, databaseName, tableName);
 
         var kustoClient = await GetOrCreateKustoClient(clusterUri, tenant);
-        var kustoResult = await kustoClient.ExecuteQueryAsync(
+        var kustoResult = await kustoClient.ExecuteQueryCommandAsync(
             databaseName,
             $".show table {tableName} cslschema", CancellationToken.None);
         var result = KustoResultToStringList(kustoResult);
@@ -204,7 +204,7 @@ public sealed class KustoService(
 
         var cslQueryProvider = await GetOrCreateCslQueryProvider(clusterUri, tenant);
         var result = new List<JsonElement>();
-        var kustoResult = await cslQueryProvider.ExecuteQueryAsync(databaseName, query, CancellationToken.None);
+        var kustoResult = await cslQueryProvider.ExecuteQueryCommandAsync(databaseName, query, CancellationToken.None);
         if (kustoResult.JsonDocument is null)
         {
             return result;
