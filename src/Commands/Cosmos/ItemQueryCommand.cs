@@ -74,7 +74,7 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
             _logger.LogError(ex, "An exception occurred querying container. Account: {Account}, Database: {Database},"
                 + " Container: {Container}", options.Account, options.Database, options.Container);
 
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

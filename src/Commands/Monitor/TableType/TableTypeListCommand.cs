@@ -44,6 +44,8 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var monitorService = context.GetService<IMonitorService>();
             var tableTypes = await monitorService.ListTableTypes(
                 options.Subscription!,
@@ -62,7 +64,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing table types.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

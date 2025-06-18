@@ -37,6 +37,8 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var accounts = await storageService.GetStorageAccounts(
                 options.Subscription!,
@@ -50,7 +52,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing storage accounts");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

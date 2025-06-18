@@ -1,15 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Command;
 using AzureMcp.Models.Option;
 using AzureMcp.Options.AzureIsv.Datadog;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Commands.AzureIsv.Datadog.MonitoredResources;
 
@@ -51,6 +47,13 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         var options = BindOptions(parseResult);
         try
         {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(
                 options.ResourceGroup!,
@@ -64,9 +67,9 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while executing the command.");
-            context.Response.Status = 500;
-            context.Response.Message = ex.Message;
+            HandleException(context, ex);
         }
+
         return context.Response;
     }
 

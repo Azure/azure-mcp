@@ -50,6 +50,8 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             List<JsonElement> results = [];
             var kusto = context.GetService<IKustoService>();
 
@@ -83,7 +85,7 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
         {
             _logger.LogError(ex, "An exception occurred querying Kusto. Cluster: {Cluster}, Database: {Database},"
             + " Query: {Query}", options.ClusterUri ?? options.ClusterName, options.Database, options.Query);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

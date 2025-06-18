@@ -38,6 +38,8 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var resourceGroupService = context.GetService<IResourceGroupService>();
             var groups = await resourceGroupService.GetResourceGroups(
                 options.Subscription!,
@@ -51,7 +53,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing resource groups.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

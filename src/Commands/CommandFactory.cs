@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
@@ -9,6 +10,7 @@ using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -28,6 +30,7 @@ public class CommandFactory
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
+    private readonly ITelemetryService _telemetryService;
 
     // Add this new class inside CommandFactory
     private class StringConverter : JsonConverter<string>
@@ -44,13 +47,14 @@ public class CommandFactory
         }
     }
 
-    public CommandFactory(IServiceProvider serviceProvider, ILogger<CommandFactory> logger)
+    public CommandFactory(IServiceProvider serviceProvider, ITelemetryService telemetryService, ILogger<CommandFactory> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
         _rootCommand = CreateRootCommand();
         _commandMap = CreateCommmandDictionary(_rootGroup, string.Empty);
+        _telemetryService = telemetryService;
         _srcGenWithOptions = new ModelsJsonContext(new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -492,7 +496,9 @@ public class CommandFactory
         {
             _logger.LogTrace("Executing '{Command}'.", command.Name);
 
-            var cmdContext = new CommandContext(_serviceProvider);
+            using var activity = _telemetryService.StartActivity("CommandExecuted");
+
+            var cmdContext = new CommandContext(_serviceProvider, activity);
             var startTime = DateTime.UtcNow;
             try
             {
@@ -513,6 +519,7 @@ public class CommandFactory
             {
                 _logger.LogError("An exception occurred while executing '{Command}'. Exception: {Exception}",
                     command.Name, ex);
+                activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
             }
             finally
             {

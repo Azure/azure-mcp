@@ -3,9 +3,11 @@
 
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
+using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server.Tools
@@ -17,9 +19,13 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 
         public McpClientServiceTests()
         {
-            var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+            var telemetry = Substitute.For<ITelemetryService>();
+            var services = new ServiceCollection()
+                .AddSingleton<ITelemetryService>(telemetry)
+                .AddLogging().BuildServiceProvider();
             var logger = services.GetRequiredService<ILogger<CommandFactory>>();
-            _commandFactory = new CommandFactory(services, logger);
+            _commandFactory = new CommandFactory(services, telemetry, logger);
+
 
             var testBinDir = AppContext.BaseDirectory;
             var exeName = OperatingSystem.IsWindows() ? "azmcp.exe" : "azmcp";

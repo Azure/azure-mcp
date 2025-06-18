@@ -57,6 +57,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var keyVaultService = context.GetService<IKeyVaultService>();
             var keys = await keyVaultService.ListKeys(
                 options.VaultName!,
@@ -74,7 +76,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing keys from vault {VaultName}.", options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
