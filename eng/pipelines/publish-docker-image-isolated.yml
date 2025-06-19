@@ -1,0 +1,125 @@
+# A "ManifestDeployment" is a secondary deployment that can be used to map multiple docker tags to a single platform-sensitive one. It waits until
+# all previous tag deployments are created, then triggers a manifest upload that bundles all tags configured in DockerDeployments. To exclude an item from the
+# manifest upload, set deployment config property excludeFromManifest to true.
+# - name: test_proxy_manifest
+#   dockerRepo: 'engsys/testproxy'
+#   stableTags:
+#   - 'latest'
+parameters:
+  - name: DockerDeployments
+    type: object
+    default: []
+  - name: ManifestDeployment
+    type: object
+    default: []
+  - name: ImageTag
+    type: string
+  - name: ContainerRegistry
+    type: string
+    default: 'azuresdkimages'
+  - name: Publish
+    type: boolean
+    default: true
+
+stages:
+  - stage:
+    displayName: Build/Publish Containers
+    variables:
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - template: /eng/pipelines/templates/variables/image.yml
+    jobs:
+      - ${{ each config in parameters.DockerDeployments }}:
+        - job: container_build_${{ config.name }}
+          displayName: Build ${{ config.name }} Image
+          pool:
+            name: $(LINUXPOOL)
+            image: $(LINUXVMIMAGE)
+            os: linux
+
+          ${{ if parameters.Publish }}:
+            templateContext:
+              outputs:
+                - output: containerImage
+                  displayName: Push ${{ config.name }}
+                  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+                  image: image:tag
+                  remoteImage:
+                  - ${{ parameters.ContainerRegistry }}.azurecr.io/${{ config.dockerRepo }}:${{ parameters.ImageTag }}
+                  - ${{ if config.stableTags }}:
+                    - ${{ each stableTag in config.stableTags }}:
+                      - ${{ parameters.ContainerRegistry }}.azurecr.io/${{ config.dockerRepo }}:${{ stableTag }}
+
+          steps:
+            - task: AzureCLI@2
+              displayName: Login to $(containerRegistry)
+              inputs:
+                azureSubscription: "Azure SDK Engineering System"
+                scriptType: pscore
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az acr login --name $(containerRegistry)
+
+            - ${{ if config.prepareScript }}:
+              - pwsh: |
+                  ./${{ config.prepareScript }}
+                displayName: "Run prep script"
+
+            - task: 1ES.BuildContainerImage@1
+              displayName: Build ${{ config.name }}:${{ parameters.ImageTag }}
+              inputs:
+                image: image:tag
+                path: ${{ config.configPath }}
+                enableNetwork: true
+                useBuildKit: true
+
+      - ${{ if and(parameters.ManifestDeployment, parameters.Publish) }}:
+        - ${{ each deployment in parameters.ManifestDeployment }}:
+          - job: container_build_${{ deployment.name }}
+            displayName: Build ${{ deployment.name }} Manifest
+            ${{ if gt(length(parameters.DockerDeployments), 0) }}:
+              dependsOn:
+                - ${{ each config in parameters.DockerDeployments }}:
+                  - container_build_${{ config.name }}
+            pool:
+              name: $(LINUXPOOL)
+              image: $(LINUXVMIMAGE)
+              os: linux
+
+            steps:
+              - pwsh: |
+                  $configurations = '${{ convertToJson(parameters.DockerDeployments) }}' -replace '\\', '/'
+                  $assembledDependentTags = $(Build.SourcesDirectory)/eng/pipelines/templates/scripts/get-docker-manifest-input.ps1 `
+                    -DockerDeploymentJson $configurations `
+                    -ContainerRegistry "${{ parameters.ContainerRegistry }}" `
+                    -ImageTag "${{ parameters.ImageTag }}" `
+
+                  Write-Host "##vso[task.setvariable variable=ManifestVariable]$assembledDependentTags"
+                displayName: Generate Manifest Variable
+
+              - pwsh: |
+                  docker manifest create ${{ parameters.ContainerRegistry }}.azurecr.io/${{ deployment.dockerRepo }}:${{ parameters.ImageTag }} $(ManifestVariable)
+                displayName: Generate Manifest
+
+              - pwsh: |
+                  docker manifest push ${{ parameters.ContainerRegistry }}.azurecr.io/${{ deployment.dockerRepo }}:${{ parameters.ImageTag }}
+                displayName: Upload Manifest
+
+              - ${{ if deployment.stableTags }}:
+                - ${{ each stableTag in deployment.stableTags }}:
+                  - pwsh: |
+                      $configurations = '${{ convertToJson(parameters.DockerDeployments) }}' -replace '\\', '/'
+                      $assembledDependentTags = $(Build.SourcesDirectory)/eng/pipelines/templates/scripts/get-docker-manifest-input.ps1 `
+                        -DockerDeploymentJson $configurations `
+                        -ContainerRegistry "${{ parameters.ContainerRegistry }}" `
+                        -ImageTag "${{ stableTag }}" `
+
+                      Write-Host "##vso[task.setvariable variable=ManifestVariable]$assembledDependentTags"
+                    displayName: Generate Manifest Variable
+
+                  - pwsh: |
+                      docker manifest create ${{ parameters.ContainerRegistry }}.azurecr.io/${{ deployment.dockerRepo }}:${{ stableTag }} $(ManifestVariable)
+                    displayName: Generate Manifest
+
+                  - pwsh: |
+                      docker manifest push ${{ parameters.ContainerRegistry }}.azurecr.io/${{ deployment.dockerRepo }}:${{ stableTag }}
+                    displayName: Upload Manifest
