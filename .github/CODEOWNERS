@@ -29,12 +29,12 @@
 # Services
 ##################
 # PRLabel: %area-AppConfig
-/src/Options/AppConfig/                @JonathanCrd @conniey @Azure/azure-mcp
-/src/Commands/AppConfig/               @JonathanCrd @conniey @Azure/azure-mcp
-/src/Services/Azure/AppConfig/         @JonathanCrd @conniey @Azure/azure-mcp
+/src/Options/AppConfig/                @JonathanCrd @conniey @mrm9084 @Azure/azure-mcp
+/src/Commands/AppConfig/               @JonathanCrd @conniey @mrm9084 @Azure/azure-mcp
+/src/Services/Azure/AppConfig/         @JonathanCrd @conniey @mrm9084 @Azure/azure-mcp
 
 # ServiceLabel: %area-AppConfig
-# ServiceOwners:                       @shenmuxiaosen @avanigupta
+# ServiceOwners:                       @shenmuxiaosen @avanigupta @mrm9084
 
 
 # PRLabel: %area-BestPractices
