@@ -463,6 +463,37 @@ public static class OptionDefinitions
                 IsRequired = false
             };
         }
+
+        public static class FeatureFlag
+        {
+            public const string FeatureFlagNameString = "feature-flag-name";
+            public const string EnabledName = "enabled";
+            public const string DescriptionName = "description";
+
+            public static readonly Option<string> FeatureFlagName = new(
+                $"--{FeatureFlagNameString}",
+                "The name of the feature flag."
+            )
+            {
+                IsRequired = true
+            };
+
+            public static readonly Option<bool> Enabled = new(
+                $"--{EnabledName}",
+                "Whether the feature flag is enabled (true) or disabled (false)."
+            )
+            {
+                IsRequired = false
+            };
+
+            public static readonly Option<string> Description = new(
+                $"--{DescriptionName}",
+                "A description of the feature flag."
+            )
+            {
+                IsRequired = false
+            };
+        }
     }
 
     public static class Kusto

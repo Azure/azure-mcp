@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.AppConfig.FeatureFlag;
 using AzureMcp.Commands.AppConfig.KeyValue;
 
 namespace AzureMcp.Commands.AppConfig;
 
+[JsonSerializable(typeof(FeatureFlag.FeatureFlagPutCommandResult))]
 [JsonSerializable(typeof(KeyValueUnlockCommand.KeyValueUnlockResult))]
 [JsonSerializable(typeof(KeyValueShowCommand.KeyValueShowResult))]
 [JsonSerializable(typeof(KeyValueSetCommand.KeyValueSetCommandResult))]

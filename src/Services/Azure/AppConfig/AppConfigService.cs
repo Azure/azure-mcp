@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using Azure.Core;
 using Azure.Data.AppConfiguration;
 using Azure.ResourceManager.AppConfiguration;
@@ -104,7 +105,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                 Value = setting.Value,
                 Label = setting.Label ?? string.Empty,
                 ContentType = setting.ContentType ?? string.Empty,
-                ETag = new ETag { Value = setting.ETag.ToString() },
+                ETag = new Models.ETag { Value = setting.ETag.ToString() },
                 LastModified = setting.LastModified,
                 Locked = setting.IsReadOnly
             });
@@ -126,7 +127,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             Value = setting.Value,
             Label = setting.Label ?? string.Empty,
             ContentType = setting.ContentType ?? string.Empty,
-            ETag = new ETag { Value = setting.ETag.ToString() },
+            ETag = new Models.ETag { Value = setting.ETag.ToString() },
             LastModified = setting.LastModified,
             Locked = setting.IsReadOnly
         };
@@ -154,6 +155,54 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         ValidateRequiredParameters(accountName, key, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
+    }
+    
+    public async Task SetFeatureFlag(string accountName, string featureFlagName, bool enabled, string? description, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    {
+        ValidateRequiredParameters(accountName, featureFlagName, subscriptionId);
+        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+        
+        FeatureFlagConfigurationSetting featureFlagSetting;
+        
+        try
+        {
+            // Try to get existing feature flag to preserve filters, variants, and telemetry
+            var existingResponse = await client.GetConfigurationSettingAsync(
+                FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName, 
+                label, 
+                cancellationToken: default);
+            
+            if (existingResponse.Value is FeatureFlagConfigurationSetting existingFeatureFlag)
+            {
+                // Preserve existing configuration and only update the specified properties
+                featureFlagSetting = existingFeatureFlag;
+                featureFlagSetting.IsEnabled = enabled;
+                
+                // Only update description if provided (to avoid overwriting with null)
+                if (description != null)
+                {
+                    featureFlagSetting.Description = description;
+                }
+            }
+            else
+            {
+                // Existing setting is not a feature flag, create new one
+                featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled, label)
+                {
+                    Description = description
+                };
+            }
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            // Feature flag doesn't exist, create a new one
+            featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled, label)
+            {
+                Description = description
+            };
+        }
+        
+        await client.SetConfigurationSettingAsync(featureFlagSetting, cancellationToken: default);
     }
 
     private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)

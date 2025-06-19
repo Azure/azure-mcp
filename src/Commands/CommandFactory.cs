@@ -285,6 +285,9 @@ public class CommandFactory
         var keyValue = new CommandGroup("kv", "App Configuration key-value setting operations - Commands for managing complete configuration settings including values, labels, and metadata");
         appConfig.AddSubGroup(keyValue);
 
+        var featureFlag = new CommandGroup("ff", "App Configuration feature flag operations - Commands for managing feature flags");
+        appConfig.AddSubGroup(featureFlag);
+
         accounts.AddCommand("list", new AppConfig.Account.AccountListCommand(GetLogger<AppConfig.Account.AccountListCommand>()));
         keyValue.AddCommand("list", new AppConfig.KeyValue.KeyValueListCommand(GetLogger<AppConfig.KeyValue.KeyValueListCommand>()));
         keyValue.AddCommand("lock", new AppConfig.KeyValue.KeyValueLockCommand(GetLogger<AppConfig.KeyValue.KeyValueLockCommand>()));
@@ -292,6 +295,7 @@ public class CommandFactory
         keyValue.AddCommand("set", new AppConfig.KeyValue.KeyValueSetCommand(GetLogger<AppConfig.KeyValue.KeyValueSetCommand>()));
         keyValue.AddCommand("show", new AppConfig.KeyValue.KeyValueShowCommand(GetLogger<AppConfig.KeyValue.KeyValueShowCommand>()));
         keyValue.AddCommand("delete", new AppConfig.KeyValue.KeyValueDeleteCommand(GetLogger<AppConfig.KeyValue.KeyValueDeleteCommand>()));
+        featureFlag.AddCommand("put", new AppConfig.FeatureFlag.FeatureFlagPutCommand(GetLogger<AppConfig.FeatureFlag.FeatureFlagPutCommand>()));
     }
 
     private void RegisterSearchCommands()
