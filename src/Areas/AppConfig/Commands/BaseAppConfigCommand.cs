@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.AppConfig.Commands;
 

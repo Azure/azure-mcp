@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Postgres.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Postgres.Commands;

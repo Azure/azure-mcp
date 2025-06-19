@@ -4,7 +4,6 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;

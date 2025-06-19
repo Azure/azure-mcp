@@ -4,7 +4,7 @@
 using Azure.Core;
 using Azure.ResourceManager.Datadog;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.AzureIsv.Datadog.Services;
 

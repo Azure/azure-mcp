@@ -5,7 +5,7 @@ using AzureMcp.Areas.Group.Options;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using AzureMcp.Models.ResourceGroup;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.ResourceGroup;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Group.Commands;

@@ -3,6 +3,6 @@
 
 using AzureMcp.Options;
 
-namespace AzureMcp.Options.Subscription;
+namespace AzureMcp.Areas.Subscription.Options;
 
 public class BaseSubscriptionOptions : GlobalOptions;

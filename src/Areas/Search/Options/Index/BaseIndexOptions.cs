@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Search.Options;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Search.Options.Index;
 

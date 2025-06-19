@@ -5,7 +5,6 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Areas.ServiceBus.Options;
 using AzureMcp.Services.Azure.Authentication;
-using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Xunit;

@@ -10,7 +10,9 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Areas.Storage.Services;
 

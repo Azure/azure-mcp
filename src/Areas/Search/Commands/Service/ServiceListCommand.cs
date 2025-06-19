@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Search;
 using AzureMcp.Areas.Search.Options.Service;
+using AzureMcp.Areas.Search.Services;
 using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 

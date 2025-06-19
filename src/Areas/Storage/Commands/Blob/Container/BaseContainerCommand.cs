@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Storage.Commands.Blob.Container;
 

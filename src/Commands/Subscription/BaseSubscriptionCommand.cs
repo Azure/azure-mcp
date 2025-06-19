@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands;
-using AzureMcp.Options.Subscription;
+using AzureMcp.Areas.Subscription.Options;
 
 namespace AzureMcp.Commands.Subscription;
 

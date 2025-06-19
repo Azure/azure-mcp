@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Kusto.Commands;
 

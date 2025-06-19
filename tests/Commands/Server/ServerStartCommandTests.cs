@@ -5,7 +5,6 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Areas.Server.Options;
-using AzureMcp.Models.Option;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server;

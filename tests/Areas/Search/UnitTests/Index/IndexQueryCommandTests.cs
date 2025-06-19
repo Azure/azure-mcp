@@ -4,8 +4,8 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Areas.Search;
 using AzureMcp.Areas.Search.Commands.Index;
+using AzureMcp.Areas.Search.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;

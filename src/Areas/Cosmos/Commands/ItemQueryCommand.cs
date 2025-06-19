@@ -5,7 +5,6 @@ using System.Text.Json.Nodes;
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Cosmos.Commands;

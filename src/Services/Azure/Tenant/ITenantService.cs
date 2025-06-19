@@ -3,7 +3,7 @@
 
 using Azure.ResourceManager.Resources;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Services.Azure.Tenant;
 
 public interface ITenantService
 {

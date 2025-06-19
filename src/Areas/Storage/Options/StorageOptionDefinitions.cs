@@ -1,4 +1,7 @@
-﻿namespace AzureMcp.Areas.Storage.Options;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Areas.Storage.Options;
 
 public static class StorageOptionDefinitions
 {

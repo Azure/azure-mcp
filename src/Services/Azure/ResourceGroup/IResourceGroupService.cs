@@ -5,7 +5,7 @@ using Azure.ResourceManager.Resources;
 using AzureMcp.Models.ResourceGroup;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Services.Azure.ResourceGroup;
 
 public interface IResourceGroupService
 {

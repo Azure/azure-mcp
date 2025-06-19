@@ -6,7 +6,6 @@ using AzureMcp.Areas.KeyVault.Options.Secret;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.KeyVault.Commands.Secret;

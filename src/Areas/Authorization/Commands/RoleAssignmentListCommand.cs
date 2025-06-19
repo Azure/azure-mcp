@@ -6,7 +6,6 @@ using AzureMcp.Areas.Authorization.Options;
 using AzureMcp.Areas.Authorization.Services;
 using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Authorization.Commands;

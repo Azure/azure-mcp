@@ -1,17 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using AzureMcp.Areas.AzureIsv.Datadog.Options;
 using AzureMcp.Areas.AzureIsv.Datadog.Services;
-using AzureMcp.Areas.AzureIsv.Options.Datadog;
 using AzureMcp.Commands.AzureIsv.Datadog;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Command;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Server;
 
 namespace AzureMcp.Areas.AzureIsv.Datadog.Commands;
 

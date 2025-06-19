@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas;
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Commands.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

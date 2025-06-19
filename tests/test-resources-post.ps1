@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 #Requires -Version 7
 
 param(
@@ -44,7 +47,7 @@ $testSettings = [ordered]@{
 Write-Host "Creating test settings file at $testSettingsPath`:`n$testSettings"
 $testSettings | Set-Content -Path $testSettingsPath -Force -NoNewLine
 
-$servicePostScripts = Get-ChildItem -Path "$PSScriptRoot/services" -Filter "*-post.ps1" -Recurse -File
+$servicePostScripts = Get-ChildItem -Path "$PSScriptRoot/Areas" -Filter "*-post.ps1" -Recurse -File
 foreach ($script in $servicePostScripts) {
     Write-Host "Running post script: $($script.FullName)"
     & $script.FullName -ResourceGroupName $ResourceGroupName -BaseName $BaseName

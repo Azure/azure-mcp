@@ -5,7 +5,6 @@ using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
 using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;

@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.Resources;
+using AzureMcp.Areas.Subscription.Options;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Subscription;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Subscription;
+namespace AzureMcp.Areas.Subscription.Commands;
 
 public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> logger) : GlobalCommand<SubscriptionListOptions>()
 {

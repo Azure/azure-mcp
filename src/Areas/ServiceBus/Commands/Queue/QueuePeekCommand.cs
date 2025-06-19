@@ -7,7 +7,6 @@ using AzureMcp.Areas.ServiceBus.Options.Queue;
 using AzureMcp.Areas.ServiceBus.Services;
 using AzureMcp.Commands.ServiceBus;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.ServiceBus.Commands.Queue;
 

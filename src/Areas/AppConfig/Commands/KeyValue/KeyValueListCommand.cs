@@ -1,13 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.AppConfig.Commands;
 using AzureMcp.Areas.AppConfig.Models;
 using AzureMcp.Areas.AppConfig.Options;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
 using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;

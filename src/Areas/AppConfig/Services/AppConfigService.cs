@@ -9,7 +9,8 @@ using AzureMcp.Areas.AppConfig.Models;
 using AzureMcp.Models.Identity;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.AppConfig.Services;
 

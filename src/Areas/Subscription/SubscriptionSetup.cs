@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Subscription.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

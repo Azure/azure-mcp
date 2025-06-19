@@ -4,7 +4,7 @@
 using Azure.ResourceManager.Resources;
 using AzureMcp.Options;
 
-namespace AzureMcp.Services.Interfaces;
+namespace AzureMcp.Services.Azure.Subscription;
 
 public interface ISubscriptionService
 {

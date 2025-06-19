@@ -7,7 +7,7 @@ using Azure.ResourceManager.Authorization;
 using AzureMcp.Areas.Authorization.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.Authorization.Services;
 

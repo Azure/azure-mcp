@@ -6,7 +6,6 @@ using AzureMcp.Areas.Redis.Options;
 using AzureMcp.Areas.Redis.Options.CacheForRedis;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Redis.Commands.CacheForRedis;
 

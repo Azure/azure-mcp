@@ -7,10 +7,10 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
-using AzureMcp.Areas.Search;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Caching;
 using static AzureMcp.Areas.Search.Commands.Index.IndexDescribeCommand;
 
 namespace AzureMcp.Areas.Search.Services;

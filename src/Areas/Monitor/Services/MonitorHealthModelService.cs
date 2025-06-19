@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 using Azure.Core;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.Monitor.Services;
 

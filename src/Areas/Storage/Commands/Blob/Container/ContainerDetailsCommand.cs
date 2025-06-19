@@ -6,7 +6,6 @@ using Azure.Storage.Blobs.Models;
 using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob.Container;
 using AzureMcp.Areas.Storage.Services;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Blob.Container;

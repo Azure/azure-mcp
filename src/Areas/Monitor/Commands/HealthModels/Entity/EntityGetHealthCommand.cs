@@ -1,12 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
-using AzureMcp.Areas.Monitor.Commands.HealthModels;
 using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.HealthModels.Entity;
 using AzureMcp.Areas.Monitor.Services;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;

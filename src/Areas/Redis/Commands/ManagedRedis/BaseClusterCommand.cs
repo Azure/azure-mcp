@@ -6,7 +6,6 @@ using AzureMcp.Areas.Redis.Options;
 using AzureMcp.Areas.Redis.Options.ManagedRedis;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
 

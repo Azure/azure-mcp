@@ -2,10 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.AzureIsv.Datadog.Options;
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.AzureIsv.Options.Datadog;
+namespace AzureMcp.Areas.AzureIsv.Datadog.Options;
 
 public class MonitoredResourcesListOptions : SubscriptionOptions
 {

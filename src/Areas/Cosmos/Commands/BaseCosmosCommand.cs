@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using Microsoft.Azure.Cosmos;
 
 namespace AzureMcp.Areas.Cosmos.Commands;

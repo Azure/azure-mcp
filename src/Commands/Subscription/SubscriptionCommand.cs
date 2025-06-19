@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 

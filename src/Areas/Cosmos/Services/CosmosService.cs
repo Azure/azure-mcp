@@ -5,7 +5,9 @@ using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Caching;
 using Microsoft.Azure.Cosmos;
 
 namespace AzureMcp.Areas.Cosmos.Services;

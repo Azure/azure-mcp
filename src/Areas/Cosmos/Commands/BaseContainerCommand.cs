@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.Cosmos.Commands;
 

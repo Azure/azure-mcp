@@ -9,7 +9,9 @@ using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Models.Identity;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.ResourceGroup;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.Redis.Services;
 

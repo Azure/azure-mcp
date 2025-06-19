@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Core;
 using AzureMcp.Commands;
 using AzureMcp.Services.Mcp;
 using ModelContextProtocol.Client;

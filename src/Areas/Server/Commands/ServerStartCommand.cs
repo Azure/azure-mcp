@@ -6,7 +6,6 @@ using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Server.Tools;
-using AzureMcp.Models.Option;
 using AzureMcp.Services.Mcp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

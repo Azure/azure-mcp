@@ -4,9 +4,8 @@
 using System.Runtime.InteropServices;
 using AzureMcp.Areas.Extension.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 using AzureMcp.Services.Azure.Authentication;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Extension.Commands;

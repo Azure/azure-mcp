@@ -1,11 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Search;
 using AzureMcp.Areas.Search.Options;
 using AzureMcp.Areas.Search.Options.Index;
+using AzureMcp.Areas.Search.Services;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Search.Commands.Index;

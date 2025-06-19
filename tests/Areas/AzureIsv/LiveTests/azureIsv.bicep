@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 targetScope = 'resourceGroup'
 
 @description('The base resource name')
-param baseName string = resourceGroup().name
+param baseName string
 
 @description('The location for the Datadog monitor')
 param location string
@@ -35,7 +38,7 @@ resource datadogMonitor 'Microsoft.Datadog/monitors@2023-01-01' = {
 
 resource datadogContributorRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
-  name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635' 
+  name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
 
 resource datadogRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

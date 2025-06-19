@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 targetScope = 'resourceGroup'
 
 @description('The client OID to grant access to test resources.')

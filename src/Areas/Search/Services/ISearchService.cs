@@ -4,7 +4,7 @@
 using AzureMcp.Options;
 using static AzureMcp.Areas.Search.Commands.Index.IndexDescribeCommand;
 
-namespace AzureMcp.Areas.Search;
+namespace AzureMcp.Areas.Search.Services;
 
 public interface ISearchService
 {
