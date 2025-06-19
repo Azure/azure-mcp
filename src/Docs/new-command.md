@@ -606,6 +606,9 @@ public async Task Should_Return400_ForInvalidInput(string args)
     Assert.Contains("validation", result.Message.ToLower());
 }
 
+### End-to-end Tests
+End-to-end tests are currently performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to "/e2eTests/e2eTestPrompts.md".
+
 ## Best Practices
 
 1. Command Structure:
