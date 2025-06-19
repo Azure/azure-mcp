@@ -103,6 +103,7 @@ public class ToolOperationsTest
     [InlineData("storage")]
     [InlineData("keyvault")]
     [InlineData("group")]
+    [InlineData("storage,keyvault")]
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
         var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
@@ -116,12 +117,21 @@ public class ToolOperationsTest
         Assert.NotNull(result);
         Assert.NotEmpty(result.Tools);
 
-        // If a group is specified, all tool names should start with that group
-        if (!string.IsNullOrWhiteSpace(commandGroup))
+        if (!string.IsNullOrWhiteSpace(commandGroup) && !commandGroup.Contains(","))
         {
+            // If a single group is specified, all tool names should start with that group
             foreach (var tool in result.Tools)
             {
                 Assert.StartsWith($"{commandGroup}-", tool.Name);
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(commandGroup) && !commandGroup.Contains(","))
+        {
+            // If multiple groups are specificed, all tool names should start with one of those groups
+            var groups = commandGroup?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
+            foreach (var tool in result.Tools)
+            {
+                Assert.Contains(groups, group => tool.Name.StartsWith($"{group}-"));
             }
         }
         else

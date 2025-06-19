@@ -48,12 +48,7 @@ public class ToolOperations
             }
             else
             {
-                var commandGroups = _commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                if (commandGroups is null)
-                {
-                    throw new Exception("CommandGroup cannot be null or empty.");
-                }
-                _toolCommands = _commandFactory.GroupCommands(commandGroups);
+                _toolCommands = _commandFactory.GroupCommands(_commandGroup);
             }
         }
     }
