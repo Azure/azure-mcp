@@ -149,4 +149,36 @@ public class ToolOperationsTest
         });
         Assert.Contains("unknown-group", ex.Message);
     }
+
+    [Fact]
+    public async Task ReadOnlyMode_FiltersToolsByReadOnlyHint()
+    {
+        // Run with ReadOnly = false
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        {
+            ReadOnly = false
+        };
+        var requestContext = new RequestContext<ListToolsRequestParams>(_server);
+        var handler = operations.ToolsCapability.ListToolsHandler;
+        Assert.NotNull(handler);
+        var allToolsResult = await handler(requestContext, CancellationToken.None);
+        Assert.NotNull(allToolsResult);
+        Assert.NotEmpty(allToolsResult.Tools);
+
+        // Run with ReadOnly = true
+        operations.ReadOnly = true;
+        var readonlyToolsResult = await handler(requestContext, CancellationToken.None);
+        Assert.NotNull(readonlyToolsResult);
+        Assert.NotEmpty(readonlyToolsResult.Tools);
+
+        // There should be fewer tools in readonly mode
+        Assert.True(readonlyToolsResult.Tools.Count < allToolsResult.Tools.Count, "Readonly mode should return fewer tools.");
+
+        // All tools in readonly mode must have ReadOnlyHint = true
+        foreach (var tool in readonlyToolsResult.Tools)
+        {
+            Assert.NotNull(tool.Annotations);
+            Assert.True(tool.Annotations.ReadOnlyHint, $"Tool '{tool.Name}' does not have ReadOnlyHint=true");
+        }
+    }
 }

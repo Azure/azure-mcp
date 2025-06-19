@@ -31,7 +31,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
     private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, ProxyToolOperationsSerializationContext.Default.JsonSchema);
 
-    public bool? ReadOnly{ get; set; } = false;
+    public bool ReadOnly { get; set; } = false;
 
     private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
         .Type(SchemaValueType.Object)
@@ -336,6 +336,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
 
         var list = listTools
             .Select(t => t.ProtocolTool)
+            .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         _cachedToolLists[tool] = list;
