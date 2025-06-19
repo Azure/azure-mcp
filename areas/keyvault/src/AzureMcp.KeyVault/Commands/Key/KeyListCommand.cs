@@ -67,11 +67,9 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = keys?.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new KeyListCommandResult(keys),
-                    KeyVaultJsonContext.Default.KeyListCommandResult) :
-                null;
+                    KeyVaultJsonContext.Default.KeyListCommandResult);
         }
         catch (Exception ex)
         {

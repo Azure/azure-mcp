@@ -49,9 +49,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = groups?.Count > 0 ?
-                ResponseResult.Create(new Result(groups), GroupJsonContext.Default.Result) :
-                null;
+            context.Response.Results = ResponseResult.Create(new GroupListCommandResult(groups), GroupJsonContext.Default.GroupListCommandResult);
         }
         catch (Exception ex)
         {
@@ -62,5 +60,5 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
         return context.Response;
     }
 
-    internal record class Result(List<ResourceGroupInfo> Groups);
+    internal record class GroupListCommandResult(List<ResourceGroupInfo> Groups);
 }

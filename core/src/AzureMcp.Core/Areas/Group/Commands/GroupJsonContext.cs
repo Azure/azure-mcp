@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Core.Areas.Group.Commands;
 
-[JsonSerializable(typeof(GroupListCommand.Result))]
+[JsonSerializable(typeof(GroupListCommand.GroupListCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal partial class GroupJsonContext : JsonSerializerContext
 {

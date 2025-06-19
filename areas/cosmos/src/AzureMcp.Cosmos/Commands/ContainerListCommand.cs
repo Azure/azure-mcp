@@ -50,11 +50,9 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = containers?.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new ContainerListCommandResult(containers),
-                    CosmosJsonContext.Default.ContainerListCommandResult) :
-                null;
+                    CosmosJsonContext.Default.ContainerListCommandResult);
         }
         catch (Exception ex)
         {

@@ -52,11 +52,9 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = databases.Any() ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new DatabaseListCommandResult(databases),
-                    RedisJsonContext.Default.DatabaseListCommandResult) :
-                null;
+                    RedisJsonContext.Default.DatabaseListCommandResult);
         }
         catch (Exception ex)
         {

@@ -47,11 +47,9 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = accounts?.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new AccountListCommandResult(accounts),
-                    CosmosJsonContext.Default.AccountListCommandResult) :
-                null;
+                    CosmosJsonContext.Default.AccountListCommandResult);
         }
         catch (Exception ex)
         {

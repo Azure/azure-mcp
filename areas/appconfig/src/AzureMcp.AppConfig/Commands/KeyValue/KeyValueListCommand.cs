@@ -71,11 +71,9 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = settings?.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new KeyValueListCommandResult(settings),
-                    AppConfigJsonContext.Default.KeyValueListCommandResult) :
-                null;
+                    AppConfigJsonContext.Default.KeyValueListCommandResult);
         }
         catch (Exception ex)
         {

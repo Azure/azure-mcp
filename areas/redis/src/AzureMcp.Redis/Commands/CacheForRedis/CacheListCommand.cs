@@ -52,11 +52,9 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = caches.Any() ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new CacheListCommandResult(caches),
-                    RedisJsonContext.Default.CacheListCommandResult) :
-                null;
+                    RedisJsonContext.Default.CacheListCommandResult);
         }
         catch (Exception ex)
         {

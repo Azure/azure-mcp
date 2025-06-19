@@ -52,11 +52,9 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = accessPolicyAssignments.Any() ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new AccessPolicyListCommandResult(accessPolicyAssignments),
-                    RedisJsonContext.Default.AccessPolicyListCommandResult) :
-                null;
+                    RedisJsonContext.Default.AccessPolicyListCommandResult);
         }
         catch (Exception ex)
         {
