@@ -66,8 +66,13 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string[] groupNames)
+    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string commaSeparatedGroupNames)
     {
+        var groupNames = commaSeparatedGroupNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (groupNames is null)
+        {
+            throw new Exception("groupNames cannot be null.");
+        }
         Dictionary<string, IBaseCommand> commandsFromGroups = new();
         foreach (string groupName in groupNames)
         {
@@ -83,6 +88,12 @@ public class CommandFactory
                     break;
                 }
             }
+        }
+
+        if (commandsFromGroups.Count == 0)
+        {
+            
+            throw new KeyNotFoundException($"No valid group in '{commaSeparatedGroupNames}' found in command groups.");
         }
 
         return commandsFromGroups;
