@@ -117,17 +117,9 @@ public class ToolOperationsTest
         Assert.NotNull(result);
         Assert.NotEmpty(result.Tools);
 
-        if (!string.IsNullOrWhiteSpace(commandGroup) && !commandGroup.Contains(","))
+        if (!string.IsNullOrWhiteSpace(commandGroup))
         {
-            // If a single group is specified, all tool names should start with that group
-            foreach (var tool in result.Tools)
-            {
-                Assert.StartsWith($"{commandGroup}-", tool.Name);
-            }
-        }
-        else if (!string.IsNullOrWhiteSpace(commandGroup) && !commandGroup.Contains(","))
-        {
-            // If multiple groups are specificed, all tool names should start with one of those groups
+            // If groups are specificed, all tool names should start with one of those groups
             var groups = commandGroup?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
             foreach (var tool in result.Tools)
             {
