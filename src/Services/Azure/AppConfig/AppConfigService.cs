@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using Azure;
 using Azure.Core;
 using Azure.Data.AppConfiguration;
@@ -156,8 +157,20 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
     }
-    
-    public async Task SetFeatureFlag(string accountName, string featureFlagName, bool enabled, string? description, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+      public async Task SetFeatureFlag(
+        string accountName, 
+        string featureFlagName, 
+        string subscriptionId, 
+        bool? enabled = null,
+        string? description = null,
+        string? displayName = null,
+        string? conditions = null,
+        string? variants = null,
+        string? allocation = null,
+        string? telemetry = null,
+        string? tenant = null, 
+        RetryPolicyOptions? retryPolicy = null, 
+        string? label = null)
     {
         ValidateRequiredParameters(accountName, featureFlagName, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
@@ -166,7 +179,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         
         try
         {
-            // Try to get existing feature flag to preserve filters, variants, and telemetry
+            // Try to get existing feature flag to preserve existing data
             var existingResponse = await client.GetConfigurationSettingAsync(
                 FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName, 
                 label, 
@@ -174,35 +187,124 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             
             if (existingResponse.Value is FeatureFlagConfigurationSetting existingFeatureFlag)
             {
-                // Preserve existing configuration and only update the specified properties
+                // Start with existing configuration
                 featureFlagSetting = existingFeatureFlag;
-                featureFlagSetting.IsEnabled = enabled;
-                
-                // Only update description if provided (to avoid overwriting with null)
-                if (description != null)
-                {
-                    featureFlagSetting.Description = description;
-                }
             }
             else
             {
                 // Existing setting is not a feature flag, create new one
-                featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled, label)
-                {
-                    Description = description
-                };
+                featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled ?? false, label);
             }
         }
         catch (RequestFailedException ex) when (ex.Status == 404)
         {
             // Feature flag doesn't exist, create a new one
-            featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled, label)
-            {
-                Description = description
-            };
+            featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled ?? false, label);
         }
         
+        // Update basic properties if provided
+        if (enabled.HasValue)
+        {
+            featureFlagSetting.IsEnabled = enabled.Value;
+        }
+        
+        if (description != null)
+        {
+            featureFlagSetting.Description = description;
+        }
+        
+        if (displayName != null)
+        {
+            featureFlagSetting.DisplayName = displayName;
+        }        // Parse and update complex JSON properties
+        await UpdateFeatureFlagJsonProperties(featureFlagSetting, conditions, variants, allocation, telemetry);
+        
         await client.SetConfigurationSettingAsync(featureFlagSetting, cancellationToken: default);
+    }    private static async Task UpdateFeatureFlagJsonProperties(
+        FeatureFlagConfigurationSetting featureFlagSetting,
+        string? conditions,
+        string? variants,
+        string? allocation,
+        string? telemetry)
+    {
+        // Update conditions (client filters and requirement type)
+        if (!string.IsNullOrEmpty(conditions))
+        {
+            try
+            {
+                var conditionsDoc = JsonDocument.Parse(conditions);
+                var root = conditionsDoc.RootElement;
+                
+                // Handle client_filters
+                if (root.TryGetProperty("client_filters", out var filtersElement) && filtersElement.ValueKind == JsonValueKind.Array)
+                {
+                    featureFlagSetting.ClientFilters.Clear();
+                    
+                    foreach (var filterElement in filtersElement.EnumerateArray())
+                    {
+                        if (filterElement.TryGetProperty("name", out var nameElement))
+                        {
+                            var filterName = nameElement.GetString() ?? string.Empty;
+                            var parameters = new Dictionary<string, object>();
+                            
+                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
+                            {
+                                foreach (var param in paramsElement.EnumerateObject())
+                                {
+                                    parameters[param.Name] = JsonElementToObject(param.Value);
+                                }
+                            }
+                            
+                            featureFlagSetting.ClientFilters.Add(new FeatureFlagFilter(filterName, parameters));
+                        }
+                    }
+                }
+                
+                // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
+            }
+            catch (JsonException ex)
+            {
+                throw new ArgumentException($"Invalid JSON format for conditions: {ex.Message}", nameof(conditions));
+            }
+        }
+        
+        // Note: Variants, allocation, and telemetry are advanced features that may not be fully supported
+        // by the current Azure SDK version (1.6.1). These would typically require:
+        // 1. Using a newer SDK version that supports the full v2.0.0 schema
+        // 2. Manually constructing the JSON value and setting it on the ConfigurationSetting
+        // 3. Using custom serialization to preserve the full feature flag structure
+        
+        if (!string.IsNullOrEmpty(variants))
+        {
+            // For now, we'll note that variants are not supported in this SDK version
+            // Future enhancement: Store as custom metadata or upgrade SDK
+            throw new NotSupportedException("Variants are not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
+        }
+        
+        if (!string.IsNullOrEmpty(allocation))
+        {
+            // For now, we'll note that allocation is not supported in this SDK version
+            throw new NotSupportedException("Allocation is not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
+        }        if (!string.IsNullOrEmpty(telemetry))
+        {
+            // For now, we'll note that telemetry is not supported in this SDK version
+            throw new NotSupportedException("Telemetry is not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
+        }
+    }
+    
+    private static object JsonElementToObject(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString() ?? string.Empty,
+            JsonValueKind.Number => element.TryGetInt32(out var intValue) ? intValue : element.GetDouble(),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => null!,
+            JsonValueKind.Object => element.EnumerateObject().ToDictionary(p => p.Name, p => JsonElementToObject(p.Value)),
+            JsonValueKind.Array => element.EnumerateArray().Select(JsonElementToObject).ToArray(),
+            _ => element.ToString()
+        };
     }
 
     private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
