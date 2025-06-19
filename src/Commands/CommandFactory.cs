@@ -90,7 +90,7 @@ public class CommandFactory
 
         if (commandsFromGroups.Count == 0)
         {
-            
+
             throw new KeyNotFoundException($"No valid group in '{commaSeparatedGroupNames}' found in command groups.");
         }
 

@@ -249,7 +249,7 @@ Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds.
 
-To catch format errors early, run `dotnet format src/AzureMcp.sln` before submitting.
+To catch format errors early, run `dotnet format AzureMcp.sln` before submitting.
 
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)
