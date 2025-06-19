@@ -15,17 +15,6 @@ public class FeatureFlagPutOptions : BaseFeatureFlagOptions
     public string? Description { get; set; }
 
     [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.DisplayNameName)]
-    public string? DisplayName { get; set; }
-
-    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.ConditionsName)]
+    public string? DisplayName { get; set; }    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.ConditionsName)]
     public string? Conditions { get; set; }
-
-    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.VariantsName)]
-    public string? Variants { get; set; }
-
-    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.AllocationName)]
-    public string? Allocation { get; set; }
-
-    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.TelemetryName)]
-    public string? Telemetry { get; set; }
 }

@@ -471,9 +471,6 @@ public static class OptionDefinitions
             public const string DescriptionName = "description";
             public const string DisplayNameName = "display-name";
             public const string ConditionsName = "conditions";
-            public const string VariantsName = "variants";
-            public const string AllocationName = "allocation";
-            public const string TelemetryName = "telemetry";
 
             public static readonly Option<string> FeatureFlagName = new(
                 $"--{FeatureFlagNameString}",
@@ -510,30 +507,6 @@ public static class OptionDefinitions
             public static readonly Option<string> Conditions = new(
                 $"--{ConditionsName}",
                 "JSON string representing feature flag conditions (requirement_type and client_filters). Format: {\"requirement_type\":\"Any\",\"client_filters\":[{\"name\":\"FilterName\",\"parameters\":{\"key\":\"value\"}}]}"
-            )
-            {
-                IsRequired = false
-            };
-
-            public static readonly Option<string> Variants = new(
-                $"--{VariantsName}",
-                "JSON string representing feature flag variants. Format: [{\"name\":\"VariantName\",\"configuration_value\":\"value\",\"status_override\":\"None\"}]"
-            )
-            {
-                IsRequired = false
-            };
-
-            public static readonly Option<string> Allocation = new(
-                $"--{AllocationName}",
-                "JSON string representing variant allocation rules. Format: {\"default_when_enabled\":\"variant1\",\"default_when_disabled\":\"variant2\",\"user\":[],\"group\":[],\"percentile\":[],\"seed\":\"\"}"
-            )
-            {
-                IsRequired = false
-            };
-
-            public static readonly Option<string> Telemetry = new(
-                $"--{TelemetryName}",
-                "JSON string representing telemetry options. Format: {\"enabled\":true,\"metadata\":{\"key\":\"value\"}}"
             )
             {
                 IsRequired = false

@@ -157,7 +157,8 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
     }
-      public async Task SetFeatureFlag(
+    
+    public async Task SetFeatureFlag(
         string accountName, 
         string featureFlagName, 
         string subscriptionId, 
@@ -165,9 +166,6 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         string? description = null,
         string? displayName = null,
         string? conditions = null,
-        string? variants = null,
-        string? allocation = null,
-        string? telemetry = null,
         string? tenant = null, 
         RetryPolicyOptions? retryPolicy = null, 
         string? label = null)
@@ -217,15 +215,13 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         {
             featureFlagSetting.DisplayName = displayName;
         }        // Parse and update complex JSON properties
-        await UpdateFeatureFlagJsonProperties(featureFlagSetting, conditions, variants, allocation, telemetry);
+        await UpdateFeatureFlagJsonProperties(featureFlagSetting, conditions);
         
         await client.SetConfigurationSettingAsync(featureFlagSetting, cancellationToken: default);
-    }    private static async Task UpdateFeatureFlagJsonProperties(
+    }    
+    private static async Task UpdateFeatureFlagJsonProperties(
         FeatureFlagConfigurationSetting featureFlagSetting,
-        string? conditions,
-        string? variants,
-        string? allocation,
-        string? telemetry)
+        string? conditions)
     {
         // Update conditions (client filters and requirement type)
         if (!string.IsNullOrEmpty(conditions))
@@ -259,8 +255,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                         }
                     }
                 }
-                
-                // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
+                  // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
             }
             catch (JsonException ex)
             {
@@ -268,28 +263,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             }
         }
         
-        // Note: Variants, allocation, and telemetry are advanced features that may not be fully supported
-        // by the current Azure SDK version (1.6.1). These would typically require:
-        // 1. Using a newer SDK version that supports the full v2.0.0 schema
-        // 2. Manually constructing the JSON value and setting it on the ConfigurationSetting
-        // 3. Using custom serialization to preserve the full feature flag structure
-        
-        if (!string.IsNullOrEmpty(variants))
-        {
-            // For now, we'll note that variants are not supported in this SDK version
-            // Future enhancement: Store as custom metadata or upgrade SDK
-            throw new NotSupportedException("Variants are not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
-        }
-        
-        if (!string.IsNullOrEmpty(allocation))
-        {
-            // For now, we'll note that allocation is not supported in this SDK version
-            throw new NotSupportedException("Allocation is not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
-        }        if (!string.IsNullOrEmpty(telemetry))
-        {
-            // For now, we'll note that telemetry is not supported in this SDK version
-            throw new NotSupportedException("Telemetry is not supported in the current Azure SDK version. Consider upgrading Azure.Data.AppConfiguration package.");
-        }
+        await Task.CompletedTask;
     }
     
     private static object JsonElementToObject(JsonElement element)

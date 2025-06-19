@@ -19,8 +19,7 @@ public interface IAppConfigService
     Task LockKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null);
     Task UnlockKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null);
     Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null);
-    Task DeleteKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null);
-    Task SetFeatureFlag(
+    Task DeleteKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null);    Task SetFeatureFlag(
         string accountName, 
         string featureFlagName, 
         string subscriptionId, 
@@ -28,9 +27,6 @@ public interface IAppConfigService
         string? description = null,
         string? displayName = null,
         string? conditions = null,
-        string? variants = null,
-        string? allocation = null,
-        string? telemetry = null,
         string? tenant = null, 
         RetryPolicyOptions? retryPolicy = null, 
         string? label = null);
