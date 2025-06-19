@@ -93,10 +93,6 @@
     <EmbeddedResource Include="Resources\azd-best-practices.txt" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Core\" />
-  </ItemGroup>
-
   <!-- Remove Cosmos native files from the build output directory -->
   <Target Name="RemoveCosmosNativeFiles" BeforeTargets="Build">
     <ItemGroup>

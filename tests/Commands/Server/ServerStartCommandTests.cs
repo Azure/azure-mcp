@@ -4,17 +4,17 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Commands;
-using AzureMcp.Areas.Service.Options;
+using AzureMcp.Areas.Server.Options;
 using AzureMcp.Models.Option;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server;
 
-public class ServiceStartCommandTests
+public class ServerStartCommandTests
 {
-    private readonly ServiceStartCommand _command;
+    private readonly ServerStartCommand _command;
 
-    public ServiceStartCommandTests()
+    public ServerStartCommandTests()
     {
         _command = new();
     }
@@ -38,9 +38,9 @@ public class ServiceStartCommandTests
         var parseResult = CreateParseResult(inputService);
 
         // Act
-        var actualService = parseResult.GetValueForOption(ServiceOptionDefinitions.ServiceType);
-        var actualPort = parseResult.GetValueForOption(ServiceOptionDefinitions.Port);
-        var actualTransport = parseResult.GetValueForOption(ServiceOptionDefinitions.Transport);
+        var actualService = parseResult.GetValueForOption(ServerOptionDefinitions.ServiceType);
+        var actualPort = parseResult.GetValueForOption(ServerOptionDefinitions.Port);
+        var actualTransport = parseResult.GetValueForOption(ServerOptionDefinitions.Transport);
 
         // Assert
         Assert.Equal(expectedService, actualService ?? "");
@@ -52,9 +52,9 @@ public class ServiceStartCommandTests
     {
         var root = new RootCommand
         {
-            ServiceOptionDefinitions.ServiceType,
-            ServiceOptionDefinitions.Port,
-            ServiceOptionDefinitions.Transport
+            ServerOptionDefinitions.ServiceType,
+            ServerOptionDefinitions.Port,
+            ServerOptionDefinitions.Transport
         };
         var args = new List<string>();
         if (!string.IsNullOrEmpty(serviceValue))

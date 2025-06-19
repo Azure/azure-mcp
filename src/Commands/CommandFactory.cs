@@ -84,32 +84,10 @@ public class CommandFactory
         // Register top-level command groups
         var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
-        RegisterSubscriptionCommands(_rootGroup, loggerFactory);
-        RegisterToolsCommands(_rootGroup, loggerFactory);
-
         foreach (var area in _serviceAreas)
         {
             area.RegisterCommands(_rootGroup, loggerFactory);
         }
-    }
-
-    private void RegisterSubscriptionCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
-    {
-        // Create Subscription command group
-        var subscription = new CommandGroup("subscription", "Azure subscription operations - Commands for listing and managing Azure subscriptions accessible to your account.");
-        rootGroup.AddSubGroup(subscription);
-
-        // Register Subscription commands
-        subscription.AddCommand("list", new SubscriptionListCommand(loggerFactory.CreateLogger<SubscriptionListCommand>()));
-    }
-
-    private void RegisterToolsCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
-    {
-        // Create Tools command group
-        var tools = new CommandGroup("tools", "CLI tools operations - Commands for discovering and exploring the functionality available in this CLI tool.");
-        rootGroup.AddSubGroup(tools);
-
-        tools.AddCommand("list", new ToolsListCommand(loggerFactory.CreateLogger<ToolsListCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

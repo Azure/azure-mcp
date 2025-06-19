@@ -21,7 +21,7 @@ internal class ServerSetup : IAreaSetup
         rootGroup.AddSubGroup(mcpServer);
 
         // Register MCP Server commands
-        var startServer = new ServiceStartCommand();
+        var startServer = new ServerStartCommand();
         mcpServer.AddCommand("start", startServer);
     }
 }

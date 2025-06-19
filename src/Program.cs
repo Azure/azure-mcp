@@ -67,6 +67,8 @@ internal class Program
             new AzureMcp.Areas.Server.ServerSetup(),
             new AzureMcp.Areas.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Areas.Storage.StorageSetup(),
+            new AzureMcp.Areas.Subscription.SubscriptionSetup(),
+            new AzureMcp.Areas.Tools.ToolsSetup(),
         ];
     }
 
