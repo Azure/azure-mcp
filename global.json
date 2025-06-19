@@ -1,5 +1,6 @@
 {
     "sdk": {
+        // Keep this version in sync with the .NET SDK version used in the Dockerfile
         "version": "9.0.300",
         "rollForward": "feature"
     }
