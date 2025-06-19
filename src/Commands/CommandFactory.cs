@@ -74,7 +74,6 @@ public class CommandFactory
                 if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
                 {
                     Dictionary<string, IBaseCommand> commandsInGroup = CreateCommmandDictionary(group, string.Empty);
-                    // iterate over all pair s in commandsInGroup and add them to the result
                     foreach (var (key, value) in commandsInGroup)
                     {
                         commandsFromGroups[key] = value;

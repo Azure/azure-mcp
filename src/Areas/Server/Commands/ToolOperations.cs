@@ -48,7 +48,6 @@ public class ToolOperations
             }
             else
             {
-                // Assume value is a comma separated list with each value being the name of a command group
                 var commandGroups = _commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 if (commandGroups is null)
                 {
