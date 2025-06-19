@@ -146,7 +146,7 @@ An optional `--service` parameter can also be set to minimize the number of load
         "server",
         "start",
         "--service",
-        "<service-name>"
+        "<service-name-1>,<service-name-2>"
       ]
     }
   }
