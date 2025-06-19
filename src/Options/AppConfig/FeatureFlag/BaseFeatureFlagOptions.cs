@@ -7,7 +7,8 @@ using AzureMcp.Models.Option;
 namespace AzureMcp.Options.AppConfig.FeatureFlag;
 
 public class BaseFeatureFlagOptions : BaseAppConfigOptions
-{    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.FeatureFlagNameString)]
+{
+    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.FeatureFlagNameString)]
     public string? FeatureFlagName { get; set; }
 
     [JsonPropertyName(OptionDefinitions.AppConfig.LabelName)]
