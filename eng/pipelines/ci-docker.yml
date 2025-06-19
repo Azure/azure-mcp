@@ -39,7 +39,6 @@ extends:
             - $(containerRegistry).azurecr.io/$(imageRepository):$(imageTag)
 
         steps:
-        - template: /eng/common/pipelines/templates/steps/sparse-checkout.yml
 
         - task: AzureCLI@2
           displayName: Login to $(containerRegistry)
