@@ -15,6 +15,7 @@ public class FeatureFlagPutOptions : BaseFeatureFlagOptions
     public string? Description { get; set; }
 
     [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.DisplayNameName)]
-    public string? DisplayName { get; set; }    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.ConditionsName)]
+    public string? DisplayName { get; set; }
+    [JsonPropertyName(OptionDefinitions.AppConfig.FeatureFlag.ConditionsName)]
     public string? Conditions { get; set; }
 }

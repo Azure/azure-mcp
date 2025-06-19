@@ -157,7 +157,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
     }
-    
+
     public async Task SetFeatureFlag(
         string accountName, 
         string featureFlagName, 
@@ -172,9 +172,9 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
     {
         ValidateRequiredParameters(accountName, featureFlagName, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
-        
+
         FeatureFlagConfigurationSetting featureFlagSetting;
-        
+
         try
         {
             // Try to get existing feature flag to preserve existing data
@@ -182,7 +182,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                 FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName, 
                 label, 
                 cancellationToken: default);
-            
+
             if (existingResponse.Value is FeatureFlagConfigurationSetting existingFeatureFlag)
             {
                 // Start with existing configuration
@@ -199,26 +199,29 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             // Feature flag doesn't exist, create a new one
             featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled ?? false, label);
         }
-        
+
         // Update basic properties if provided
         if (enabled.HasValue)
         {
             featureFlagSetting.IsEnabled = enabled.Value;
         }
-        
+
         if (description != null)
         {
             featureFlagSetting.Description = description;
         }
-        
+
         if (displayName != null)
         {
             featureFlagSetting.DisplayName = displayName;
-        }        // Parse and update complex JSON properties
+        }
+
+        // Parse and update complex JSON properties
         await UpdateFeatureFlagJsonProperties(featureFlagSetting, conditions);
-        
+
         await client.SetConfigurationSettingAsync(featureFlagSetting, cancellationToken: default);
-    }    
+    }
+
     private static async Task UpdateFeatureFlagJsonProperties(
         FeatureFlagConfigurationSetting featureFlagSetting,
         string? conditions)

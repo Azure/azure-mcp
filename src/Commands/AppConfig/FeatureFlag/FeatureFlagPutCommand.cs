@@ -12,7 +12,8 @@ namespace AzureMcp.Commands.AppConfig.FeatureFlag;
 /// Command to create or update a feature flag in Azure App Configuration.
 /// </summary>
 public sealed class FeatureFlagPutCommand(ILogger<FeatureFlagPutCommand> logger) : BaseFeatureFlagCommand<FeatureFlagPutOptions>()
-{    private const string CommandTitle = "Set App Configuration Feature Flag";
+{
+    private const string CommandTitle = "Set App Configuration Feature Flag";
     private readonly Option<bool> _enabledOption = OptionDefinitions.AppConfig.FeatureFlag.Enabled;
     private readonly Option<string> _descriptionOption = OptionDefinitions.AppConfig.FeatureFlag.Description;
     private readonly Option<string> _displayNameOption = OptionDefinitions.AppConfig.FeatureFlag.DisplayName;
