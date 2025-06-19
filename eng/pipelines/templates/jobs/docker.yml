@@ -1,0 +1,58 @@
+pr: none
+
+trigger:
+  branches:
+    include:
+    - main
+
+extends:
+  template: /eng/pipelines/templates/1es-redirect.yml
+  parameters:
+    stages:
+    - stage:
+      displayName: Docker Build and Publish
+      variables:
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - template: /eng/pipelines/templates/variables/image.yml
+      - name: configPath
+        value: $(Build.SourcesDirectory)
+      - name: containerRegistry
+        value: 'azuresdkimages'
+      - name: imageRepository
+        value: 'azure/azure-mcp'
+      - name: imageTag
+        value: $(build.buildid)
+
+      jobs:
+      - job:
+        displayName: Docker Build and Publish
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+
+        templateContext:
+          outputs:
+          - output: containerImage
+            image: image:tag
+            remoteImage:
+            - $(containerRegistry).azurecr.io/$(imageRepository):$(imageTag)
+
+        steps:
+
+        - task: AzureCLI@2
+          displayName: Login to $(containerRegistry)
+          inputs:
+            azureSubscription: "Azure SDK Engineering System"
+            scriptType: pscore
+            scriptLocation: inlineScript
+            inlineScript: |
+              az acr login --name $(containerRegistry)
+
+        - task: 1ES.BuildContainerImage@1
+          displayName: Build Docker Image
+          inputs:
+            path: $(configPath)
+            image: image:tag
+            enableNetwork: true
+            useBuildKit: true
