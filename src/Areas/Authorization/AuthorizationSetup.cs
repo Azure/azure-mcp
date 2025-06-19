@@ -22,7 +22,7 @@ internal class AuthorizationSetup : IAreaSetup
         var authorization = new CommandGroup("role",
             "Authorization operations - Commands for managing Azure RBAC resources.");
         rootGroup.AddSubGroup(authorization);
-        
+
         // Create Role Assignment subgroup
         var roleAssignment = new CommandGroup("assignment",
             "Role assignment operations - Commands for listing and managing Azure RBAC role assignments for a given scope.");
