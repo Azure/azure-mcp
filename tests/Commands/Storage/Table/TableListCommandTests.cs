@@ -73,7 +73,7 @@ public class TableListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoTables()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoTables()
     {
         // Arrange
         _storageService.ListTables(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId),
@@ -91,7 +91,14 @@ public class TableListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var results = JsonSerializer.Deserialize<TableListResult>(json);
+
+        Assert.NotNull(results);
+        Assert.NotNull(results.Tables);
+        Assert.Empty(results.Tables);
     }
 
     [Fact]
