@@ -24,29 +24,36 @@ public class ClusterListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IRedisService _redisService;
     private readonly ILogger<ClusterListCommand> _logger;
+    private readonly ClusterListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
 
     public ClusterListCommandTests()
     {
         _redisService = Substitute.For<IRedisService>();
         _logger = Substitute.For<ILogger<ClusterListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_redisService);
+        var collection = new ServiceCollection().AddSingleton(_redisService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsClusters_WhenClustersExist()
     {
         var expectedClusters = new ClusterModel[] { new() { Name = "cluster1" }, new() { Name = "cluster2" } };
-        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListClustersAsync(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedClusters);
 
-        var command = new ClusterListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
@@ -67,33 +74,39 @@ public class ClusterListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoClusters()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoClusters()
     {
-        _redisService.ListClustersAsync("sub123").Returns([]);
+        _redisService.ListClustersAsync(Arg.Is(_knownSubscriptionId)).Returns([]);
 
-        var command = new ClusterListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<ClusterListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Clusters);
+        Assert.Empty(result.Clusters);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesException()
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
-        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListClustersAsync(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
-        var command = new ClusterListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
@@ -104,19 +117,20 @@ public class ClusterListCommandTests
     [InlineData("--subscription")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
-        var command = new ClusterListCommand(_logger);
-        var args = command.GetCommand().Parse(
+        var args = _parser.Parse(
         [
-            missingParameter == "--subscription" ? "" : "--subscription", "sub123",
+            missingParameter == "--subscription" ? "" : "--subscription", _knownSubscriptionId,
         ]);
 
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.Equal($"Missing Required options: {missingParameter}", response.Message);
     }
 
-    private record ClusterListResult(IEnumerable<ClusterModel> Clusters);
+    private record ClusterListResult(IEnumerable<ClusterModel> Clusters)
+    {
+        public IEnumerable<ClusterModel> Clusters { get; set; } = Clusters ?? [];
+    }
 }

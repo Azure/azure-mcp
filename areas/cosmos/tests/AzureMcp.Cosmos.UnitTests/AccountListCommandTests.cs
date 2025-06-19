@@ -23,16 +23,22 @@ public class AccountListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly ICosmosService _cosmosService;
     private readonly ILogger<AccountListCommand> _logger;
+    private readonly AccountListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
 
     public AccountListCommandTests()
     {
         _cosmosService = Substitute.For<ICosmosService>();
         _logger = Substitute.For<ILogger<AccountListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_cosmosService);
+        var collection = new ServiceCollection().AddSingleton(_cosmosService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
@@ -40,15 +46,13 @@ public class AccountListCommandTests
     {
         // Arrange
         var expectedAccounts = new List<string> { "account1", "account2" };
-        _cosmosService.GetCosmosAccounts(Arg.Is("sub123"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _cosmosService.GetCosmosAccounts(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedAccounts);
 
-        var command = new AccountListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse(["--subscription", _knownSubscriptionId]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -62,22 +66,27 @@ public class AccountListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoAccounts()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoAccounts()
     {
         // Arrange
-        _cosmosService.GetCosmosAccounts("sub123", null, null)
+        _cosmosService.GetCosmosAccounts(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns([]);
 
-        var command = new AccountListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse(["--subscription", _knownSubscriptionId]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<AccountListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Accounts);
+        Assert.Empty(result.Accounts);
     }
 
     [Fact]
@@ -85,17 +94,14 @@ public class AccountListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
 
-        _cosmosService.GetCosmosAccounts(subscriptionId, null, Arg.Any<RetryPolicyOptions>())
+        _cosmosService.GetCosmosAccounts(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
-        var command = new AccountListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", subscriptionId]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse(["--subscription", _knownSubscriptionId]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);

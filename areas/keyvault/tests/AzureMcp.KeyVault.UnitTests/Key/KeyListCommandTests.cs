@@ -26,9 +26,8 @@ public class KeyListCommandTests
     private readonly KeyListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-
-    private const string _knownSubscriptionId = "knownSubscriptionId";
-    private const string _knownVaultName = "knownVaultName";
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+    private readonly string _knownVaultName = "vault123";
 
     public KeyListCommandTests()
     {
@@ -50,15 +49,12 @@ public class KeyListCommandTests
         // Arrange
         var expectedKeys = new List<string> { "key1", "key2" };
 
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedKeys);
+        _keyVaultService.ListKeys(Arg.Is(_knownVaultName), Arg.Any<bool>(), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>()).Returns(expectedKeys);
 
         var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId,
             "--vault", _knownVaultName,
             "--subscription", _knownSubscriptionId
         ]);
@@ -78,18 +74,15 @@ public class KeyListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoKeys()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoKeys()
     {
         // Arrange
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns([]);
+        _keyVaultService.ListKeys(_knownVaultName, Arg.Any<bool>(), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId,
             "--vault", _knownVaultName,
             "--subscription", _knownSubscriptionId
         ]);
@@ -99,7 +92,14 @@ public class KeyListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<KeyListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Keys);
+        Assert.Empty(result.Keys);
     }
 
     [Fact]
@@ -108,15 +108,12 @@ public class KeyListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.ListKeys(_knownVaultName, Arg.Any<bool>(), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId,
             "--vault", _knownVaultName,
             "--subscription", _knownSubscriptionId
         ]);

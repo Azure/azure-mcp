@@ -25,6 +25,8 @@ public class AccountListCommandTests
     private readonly AccountListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+
 
     public AccountListCommandTests()
     {
@@ -43,13 +45,14 @@ public class AccountListCommandTests
     public async Task ExecuteAsync_NoParameters_ReturnsSubscriptions()
     {
         // Arrange
-        var subscriptionId = "sub123";
         var expectedAccounts = new List<string> { "account1", "account2" };
 
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetStorageAccounts(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedAccounts);
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -66,22 +69,29 @@ public class AccountListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoAccounts()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoAccounts()
     {
         // Arrange
-        var subscriptionId = "sub123";
-
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetStorageAccounts(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns([]);
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<AccountListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Accounts);
+        Assert.Empty(result.Accounts);
     }
 
     [Fact]
@@ -89,12 +99,13 @@ public class AccountListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
 
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), null, Arg.Any<RetryPolicyOptions>())
+        _storageService.GetStorageAccounts(Arg.Is(_knownSubscriptionId), null, Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);

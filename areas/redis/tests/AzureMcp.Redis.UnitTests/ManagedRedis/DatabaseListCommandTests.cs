@@ -23,16 +23,24 @@ public class DatabaseListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IRedisService _redisService;
     private readonly ILogger<DatabaseListCommand> _logger;
+    private readonly DatabaseListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+    private readonly string _knownResourceGroup = "rg1";
+    private readonly string _knownCluster = "cluster1";
 
     public DatabaseListCommandTests()
     {
         _redisService = Substitute.For<IRedisService>();
         _logger = Substitute.For<ILogger<DatabaseListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_redisService);
+        var collection = new ServiceCollection().AddSingleton(_redisService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
@@ -61,18 +69,21 @@ public class DatabaseListCommandTests
         };
 
         _redisService.ListDatabasesAsync(
-            "cluster1",
-            "rg1",
-            "sub123",
+            Arg.Is(_knownCluster),
+            Arg.Is(_knownResourceGroup),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(expectedDatabases);
 
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cluster", "cluster1"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cluster", _knownCluster
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
@@ -94,25 +105,34 @@ public class DatabaseListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoDatabases()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoDatabases()
     {
         _redisService.ListDatabasesAsync(
-            "cluster1",
-            "rg1",
-            "sub123",
+            Arg.Is(_knownCluster),
+            Arg.Is(_knownResourceGroup),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns([]);
 
-        var command = new DatabaseListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cluster", "cluster1"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cluster", _knownCluster
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<DatabaseListCommandResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Databases);
+        Assert.Empty(result.Databases);
     }
 
     [Fact]
@@ -120,20 +140,21 @@ public class DatabaseListCommandTests
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
         _redisService.ListDatabasesAsync(
-            "cluster1",
-            "rg1",
-            "sub123",
+            Arg.Is(_knownCluster),
+            Arg.Is(_knownResourceGroup),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
-        var command = new DatabaseListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cluster", "cluster1"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cluster", _knownCluster
+        ]);
 
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
@@ -150,22 +171,23 @@ public class DatabaseListCommandTests
 
         var options = new List<string>();
         if (parameterToKeep == "--subscription")
-            options.AddRange(["--subscription", "sub123"]);
+            options.AddRange(["--subscription", _knownSubscriptionId]);
         if (parameterToKeep == "--resource-group")
-            options.AddRange(["--resource-group", "rg1"]);
+            options.AddRange(["--resource-group", _knownResourceGroup]);
         if (parameterToKeep == "--cluster")
-            options.AddRange(["--cluster", "cluster1"]);
+            options.AddRange(["--cluster", _knownCluster]);
 
-        var parser = new Parser(command.GetCommand());
-        var parseResult = parser.Parse(options.ToArray());
-        var context = new CommandContext(_serviceProvider);
+        var parseResult = _parser.Parse(options.ToArray());
 
-        var response = await command.ExecuteAsync(context, parseResult);
+        var response = await _command.ExecuteAsync(_context, parseResult);
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    private record DatabaseListCommandResult(IEnumerable<Database> Databases);
+    private record DatabaseListCommandResult(IEnumerable<Database> Databases)
+    {
+        public IEnumerable<Database> Databases { get; set; } = Databases ?? [];
+    }
 }

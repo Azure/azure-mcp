@@ -22,29 +22,41 @@ public class DatabaseListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IPostgresService _postgresService;
     private readonly ILogger<DatabaseListCommand> _logger;
+    private readonly DatabaseListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+    private readonly string _knownResourceGroup = "rg1";
+    private readonly string _knownUser = "user1";
+    private readonly string _knownServer = "server1";
 
     public DatabaseListCommandTests()
     {
         _postgresService = Substitute.For<IPostgresService>();
         _logger = Substitute.For<ILogger<DatabaseListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_postgresService);
+        var collection = new ServiceCollection().AddSingleton(_postgresService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsDatabases_WhenDatabasesExist()
     {
         var expectedDatabases = new List<string> { "db1", "db2" };
-        _postgresService.ListDatabasesAsync("sub123", "rg1", "user1", "server1").Returns(expectedDatabases);
+        _postgresService.ListDatabasesAsync(Arg.Is(_knownSubscriptionId), Arg.Is(_knownResourceGroup), Arg.Is(_knownUser), Arg.Is(_knownServer)).Returns(expectedDatabases);
 
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--user-name", _knownUser,
+            "--server", _knownServer
+        ]);
 
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
@@ -60,29 +72,43 @@ public class DatabaseListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsMessage_WhenNoDatabasesExist()
     {
-        _postgresService.ListDatabasesAsync("sub123", "rg1", "user1", "server1").Returns([]);
+        _postgresService.ListDatabasesAsync(Arg.Is(_knownSubscriptionId), Arg.Is(_knownResourceGroup), Arg.Is(_knownUser), Arg.Is(_knownServer)).Returns([]);
 
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--user-name", _knownUser,
+            "--server", _knownServer
+        ]);
 
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
+        Assert.NotNull(response.Results);
         Assert.Equal(200, response.Status);
         Assert.Equal("Success", response.Message);
-        Assert.Null(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<DatabaseListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Databases);
+        Assert.Empty(result.Databases);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesException()
     {
-        _postgresService.ListDatabasesAsync("sub123", "rg1", "user1", "server1").ThrowsAsync(new Exception("Test exception"));
+        _postgresService.ListDatabasesAsync(Arg.Is(_knownSubscriptionId), Arg.Is(_knownResourceGroup), Arg.Is(_knownUser), Arg.Is(_knownServer)).ThrowsAsync(new Exception("Test exception"));
 
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--user-name", _knownUser,
+            "--server", _knownServer
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
@@ -96,17 +122,15 @@ public class DatabaseListCommandTests
     [InlineData("--server")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse(new string[]
+        var args = _parser.Parse(new string[]
         {
-            missingParameter == "--subscription" ? "" : "--subscription", "sub123",
-            missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
-            missingParameter == "--user" ? "" : "--user", "user1",
-            missingParameter == "--server" ? "" : "--server", "server123",
+            missingParameter == "--subscription" ? "" : "--subscription", _knownSubscriptionId,
+            missingParameter == "--resource-group" ? "" : "--resource-group", _knownResourceGroup,
+            missingParameter == "--user-name" ? "" : "--user-name", _knownUser,
+            missingParameter == "--server" ? "" : "--server", _knownServer,
         });
 
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);

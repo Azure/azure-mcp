@@ -22,16 +22,24 @@ public class AccessPolicyListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IRedisService _redisService;
     private readonly ILogger<AccessPolicyListCommand> _logger;
+    private readonly AccessPolicyListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+    private readonly string _knownResourceGroup = "rg1";
+    private readonly string _knownCache = "cache1";
 
     public AccessPolicyListCommandTests()
     {
         _redisService = Substitute.For<IRedisService>();
         _logger = Substitute.For<ILogger<AccessPolicyListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_redisService);
+        var collection = new ServiceCollection().AddSingleton(_redisService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
@@ -44,18 +52,21 @@ public class AccessPolicyListCommandTests
         };
 
         _redisService.ListAccessPolicyAssignmentsAsync(
-            "cache1",
-            "rg1",
-            "sub123",
+            Arg.Is(_knownCache),
+            Arg.Is(_knownResourceGroup),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(expectedAssignments);
 
-        var command = new AccessPolicyListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cache", "cache1"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cache", _knownCache
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
@@ -77,25 +88,34 @@ public class AccessPolicyListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoAccessPolicyAssignments()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoAccessPolicyAssignments()
     {
         _redisService.ListAccessPolicyAssignmentsAsync(
-            "cache1",
-            "rg1",
-            "sub123",
+            Arg.Is(_knownCache),
+            Arg.Is(_knownResourceGroup),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns([]);
 
-        var command = new AccessPolicyListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cache", "cache1"]);
-        var context = new CommandContext(_serviceProvider);
-        var response = await command.ExecuteAsync(context, args);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cache", _knownCache
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<AccessPolicyListCommandResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.AccessPolicyAssignments);
+        Assert.Empty(result.AccessPolicyAssignments);
     }
 
     [Fact]
@@ -103,20 +123,21 @@ public class AccessPolicyListCommandTests
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
         _redisService.ListAccessPolicyAssignmentsAsync(
-            cacheName: "cache1",
-            resourceGroupName: "rg1",
-            subscriptionId: "sub123",
+            cacheName: _knownCache,
+            resourceGroupName: _knownResourceGroup,
+            subscriptionId: _knownSubscriptionId,
             tenant: Arg.Any<string>(),
             authMethod: Arg.Any<AuthMethod>(),
             retryPolicy: Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
-        var command = new AccessPolicyListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--cache", "cache1"]);
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--resource-group", _knownResourceGroup,
+            "--cache", _knownCache
+        ]);
 
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
@@ -129,26 +150,25 @@ public class AccessPolicyListCommandTests
     [InlineData("--cache")]
     public async Task ExecuteAsync_ReturnsError_WhenRequiredParameterIsMissing(string parameterToKeep)
     {
-        var command = new AccessPolicyListCommand(_logger);
-
         var options = new List<string>();
         if (parameterToKeep == "--subscription")
-            options.AddRange(["--subscription", "sub123"]);
+            options.AddRange(["--subscription", _knownSubscriptionId]);
         if (parameterToKeep == "--resource-group")
-            options.AddRange(["--resource-group", "rg1"]);
+            options.AddRange(["--resource-group", _knownResourceGroup]);
         if (parameterToKeep == "--cache")
-            options.AddRange(["--cache", "cache1"]);
+            options.AddRange(["--cache", _knownCache]);
 
-        var parser = new Parser(command.GetCommand());
-        var parseResult = parser.Parse(options.ToArray());
-        var context = new CommandContext(_serviceProvider);
+        var parseResult = _parser.Parse(options.ToArray());
 
-        var response = await command.ExecuteAsync(context, parseResult);
+        var response = await _command.ExecuteAsync(_context, parseResult);
 
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    private record AccessPolicyListCommandResult(IEnumerable<AccessPolicyAssignment> AccessPolicyAssignments);
+    private record AccessPolicyListCommandResult(IEnumerable<AccessPolicyAssignment> AccessPolicyAssignments)
+    {
+        public IEnumerable<AccessPolicyAssignment> AccessPolicyAssignments { get; set; } = AccessPolicyAssignments ?? [];
+    }
 }

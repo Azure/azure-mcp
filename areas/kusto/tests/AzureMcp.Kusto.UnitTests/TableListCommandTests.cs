@@ -77,7 +77,7 @@ public sealed class TableListCommandTests
 
     [Theory]
     [MemberData(nameof(TableListArgumentMatrix))]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoTables(string cliArgs, bool useClusterUri)
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoTables(string cliArgs, bool useClusterUri)
     {
         if (useClusterUri)
         {
@@ -94,14 +94,25 @@ public sealed class TableListCommandTests
                 Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(new List<string>());
         }
+
         var command = new TableListCommand(_logger);
         var parser = new Parser(command.GetCommand());
         var args = parser.Parse(cliArgs);
         var context = new CommandContext(_serviceProvider);
 
+        // Act
         var response = await command.ExecuteAsync(context, args);
+
+        // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<TablesListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Tables);
+        Assert.Empty(result.Tables);
     }
 
     [Theory]

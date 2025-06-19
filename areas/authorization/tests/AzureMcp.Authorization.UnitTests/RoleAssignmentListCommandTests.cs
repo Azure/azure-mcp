@@ -24,67 +24,71 @@ public class RoleAssignmentListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<RoleAssignmentListCommand> _logger;
+    private readonly RoleAssignmentListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
+    private readonly string _knownScope = "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg1";
 
     public RoleAssignmentListCommandTests()
     {
         _authorizationService = Substitute.For<IAuthorizationService>();
         _logger = Substitute.For<ILogger<RoleAssignmentListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_authorizationService);
+        var collection = new ServiceCollection().AddSingleton(_authorizationService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsRoleAssignments_WhenRoleAssignmentsExist()
     {
         // Arrange
-        var subscriptionId = "00000000-0000-0000-0000-000000000001";
-        var scope = $"/subscriptions/{subscriptionId}/resourceGroups/rg1";
         var id1 = "00000000-0000-0000-0000-000000000001";
         var id2 = "00000000-0000-0000-0000-000000000002";
         var expectedRoleAssignments = new List<RoleAssignment>
         {
             new RoleAssignment
             {
-                Id = $"/subscriptions/{subscriptionId}/resourcegroups/azure-mcp/providers/Microsoft.Authorization/roleAssignments/{id1}",
+                Id = $"/subscriptions/{_knownSubscriptionId}/resourcegroups/azure-mcp/providers/Microsoft.Authorization/roleAssignments/{id1}",
                 Name = "Test role definition 1",
                 PrincipalId = new Guid(id1),
                 PrincipalType = "User",
-                RoleDefinitionId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{id1}",
-                Scope = scope,
+                RoleDefinitionId = $"/subscriptions/{_knownSubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{id1}",
+                Scope = _knownScope,
                 Description = "Role assignment for azmcp test 1",
                 DelegatedManagedIdentityResourceId = string.Empty,
                 Condition = string.Empty
             },
             new RoleAssignment
             {
-                Id = $"/subscriptions/{subscriptionId}/resourcegroups/azure-mcp/providers/Microsoft.Authorization/roleAssignments/{id2}",
+                Id = $"/subscriptions/{_knownSubscriptionId}/resourcegroups/azure-mcp/providers/Microsoft.Authorization/roleAssignments/{id2}",
                 Name = "Test role definition 2",
                 PrincipalId = new Guid(id2),
                 PrincipalType = "User",
-                RoleDefinitionId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{id2}",
-                Scope = scope,
+                RoleDefinitionId = $"/subscriptions/{_knownSubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{id2}",
+                Scope = _knownScope,
                 Description = "Role assignment for azmcp test 2",
                 DelegatedManagedIdentityResourceId = string.Empty,
                 Condition = "ActionMatches{'Microsoft.Authorization/roleAssignments/write'}"
             }
         };
         _authorizationService.ListRoleAssignments(
-                Arg.Is(scope),
+                Arg.Is(_knownScope),
                 Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
             .Returns(expectedRoleAssignments);
-        var command = new RoleAssignmentListCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", subscriptionId,
-            "--scope", scope,
+
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--scope", _knownScope,
         ]);
-        var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -98,27 +102,30 @@ public class RoleAssignmentListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoRoleAssignments()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoRoleAssignments()
     {
         // Arrange
-        var subscriptionId = "00000000-0000-0000-0000-000000000001";
-        var scope = $"/subscriptions/{subscriptionId}/resourceGroups/rg1";
-        _authorizationService.ListRoleAssignments(scope, null, null)
+        _authorizationService.ListRoleAssignments(Arg.Is(_knownScope), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns([]);
 
-        var command = new RoleAssignmentListCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", subscriptionId,
-            "--scope", scope
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--scope", _knownScope
         ]);
-        var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<RoleAssignmentListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Assignments);
+        Assert.Empty(result.Assignments);
     }
 
     [Fact]
@@ -126,21 +133,17 @@ public class RoleAssignmentListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "00000000-0000-0000-0000-000000000001";
-        var scope = $"/subscriptions/{subscriptionId}/resourceGroups/rg1";
 
-        _authorizationService.ListRoleAssignments(scope, null, Arg.Any<RetryPolicyOptions>())
+        _authorizationService.ListRoleAssignments(Arg.Is(_knownScope), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
-        var command = new RoleAssignmentListCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", subscriptionId,
-            "--scope", scope
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId,
+            "--scope", _knownScope
         ]);
-        var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);

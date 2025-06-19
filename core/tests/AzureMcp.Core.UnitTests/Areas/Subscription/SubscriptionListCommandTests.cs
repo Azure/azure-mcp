@@ -4,6 +4,7 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Core.Areas.Subscription.Commands;
 using AzureMcp.Core.Models;
@@ -106,7 +107,7 @@ public class SubscriptionListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_EmptySubscriptionList_ReturnsNullResults()
+    public async Task ExecuteAsync_EmptySubscriptionList_ReturnsEmptyResults()
     {
         // Arrange
         _subscriptionService
@@ -116,12 +117,19 @@ public class SubscriptionListCommandTests
         var args = _parser.Parse("");
 
         // Act
-        var result = await _command.ExecuteAsync(_context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<SubscriptionListResult>(json);
+
         Assert.NotNull(result);
-        Assert.Equal(200, result.Status);
-        Assert.Null(result.Results);
+        Assert.NotNull(result.Subscriptions);
+        Assert.Empty(result.Subscriptions);
     }
 
     [Fact]
@@ -230,5 +238,11 @@ public class SubscriptionListCommandTests
         var subscription = subscriptionsArray[0];
         Assert.Equal(expectedSubscriptionId, subscription.GetProperty("subscriptionId").GetString());
         Assert.Equal(expectedDisplayName, subscription.GetProperty("displayName").GetString());
+    }
+
+    private sealed class SubscriptionListResult
+    {
+        [JsonPropertyName("subscriptions")]
+        public List<string>? Subscriptions { get; set; }
     }
 }
