@@ -358,13 +358,13 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.True(enabledProperty.GetBoolean());
-        
+
         var descriptionProperty = result.AssertProperty("description");
         Assert.Equal(description, descriptionProperty.GetString());
-        
+
         var displayNameProperty = result.AssertProperty("displayName");
         Assert.Equal(displayName, displayNameProperty.GetString());
     }
@@ -392,7 +392,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.True(enabledProperty.GetBoolean());
     }
@@ -422,10 +422,10 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.False(enabledProperty.GetBoolean());
-        
+
         var labelProperty = result.AssertProperty("label");
         Assert.Equal(label, labelProperty.GetString());
     }
@@ -465,7 +465,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var descriptionProperty = result.AssertProperty("description");
         Assert.Equal(updatedDescription, descriptionProperty.GetString());
     }
@@ -511,7 +511,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.True(enabledProperty.GetBoolean());
     }
@@ -551,11 +551,12 @@ public class AppConfigCommandTests : CommandTestsBase,
             });
 
         // assert - Should have updated display name but preserved other properties
-        var nameProperty = result.AssertProperty("name");        Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+        var nameProperty = result.AssertProperty("name");
+        Assert.Equal(featureFlagName, nameProperty.GetString());
+
         var displayNameProperty = result.AssertProperty("displayName");
         Assert.Equal(updatedDisplayName, displayNameProperty.GetString());
-        
+
         // Note: We're testing that the update succeeded, but we can't easily verify
         // that other properties were preserved without additional API calls
     }
@@ -592,7 +593,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.False(enabledProperty.GetBoolean());
     }
@@ -619,7 +620,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert
         var nameProperty = result.AssertProperty("name");
         Assert.Equal(featureFlagName, nameProperty.GetString());
-        
+
         var enabledProperty = result.AssertProperty("enabled");
         Assert.True(enabledProperty.GetBoolean());
     }

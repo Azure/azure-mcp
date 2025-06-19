@@ -82,9 +82,9 @@ public sealed class FeatureFlagPutCommand(ILogger<FeatureFlagPutCommand> logger)
 
             context.Response.Results = ResponseResult.Create(
                 new FeatureFlagPutCommandResult(
-                    options.FeatureFlagName, 
-                    options.Enabled ?? false, 
-                    options.Description, 
+                    options.FeatureFlagName,
+                    options.Enabled ?? false,
+                    options.Description,
                     options.DisplayName,
                     options.Label),
                 AppConfigJsonContext.Default.FeatureFlagPutCommandResult

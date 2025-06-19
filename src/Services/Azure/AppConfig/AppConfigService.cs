@@ -159,15 +159,15 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
     }
 
     public async Task SetFeatureFlag(
-        string accountName, 
-        string featureFlagName, 
-        string subscriptionId, 
+        string accountName,
+        string featureFlagName,
+        string subscriptionId,
         bool? enabled = null,
         string? description = null,
         string? displayName = null,
         string? conditions = null,
-        string? tenant = null, 
-        RetryPolicyOptions? retryPolicy = null, 
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null,
         string? label = null)
     {
         ValidateRequiredParameters(accountName, featureFlagName, subscriptionId);
@@ -179,8 +179,8 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         {
             // Try to get existing feature flag to preserve existing data
             var existingResponse = await client.GetConfigurationSettingAsync(
-                FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName, 
-                label, 
+                FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName,
+                label,
                 cancellationToken: default);
 
             if (existingResponse.Value is FeatureFlagConfigurationSetting existingFeatureFlag)
@@ -233,19 +233,19 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             {
                 var conditionsDoc = JsonDocument.Parse(conditions);
                 var root = conditionsDoc.RootElement;
-                
+
                 // Handle client_filters
                 if (root.TryGetProperty("client_filters", out var filtersElement) && filtersElement.ValueKind == JsonValueKind.Array)
                 {
                     featureFlagSetting.ClientFilters.Clear();
-                    
+
                     foreach (var filterElement in filtersElement.EnumerateArray())
                     {
                         if (filterElement.TryGetProperty("name", out var nameElement))
                         {
                             var filterName = nameElement.GetString() ?? string.Empty;
                             var parameters = new Dictionary<string, object>();
-                            
+
                             if (filterElement.TryGetProperty("parameters", out var paramsElement))
                             {
                                 foreach (var param in paramsElement.EnumerateObject())
@@ -253,22 +253,22 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                                     parameters[param.Name] = JsonElementToObject(param.Value);
                                 }
                             }
-                            
+
                             featureFlagSetting.ClientFilters.Add(new FeatureFlagFilter(filterName, parameters));
                         }
                     }
                 }
-                  // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
+                // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
             }
             catch (JsonException ex)
             {
                 throw new ArgumentException($"Invalid JSON format for conditions: {ex.Message}", nameof(conditions));
             }
         }
-        
+
         await Task.CompletedTask;
     }
-    
+
     private static object JsonElementToObject(JsonElement element)
     {
         return element.ValueKind switch
