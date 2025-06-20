@@ -100,6 +100,7 @@ public class CommandFactory
         RegisterServiceBusCommands();
         RegisterRedisCommands();
         RegisterAuthorizationCommands();
+        RegisterBicepSchemaCommands();
     }
 
     private void RegisterBestPracticesCommand()
@@ -444,6 +445,16 @@ public class CommandFactory
 
         // Register role assignment commands
         roleAssignment.AddCommand("list", new RoleAssignmentListCommand(GetLogger<RoleAssignmentListCommand>()));
+    }
+
+    private void RegisterBicepSchemaCommands()
+    {
+        // Create Bicep Schema command group
+        var bicep = new CommandGroup("bicepschema", "Bicep schema operations - Commands for working with Bicep IaC generation.");
+        _rootGroup.AddSubGroup(bicep);
+
+        // Register Bicep Schema command
+        bicep.AddCommand("get", new BicepSchema.BicepSchemaGetCommand(GetLogger<BicepSchema.BicepSchemaGetCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

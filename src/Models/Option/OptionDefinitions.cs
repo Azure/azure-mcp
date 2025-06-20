@@ -741,4 +741,17 @@ public static class OptionDefinitions
             IsRequired = false
         };
     }
+
+    public static class BicepSchema
+    {
+        public const string ResourceType = "resource-type";
+
+        public static readonly Option<string> ResourceTypeName = new(
+            $"--{ResourceType}",
+            "The name of the Bicep Resource Type (e.g., keyvault)."
+        )
+        {
+            IsRequired = true
+        };
+    }
 }
