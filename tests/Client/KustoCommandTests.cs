@@ -2,11 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using Azure.Core;
 using Azure.Identity;
+using AzureMcp.Services.Azure.Kusto;
 using AzureMcp.Tests.Client.Helpers;
-using Kusto.Cloud.Platform.Data;
-using Kusto.Data;
-using Kusto.Data.Net.Client;
 using ModelContextProtocol.Client;
 using Xunit;
 
@@ -38,13 +37,11 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
                 { "cluster-name", Settings.ResourceBaseName }
                 });
             var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            var kcsb = new KustoConnectionStringBuilder(clusterUri)
-                .WithAadAzureTokenCredentialsAuthentication(credentials);
-            using var adminClient = KustoClientFactory.CreateCslAdminProvider(kcsb);
-            using var resp = await adminClient.ExecuteControlCommandAsync(
+            var kustoClient = new KustoClient(clusterUri ?? string.Empty, new HttpClient(), credentials, "ua");
+            var resp = await kustoClient.ExecuteControlCommandAsync(
                 TestDatabaseName,
-                ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]");
-            resp.Consume();
+                ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]",
+                CancellationToken.None).ConfigureAwait(false);
         }
         catch
         {

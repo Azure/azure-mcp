@@ -63,7 +63,6 @@
     <PackageReference Include="Azure.ResourceManager.Storage" />
     <PackageReference Include="Azure.ResourceManager.Datadog" />
     <PackageReference Include="JsonSchema.Net" />
-    <PackageReference Include="Microsoft.Azure.Kusto.Data" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
