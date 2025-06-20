@@ -2,11 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Areas.KeyVault.Services;
+using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
@@ -47,7 +46,7 @@ public class ToolOperationsTest
         collection.AddSingleton(_ => _keyVaultService);
 
         _serviceProvider = collection.AddLogging().BuildServiceProvider();
-        _commandFactory = new CommandFactory(_serviceProvider, _commandFactoryLogger);
+        _commandFactory = CommandFactoryHelpers.CreateCommandFactory(_serviceProvider);
     }
 
     [Fact]

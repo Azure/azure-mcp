@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace AzureMcp.Helpers
 {
@@ -20,6 +21,43 @@ namespace AzureMcp.Helpers
 
             using var reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        /// <summary>
+        /// Finds a resource by name pattern match then returns the full resource name.
+        /// </summary>
+        /// <param name="assembly">The assembly containing the embedded resource.</param>
+        /// <param name="resourcePattern">A regex pattern matching the full name of the resource.</param>
+        /// <returns>The full name of the embedded resource.</returns>
+        /// <exception cref="ArgumentException">Thrown when multiple resources match resource pattern</exception>
+        public static string FindEmbeddedResource(Assembly assembly, string resourcePattern)
+        {
+            string[] names = assembly.GetManifestResourceNames();
+            Regex regex;
+            try
+            {
+                regex = new Regex(resourcePattern);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"Invalid regex pattern: '{resourcePattern}'", nameof(resourcePattern), ex);
+            }
+
+            string[] matches = assembly.GetManifestResourceNames()
+                .Where(name => regex.IsMatch(name))
+                .ToArray();
+
+            if (matches.Length == 0)
+            {
+                throw new ArgumentException($"No resources match pattern '{resourcePattern}'.", nameof(resourcePattern));
+            }
+
+            if (matches.Length > 1)
+            {
+                throw new ArgumentException($"Multiple resources match pattern '{resourcePattern}'. Please refine your pattern.", nameof(resourcePattern));
+            }
+
+            return matches[0];
         }
     }
 }

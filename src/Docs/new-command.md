@@ -5,6 +5,15 @@
 
 This document provides a comprehensive guide for implementing commands in Azure MCP following established patterns.
 
+## Area Pattern: Organizing Service Code
+
+All new services and their commands should use the Area pattern:
+
+- **Service code** goes in `src/Areas/{ServiceName}` (e.g., `src/Areas/Storage`)
+- **Tests** go in `tests/Areas/{ServiceName}`
+
+This keeps all code, options, models, and tests for a service together. See `src/Areas/Storage` for a reference implementation.
+
 ## Command Architecture
 
 ### Command Design Principles
@@ -39,40 +48,47 @@ This document provides a comprehensive guide for implementing commands in Azure 
 3. **Command Pattern**
    Commands follow the Model-Context-Protocol (MCP) pattern with this naming convention:
    ```
-   azmcp <service> <resource> <operation>
+   azmcp <azure service> <resource> <operation>
    ```
    Example: `azmcp storage container list`
 
    Where:
-   - `service`: Azure service name (lowercase, e.g., storage, cosmos, kusto)
+   - `azure service`: Azure service name (lowercase, e.g., storage, cosmos, kusto)
    - `resource`: Resource type (singular noun, lowercase)
    - `operation`: Action to perform (verb, lowercase)
-   
+
    Each command is:
-   - Registered in CommandFactory
+   - In code, to avoid ambiguity between service classes and Azure services, we
+     refer to Azure services as Areas
+   - Registered in the RegisterCommands method of its service's Areas/{Area}/{Area}Setup.cs file
    - Organized in a hierarchy of command groups
    - Documented with a title, description and examples
    - Validated before execution
    - Returns a standardized response format
 
-## Required Files
+
+### Required Files
 
 A complete command requires:
 
-1. Options class: `src/Options/{Service}/{Resource}/{Operation}Options.cs`
-2. Command class: `src/Commands/{Service}/{Resource}/{Resource}{Operation}Command.cs`
-3. Service interface: `src/Services/Interfaces/I{Service}Service.cs`
-4. Service implementation: `src/Services/Azure/{Service}/{Service}Service.cs`
-5. Unit test: `tests/Commands/{Service}/{Resource}/{Resource}{Operation}CommandTests.cs`
-6. Integration test: `tests/Client/{Service}CommandTests.cs`
-7. Registration in `src/Commands/CommandFactory.cs`
+1. Options class: `src/Areas/{Area}/Options/{Resource}/{Operation}Options.cs`
+2. Command class: `src/Areas/{Area}/Commands/{Resource}/{Resource}{Operation}Command.cs`
+3. Service interface: `src/Areas/{Area}/Services/I{Service}Service.cs`
+4. Service implementation: `src/Areas/{Area}/Services/{Service}Service.cs`
+   - {Area} and {Service} should not be considered synonymous
+   - It's common for an area to have a single service class named after the
+     area but some areas will have multiple service classes
+5. Unit test: `tests/Areas/{Area}/UnitTests/{Resource}/{Resource}{Operation}CommandTests.cs`
+6. Integration test: `tests/Areas/{Area}/LiveTests/{Area}CommandTests.cs`
+7. Command registration in RegisterCommands(): `src/Areas/{Area}/{Area}Setup.cs`
+9. Area registration in RegisterAreas(): `src/Program.cs`
 
 ## Implementation Guidelines
 
 ### 1. Options Class
 
 ```csharp
-public class {Resource}{Operation}Options : Base{Service}Options 
+public class {Resource}{Operation}Options : Base{Service}Options
 {
     // Only add properties not in base class
     public string? NewOption { get; set; }
@@ -81,7 +97,7 @@ public class {Resource}{Operation}Options : Base{Service}Options
 
 IMPORTANT:
 - Inherit from appropriate base class (BaseServiceOptions, GlobalOptions, etc.)
-- Never redefine properties from base classes 
+- Never redefine properties from base classes
 - Make properties nullable if not required
 - Use consistent parameter names across services:
   - Use `subscription` instead of `subscriptionId`
@@ -93,12 +109,12 @@ IMPORTANT:
 ### 2. Command Class
 
 ```csharp
-public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger) 
+public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger)
     : Base{Service}Command<{Resource}{Operation}Options>
 {
     private const string CommandTitle = "Human Readable Title";
     private readonly ILogger<{Resource}{Operation}Command> _logger = logger;
-    
+
     // Define options from OptionDefinitions
     private readonly Option<string> _newOption = OptionDefinitions.Service.NewOption;
 
@@ -118,8 +134,8 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     {
         base.RegisterOptions(command);
         command.AddOption(_newOption);
-    }    
-    
+    }
+
     protected override {Resource}{Operation}Options BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
@@ -128,7 +144,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     }
 
     [McpServerTool(
-        Destructive = false,     // Set to true for commands that modify resources 
+        Destructive = false,     // Set to true for commands that modify resources
         ReadOnly = true,        // Set to false for commands that modify resources
         Title = CommandTitle)]  // Display name shown in UI
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -145,7 +161,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
 
             // Get the appropriate service from DI
             var service = context.GetService<I{Service}Service>();
-            
+
             // Call service operation(s) with required parameters
             var results = await service.{Operation}(
                 options.RequiredParam!,  // Required parameters end with !
@@ -154,17 +170,17 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
                 options.RetryPolicy);    // From GlobalCommand
 
             // Set results if any were returned
-            context.Response.Results = results?.Count > 0 ? 
+            context.Response.Results = results?.Count > 0 ?
                 ResponseResult.Create(
                     new {Operation}CommandResult(results),
-                    {Service}JsonContext.Default.{Operation}CommandResult) : 
+                    {Service}JsonContext.Default.{Operation}CommandResult) :
                 null;
         }
         catch (Exception ex)
         {
             // Log error with all relevant context
-            _logger.LogError(ex, 
-                "Error in {Operation}. Required: {Required}, Optional: {Optional}, Options: {@Options}", 
+            _logger.LogError(ex,
+                "Error in {Operation}. Required: {Required}, Optional: {Optional}, Options: {@Options}",
                 Name, options.RequiredParam, options.OptionalParam, options);
             HandleException(context.Response, ex);
         }
@@ -176,13 +192,13 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     protected override string GetErrorMessage(Exception ex) => ex switch
     {
         ResourceNotFoundException => "Resource not found. Verify the resource exists and you have access.",
-        AuthorizationException authEx => 
+        AuthorizationException authEx =>
             $"Authorization failed accessing the resource. Details: {authEx.Message}",
         ServiceException svcEx => svcEx.Message,
         _ => base.GetErrorMessage(ex)
     };
 
-    protected override int GetStatusCode(Exception ex) => ex switch  
+    protected override int GetStatusCode(Exception ex) => ex switch
     {
         ResourceNotFoundException => 404,
         AuthorizationException => 403,
@@ -214,7 +230,7 @@ namespace AzureMcp.Commands.{Service};
 
 // Base command for all service commands
 public abstract class Base{Service}Command<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> 
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new()
 {
     protected readonly Option<string> _commonOption = OptionDefinitions.Service.CommonOption;
@@ -249,13 +265,13 @@ public abstract class Base{Service}Command<
 
 // Base command for resource-specific commands
 public abstract class Base{Resource}Command<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> 
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : Base{Service}Command<TOptions>
     where TOptions : Base{Resource}Options, new()
 {
     protected readonly Option<string> _resourceOption = OptionDefinitions.Service.Resource;
-    
-    protected override void RegisterOptions(Command command) 
+
+    protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_resourceOption);
@@ -286,11 +302,11 @@ public class {Resource}{Operation}CommandTests
     {
         _service = Substitute.For<I{Service}Service>();
         _logger = Substitute.For<ILogger<{Resource}{Operation}Command>>();
-        
+
         var collection = new ServiceCollection();
         collection.AddSingleton(_service);
         _serviceProvider = collection.BuildServiceProvider();
-        
+
         _command = new(_logger);
     }
 
@@ -369,7 +385,7 @@ public class {Service}CommandTests : CommandTestsBase, IClassFixture<LiveTestFix
     protected ITestOutputHelper Output { get; }
     protected IMcpClient Client { get; }
 
-    public {Service}CommandTests(LiveTestFixture fixture, ITestOutputHelper output) 
+    public {Service}CommandTests(LiveTestFixture fixture, ITestOutputHelper output)
         : base(fixture, output)
     {
         Client = fixture.Client;
@@ -379,14 +395,14 @@ public class {Service}CommandTests : CommandTestsBase, IClassFixture<LiveTestFix
 
     [Theory]
     [InlineData(AuthMethod.Credential)]
-    [InlineData(AuthMethod.Key)] 
+    [InlineData(AuthMethod.Key)]
     [Trait("Category", "Live")]
     public async Task Should_{Operation}_{Resource}_WithAuth(AuthMethod authMethod)
     {
         // Arrange
         var result = await CallToolAsync(
             "azmcp-{service}-{resource}-{operation}",
-            new() 
+            new()
             {
                 { "subscription", Settings.Subscription },
                 { "resource-group", Settings.ResourceGroup },
@@ -415,29 +431,41 @@ public class {Service}CommandTests : CommandTestsBase, IClassFixture<LiveTestFix
             $"azmcp-{service}-{resource}-{operation} {args}");
 
         Assert.Equal(400, result.GetProperty("status").GetInt32());
-        Assert.Contains("required", 
+        Assert.Contains("required",
             result.GetProperty("message").GetString()!.ToLower());
     }
 }
 ```
 
-### 6. CommandFactory Registration
+### 6. Command Registration
 
 ```csharp
-private void Register{Service}Commands()
+private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
 {
     var service = new CommandGroup(
         "{service}",
         "{Service} operations");
-    _rootGroup.AddSubGroup(service);
+    rootGroup.AddSubGroup(service);
 
     var resource = new CommandGroup(
-        "{resource}", 
+        "{resource}",
         "{Resource} operations");
     service.AddSubGroup(resource);
 
     resource.AddCommand("operation", new {Service}.{Resource}{Operation}Command(
-        GetLogger<{Resource}{Operation}Command>()));
+        loggerFactory.CreateLogger<{Resource}{Operation}Command>()));
+```
+
+### 7. Area registration
+```csharp
+    private static IAreaSetup[] RegisterAreas()
+    {
+        return [
+            new AzureMcp.Areas.AppConfig.AppConfigSetup(),
+            new AzureMcp.Areas.{Service}.{Service}Setup(),
+            new AzureMcp.Areas.Storage.StorageSetup(),
+        ];
+    }
 ```
 
 ## Error Handling
@@ -447,11 +475,11 @@ Commands in Azure MCP follow a standardized error handling approach using the ba
 ### 1. Status Code Mapping
 The base implementation handles common status codes:
 ```csharp
-protected virtual int GetStatusCode(Exception ex) => ex switch 
+protected virtual int GetStatusCode(Exception ex) => ex switch
 {
     // Common error response codes
     AuthenticationFailedException => 401,   // Unauthorized
-    RequestFailedException rfEx => rfEx.Status,  // Service-reported status 
+    RequestFailedException rfEx => rfEx.Status,  // Service-reported status
     HttpRequestException => 503,   // Service unavailable
     ValidationException => 400,    // Bad request
     _ => 500  // Unknown errors
@@ -460,7 +488,7 @@ protected virtual int GetStatusCode(Exception ex) => ex switch
 
 ### 2. Error Message Formatting
 Error messages should be user-actionable and help debug issues:
-```csharp 
+```csharp
 protected virtual string GetErrorMessage(Exception ex) => ex switch
 {
     AuthenticationFailedException authEx =>
@@ -485,7 +513,7 @@ protected virtual void HandleException(CommandResponse response, Exception ex)
 
     response.Status = GetStatusCode(ex);
     // Add link to troubleshooting guide
-    response.Message = GetErrorMessage(ex) + 
+    response.Message = GetErrorMessage(ex) +
         ". Details at https://aka.ms/azmcp/troubleshooting";
     response.Results = ResponseResult.Create(
         result, JsonSourceGenerationContext.Default.ExceptionResult);
@@ -498,21 +526,21 @@ Commands should override error handlers to add service-specific mappings:
 protected override string GetErrorMessage(Exception ex) => ex switch
 {
     // Add service-specific cases
-    ResourceNotFoundException => 
+    ResourceNotFoundException =>
         "Resource not found. Verify name and permissions.",
-    ServiceQuotaExceededException => 
+    ServiceQuotaExceededException =>
         "Service quota exceeded. Request quota increase.",
     _ => base.GetErrorMessage(ex) // Fall back to base implementation
 };
 ```
 
-### 5. Error Context Logging 
+### 5. Error Context Logging
 Always log errors with relevant context information:
 ```csharp
 catch (Exception ex)
 {
-    _logger.LogError(ex, 
-        "Error in {Operation}. Resource: {Resource}, Options: {@Options}", 
+    _logger.LogError(ex,
+        "Error in {Operation}. Resource: {Resource}, Options: {@Options}",
         Name, resourceId, options);
     HandleException(context.Response, ex);
 }
@@ -521,13 +549,13 @@ catch (Exception ex)
 ### 6. Common Error Scenarios to Handle
 
 1. **Authentication/Authorization**
-   - Azure credential expiry 
+   - Azure credential expiry
    - Missing RBAC permissions
    - Invalid connection strings
-   
+
 2. **Validation**
    - Missing required parameters
-   - Invalid parameter formats 
+   - Invalid parameter formats
    - Conflicting options
 
 3. **Resource State**
@@ -538,7 +566,7 @@ catch (Exception ex)
 4. **Service Limits**
    - Throttling/rate limits
    - Quota exceeded
-   - Service capacity 
+   - Service capacity
 
 5. **Network/Connectivity**
    - Service unavailable
@@ -569,10 +597,10 @@ public async Task ExecuteAsync_HandlesServiceError()
     // Arrange
     _service.Operation()
         .Returns(Task.FromException(new ServiceException("Test error")));
-        
-    // Act 
+
+    // Act
     var response = await ExecuteCommand("--param value");
-        
+
     // Assert
     Assert.Equal(500, response.Status);
     Assert.Contains("Test error", response.Message);
@@ -598,16 +626,13 @@ public async Task Should_HandleAuth(AuthMethod method)
 
 [Theory]
 [InlineData("--invalid-value")]    // Bad input
-[InlineData("--missing-required")] // Missing params  
+[InlineData("--missing-required")] // Missing params
 public async Task Should_Return400_ForInvalidInput(string args)
 {
     var result = await CallCommand(args);
     Assert.Equal(400, result.Status);
     Assert.Contains("validation", result.Message.ToLower());
 }
-
-### End-to-end Tests
-End-to-end tests are currently performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to "/e2eTests/e2eTestPrompts.md".
 
 ## Best Practices
 
@@ -646,7 +671,7 @@ End-to-end tests are currently performed manually. Command authors must thorough
    - Skip base.RegisterOptions() call
    - Use hardcoded option strings
    - Return different response formats
-   - Leave command unregistered 
+   - Leave command unregistered
    - Skip error handling
    - Miss required tests
 
@@ -665,12 +690,12 @@ End-to-end tests are currently performed manually. Command authors must thorough
 Before submitting:
 
 - [ ] Options class follows inheritance pattern
-- [ ] Command class implements all required members 
+- [ ] Command class implements all required members
 - [ ] Command uses proper OptionDefinitions
 - [ ] Service interface and implementation complete
 - [ ] Unit tests cover all paths
 - [ ] Integration tests added
-- [ ] Registered in CommandFactory 
+- [ ] Registered in CommandFactory
 - [ ] Follows file structure exactly
 - [ ] Error handling implemented
 - [ ] Documentation complete

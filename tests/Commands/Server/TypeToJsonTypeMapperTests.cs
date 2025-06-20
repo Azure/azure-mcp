@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using System.Collections;
-using AzureMcp.Commands.Server;
+using AzureMcp.Areas.Server.Commands;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server;

@@ -4,7 +4,8 @@
 using Azure.ResourceManager.Resources;
 using AzureMcp.Models.ResourceGroup;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.ResourceGroup;
 
