@@ -637,7 +637,7 @@ public async Task Should_Return400_ForInvalidInput(string args)
 }
 ```
 
-If your live test class needs to implement IAsyncLifetime or override Dispose, you must still call Dispose on your base class:
+If your live test class needs to implement `IAsyncLifetime` or override `Dispose`, you must call `Dispose` on your base class:
 ```cs
 public class MyCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
