@@ -185,7 +185,7 @@ Before running live tests,
     Use the `-ResourceGroupName` parameter to change the resource group name from its default of "{username}-mcp{hash}".
     Use the `-BaseName` parameter to change the name for all of the resources from its default of "mcp{hash}".
     Use the `-Unique` switch to make `{hash}` in the resource group name and base name unique per invocation
-    Use the `-DeleteAfterHours` parameter to change the default DeleteAfter tag of 3 hours.
+    Use the `-DeleteAfterHours` parameter to change the default DeleteAfter tag of 12 hours.
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the root of the repo.
 
