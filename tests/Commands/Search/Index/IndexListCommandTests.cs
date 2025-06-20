@@ -62,7 +62,7 @@ public class IndexListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoIndexes()
+    public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoIndexes()
     {
         // Arrange
         _searchService.ListIndexes(Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
@@ -78,7 +78,13 @@ public class IndexListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<IndexListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Empty(result.Indexes);
     }
 
     [Fact]

@@ -42,9 +42,10 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = clusterNames?.Count > 0 ?
-                ResponseResult.Create(new ClusterListCommandResult(clusterNames), KustoJsonContext.Default.ClusterListCommandResult) :
-                null;
+            context.Response.Results = CreateListResult(
+                clusterNames,
+                clusters => new ClusterListCommandResult(clusters),
+                KustoJsonContext.Default.ClusterListCommandResult);
         }
         catch (Exception ex)
         {

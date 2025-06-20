@@ -107,7 +107,7 @@ public class SubscriptionListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_EmptySubscriptionList_ReturnsNullResults()
+    public async Task ExecuteAsync_EmptySubscriptionList_ReturnsEmptyResults()
     {
         // Arrange
         _subscriptionService
@@ -122,7 +122,11 @@ public class SubscriptionListCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(200, result.Status);
-        Assert.Null(result.Results);
+        Assert.NotNull(result.Results);
+        
+        var jsonDoc = JsonDocument.Parse(JsonSerializer.Serialize(result.Results));
+        var subscriptionsArray = jsonDoc.RootElement.GetProperty("subscriptions");
+        Assert.Equal(0, subscriptionsArray.GetArrayLength());
     }
 
     [Fact]

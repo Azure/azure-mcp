@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Text.Json.Serialization.Metadata;
+
 
 namespace AzureMcp.Commands;
 
@@ -46,6 +50,26 @@ public abstract class BaseCommand : IBaseCommand
     protected virtual string GetErrorMessage(Exception ex) => ex.Message;
 
     protected virtual int GetStatusCode(Exception ex) => 500;
+
+    /// <summary>
+    /// Creates a ResponseResult from a collection, always returning a result with an empty collection if the input is null or empty.
+    /// This ensures consistent JSON output that always includes a "results" field.
+    /// </summary>
+    /// <typeparam name="TItem">The type of items in the collection</typeparam>
+    /// <typeparam name="TResult">The type of the result object</typeparam>
+    /// <param name="collection">The collection that may be null or empty</param>
+    /// <param name="resultFactory">A function that creates the result object from a non-null collection</param>
+    /// <param name="jsonTypeInfo">The JsonTypeInfo for serialization</param>
+    /// <returns>A ResponseResult that always contains a result object</returns>
+    protected static ResponseResult CreateListResult<TItem, TResult>(
+        IEnumerable<TItem>? collection,
+        Func<List<TItem>, TResult> resultFactory,
+        JsonTypeInfo<TResult> jsonTypeInfo)
+    {
+        var safeCollection = collection?.ToList() ?? [];
+        var result = resultFactory(safeCollection);
+        return ResponseResult.Create(result, jsonTypeInfo);
+    }
 
     public virtual ValidationResult Validate(CommandResult commandResult, CommandResponse? commandResponse = null)
     {

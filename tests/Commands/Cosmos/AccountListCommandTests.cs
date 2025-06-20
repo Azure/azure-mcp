@@ -61,7 +61,7 @@ public class AccountListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoAccounts()
+    public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoAccounts()
     {
         // Arrange
         _cosmosService.GetCosmosAccounts("sub123", null, null)
@@ -76,7 +76,13 @@ public class AccountListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<AccountListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Empty(result.Accounts);
     }
 
     [Fact]

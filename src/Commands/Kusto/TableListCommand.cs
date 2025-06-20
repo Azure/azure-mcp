@@ -54,9 +54,10 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
                     options.RetryPolicy);
             }
 
-            context.Response.Results = tableNames?.Count > 0 ?
-                ResponseResult.Create(new TableListCommandResult(tableNames), KustoJsonContext.Default.TableListCommandResult) :
-                null;
+            context.Response.Results = CreateListResult(
+                tableNames,
+                tables => new TableListCommandResult(tables),
+                KustoJsonContext.Default.TableListCommandResult);
         }
         catch (Exception ex)
         {

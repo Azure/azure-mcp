@@ -72,7 +72,7 @@ public class BlobListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoBlobs()
+    public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoBlobs()
     {
         // Arrange
         _storageService.ListBlobs(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName), Arg.Is(_knownSubscriptionId),
@@ -89,7 +89,13 @@ public class BlobListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<BlobListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Empty(result.Blobs);
     }
 
     [Fact]
