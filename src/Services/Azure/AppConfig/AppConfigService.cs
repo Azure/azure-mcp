@@ -244,7 +244,8 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                         if (filterElement.TryGetProperty("name", out var nameElement))
                         {
                             var filterName = nameElement.GetString() ?? string.Empty;
-                            var parameters = new Dictionary<string, object>();                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
+                            var parameters = new Dictionary<string, object>();
+                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
                             {
                                 var paramDict = JsonSerializer.Deserialize(paramsElement.GetRawText(), JsonSourceGenerationContext.Default.DictionaryStringObject) ?? new Dictionary<string, object?>();
                                 foreach (var (key, value) in paramDict)
@@ -266,7 +267,9 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         }
 
         await Task.CompletedTask;
-    }    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
+    }
+    
+    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
     {
         ValidateRequiredParameters(accountName, key, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
