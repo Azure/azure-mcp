@@ -14,6 +14,7 @@ namespace AzureMcp;
 [JsonSerializable(typeof(List<string>))]
 [JsonSerializable(typeof(List<JsonNode>))]
 [JsonSerializable(typeof(AzureCredentials))]
+[JsonSerializable(typeof(Dictionary<string, object?>))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal partial class JsonSourceGenerationContext : JsonSerializerContext
 {

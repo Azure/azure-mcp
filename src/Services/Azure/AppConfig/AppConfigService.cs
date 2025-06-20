@@ -244,13 +244,12 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                         if (filterElement.TryGetProperty("name", out var nameElement))
                         {
                             var filterName = nameElement.GetString() ?? string.Empty;
-                            var parameters = new Dictionary<string, object>();
-
-                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
+                            var parameters = new Dictionary<string, object>();                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
                             {
-                                foreach (var param in paramsElement.EnumerateObject())
+                                var paramDict = JsonSerializer.Deserialize(paramsElement.GetRawText(), JsonSourceGenerationContext.Default.DictionaryStringObject) ?? new Dictionary<string, object?>();
+                                foreach (var (key, value) in paramDict)
                                 {
-                                    parameters[param.Name] = JsonElementToObject(param.Value);
+                                    parameters[key] = value;
                                 }
                             }
 
@@ -267,24 +266,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         }
 
         await Task.CompletedTask;
-    }
-
-    private static object JsonElementToObject(JsonElement element)
-    {
-        return element.ValueKind switch
-        {
-            JsonValueKind.String => element.GetString() ?? string.Empty,
-            JsonValueKind.Number => element.TryGetInt32(out var intValue) ? intValue : element.GetDouble(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            JsonValueKind.Null => null!,
-            JsonValueKind.Object => element.EnumerateObject().ToDictionary(p => p.Name, p => JsonElementToObject(p.Value)),
-            JsonValueKind.Array => element.EnumerateArray().Select(JsonElementToObject).ToArray(),
-            _ => element.ToString()
-        };
-    }
-
-    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
+    }    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
     {
         ValidateRequiredParameters(accountName, key, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
