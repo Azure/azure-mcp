@@ -358,6 +358,8 @@ The Azure MCP wrapper automatically installs the correct platform-specific packa
 
 #### Resolution Steps:
 
+**First, ensure you have the latest VS Code version** (v1.101 or later released June 12th, 2024), as older versions may cause compatibility issues with the Azure MCP Server on Ubuntu systems.
+
 **The wrapper will attempt automatic installation first.** If auto-installation fails, try these manual steps:
 
 1. **Clear npm cache and reinstall:**
