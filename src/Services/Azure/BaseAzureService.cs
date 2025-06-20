@@ -7,7 +7,7 @@ using Azure.Core;
 using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Authentication;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Services.Azure;
 

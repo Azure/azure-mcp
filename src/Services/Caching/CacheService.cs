@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Concurrent;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AzureMcp.Services.Caching;

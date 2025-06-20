@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Server.Tools;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;

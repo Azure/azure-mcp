@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Server.Commands.Tools;
+using AzureMcp.Areas.Server.Models;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,10 +22,9 @@ namespace AzureMcp.Tests.Commands.Server.Tools
 
         public McpClientServiceTests()
         {
-            var services = new ServiceCollection().AddLogging().BuildServiceProvider();
-            var commandFactoryLogger = services.GetRequiredService<ILogger<CommandFactory>>();
-            _commandFactory = new CommandFactory(services, commandFactoryLogger);
-            _mcpClientServiceLogger = services.GetRequiredService<ILogger<McpClientService>>();
+            var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+            _commandFactory = CommandFactoryHelpers.CreateCommandFactory(serviceProvider);
+            _mcpClientServiceLogger = serviceProvider.GetRequiredService<ILogger<McpClientService>>();
 
             var testBinDir = AppContext.BaseDirectory;
             var exeName = OperatingSystem.IsWindows() ? "azmcp.exe" : "azmcp";

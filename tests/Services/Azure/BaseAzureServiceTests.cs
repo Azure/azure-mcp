@@ -4,7 +4,7 @@
 using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 using NSubstitute;
 using Xunit;
 
