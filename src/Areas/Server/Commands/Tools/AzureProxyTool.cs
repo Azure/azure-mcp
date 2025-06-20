@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Server.Commands.Tools;
 using Json.Schema;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
@@ -13,11 +12,11 @@ namespace AzureMcp.Commands.Server.Tools;
 
 [JsonSerializable(typeof(JsonSchema))]
 [JsonSerializable(typeof(ListToolsResult))]
-[JsonSerializable(typeof(List<McpClientTool>))]
+[JsonSerializable(typeof(IEnumerable<Tool>))]
 [JsonSerializable(typeof(Dictionary<string, object?>))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     WriteIndented = true
 )]
 internal partial class AzureProxyToolSerializationContext : JsonSerializerContext
@@ -211,7 +210,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         }
 
         var listTools = await client.ListToolsAsync();
-        var toolsJson = JsonSerializer.Serialize(listTools, AzureProxyToolSerializationContext.Default.ListMcpClientTool);
+        var toolsJson = JsonSerializer.Serialize(listTools.Select(t => t.ProtocolTool), AzureProxyToolSerializationContext.Default.IEnumerableTool);
         _cachedToolListsJson[tool] = toolsJson;
 
         return toolsJson;
