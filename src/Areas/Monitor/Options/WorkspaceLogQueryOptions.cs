@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Areas.Monitor.Options;
 
-public class LogQueryOptions : WorkspaceOptions
+public class WorkspaceLogQueryOptions : WorkspaceOptions
 {
     public string? Query { get; set; }
     public int? Hours { get; set; }
