@@ -688,6 +688,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 1. Do not:
    - Redefine base class properties in Options classes
    - Skip base.RegisterOptions() call
+   - Skip base.Dispose() call
    - Use hardcoded option strings
    - Return different response formats
    - Leave command unregistered
