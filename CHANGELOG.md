@@ -9,7 +9,7 @@
 ### Bugs Fixed
 
 ### Other Changes
-Repository structure changed to organize all of an Azure service's code into a single "area" folder.
+Repository structure changed to organize all of an Azure service's code into a single "area" folder. [#426](https://github.com/Azure/azure-mcp/pull/426)
 
 ## 0.2.3 (2025-06-19)
 
