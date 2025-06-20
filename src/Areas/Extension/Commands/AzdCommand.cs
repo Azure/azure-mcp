@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Reflection;
 using System.Runtime.InteropServices;
 using AzureMcp.Areas.Extension.Options;
 using AzureMcp.Commands;
@@ -35,9 +36,9 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
 
     private static string LoadBestPracticesText()
     {
-        var assembly = typeof(AzdCommand).Assembly;
-        const string ResourceName = "AzureMcp.Areas.Extension.Resources.azd-best-practices.txt";
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
+        Assembly assembly = typeof(AzdCommand).Assembly;
+        string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, "azd-best-practices.txt");
+        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
     }
 
     private static readonly string[] s_azdCliPaths =

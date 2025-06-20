@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Reflection;
 using AzureMcp.Commands;
 using AzureMcp.Helpers;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,9 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
 
     private static string LoadBestPracticesText()
     {
-        var assembly = typeof(AzureBestPracticesGetCommand).Assembly;
-        const string ResourceName = "AzureMcp.Area.AzureBestPractices.Resources.azure-best-practices.txt";
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
+        Assembly assembly = typeof(AzureBestPracticesGetCommand).Assembly;
+        string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, "azure-best-practices.txt");
+        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
     }
 
     public override string Name => "get";

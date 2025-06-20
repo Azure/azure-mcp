@@ -21,6 +21,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
 
     public ValueTask DisposeAsync()
     {
+        base.Dispose();
         return ValueTask.CompletedTask;
     }
 
