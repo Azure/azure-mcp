@@ -5,6 +5,7 @@ namespace AzureMcp.Areas.Monitor.Options;
 
 public static class MonitorOptionDefinitions
 {
+    public const string ResourceIdName = "resource-id";
     public const string WorkspaceIdOrName = "workspace";
     public const string TableNameName = "table-name";
     public const string TableTypeName = "table-type";
@@ -14,6 +15,14 @@ public static class MonitorOptionDefinitions
 
     public const string EntityName = "entity";
     public const string HealthModelName = "model-name";
+
+    public static readonly Option<string> ResourceId = new(
+        $"--{ResourceIdName}",
+        "The Azure Resource ID to query logs. Example: /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.OperationalInsights/workspaces/<ws>"
+    )
+    {
+        IsRequired = true
+    };
 
     public static readonly Option<string> Workspace = new(
         $"--{WorkspaceIdOrName}",

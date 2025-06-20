@@ -4,7 +4,11 @@
 
 ### Features Added
 
+- Added new command for resource-centric logs query in Azure Monitor with command path `azmcp-monitor-resource-logs-query` - https://github.com/Azure/azure-mcp/pull/413/
+
 ### Breaking Changes
+
+- Changed the command for workspace-based logs query in Azure Monitor from `azmcp-monitor-log-query` to `azmcp-monitor-workspace-logs-query`
 
 ### Bugs Fixed
 
