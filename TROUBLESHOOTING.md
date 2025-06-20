@@ -349,7 +349,7 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 
 ### Platform Package Installation Issues
 
-If you encounter errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this typically indicates an incomplete installation.
+The Azure MCP wrapper automatically installs the correct platform-specific package when needed. However, if you encounter persistent errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this may indicate network connectivity issues or permission problems.
 
 #### Error Examples:
 - `Failed to load platform specific package '@azure/mcp-linux-x64'`
@@ -357,6 +357,8 @@ If you encounter errors about missing platform packages (e.g., `@azure/mcp-linux
 - `'@azure/mcp-linux-x64' module is missing`
 
 #### Resolution Steps:
+
+**The wrapper will attempt automatic installation first.** If auto-installation fails, try these manual steps:
 
 1. **Clear npm cache and reinstall:**
    ```bash
@@ -386,12 +388,12 @@ If you encounter errors about missing platform packages (e.g., `@azure/mcp-linux
    npm --version
    ```
 
-#### Common Causes:
+#### Common Causes of Auto-Installation Failure:
 - **Network connectivity issues** during package installation
-- **npm cache corruption** preventing proper package resolution
-- **Incomplete installation** due to interrupted download
+- **Permission problems** preventing npm from installing packages
+- **Corporate firewall/proxy** blocking npm registry access  
 - **Disk space issues** preventing package extraction
-- **Corporate firewall/proxy** blocking npm registry access
+- **npm cache corruption** preventing proper package resolution
 
 #### For Enterprise Users:
 If you're behind a corporate firewall, you may need to:
