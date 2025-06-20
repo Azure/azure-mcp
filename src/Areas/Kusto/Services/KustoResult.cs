@@ -1,4 +1,4 @@
-﻿namespace AzureMcp.Services.Azure.Kusto;
+﻿namespace AzureMcp.Areas.Kusto.Services;
 
 public class KustoResult
 {

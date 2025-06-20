@@ -36,7 +36,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
     private static string LoadBestPracticesText()
     {
         var assembly = typeof(AzdCommand).Assembly;
-        const string ResourceName = "AzureMcp.Resources.azd-best-practices.txt";
+        const string ResourceName = "AzureMcp.Areas.Extension.Resources.azd-best-practices.txt";
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
     }
 

@@ -83,17 +83,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\azure-best-practices.txt" />
-    <EmbeddedResource Include="Resources\azd-best-practices.txt" />
-    <EmbeddedResource Include="Resources\registry.json" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+    <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
+    <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
   </ItemGroup>
-
-  <!-- TODO: Remove after 5/19/25 -->
-  <!-- Runs before every dotnet build -->
-  <Target Name="InstallGitHooks" BeforeTargets="BeforeBuild">
-    <Message Text="To install git hooks, run 'eng/scripts/Install-GitHooks.ps1'" Importance="high" />
-    <Message Text="To remove git hooks, run 'eng/scripts/Remove-GitHooks.ps1'" Importance="high" />
-  </Target>
 
   <!-- Remove Cosmos native files from the build output directory -->
   <Target Name="RemoveCosmosNativeFiles" BeforeTargets="Build">

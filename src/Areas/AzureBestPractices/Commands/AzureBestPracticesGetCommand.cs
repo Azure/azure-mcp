@@ -19,7 +19,7 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
     private static string LoadBestPracticesText()
     {
         var assembly = typeof(AzureBestPracticesGetCommand).Assembly;
-        const string ResourceName = "AzureMcp.Resources.azure-best-practices.txt";
+        const string ResourceName = "AzureMcp.Area.AzureBestPractices.Resources.azure-best-practices.txt";
         return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, ResourceName);
     }
 

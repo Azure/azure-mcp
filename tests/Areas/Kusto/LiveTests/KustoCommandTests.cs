@@ -4,7 +4,8 @@
 using System.Text.Json;
 using Azure.Core;
 using Azure.Identity;
-using AzureMcp.Services.Azure.Kusto;
+using AzureMcp.Areas.Kusto.Services;
+using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
 using Xunit;

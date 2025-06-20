@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using Azure.Core;
 
-namespace AzureMcp.Services.Azure.Kusto;
+namespace AzureMcp.Areas.Kusto.Services;
 
 public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredential tokenCredential, string userAgent)
 {
