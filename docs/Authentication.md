@@ -18,7 +18,7 @@ Azure MCP Server authenticates to Microsoft Entra ID via the [Azure Identity lib
     | 5 | [AzureCliCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azureclicredential?view=azure-dotnet) | Uses your Azure CLI login | Yes |
     | 6 | [AzurePowerShellCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azurepowershellcredential?view=azure-dotnet) | Uses your Azure PowerShell login | Yes |
     | 7 | [AzureDeveloperCliCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azuredeveloperclicredential?view=azure-dotnet) | Uses your Azure Developer CLI login | Yes |
-    | 8 | [InteractiveBrowserCredential](https://learn.microsoft.com/dotnet/api/azure.identity.interactivebrowsercredential?view=azure-dotnet) | Uses a broker and falls back to browser-based login if needed | Yes |
+    | 8 | [InteractiveBrowserCredential](https://learn.microsoft.com/dotnet/api/azure.identity.interactivebrowsercredential?view=azure-dotnet) | Uses a broker and falls back to browser-based login if needed. The account picker dialog allows you to ensure you're selecting the correct account. | Yes |
 
     If you're logged in through any of these mechanisms, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure. For example, read access to your Storage account via Role-Based Access Control (RBAC). To learn more about Azure's RBAC authorization system, see [What is Azure RBAC?](https://learn.microsoft.com/azure/role-based-access-control/overview).
 
