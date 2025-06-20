@@ -268,7 +268,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
 
         await Task.CompletedTask;
     }
-    
+
     private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
     {
         ValidateRequiredParameters(accountName, key, subscriptionId);
