@@ -3,7 +3,7 @@
 
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.Tenant;
 

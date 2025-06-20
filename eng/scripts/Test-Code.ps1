@@ -5,7 +5,7 @@
 param(
     [string] $TestResultsPath,
     [switch] $Live,
-    [switch] $OpenReport = $false
+    [switch] $OpenReport
 )
 
 $ErrorActionPreference = 'Stop'
@@ -19,13 +19,14 @@ if (!$TestResultsPath) {
 
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
-
-Remove-Item "$RepoRoot/tests/xunit.runner.json" -Force
-Write-Output "Deleted existing xunit.runner.json file"
-Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "xunit.runner.json"
-Write-Output "Renamed xunit.runner.ci.json to xunit.runner.json"
-$xunitJson = Get-Content "$RepoRoot/tests/xunit.runner.json" | ConvertFrom-Json
-Write-Output $xunitJson
+if ($env:TF_BUILD) {
+    Remove-Item "$RepoRoot/tests/xunit.runner.json" -Force
+    Write-Host "Deleted existing xunit.runner.json file"
+    Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "xunit.runner.json"
+    Write-Host "Renamed xunit.runner.ci.json to xunit.runner.json"
+    $xunitJson = Get-Content "$RepoRoot/tests/xunit.runner.json"
+    Write-Host $xunitJson
+}
 
 # Run tests with coverage
 $filter = $Live ? "Category~Live" : "Category!~Live"
@@ -69,7 +70,8 @@ if ($env:TF_BUILD) {
     " -targetdir:'$reportDirectory'" +
     " -reporttypes:'Html;HtmlSummary;Cobertura'" +
     " -assemblyfilters:'+azmcp'" +
-    " -classfilters:'-*Tests*;-*Program'")
+    " -classfilters:'-*Tests*;-*Program'" +
+    " -filefilters:'-*JsonSourceGenerator*;-*LibraryImportGenerator*'")
 
     Write-Host "Coverage report generated at $reportDirectory/index.html"
 

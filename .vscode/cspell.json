@@ -157,6 +157,7 @@
         "cvzf",
         "Dataplane",
         "dataplane",
+        "filefilters",
         "gethealth",
         "healthmodels",
         "kcsb",

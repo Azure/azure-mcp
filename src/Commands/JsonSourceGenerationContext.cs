@@ -3,8 +3,8 @@
 
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.Group.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Group;
 
 namespace AzureMcp;
 
