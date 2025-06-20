@@ -1,10 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 using AzureMcp.Models.Identity;
 
 namespace AzureMcp.Areas.Redis.Models.ManagedRedis;
