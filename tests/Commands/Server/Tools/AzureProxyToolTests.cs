@@ -50,15 +50,14 @@ namespace AzureMcp.Tests.Commands.Server.Tools
                     Arg.Any<CancellationToken>())
                 .Returns(callInfo =>
                 {
-                    var result = new CallToolResponse
+                    var result = new CallToolResult
                     {
                         Content = [
-                            new Content {
-                                Type = "text",
+                            new TextContentBlock {
                                 Text = """
                                     storage account 1
                                     storage account 2
-                            """ }
+                                    """ }
                         ]
                     };
                     var json = JsonSerializer.SerializeToNode(result);
@@ -106,9 +105,9 @@ namespace AzureMcp.Tests.Commands.Server.Tools
             };
 
             var result = await _azureProxyTool.InvokeAsync(request, CancellationToken.None);
-            Assert.Contains("list of tools", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("storage", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("keyvault", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("list of tools", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("storage", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("keyvault", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -128,8 +127,8 @@ namespace AzureMcp.Tests.Commands.Server.Tools
                 }
             };
             var result = await _azureProxyTool.InvokeAsync(request, CancellationToken.None);
-            Assert.Contains("account_list", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("container_list", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("account_list", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("container_list", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -150,8 +149,8 @@ namespace AzureMcp.Tests.Commands.Server.Tools
                 }
             };
             var result = await _azureProxyTool.InvokeAsync(request, CancellationToken.None);
-            Assert.Contains("storage account 1", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("storage account 2", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("storage account 1", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("storage account 2", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
