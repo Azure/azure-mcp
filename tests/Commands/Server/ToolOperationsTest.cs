@@ -119,7 +119,7 @@ public class ToolOperationsTest
 
         if (!string.IsNullOrWhiteSpace(commandGroup))
         {
-            // If groups are specificed, all tool names should start with one of those groups
+            // If groups are specified, all tool names should start with one of those groups
             var groups = commandGroup?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
             foreach (var tool in result.Tools)
             {
