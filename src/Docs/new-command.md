@@ -609,6 +609,8 @@ public async Task ExecuteAsync_HandlesServiceError()
 ```
 
 ### Integration Tests
+Services requiring test resource deployment should add a bicep template to `/infra/services/` and import that template as a module in `/infra/test-resources.bicep`. If additional logic needs to be performed after resource deployment, but before any live tests are run, add a `{service}-post.ps1` script to the `/infra/services/` folder. See `/infra/services/storage.bicep` and `/infra/services/storage-post.ps1` for canonical examples.
+
 Live test scenarios should include:
 ```csharp
 [Theory]
@@ -633,6 +635,23 @@ public async Task Should_Return400_ForInvalidInput(string args)
     Assert.Equal(400, result.Status);
     Assert.Contains("validation", result.Message.ToLower());
 }
+```
+
+If your live test class needs to implement IAsyncLifetime or override Dispose, you must still call Dispose on your base class:
+```cs
+public class MyCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    : CommandTestsBase(liveTestFixture, output),
+    IClassFixture<LiveTestFixture>, IAsyncLifetime
+{
+    public ValueTask DisposeAsync()
+    {
+        base.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}
+```
+
+Failure to call `base.Dispose()` will prevent request and response data from `CallCommand` from being written to failing test results.
 
 ## Best Practices
 

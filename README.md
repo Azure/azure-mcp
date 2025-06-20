@@ -152,7 +152,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - Support for template discovery, template initialization, provisioning and deployment
 - Cross-platform compatibility
 
-Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/src/Resources/azd-best-practices.txt).
+Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/src/Areas/Extension/Resources/azd-best-practices.txt).
 
 ### 🛡️ Azure Best Practices
 - Get secure, production-grade Azure SDK best practices for effective code generation.
