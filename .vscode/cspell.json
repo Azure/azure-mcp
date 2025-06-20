@@ -179,6 +179,7 @@
         "MACOS",
         "MACPOOL",
         "MACVMIMAGE",
+        "netstat",
         "Newtonsoft",
         "Npgsql",
         "npmjs",
@@ -186,6 +187,8 @@
         "oidc",
         "payg",
         "pgrep",
+        "pids",
+        "procps",
         "proxying",
         "pscore",
         "RediSearch",
@@ -194,6 +197,7 @@
         "servicebus",
         "setparam",
         "testsettings",
+        "tlnp",
         "toolsets",
         "vectorizable",
         "Vectorizer",
@@ -202,6 +206,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "xargs",
         "Xunit"
     ]
 }
