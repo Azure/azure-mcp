@@ -1,6 +1,6 @@
 # Use the official .NET SDK image as the build image
 # Verify the SDK and runtime versions match the ones in global.json
-FROM mcr.microsoft.com/dotnet/sdk:9.0.300-bookworm-slim AS build
+FROM mcr.microsoft.com/dotnet/nightly/sdk:10-preview-trixie-slim AS build
 WORKDIR /src
 
 COPY . .
@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN pwsh "eng/scripts/Build-Module.ps1" -OutputPath /app/publish -OperatingSystem Linux -Architecture x64
 
 # Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0.5-bookworm-slim AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0.6-bookworm-slim AS runtime
 WORKDIR /app
 
 # Install Azure CLI and required dependencies
