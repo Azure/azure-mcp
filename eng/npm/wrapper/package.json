@@ -23,9 +23,9 @@
   "bin": {
     "azmcp": "./index.js"
   },
-  "os": [
-  ],
-  "cpu": [
-  ],
-  "optionalDependencies": {}
+  "os": [],
+  "cpu": [],
+  "dependencies": {
+    "@azure/mcp-linux-x64": "^0.2.3"
+  }
 }
