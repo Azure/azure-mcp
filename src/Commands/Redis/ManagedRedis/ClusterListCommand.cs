@@ -45,11 +45,9 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = clusters.Any() ?
-                ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new ClusterListCommandResult(clusters),
-                    RedisJsonContext.Default.ClusterListCommandResult) :
-                null;
+                    RedisJsonContext.Default.ClusterListCommandResult);
         }
         catch (Exception ex)
         {
