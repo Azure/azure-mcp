@@ -10,6 +10,8 @@
 
 ### Other Changes
 
+- Updated to ModelContextProtocol 0.3.0-preview1, which brings support for the 06-18-2025 MCP specification. https://github.com/Azure/azure-mcp/pull/431
+
 ## 0.2.3 (2025-06-19)
 
 ### Features Added
