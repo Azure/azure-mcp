@@ -83,6 +83,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\terraform-best-practices.txt" />
     <EmbeddedResource Include="Resources\azure-best-practices.txt" />
     <EmbeddedResource Include="Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Resources\registry.json" />

@@ -193,6 +193,7 @@
         "resourcegroups",
         "servicebus",
         "setparam",
+        "terraformbestpractices",
         "testsettings",
         "toolsets",
         "vectorizable",
@@ -202,6 +203,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "winget",
         "Xunit"
     ]
 }

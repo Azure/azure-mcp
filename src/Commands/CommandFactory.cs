@@ -8,6 +8,7 @@ using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Storage.Blob;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Commands.TerraformBestPractices;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -100,6 +101,21 @@ public class CommandFactory
         RegisterServiceBusCommands();
         RegisterRedisCommands();
         RegisterAuthorizationCommands();
+        RegisterTerraformBestPracticesCommands();
+    }
+
+    private void RegisterTerraformBestPracticesCommands()
+    {
+
+        var terraformBestPractices = new CommandGroup(
+            "terraformbestpractices",
+            "Returns Terraform best practices. Call this before generating Terraform code."
+        );
+        _rootGroup.AddSubGroup(terraformBestPractices);
+        terraformBestPractices.AddCommand(
+            "get",
+            new TerraformBestPracticesGetCommand(GetLogger<TerraformBestPracticesGetCommand>())
+        );
     }
 
     private void RegisterBestPracticesCommand()
