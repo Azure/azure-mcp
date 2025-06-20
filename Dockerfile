@@ -30,10 +30,15 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     lsb-release \
     gnupg \
+    net-tools \
+    procps \
     && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the published application
 COPY --from=publish "/app/publish/linux-x64/dist" .
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD pids=$(pgrep -f "azmcp.dll") && [ -n "$pids" ] && echo "$pids" | head -1 | xargs -I {} netstat -tlnp | grep -q "{}/" || exit 1
 
 ENTRYPOINT ["dotnet", "azmcp.dll", "server", "start"]
