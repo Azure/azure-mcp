@@ -10,28 +10,28 @@ using AzureMcp.Helpers;
 namespace AzureMcp.Services.Azure.Authentication;
 
 /// <summary>
-/// A custom token credential that chains the Identity Broker-enabled InteractiveBrowserCredential 
-/// with DefaultAzureCredential to provide a seamless authentication experience.
+/// A custom token credential that chains DefaultAzureCredential with a broker-enabled instance of
+/// InteractiveBrowserCredential to provide a seamless authentication experience.
 /// </summary>
 /// <remarks>
 /// This credential attempts authentication in the following order:
-/// 1. Interactive browser authentication with Identity Broker (supporting Windows Hello, biometrics, etc.)
-/// 2. DefaultAzureCredential chain (environment variables, managed identity, CLI, etc.)
+/// 1. DefaultAzureCredential chain (environment variables, managed identity, CLI, etc.)
+/// 2. Interactive browser authentication with Identity Broker (supporting Windows Hello, biometrics, etc.)
 /// </remarks>
 public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 {
-    private ChainedTokenCredential? _chainedCredential;
+    private TokenCredential? _credential;
 
     public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        _chainedCredential ??= CreateChainedCredential(tenantId);
-        return _chainedCredential.GetToken(requestContext, cancellationToken);
+        _credential ??= CreateCredential(tenantId);
+        return _credential.GetToken(requestContext, cancellationToken);
     }
 
     public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        _chainedCredential ??= CreateChainedCredential(tenantId);
-        return _chainedCredential.GetTokenAsync(requestContext, cancellationToken);
+        _credential ??= CreateCredential(tenantId);
+        return _credential.GetTokenAsync(requestContext, cancellationToken);
     }
 
     private const string AuthenticationRecordEnvVarName = "AZURE_MCP_AUTHENTICATION_RECORD";
@@ -45,25 +45,25 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         return EnvironmentHelpers.GetEnvironmentVariableAsBool(OnlyUseBrokerCredentialEnvVarName);
     }
 
-    private static ChainedTokenCredential CreateChainedCredential(string? tenantId)
+    private static TokenCredential CreateCredential(string? tenantId)
     {
         string? authRecordJson = Environment.GetEnvironmentVariable(AuthenticationRecordEnvVarName);
         AuthenticationRecord? authRecord = null;
         if (!string.IsNullOrEmpty(authRecordJson))
         {
             byte[] bytes = Encoding.UTF8.GetBytes(authRecordJson);
-            using MemoryStream authRecordStream = new MemoryStream(bytes);
+            using MemoryStream authRecordStream = new(bytes);
             authRecord = AuthenticationRecord.Deserialize(authRecordStream);
         }
 
         if (ShouldUseOnlyBrokerCredential())
         {
-            return new(CreateBrowserCredential(tenantId, authRecord));
+            return CreateBrowserCredential(tenantId, authRecord);
         }
-        else
-        {
-            return new(CreateDefaultCredential(tenantId), CreateBrowserCredential(tenantId, authRecord));
-        }
+
+        return new ChainedTokenCredential(
+            CreateDefaultCredential(tenantId),
+            CreateBrowserCredential(tenantId, authRecord));
     }
 
     private static string TokenCacheName = "azure-mcp-msal.cache";
