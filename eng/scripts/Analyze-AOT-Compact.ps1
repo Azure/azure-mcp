@@ -122,11 +122,7 @@ Initialize-AOTAnalysisDirectories -aotReportDir $aotReportDir -projectFile $proj
 
 $publishArgs = @(
     'publish', $projectFile,
-    '--configuration', 'Release',  # Always use Release for AOT analysis
-    '--runtime', $runtime,
-    '--self-contained', 'true',
-    '/p:PublishTrimmed=true',
-    '/p:TrimmerSingleWarn=false'
+    '--runtime', $runtime
 )
 
 Write-Host "Executing: dotnet $($publishArgs -join ' ')"

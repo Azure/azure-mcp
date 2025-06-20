@@ -10,26 +10,22 @@
 
     <!-- Publishing settings -->
     <IsAotCompatible>true</IsAotCompatible>
-    <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>false</SelfContained>
-    <PublishReadyToRun>false</PublishReadyToRun>
-    <PublishTrimmed>false</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <!-- Debug configuration -->
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>false</SelfContained>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <!-- Multi-platform support -->
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishAot>true</PublishAot>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+
+    <!-- .NET Tool Package settings -->
+    <PackAsTool>true</PackAsTool>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>azure;mcp;</PackageTags>
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText('../CHANGELOG.md').TrimEnd())</PackageReleaseNotes>
+    <ToolCommandName>$(CliName)</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,6 +34,11 @@
 
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="Azure.Experimental.EnableActivitySource" Value="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- TODO: do you want a .NET-Tool-specific README? This will show on NuGet.org. -->
+    <None Include="../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,13 +89,6 @@
     <EmbeddedResource Include="Resources\registry.json" />
   </ItemGroup>
 
-  <!-- TODO: Remove after 5/19/25 -->
-  <!-- Runs before every dotnet build -->
-  <Target Name="InstallGitHooks" BeforeTargets="BeforeBuild">
-    <Message Text="To install git hooks, run 'eng/scripts/Install-GitHooks.ps1'" Importance="high" />
-    <Message Text="To remove git hooks, run 'eng/scripts/Remove-GitHooks.ps1'" Importance="high" />
-  </Target>
-
   <!-- Remove Cosmos native files from the build output directory -->
   <Target Name="RemoveCosmosNativeFiles" BeforeTargets="Build">
     <ItemGroup>
@@ -104,8 +98,4 @@
       <ContentWithTargetPath Remove="@(FilesToRemove)" />
     </ItemGroup>
   </Target>
-
-  <PropertyGroup>
-    <TrimmerSingleWarn>false</TrimmerSingleWarn>
-  </PropertyGroup>
 </Project>
