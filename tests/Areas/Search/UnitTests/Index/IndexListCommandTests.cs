@@ -6,6 +6,7 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas.Search.Commands.Index;
+using AzureMcp.Areas.Search.Models;
 using AzureMcp.Areas.Search.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -37,8 +38,7 @@ public class IndexListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsIndexes_WhenIndexesExist()
     {
-        // Arrange
-        var expectedIndexes = new List<string> { "index1", "index2" };
+        var expectedIndexes = new List<IndexInfo> { new("index1", null), new("index2", "This is the second index") };
         _searchService.ListIndexes(Arg.Is("service123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedIndexes);
 
@@ -47,15 +47,17 @@ public class IndexListCommandTests
         var args = parser.Parse("--service-name service123");
         var context = new CommandContext(_serviceProvider);
 
-        // Act
         var response = await command.ExecuteAsync(context, args);
 
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<IndexListResult>(json);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        var result = JsonSerializer.Deserialize<IndexListResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Equal(expectedIndexes, result.Indexes);
@@ -64,19 +66,16 @@ public class IndexListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsNull_WhenNoIndexes()
     {
-        // Arrange
         _searchService.ListIndexes(Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(new List<string>());
+            .Returns(new List<IndexInfo>());
 
         var command = new IndexListCommand(_logger);
         var parser = new Parser(command.GetCommand());
         var args = parser.Parse("--service-name service123");
         var context = new CommandContext(_serviceProvider);
 
-        // Act
         var response = await command.ExecuteAsync(context, args);
 
-        // Assert
         Assert.NotNull(response);
         Assert.Null(response.Results);
     }
@@ -84,7 +83,6 @@ public class IndexListCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesException()
     {
-        // Arrange
         var expectedError = "Test error";
         var serviceName = "service123";
 
@@ -96,10 +94,8 @@ public class IndexListCommandTests
         var args = parser.Parse($"--service-name {serviceName}");
         var context = new CommandContext(_serviceProvider);
 
-        // Act
         var response = await command.ExecuteAsync(context, args);
 
-        // Assert
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expectedError, response.Message);
@@ -108,6 +104,6 @@ public class IndexListCommandTests
     private class IndexListResult
     {
         [JsonPropertyName("indexes")]
-        public List<string> Indexes { get; set; } = [];
+        public List<IndexInfo> Indexes { get; set; } = [];
     }
 }

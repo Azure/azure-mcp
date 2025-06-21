@@ -7,6 +7,7 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
+using AzureMcp.Areas.Search.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Subscription;
@@ -62,13 +63,13 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
         return services;
     }
 
-    public async Task<List<string>> ListIndexes(
+    public async Task<List<IndexInfo>> ListIndexes(
         string serviceName,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(serviceName);
 
-        var indexes = new List<string>();
+        var indexes = new List<IndexInfo>();
 
         try
         {
@@ -80,9 +81,9 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
             var endpoint = new Uri($"https://{serviceName}.search.windows.net");
             var searchClient = new SearchIndexClient(endpoint, credential, clientOptions);
 
-            await foreach (var indexName in searchClient.GetIndexNamesAsync())
+            await foreach (var index in searchClient.GetIndexesAsync())
             {
-                indexes.Add(indexName);
+                indexes.Add(new IndexInfo(index.Name, index.Description));
             }
         }
         catch (Exception ex)
@@ -197,7 +198,9 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
 
     private static void ConfigureSearchOptions(string q, SearchOptions options, SearchIndex indexDefinition, List<string> vectorFields)
     {
-        List<string> selectedFields = [.. indexDefinition.Fields.Where(f => !vectorFields.Contains(f.Name)).Select(f => f.Name)];
+        List<string> selectedFields = [.. indexDefinition.Fields
+                                                         .Where(f => f.IsHidden == false && !vectorFields.Contains(f.Name))
+                                                         .Select(f => f.Name)];
         foreach (var field in selectedFields)
         {
             options.Select.Add(field);

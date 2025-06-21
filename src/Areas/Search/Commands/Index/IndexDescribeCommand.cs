@@ -96,6 +96,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
             public bool? Key { get; init; }
             public bool? Searchable { get; init; }
             public bool? Filterable { get; init; }
+            public bool? Facetable { get; init; }
+            public bool? Retrievable { get; init; }
 
             [SetsRequiredMembers]
             public SearchFieldProxy(SearchField field) : this()
@@ -105,6 +107,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
                 Key = field.IsKey;
                 Searchable = field.IsSearchable;
                 Filterable = field.IsFilterable;
+                Facetable = field.IsFacetable;
+                Retrievable = !field.IsHidden;
             }
         }
 
