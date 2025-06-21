@@ -38,7 +38,12 @@ RUN apt-get update && apt-get install -y \
 # Copy the published application
 COPY --from=publish "/app/publish/linux-x64/dist" .
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD pids=$(pgrep -f "azmcp.dll") && [ -n "$pids" ] && echo "$pids" | head -1 | xargs -I {} netstat -tlnp | grep -q "{}/" || exit 1
+# Copy health check script
+COPY infra/healthcheck.sh /app/healthcheck.sh
+RUN chmod +x /app/healthcheck.sh
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD /app/healthcheck.sh
 
 ENTRYPOINT ["dotnet", "azmcp.dll", "server", "start"]
