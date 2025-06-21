@@ -97,7 +97,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         return ValueTask.FromResult(listToolsResult);
     }
 
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Params?.Name))
         {
@@ -141,12 +141,11 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
             return await InvokeChildToolAsync(request, intent ?? "", tool, command, toolParams, cancellationToken);
         }
 
-        return new CallToolResponse
+        return new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = """
                         The "command" parameters are required when not learning
                         Run again with the "learn" argument to get a list of available tools and their parameters.
@@ -157,7 +156,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         };
     }
 
-    private async Task<CallToolResponse> InvokeChildToolAsync(RequestContext<CallToolRequestParams> request, string? intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
+    private async Task<CallToolResult> InvokeChildToolAsync(RequestContext<CallToolRequestParams> request, string? intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
     {
         IMcpClient? client;
 
@@ -211,24 +210,23 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
 
             foreach (var content in toolCallResponse.Content)
             {
-                if (content.Type == "text")
+                if (content is TextContentBlock textContent)
                 {
-                    if (string.IsNullOrWhiteSpace(content.Text))
+                    if (string.IsNullOrWhiteSpace(textContent.Text))
                     {
                         continue;
                     }
 
-                    if (content.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
+                    if (textContent.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
                     {
                         var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
 
                         _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
-                        var finalResponse = new CallToolResponse
+                        return new CallToolResult
                         {
                             Content =
                             [
-                                new Content {
-                                    Type = "text",
+                                new TextContentBlock {
                                     Text = $"""
                                         The '{command}' command is missing required parameters.
 
@@ -241,12 +239,10 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                                         Command Spec:
                                         {childToolSpecJson}
                                         """
-                                }
+                                },
+                                .. toolCallResponse.Content
                             ]
                         };
-
-                        finalResponse.Content.AddRange(toolCallResponse.Content);
-                        return finalResponse;
                     }
                 }
             }
@@ -256,12 +252,11 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content =
                 [
-                    new Content {
-                        Type = "text",
+                    new TextContentBlock {
                         Text = $"""
                             There was an error finding or calling tool and command.
                             Failed to call tool: {tool}, command: {command}
@@ -275,16 +270,15 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         }
     }
 
-    private async Task<CallToolResponse> InvokeToolLearn(RequestContext<CallToolRequestParams> request, string? intent, string tool, CancellationToken cancellationToken)
+    private async Task<CallToolResult> InvokeToolLearn(RequestContext<CallToolRequestParams> request, string? intent, string tool, CancellationToken cancellationToken)
     {
         var toolsJson = await GetChildToolListJsonAsync(request, tool);
 
-        var learnResponse = new CallToolResponse
+        var learnResponse = new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = $"""
                         Here are the available command and their parameters for '{tool}' tool.
                         If you do not find a suitable command, run again with the "learn=true" to get a list of available commands and their parameters.
@@ -369,7 +363,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
 
     private static async Task NotifyProgressAsync(RequestContext<CallToolRequestParams> request, string message, CancellationToken cancellationToken)
     {
-        var progressToken = request.Params?.Meta?.ProgressToken;
+        var progressToken = request.Params?.ProgressToken;
         if (progressToken == null)
         {
             return;
@@ -401,8 +395,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new Content{
-                        Type = "text",
+                    Content = new TextContentBlock {
                         Text = $"""
                             This is a list of available commands for the {tool} server.
 
@@ -430,8 +423,8 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         };
         try
         {
-            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
-            var toolCallJson = samplingResponse.Content.Text?.Trim();
+            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
+            var toolCallJson = (samplingResponse.Content as TextContentBlock)?.Text?.Trim();
             string? commandName = null;
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))

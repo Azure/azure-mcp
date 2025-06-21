@@ -66,19 +66,19 @@ public class ToolOperations
         return ValueTask.FromResult(listToolsResult);
     }
 
-    private async ValueTask<CallToolResponse> OnCallTools(RequestContext<CallToolRequestParams> parameters,
+    private async ValueTask<CallToolResult> OnCallTools(RequestContext<CallToolRequestParams> parameters,
         CancellationToken cancellationToken)
     {
         if (parameters.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -88,14 +88,14 @@ public class ToolOperations
         var command = _toolCommands.GetValueOrDefault(parameters.Params.Name);
         if (command == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = $"Could not find command: {parameters.Params.Name}",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -113,12 +113,17 @@ public class ToolOperations
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [
-                    new Content {
-                        Text = jsonResponse,
-                        MimeType = "application/json" }],
+                    new EmbeddedResourceBlock
+                    {
+                        Resource = new TextResourceContents
+                        {
+                            Text = jsonResponse,
+                            MimeType = "application/json"
+                        }
+                    }],
             };
         }
         catch (Exception ex)

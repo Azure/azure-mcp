@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
@@ -30,7 +31,7 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
 
         var result = await Client.CallToolAsync(command, parameters);
 
-        var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
+        var content = GetApplicationJsonText(result.Content);
         if (string.IsNullOrWhiteSpace(content))
         {
             Output.WriteLine($"response: {JsonSerializer.Serialize(result)}");
@@ -58,5 +59,18 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
         {
             Output.WriteLine(FailureOutput.ToString());
         }
+    }
+
+    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
+    {
+        foreach (var c in contents)
+        {
+            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
+            {
+                return text.Text;
+            }
+        }
+
+        return null;
     }
 }

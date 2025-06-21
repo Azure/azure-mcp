@@ -180,8 +180,8 @@ public class ProxyToolOperationsTests
         Assert.NotNull(result);
         Assert.NotEmpty(result.Content);
         Assert.Equal("text", result.Content[0].Type);
-        Assert.Contains("account-list", result.Content[0].Text);
-        Assert.Contains("container-list", result.Content[0].Text);
+        Assert.Contains("account-list", (result.Content[0] as TextContentBlock)?.Text);
+        Assert.Contains("container-list", (result.Content[0] as TextContentBlock)?.Text);
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public class ProxyToolOperationsTests
         Assert.NotNull(result);
         Assert.NotEmpty(result.Content);
         Assert.Equal("text", result.Content[0].Type);
-        Assert.Contains("account-list", result.Content[0].Text);
+        Assert.Contains("account-list", (result.Content[0] as TextContentBlock)?.Text);
     }
 
     [Fact]
@@ -261,8 +261,8 @@ public class ProxyToolOperationsTests
         Assert.NotNull(result);
         Assert.NotEmpty(result.Content);
         Assert.Equal("text", result.Content[0].Type);
-        Assert.Contains("command", result.Content[0].Text);
-        Assert.Contains("learn", result.Content[0].Text);
+        Assert.Contains("command", (result.Content[0] as TextContentBlock)?.Text);
+        Assert.Contains("learn", (result.Content[0] as TextContentBlock)?.Text);
     }
     [Fact]
     public async Task CallToolHandler_WithValidCommand_ShouldCallProviderClient()
@@ -297,9 +297,9 @@ public class ProxyToolOperationsTests
                 Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                var result = new CallToolResponse
+                var result = new CallToolResult
                 {
-                    Content = [new Content { Type = "text", Text = "Storage accounts listed successfully" }]
+                    Content = [new TextContentBlock { Text = "Storage accounts listed successfully" }]
                 };
                 var json = JsonSerializer.SerializeToNode(result);
                 return Task.FromResult(new JsonRpcResponse { Result = json });
@@ -329,7 +329,7 @@ public class ProxyToolOperationsTests
         Assert.NotNull(result);
         Assert.NotEmpty(result.Content);
         Assert.Equal("text", result.Content[0].Type);
-        Assert.Contains("Storage accounts listed successfully", result.Content[0].Text);
+        Assert.Contains("Storage accounts listed successfully", (result.Content[0] as TextContentBlock)?.Text);
 
         // Verify the client was called for both tools/list and tools/call
         await mockClient.Received().SendRequestAsync(
@@ -369,7 +369,7 @@ public class ProxyToolOperationsTests
         Assert.NotEmpty(result.Content);
         Assert.Equal("text", result.Content[0].Type);
         // Should fallback to learn mode since client provider failed
-        Assert.Contains("available command", result.Content[0].Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("available command", (result.Content[0] as TextContentBlock)?.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class ProxyToolOperationsTests
         var resultAll = await proxyToolOperationsAll.CallToolHandler(request, CancellationToken.None);
         Assert.NotNull(resultAll);
         Assert.NotEmpty(resultAll.Content);
-        var textAll = resultAll.Content[0].Text;
+        var textAll = (resultAll.Content[0] as TextContentBlock)?.Text;
         Assert.Contains("readonly-tool", textAll);
         Assert.Contains("write-tool", textAll);
         Assert.Contains("no-annotation-tool", textAll);
@@ -436,7 +436,7 @@ public class ProxyToolOperationsTests
         var resultReadonly = await proxyToolOperationsReadonly.CallToolHandler(request, CancellationToken.None);
         Assert.NotNull(resultReadonly);
         Assert.NotEmpty(resultReadonly.Content);
-        var textReadonly = resultReadonly.Content[0].Text;
+        var textReadonly = (resultReadonly.Content[0] as TextContentBlock)?.Text;
         Assert.Contains("readonly-tool", textReadonly);
         Assert.DoesNotContain("write-tool", textReadonly);
         Assert.DoesNotContain("no-annotation-tool", textReadonly);
