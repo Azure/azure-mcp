@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Add Docker HealthCheck  - https://Azure/azure-mcp/pull/427
+
 ### Breaking Changes
 
 ### Bugs Fixed
