@@ -51,7 +51,7 @@ public class IndexListCommandTests
 
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
-        
+
         var json = JsonSerializer.Serialize(response.Results);
         var options = new JsonSerializerOptions
         {
