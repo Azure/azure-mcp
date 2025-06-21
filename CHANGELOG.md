@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
+
 ### Breaking Changes
 
 ### Bugs Fixed
