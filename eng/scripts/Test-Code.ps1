@@ -5,7 +5,8 @@
 param(
     [string] $TestResultsPath,
     [switch] $Live,
-    [switch] $CoverageSummary
+    [switch] $CoverageSummary,
+    [switch] $OpenReport
 )
 
 $ErrorActionPreference = 'Stop'
@@ -70,17 +71,31 @@ if ($env:TF_BUILD) {
     " -targetdir:'$reportDirectory'" +
     " -reporttypes:'Html;HtmlSummary;Cobertura'" +
     " -assemblyfilters:'+azmcp'" +
-    " -classfilters:'-*Tests*;-*Program'")
+    " -classfilters:'-*Tests*;-*Program'" +
+    " -filefilters:'-*JsonSourceGenerator*;-*LibraryImportGenerator*'")
 
     Write-Host "Coverage report generated at $reportDirectory/index.html"
 
     # Open the report in default browser
     $reportPath = "$reportDirectory/index.html"
-    if (Test-Path $reportPath) {
-        Write-Host "Opening coverage report in browser..."
-        Start-Process $reportPath
-    } else {
+    if (-not (Test-Path $reportPath)) {
         Write-Error "Could not find coverage report at $reportPath"
+        exit 1
+    }
+
+    if ($OpenReport) {
+        # Open the report in default browser
+        Write-Host "Opening coverage report in browser..."
+        if ($IsMacOS) {
+            # On macOS, use 'open' command
+            Start-Process "open" -ArgumentList $reportPath
+        } elseif ($IsLinux) {
+            # On Linux, use 'xdg-open'
+            Start-Process "xdg-open" -ArgumentList $reportPath
+        } else {
+            # On Windows, use 'Start-Process'
+            Start-Process $reportPath
+        }
     }
 }
 

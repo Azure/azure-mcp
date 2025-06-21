@@ -2,7 +2,7 @@ param(
     [string]$SubscriptionId,
     [string]$ResourceGroupName,
     [string]$BaseName,
-    [int]$DeleteAfterHours = 24*5,
+    [int]$DeleteAfterHours = 12,
     [switch]$Unique
 )
 

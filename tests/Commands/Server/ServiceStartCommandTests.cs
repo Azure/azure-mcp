@@ -3,10 +3,11 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Models.Option;
 using Xunit;
 
-namespace AzureMcp.Commands.Server.Tests;
+namespace AzureMcp.Tests.Commands.Server;
 
 public class ServiceStartCommandTests
 {

@@ -1,6 +1,6 @@
 # Release History
 
-## 0.2.1 (Unreleased)
+## 0.2.4 (Unreleased)
 
 ### Features Added
 
@@ -8,9 +8,34 @@
 
 ### Bugs Fixed
 
-- Fixed the issue where queries containing double quotes failed to execute. https://github.com/Azure/azure-mcp/pull/338
-
 ### Other Changes
+Repository structure changed to organize all of an Azure service's code into a single "area" folder. [#426](https://github.com/Azure/azure-mcp/pull/426)
+
+## 0.2.3 (2025-06-19)
+
+### Features Added
+
+- Adds support to launch MCP server in readonly mode - https://github.com/Azure/azure-mcp/pull/410
+
+### Bugs Fixed
+
+- MCP tools now expose annotations to clients https://github.com/Azure/azure-mcp/pull/388
+
+## 0.2.2 (2025-06-17)
+
+### Features Added
+
+- Support for Azure ISV Services https://github.com/Azure/azure-mcp/pull/199/
+- Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+- Support for Key Vault Secrets https://github.com/Azure/azure-mcp/pull/173
+
+
+## 0.2.1 (2025-06-12)
+
+### Bugs Fixed
+
+- Fixed the issue where queries containing double quotes failed to execute. https://github.com/Azure/azure-mcp/pull/338
+- Enables dynamic proxy mode within single "azure" tool. https://github.com/Azure/azure-mcp/pull/325
 
 ## 0.2.0 (2025-06-09)
 
