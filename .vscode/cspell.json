@@ -159,6 +159,7 @@
         "dataplane",
         "gethealth",
         "healthmodels",
+        "healthcheck",
         "kcsb",
         "keyspace",
         "Kusto",
