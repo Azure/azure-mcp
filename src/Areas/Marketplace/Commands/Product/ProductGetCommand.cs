@@ -30,7 +30,6 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
     private readonly Option<string> _pricingAudienceOption = OptionDefinitions.Marketplace.PricingAudience;
     private readonly Option<string> _objectIdOption = OptionDefinitions.Marketplace.ObjectId;
     private readonly Option<string> _altSecIdOption = OptionDefinitions.Marketplace.AltSecId;
-
     public override string Name => "get";
 
     public override string Description =>
