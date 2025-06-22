@@ -62,12 +62,12 @@ public class MarketplaceService(ITenantService tenantService)
     {
         ValidateRequiredParameters(productId, subscription);
 
-        string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market, 
+        string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market,
             lookupOfferInTenantLevel, includeHiddenPlans, planId, skuId, includeServiceInstructionTemplates);
 
-        string productResponseString = await GetMarketplaceResponseAsync(productUrl, partnerTenantId, 
+        string productResponseString = await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
             pricingAudience, objectId, altSecId, tenant);
-        
+
         return JsonNode.Parse(productResponseString) ?? throw new Exception("Failed to parse product response to JSON.");
     }
 
@@ -116,7 +116,7 @@ public class MarketplaceService(ITenantService tenantService)
         return $"{ManagementApiBaseUrl}/subscriptions/{subscription}/providers/Microsoft.Marketplace/products/{productId}?{queryString}";
     }
 
-    private async Task<string> GetMarketplaceResponseAsync(string url, string? partnerTenantId, 
+    private async Task<string> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
         string? pricingAudience, string? objectId, string? altSecId, string? tenant)
     {
         string accessToken = await GetAccessTokenAsync(tenant);
