@@ -115,7 +115,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         return settings;
     }
 
-    public async Task<KeyValueSetting> GetKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task<KeyValueSetting> GetKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null)
     {
         ValidateRequiredParameters(accountName, key, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
@@ -144,11 +144,18 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         await SetKeyValueReadOnlyState(accountName, key, subscriptionId, tenant, retryPolicy, label, false);
     }
 
-    public async Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null)
     {
         ValidateRequiredParameters(accountName, key, value, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
-        await client.SetConfigurationSettingAsync(key, value, label, cancellationToken: default);
+        
+        // Create a ConfigurationSetting object to include contentType if provided
+        var setting = new ConfigurationSetting(key, value, label)
+        {
+            ContentType = contentType
+        };
+        
+        await client.SetConfigurationSettingAsync(setting, cancellationToken: default);
     }
 
     public async Task DeleteKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
