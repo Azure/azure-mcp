@@ -7,7 +7,7 @@ namespace AzureMcp.Areas.Monitor.Options
 {
     public abstract class ResourceOptions : BaseMonitorOptions, IResourceOptions
     {
-        [JsonPropertyName(MonitorOptionDefinitions.ResourceIdName)]
+        [JsonPropertyName(ResourceLogQueryOptionDefinitions.ResourceIdName)]
         public string? ResourceId { get; set; }
     }
 }
