@@ -37,7 +37,8 @@ public class ServiceStartCommandTests
         var parseResult = CreateParseResult(inputService);
 
         // Act
-        var actualService = parseResult.GetValueForOption(OptionDefinitions.Service.ServiceType);
+        var actualServiceArray = parseResult.GetValueForOption(OptionDefinitions.Service.ServiceType);
+        var actualService = (actualServiceArray != null && actualServiceArray.Length > 0) ? actualServiceArray[0] : "";
         var actualPort = parseResult.GetValueForOption(OptionDefinitions.Service.Port);
         var actualTransport = parseResult.GetValueForOption(OptionDefinitions.Service.Transport);
 

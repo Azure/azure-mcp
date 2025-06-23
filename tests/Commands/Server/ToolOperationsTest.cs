@@ -106,9 +106,10 @@ public class ToolOperationsTest
     [InlineData("storage,keyvault")]
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
+        string[]? groupArray = commandGroup == null ? null : commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
         {
-            CommandGroup = commandGroup
+            CommandGroup = groupArray
         };
         var requestContext = new RequestContext<ListToolsRequestParams>(_server);
         var handler = operations.ToolsCapability.ListToolsHandler;
@@ -117,13 +118,12 @@ public class ToolOperationsTest
         Assert.NotNull(result);
         Assert.NotEmpty(result.Tools);
 
-        if (!string.IsNullOrWhiteSpace(commandGroup))
+        if (groupArray != null && groupArray.Length > 0)
         {
             // If groups are specified, all tool names should start with one of those groups
-            var groups = commandGroup?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
             foreach (var tool in result.Tools)
             {
-                Assert.Contains(groups, group => tool.Name.StartsWith($"{group}-"));
+                Assert.Contains(groupArray, group => tool.Name.StartsWith($"{group}-"));
             }
         }
         else
@@ -141,7 +141,7 @@ public class ToolOperationsTest
         {
             var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
             {
-                CommandGroup = "unknown-group"
+                CommandGroup = new[] { "unknown-group" }
             };
             var requestContext = new RequestContext<ListToolsRequestParams>(_server);
             var handler = operations.ToolsCapability.ListToolsHandler;

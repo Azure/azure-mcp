@@ -16,7 +16,7 @@ public class ToolOperations
     private readonly CommandFactory _commandFactory;
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
     private readonly ILogger<ToolOperations> _logger;
-    private string _commandGroup = string.Empty;
+    private string[]? _commandGroup = null;
 
     public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ILogger<ToolOperations> logger)
     {
@@ -36,13 +36,13 @@ public class ToolOperations
 
     public bool ReadOnly { get; set; } = false;
 
-    public string? CommandGroup
+    public string[]? CommandGroup
     {
         get => _commandGroup;
         set
         {
-            _commandGroup = value ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(_commandGroup))
+            _commandGroup = value;
+            if (_commandGroup == null || _commandGroup.Length == 0 || _commandGroup.All(string.IsNullOrWhiteSpace))
             {
                 _toolCommands = _commandFactory.AllCommands;
             }

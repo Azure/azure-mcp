@@ -64,9 +64,8 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string commaSeparatedGroupNames)
+    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string[] groupNames)
     {
-        var groupNames = commaSeparatedGroupNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (groupNames is null)
         {
             throw new Exception("groupNames cannot be null.");
@@ -90,8 +89,7 @@ public class CommandFactory
 
         if (commandsFromGroups.Count == 0)
         {
-
-            throw new KeyNotFoundException($"No valid group in '{commaSeparatedGroupNames}' found in command groups.");
+            throw new KeyNotFoundException($"No valid group in '[{string.Join(",", groupNames)}]' found in command groups.");
         }
 
         return commandsFromGroups;
@@ -217,7 +215,6 @@ public class CommandFactory
             foreach (var kvp in node.Commands)
             {
                 var key = GetPrefix(updatedPrefix, kvp.Key);
-
                 aggregated.Add(key, kvp.Value);
             }
         }
@@ -229,9 +226,7 @@ public class CommandFactory
 
         foreach (var command in node.SubGroup)
         {
-            var childPrefix = GetPrefix(updatedPrefix, command.Name);
             var subcommandsDictionary = CreateCommmandDictionary(command, updatedPrefix);
-
             foreach (var item in subcommandsDictionary)
             {
                 aggregated.Add(item.Key, item.Value);
