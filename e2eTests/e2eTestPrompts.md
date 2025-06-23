@@ -1,4 +1,4 @@
-This file contains prompts used for end-to-end testing to ensure each tool is invoked properly by Agents. The tables are organized by Azure MCP Server areas in alphabetical order.
+This file contains prompts used for end-to-end testing to ensure each tool is invoked properly by MCP clients. The tables are organized by Azure MCP Server areas in alphabetical order.
 
 ## App Configuration
 
