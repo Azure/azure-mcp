@@ -52,15 +52,14 @@ public class AccountListCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);        // Assert
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<AccountListResult>(json, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        var result = JsonSerializer.Deserialize<AccountListResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Accounts.Count);
