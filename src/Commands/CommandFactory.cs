@@ -68,7 +68,7 @@ public class CommandFactory
     {
         if (groupNames is null)
         {
-            throw new Exception("groupNames cannot be null.");
+            throw new ArgumentException("groupNames cannot be null.");
         }
         Dictionary<string, IBaseCommand> commandsFromGroups = new();
         foreach (string groupName in groupNames)
