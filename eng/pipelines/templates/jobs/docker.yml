@@ -15,7 +15,7 @@ extends:
       - template: /eng/pipelines/templates/variables/globals.yml
       - template: /eng/pipelines/templates/variables/image.yml
       - name: configPath
-        value: ./
+        value: $(Build.SourcesDirectory)
       - name: containerRegistry
         value: 'azuresdkimages'
       - name: imageRepository
