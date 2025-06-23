@@ -15,13 +15,13 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
     private readonly Option<string> _queryOption = MonitorOptionDefinitions.Query;
     private readonly Option<int> _hoursOption = MonitorOptionDefinitions.Hours;
     private readonly Option<int> _limitOption = MonitorOptionDefinitions.Limit;
-    private readonly Option<string> _workspaceOption = MonitorOptionDefinitions.Workspace;
+    private readonly Option<string> _workspaceOption = WorkspaceLogQueryOptionDefinitions.Workspace;
 
     public override string Name => "query";
 
     public override string Description =>
         $"""
-        Execute a KQL query against a Log Analytics workspace. Requires {MonitorOptionDefinitions.WorkspaceIdOrName}
+        Execute a KQL query against a Log Analytics workspace. Requires {WorkspaceLogQueryOptionDefinitions.WorkspaceIdOrName}
         and resource group. Optional {MonitorOptionDefinitions.HoursName}
         (default: {MonitorOptionDefinitions.Hours.GetDefaultValue()}) and {MonitorOptionDefinitions.LimitName}
         (default: {MonitorOptionDefinitions.Limit.GetDefaultValue()}) parameters.

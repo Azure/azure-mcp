@@ -49,7 +49,7 @@ public class MonitorSetup : IAreaSetup
         // Register Monitor commands
 
         workspaceLogs.AddCommand("query", new WorkspaceLogQueryCommand(loggerFactory.CreateLogger<WorkspaceLogQueryCommand>()));
-        resourceLogs.AddCommand("query", new WorkspaceLogQueryCommand(loggerFactory.CreateLogger<WorkspaceLogQueryCommand>()));
+        resourceLogs.AddCommand("query", new ResourceLogQueryCommand(loggerFactory.CreateLogger<ResourceLogQueryCommand>()));
 
         workspaces.AddCommand("list", new WorkspaceListCommand(loggerFactory.CreateLogger<WorkspaceListCommand>()));
         monitorTable.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));

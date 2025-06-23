@@ -1,33 +1,32 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Models.Option;
-using AzureMcp.Options.Monitor;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Areas.Monitor.Options;
+using AzureMcp.Areas.Monitor.Services;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.Monitor.Log;
+namespace AzureMcp.Areas.Monitor.Commands.Log;
 
 public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> logger) : BaseMonitorCommand<ResourceLogQueryOptions>()
 {
     private const string CommandTitle = "Query Logs for Azure Resource";
     private readonly ILogger<ResourceLogQueryCommand> _logger = logger;
-    private readonly Option<string> _tableNameOption = OptionDefinitions.Monitor.TableName;
-    private readonly Option<string> _queryOption = OptionDefinitions.Monitor.Query;
-    private readonly Option<int> _hoursOption = OptionDefinitions.Monitor.Hours;
-    private readonly Option<int> _limitOption = OptionDefinitions.Monitor.Limit;
-    private readonly Option<string> _resourceIdOption = OptionDefinitions.Monitor.ResourceId;
+    private readonly Option<string> _tableNameOption = MonitorOptionDefinitions.TableName;
+    private readonly Option<string> _queryOption = MonitorOptionDefinitions.Query;
+    private readonly Option<int> _hoursOption = MonitorOptionDefinitions.Hours;
+    private readonly Option<int> _limitOption = MonitorOptionDefinitions.Limit;
+    private readonly Option<string> _resourceIdOption = ResourceLogQueryOptionDefinitions.ResourceId;
 
     public override string Name => "query";
 
     public override string Description =>
         $"""
         Executes a Kusto Query Language (KQL) query to retrieve logs for any Azure resource that emits logs to Log Analytics.
-        
-        - Use the {OptionDefinitions.Monitor.ResourceIdName} parameter to specify the full Azure Resource ID (/subscriptions/0000/resourceGroups/rg/providers/Microsoft.Storage/storageAccounts/myaccount).
-        - The {OptionDefinitions.Monitor.TableNameName} parameter specifies the Log Analytics table to query.
-        - The {OptionDefinitions.Monitor.QueryTextName} parameter accepts a KQL query or a predefined query name.
-        - Optional parameters: {OptionDefinitions.Monitor.HoursName} (default: {OptionDefinitions.Monitor.Hours.GetDefaultValue()}) to set the time range, and {OptionDefinitions.Monitor.LimitName} (default: {OptionDefinitions.Monitor.Limit.GetDefaultValue()}) to limit the number of results.
+
+        - Use the {ResourceLogQueryOptionDefinitions.ResourceIdName} parameter to specify the full Azure Resource ID (/subscriptions/0000/resourceGroups/rg/providers/Microsoft.Storage/storageAccounts/myaccount).
+        - The {MonitorOptionDefinitions.TableNameName} parameter specifies the Log Analytics table to query.
+        - The {MonitorOptionDefinitions.QueryTextName} parameter accepts a KQL query or a predefined query name.
+        - Optional parameters: {MonitorOptionDefinitions.HoursName} (default: {MonitorOptionDefinitions.Hours.GetDefaultValue()}) to set the time range, and {MonitorOptionDefinitions.LimitName} (default: {MonitorOptionDefinitions.Limit.GetDefaultValue()}) to limit the number of results.
         
         This tool is useful for:
         - Querying logs for any Azure resource by resourceId
