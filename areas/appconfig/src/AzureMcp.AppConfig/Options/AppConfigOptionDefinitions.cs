@@ -9,6 +9,7 @@ public static class AppConfigOptionDefinitions
     public const string KeyName = "key";
     public const string ValueName = "value";
     public const string LabelName = "label";
+    public const string ContentTypeName = "content-type";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -37,6 +38,14 @@ public static class AppConfigOptionDefinitions
     public static readonly Option<string> Label = new(
         $"--{LabelName}",
         "The label to apply to the configuration key. Labels are used to group and organize settings."
+    )
+    {
+        IsRequired = false
+    };
+    
+    public static readonly Option<string> ContentType = new(
+        $"--{ContentTypeName}",
+        "The content type of the configuration value. This is used to indicate how the value should be interpreted or parsed."
     )
     {
         IsRequired = false
