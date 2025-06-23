@@ -4,19 +4,56 @@ This document provides comprehensive guidance for Azure MCP Server authenticatio
 
 ## Authentication Fundamentals
 
-Azure MCP Server uses the Azure Identity SDK's [`DefaultAzureCredential`](https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac) for authentication, which tries credentials in the following order:
+Azure MCP Server authenticates to Microsoft Entra ID via the [Azure Identity library for .NET](https://learn.microsoft.com/dotnet/azure/sdk/authentication/). If environment variable `AZURE_MCP_ONLY_USE_BROKER_CREDENTIAL` is:
 
-1. **Environment Variables** (`EnvironmentCredential`) - Perfect for CI/CD pipelines
-2. **Shared Token Cache** (`SharedTokenCacheCredential`) - Uses cached tokens from other tools
-3. **Visual Studio** (`VisualStudioCredential`) - Uses your Visual Studio credentials
-4. **Azure CLI** (`AzureCliCredential`) - Uses your existing Azure CLI login
-5. **Azure PowerShell** (`AzurePowerShellCredential`) - Uses your Az PowerShell login
-6. **Azure Developer CLI** (`AzureDeveloperCliCredential`) - Uses your azd login
-7. **Interactive Browser** (`InteractiveBrowserCredential`) - Falls back to browser-based login if needed
+- Set to `true`, a broker-enabled instance of `InteractiveBrowserCredential` is used to authenticate. On Windows, the broker is Web Account Manager. If a broker isn't supported on your operating system, the credential degrades gracefully to a browser-based login experience. For more information on this approach, see [Interactive brokered authentication](https://learn.microsoft.com/dotnet/azure/sdk/authentication/additional-methods#interactive-brokered-authentication).
+- Not set, a custom [chain of credentials](https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac#how-a-chained-credential-works) is used to authenticate. The chain is designed to support many environments, along with the most common authentication flows and developer tools. When one credential fails to acquire a token, the chain attempts the next credential. In Azure MCP Server, the chain is configured as follows by default:
 
-For production scenarios, additional credentials can be enabled:
-- **Managed Identity** (`ManagedIdentityCredential`) - For Azure-hosted applications
-- **Workload Identity** (`WorkloadIdentityCredential`) - For Kubernetes workloads
+    | Order | Credential | Description | Enabled? |
+    |-------|------------|-------------|----------|
+    | 1 | [EnvironmentCredential](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential?view=azure-dotnet) | Perfect for CI/CD pipelines | Yes |
+    | 2 | [WorkloadIdentityCredential](https://learn.microsoft.com/dotnet/api/azure.identity.workloadidentitycredential?view=azure-dotnet)| Uses Workload ID authentication on Kubernetes and other hosts supporting workload identity | **No** |
+    | 3 | [ManagedIdentityCredential](https://learn.microsoft.com/dotnet/api/azure.identity.managedidentitycredential?view=azure-dotnet)| Uses managed identity authentication | **No** |
+    | 4 | [VisualStudioCredential](https://learn.microsoft.com/dotnet/api/azure.identity.visualstudiocredential?view=azure-dotnet) | Uses your Visual Studio login | Yes |
+    | 5 | [AzureCliCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azureclicredential?view=azure-dotnet) | Uses your Azure CLI login | Yes |
+    | 6 | [AzurePowerShellCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azurepowershellcredential?view=azure-dotnet) | Uses your Azure PowerShell login | Yes |
+    | 7 | [AzureDeveloperCliCredential](https://learn.microsoft.com/dotnet/api/azure.identity.azuredeveloperclicredential?view=azure-dotnet) | Uses your Azure Developer CLI login | Yes |
+    | 8 | [InteractiveBrowserCredential](https://learn.microsoft.com/dotnet/api/azure.identity.interactivebrowsercredential?view=azure-dotnet) | Uses a broker and falls back to browser-based login if needed. The account picker dialog allows you to ensure you're selecting the correct account. | Yes |
+
+    If you're logged in through any of these mechanisms, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure. For example, read access to your Storage account via Role-Based Access Control (RBAC). To learn more about Azure's RBAC authorization system, see [What is Azure RBAC?](https://learn.microsoft.com/azure/role-based-access-control/overview).
+
+## Recommended Authentication Configuration by Environment
+
+### Production Environments
+
+For Kubernetes workloads or Azure-hosted apps, set the following environment variable to `true`:
+
+```bash
+export AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS=true
+```
+
+This configuration modifies the credential chain to enable authentication via workload identity and managed identity, in that order.
+
+### Development Environments
+
+For local development with minimal restrictions, authenticate using Visual Studio, Azure CLI, Azure PowerShell, or Azure Developer CLI. For example, run the following commands to authenticate via Azure CLI:
+
+```bash
+az login
+# Verify access
+az account show
+```
+
+### CI/CD Pipelines
+
+For automated builds and deployments, set the following environment variables:
+
+```bash
+# Use service principal
+export AZURE_CLIENT_ID="<pipeline-sp-client-id>"
+export AZURE_CLIENT_SECRET="<pipeline-sp-secret>"
+export AZURE_TENANT_ID="<your-tenant-id>"
+```
 
 ## Authentication Scenarios in Enterprise Environments
 
@@ -32,33 +69,36 @@ Many organizations disable local authentication methods (access keys, SAS tokens
 
 #### What You Need to Know
 
-When local authentication is disabled, Azure MCP Server must use **Azure Entra ID (formerly Azure AD)** authentication exclusively. This requires:
+When local authentication is disabled, Azure MCP Server must use Microsoft Entra authentication exclusively. This requires:
 
 1. **Proper RBAC permissions** on the target resources
-2. **Network connectivity** to Azure Entra ID endpoints
-3. **Valid Azure Entra ID credentials** (not personal Microsoft accounts)
+2. **Network connectivity** to Microsoft Entra endpoints
+3. **Valid Microsoft Entra ID credentials** (not personal Microsoft accounts)
 
 #### Working with Your Resource Administrator
 
 **Information to Provide to Your Admin:**
 
 1. **Service Principal Requirements:**
+
    ```
    Application Name: Azure MCP Server Access
-   Required Permissions: 
+   Required Permissions:
    - Resource-specific data plane roles (e.g., Storage Blob Data Reader)
    - Subscription/Resource Group reader permissions (for discovery)
    ```
 
 2. **Network Requirements:**
+
    ```
    Required Endpoints:
-   - login.microsoftonline.com (Azure AD authentication)
+   - login.microsoftonline.com (Microsoft Entra authentication)
    - management.azure.com (Azure Resource Manager)
    - Resource-specific endpoints (e.g., *.blob.core.windows.net)
    ```
 
 3. **RBAC Role Assignments Needed:**
+
    ```
    Scope: Subscription, Resource Group, or specific Resource
    Principal: Your user account or service principal
@@ -192,9 +232,9 @@ az ad sp create-for-rbac --name "azure-mcp-server" --role "Reader" --scopes "/su
 Set environment variables for service principal authentication:
 
 ```bash
-export AZURE_CLIENT_ID="your-client-id"
-export AZURE_CLIENT_SECRET="your-client-secret"
-export AZURE_TENANT_ID="your-tenant-id"
+export AZURE_CLIENT_ID="<your-client-id>"
+export AZURE_CLIENT_SECRET="<your-client-secret>"
+export AZURE_TENANT_ID="<your-tenant-id>"
 ```
 
 #### Security Best Practices
@@ -237,18 +277,21 @@ Organizations may enforce Conditional Access policies that affect authentication
 #### Diagnostic Commands
 
 1. **Test Authentication:**
+
    ```bash
    az login --tenant your-tenant-id
    az account show
    ```
 
 2. **Test Resource Access:**
+
    ```bash
    # Test storage access
    az storage blob list --account-name mystorageaccount --container-name mycontainer --auth-mode login
    ```
 
 3. **Network Connectivity:**
+
    ```bash
    # Test endpoint connectivity
    curl -I https://login.microsoftonline.com
@@ -258,59 +301,25 @@ Organizations may enforce Conditional Access policies that affect authentication
 #### Common Error Patterns
 
 1. **DNS Resolution Failures:**
+
    ```
    Error: getaddrinfo ENOTFOUND mystorageaccount.privatelink.blob.core.windows.net
    Solution: Configure DNS for private endpoints
    ```
 
 2. **Certificate Trust Issues:**
+
    ```
    Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE
    Solution: Install corporate CA certificates
    ```
 
 3. **Firewall Blocks:**
+
    ```
    Error: connect ETIMEDOUT
    Solution: Configure firewall rules for Azure endpoints
    ```
-
-## Authentication Configuration by Environment
-
-### Development Environment
-
-For local development with minimal restrictions:
-
-```bash
-# Use Azure CLI authentication
-az login
-# Verify access
-az account show
-```
-
-### CI/CD Pipelines
-
-For automated builds and deployments:
-
-```bash
-# Use service principal
-export AZURE_CLIENT_ID="pipeline-sp-client-id"
-export AZURE_CLIENT_SECRET="pipeline-sp-secret"
-export AZURE_TENANT_ID="your-tenant-id"
-```
-
-### Production Environments
-
-For applications running in Azure:
-
-```bash
-# Enable managed identity
-export AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS=true
-```
-
-For more details on these authentication methods, see:
-- [Managed Identity documentation](https://learn.microsoft.com/azure/active-directory/managed-identities-azure-resources/)
-- [Workload Identity Federation documentation](https://learn.microsoft.com/azure/active-directory/workload-identities/workload-identity-federation)
 
 ## Getting Help
 
@@ -322,6 +331,4 @@ When working with administrators, provide:
 4. **Authentication Method:** Which credential type you're trying to use
 5. **Logs:** Relevant log entries showing the authentication attempt
 
-For additional support, see the [Troubleshooting Guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md).
-
-If you need further assistance, you can request help by [filing a GitHub issue](https://github.com/Azure/azure-mcp/issues/new) in this repository.
+For additional support, see the [Troubleshooting Guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md). For further assistance, [open a GitHub issue](https://github.com/Azure/azure-mcp/issues/new).

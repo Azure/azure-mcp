@@ -20,11 +20,19 @@ If you are contributing significant changes, or if the issue is already assigned
 
 The project is organized as follows:
 - `src/` - Main source code
-  - `Arguments/` - Command argument definitions
-  - `Commands/` - Command implementations
-  - `Models/` - Data models and interfaces
-  - `Services/` - Service implementations
+  - `Areas/{Area}/` - Service specific code
+    - `Commands/` - Command implementations
+    - `Models/` - Service specific models
+    - `Services/` - Service implementations and interfaces
+    - `Options/` - Service specific command options
+  - `Commands/` - Command base and helper classes
+  - `Models/` - Common models and base classes
+  - `Services/` - Common services
+  - `Options/` - Command option definitions
 - `tests/` - Test files
+  - `Areas/{Area}/` - Service specific tests
+    - `UnitTests/` - Unit tests require no authentication or test resources
+    - `LiveTests/` - Live tests depend on Azure resources and authentication
 - `docs/` - Documentation
 
 ### Adding a New Command
@@ -170,16 +178,14 @@ Before running live tests,
   - [`Connect-AzAccount`](https://learn.microsoft.com/powershell/azure/authenticate-interactive?view=azps-13.4.0)
 - Deploy test resources
     ```pwsh
-    ./eng/common/TestResources/New-TestResources.ps1 `
-    -SubscriptionId YourSubscriptionId `
-    -ResourceGroupName YourResourceGroupName `
-    -Verbose `
-    -Force
+    ./eng/scripts/Deploy-TestResources.ps1
     ```
 
-    Omitting the `-ResourceGroupName` parameter will default the resource group name to "rg-{username}".
-
-    Internal users can omit the `-SubscriptionId` parameter to default to the playground subscription.
+    Use the `-SubscriptionId` parameter to use a specific subscription, otherwise, for internal users, the subscription will be defaulted to a known subscription.
+    Use the `-ResourceGroupName` parameter to change the resource group name from its default of "{username}-mcp{hash}".
+    Use the `-BaseName` parameter to change the name for all of the resources from its default of "mcp{hash}".
+    Use the `-Unique` switch to make `{hash}` in the resource group name and base name unique per invocation
+    Use the `-DeleteAfterHours` parameter to change the default DeleteAfter tag of 12 hours.
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the root of the repo.
 
