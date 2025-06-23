@@ -9,7 +9,10 @@
 ### Bugs Fixed
 
 ### Other Changes
-Repository structure changed to organize all of an Azure service's code into a single "area" folder. [#426](https://github.com/Azure/azure-mcp/pull/426)
+
+- Repository structure changed to organize all of an Azure service's code into a single "area" folder. ([426](https://github.com/Azure/azure-mcp/pull/426))
+- Upgraded Azure.Messaging.ServiceBus to 7.20.1 and Azure.Core to 1.46.2. ([441](https://github.com/Azure/azure-mcp/pull/441/))
+- Updated to ModelContextProtocol 0.3.0-preview1, which brings support for the 06-18-2025 MCP specification. ([431](https://github.com/Azure/azure-mcp/pull/431))
 
 ## 0.2.3 (2025-06-19)
 

@@ -296,31 +296,11 @@ See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLE
 <details>
 <summary>Authentication options including DefaultAzureCredential flow, RBAC permissions, troubleshooting, and production credentials</summary>
 
-The Azure MCP Server seamlessly integrates with your host operating system's authentication mechanisms, making it super easy to get started! We use Azure Identity under the hood via [`DefaultAzureCredential`](https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac), which tries these credentials in order:
-
-1. **Environment Variables** (`EnvironmentCredential`) - Perfect for CI/CD pipelines
-2. **Shared Token Cache** (`SharedTokenCacheCredential`) - Uses cached tokens from other tools
-3. **Visual Studio** (`VisualStudioCredential`) - Uses your Visual Studio credentials
-4. **Azure CLI** (`AzureCliCredential`) - Uses your existing Azure CLI login
-5. **Azure PowerShell** (`AzurePowerShellCredential`) - Uses your Az PowerShell login
-6. **Azure Developer CLI** (`AzureDeveloperCliCredential`) - Uses your azd login
-7. **Interactive Browser** (`InteractiveBrowserCredential`) - Falls back to browser-based login if needed
-
-If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
+The Azure MCP Server uses the Azure Identity library for .NET to authenticate to Microsoft Entra ID. For detailed information, see [Authentication Fundamentals](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md#authentication-fundamentals).
 
 If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#authentication).
 
-For enterprise authentication scenarios including network restrictions, security policies, and protected resources, see our [Authentication and Security guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md).
-
-### Production Credentials
-
-By default, the Azure MCP Server excludes production credentials like Managed Identity and Workload Identity. To enable these credentials, set the environment variable:
-
-```
-AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS=true
-```
-
-This is useful when running on Azure services where you want to use managed identities.
+For enterprise authentication scenarios, including network restrictions, security policies, and protected resources, see [Authentication Scenarios in Enterprise Environments](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md#authentication-scenarios-in-enterprise-environments).
 </details>
 
 ## 🛡️ Security Note
