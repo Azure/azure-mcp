@@ -78,8 +78,7 @@ public class ToolOperations
     private async ValueTask<CallToolResult> OnCallTools(RequestContext<CallToolRequestParams> parameters,
         CancellationToken cancellationToken)
     {
-        using var activity = _telemetry
-            .StartActivity(nameof(OnCallTools));
+        using var activity = _telemetry.StartActivity(TelemetryConstants.ActivityName.ToolExecuted);
 
         AddClientInfo(activity, parameters.Server.ClientInfo);
 
@@ -102,7 +101,7 @@ public class ToolOperations
 
         var toolName = parameters.Params.Name;
 
-        activity?.AddTag(TelemetryConstants.ToolName, toolName);
+        activity?.AddTag(TelemetryConstants.TagName.ToolName, toolName);
 
         var command = _toolCommands.GetValueOrDefault(toolName);
         if (command == null)
@@ -121,24 +120,19 @@ public class ToolOperations
                 IsError = true,
             };
         }
+
         var commandContext = new CommandContext(_serviceProvider);
 
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(parameters.Params.Arguments);
 
-        activity?.AddEvent(new ActivityEvent("Invoking tool"));
+        activity?.AddEvent(new ActivityEvent("Started invoking tool."));
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
 
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
-
-            if (!IsSuccessStatusCode(commandResponse.Status))
-            {
-                activity?.SetStatus(ActivityStatusCode.Error)
-                    ?.AddException(new ToolFailedException(toolName, commandResponse.Message));
-            }
 
             return new CallToolResult
             {
@@ -152,8 +146,8 @@ public class ToolOperations
         {
             _logger.LogError(ex, "An exception occurred running '{Tool}'. ", realCommand.Name);
 
-            activity?.SetStatus(ActivityStatusCode.Error)
-                ?.AddException(ex);
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
+
             throw;
         }
         finally
@@ -228,10 +222,7 @@ public class ToolOperations
             return;
         }
 
-        activity
-            .AddTag(TelemetryConstants.ClientName, clientInfo.Name)
-            .AddTag(TelemetryConstants.ClientVersion, clientInfo.Version);
+        activity.AddTag(TelemetryConstants.TagName.ClientName, clientInfo.Name)
+            .AddTag(TelemetryConstants.TagName.ClientVersion, clientInfo.Version);
     }
-
-    private static bool IsSuccessStatusCode(int statusCode) => statusCode >= 200 && statusCode <= 299;
 }
