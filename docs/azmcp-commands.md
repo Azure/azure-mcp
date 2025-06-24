@@ -71,32 +71,32 @@ azmcp cosmos database container item query --subscription <subscription> \
                        [--query "SELECT * FROM c"]
 ```
 
-### Kusto (Azure Data Explorer) Operations
+### Azure Data Explorer Operations
 ```bash
-# List Kusto clusters in a subscription
+# List Azure Data Explorer clusters in a subscription
 azmcp kusto cluster list --subscription <subscription>
 
-# Get details for a Kusto cluster
+# Get details for a Azure Data Explorer cluster
 azmcp kusto cluster get --subscription <subscription> --cluster-name <cluster-name>
 
-# List databases in a Kusto cluster
+# List databases in a Azure Data Explorer cluster
 azmcp kusto database list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
 
-# List tables in a Kusto database
+# List tables in a Azure Data Explorer database
 azmcp kusto table list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                                 --database-name <database-name> \
 
-# Retrieves the schema of a specified Kusto table.
+# Retrieves the schema of a specified Azure Data Explorer table.
 azmcp kusto table schema [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                                   --database-name <database-name> \
                                   --table <table-name>
 
-# Query a Kusto database
+# Query Azure Data Explorer database
 azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                            --database-name <database-name> \
                            --query "<kql-query>"
 
-# Retrieves a sample of data from a specified Kusto table.
+# Retrieves a sample of data from a specified Azure Data Explorer table.
 azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                             --database-name <database-name> \
                             --table <table-name> \

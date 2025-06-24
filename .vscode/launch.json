@@ -26,7 +26,7 @@
             }
         },
         {
-            "name": "Debug Kusto Cluster List",
+            "name": "Debug Azure Data Explorer Cluster List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -46,7 +46,7 @@
             }
         },
         {
-            "name": "Debug Kusto Cluster Get",
+            "name": "Debug Azure Data Explorer Cluster Get",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -68,7 +68,7 @@
             }
         },
         {
-            "name": "Debug Kusto Database List",
+            "name": "Debug Azure Data Explorer Database List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -90,7 +90,7 @@
             }
         },
         {
-            "name": "Debug Kusto Databases List with Cluster URI",
+            "name": "Debug Azure Data Explorer Databases List with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -110,7 +110,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table List",
+            "name": "Debug Azure Data Explorer Table List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -134,7 +134,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table List with Cluster URI",
+            "name": "Debug Azure Data Explorer Table List with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -156,7 +156,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table Schema",
+            "name": "Debug Azure Data Explorer Table Schema",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -182,7 +182,7 @@
             }
         },
         {
-            "name": "Debug Kusto Sample",
+            "name": "Debug Azure Data Explorer Sample",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -209,7 +209,7 @@
             }
         },
         {
-            "name": "Debug Kusto Query",
+            "name": "Debug Azure Data Explorer Query",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -234,7 +234,7 @@
             }
         },
         {
-            "name": "Debug Kusto Query with Cluster URI",
+            "name": "Debug Azure Data Explorer Query with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
