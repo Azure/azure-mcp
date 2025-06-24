@@ -8,7 +8,6 @@ using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
-using AzureMcp.Options.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,9 +123,7 @@ public sealed class ServiceStartCommand : BaseCommand
         services.AddSingleton<IMcpClientService, McpClientService>();
 
         var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
-        var entryAssembly = Assembly.GetEntryAssembly();
-        var assemblyName = entryAssembly?.GetName();
-        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? DefaultServerName;
 
         mcpServerOptionsBuilder.Configure(mcpServerOptions =>
         {

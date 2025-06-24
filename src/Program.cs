@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Reflection;
 using AzureMcp.Areas;
+using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
