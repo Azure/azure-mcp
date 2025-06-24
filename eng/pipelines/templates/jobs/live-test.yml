@@ -40,13 +40,6 @@ jobs:
       useGlobalJson: true
 
   - ${{ if eq(parameters.OSName, 'linux') }}:
-    - pwsh: |
-        $testAres = $env:TESTAREAS
-        Write-Host "TESTAREAS: $testAreas"
-        $areas = [array](ConvertFrom-Json $env:TESTAREAS)
-        Write-Host "Converted: $areas"
-      displayName: Debug TESTAREAS variables
-
     - template: /eng/common/TestResources/build-test-resource-config.yml
       parameters:
         EnvVars:
