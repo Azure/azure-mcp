@@ -5,6 +5,7 @@ using System.Text.Json;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
