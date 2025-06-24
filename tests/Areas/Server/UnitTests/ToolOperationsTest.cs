@@ -161,7 +161,7 @@ public class ToolOperationsTest
     public async Task ReadOnlyMode_FiltersToolsByReadOnlyHint()
     {
         // Run with ReadOnly = false
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
         {
             ReadOnly = false
         };
