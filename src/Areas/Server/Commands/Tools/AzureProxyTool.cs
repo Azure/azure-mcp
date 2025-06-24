@@ -14,7 +14,6 @@ namespace AzureMcp.Commands.Server.Tools;
 [JsonSerializable(typeof(JsonSchema))]
 [JsonSerializable(typeof(ListToolsResult))]
 [JsonSerializable(typeof(IEnumerable<Tool>))]
-[JsonSerializable(typeof(List<Tool>))]
 [JsonSerializable(typeof(Dictionary<string, object?>))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
