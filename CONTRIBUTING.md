@@ -146,7 +146,8 @@ An optional `--service` parameter can also be set to minimize the number of load
         "server",
         "start",
         "--service",
-        "<service-name>"
+        "<service-name-1>",
+        "<optional-service-name-2>"
       ]
     }
   }
@@ -249,7 +250,7 @@ Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds.
 
-To catch format errors early, run `dotnet format src/AzureMcp.sln` before submitting.
+To catch format errors early, run `dotnet format` before submitting.
 
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)

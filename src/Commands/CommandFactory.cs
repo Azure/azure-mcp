@@ -64,17 +64,35 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string groupName)
+    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string[] groupNames)
     {
-        foreach (CommandGroup group in _rootGroup.SubGroup)
+        if (groupNames is null)
         {
-            if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("groupNames cannot be null.");
+        }
+        Dictionary<string, IBaseCommand> commandsFromGroups = new();
+        foreach (string groupName in groupNames)
+        {
+            foreach (CommandGroup group in _rootGroup.SubGroup)
             {
-                return CreateCommmandDictionary(group, string.Empty);
+                if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
+                {
+                    Dictionary<string, IBaseCommand> commandsInGroup = CreateCommmandDictionary(group, string.Empty);
+                    foreach (var (key, value) in commandsInGroup)
+                    {
+                        commandsFromGroups[key] = value;
+                    }
+                    break;
+                }
             }
         }
 
-        throw new KeyNotFoundException($"Group '{groupName}' not found in command groups.");
+        if (commandsFromGroups.Count == 0)
+        {
+            throw new KeyNotFoundException($"No valid group in '[{string.Join(",", groupNames)}]' found in command groups.");
+        }
+
+        return commandsFromGroups;
     }
     private void RegisterCommandGroup()
     {
@@ -197,7 +215,6 @@ public class CommandFactory
             foreach (var kvp in node.Commands)
             {
                 var key = GetPrefix(updatedPrefix, kvp.Key);
-
                 aggregated.Add(key, kvp.Value);
             }
         }
@@ -209,9 +226,7 @@ public class CommandFactory
 
         foreach (var command in node.SubGroup)
         {
-            var childPrefix = GetPrefix(updatedPrefix, command.Name);
             var subcommandsDictionary = CreateCommmandDictionary(command, updatedPrefix);
-
             foreach (var item in subcommandsDictionary)
             {
                 aggregated.Add(item.Key, item.Value);

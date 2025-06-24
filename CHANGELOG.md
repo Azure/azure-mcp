@@ -4,16 +4,22 @@
 
 ### Features Added
 
+- Added new command for resource-centric logs query in Azure Monitor with command path `azmcp-monitor-resource-logs-query` - https://github.com/Azure/azure-mcp/pull/413/
 - Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.)
 
 ### Breaking Changes
+
+- Changed the command for workspace-based logs query in Azure Monitor from `azmcp-monitor-log-query` to `azmcp-monitor-workspace-logs-query`
 
 ### Bugs Fixed
 
 - Fixed handling of non-retrievable fields in Azure AI Search. [#416](https://github.com/Azure/azure-mcp/issues/416)
 
 ### Other Changes
-Repository structure changed to organize all of an Azure service's code into a single "area" folder. [#426](https://github.com/Azure/azure-mcp/pull/426)
+
+- Repository structure changed to organize all of an Azure service's code into a single "area" folder. ([426](https://github.com/Azure/azure-mcp/pull/426))
+- Upgraded Azure.Messaging.ServiceBus to 7.20.1 and Azure.Core to 1.46.2. ([441](https://github.com/Azure/azure-mcp/pull/441/))
+- Updated to ModelContextProtocol 0.3.0-preview1, which brings support for the 06-18-2025 MCP specification. ([431](https://github.com/Azure/azure-mcp/pull/431))
 
 ## 0.2.3 (2025-06-19)
 

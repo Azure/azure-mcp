@@ -26,7 +26,6 @@ public class ContainerListCommandTests
     private readonly Parser _parser;
     private readonly string _knownAccountName = "account123";
     private readonly string _knownSubscriptionId = "sub123";
-    private readonly string _knownTenantId = "tenant123";
 
     public ContainerListCommandTests()
     {

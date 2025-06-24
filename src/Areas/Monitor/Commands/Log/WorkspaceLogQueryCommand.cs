@@ -7,20 +7,21 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Log;
 
-public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonitorCommand<LogQueryOptions>()
+public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> logger) : BaseMonitorCommand<WorkspaceLogQueryOptions>()
 {
     private const string CommandTitle = "Query Log Analytics Workspace";
-    private readonly ILogger<LogQueryCommand> _logger = logger;
+    private readonly ILogger<WorkspaceLogQueryCommand> _logger = logger;
     private readonly Option<string> _tableNameOption = MonitorOptionDefinitions.TableName;
     private readonly Option<string> _queryOption = MonitorOptionDefinitions.Query;
     private readonly Option<int> _hoursOption = MonitorOptionDefinitions.Hours;
     private readonly Option<int> _limitOption = MonitorOptionDefinitions.Limit;
+    private readonly Option<string> _workspaceOption = WorkspaceLogQueryOptionDefinitions.Workspace;
 
     public override string Name => "query";
 
     public override string Description =>
         $"""
-        Execute a KQL query against a Log Analytics workspace. Requires {MonitorOptionDefinitions.WorkspaceIdOrName}
+        Execute a KQL query against a Log Analytics workspace. Requires {WorkspaceLogQueryOptionDefinitions.WorkspaceIdOrName}
         and resource group. Optional {MonitorOptionDefinitions.HoursName}
         (default: {MonitorOptionDefinitions.Hours.GetDefaultValue()}) and {MonitorOptionDefinitions.LimitName}
         (default: {MonitorOptionDefinitions.Limit.GetDefaultValue()}) parameters.
@@ -37,6 +38,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         command.AddOption(_hoursOption);
         command.AddOption(_limitOption);
         command.AddOption(_resourceGroupOption);
+        command.AddOption(_workspaceOption);
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
@@ -52,7 +54,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
             }
 
             var monitorService = context.GetService<IMonitorService>();
-            var results = await monitorService.QueryLogs(
+            var results = await monitorService.QueryWorkspaceLogs(
                 options.Subscription!,
                 options.Workspace!,
                 options.Query!,
@@ -73,7 +75,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         return context.Response;
     }
 
-    protected override LogQueryOptions BindOptions(ParseResult parseResult)
+    protected override WorkspaceLogQueryOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.TableName = parseResult.GetValueForOption(_tableNameOption);
@@ -81,6 +83,7 @@ public sealed class LogQueryCommand(ILogger<LogQueryCommand> logger) : BaseMonit
         options.Hours = parseResult.GetValueForOption(_hoursOption);
         options.Limit = parseResult.GetValueForOption(_limitOption);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
+        options.Workspace = parseResult.GetValueForOption(_workspaceOption);
         return options;
     }
 }

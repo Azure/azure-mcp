@@ -5,23 +5,13 @@ namespace AzureMcp.Areas.Monitor.Options;
 
 public static class MonitorOptionDefinitions
 {
-    public const string WorkspaceIdOrName = "workspace";
     public const string TableNameName = "table-name";
     public const string TableTypeName = "table-type";
     public const string QueryTextName = "query";
     public const string HoursName = "hours";
     public const string LimitName = "limit";
-
     public const string EntityName = "entity";
     public const string HealthModelName = "model-name";
-
-    public static readonly Option<string> Workspace = new(
-        $"--{WorkspaceIdOrName}",
-        "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace."
-    )
-    {
-        IsRequired = true
-    };
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",

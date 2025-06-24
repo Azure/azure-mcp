@@ -58,6 +58,8 @@ Instead of loading all tools, configure targeted MCP servers for your specific n
 *Available Azure Services for `--service` flag:*
 `storage`, `keyvault`, `cosmos`, `redis`, `servicebus`, `monitor`, `appconfig`, `kusto`, `postgres`, `search`
 
+You can start the server with multiple services by specifying after the `--service` flag, such as `--service storage keyvault`.
+
 **Option 3: Use Dynamic Tool Selection (Alternative Approach)**
 Use Azure MCP's dynamic proxy mode - exposes one tool that internally routes to all Azure services:
 

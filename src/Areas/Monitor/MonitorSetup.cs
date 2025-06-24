@@ -28,11 +28,11 @@ public class MonitorSetup : IAreaSetup
         rootGroup.AddSubGroup(monitor);
 
         // Create Monitor subgroups
-        var logs = new CommandGroup("log", "Azure Monitor logs operations - Commands for querying Log Analytics workspaces using KQL.");
-        monitor.AddSubGroup(logs);
-
         var workspaces = new CommandGroup("workspace", "Log Analytics workspace operations - Commands for managing Log Analytics workspaces.");
         monitor.AddSubGroup(workspaces);
+
+        var resources = new CommandGroup("resource", "Azure Monitor resource operations - Commands for resource-centric operations.");
+        monitor.AddSubGroup(resources);
 
         var monitorTable = new CommandGroup("table", "Log Analytics workspace table operations - Commands for listing tables in Log Analytics workspaces.");
         monitor.AddSubGroup(monitorTable);
@@ -40,8 +40,17 @@ public class MonitorSetup : IAreaSetup
         var monitorTableType = new CommandGroup("type", "Log Analytics workspace table type operations - Commands for listing table types in Log Analytics workspaces.");
         monitorTable.AddSubGroup(monitorTableType);
 
+        var workspaceLogs = new CommandGroup("log", "Azure Monitor logs operations - Commands for querying Log Analytics workspaces using KQL.");
+        workspaces.AddSubGroup(workspaceLogs);
+
+        var resourceLogs = new CommandGroup("log", "Azure Monitor resource logs operations - Commands for querying resource logs using KQL.");
+        resources.AddSubGroup(resourceLogs);
+
         // Register Monitor commands
-        logs.AddCommand("query", new LogQueryCommand(loggerFactory.CreateLogger<LogQueryCommand>()));
+
+        workspaceLogs.AddCommand("query", new WorkspaceLogQueryCommand(loggerFactory.CreateLogger<WorkspaceLogQueryCommand>()));
+        resourceLogs.AddCommand("query", new ResourceLogQueryCommand(loggerFactory.CreateLogger<ResourceLogQueryCommand>()));
+
         workspaces.AddCommand("list", new WorkspaceListCommand(loggerFactory.CreateLogger<WorkspaceListCommand>()));
         monitorTable.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
 
