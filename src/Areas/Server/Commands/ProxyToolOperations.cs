@@ -4,7 +4,6 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Commands.Server.Tools;
-using Json.Schema;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
@@ -12,7 +11,6 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Commands.Server;
 
-[JsonSerializable(typeof(JsonSchema))]
 [JsonSerializable(typeof(Tool))]
 [JsonSerializable(typeof(List<Tool>))]
 [JsonSerializable(typeof(Dictionary<string, object?>))]
@@ -21,58 +19,59 @@ namespace AzureMcp.Commands.Server;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     WriteIndented = true
 )]
-internal partial class ProxyToolOperationsSerializationContext : JsonSerializerContext
-{
-}
+internal partial class ProxyToolOperationsSerializationContext : JsonSerializerContext;
 
 public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<ProxyToolOperations> logger)
 {
     private readonly IMcpClientService _mcpClientService = mcpClientService;
     private readonly ILogger<ProxyToolOperations> _logger = logger;
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, ProxyToolOperationsSerializationContext.Default.JsonSchema);
 
     public bool ReadOnly { get; set; } = false;
 
-    private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("intent", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Required()
-                .Description("The intent of the operation to perform.")
-            ),
-            ("command", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The sub command to invoke to within the tool.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("Wrapped set of arguments to pass to the sub command.")
-            ),
-            ("learn", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Boolean)
-                .Description("When set to true returns a list of available sub commands and their parameters.")
-                .Default(false)
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
+    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
+        {
+          "type": "object",
+          "properties": {
+            "intent": {
+              "type": "string",
+              "description": "The intent of the azure operation to perform."
+            },
+            "command": {
+              "type": "string",
+              "description": "The sub command to invoke to within the tool."
+            },
+            "parameters": {
+              "type": "object",
+              "description": "Wrapped set of arguments to pass to the sub command."
+            },
+            "learn": {
+              "type": "boolean",
+              "description": "When set to true returns a list of available sub commands and their parameters.",
+              "default": false
+            }
+          },
+          "required": ["intent"],
+          "additionalProperties": false
+        }
+        """, AzureProxyToolSerializationContext.Default.JsonElement);
 
-    private static readonly JsonSchema ToolCallProxySchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("tool", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The name of the tool to call.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("A key/value pair of parameters names nad values to pass to the tool call command.")
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
+    private const string ToolCallProxySchema = """
+        {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "description": "The name of the tool to call."
+            },
+            "parameters": {
+              "type": "object",
+              "description": "A key/value pair of parameters names nad values to pass to the tool call command."
+            }
+          },
+          "additionalProperties": false
+        }
+        """;
 
     public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
@@ -86,7 +85,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                     To invoke a command, set "command" and wrap its args in "parameters".
                     Set "learn=true" to discover available sub commands.
                     """,
-                InputSchema = JsonSerializer.SerializeToElement(ToolSchema, ProxyToolOperationsSerializationContext.Default.JsonSchema),
+                InputSchema = ToolSchema,
             });
 
         var listToolsResult = new ListToolsResult
@@ -408,7 +407,9 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                             - If no command matches, return JSON schema with "Unknown" tool name.
 
                             Result Schema:
-                            {ToolCallProxySchemaJson}                            Intent:
+                            {ToolCallProxySchema}
+
+                            Intent:
                             {intent ?? "No specific intent provided"}
 
                             Known Parameters:

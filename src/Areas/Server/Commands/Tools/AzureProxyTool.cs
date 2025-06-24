@@ -3,7 +3,6 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Areas.Server.Commands.Tools;
-using Json.Schema;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
@@ -11,7 +10,7 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Commands.Server.Tools;
 
-[JsonSerializable(typeof(JsonSchema))]
+[JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(ListToolsResult))]
 [JsonSerializable(typeof(List<McpClientTool>))]
 [JsonSerializable(typeof(List<Tool>))]
@@ -34,51 +33,54 @@ internal partial class AzureProxyToolSerializationContext : JsonSerializerContex
 [McpServerToolType]
 public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientService mcpClientService) : McpServerTool
 {
-    private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("intent", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Required()
-                .Description("The intent of the azure operation to perform.")
-            ),
-            ("tool", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The azure tool to use to execute the operation.")
-            ),
-            ("command", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The command to execute against the specified tool.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("The parameters to pass to the tool command.")
-            ),
-            ("learn", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Boolean)
-                .Description("To learn about the tool and its supported child tools and parameters.")
-                .Default(false)
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
+    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
+        {
+          "type": "object",
+          "properties": {
+            "intent": {
+              "type": "string",
+              "description": "The intent of the azure operation to perform."
+            },
+            "tool": {
+              "type": "string",
+              "description": "The azure tool to use to execute the operation."
+            },
+            "command": {
+              "type": "string",
+              "description": "The command to execute against the specified tool."
+            },
+            "parameters": {
+              "type": "object",
+              "description": "The parameters to pass to the tool command."
+            },
+            "learn": {
+              "type": "boolean",
+              "description": "To learn about the tool and its supported child tools and parameters.",
+              "default": false
+            }
+          },
+          "required": ["intent"],
+          "additionalProperties": false
+        }
+        """, AzureProxyToolSerializationContext.Default.JsonElement);
 
-    private static readonly JsonSchema ToolCallProxySchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("tool", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The name of the tool to call.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("A key/value pair of parameters names nad values to pass to the tool call command.")
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
+    private const string ToolCallProxySchema = """
+        {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "description": "The name of the tool to call."
+            },
+            "parameters": {
+              "type": "object",
+              "description": "A key/value pair of parameters names nad values to pass to the tool call command."
+            }
+          },
+          "additionalProperties": false
+        }
+        """;
 
-    private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, AzureProxyToolSerializationContext.Default.JsonSchema);
     private readonly ILogger<AzureProxyTool> _logger = logger;
     private readonly IMcpClientService _mcpClientService = mcpClientService;
     private string? _cachedRootToolsJson;
@@ -100,8 +102,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
             Always use this tool for any Azure or "azd" related operation requiring up-to-date, dynamic, and interactive capabilities.
             Always include the "intent" parameter to specify the operation you want to perform.
         """,
-        Annotations = new ToolAnnotations(),
-        InputSchema = JsonSerializer.SerializeToElement(ToolSchema, AzureProxyToolSerializationContext.Default.JsonSchema),
+        InputSchema = ToolSchema,
     };
 
     /// <summary>
@@ -427,7 +428,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                             - If no command matches, return JSON schema with "Unknown" tool name.
 
                             Result Schema:
-                            {ToolCallProxySchemaJson}
+                            {ToolCallProxySchema}
 
                             Intent:
                             {intent}
