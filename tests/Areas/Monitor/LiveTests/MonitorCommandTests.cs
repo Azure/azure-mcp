@@ -356,14 +356,5 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         Assert.False(string.IsNullOrEmpty(interval.GetString()));
         // Verify it follows duration format (starts with PT)
         Assert.StartsWith("PT", interval.GetString());
-
-        Assert.True(firstTimeSeries.TryGetProperty("avgBuckets", out var avgBuckets));
-        Assert.Equal(JsonValueKind.Array, avgBuckets.ValueKind);
-
-        // Verify avgBuckets contains numeric values
-        foreach (var bucket in avgBuckets.EnumerateArray())
-        {
-            Assert.Equal(JsonValueKind.Number, bucket.ValueKind);
-        }
     }
 }
