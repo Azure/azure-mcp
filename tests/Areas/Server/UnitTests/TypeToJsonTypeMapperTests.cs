@@ -4,8 +4,9 @@ using System.Collections;
 using AzureMcp.Areas.Server.Commands;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
+[Trait("Area", "Server")]
 public class TypeToJsonTypeMapperTests
 {
     [Fact]

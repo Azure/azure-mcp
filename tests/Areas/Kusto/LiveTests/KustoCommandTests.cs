@@ -12,7 +12,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Kusto.LiveTests;
 
-
+[Trait("Area", "Kusto")]
 public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>, IAsyncLifetime

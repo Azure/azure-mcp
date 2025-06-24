@@ -12,8 +12,9 @@ using ModelContextProtocol.Server;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
+[Trait("Area", "Server")]
 public class ToolOperationsTest
 {
     // https://json-schema.org/understanding-json-schema/reference/type

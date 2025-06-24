@@ -10,6 +10,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class MockClientTests
 {
     private readonly McpServerOptions _options;

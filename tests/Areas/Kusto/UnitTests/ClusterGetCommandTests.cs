@@ -17,6 +17,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Kusto.UnitTests;
 
+[Trait("Area", "Kusto")]
 public sealed class ClusterGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

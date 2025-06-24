@@ -12,8 +12,9 @@ using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server.Tools
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
 {
+    [Trait("Area", "Server")]
     public class McpClientServiceTests
     {
         private readonly CommandFactory _commandFactory;

@@ -5,8 +5,9 @@ using AzureMcp.Commands;
 using ModelContextProtocol.Client;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server.Tools
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
 {
+    [Trait("Area", "Server")]
     public class McpCommandGroupTests
     {
         private readonly CommandFactory _commandFactory;

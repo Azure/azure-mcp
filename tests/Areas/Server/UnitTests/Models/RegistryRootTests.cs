@@ -5,9 +5,10 @@ using System.Text.Json;
 using AzureMcp.Areas.Server.Models;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server.Models;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Models;
 
-public sealed class RegistryRootTests
+[Trait("Area", "Server")]
+public class RegistryRootTests
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

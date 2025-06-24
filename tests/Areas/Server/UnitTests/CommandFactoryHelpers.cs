@@ -6,7 +6,7 @@ using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
 internal class CommandFactoryHelpers
 {

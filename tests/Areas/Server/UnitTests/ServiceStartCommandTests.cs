@@ -7,8 +7,9 @@ using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Models.Option;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
+[Trait("Area", "Server")]
 public class ServiceStartCommandTests
 {
     private readonly ServiceStartCommand _command;

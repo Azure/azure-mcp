@@ -12,8 +12,9 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Extension;
+namespace AzureMcp.Tests.Areas.Extension.UnitTests;
 
+[Trait("Area", "Extension")]
 public sealed class AzCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

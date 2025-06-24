@@ -5,8 +5,9 @@ using System.Reflection;
 using ModelContextProtocol.Server;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
+[Trait("Area", "Server")]
 public class McpServerToolAttributeTests
 {
     [Fact]

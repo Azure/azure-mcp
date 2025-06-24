@@ -11,8 +11,9 @@ using ModelContextProtocol.Server;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server.Tools
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
 {
+    [Trait("Area", "Server")]
     public class AzureProxyToolTests
     {
         private readonly ILogger<AzureProxyTool> _logger = Substitute.For<ILogger<AzureProxyTool>>();

@@ -15,6 +15,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Monitor.LiveTests;
 
+[Trait("Area", "Monitor")]
 public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper output) : CommandTestsBase(fixture, output), IClassFixture<LiveTestFixture>, IAsyncLifetime
 {
     private LogAnalyticsHelper? _logHelper;
