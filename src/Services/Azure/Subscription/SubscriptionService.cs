@@ -3,7 +3,8 @@
 
 using Azure.ResourceManager.Resources;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.Subscription;
 

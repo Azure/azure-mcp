@@ -2,11 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using AzureMcp.Areas.KeyVault.Services;
+using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
@@ -47,7 +46,7 @@ public class ToolOperationsTest
         collection.AddSingleton(_ => _keyVaultService);
 
         _serviceProvider = collection.AddLogging().BuildServiceProvider();
-        _commandFactory = new CommandFactory(_serviceProvider, _commandFactoryLogger);
+        _commandFactory = CommandFactoryHelpers.CreateCommandFactory(_serviceProvider);
     }
 
     [Fact]
@@ -104,11 +103,13 @@ public class ToolOperationsTest
     [InlineData("storage")]
     [InlineData("keyvault")]
     [InlineData("group")]
+    [InlineData("storage,keyvault")]
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
+        string[]? groupArray = commandGroup == null ? null : commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
         {
-            CommandGroup = commandGroup
+            CommandGroup = groupArray
         };
         var requestContext = new RequestContext<ListToolsRequestParams>(_server);
         var handler = operations.ToolsCapability.ListToolsHandler;
@@ -117,12 +118,12 @@ public class ToolOperationsTest
         Assert.NotNull(result);
         Assert.NotEmpty(result.Tools);
 
-        // If a group is specified, all tool names should start with that group
-        if (!string.IsNullOrWhiteSpace(commandGroup))
+        if (groupArray != null && groupArray.Length > 0)
         {
+            // If groups are specified, all tool names should start with one of those groups
             foreach (var tool in result.Tools)
             {
-                Assert.StartsWith($"{commandGroup}-", tool.Name);
+                Assert.Contains(groupArray, group => tool.Name.StartsWith($"{group}-"));
             }
         }
         else
@@ -140,7 +141,7 @@ public class ToolOperationsTest
         {
             var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
             {
-                CommandGroup = "unknown-group"
+                CommandGroup = new[] { "unknown-group" }
             };
             var requestContext = new RequestContext<ListToolsRequestParams>(_server);
             var handler = operations.ToolsCapability.ListToolsHandler;

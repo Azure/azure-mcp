@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Models.Server;
+using AzureMcp.Areas.Server.Models;
 using Xunit;
 
 namespace AzureMcp.Tests.Commands.Server.Models;
