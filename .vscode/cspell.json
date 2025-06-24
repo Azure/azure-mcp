@@ -127,6 +127,7 @@
                 "setvariable",
                 "stylecop",
                 "targetdir",
+                "testareas",
                 "testproxy",
                 "toplevel",
                 "uploadsummary",

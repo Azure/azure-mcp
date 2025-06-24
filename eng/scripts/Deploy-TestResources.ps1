@@ -2,6 +2,7 @@ param(
     [string]$SubscriptionId,
     [string]$ResourceGroupName,
     [string]$BaseName,
+    [string[]]$Areas,
     [int]$DeleteAfterHours = 12,
     [switch]$Unique
 )
@@ -31,12 +32,23 @@ if(!$ResourceGroupName) {
 
 Push-Location $RepoRoot
 try {
+    $armParameters = @{ areas=$areas }
+
+    Write-Host "Deploying:`n  ResourceGroupName: `"$ResourceGroupName`"`n  BaseName: `"$BaseName`"`n  DeleteAfterHours: $DeleteAfterHours`n  ArmTemplateParameters: $(ConvertTo-Json $armParameters -Compress)"
+
     if($SubscriptionId) {
-        Write-Host "./eng/common/TestResources/New-TestResources.ps1 -SubscriptionId `"$SubscriptionId`" -ResourceGroupName `"$ResourceGroupName`" -BaseName `"$BaseName`" -DeleteAfterHours $DeleteAfterHours"
-        ./eng/common/TestResources/New-TestResources.ps1 -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -BaseName $BaseName -DeleteAfterHours $DeleteAfterHours
+        ./eng/common/TestResources/New-TestResources.ps1 `
+            -SubscriptionId $SubscriptionId `
+            -ResourceGroupName $ResourceGroupName `
+            -BaseName $BaseName `
+            -DeleteAfterHours $DeleteAfterHours `
+            -ArmTemplateParameters $armParameters
     } else {
-        Write-Host "./eng/common/TestResources/New-TestResources.ps1 -ResourceGroupName `"$ResourceGroupName`" -BaseName `"$BaseName`" -DeleteAfterHours $DeleteAfterHours"
-        ./eng/common/TestResources/New-TestResources.ps1 -ResourceGroupName $ResourceGroupName -BaseName $BaseName -DeleteAfterHours $DeleteAfterHours
+        ./eng/common/TestResources/New-TestResources.ps1 `
+            -ResourceGroupName $ResourceGroupName `
+            -BaseName $BaseName `
+            -DeleteAfterHours $DeleteAfterHours `
+            -ArmTemplateParameters $armParameters
     }
 }
 finally {
