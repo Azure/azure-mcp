@@ -4,9 +4,13 @@
 
 ### Features Added
 
+- Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.)
+
 ### Breaking Changes
 
 ### Bugs Fixed
+
+- Fixed handling of non-retrievable fields in Azure AI Search. [#416](https://github.com/Azure/azure-mcp/issues/416)
 
 ### Other Changes
 Repository structure changed to organize all of an Azure service's code into a single "area" folder. [#426](https://github.com/Azure/azure-mcp/pull/426)
