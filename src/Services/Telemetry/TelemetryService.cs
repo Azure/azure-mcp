@@ -22,7 +22,7 @@ public class TelemetryService : ITelemetryService
 
         var tagsList = new List<KeyValuePair<string, object?>>()
         {
-            new(TelemetryConstants.AzureMcpVersion, version)
+            new(TelemetryConstants.TagName.AzureMcpVersion, version)
         };
 
         Parent = new ActivitySource(name, version, tagsList);

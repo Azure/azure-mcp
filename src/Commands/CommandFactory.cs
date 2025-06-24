@@ -154,7 +154,7 @@ public class CommandFactory
         {
             _logger.LogTrace("Executing '{Command}'.", command.Name);
 
-            using var activity = _telemetryService.StartActivity("CommandExecuted");
+            using var activity = _telemetryService.StartActivity(TelemetryConstants.ActivityName.CommandExecuted);
 
             var cmdContext = new CommandContext(_serviceProvider, activity);
             var startTime = DateTime.UtcNow;
@@ -184,11 +184,6 @@ public class CommandFactory
                 _logger.LogTrace("Finished running '{Command}'.", command.Name);
             }
         });
-    }
-
-    private ILogger<T> GetLogger<T>()
-    {
-        return _serviceProvider.GetRequiredService<ILogger<T>>();
     }
 
     private static IBaseCommand? FindCommandInGroup(CommandGroup group, Queue<string> nameParts)

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
+using Azure.Core;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 using AzureMcp.Services.Telemetry;
@@ -35,19 +36,49 @@ public abstract class SubscriptionCommand<
 
     protected void AddSubscriptionInformation(Activity? activity, TOptions options)
     {
-        activity?.AddTag(TelemetryConstants.SubscriptionGuid, options.Subscription);
+        activity?.AddTag(TelemetryConstants.TagName.SubscriptionGuid, options.Subscription);
     }
 
     protected void AddResourceInformation(Activity? activity, string? resourceId)
     {
-        if (string.IsNullOrEmpty(resourceId))
+        if (activity is null || string.IsNullOrEmpty(resourceId))
         {
             return;
         }
 
-        var bytes = s_sHA256.ComputeHash(s_encoding.GetBytes(resourceId));
-        var hashedString = string.Join(string.Empty, bytes.Select(x => x.ToString("x2")));
+        if (ResourceIdentifier.TryParse(resourceId, out var resource))
+        {
+            AddResourceInformation(activity, resource);
+        }
+        else
+        {
+            var resourceHash = GetHashedValue(resourceId);
+            activity.AddTag(TelemetryConstants.TagName.ResourceHash, resourceHash)
+                .AddTag(TelemetryConstants.TagName.IsCalculated, true);
+        }
+    }
 
-        activity?.AddTag(TelemetryConstants.ResourceHash, hashedString);
+    protected void AddResourceInformation(Activity? activity, ResourceIdentifier? resourceIdentifier)
+    {
+        if (activity is null || resourceIdentifier is null)
+        {
+            return;
+        }
+
+        var hashedString = GetHashedValue(resourceIdentifier.ToString());
+        activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
+    }
+
+    protected string GetResourceUri(string subscriptionId, string resourceGroup, string provider, string[] components)
+    {
+        var remaining = string.Join('/', components);
+
+        return $"resource/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/{provider}/{remaining}";
+    }
+
+    private static string GetHashedValue(string contents)
+    {
+        var bytes = s_sHA256.ComputeHash(s_encoding.GetBytes(contents));
+        return string.Join(string.Empty, bytes.Select(x => x.ToString("x2")));
     }
 }
