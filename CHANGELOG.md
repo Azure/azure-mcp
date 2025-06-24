@@ -5,7 +5,7 @@
 ### Features Added
 
 - Added new command for resource-centric logs query in Azure Monitor with command path `azmcp-monitor-resource-logs-query` - https://github.com/Azure/azure-mcp/pull/413/
-- Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.)
+- Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.) - https://github.com/Azure/azure-mcp/pull/440
 
 ### Breaking Changes
 
