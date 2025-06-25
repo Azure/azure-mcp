@@ -38,6 +38,8 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var accessPolicyAssignments = await redisService.ListAccessPolicyAssignmentsAsync(
                 options.Cache!,

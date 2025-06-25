@@ -37,6 +37,8 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             var setting = await appConfigService.GetKeyValue(
                 options.Account!,
