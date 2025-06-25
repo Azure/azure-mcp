@@ -79,5 +79,4 @@ jobs:
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)
       ArtifactName: $(PipelineArtifactName)_$(System.JobName)
-      CustomCondition: succeededOrFailed()
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
