@@ -21,3 +21,4 @@ steps:
     parameters:
       ArtifactPath: ${{ parameters.sourceDirectory }}/.work/aotCompactReport
       ArtifactName: AOTCompatibilityReport
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
