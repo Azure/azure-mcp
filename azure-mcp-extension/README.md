@@ -1,0 +1,1 @@
+# azure-mcp-extension README

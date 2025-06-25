@@ -1,5 +1,6 @@
 bin
 obj
+server
 .dist
 .work
 tests/test-cmds.txt
