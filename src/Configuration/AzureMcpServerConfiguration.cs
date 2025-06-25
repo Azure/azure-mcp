@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace AzureMcp.Configuration;
 
-public class AzureMcpServerConfiguration(string name, string version)
+public class AzureMcpServerConfiguration
 {
-    public string Name { get; } = name;
-    public string Version { get; } = version;
+    public const string DefaultName = "Azure.Mcp.Server";
+
+    public string Name { get; set; } = DefaultName;
+
+    public string Version { get; set; } = "1.0.0-beta";
+
+    public bool IsTelemetryEnabled { get; set; } = true;
 }
