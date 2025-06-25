@@ -350,7 +350,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert - verify the set result
         var valueRead = setResult.AssertProperty("value");
         Assert.Equal(value, valueRead.GetString());
-        
+
         var contentTypeRead = setResult.AssertProperty("contentType");
         Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
         Assert.Equal(contentType, contentTypeRead.GetString());
@@ -368,11 +368,11 @@ public class AppConfigCommandTests : CommandTestsBase,
         // assert - verify the get result
         var setting = getResult.AssertProperty("setting");
         Assert.Equal(JsonValueKind.Object, setting.ValueKind);
-        
+
         valueRead = setting.AssertProperty("value");
         Assert.Equal(JsonValueKind.String, valueRead.ValueKind);
         Assert.Equal(value, valueRead.GetString());
-        
+
         contentTypeRead = setting.AssertProperty("contentType");
         Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
         Assert.Equal(contentType, contentTypeRead.GetString());
@@ -401,10 +401,10 @@ public class AppConfigCommandTests : CommandTestsBase,
         {
             // act - set key-value with content type
             await _appConfigService.SetKeyValue(
-                _accountName, 
-                key, 
-                value, 
-                _subscriptionId, 
+                _accountName,
+                key,
+                value,
+                _subscriptionId,
                 contentType: contentType);
 
             // act - get key-value to verify content type was preserved
