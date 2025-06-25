@@ -13,10 +13,10 @@ internal static class TelemetryConstants
         internal const string AzureMcpVersion = "Version";
         internal const string SubscriptionGuid = "AzSubscriptionGuid";
         internal const string ResourceHash = "AzResourceHash";
+        internal const string MacAddressHash = "MacAddressHash";
         internal const string ClientName = "ClientName";
         internal const string ClientVersion = "ClientVersion";
         internal const string ToolName = "ToolName";
-        internal const string IsCalculated = "IsCalculated";
     }
 
     internal class ActivityName
