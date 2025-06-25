@@ -163,7 +163,7 @@ try {
     $root = $repositoryRoot = "$PSScriptRoot/../../.." | Resolve-Path
 
     if($ServiceDirectory) {
-        $root = "$repositoryRoot/sdk/$ServiceDirectory" | Resolve-Path
+        $root = [System.IO.Path]::Combine($repositoryRoot, "sdk", $ServiceDirectory) | Resolve-Path
     }
 
     if ($TestResourcesDirectory) {
@@ -691,10 +691,6 @@ $postDeploymentScript `@parameters
         Write-Host "Deleting ARM deployment as it may contain secrets. Deployed resources will not be affected."
         $null = $deployment | Remove-AzResourceGroupDeployment
     }
-} catch {
-    Write-Host "Script failed at line: $($_.InvocationInfo.ScriptLineNumber)"
-    Write-Host "Line content: $($_.InvocationInfo.Line)"
-    Write-Host "Error: $($_.Exception.Message)"
 } finally {
     $exitActions.Invoke()
 }
