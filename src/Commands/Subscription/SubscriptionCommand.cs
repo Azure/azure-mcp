@@ -69,11 +69,11 @@ public abstract class SubscriptionCommand<
         activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
     }
 
-    protected string GetResourceUri(string subscriptionId, string resourceGroup, string provider, string[] components)
+    protected string GetResourceUri(string subscriptionId, string resourceGroup, string resourceProviderGroup, params string[] resources)
     {
-        var remaining = string.Join('/', components);
+        var remaining = string.Join('/', resources);
 
-        return $"resource/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/{provider}/{remaining}";
+        return $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/{resourceProviderGroup}/{remaining}";
     }
 
     private static string GetHashedValue(string contents)
