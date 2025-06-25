@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Diagnostics;
 using System.Reflection;
 using AzureMcp.Areas;
 using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Configuration;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
@@ -110,21 +112,27 @@ internal class Program
     {
         Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
     }
+
     internal static void ConfigureServices(IServiceCollection services)
     {
-        services.ConfigureOpenTelemetry();
-        services.AddSingleton<AzureEventSourceLogForwarder>();
-        services.AddSingleton<ITelemetryService>(sp =>
-        {
-            var entryAssembly = Assembly.GetEntryAssembly();
-            var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
-            var assemblyVersion = assemblyName?.Version?.ToString() ?? "1.0.0-beta";
+        services.AddOptions<AzureMcpServerConfiguration>()
+            .Configure(options =>
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
+                if (assemblyName?.Version != null)
+                {
+                    options.Version = assemblyName.Version.ToString();
+                }
 
-            return new TelemetryService(
-                sp.GetRequiredService<AzureEventSourceLogForwarder>(),
-                assemblyName?.Name ?? ServiceStartCommand.DefaultName,
-                assemblyVersion);
-        });
+                var collectTelemetry = Environment.GetEnvironmentVariable("AZURE_MCP_COLLECT_TELEMETRY");
+
+                options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
+                    || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
+            });
+
+        services.ConfigureOpenTelemetry();
+        services.AddSingleton<ITelemetryService, TelemetryService>();
 
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
