@@ -36,8 +36,8 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: TagRepository
   pool:
-    name: azsdk-pool-mms-ubuntu-2204-general
-    image: azsdk-pool-mms-ubuntu-2204-1espt
+    name: azsdk-pool
+    image: ubuntu-24.04
     os: linux
   strategy:
     runOnce:
