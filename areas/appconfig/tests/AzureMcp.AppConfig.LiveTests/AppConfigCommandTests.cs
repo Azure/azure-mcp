@@ -325,4 +325,113 @@ public class AppConfigCommandTests : CommandTestsBase,
         var keyProperty = result.AssertProperty("key");
         Assert.Equal(key, keyProperty.GetString());
     }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_and_get_appconfig_kv_with_content_type()
+    {
+        // arrange
+        const string key = "config-with-content-type";
+        const string value = @"{""property"":""value""}";
+        const string contentType = "application/json";
+
+        // act - set key-value with content type
+        var setResult = await CallToolAsync(
+            "azmcp-appconfig-kv-set",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "account-name", _accountName },
+                { "key", key },
+                { "value", value },
+                { "content-type", contentType }
+            });
+
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
+        
+        var contentTypeRead = setResult.AssertProperty("contentType");
+        Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
+        Assert.Equal(contentType, contentTypeRead.GetString());
+
+        // act - get the key-value to verify content type was stored
+        var getResult = await CallToolAsync(
+            "azmcp-appconfig-kv-show",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "account-name", _accountName },
+                { "key", key }
+            });
+
+        // assert - verify the get result
+        var setting = getResult.AssertProperty("setting");
+        Assert.Equal(JsonValueKind.Object, setting.ValueKind);
+        
+        valueRead = setting.AssertProperty("value");
+        Assert.Equal(JsonValueKind.String, valueRead.ValueKind);
+        Assert.Equal(value, valueRead.GetString());
+        
+        contentTypeRead = setting.AssertProperty("contentType");
+        Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
+        Assert.Equal(contentType, contentTypeRead.GetString());
+
+        // cleanup
+        await CallToolAsync(
+            "azmcp-appconfig-kv-delete",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "account-name", _accountName },
+                { "key", key }
+            });
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_and_get_content_type_directly_using_service()
+    {
+        // arrange
+        const string key = "service-content-type-test";
+        const string value = @"{""name"":""testValue"",""enabled"":true}";
+        const string contentType = "application/json; charset=utf-8";
+
+        try
+        {
+            // act - set key-value with content type
+            await _appConfigService.SetKeyValue(
+                _accountName, 
+                key, 
+                value, 
+                _subscriptionId, 
+                contentType: contentType);
+
+            // act - get key-value to verify content type was preserved
+            var setting = await _appConfigService.GetKeyValue(
+                _accountName,
+                key,
+                _subscriptionId);
+
+            // assert - verify content type was properly set and retrieved
+            Assert.Equal(key, setting.Key);
+            Assert.Equal(value, setting.Value);
+            Assert.Equal(contentType, setting.ContentType);
+        }
+        finally
+        {
+            // cleanup
+            try
+            {
+                await _appConfigService.DeleteKeyValue(
+                    _accountName,
+                    key,
+                    _subscriptionId);
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+        }
+    }
 }

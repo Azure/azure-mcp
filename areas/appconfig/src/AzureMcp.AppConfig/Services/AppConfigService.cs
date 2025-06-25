@@ -148,16 +148,15 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
     {
         ValidateRequiredParameters(accountName, key, value, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
-        
+
         // Create a ConfigurationSetting object to include contentType if provided
         var setting = new ConfigurationSetting(key, value, label)
         {
             ContentType = contentType
         };
-        
+
         await client.SetConfigurationSettingAsync(setting, cancellationToken: default);
     }
-
     public async Task DeleteKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
     {
         ValidateRequiredParameters(accountName, key, subscriptionId);
