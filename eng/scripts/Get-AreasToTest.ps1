@@ -20,13 +20,13 @@ try {
     if(!$isPullRequestBuild) {
         # If we're not in a pull request, test all areas
         $allAreas = Get-ChildItem ./src/Areas -Directory | Select-Object -ExpandProperty Name
-        [array]$areasToTest = $allAreas + 'Core' | Sort-Object -Unique
+        $areasToTest = @($allAreas + 'Core' | Sort-Object -Unique)
     } else {
         # If we're in a pull request, use the set of changed files to narrow down the set of areas to test.
         $changedFiles = Get-ChangedFiles
         Write-Host ''
 
-        [array]$changedAreas = $changedFiles | ForEach-Object { $_ -match '^(src|tests)/Areas/(.*?)/' ? $Matches[2] : 'Core' } | Sort-Object -Unique
+        $changedAreas = @($changedFiles | ForEach-Object { $_ -match '^(src|tests)/Areas/(.*?)/' ? $Matches[2] : 'Core' } | Sort-Object -Unique)
 
         if($changedAreas.Count -eq 1 -and $changedAreas[0] -eq 'Core')
         {
@@ -47,7 +47,7 @@ try {
         }
 
         # If there are core changes, ensure CoreTestAreas are in the list of areas to test
-        [array]$areasToTest = ($hasCoreChanges ? $changedAreas + $coreTestAreas : $changedAreas) | Sort-Object -Unique
+        $areasToTest = @(($hasCoreChanges ? $changedAreas + $coreTestAreas : $changedAreas) | Sort-Object -Unique)
     }
 
     if($SetDevOpsVariables) {
