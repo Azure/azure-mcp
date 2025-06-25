@@ -3,9 +3,8 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
-using System.Text;
 using Azure.Core;
+using AzureMcp.Helpers;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 using AzureMcp.Services.Telemetry;
@@ -16,8 +15,6 @@ public abstract class SubscriptionCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> : GlobalCommand<TOptions>
     where TOptions : SubscriptionOptions, new()
 {
-    private static readonly SHA256 s_sHA256 = SHA256.Create();
-    private static readonly Encoding s_encoding = Encoding.UTF8;
 
     protected readonly Option<string> _subscriptionOption = OptionDefinitions.Common.Subscription;
 
@@ -52,7 +49,7 @@ public abstract class SubscriptionCommand<
         }
         else
         {
-            var resourceHash = GetHashedValue(resourceId);
+            var resourceHash = Sha256Helper.GetHashedValue(resourceId);
             activity.AddTag(TelemetryConstants.TagName.ResourceHash, resourceHash)
                 .AddTag(TelemetryConstants.TagName.IsCalculated, true);
         }
@@ -65,7 +62,7 @@ public abstract class SubscriptionCommand<
             return;
         }
 
-        var hashedString = GetHashedValue(resourceIdentifier.ToString());
+        var hashedString = Sha256Helper.GetHashedValue(resourceIdentifier.ToString());
         activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
     }
 
@@ -76,9 +73,4 @@ public abstract class SubscriptionCommand<
         return $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/{resourceProviderGroup}/{remaining}";
     }
 
-    private static string GetHashedValue(string contents)
-    {
-        var bytes = s_sHA256.ComputeHash(s_encoding.GetBytes(contents));
-        return string.Join(string.Empty, bytes.Select(x => x.ToString("x2")));
-    }
 }
