@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for Azure AI Foundry with 14 new commands across 7 service areas: projects, models, deployments, connections, agents, datasets, and vector stores
+
 ### Breaking Changes
 
 ### Bugs Fixed

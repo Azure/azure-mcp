@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Azure.AI.Projects" Version="1.0.0-beta.9" />
     <PackageVersion Include="Azure.Bicep.Types" Version="0.5.110" />
     <PackageVersion Include="Azure.Bicep.Types.Az" Version="0.2.771" />
     <PackageVersion Include="Azure.Core" Version="1.46.2" />
@@ -52,6 +53,7 @@
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="xunit.v3" Version="2.0.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.2" /> <!-- Pin to 6.0.2 until https://github.com/coverlet-coverage/coverlet/issues/1737 is resolved -->
+    <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+    <!-- Pin to 6.0.2 until https://github.com/coverlet-coverage/coverlet/issues/1737 is resolved -->
   </ItemGroup>
 </Project>

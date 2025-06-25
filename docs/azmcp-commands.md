@@ -342,6 +342,62 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure AI Foundry Operations
+
+```bash
+# List Azure AI Foundry projects in a subscription
+azmcp ai-foundry project list --subscription <subscription> [--resource-group <resource-group>]
+
+# Get detailed information about a specific AI Foundry project
+azmcp ai-foundry project describe --subscription <subscription> --resource-group <resource-group> --project-name <project-name>
+
+# List available models in the AI Foundry model catalog
+azmcp ai-foundry model list --project-endpoint <project-endpoint> [--model-provider <provider>] [--category <category>]
+
+# Get detailed information about a specific model
+azmcp ai-foundry model describe --project-endpoint <project-endpoint> --model-id <model-id>
+
+# List model deployments in an AI Foundry project
+azmcp ai-foundry deployment list --project-endpoint <project-endpoint>
+
+# Get detailed information about a specific deployment
+azmcp ai-foundry deployment describe --project-endpoint <project-endpoint> --deployment-name <deployment-name>
+
+# List connections to external services in an AI Foundry project
+azmcp ai-foundry connection list --project-endpoint <project-endpoint>
+
+# Get detailed information about a specific connection
+azmcp ai-foundry connection describe --project-endpoint <project-endpoint> --connection-name <connection-name>
+
+# List AI agents in an AI Foundry project
+azmcp ai-foundry agent list --project-endpoint <project-endpoint>
+
+# Get detailed information about a specific agent
+azmcp ai-foundry agent describe --project-endpoint <project-endpoint> --agent-id <agent-id>
+
+# List datasets in an AI Foundry project
+azmcp ai-foundry dataset list --project-endpoint <project-endpoint>
+
+# Get detailed information about a specific dataset
+azmcp ai-foundry dataset describe --project-endpoint <project-endpoint> --dataset-id <dataset-id>
+
+# List vector stores in an AI Foundry project
+azmcp ai-foundry vectorstore list --project-endpoint <project-endpoint>
+
+# Get detailed information about a specific vector store
+azmcp ai-foundry vectorstore describe --project-endpoint <project-endpoint> --vectorstore-id <vectorstore-id>
+
+# Examples:
+# List all AI Foundry projects in your subscription
+azmcp ai-foundry project list --subscription <subscription>
+
+# Browse available GPT models from OpenAI
+azmcp ai-foundry model list --project-endpoint "https://myproject.cognitiveservices.azure.com" --model-provider "OpenAI" --category "chat"
+
+# Check deployment status
+azmcp ai-foundry deployment describe --project-endpoint "https://myproject.cognitiveservices.azure.com" --deployment-name "gpt-4-deployment"
+```
+
 ### Azure AI Search
 
 ```bash

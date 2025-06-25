@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.Projects" />
     <PackageReference Include="Azure.Bicep.Types" />
     <PackageReference Include="Azure.Bicep.Types.Az" />
     <PackageReference Include="Azure.Core" />
