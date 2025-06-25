@@ -8,6 +8,7 @@ using AzureMcp.Commands;
 using AzureMcp.Commands.Server;
 using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +24,6 @@ namespace AzureMcp.Areas.Server.Commands;
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
-    public const string DefaultName = "Azure.Mcp.Server";
-
     private const string CommandTitle = "Start MCP Server";
     private const string DefaultServerName = "Azure MCP Server";
 
@@ -112,6 +111,19 @@ public sealed class ServiceStartCommand : BaseCommand
         }
     }
 
+    private static IEnumerable<KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>>? ConfigureNotificationHandlers(ITelemetryService telemetryService)
+    {
+        var contents = new List<KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>>();
+        var initializeHandler = (JsonRpcNotification jsonRpc, CancellationToken ct) =>
+        {
+            return ValueTask.CompletedTask;
+        };
+
+        contents.Add(new KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>(NotificationMethods.InitializedNotification, initializeHandler));
+
+        return contents;
+    }
+
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -125,7 +137,7 @@ public sealed class ServiceStartCommand : BaseCommand
         var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
         var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? DefaultServerName;
 
-        mcpServerOptionsBuilder.Configure(mcpServerOptions =>
+        mcpServerOptionsBuilder.Configure<ITelemetryService>((mcpServerOptions, telemetryService) =>
         {
             mcpServerOptions.ProtocolVersion = "2024-11-05";
             mcpServerOptions.ServerInfo = new Implementation
@@ -133,6 +145,13 @@ public sealed class ServiceStartCommand : BaseCommand
                 Name = serverName,
                 Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
             };
+
+            if (mcpServerOptions.Capabilities == null)
+            {
+                mcpServerOptions.Capabilities = new ServerCapabilities();
+            }
+
+            mcpServerOptions.Capabilities.NotificationHandlers = ConfigureNotificationHandlers(telemetryService);
         });
 
         var serviceArray = options.Service;
@@ -148,13 +167,16 @@ public sealed class ServiceStartCommand : BaseCommand
             mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
             {
                 toolOperations.ReadOnly = options.ReadOnly ?? false;
-                mcpServerOptions.Capabilities = new ServerCapabilities
+
+                if (mcpServerOptions.Capabilities == null)
                 {
-                    Tools = new ToolsCapability()
-                    {
-                        CallToolHandler = toolOperations.CallToolHandler,
-                        ListToolsHandler = toolOperations.ListToolsHandler,
-                    }
+                    mcpServerOptions.Capabilities = new ServerCapabilities();
+                }
+
+                mcpServerOptions.Capabilities.Tools = new ToolsCapability()
+                {
+                    CallToolHandler = toolOperations.CallToolHandler,
+                    ListToolsHandler = toolOperations.ListToolsHandler,
                 };
             });
         }
@@ -166,10 +188,12 @@ public sealed class ServiceStartCommand : BaseCommand
                 toolOperations.ReadOnly = options.ReadOnly ?? false;
                 toolOperations.CommandGroup = serviceArray;
 
-                mcpServerOptions.Capabilities = new ServerCapabilities
+                if (mcpServerOptions.Capabilities == null)
                 {
-                    Tools = toolOperations.ToolsCapability
-                };
+                    mcpServerOptions.Capabilities = new ServerCapabilities();
+                }
+
+                mcpServerOptions.Capabilities.Tools = toolOperations.ToolsCapability;
             });
         }
 

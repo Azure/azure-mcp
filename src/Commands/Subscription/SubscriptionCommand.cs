@@ -36,23 +36,16 @@ public abstract class SubscriptionCommand<
         activity?.AddTag(TelemetryConstants.TagName.SubscriptionGuid, options.Subscription);
     }
 
-    protected void AddResourceInformation(Activity? activity, string? resourceId)
+    protected void AddResourceInformation(Activity? activity, params string[] parts)
     {
-        if (activity is null || string.IsNullOrEmpty(resourceId))
+        if (activity is null || parts.Length == 0)
         {
             return;
         }
 
-        if (ResourceIdentifier.TryParse(resourceId, out var resource))
-        {
-            AddResourceInformation(activity, resource);
-        }
-        else
-        {
-            var resourceHash = Sha256Helper.GetHashedValue(resourceId);
-            activity.AddTag(TelemetryConstants.TagName.ResourceHash, resourceHash)
-                .AddTag(TelemetryConstants.TagName.IsCalculated, true);
-        }
+        var constructed = string.Join('/', parts);
+        var hashedString = Sha256Helper.GetHashedValue(constructed);
+        activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
     }
 
     protected void AddResourceInformation(Activity? activity, ResourceIdentifier? resourceIdentifier)
@@ -62,8 +55,7 @@ public abstract class SubscriptionCommand<
             return;
         }
 
-        var hashedString = Sha256Helper.GetHashedValue(resourceIdentifier.ToString());
-        activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
+        AddResourceInformation(activity, resourceIdentifier.ToString());
     }
 
     protected string GetResourceUri(string subscriptionId, string resourceGroup, string resourceProviderGroup, params string[] resources)
