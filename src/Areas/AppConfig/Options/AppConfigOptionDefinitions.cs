@@ -42,7 +42,7 @@ public static class AppConfigOptionDefinitions
     {
         IsRequired = false
     };
-    
+
     public static readonly Option<string> ContentType = new(
         $"--{ContentTypeName}",
         "The content type of the configuration value. This is used to indicate how the value should be interpreted or parsed."
