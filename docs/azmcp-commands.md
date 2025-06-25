@@ -71,32 +71,32 @@ azmcp cosmos database container item query --subscription <subscription> \
                        [--query "SELECT * FROM c"]
 ```
 
-### Kusto (Azure Data Explorer) Operations
+### Azure Data Explorer Operations
 ```bash
-# List Kusto clusters in a subscription
+# List Azure Data Explorer clusters in a subscription
 azmcp kusto cluster list --subscription <subscription>
 
-# Get details for a Kusto cluster
+# Get details for a Azure Data Explorer cluster
 azmcp kusto cluster get --subscription <subscription> --cluster-name <cluster-name>
 
-# List databases in a Kusto cluster
+# List databases in a Azure Data Explorer cluster
 azmcp kusto database list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
 
-# List tables in a Kusto database
+# List tables in a Azure Data Explorer database
 azmcp kusto table list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                                 --database-name <database-name> \
 
-# Retrieves the schema of a specified Kusto table.
+# Retrieves the schema of a specified Azure Data Explorer table.
 azmcp kusto table schema [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                                   --database-name <database-name> \
                                   --table <table-name>
 
-# Query a Kusto database
+# Query Azure Data Explorer database
 azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                            --database-name <database-name> \
                            --query "<kql-query>"
 
-# Retrieves a sample of data from a specified Kusto table.
+# Retrieves a sample of data from a specified Azure Data Explorer table.
 azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
                             --database-name <database-name> \
                             --table <table-name> \
@@ -188,6 +188,55 @@ azmcp monitor healthmodels entity gethealth --subscription <subscription> \
                                        --resource-group <resource-group> \
                                        --model-name <health-model-name> \
                                        --entity <entity-id>
+```
+
+#### Metrics
+```bash
+# Query Azure Monitor metrics for a resource
+azmcp monitor metrics query --subscription <subscription> \
+                           --resource-name <resource-name> \
+                           --metric-namespace <metric-namespace> \
+                           --metric-names <metric-names> \
+                           [--resource-group <resource-group>] \
+                           [--resource-type <resource-type>] \
+                           [--start-time <start-time>] \
+                           [--end-time <end-time>] \
+                           [--interval <interval>] \
+                           [--aggregation <aggregation>] \
+                           [--filter <filter>] \
+                           [--max-buckets <max-buckets>]
+
+# List available metric definitions for a resource
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 [--resource-group <resource-group>] \
+                                 [--resource-type <resource-type>] \
+                                 [--metric-namespace <metric-namespace>] \
+                                 [--search-string <search-string>] \
+                                 [--limit <limit>]
+
+# Examples:
+# Query CPU and memory metrics for a virtual machine
+azmcp monitor metrics query --subscription <subscription> \
+                           --resource-name <resource-name> \
+                           --resource-group <resource-group> \
+                           --metric-namespace "microsoft.compute/virtualmachines" \
+                           --resource-type "Microsoft.Compute/virtualMachines" \
+                           --metric-names "Percentage CPU,Available Memory Bytes" \
+                           --start-time "2024-01-01T00:00:00Z" \
+                           --end-time "2024-01-01T23:59:59Z" \
+                           --interval "PT1H" \
+                           --aggregation "Average"
+
+# List all available metrics for a storage account
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 --resource-type "Microsoft.Storage/storageAccounts"
+
+# Find metrics related to transactions
+azmcp monitor metrics definitions --subscription <subscription> \
+                                 --resource-name <resource-name> \
+                                 --search-string "transaction"
 ```
 
 ### Azure App Configuration Operations

@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Models.Option;
+
 namespace AzureMcp.Areas.Monitor.Options;
 
 public static class MonitorOptionDefinitions
@@ -58,6 +60,138 @@ public static class MonitorOptionDefinitions
     {
         IsRequired = true
     };
+
+    public static class Metrics
+    {
+        // Metrics related options
+        public const string ResourceIdName = "resource-id";
+        public const string ResourceTypeName = "resource-type";
+        public const string ResourceNameName = "resource-name";
+        public const string MetricNamespaceName = "metric-namespace";
+        public const string MetricNamesName = "metric-names";
+        public const string StartTimeName = "start-time";
+        public const string EndTimeName = "end-time";
+        public const string IntervalName = "interval";
+        public const string AggregationName = "aggregation";
+        public const string FilterName = "filter";
+        public const string SearchStringName = "search-string";
+
+        public const string EntityName = "entity";
+        public const string HealthModelName = "model-name";
+        public const string MaxBucketsName = "max-buckets";
+
+        // Metrics options
+        public static readonly Option<string> MetricNamespaceOptional = new(
+            $"--{MetricNamespaceName}",
+            "The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> MetricNamespace = new(
+            $"--{MetricNamespaceName}",
+            "The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> MetricNames = new(
+            $"--{MetricNamesName}",
+            "The names of metrics to query (comma-separated)."
+        )
+        {
+            IsRequired = true,
+            AllowMultipleArgumentsPerToken = true
+        };
+
+        public static readonly Option<string> StartTime = new(
+            $"--{StartTimeName}",
+            () => DateTime.UtcNow.AddHours(-24).ToString("o"),
+            "The start time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to 24 hours ago."
+        );
+
+        public static readonly Option<string> EndTime = new(
+            $"--{EndTimeName}",
+            () => DateTime.UtcNow.ToString("o"),
+            "The end time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to now."
+        );
+
+        public static readonly Option<string> Interval = new(
+            $"--{IntervalName}",
+            "The time interval for data points (e.g., PT1H for 1 hour, PT5M for 5 minutes)."
+        );
+
+        public static readonly Option<string> Aggregation = new(
+            $"--{AggregationName}",
+            "The aggregation type to use (Average, Maximum, Minimum, Total, Count)."
+        );
+
+        public static readonly Option<string> Filter = new(
+            $"--{FilterName}",
+            "OData filter to apply to the metrics query."
+        );
+
+        public static readonly Option<string> SearchString = new(
+            $"--{SearchStringName}",
+            "A string to filter the metric definitions by. Helpful for reducing the number of records returned. Performs case-insensitive matching on metric name and description fields."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<int> DefinitionsLimit = new(
+            $"--limit",
+            () => 10,
+            "The maximum number of metric definitions to return. Defaults to 10."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<int> NamespacesLimit = new(
+            $"--limit",
+            () => 10,
+            "The maximum number of metric namespaces to return. Defaults to 10."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<int> MaxBuckets = new(
+            $"--{MaxBucketsName}",
+            () => 50,
+            "The maximum number of time buckets to return. Defaults to 50."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> OptionalResourceGroup = new(
+            $"--{OptionDefinitions.Common.ResourceGroupName}",
+            "The name of the Azure resource group. This is a logical container for Azure resources."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> ResourceType = new(
+            $"--{ResourceTypeName}",
+            "The Azure resource type (e.g., 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines'). If not specified, will attempt to infer from resource name."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> ResourceName = new(
+            $"--{ResourceNameName}",
+            "The name of the Azure resource to query metrics for."
+        )
+        {
+            IsRequired = true
+        };
+    }
 
     public static class Health
     {

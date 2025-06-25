@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;
 using AzureMcp.Areas.Monitor.Commands.Log;
+using AzureMcp.Areas.Monitor.Commands.Metrics;
 using AzureMcp.Areas.Monitor.Commands.Table;
 using AzureMcp.Areas.Monitor.Commands.TableType;
 using AzureMcp.Areas.Monitor.Commands.Workspace;
@@ -19,6 +20,9 @@ public class MonitorSetup : IAreaSetup
     {
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
+        services.AddSingleton<IResourceResolverService, ResourceResolverService>();
+        services.AddSingleton<IMetricsQueryClientService, MetricsQueryClientService>();
+        services.AddSingleton<IMonitorMetricsService, MonitorMetricsService>();
     }
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
@@ -63,5 +67,12 @@ public class MonitorSetup : IAreaSetup
         health.AddSubGroup(entity);
 
         entity.AddCommand("gethealth", new EntityGetHealthCommand(loggerFactory.CreateLogger<EntityGetHealthCommand>()));
+
+        // Create Metrics command group and register commands
+        var metrics = new CommandGroup("metrics", "Azure Monitor metrics operations - Commands for querying and analyzing Azure Monitor metrics.");
+        monitor.AddSubGroup(metrics);
+
+        metrics.AddCommand("query", new MetricsQueryCommand(loggerFactory.CreateLogger<MetricsQueryCommand>()));
+        metrics.AddCommand("definitions", new MetricsDefinitionsCommand(loggerFactory.CreateLogger<MetricsDefinitionsCommand>()));
     }
 }

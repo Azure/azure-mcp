@@ -341,7 +341,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
     private async Task<string> GetChildToolListJsonAsync(RequestContext<CallToolRequestParams> request, string tool)
     {
         var listTools = await GetChildToolListAsync(request, tool);
-        return JsonSerializer.Serialize(listTools, AzureProxyToolSerializationContext.Default.ListTool);
+        return JsonSerializer.Serialize(listTools, AzureProxyToolSerializationContext.Default.IEnumerableTool);
     }
 
     private async Task<Tool> GetChildToolAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
