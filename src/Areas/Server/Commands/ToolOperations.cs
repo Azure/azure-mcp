@@ -5,11 +5,11 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
+using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Areas.Server.Commands;
 
@@ -57,11 +57,12 @@ public class ToolOperations
             }
         }
     }
+
     private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext, CancellationToken cancellationToken)
     {
-        using var listActivity = _telemetry.StartActivity(nameof(OnListTools));
+        using var listActivity = _telemetry.StartActivity(nameof(OnListTools), requestContext.Server.ClientInfo);
 
-        listActivity?.AddTag("ClientName", "");
+        listActivity?.AddTag(TelemetryConstants.TagName.ClientName, string.Empty);
 
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
@@ -78,9 +79,7 @@ public class ToolOperations
     private async ValueTask<CallToolResult> OnCallTools(RequestContext<CallToolRequestParams> parameters,
         CancellationToken cancellationToken)
     {
-        using var activity = _telemetry.StartActivity(TelemetryConstants.ActivityName.ToolExecuted);
-
-        AddClientInfo(activity, parameters.Server.ClientInfo);
+        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, parameters.Server.ClientInfo);
 
         if (parameters.Params == null)
         {
@@ -126,7 +125,6 @@ public class ToolOperations
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(parameters.Params.Arguments);
 
-        activity?.AddEvent(new ActivityEvent("Started invoking tool."));
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
 
         try
@@ -152,7 +150,6 @@ public class ToolOperations
         }
         finally
         {
-            activity?.AddEvent(new ActivityEvent("Finished invoking tool"));
             _logger.LogTrace("Finished executing '{Tool}'.", realCommand.Name);
         }
     }
@@ -213,16 +210,5 @@ public class ToolOperations
         tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSourceGenerationContext(newOptions).JsonNode);
 
         return tool;
-    }
-
-    private void AddClientInfo(Activity? activity, Implementation? clientInfo)
-    {
-        if (activity == null || clientInfo == null)
-        {
-            return;
-        }
-
-        activity.AddTag(TelemetryConstants.TagName.ClientName, clientInfo.Name)
-            .AddTag(TelemetryConstants.TagName.ClientVersion, clientInfo.Version);
     }
 }
