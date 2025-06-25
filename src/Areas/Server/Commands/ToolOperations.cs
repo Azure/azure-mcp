@@ -121,7 +121,7 @@ public class ToolOperations
             };
         }
 
-        var commandContext = new CommandContext(_serviceProvider);
+        var commandContext = new CommandContext(_serviceProvider, activity);
 
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(parameters.Params.Arguments);
