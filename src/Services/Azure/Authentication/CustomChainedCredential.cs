@@ -119,4 +119,52 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
         return new DefaultAzureCredential(defaultCredentialOptions);
     }
+
+    private static TokenCredential? CreateVsCodeBrokerCredential(string? tenantId)
+    {
+        // VS Code Azure extension client ID
+        const string vsCodeClientId = "aebc6443-996d-45c2-90f0-388ff96faa56";
+        string authRecordPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".azure",
+            "ms-azuretools.vscode-azureresourcegroups",
+            "authRecord.json");
+
+        if (!File.Exists(authRecordPath))
+        {
+            return null;
+        }
+
+        AuthenticationRecord? authRecord = null;
+        try
+        {
+            using var stream = File.OpenRead(authRecordPath);
+            authRecord = AuthenticationRecord.Deserialize(stream);
+        }
+        catch
+        {
+            return null;
+        }
+
+        // Fallback to tenantId from auth record if not provided
+        string? effectiveTenantId = !string.IsNullOrEmpty(tenantId)
+            ? tenantId
+            : authRecord?.TenantId;
+
+        var brokerOptions = new InteractiveBrowserCredentialBrokerOptions(0)
+        {
+            ClientId = vsCodeClientId,
+            TenantId = effectiveTenantId,
+            AuthenticationRecord = authRecord,
+            TokenCachePersistenceOptions = new TokenCachePersistenceOptions()
+            {
+                Name = "azure-mcp-msal.cache",
+            }
+        };
+
+        var browserCredential = new InteractiveBrowserCredential(brokerOptions);
+
+        // Optional: set a timeout if desired
+        return browserCredential;
+    }
 }
