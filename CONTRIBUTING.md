@@ -182,17 +182,26 @@ Before running live tests,
     ./eng/scripts/Deploy-TestResources.ps1
     ```
 
-    Use the `-SubscriptionId` parameter to use a specific subscription, otherwise, for internal users, the subscription will be defaulted to a known subscription.
-    Use the `-ResourceGroupName` parameter to change the resource group name from its default of "{username}-mcp{hash}".
-    Use the `-BaseName` parameter to change the name for all of the resources from its default of "mcp{hash}".
-    Use the `-Unique` switch to make `{hash}` in the resource group name and base name unique per invocation
-    Use the `-DeleteAfterHours` parameter to change the default DeleteAfter tag of 12 hours.
+    | Parameter           | Type     | Description                                                                                                                   |
+    |---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------|
+    | `Areas`             | string[] | Reduce the scope of your deployment to specific areas.  e.g. `-Areas Storage, KeyVault`                                       |
+    | `SubscriptionId`    | string   | Deploy to a specific subscription, otherwise, for internal users, the subscription will be defaulted to a known subscription. |
+    | `ResourceGroupName` | string   | Set the resource group name. Defaults to "{username}-mcp{hash(username)}".                                                    |
+    | `BaseName`          | string   | Set the base name for all of the resources. Defaults to "mcp{hash}".                                                          |
+    | `Unique`            | switch   | Make `{hash}` in the resource group name and base name unique per invocation. Defaults to a hash of your username             |
+    | `DeleteAfterHours`  | int      | Change the timespan used to set  the DeleteAfter tag. Defaults to 12 hours.                                                   |
+
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the root of the repo.
 
 You can run live tests with:
 ```pwsh
 ./eng/scripts/Test-Code.ps1 -Live
+```
+
+`Test-Code.ps1` supports the `-Areas` parameter as well
+```pwsh
+./eng/scripts/Test-Code.ps1 -Live -Areas Storage, KeyVault
 ```
 
 ### `npx` live tests
