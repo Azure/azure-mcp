@@ -57,6 +57,8 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IMonitorHealthModelService>();
             var result = await service.GetEntityHealth(
                 options.Entity!,

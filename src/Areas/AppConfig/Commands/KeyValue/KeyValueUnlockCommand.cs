@@ -36,6 +36,9 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
             {
                 return context.Response;
             }
+
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.UnlockKeyValue(
                 options.Account!,

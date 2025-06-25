@@ -54,6 +54,8 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var cosmosService = context.GetService<ICosmosService>();
             var items = await cosmosService.QueryItems(
                 options.Account!,
