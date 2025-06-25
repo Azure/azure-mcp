@@ -79,20 +79,16 @@ public class MockClientTests
                             {
                                 Content =
                                 [
-                                    new EmbeddedResourceBlock
+                                    new TextContentBlock
                                     {
-                                        Resource = new TextResourceContents
+                                        Text = JsonSerializer.Serialize(new
                                         {
-                                            MimeType = "application/json",
-                                            Text = JsonSerializer.Serialize(new
+                                            subscriptions = new[]
                                             {
-                                                subscriptions = new[]
-                                                {
-                                                    new { id = "sub-1", name = "Test Sub A" },
-                                                    new { id = "sub-2", name = "Test Sub B" }
-                                                }
-                                            })
-                                        },
+                                                new { id = "sub-1", name = "Test Sub A" },
+                                                new { id = "sub-2", name = "Test Sub B" }
+                                            }
+                                        })
                                     }
                                 ]
                             });
@@ -115,7 +111,7 @@ public class MockClientTests
                 Assert.NotNull(callToolResponse);
                 Assert.NotEmpty(callToolResponse.Content);
 
-                string? jsonContent = GetApplicationJsonText(callToolResponse.Content);
+                string? jsonContent = McpTestUtilities.GetFirstText(callToolResponse.Content);
                 Assert.NotNull(jsonContent);
 
                 var json = JsonSerializer.Deserialize<JsonNode>(jsonContent);
@@ -232,18 +228,5 @@ public class MockClientTests
 
         await transport.DisposeAsync();
         await runTask;
-    }
-
-    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
-    {
-        foreach (var c in contents)
-        {
-            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
-            {
-                return text.Text;
-            }
-        }
-
-        return null;
     }
 }

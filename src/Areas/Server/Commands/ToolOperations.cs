@@ -115,15 +115,10 @@ public class ToolOperations
 
             return new CallToolResult
             {
-                Content = [
-                    new EmbeddedResourceBlock
-                    {
-                        Resource = new TextResourceContents
-                        {
-                            Text = jsonResponse,
-                            MimeType = "application/json"
-                        }
-                    }],
+                Content =
+                [
+                    new TextContentBlock { Text = jsonResponse }
+                ],
             };
         }
         catch (Exception ex)

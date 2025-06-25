@@ -31,7 +31,7 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
 
         var result = await Client.CallToolAsync(command, parameters);
 
-        var content = GetApplicationJsonText(result.Content);
+        var content = McpTestUtilities.GetFirstText(result.Content);
         if (string.IsNullOrWhiteSpace(content))
         {
             Output.WriteLine($"response: {JsonSerializer.Serialize(result)}");
@@ -59,18 +59,5 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
         {
             Output.WriteLine(FailureOutput.ToString());
         }
-    }
-
-    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
-    {
-        foreach (var c in contents)
-        {
-            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
-            {
-                return text.Text;
-            }
-        }
-
-        return null;
     }
 }

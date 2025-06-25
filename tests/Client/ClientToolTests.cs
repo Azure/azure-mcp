@@ -30,7 +30,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?> { },
             cancellationToken: TestContext.Current.CancellationToken);
 
-        string? content = GetApplicationJsonText(result.Content);
+        string? content = McpTestUtilities.GetFirstText(result.Content);
 
         Assert.False(string.IsNullOrWhiteSpace(content));
 
@@ -50,7 +50,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
     {
         var result = await _client.CallToolAsync("non_existent_tool", new Dictionary<string, object?>(), cancellationToken: TestContext.Current.CancellationToken);
 
-        string? content = GetApplicationJsonText(result.Content);
+        string? content = McpTestUtilities.GetFirstText(result.Content);
         Assert.True(string.IsNullOrWhiteSpace(content));
     }
 
@@ -131,18 +131,5 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
-    }
-
-    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
-    {
-        foreach (var c in contents)
-        {
-            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
-            {
-                return text.Text;
-            }
-        }
-
-        return null;
     }
 }
