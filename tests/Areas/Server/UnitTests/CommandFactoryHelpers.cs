@@ -7,6 +7,7 @@ using AzureMcp.Commands;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests;
 
@@ -36,6 +37,11 @@ internal class CommandFactoryHelpers
         }
 
         public Activity? StartActivity(string activityName)
+        {
+            return null;
+        }
+
+        public Activity? StartActivity(string activityName, Implementation? clientInfo)
         {
             return null;
         }
