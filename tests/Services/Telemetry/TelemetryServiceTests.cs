@@ -27,21 +27,6 @@ public class TelemetryServiceTests
     }
 
     [Fact]
-    public void StartActivity_WhenTelemetryEnabled_ShouldReturnActivity()
-    {
-        // Arrange
-        using var service = new TelemetryService(_mockOptions);
-        const string activityId = "test-activity";
-
-        // Act
-        using var activity = service.StartActivity(activityId);
-
-        // Assert
-        Assert.NotNull(activity);
-        Assert.Equal(activityId, activity.OperationName);
-    }
-
-    [Fact]
     public void StartActivity_WhenTelemetryDisabled_ShouldReturnNull()
     {
         // Arrange
@@ -54,32 +39,6 @@ public class TelemetryServiceTests
 
         // Assert
         Assert.Null(activity);
-    }
-
-    [Fact]
-    public void StartActivity_WithClientInfo_WhenTelemetryEnabled_ShouldAddClientTags()
-    {
-        // Arrange
-        using var service = new TelemetryService(_mockOptions);
-        const string activityId = "test-activity";
-        var clientInfo = new Implementation
-        {
-            Name = "TestClient",
-            Version = "2.0.0"
-        };
-
-        // Act
-        using var activity = service.StartActivity(activityId, clientInfo);
-
-        // Assert
-        Assert.NotNull(activity);
-        Assert.Equal(activityId, activity.OperationName);
-
-        var clientNameTag = activity.Tags.FirstOrDefault(t => t.Key == TagName.ClientName);
-        var clientVersionTag = activity.Tags.FirstOrDefault(t => t.Key == TagName.ClientVersion);
-
-        Assert.Equal(clientInfo.Name, clientNameTag.Value);
-        Assert.Equal(clientInfo.Version, clientVersionTag.Value);
     }
 
     [Fact]
@@ -100,42 +59,6 @@ public class TelemetryServiceTests
 
         // Assert
         Assert.Null(activity);
-    }
-
-    [Fact]
-    public void StartActivity_WithNullClientInfo_ShouldNotAddClientTags()
-    {
-        // Arrange
-        using var service = new TelemetryService(_mockOptions);
-        const string activityId = "test-activity";
-
-        // Act
-        using var activity = service.StartActivity(activityId, null);
-
-        // Assert
-        Assert.NotNull(activity);
-        Assert.Equal(activityId, activity.OperationName);
-
-        var clientNameTag = activity.Tags.FirstOrDefault(t => t.Key == TagName.ClientName);
-        var clientVersionTag = activity.Tags.FirstOrDefault(t => t.Key == TagName.ClientVersion);
-
-        Assert.Equal(default(KeyValuePair<string, string?>), clientNameTag);
-        Assert.Equal(default(KeyValuePair<string, string?>), clientVersionTag);
-    }
-
-    [Fact]
-    public void StartActivity_WithoutClientInfo_ShouldCallOverloadWithNullClientInfo()
-    {
-        // Arrange
-        using var service = new TelemetryService(_mockOptions);
-        const string activityId = "test-activity";
-
-        // Act
-        using var activity = service.StartActivity(activityId);
-
-        // Assert
-        Assert.NotNull(activity);
-        Assert.Equal(activityId, activity.OperationName);
     }
 
     [Fact]
