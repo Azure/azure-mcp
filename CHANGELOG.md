@@ -1,16 +1,10 @@
 # Release History
 
-## 0.2.5 (Unreleased)
-
-### Features Added
-
-### Breaking Changes
+## 0.2.5 (2025-06-26)
 
 ### Bugs Fixed
-
+- Fixed issue where tool listing incorrectly returned resources instead of text. [#471](https://github.com/Azure/azure-mcp/issues/465)
 - Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
-
-### Other Changes
 
 ## 0.2.4 (2025-06-24)
 
