@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using AzureMcp.Configuration;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using static AzureMcp.Services.Telemetry.TelemetryConstants;
@@ -15,20 +14,13 @@ namespace AzureMcp.Services.Telemetry;
 /// </summary>
 public class TelemetryService : ITelemetryService
 {
-    private readonly AzureEventSourceLogForwarder? _logForwarder;
     private readonly bool _isEnabled;
 
-    public ActivitySource Parent { get; }
+    internal ActivitySource Parent { get; }
 
-    public TelemetryService(IOptions<AzureMcpServerConfiguration> options, AzureEventSourceLogForwarder? logForwarder = null)
+    public TelemetryService(IOptions<AzureMcpServerConfiguration> options)
     {
         _isEnabled = options.Value.IsTelemetryEnabled;
-
-        if (_isEnabled && logForwarder != null)
-        {
-            _logForwarder = logForwarder;
-            _logForwarder?.Start();
-        }
 
         var tagsList = new List<KeyValuePair<string, object?>>()
         {
@@ -60,6 +52,5 @@ public class TelemetryService : ITelemetryService
 
     public void Dispose()
     {
-        _logForwarder?.Dispose();
     }
 }

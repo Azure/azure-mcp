@@ -10,6 +10,7 @@ using AzureMcp.Helpers;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -35,7 +36,12 @@ public static class OpenTelemetryExtensions
         var isDebugging = Debugger.IsAttached;
         if (isDebugging)
         {
-            services.AddSingleton<AzureEventSourceLogForwarder>();
+            services.AddSingleton(sp =>
+            {
+                var forwarder = new AzureEventSourceLogForwarder(sp.GetRequiredService<ILoggerFactory>());
+                forwarder.Start();
+                return forwarder;
+            });
         }
 
         var appInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
