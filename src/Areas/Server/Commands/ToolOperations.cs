@@ -62,8 +62,6 @@ public class ToolOperations
     {
         using var listActivity = _telemetry.StartActivity(nameof(OnListTools), requestContext.Server.ClientInfo);
 
-        listActivity?.AddTag(TelemetryConstants.TagName.ClientName, string.Empty);
-
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
             .Where(tool => !ReadOnly || tool.Annotations?.ReadOnlyHint == true)
@@ -100,7 +98,7 @@ public class ToolOperations
 
         var toolName = parameters.Params.Name;
 
-        activity?.AddTag(TelemetryConstants.TagName.ToolName, toolName);
+        activity?.AddTag(TagName.ToolName, toolName);
 
         var command = _toolCommands.GetValueOrDefault(toolName);
         if (command == null)
