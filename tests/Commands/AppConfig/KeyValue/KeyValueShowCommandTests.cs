@@ -10,7 +10,7 @@ using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
-using AzureMcp.Tests.Commands.AppConfig.Models;
+using AzureMcp.Tests.Models.AppConfig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -68,7 +68,7 @@ public class KeyValueShowCommandTests
 
         // Act
         var response = await command.ExecuteAsync(context, args);
-        
+
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
