@@ -8,6 +8,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Added support for batch setting access tier for multiple Azure Storage blobs via the `azmcp-storage-blob-batch-set-tier` command. This command efficiently changes the storage tier (Hot, Cool, Archive, etc) for multiple blobs simultaneously in a single operation. [[#735](https://github.com/Azure/azure-mcp/issues/735)]
 - Added descriptions to all Azure MCP command groups to improve discoverability and usability when running the server with `--mode single` or `--mode namespace`. [[#791](https://github.com/Azure/azure-mcp/pull/791)]
+- App Configuration Put command now also supports setting the `ContentType` property. [#459](https://github.com/Azure/azure-mcp/pull/459)
 
 ### Breaking Changes
 
