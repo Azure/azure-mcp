@@ -111,19 +111,6 @@ public sealed class ServiceStartCommand : BaseCommand
         }
     }
 
-    private static IEnumerable<KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>>? ConfigureNotificationHandlers(ITelemetryService telemetryService)
-    {
-        var contents = new List<KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>>();
-        var initializeHandler = (JsonRpcNotification jsonRpc, CancellationToken ct) =>
-        {
-            return ValueTask.CompletedTask;
-        };
-
-        contents.Add(new KeyValuePair<string, Func<JsonRpcNotification, CancellationToken, ValueTask>>(NotificationMethods.InitializedNotification, initializeHandler));
-
-        return contents;
-    }
-
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -150,8 +137,6 @@ public sealed class ServiceStartCommand : BaseCommand
             {
                 mcpServerOptions.Capabilities = new ServerCapabilities();
             }
-
-            mcpServerOptions.Capabilities.NotificationHandlers = ConfigureNotificationHandlers(telemetryService);
         });
 
         var serviceArray = options.Service;
