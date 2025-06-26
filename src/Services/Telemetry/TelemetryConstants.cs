@@ -17,6 +17,7 @@ public static class TelemetryConstants
         public const string ClientName = "ClientName";
         public const string ClientVersion = "ClientVersion";
         public const string ToolName = "ToolName";
+        public const string ErrorDetails = "ErrorDetails";
     }
 
     public class ActivityName

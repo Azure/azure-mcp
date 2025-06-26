@@ -86,8 +86,7 @@ public class ToolOperations
                 Text = "Cannot call tools with null parameters.",
             };
 
-            activity?.SetStatus(ActivityStatusCode.Error);
-            activity?.AddException(new ArgumentException(content.Text));
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
 
             return new CallToolResult
             {
@@ -108,8 +107,7 @@ public class ToolOperations
                 Text = $"Could not find command: {toolName}",
             };
 
-            activity?.SetStatus(ActivityStatusCode.Error)
-                ?.AddException(new ArgumentException(content.Text));
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
 
             return new CallToolResult
             {
@@ -142,7 +140,7 @@ public class ToolOperations
         {
             _logger.LogError(ex, "An exception occurred running '{Tool}'. ", realCommand.Name);
 
-            activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
 
             throw;
         }

@@ -3,6 +3,7 @@
 
 
 using System.Diagnostics;
+using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Commands;
 
@@ -30,7 +31,7 @@ public abstract class BaseCommand : IBaseCommand
 
     protected virtual void HandleException(CommandContext context, Exception ex)
     {
-        context.Activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
+        context.Activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
 
         var response = context.Response;
         var result = new ExceptionResult(
