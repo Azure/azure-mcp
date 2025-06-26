@@ -2,19 +2,18 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
-using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using AzureMcp.Areas;
-using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
 using AzureMcp.Configuration;
+using AzureMcp.Helpers;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
 using AzureMcp.Services.Telemetry;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -129,6 +128,16 @@ internal class Program
 
                 options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
                     || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
+
+                if (options.IsTelemetryEnabled)
+                {
+                    var address = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(x => x.OperationalStatus == OperationalStatus.Up)
+                    .Select(x => x.GetPhysicalAddress().ToString())
+                    .FirstOrDefault(string.Empty);
+
+                    options.MacAddressHash = Sha256Helper.GetHashedValue(address);
+                }
             });
 
         services.ConfigureOpenTelemetry();

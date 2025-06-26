@@ -25,6 +25,7 @@ public class TelemetryService : ITelemetryService
         var tagsList = new List<KeyValuePair<string, object?>>()
         {
             new(TagName.AzureMcpVersion, options.Value.Version),
+            new(TagName.MacAddressHash, options.Value.MacAddressHash)
         };
 
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, tagsList);

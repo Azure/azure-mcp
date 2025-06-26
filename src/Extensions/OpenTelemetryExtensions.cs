@@ -66,18 +66,9 @@ public static class OpenTelemetryExtensions
             .ConfigureResource(r =>
             {
                 var version = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString();
-                var address = NetworkInterface.GetAllNetworkInterfaces()
-                    .Where(x => x.OperationalStatus == OperationalStatus.Up)
-                    .Select(x => x.GetPhysicalAddress().ToString())
-                    .FirstOrDefault(string.Empty);
-                var attributes = new List<KeyValuePair<string, object>>()
-                {
-                    new(TelemetryConstants.TagName.MacAddressHash, Sha256Helper.GetHashedValue(address))
-                };
 
                 r.AddService("azmcp", version)
-                    .AddTelemetrySdk()
-                    .AddAttributes(attributes);
+                    .AddTelemetrySdk();
             })
             .UseAzureMonitorExporter(options =>
             {
