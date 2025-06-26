@@ -178,7 +178,7 @@ public class CommandFactory
             {
                 _logger.LogError("An exception occurred while executing '{Command}'. Exception: {Exception}",
                     command.Name, ex);
-                activity?.SetStatus(ActivityStatusCode.Error)?.AddException(ex);
+                activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
             }
             finally
             {
