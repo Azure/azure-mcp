@@ -9,6 +9,7 @@ using AzureMcp.Commands.AppConfig.KeyValue;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -126,6 +127,7 @@ public class KeyValueDeleteCommandTests
         Assert.Equal(500, response.Status);
         Assert.Contains("Failed to delete key-value", response.Message);
     }
+
     [Theory]
     [InlineData("--account-name", "account1", "--key", "my-key")] // Missing subscription
     [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name
@@ -143,14 +145,5 @@ public class KeyValueDeleteCommandTests
         // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class KeyValueDeleteResult
-    {
-        [JsonPropertyName("key")]
-        public string Key { get; set; } = string.Empty;
-
-        [JsonPropertyName("label")]
-        public string? Label { get; set; }
     }
 }

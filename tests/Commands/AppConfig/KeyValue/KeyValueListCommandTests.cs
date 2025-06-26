@@ -10,6 +10,7 @@ using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -65,7 +66,10 @@ public class KeyValueListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueListResult>(json);
+        var result = JsonSerializer.Deserialize<KeyValueListResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Settings.Count);
@@ -154,6 +158,7 @@ public class KeyValueListCommandTests
         Assert.Equal(500, response.Status);
         Assert.Contains("Service error", response.Message);
     }
+
     [Theory]
     [InlineData("--account-name", "account1")] // Missing subscription
     [InlineData("--subscription", "sub123")] // Missing account-name
@@ -170,11 +175,5 @@ public class KeyValueListCommandTests
         // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class KeyValueListResult
-    {
-        [JsonPropertyName("settings")]
-        public List<KeyValueSetting> Settings { get; set; } = [];
     }
 }
