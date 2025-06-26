@@ -10,6 +10,7 @@ using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -103,6 +104,7 @@ public class KeyValueSetCommandTests
         Assert.Equal("my-value", result.Value);
         Assert.Equal("prod", result.Label);
     }
+
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
@@ -147,20 +149,10 @@ public class KeyValueSetCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, parsedArgs);        // Assert
+        var response = await command.ExecuteAsync(context, parsedArgs);
+
+        // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class KeyValueSetResult
-    {
-        [JsonPropertyName("key")]
-        public string Key { get; set; } = string.Empty;
-
-        [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
-
-        [JsonPropertyName("label")]
-        public string? Label { get; set; }
     }
 }

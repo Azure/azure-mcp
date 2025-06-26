@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Commands.AppConfig.Account;
 using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,7 +60,10 @@ public class AccountListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<AccountListResult>(json);
+        var result = JsonSerializer.Deserialize<AccountListResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Accounts.Count);
@@ -81,10 +85,13 @@ public class AccountListCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);        // Assert
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
         Assert.Equal(200, response.Status);
         Assert.Null(response.Results);
     }
+
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
@@ -97,10 +104,13 @@ public class AccountListCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);        // Assert
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Service error", response.Message);
     }
+
     [Fact]
     public async Task ExecuteAsync_Returns400_WhenSubscriptionIsMissing()
     {
@@ -115,11 +125,5 @@ public class AccountListCommandTests
         // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class AccountListResult
-    {
-        [JsonPropertyName("accounts")]
-        public List<AppConfigurationAccount> Accounts { get; set; } = [];
     }
 }

@@ -10,6 +10,7 @@ using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -127,6 +128,7 @@ public class KeyValueLockCommandTests
         Assert.Equal(500, response.Status);
         Assert.Contains("Failed to lock key-value", response.Message);
     }
+
     [Theory]
     [InlineData("")]
     [InlineData("--subscription sub123")]
@@ -144,17 +146,5 @@ public class KeyValueLockCommandTests
         // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class KeyValueLockResult
-    {
-        [JsonPropertyName("key")]
-        public string Key { get; set; } = string.Empty;
-
-        [JsonPropertyName("label")]
-        public string? Label { get; set; }
-
-        [JsonPropertyName("isLocked")]
-        public bool IsLocked { get; set; }
     }
 }

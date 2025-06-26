@@ -10,6 +10,7 @@ using AzureMcp.Models.AppConfig;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
+using AzureMcp.Tests.Commands.AppConfig.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -66,7 +67,9 @@ public class KeyValueShowCommandTests
         var context = new CommandContext(_serviceProvider);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);        // Assert
+        var response = await command.ExecuteAsync(context, args);
+        
+        // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
 
@@ -118,6 +121,7 @@ public class KeyValueShowCommandTests
         Assert.Equal(200, response.Status);
         await _appConfigService.Received(1).GetKeyValue("account1", "my-key", "sub123", null, Arg.Any<RetryPolicyOptions>(), null);
     }
+
     [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
@@ -164,11 +168,5 @@ public class KeyValueShowCommandTests
         // Assert
         Assert.Equal(400, response.Status);
         Assert.Contains("required", response.Message.ToLower());
-    }
-
-    private sealed class KeyValueShowResult
-    {
-        [JsonPropertyName("setting")]
-        public KeyValueSetting Setting { get; set; } = new();
     }
 }
