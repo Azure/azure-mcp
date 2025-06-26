@@ -15,6 +15,7 @@ namespace AzureMcp.Services.Telemetry;
 public class TelemetryService : ITelemetryService
 {
     private readonly bool _isEnabled;
+    private readonly List<KeyValuePair<string, object?>> _tagsList;
 
     internal ActivitySource Parent { get; }
 
@@ -22,13 +23,13 @@ public class TelemetryService : ITelemetryService
     {
         _isEnabled = options.Value.IsTelemetryEnabled;
 
-        var tagsList = new List<KeyValuePair<string, object?>>()
+        _tagsList = new List<KeyValuePair<string, object?>>()
         {
             new(TagName.AzureMcpVersion, options.Value.Version),
             new(TagName.MacAddressHash, options.Value.MacAddressHash)
         };
 
-        Parent = new ActivitySource(options.Value.Name, options.Value.Version, tagsList);
+        Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);
     }
 
     public Activity? StartActivity(string activityId) => StartActivity(activityId, null);
@@ -42,11 +43,18 @@ public class TelemetryService : ITelemetryService
 
         var activity = Parent.StartActivity(activityId);
 
-        if (activity != null && clientInfo != null)
+        if (activity == null)
+        {
+            return activity;
+        }
+
+        if (clientInfo != null)
         {
             activity.AddTag(TagName.ClientName, clientInfo.Name)
                 .AddTag(TagName.ClientVersion, clientInfo.Version);
         }
+
+        _tagsList.ForEach(kvp => activity.AddTag(kvp.Key, kvp.Value));
 
         return activity;
     }
