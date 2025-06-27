@@ -6,7 +6,7 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Services.Telemetry;
 
-public interface ITelemetryService : IDisposable
+public interface ITelemetryService
 {
     Activity? StartActivity(string activityName);
 

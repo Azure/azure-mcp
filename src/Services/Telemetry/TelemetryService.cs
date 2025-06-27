@@ -54,12 +54,10 @@ public class TelemetryService : ITelemetryService
                 .AddTag(TagName.ClientVersion, clientInfo.Version);
         }
 
+        activity.AddTag(TagName.EventId, Guid.NewGuid().ToString());
+
         _tagsList.ForEach(kvp => activity.AddTag(kvp.Key, kvp.Value));
 
         return activity;
-    }
-
-    public void Dispose()
-    {
     }
 }
