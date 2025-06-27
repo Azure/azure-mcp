@@ -326,6 +326,18 @@ azmcp role assignment list --subscription <subscription> --scope <scope>
 azmcp group list --subscription <subscription>
 ```
 
+### Azure AI Foundry Operations
+```bash
+# List AI Foundry models
+azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] [--publisher-name <publisher-name>] [--license-name <license-name>] [--model-name <model-name>]
+
+# Deploy an AI Foundry model
+azmcp foundry models deploy --subscription <subscription> --resource-group <resource-group>  --deployment-name <deployment-name> --model-name <model-name> --model-format <model-format> --azure-ai-services-name <azure-ai-services-name> [--model-version <model-version>] [--model-source <model-source>] [--sku-name <sku-name>] [--sku-capacity <sku-capacity>] [--scale-type <scale-type>] [--scale-capacity <scale-capacity>]
+
+# List AI Foundry model deployments
+azmcp foundry models deployments list --endpoint <endpoint>
+```
+
 ### Azure CLI Extension Operations
 ```bash
 # Execute any Azure CLI command
