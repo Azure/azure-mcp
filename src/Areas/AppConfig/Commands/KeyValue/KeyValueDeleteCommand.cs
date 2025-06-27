@@ -36,6 +36,8 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.DeleteKeyValue(
                 options.Account!,
@@ -51,7 +53,7 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred deleting value. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

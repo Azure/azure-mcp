@@ -39,6 +39,8 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var blobs = await storageService.ListBlobs(
                 options.Account!,
@@ -54,7 +56,7 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing storage blobs.  Account: {Account}, Container: {Container}.", options.Account, options.Container);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

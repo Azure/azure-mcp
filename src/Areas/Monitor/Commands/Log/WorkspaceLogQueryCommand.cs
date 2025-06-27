@@ -53,6 +53,8 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var monitorService = context.GetService<IMonitorService>();
             var results = await monitorService.QueryWorkspaceLogs(
                 options.Subscription!,
@@ -69,7 +71,7 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing log query command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

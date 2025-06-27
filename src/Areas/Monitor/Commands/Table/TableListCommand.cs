@@ -44,6 +44,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var monitorService = context.GetService<IMonitorService>();
             var tables = await monitorService.ListTables(
                 options.Subscription!,
@@ -60,7 +62,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing tables.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

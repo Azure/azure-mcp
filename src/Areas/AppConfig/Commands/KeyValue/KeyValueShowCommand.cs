@@ -37,6 +37,8 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             var setting = await appConfigService.GetKeyValue(
                 options.Account!,
@@ -53,7 +55,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred getting value. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

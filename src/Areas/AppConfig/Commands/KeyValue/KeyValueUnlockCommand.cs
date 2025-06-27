@@ -36,6 +36,9 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
             {
                 return context.Response;
             }
+
+            AddSubscriptionInformation(context.Activity, options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.UnlockKeyValue(
                 options.Account!,
@@ -53,7 +56,7 @@ public sealed class KeyValueUnlockCommand(ILogger<KeyValueUnlockCommand> logger)
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred unlocking key. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

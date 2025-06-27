@@ -40,6 +40,8 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var caches = await redisService.ListCachesAsync(
                 options.Subscription!,
@@ -57,7 +59,7 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
         {
             _logger.LogError(ex, "Failed to list Redis Caches");
 
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -2,13 +2,18 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Net.NetworkInformation;
+using System.Reflection;
 using AzureMcp.Areas;
 using AzureMcp.Commands;
+using AzureMcp.Configuration;
+using AzureMcp.Helpers;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -105,9 +110,38 @@ internal class Program
     {
         Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
     }
+
     internal static void ConfigureServices(IServiceCollection services)
     {
+        services.AddOptions<AzureMcpServerConfiguration>()
+            .Configure(options =>
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
+                if (assemblyName?.Version != null)
+                {
+                    options.Version = assemblyName.Version.ToString();
+                }
+
+                var collectTelemetry = Environment.GetEnvironmentVariable("AZURE_MCP_COLLECT_TELEMETRY");
+
+                options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
+                    || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
+
+                if (options.IsTelemetryEnabled)
+                {
+                    var address = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(x => x.OperationalStatus == OperationalStatus.Up)
+                    .Select(x => x.GetPhysicalAddress().ToString())
+                    .FirstOrDefault(string.Empty);
+
+                    options.MacAddressHash = Sha256Helper.GetHashedValue(address);
+                }
+            });
+
         services.ConfigureOpenTelemetry();
+        services.AddSingleton<ITelemetryService, TelemetryService>();
+
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IExternalProcessService, ExternalProcessService>();

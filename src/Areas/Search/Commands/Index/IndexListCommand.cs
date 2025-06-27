@@ -67,7 +67,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing search indexes");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

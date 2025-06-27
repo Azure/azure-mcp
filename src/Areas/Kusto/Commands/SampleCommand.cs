@@ -51,6 +51,8 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var kusto = context.GetService<IKustoService>();
             List<JsonElement> results;
             var query = $"{options.Table} | sample {options.Limit}";
@@ -84,7 +86,7 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred sampling table. Cluster: {Cluster}, Database: {Database}, Table: {Table}.", options.ClusterUri ?? options.ClusterName, options.Database, options.Table);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

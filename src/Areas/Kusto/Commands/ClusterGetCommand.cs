@@ -35,6 +35,8 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var kusto = context.GetService<IKustoService>();
             var cluster = await kusto.GetCluster(
                 options.Subscription!,
@@ -48,7 +50,7 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred getting Kusto cluster details. Cluster: {Cluster}.", options.ClusterName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

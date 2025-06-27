@@ -64,6 +64,8 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IServiceBusService>();
             var messages = await service.PeekQueueMessages(
                 options.Namespace!,
@@ -80,7 +82,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

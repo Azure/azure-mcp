@@ -38,6 +38,8 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var monitorService = context.GetService<IMonitorService>();
             var workspaces = await monitorService.ListWorkspaces(
                 options.Subscription!,
@@ -53,7 +55,7 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing workspaces.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

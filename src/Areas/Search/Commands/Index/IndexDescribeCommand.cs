@@ -73,7 +73,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving search index definition");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -37,6 +37,8 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var searchService = context.GetService<ISearchService>();
 
             var services = await searchService.ListServices(
@@ -52,7 +54,7 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing search services");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

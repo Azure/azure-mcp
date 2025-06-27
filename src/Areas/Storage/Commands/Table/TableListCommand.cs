@@ -36,6 +36,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var storageService = context.GetService<IStorageService>();
             var tables = await storageService.ListTables(
                 options.Account!,
@@ -72,7 +74,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing tables. Account: {Account}.", options.Account);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

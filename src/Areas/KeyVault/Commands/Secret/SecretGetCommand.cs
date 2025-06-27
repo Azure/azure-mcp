@@ -59,6 +59,8 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var keyVaultService = context.GetService<IKeyVaultService>();
             var result = await keyVaultService.GetSecret(
                 options.VaultName!,
@@ -74,7 +76,7 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting secret {SecretName} from vault {VaultName}", options.SecretName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

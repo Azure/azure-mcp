@@ -68,6 +68,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var service = context.GetService<IKeyVaultService>();
             var key = await service.CreateKey(
                 options.VaultName!,
@@ -84,7 +86,7 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating key {KeyName} in vault {VaultName}", options.KeyName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

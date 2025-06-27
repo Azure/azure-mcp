@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
+
 ### Breaking Changes
 
 ### Bugs Fixed

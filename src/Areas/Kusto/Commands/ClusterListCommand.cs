@@ -37,6 +37,8 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options);
+
             var kusto = context.GetService<IKustoService>();
             var clusterNames = await kusto.ListClusters(
                 options.Subscription!,
@@ -50,7 +52,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing Kusto clusters. Subscription: {Subscription}.", options.Subscription);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }
