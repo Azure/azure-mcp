@@ -19,7 +19,8 @@ namespace AzureMcp.Areas.BicepSchema.Commands
 
         public override string Description =>
        """
-        Provides the schema for the most recent apiVersion of an Azure resource.
+        Provides the bicep schema for the most recent apiVersion of an Azure resource.
+        Only call this command if you are asked to create or modify resources in a bicep template.
         The resource-type parameter must be in the full Azure Resource Manager format '{ResourceProvider}/{ResourceType}'.
         (e.g., 'Microsoft.KeyVault/vaults', 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines').
         If you are asked to create or modify resources in a bicep ARM template, call this function multiple times,
