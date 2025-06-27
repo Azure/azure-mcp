@@ -113,7 +113,7 @@ if($CoverageSummary) {
         $xml = [xml](Get-Content $coverageFile.FullName)
 
         $classes = $xml.coverage.packages.package.classes.class |
-            Where-Object { $_.name -match 'AzureMcp\.Commands\.' -and $_.filename -notlike '*System.Text.Json.SourceGeneration*' }
+            Where-Object { $_.name -match 'AzureMcp\.(.*\.)?Commands\.' -and $_.filename -notlike '*System.Text.Json.SourceGeneration*' }
 
         $fileGroups = $classes |
             Group-Object { $_.filename } |

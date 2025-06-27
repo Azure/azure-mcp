@@ -74,9 +74,10 @@ jobs:
       inputs:
         azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
         azurePowerShellVersion: 'LatestVersion'
-        scriptType: FilePath
-        scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
-        scriptArguments: -Live -CoverageSummary -Areas (ConvertFrom-Json $env:TESTAREAS)
+        scriptType: InlineScript
+        Inline: |
+          ./eng/scripts/Test-Code.ps1 -Live -CoverageSummary -Areas (ConvertFrom-Json $env:TESTAREAS)
+          exit $LastExitCode
         pwsh: true
         workingDirectory: $(Build.SourcesDirectory)
 
