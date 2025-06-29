@@ -16,7 +16,11 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     public override string Name => "list";
 
     public override string Description =>
-        "List all tables in a specific Kusto database. Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name` .Returns table names as a JSON array.";
+        """
+        List all tables in a specific Kusto database.
+        Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name`.
+        Returns table names as a JSON array.
+        """;
 
     public override string Title => CommandTitle;
 

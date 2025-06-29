@@ -58,17 +58,20 @@ azmcp bestpractices get
 azmcp cosmos account list --subscription <subscription>
 
 # List databases in a Cosmos DB account
-azmcp cosmos database list --subscription <subscription> --account-name <account-name>
+azmcp cosmos database list --subscription <subscription> \
+                           --account-name <account-name>
 
 # List containers in a Cosmos DB database
-azmcp cosmos database container list --subscription <subscription> --account-name <account-name> --database-name <database-name>
+azmcp cosmos database container list --subscription <subscription> \
+                                     --account-name <account-name> \
+                                     --database-name <database-name>
 
 # Query items in a Cosmos DB container
 azmcp cosmos database container item query --subscription <subscription> \
-                       --account-name <account-name> \
-                       --database-name <database-name> \
-                       --container-name <container-name> \
-                       [--query "SELECT * FROM c"]
+                                           --account-name <account-name> \
+                                           --database-name <database-name> \
+                                           --container-name <container-name> \
+                                           [--query "SELECT * FROM c"]
 ```
 
 ### Azure Data Explorer Operations
@@ -77,65 +80,97 @@ azmcp cosmos database container item query --subscription <subscription> \
 azmcp kusto cluster list --subscription <subscription>
 
 # Get details for a Azure Data Explorer cluster
-azmcp kusto cluster get --subscription <subscription> --cluster-name <cluster-name>
+azmcp kusto cluster get --subscription <subscription> \
+                        --cluster-name <cluster-name>
 
 # List databases in a Azure Data Explorer cluster
 azmcp kusto database list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
 
 # List tables in a Azure Data Explorer database
-azmcp kusto table list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
-                                --database-name <database-name> \
+azmcp kusto table list [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>] \
+                       --database-name <database-name>
 
 # Retrieves the schema of a specified Azure Data Explorer table.
-azmcp kusto table schema [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
-                                  --database-name <database-name> \
-                                  --table <table-name>
+azmcp kusto table schema [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>] \
+                         --database-name <database-name> \
+                         --table <table-name>
 
 # Query Azure Data Explorer database
-azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
-                           --database-name <database-name> \
-                           --query "<kql-query>"
+azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>] \
+                  --database-name <database-name> \
+                  --query "<kql-query>"
 
 # Retrieves a sample of data from a specified Azure Data Explorer table.
 azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> --cluster-name <cluster-name>]
-                            --database-name <database-name> \
-                            --table <table-name> \
-                           [--limit <limit>]
+                   --database-name <database-name> \
+                   --table <table-name> \
+                   [--limit <limit>]
 
 ```
 
 ### Azure DB for PostgreSQL Operations
-
+#### Database commands
 ```bash
-## Database commands
-
 # List all databases in a PostgreSQL server
-azmcp postgres database list --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server>
+azmcp postgres database list --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user-name <user> \
+                             --server <server>
 
 # Execute a query on a PostgreSQL database
-azmcp postgres database query --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --database <database> --query <query>
+azmcp postgres database query --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user-name <user> \
+                              --server <server> \
+                              --database <database> \
+                              --query <query>
+```
 
-## Table Commands
-
+#### Table Commands
+```bash
 # List all tables in a PostgreSQL database
-azmcp postgres table list --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --database <database>
+azmcp postgres table list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user-name <user> \
+                          --server <server> \
+                          --database <database>
 
 # Get the schema of a specific table in a PostgreSQL database
-azmcp postgres table schema --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --database <database> --table <table>
+azmcp postgres table schema --subscription <subscription> \
+                            --resource-group <resource-group> \
+                            --user-name <user> \
+                            --server <server> \
+                            --database <database> \
+                            --table <table>
+```
 
-## Server Commands
-
+#### Server Commands
+```bash
 # List all PostgreSQL servers in a subscription & resource group
-azmcp postgres server list --subscription <subscription> --resource-group <resource-group> --user-name <user>
+azmcp postgres server list --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user-name <user>
 
 # Retrieve the configuration of a PostgreSQL server
-azmcp postgres server config --subscription <subscription> --resource-group <resource-group> ----user-name <user> --server <server>
+azmcp postgres server config --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user-name <user> \
+                             --server <server>
 
 # Retrieve a specific parameter of a PostgreSQL server
-azmcp postgres server param --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter>
+azmcp postgres server param --subscription <subscription> \
+                            --resource-group <resource-group> \
+                            --user-name <user> \
+                            --server <server> \
+                            --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server setparam --subscription <subscription> --resource-group <resource-group> --user-name <user> --server <server> --param <parameter> --value <value>
+azmcp postgres server setparam --subscription <subscription> \
+                               --resource-group <resource-group> \
+                               --user-name <user> \
+                               --server <server> \
+                               --param <parameter> \
+                               --value <value>
 ```
 
 ### Azure Storage Operations
@@ -144,16 +179,22 @@ azmcp postgres server setparam --subscription <subscription> --resource-group <r
 azmcp storage account list --subscription <subscription>
 
 # List tables in a Storage account
-azmcp storage table list --subscription <subscription> --account-name <account-name>
+azmcp storage table list --subscription <subscription> \
+                         --account-name <account-name>
 
 # List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> --account-name <account-name> --container-name <container-name>
+azmcp storage blob list --subscription <subscription> \
+                        --account-name <account-name> \
+                        --container-name <container-name>
 
 # List containers in a Storage blob service
-azmcp storage blob container list --subscription <subscription> --account-name <account-name>
+azmcp storage blob container list --subscription <subscription> \
+                                  --account-name <account-name>
 
 # Get detailed properties of a storage container
-azmcp storage blob container details --subscription <subscription> --account-name <account-name> --container-name <container-name>
+azmcp storage blob container details --subscription <subscription> \
+                                     --account-name <account-name> \
+                                     --container-name <container-name>
 ```
 
 ### Azure Monitor Operations
@@ -163,7 +204,9 @@ azmcp storage blob container details --subscription <subscription> --account-nam
 azmcp monitor workspace list --subscription <subscription>
 
 # List tables in a Log Analytics workspace
-azmcp monitor table list --subscription <subscription> --workspace <workspace> --resource-group <resource-group>
+azmcp monitor table list --subscription <subscription> \
+                         --workspace <workspace> \
+                         --resource-group <resource-group>
 
 # Query logs from Azure Monitor using KQL
 azmcp monitor log query --subscription <subscription> \
@@ -185,58 +228,58 @@ azmcp monitor log query --subscription <subscription> \
 ```bash
 # Get the health of an entity
 azmcp monitor healthmodels entity gethealth --subscription <subscription> \
-                                       --resource-group <resource-group> \
-                                       --model-name <health-model-name> \
-                                       --entity <entity-id>
+                                            --resource-group <resource-group> \
+                                            --model-name <health-model-name> \
+                                            --entity <entity-id>
 ```
 
 #### Metrics
 ```bash
 # Query Azure Monitor metrics for a resource
 azmcp monitor metrics query --subscription <subscription> \
-                           --resource-name <resource-name> \
-                           --metric-namespace <metric-namespace> \
-                           --metric-names <metric-names> \
-                           [--resource-group <resource-group>] \
-                           [--resource-type <resource-type>] \
-                           [--start-time <start-time>] \
-                           [--end-time <end-time>] \
-                           [--interval <interval>] \
-                           [--aggregation <aggregation>] \
-                           [--filter <filter>] \
-                           [--max-buckets <max-buckets>]
+                            --resource-name <resource-name> \
+                            --metric-namespace <metric-namespace> \
+                            --metric-names <metric-names> \
+                            [--resource-group <resource-group>] \
+                            [--resource-type <resource-type>] \
+                            [--start-time <start-time>] \
+                            [--end-time <end-time>] \
+                            [--interval <interval>] \
+                            [--aggregation <aggregation>] \
+                            [--filter <filter>] \
+                            [--max-buckets <max-buckets>]
 
 # List available metric definitions for a resource
 azmcp monitor metrics definitions --subscription <subscription> \
-                                 --resource-name <resource-name> \
-                                 [--resource-group <resource-group>] \
-                                 [--resource-type <resource-type>] \
-                                 [--metric-namespace <metric-namespace>] \
-                                 [--search-string <search-string>] \
-                                 [--limit <limit>]
+                                  --resource-name <resource-name> \
+                                  [--resource-group <resource-group>] \
+                                  [--resource-type <resource-type>] \
+                                  [--metric-namespace <metric-namespace>] \
+                                  [--search-string <search-string>] \
+                                  [--limit <limit>]
 
 # Examples:
 # Query CPU and memory metrics for a virtual machine
 azmcp monitor metrics query --subscription <subscription> \
-                           --resource-name <resource-name> \
-                           --resource-group <resource-group> \
-                           --metric-namespace "microsoft.compute/virtualmachines" \
-                           --resource-type "Microsoft.Compute/virtualMachines" \
-                           --metric-names "Percentage CPU,Available Memory Bytes" \
-                           --start-time "2024-01-01T00:00:00Z" \
-                           --end-time "2024-01-01T23:59:59Z" \
-                           --interval "PT1H" \
-                           --aggregation "Average"
+                            --resource-name <resource-name> \
+                            --resource-group <resource-group> \
+                            --metric-namespace "microsoft.compute/virtualmachines" \
+                            --resource-type "Microsoft.Compute/virtualMachines" \
+                            --metric-names "Percentage CPU,Available Memory Bytes" \
+                            --start-time "2024-01-01T00:00:00Z" \
+                            --end-time "2024-01-01T23:59:59Z" \
+                            --interval "PT1H" \
+                            --aggregation "Average"
 
 # List all available metrics for a storage account
 azmcp monitor metrics definitions --subscription <subscription> \
-                                 --resource-name <resource-name> \
-                                 --resource-type "Microsoft.Storage/storageAccounts"
+                                  --resource-name <resource-name> \
+                                  --resource-type "Microsoft.Storage/storageAccounts"
 
 # Find metrics related to transactions
 azmcp monitor metrics definitions --subscription <subscription> \
-                                 --resource-name <resource-name> \
-                                 --search-string "transaction"
+                                  --resource-name <resource-name> \
+                                  --search-string "transaction"
 ```
 
 ### Azure App Configuration Operations
@@ -245,52 +288,97 @@ azmcp monitor metrics definitions --subscription <subscription> \
 azmcp appconfig account list --subscription <subscription>
 
 # List all key-value settings in an App Configuration store
-azmcp appconfig kv list --subscription <subscription> --account-name <account-name> [--key <key>] [--label <label>]
+azmcp appconfig kv list --subscription <subscription> \
+                        --account-name <account-name> \
+                        [--key <key>] \
+                        [--label <label>]
 
 # Show a specific key-value setting
-azmcp appconfig kv show --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
+azmcp appconfig kv show --subscription <subscription> \
+                        --account-name <account-name> \
+                        --key <key> \
+                        [--label <label>]
 
 # Set a key-value setting
-azmcp appconfig kv set --subscription <subscription> --account-name <account-name> --key <key> --value <value> [--label <label>]
+azmcp appconfig kv set --subscription <subscription> \
+                       --account-name <account-name> \
+                       --key <key> \
+                       --value <value> \
+                       [--label <label>]
 
 # Lock a key-value setting (make it read-only)
-azmcp appconfig kv lock --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
+azmcp appconfig kv lock --subscription <subscription> \
+                        --account-name <account-name> \
+                        --key <key> \
+                        [--label <label>]
 
 # Unlock a key-value setting (make it editable)
-azmcp appconfig kv unlock --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
+azmcp appconfig kv unlock --subscription <subscription> \
+                          --account-name <account-name> \
+                          --key <key> \
+                          [--label <label>]
 
 # Delete a key-value setting
-azmcp appconfig kv delete --subscription <subscription> --account-name <account-name> --key <key> [--label <label>]
+azmcp appconfig kv delete --subscription <subscription> \
+                          --account-name <account-name> \
+                          --key <key> \
+                          [--label <label>]
 ```
 
 ### Azure Key Vault Operations
 ```bash
 # Lists keys in vault
-azmcp keyvault key list --subscription <subscription> --vault <vault-name> --include-managed <true/false>
+azmcp keyvault key list --subscription <subscription> \
+                        --vault <vault-name> \
+                        --include-managed <true/false>
 
 # Gets a key in vault
-azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key <key-name>
+azmcp keyvault key get --subscription <subscription> \
+                       --vault <vault-name> \
+                       --key <key-name>
 
 # Create a key in vault
-azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
+azmcp keyvault key create --subscription <subscription> \
+                          --vault <vault-name> \
+                          --key <key-name> \
+                          --key-type <key-type>
+
+# Gets a secret in vault
+azmcp keyvault secret get --subscription <subscription> \
+                          --vault <vault-name> \
+                          --name <secret-name>
 ```
 
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue
-azmcp servicebus queue peek --subscription <subscription> --namespace <service-bus-namespace> --queue-name <queue-name> [--max-messages <int>]
+azmcp servicebus queue peek --subscription <subscription> \
+                            --namespace <service-bus-namespace> \
+                            --queue-name <queue-name> \
+                            [--max-messages <int>]
 
 # Returns runtime and details about the Service Bus queue
-azmcp servicebus queue details --subscription <subscription> --namespace <service-bus-namespace> --queue-name <queue-name>
+azmcp servicebus queue details --subscription <subscription> \
+                               --namespace <service-bus-namespace> \
+                               --queue-name <queue-name>
 
 # Gets runtime details a Service Bus topic
-azmcp servicebus topic details --subscription <subscription> --namespace <service-bus-namespace> --topic-name <topic-name>
+azmcp servicebus topic details --subscription <subscription> \
+                               --namespace <service-bus-namespace> \
+                               --topic-name <topic-name>
 
 # Peeks at messages in a Service Bus subscription within a topic.
-azmcp servicebus topic subscription peek --subscription <subscription> --namespace <service-bus-namespace> --topic-name <topic-name> --subscription-name <subscription-name> [--max-messages <int>]
+azmcp servicebus topic subscription peek --subscription <subscription> \
+                                         --namespace <service-bus-namespace> \
+                                         --topic-name <topic-name> \
+                                         --subscription-name <subscription-name> \
+                                         [--max-messages <int>]
 
 # Gets runtime details and message counts for a Service Bus subscription
-azmcp servicebus topic subscription details --subscription <subscription> --namespace <service-bus-namespace> --topic-name <topic-name> --subscription-name <subscription-name>
+azmcp servicebus topic subscription details --subscription <subscription> \
+                                            --namespace <service-bus-namespace> \
+                                            --topic-name <topic-name> \
+                                            --subscription-name <subscription-name>
 ```
 
 ### Azure Redis Operations
@@ -299,25 +387,32 @@ azmcp servicebus topic subscription details --subscription <subscription> --name
 azmcp redis cluster list --subscription <subscription>
 
 # Lists Databases in an Azure Redis Cluster
-azmcp redis cluster database list --subscription <subscription> --resource-group <resource-group> --cluster <cluster-name>
+azmcp redis cluster database list --subscription <subscription> \
+                                  --resource-group <resource-group> \
+                                  --cluster <cluster-name>
 
 # Lists Redis Caches in the Azure Cache for Redis service
 azmcp redis cache list --subscription <subscription>
 
 # Lists Access Policy Assignments in an Azure Redis Cache
-azmcp redis cache list accesspolicy --subscription <subscription>  --resource-group <resource-group> --cache <cache-name>
+azmcp redis cache list accesspolicy --subscription <subscription> \
+                                    --resource-group <resource-group> \
+                                    --cache <cache-name>
 ```
 
 ### Azure Native ISV Operations
 ```bash
 # List monitored resources in Datadog
-azmcp datadog monitoredresources list --subscription <subscription> --resource-group <resource-group> --datadog-resource <datadog-resource>
+azmcp datadog monitoredresources list --subscription <subscription> \
+                                      --resource-group <resource-group> \
+                                      --datadog-resource <datadog-resource>
 ```
 
 ### Azure RBAC Operations
 ```bash
 # List Azure RBAC role assignments
-azmcp role assignment list --subscription <subscription> --scope <scope>
+azmcp role assignment list --subscription <subscription> \
+                           --scope <scope>
 ```
 
 ### Azure Resource Group Operations
@@ -349,13 +444,19 @@ azmcp extension az --command "vm list --resource-group <resource-group>"
 azmcp search list --subscription <subscription>
 
 # List AI Search indexes in account
-azmcp search index list --subscription <subscription> --service-name <service-name>
+azmcp search index list --subscription <subscription> \
+                        --service-name <service-name>
 
 # Get AI Search index
-azmcp search index describe --subscription <subscription> --service-name <service-name> --index-name <index-name>
+azmcp search index describe --subscription <subscription> \
+                            --service-name <service-name> \
+                            --index-name <index-name>
 
 # Query AI Search index
-azmcp search index query --subscription <subscription> --service-name <service-name> --index-name <index-name> --query <query>
+azmcp search index query --subscription <subscription> \
+                         --service-name <service-name> \
+                         --index-name <index-name> \
+                         --query <query>
 ```
 
 ## Response Format
