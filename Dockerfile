@@ -30,10 +30,20 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     lsb-release \
     gnupg \
+    net-tools \
+    procps \
     && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the published application
 COPY --from=publish "/app/publish/linux-x64/dist" .
+
+# Copy health check script
+COPY infra/healthcheck.sh /app/healthcheck.sh
+RUN chmod +x /app/healthcheck.sh
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD /app/healthcheck.sh
 
 ENTRYPOINT ["dotnet", "azmcp.dll", "server", "start"]

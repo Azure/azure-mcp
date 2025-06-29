@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Add support to container healthcheck  - https://Azure/azure-mcp/pull/427
+
 ### Breaking Changes
 
 ### Bugs Fixed
@@ -24,6 +26,8 @@
 - Added support for starting the server with a subset of services using the `--service` flag - https://github.com/Azure/azure-mcp/pull/424
 - Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.) - https://github.com/Azure/azure-mcp/pull/440
 - Added new commands for querying metrics with Azure Monitor with command paths `azmcp-monitor-metrics-query` and `azmcp-monitor-metrics-definitions`. - https://github.com/Azure/azure-mcp/pull/428
+
+
 
 ### Breaking Changes
 
