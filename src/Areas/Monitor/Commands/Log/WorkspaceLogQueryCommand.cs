@@ -15,7 +15,6 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
     private readonly Option<string> _queryOption = MonitorOptionDefinitions.Query;
     private readonly Option<int> _hoursOption = MonitorOptionDefinitions.Hours;
     private readonly Option<int> _limitOption = MonitorOptionDefinitions.Limit;
-    private readonly Option<string> _workspaceOption = WorkspaceOptionDefinitions.Workspace;
 
     public override string Name => "query";
 
@@ -38,7 +37,7 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         command.AddOption(_hoursOption);
         command.AddOption(_limitOption);
         command.AddOption(_resourceGroupOption);
-        command.AddOption(_workspaceOption);
+
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
@@ -83,7 +82,6 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         options.Hours = parseResult.GetValueForOption(_hoursOption);
         options.Limit = parseResult.GetValueForOption(_limitOption);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        options.Workspace = parseResult.GetValueForOption(_workspaceOption);
         return options;
     }
 }
