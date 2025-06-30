@@ -2,107 +2,115 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Server.Commands.Tools;
+using AzureMcp.Areas.Server.Commands.Discovery;
+using Json.Schema;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 
-namespace AzureMcp.Commands.Server.Tools;
+namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-[JsonSerializable(typeof(JsonElement))]
+[JsonSerializable(typeof(JsonSchema))]
 [JsonSerializable(typeof(ListToolsResult))]
-[JsonSerializable(typeof(IEnumerable<Tool>))]
+[JsonSerializable(typeof(List<McpClientTool>))]
 [JsonSerializable(typeof(Dictionary<string, object?>))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
     WriteIndented = true
 )]
-internal partial class AzureProxyToolSerializationContext : JsonSerializerContext
+internal partial class SingleProxyToolLoaderSerializationContext : JsonSerializerContext
 {
 }
 
-/// <summary>
-/// Initializes a new instance of the <see cref="AzureProxyTool"/> class.
-/// </summary>
-/// <param name="logger"></param>
-/// <param name="mcpClientService"></param>
-/// <exception cref="ArgumentNullException"></exception>
-[McpServerToolType]
-public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientService mcpClientService) : McpServerTool
+public sealed class SingleProxyToolLoader : IToolLoader
 {
-    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
-        {
-          "type": "object",
-          "properties": {
-            "intent": {
-              "type": "string",
-              "description": "The intent of the azure operation to perform."
-            },
-            "tool": {
-              "type": "string",
-              "description": "The azure tool to use to execute the operation."
-            },
-            "command": {
-              "type": "string",
-              "description": "The command to execute against the specified tool."
-            },
-            "parameters": {
-              "type": "object",
-              "description": "The parameters to pass to the tool command."
-            },
-            "learn": {
-              "type": "boolean",
-              "description": "To learn about the tool and its supported child tools and parameters.",
-              "default": false
-            }
-          },
-          "required": ["intent"],
-          "additionalProperties": false
-        }
-        """, AzureProxyToolSerializationContext.Default.JsonElement);
-
-    private const string ToolCallProxySchema = """
-        {
-          "type": "object",
-          "properties": {
-            "tool": {
-              "type": "string",
-              "description": "The name of the tool to call."
-            },
-            "parameters": {
-              "type": "object",
-              "description": "A key/value pair of parameters names nad values to pass to the tool call command."
-            }
-          },
-          "additionalProperties": false
-        }
-        """;
-
-    private readonly ILogger<AzureProxyTool> _logger = logger;
-    private readonly IMcpClientService _mcpClientService = mcpClientService;
+    private IMcpDiscoveryStrategy _discoveryStrategy;
+    private ILogger<SingleProxyToolLoader> _logger;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, SingleProxyToolLoaderSerializationContext.Default.JsonSchema);
 
-    /// <summary>
-    /// Gets the protocol tool definition for Azure operations.
-    /// </summary>
-    public override Tool ProtocolTool => new()
+    public SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger)
     {
-        Name = "azure",
-        Description = """
-            This server/tool provides real-time, programmatic access to all Azure products, services, and resources,
-            as well as all interactions with the Azure Developer CLI (azd).
-            Use this tool for any Azure control plane or data plane operation, including resource management and automation.
-            To discover available capabilities, call the tool with the "learn" parameter to get a list of top-level tools.
-            To explore further, set "learn" and specify a tool name to retrieve supported commands and their parameters.
-            To execute an action, set the "tool", "command", and convert the users intent into the "parameters" based on the discovered schema.
-            Always use this tool for any Azure or "azd" related operation requiring up-to-date, dynamic, and interactive capabilities.
-            Always include the "intent" parameter to specify the operation you want to perform.
-        """,
-        InputSchema = ToolSchema,
-    };
+        _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
+    .Type(SchemaValueType.Object)
+    .Properties(
+        ("intent", new JsonSchemaBuilder()
+            .Type(SchemaValueType.String)
+            .Required()
+            .Description("The intent of the azure operation to perform.")
+        ),
+        ("tool", new JsonSchemaBuilder()
+            .Type(SchemaValueType.String)
+            .Description("The azure tool to use to execute the operation.")
+        ),
+        ("command", new JsonSchemaBuilder()
+            .Type(SchemaValueType.String)
+            .Description("The command to execute against the specified tool.")
+        ),
+        ("parameters", new JsonSchemaBuilder()
+            .Type(SchemaValueType.Object)
+            .Description("The parameters to pass to the tool command.")
+        ),
+        ("learn", new JsonSchemaBuilder()
+            .Type(SchemaValueType.Boolean)
+            .Description("To learn about the tool and its supported child tools and parameters.")
+            .Default(false)
+        )
+    )
+    .AdditionalProperties(false)
+    .Build();
+
+    private static readonly JsonSchema ToolCallProxySchema = new JsonSchemaBuilder()
+        .Type(SchemaValueType.Object)
+        .Properties(
+            ("tool", new JsonSchemaBuilder()
+                .Type(SchemaValueType.String)
+                .Description("The name of the tool to call.")
+            ),
+            ("parameters", new JsonSchemaBuilder()
+                .Type(SchemaValueType.Object)
+                .Description("A key/value pair of parameters names nad values to pass to the tool call command.")
+            )
+        )
+        .AdditionalProperties(false)
+        .Build();
+
+    public bool ReadOnly { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string? Namespace { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    {
+        var toolsResult = new ListToolsResult
+        {
+            Tools = new List<Tool>
+            {
+                new Tool
+                {
+                    Name = "azure",
+                    Description = """
+                        This server/tool provides real-time, programmatic access to all Azure products, services, and resources,
+                        as well as all interactions with the Azure Developer CLI (azd).
+                        Use this tool for any Azure control plane or data plane operation, including resource management and automation.
+                        To discover available capabilities, call the tool with the "learn" parameter to get a list of top-level tools.
+                        To explore further, set "learn" and specify a tool name to retrieve supported commands and their parameters.
+                        To execute an action, set the "tool", "command", and convert the users intent into the "parameters" based on the discovered schema.
+                        Always use this tool for any Azure or "azd" related operation requiring up-to-date, dynamic, and interactive capabilities.
+                        Always include the "intent" parameter to specify the operation you want to perform.
+                    """,
+                    Annotations = new ToolAnnotations(),
+                    InputSchema = JsonSerializer.SerializeToElement(ToolSchema, SingleProxyToolLoaderSerializationContext.Default.JsonSchema),                }
+            },
+        };
+
+        return ValueTask.FromResult(toolsResult);
+    }
 
     /// <summary>
     /// Handles invocation of the Azure proxy tool, routing requests to the correct Azure tool or command.
@@ -110,7 +118,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
     /// <param name="request">The request context containing parameters and metadata.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A <see cref="CallToolResponse"/> representing the result of the operation.</returns>
-    public override async ValueTask<CallToolResult> InvokeAsync(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
+    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
     {
         var args = request.Params?.Arguments;
         string? intent = null;
@@ -157,11 +165,12 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
             return await CommandModeAsync(request, intent ?? "", tool!, command!, toolParams, cancellationToken);
         }
 
-        return new CallToolResult
+        return new CallToolResponse
         {
             Content =
             [
-                new TextContentBlock {
+                new Content {
+                    Type = "text",
                     Text = """
                         The "tool" and "command" parameters are required when not learning
                         Run again with the "learn" argument to get a list of available tools and their parameters.
@@ -172,25 +181,26 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         };
     }
 
-    private string GetRootToolsJson()
+    private async Task<string> GetRootToolsJsonAsync()
     {
         if (_cachedRootToolsJson != null)
         {
             return _cachedRootToolsJson;
         }
 
-        var providerMetadataList = _mcpClientService.ListProviderMetadata();
-        var tools = new List<Tool>(providerMetadataList.Count);
-        foreach (var meta in providerMetadataList)
+        var serverList = await _discoveryStrategy.DiscoverServersAsync();
+        var tools = new List<Tool>(serverList.Count());
+        foreach (var server in serverList)
         {
+            var serverMetadata = server.CreateMetadata();
             tools.Add(new Tool
             {
-                Name = meta.Id,
-                Description = meta.Description,
+                Name = serverMetadata.Id,
+                Description = serverMetadata.Description,
             });
         }
         var toolsResult = new ListToolsResult { Tools = tools };
-        var toolsJson = JsonSerializer.Serialize(toolsResult, AzureProxyToolSerializationContext.Default.ListToolsResult);
+        var toolsJson = JsonSerializer.Serialize(toolsResult, SingleProxyToolLoaderSerializationContext.Default.ListToolsResult);
         _cachedRootToolsJson = toolsJson;
 
         return toolsJson;
@@ -204,27 +214,23 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         }
 
         var clientOptions = CreateClientOptions(request.Server);
-        var client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
-        if (client == null)
-        {
-            return string.Empty;
-        }
-
+        var client = await _discoveryStrategy.GetOrCreateClientAsync(tool, clientOptions);
         var listTools = await client.ListToolsAsync();
-        var toolsJson = JsonSerializer.Serialize(listTools.Select(t => t.ProtocolTool), AzureProxyToolSerializationContext.Default.IEnumerableTool);
+        var toolsJson = JsonSerializer.Serialize(listTools, SingleProxyToolLoaderSerializationContext.Default.ListMcpClientTool);
         _cachedToolListsJson[tool] = toolsJson;
 
         return toolsJson;
     }
 
-    private async Task<CallToolResult> RootLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, CancellationToken cancellationToken)
+    private async Task<CallToolResponse> RootLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, CancellationToken cancellationToken)
     {
-        var toolsJson = GetRootToolsJson();
-        var learnResponse = new CallToolResult
+        var toolsJson = await GetRootToolsJsonAsync();
+        var learnResponse = new CallToolResponse
         {
             Content =
             [
-                new TextContentBlock {
+                new Content {
+                    Type = "text",
                     Text = $"""
                         Here are the available list of tools.
                         Next, identify the tool you want to learn about and run again with the "learn" argument and the "tool" name to get a list of available commands and their parameters.
@@ -247,7 +253,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         return response;
     }
 
-    private async Task<CallToolResult> ToolLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, CancellationToken cancellationToken)
+    private async Task<CallToolResponse> ToolLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, CancellationToken cancellationToken)
     {
         var toolsJson = await GetToolListJsonAsync(request, tool);
         if (string.IsNullOrEmpty(toolsJson))
@@ -255,11 +261,12 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
             return await RootLearnModeAsync(request, intent, cancellationToken);
         }
 
-        var learnResponse = new CallToolResult
+        var learnResponse = new CallToolResponse
         {
             Content =
             [
-                new TextContentBlock {
+                new Content {
+                    Type = "text",
                     Text = $"""
                         Here are the available command and their parameters for '{tool}' tool.
                         If you do not find a suitable tool, run again with the "learn" argument and empty "tool" to get a list of available tools and their parameters.
@@ -283,14 +290,14 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         return response;
     }
 
-    private async Task<CallToolResult> CommandModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
+    private async Task<CallToolResponse> CommandModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
     {
         IMcpClient? client;
 
         try
         {
             var clientOptions = CreateClientOptions(request.Server);
-            client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
+            client = await _discoveryStrategy.GetOrCreateClientAsync(tool, clientOptions);
             if (client == null)
             {
                 _logger.LogError("Failed to get provider client for tool: {Tool}", tool);
@@ -311,11 +318,12 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
-            return new CallToolResult
+            return new CallToolResponse
             {
                 Content =
                 [
-                    new TextContentBlock {
+                    new Content {
+                        Type = "text",
                         Text = $"""
                             There was an error finding or calling tool and command.
                             Failed to call tool: {tool}, command: {command}
@@ -336,7 +344,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
 
     private static async Task NotifyProgressAsync(RequestContext<CallToolRequestParams> request, string message, CancellationToken cancellationToken)
     {
-        var progressToken = request.Params?.ProgressToken;
+        var progressToken = request.Params?.Meta?.ProgressToken;
         if (progressToken == null)
         {
             return;
@@ -360,7 +368,8 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new TextContentBlock {
+                    Content = new Content{
+                        Type = "text",
                         Text = $"""
                             The following is a list of available tools for the Azure server.
 
@@ -381,8 +390,8 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         };
         try
         {
-            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
-            var toolName = (samplingResponse.Content as TextContentBlock)?.Text?.Trim();
+            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
+            var toolName = samplingResponse.Content.Text?.Trim();
             if (!string.IsNullOrEmpty(toolName) && toolName != "Unknown")
             {
                 return toolName;
@@ -406,7 +415,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
         var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, AzureProxyToolSerializationContext.Default.DictionaryStringObject);
+        var toolParamsJson = JsonSerializer.Serialize(toolParams, SingleProxyToolLoaderSerializationContext.Default.DictionaryStringObject);
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -414,7 +423,8 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new TextContentBlock{
+                    Content = new Content{
+                        Type = "text",
                         Text = $"""
                             This is a list of available commands for the {tool} server.
 
@@ -427,7 +437,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                             - If no command matches, return JSON schema with "Unknown" tool name.
 
                             Result Schema:
-                            {ToolCallProxySchema}
+                            {ToolCallProxySchemaJson}
 
                             Intent:
                             {intent}
@@ -444,8 +454,8 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
         };
         try
         {
-            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
-            var toolCallJson = (samplingResponse.Content as TextContentBlock)?.Text?.Trim();
+            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
+            var toolCallJson = samplingResponse.Content.Text?.Trim();
             string? commandName = null;
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))
@@ -458,7 +468,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), AzureProxyToolSerializationContext.Default.DictionaryStringObject) ?? [];
+                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), SingleProxyToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -478,7 +488,7 @@ public sealed class AzureProxyTool(ILogger<AzureProxyTool> logger, IMcpClientSer
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), AzureProxyToolSerializationContext.Default.DictionaryStringObject) ?? [];
+            return JsonSerializer.Deserialize(parametersElem.GetRawText(), SingleProxyToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
         }
 
         return [];

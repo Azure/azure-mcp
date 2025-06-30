@@ -3,7 +3,7 @@
 
 using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.Tools;
-using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Areas.Server.Commands.Tools;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;

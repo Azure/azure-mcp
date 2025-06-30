@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Server.Commands.Tools;
-using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using ModelContextProtocol.Client;
+
+namespace AzureMcp.Areas.Server.Commands.Discovery;
 
 /// <summary>
 /// Represents a command group that provides metadata and MCP client creation.
 /// </summary>
-public sealed class CommandGroupMcpClientProvider(CommandGroup commandGroup) : IMcpClientProvider
+public sealed class CommandGroupServerProvider(CommandGroup commandGroup) : IMcpServerProvider
 {
     private readonly CommandGroup _commandGroup = commandGroup;
     private string? _entryPoint = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;

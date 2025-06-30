@@ -4,14 +4,14 @@
 using AzureMcp.Areas.Server.Models;
 using ModelContextProtocol.Client;
 
-namespace AzureMcp.Areas.Server.Commands.Tools;
+namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public sealed class RegistryMcpClientProvider : IMcpClientProvider
+public sealed class RegistryServerProvider : IMcpServerProvider
 {
     private readonly string _id;
     private readonly RegistryServerInfo _serverInfo;
 
-    public RegistryMcpClientProvider(string id, RegistryServerInfo serverInfo)
+    public RegistryServerProvider(string id, RegistryServerInfo serverInfo)
     {
         _id = id;
         _serverInfo = serverInfo;
