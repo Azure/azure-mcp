@@ -12,7 +12,6 @@ namespace AzureMcp.Areas.Monitor.Commands.TableType;
 public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) : BaseMonitorCommand<TableTypeListOptions>()
 {
     private const string CommandTitle = "List Log Analytics Table Types";
-
     private readonly ILogger<TableTypeListCommand> _logger = logger;
 
     public override string Name => "list";

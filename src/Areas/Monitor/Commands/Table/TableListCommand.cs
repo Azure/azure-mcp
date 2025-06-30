@@ -30,7 +30,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         base.RegisterOptions(command);
         command.AddOption(_tableTypeOption);
         command.AddOption(_resourceGroupOption);
-
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]

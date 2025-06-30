@@ -37,7 +37,6 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         command.AddOption(_hoursOption);
         command.AddOption(_limitOption);
         command.AddOption(_resourceGroupOption);
-
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
