@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.TableType;
 using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
