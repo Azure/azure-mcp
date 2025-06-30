@@ -4,28 +4,37 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Show me the best practices you follow when asked to perform Azure-related tasks |
+| azmcp-bestpractices-get | Fetch the latest Azure best practices |
+| azmcp-bestpractices-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
 
 ## Subscription Management
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-subscription-list | List all subscriptions for my account |
+| azmcp-subscription-list | What subscriptions do I have? |
+| azmcp-subscription-list | Show me my subscriptions |
+| azmcp-subscription-list | What is my current subscription? |
 
 ## Resource Group
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-group-list | List all resource groups in my subscription |
+| azmcp-group-list | Show me the resource groups in my subscription |
+| azmcp-group-list | Show me my resource groups |
 
 ## Azure App Configuration
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-appconfig-account-list | List all App Configuration stores in my subscription |
+| azmcp-appconfig-account-list | Show me the App Configuration stores in my subscription |
+| azmcp-appconfig-account-list | Show me my App Configuration stores |
 | azmcp-appconfig-kv-list | List all key-value settings in App Configuration store <app_config_store_name> |
+| azmcp-appconfig-kv-list | Show me the key-value settings in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-show | Show the content for the key <key_name> in App Configuration store <app_config_store_name> |
-| azmcp-appconfig-kv-set | Set the value for the key <key_name> in App Configuration store <app_config_store_name> |
+| azmcp-appconfig-kv-set | Set the key <key_name> in App Configuration store <app_config_store_name> to \<value> |
 | azmcp-appconfig-kv-lock | Lock the key <key_name> in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-unlock | Unlock the key <key_name> in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-delete | Delete the key <key_name> in App Configuration store <app_config_store_name> |
@@ -34,17 +43,21 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-extension-az | List my resource groups using the Azure CLI |
-| azmcp-extension-az | Show me the details of the storage account <account_name> using the Azure CLI |
-| azmcp-extension-az | List all virtual machines in my subscription using the Azure CLI |
+| azmcp-extension-az | Create a Storage account with name <storage_account_name> |
+| azmcp-extension-az | Show me the details of the storage account <account_name> |
+| azmcp-extension-az | List all virtual machines in my subscription |
 
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-cosmos-account-list | List all cosmosdb accounts in my subscription |
+| azmcp-cosmos-account-list | Show me the cosmosdb accounts in my subscription |
+| azmcp-cosmos-account-list | Show me my cosmosdb accounts |
 | azmcp-cosmos-database-list | List all the databases in the cosmosdb account <account_name> |
+| azmcp-cosmos-database-list | Show me the databases in the cosmosdb account <account_name> |
 | azmcp-cosmos-database-container-list | List all the containers in the database <database_name> for the cosmosdb account <account_name> |
+| azmcp-cosmos-database-container-list | Show me the containers in the database <database_name> for the cosmosdb account <account_name> |
 | azmcp-cosmos-database-container-item-query | Show me the items that contain the word <search_term> in the container <container_name> in the database <database_name> for the cosmosdb account <account_name> |
 
 ## Azure Data Explorer
@@ -52,35 +65,43 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-kusto-cluster-list | List all Data Explorer clusters in my subscription |
+| azmcp-kusto-cluster-list | Show me the Data Explorer clusters in my subscription |
+| azmcp-kusto-cluster-list | Show me my Data Explorer clusters |
 | azmcp-kusto-cluster-get | Show me the details of the Data Explorer cluster <cluster_name> |
 | azmcp-kusto-database-list | List all databases in the Data Explorer cluster <cluster_name> |
+| azmcp-kusto-database-list | Show me the databases in the Data Explorer cluster <cluster_name> |
 | azmcp-kusto-table-list | List all tables in the Data Explorer database <database_name> in cluster <cluster_name> |
+| azmcp-kusto-table-list | Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-table-schema | Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-query | Show me all items that contain the word <search_term> in the Data Explorer table <table_name> in cluster <cluster_name> |
-| azmcp-kusto-sample | Get a sample of data from the Data Explorer table <table_name> in cluster <cluster_name> |
+| azmcp-kusto-sample | Show me a data sample from the Data Explorer table <table_name> in cluster <cluster_name> |
 
 ## Azure Key Vault
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-keyvault-key-list | List all the keys in the key vault <key_vault_account_name> |
-| azmcp-keyvault-key-get | Get the details about the key <key_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-key-list | List all keys in the key vault <key_vault_account_name> |
+| azmcp-keyvault-key-list | Show me the keys in the key vault <key_vault_account_name> |
+| azmcp-keyvault-key-get | Show me the details of key <key_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
-| azmcp-keyvault-secret-get | Get the details about the secret <secret_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-get | Show me the details about the secret <secret_name> in the key vault <key_vault_account_name> |
 
 ## Azure Monitor
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-monitor-workspace-list | List all Log Analytics workspaces in my subscription |
+| azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
+| azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
 | azmcp-monitor-table-list | List all tables in the Log Analytics workspace <workspace_name> |
-| azmcp-monitor-table-type-list | List available table types in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-table-list | Show me the tables in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-table-type-list | List all available table types in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-table-type-list | Show me the available table types in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-healthmodels-entity-gethealth | Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-metrics-definitions | What metric definitions are available for the Application Insights resource <resource_name> |
 | azmcp-monitor-metrics-definitions | Show me all available metrics and their definitions for storage account <account_name> |
 | azmcp-monitor-metrics-definitions | Get metric definitions for <resource_type> <resource_name> from the namespace |
-| azmcp-monitor-metrics-query | Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period> |
 | azmcp-monitor-metrics-query | Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period> |
 | azmcp-monitor-metrics-query | What's the request per second rate for my Application Insights resource <resource_name> over the last <time_period> |
 | azmcp-monitor-metrics-query | Investigate error rates and failed requests for Application Insights resource <resource_name> for the last <time_period> |
@@ -93,43 +114,58 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-datadog-monitoredresources-list | List all monitored resources in the Datadog resource <resource_name> |
+| azmcp-datadog-monitoredresources-list | Show me the monitored resources in the Datadog resource <resource_name> |
 
 ## Azure DB for PostgreSQL
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-postgres-server list | List all PostgreSQL servers in my subscription |
-| azmcp-postgres-server config | Get the configuration of PostgreSQL server <server> |
-| azmcp-postgres-server param | Show me if the parameter my PostgreSQL server <server> has replication enabled |
-| azmcp-postgres-server setparam | Enable replication for my PostgreSQL server <server> |
-| azmcp-postgres-database list | List all PostgreSQL databases in server <server> |
-| azmcp-postgres-database query | Show me all items that contain the word <search_term> in the PostgreSQL database <database> in server <server> |
-| azmcp-postgres-table list | List all tables in the PostgreSQL database <database> in server <server> |
-| azmcp-postgres-table schema | Show me the schema of table <table> in the PostgreSQL database <database> in server <server> |
+| azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
+| azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
+| azmcp-postgres-server-list | Show me my PostgreSQL servers |
+| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server <server> |
+| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server <server> has replication enabled |
+| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server <server> |
+| azmcp-postgres-database-list | List all PostgreSQL databases in server <server> |
+| azmcp-postgres-database-list | Show me the PostgreSQL databases in server <server> |
+| azmcp-postgres-database-query | Show me all items that contain the word <search_term> in the PostgreSQL database <database> in server <server> |
+| azmcp-postgres-table-list | List all tables in the PostgreSQL database <database> in server <server> |
+| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database <database> in server <server> |
+| azmcp-postgres-table-schema | Show me the schema of table <table> in the PostgreSQL database <database> in server <server> |
 
 ## Azure Redis
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-redis-cluster-list | List all Redis Clusters in my subscription |
+| azmcp-redis-cluster-list | Show me the Redis Clusters in my subscription |
+| azmcp-redis-cluster-list | Show me my Redis Clusters |
 | azmcp-redis-cluster-database-list | List all databases in the Redis Cluster <cluster_name> |
+| azmcp-redis-cluster-database-list | Show me the databases in the Redis Cluster <cluster_name> |
 | azmcp-redis-cache-list | List all Redis Caches in my subscription |
+| azmcp-redis-cache-list | Show me the Redis Caches in my subscription |
+| azmcp-redis-cache-list | Show me my Redis Caches |
 | azmcp-redis-cache-list-accesspolicy | List all access policies in the Redis Cache <cache_name> |
+| azmcp-redis-cache-list-accesspolicy | Show me the access policies in the Redis Cache <cache_name> |
 
 ## Azure RBAC
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-role-assignment-list | List all role assignments in my subscription |
+| azmcp-role-assignment-list | List all available role assignments in my subscription |
+| azmcp-role-assignment-list | Show me the available role assignments in my subscription |
 
 ## Azure AI Search
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-search list | List all Cognitive Search services in my subscription |
-| azmcp-search index list | List all indexes in the Cognitive Search service <service-name> |
-| azmcp-search index describe | Show me the details of the index <index-name> in Cognitive Search service <service-name> |
-| azmcp-search index query | Search for instances of <search_term> in the index <index-name> in Cognitive Search service <service-name> |
+| azmcp-search-list | List all Cognitive Search services in my subscription |
+| azmcp-search-list | Show me the Cognitive Search services in my subscription |
+| azmcp-search-list | Show me my Cognitive Search services |
+| azmcp-search-index-list | List all indexes in the Cognitive Search service <service-name> |
+| azmcp-search-index-list | Show me the indexes in the Cognitive Search service <service-name> |
+| azmcp-search-index-describe | Show me the details of the index <index-name> in Cognitive Search service <service-name> |
+| azmcp-search-index-query | Search for instances of <search_term> in the index <index-name> in Cognitive Search service <service-name> |
 
 ## Azure Service Bus
 
@@ -145,8 +181,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-storage-account-list | List all my storage accounts in my subscription |
+| azmcp-storage-account-list | List all storage accounts in my subscription |
+| azmcp-storage-account-list | Show me the storage accounts in my subscription |
+| azmcp-storage-account-list | Show me my storage accounts |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
-| azmcp-storage-blob-list | List all blobs in the blob container <container_name> of the storage account <account_name> |
+| azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+| azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
+| azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
+| azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |

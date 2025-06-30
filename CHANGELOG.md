@@ -9,6 +9,13 @@
 ### Bugs Fixed
 
 ### Other Changes
+- Updated the descriptions of the following tools for readability and to reflect their required parameters more accurately:
+  - `azmcp-datadog-monitoredresources-list`
+  - `azmcp-kusto-cluster-list`
+  - `azmcp-kusto-database-list`
+  - `azmcp-kusto-sample`
+  - `azmcp-kusto-table-list`
+  - `azmcp-kusto-table-schema`
 
 ## 0.2.5 (2025-06-26)
 
