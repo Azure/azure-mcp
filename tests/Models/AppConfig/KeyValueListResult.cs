@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Models.AppConfig;
+using AzureMcp.Areas.AppConfig.Models;
 
 namespace AzureMcp.Tests.Models.AppConfig;
 

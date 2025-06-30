@@ -5,11 +5,11 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.AppConfig.Account;
-using AzureMcp.Models.AppConfig;
+using AzureMcp.Areas.AppConfig.Commands.Account;
+using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using AzureMcp.Tests.Models.AppConfig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.AppConfig.Account;
+namespace AzureMcp.Tests.Areas.AppConfig.UnitTests.Account;
 
 public class AccountListCommandTests
 {

@@ -5,10 +5,10 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.AppConfig.KeyValue;
+using AzureMcp.Areas.AppConfig.Commands.KeyValue;
+using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using AzureMcp.Tests.Models.AppConfig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.AppConfig.KeyValue;
+namespace AzureMcp.Tests.Areas.AppConfig.UnitTests.KeyValue;
 
 public class KeyValueDeleteCommandTests
 {

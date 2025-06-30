@@ -5,11 +5,11 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.AppConfig.KeyValue;
-using AzureMcp.Models.AppConfig;
+using AzureMcp.Areas.AppConfig.Commands.KeyValue;
+using AzureMcp.Areas.AppConfig.Models;
+using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using AzureMcp.Tests.Models.AppConfig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,18 +17,18 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.AppConfig.KeyValue;
+namespace AzureMcp.Tests.Areas.AppConfig.UnitTests.KeyValue;
 
-public class KeyValueUnlockCommandTests
+public class KeyValueShowCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IAppConfigService _appConfigService;
-    private readonly ILogger<KeyValueUnlockCommand> _logger;
+    private readonly ILogger<KeyValueShowCommand> _logger;
 
-    public KeyValueUnlockCommandTests()
+    public KeyValueShowCommandTests()
     {
         _appConfigService = Substitute.For<IAppConfigService>();
-        _logger = Substitute.For<ILogger<KeyValueUnlockCommand>>();
+        _logger = Substitute.For<ILogger<KeyValueShowCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_appConfigService);
@@ -37,44 +37,27 @@ public class KeyValueUnlockCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_UnlocksKeyValue_WhenValidParametersProvided()
+    public async Task ExecuteAsync_ReturnsSetting_WhenSettingExists()
     {
         // Arrange
-        var command = new KeyValueUnlockCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", "sub123",
-            "--account-name", "account1",
-            "--key", "my-key"
-        ]);
-        var context = new CommandContext(_serviceProvider);
-
-        // Act
-        var response = await command.ExecuteAsync(context, args);
-
-        // Assert
-        Assert.Equal(200, response.Status);
-        await _appConfigService.Received(1).UnlockKeyValue(
-            "account1",
-            "my-key",
-            "sub123",
-            null,
-            Arg.Any<RetryPolicyOptions>(),
-            null);
-        var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json, new JsonSerializerOptions
+        var expectedSetting = new KeyValueSetting
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+            Key = "my-key",
+            Value = "my-value",
+            Label = "prod",
+            ContentType = "text/plain",
+            Locked = false
+        };
+        _appConfigService.GetKeyValue(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedSetting);
 
-        Assert.NotNull(result);
-        Assert.Equal("my-key", result.Key);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_UnlocksKeyValueWithLabel_WhenLabelProvided()
-    {
-        // Arrange
-        var command = new KeyValueUnlockCommand(_logger);
+        var command = new KeyValueShowCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
@@ -88,38 +71,71 @@ public class KeyValueUnlockCommandTests
 
         // Assert
         Assert.Equal(200, response.Status);
-        await _appConfigService.Received(1).UnlockKeyValue(
-            "account1",
-            "my-key",
-            "sub123",
-            null,
-            Arg.Any<RetryPolicyOptions>(),
-            "prod");
+        Assert.NotNull(response.Results);
+
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyValueUnlockResult>(json, new JsonSerializerOptions
+        var result = JsonSerializer.Deserialize<KeyValueShowResult>(json, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
         Assert.NotNull(result);
-        Assert.Equal("my-key", result.Key);
-        Assert.Equal("prod", result.Label);
+        Assert.Equal("my-key", result.Setting.Key);
+        Assert.Equal("my-value", result.Setting.Value);
+        Assert.Equal("prod", result.Setting.Label);
     }
 
     [Fact]
-    public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
+    public async Task ExecuteAsync_ReturnsSetting_WhenNoLabelProvided()
     {
         // Arrange
-        _appConfigService.UnlockKeyValue(
+        var expectedSetting = new KeyValueSetting
+        {
+            Key = "my-key",
+            Value = "my-value",
+            Label = "",
+            ContentType = "text/plain",
+            Locked = false
+        };
+        _appConfigService.GetKeyValue(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>(),
             Arg.Any<string>())
-            .Returns(Task.FromException<KeyValueSetting>(new Exception("Failed to unlock key-value")));
+            .Returns(expectedSetting);
 
-        var command = new KeyValueUnlockCommand(_logger);
+        var command = new KeyValueShowCommand(_logger);
+        var args = command.GetCommand().Parse([
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "my-key"
+        ]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        await _appConfigService.Received(1).GetKeyValue("account1", "my-key", "sub123", null, Arg.Any<RetryPolicyOptions>(), null);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
+    {
+        // Arrange
+        _appConfigService.GetKeyValue(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>(),
+            Arg.Any<string>())
+            .Returns(Task.FromException<KeyValueSetting>(new Exception("Setting not found")));
+
+        var command = new KeyValueShowCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--account-name", "account1",
@@ -132,17 +148,17 @@ public class KeyValueUnlockCommandTests
 
         // Assert
         Assert.Equal(500, response.Status);
-        Assert.Contains("Failed to unlock key-value", response.Message);
+        Assert.Contains("Setting not found", response.Message);
     }
 
     [Theory]
     [InlineData("--account-name", "account1", "--key", "my-key")] // Missing subscription
-    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name
+    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name  
     [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {
         // Arrange
-        var command = new KeyValueUnlockCommand(_logger);
+        var command = new KeyValueShowCommand(_logger);
         var parseResult = command.GetCommand().Parse(args);
         var context = new CommandContext(_serviceProvider);
 
