@@ -4,7 +4,8 @@ param(
     [string] $TenantId,
     [string] $TestApplicationId,
     [string] $ResourceGroupName,
-    [string] $BaseName
+    [string] $BaseName,
+    [hashtable] $AdditionalParameters
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,8 +45,19 @@ $testSettings = [ordered]@{
 Write-Host "Creating test settings file at $testSettingsPath`:`n$testSettings"
 $testSettings | Set-Content -Path $testSettingsPath -Force -NoNewLine
 
-$servicePostScripts = Get-ChildItem -Path "$PSScriptRoot/services" -Filter "*-post.ps1" -Recurse -File
-foreach ($script in $servicePostScripts) {
-    Write-Host "Running post script: $($script.FullName)"
-    & $script.FullName -ResourceGroupName $ResourceGroupName -BaseName $BaseName
+$areas = $AdditionalParameters.areas
+
+if(!$areas) {
+    $areas = @(Get-ChildItem "$RepoRoot/src/Areas" -Directory | Select-Object -ExpandProperty Name)
+}
+
+Write-Host "Processing post scripts for areas: $($areas -join ',')"
+
+foreach($area in $areas)
+{
+    $areaPostScript = "$PSScriptRoot/services/$($area.ToLower())-post.ps1"
+    if(Test-Path $areaPostScript) {
+        Write-Host "Running post script: $areaPostScript"
+        & $areaPostScript -ResourceGroupName $ResourceGroupName -BaseName $BaseName
+    }
 }
