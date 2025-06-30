@@ -1,0 +1,29 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using ModelContextProtocol.Protocol;
+
+namespace AzureMcp.Areas.Server.Commands.ToolLoading;
+
+/// <summary>
+/// IToolLoader is an interface for loading tools in the MCP server.
+/// It provides methods to list tools and call tools.
+/// </summary>
+public interface IToolLoader
+{
+    /// <summary>
+    /// ListToolsHandler is used to list all tools available in the MCP server.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// CallToolHandler is used to call a specific tool with the provided parameters.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken);
+}

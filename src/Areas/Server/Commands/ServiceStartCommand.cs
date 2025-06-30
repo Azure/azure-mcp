@@ -1,20 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Reflection;
-using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
-using AzureMcp.Services.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -25,8 +20,6 @@ namespace AzureMcp.Areas.Server.Commands;
 public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
-    private const string DefaultServerName = "Azure MCP Server";
-
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
@@ -52,7 +45,9 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
-        var serviceArray = parseResult.GetValueForOption(_serviceTypeOption) ?? OptionDefinitions.Service.ServiceType.GetDefaultValue();
+        var service = parseResult.GetValueForOption(_serviceTypeOption) == default
+            ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
+            : parseResult.GetValueForOption(_serviceTypeOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
@@ -62,7 +57,7 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
-            Service = serviceArray,
+            Service = service,
             ReadOnly = readOnly,
         };
 
@@ -85,6 +80,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
                 .ConfigureLogging(logging =>
                 {
+                    logging.SetMinimumLevel(LogLevel.Information);
                     logging.AddEventSourceLogger();
                 });
 
@@ -99,8 +95,10 @@ public sealed class ServiceStartCommand : BaseCommand
             return Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                 {
+                    logging.SetMinimumLevel(LogLevel.Information);
                     logging.ClearProviders();
                     logging.AddEventSourceLogger();
+                    logging.AddConsole();
                 })
                 .ConfigureServices(services =>
                 {
@@ -113,90 +111,44 @@ public sealed class ServiceStartCommand : BaseCommand
 
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
-        var entryAssembly = Assembly.GetEntryAssembly();
-        var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
-        var assemblyVersion = assemblyName?.Version?.ToString() ?? "1.0.0-beta";
-
-        services.AddSingleton<ToolOperations>();
-        services.AddSingleton<ProxyToolOperations>();
-        services.AddSingleton<IMcpClientService, McpClientService>();
-
-        var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
-        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? DefaultServerName;
-
-        mcpServerOptionsBuilder.Configure<ITelemetryService>((mcpServerOptions, telemetryService) =>
-        {
-            mcpServerOptions.ProtocolVersion = "2024-11-05";
-            mcpServerOptions.ServerInfo = new Implementation
-            {
-                Name = serverName,
-                Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
-            };
-
-            if (mcpServerOptions.Capabilities == null)
-            {
-                mcpServerOptions.Capabilities = new ServerCapabilities();
-            }
-        });
-
-        var serviceArray = options.Service;
-
-        // The "azure" mode contains a single "azure" tools that performs internal tool discovery and proxying.
-        if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "azure")
-        {
-            services.AddSingleton<McpServerTool, AzureProxyTool>();
-        }
-        // The "proxy" mode exposes a single tool per service/namespace and performs internal tool discovery and proxying.
-        else if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "proxy")
-        {
-            mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
-            {
-                toolOperations.ReadOnly = options.ReadOnly ?? false;
-
-                if (mcpServerOptions.Capabilities == null)
-                {
-                    mcpServerOptions.Capabilities = new ServerCapabilities();
-                }
-
-                mcpServerOptions.Capabilities.Tools = new ToolsCapability()
-                {
-                    CallToolHandler = toolOperations.CallToolHandler,
-                    ListToolsHandler = toolOperations.ListToolsHandler,
-                };
-            });
-        }
-        // The default mode loads all tools from the default ToolOperations service.
-        else
-        {
-            mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
-            {
-                toolOperations.ReadOnly = options.ReadOnly ?? false;
-                toolOperations.CommandGroup = serviceArray;
-
-                if (mcpServerOptions.Capabilities == null)
-                {
-                    mcpServerOptions.Capabilities = new ServerCapabilities();
-                }
-
-                mcpServerOptions.Capabilities.Tools = toolOperations.ToolsCapability;
-            });
-        }
-
-        var mcpServerBuilder = services.AddMcpServer();
-
-        if (options.Transport != TransportTypes.Sse)
-        {
-            mcpServerBuilder.WithStdioServerTransport();
-        }
-        else
-        {
-            mcpServerBuilder.WithHttpTransport();
-        }
+        services.AddSingleton<AzureEventSourceLogForwarder>();
+        services.AddHostedService<OtelService>();
+        services.AddAzureMcpServer(options);
     }
 
     private sealed class StdioMcpServerHostedService(IMcpServer session) : BackgroundService
     {
         /// <inheritdoc />
         protected override Task ExecuteAsync(CancellationToken stoppingToken) => session.RunAsync(stoppingToken);
+    }
+
+    /// <summary>
+    /// Resolves (and starts) the OpenTelemetry services.
+    /// </summary>
+    private sealed class OtelService : BackgroundService
+    {
+        private readonly MeterProvider? _meterProvider;
+        private readonly TracerProvider? _tracerProvider;
+        private readonly LoggerProvider? _loggerProvider;
+        private readonly AzureEventSourceLogForwarder _logForwarder;
+
+        public OtelService(IServiceProvider provider)
+        {
+            _meterProvider = provider.GetService<MeterProvider>();
+            _tracerProvider = provider.GetService<TracerProvider>();
+            _loggerProvider = provider.GetService<LoggerProvider>();
+            _logForwarder = provider.GetRequiredService<AzureEventSourceLogForwarder>();
+            _logForwarder.Start();
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
+
+        public override void Dispose()
+        {
+            _meterProvider?.Dispose();
+            _tracerProvider?.Dispose();
+            _loggerProvider?.Dispose();
+            _logForwarder.Dispose();
+        }
     }
 }
