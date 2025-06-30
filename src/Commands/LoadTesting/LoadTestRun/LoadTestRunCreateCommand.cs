@@ -68,7 +68,7 @@ public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> l
             // Call service operation(s)
             var results = await service.CreateLoadTestRunAsync(
                 options.Subscription!,
-                options.LoadTestName!,
+                options.TestResourceName!,
                 options.LoadTestId!,
                 options.LoadTestRunId!,
                 options.ResourceGroup,

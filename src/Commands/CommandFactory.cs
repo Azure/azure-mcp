@@ -418,12 +418,12 @@ public class CommandFactory
         _rootGroup.AddSubGroup(service);
 
         var resource = new CommandGroup(
-            "loadtest",
-            "Load test operations - Commands for listing, creating and managing Azure load tests.");
+            "testresource",
+            "Load test resource operations - Commands for listing, creating and managing Azure load test resources.");
         service.AddSubGroup(resource);
 
-        resource.AddCommand("list", new LoadTesting.LoadTest.LoadTestListCommand(
-            GetLogger<LoadTesting.LoadTest.LoadTestListCommand>()));
+        resource.AddCommand("list", new LoadTesting.LoadTestResource.TestResourceListCommand(
+            GetLogger<LoadTesting.LoadTestResource.TestResourceListCommand>()));
 
         resource = new CommandGroup(
             "loadtestrun",

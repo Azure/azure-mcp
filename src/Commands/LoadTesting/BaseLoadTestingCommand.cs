@@ -13,7 +13,7 @@ public abstract class BaseLoadTestingCommand<
 {
     public override string Name => "loadtest";
 
-    protected readonly Option<string> _loadTestOption = OptionDefinitions.LoadTesting.LoadTest;
+    protected readonly Option<string> _loadTestOption = OptionDefinitions.LoadTesting.TestResource;
 
     public override string Description =>
         "Retrieves information about a load test.";
@@ -27,7 +27,7 @@ public abstract class BaseLoadTestingCommand<
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.LoadTestName = parseResult.GetValueForOption(_loadTestOption);
+        options.TestResourceName = parseResult.GetValueForOption(_loadTestOption);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }

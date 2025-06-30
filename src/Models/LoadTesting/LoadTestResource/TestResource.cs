@@ -1,13 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Models.LoadTesting.LoadTest;
-public class LoadTestResource
+namespace AzureMcp.Models.LoadTesting.LoadTestResource;
+public class TestResource
 {
     public string Id { get; set; } = string.Empty;
     public string? Name { get; set; } = string.Empty;
     public string? Type { get; set; } = string.Empty;
     public string? Location { get; set; } = string.Empty;
-    public IDictionary<string, string>? Tags { get; set; } = new Dictionary<string, string>();
-    public LoadTestProperties? Properties { get; set; } = new LoadTestProperties();
+    public TestResourceProperties? Properties { get; set; } = new TestResourceProperties();
 }

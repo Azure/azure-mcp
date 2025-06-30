@@ -66,7 +66,7 @@ public sealed class LoadTestRunGetCommand(ILogger<LoadTestRunGetCommand> logger)
             // Call service operation(s)
             var results = await service.GetLoadTestRunAsync(
                 options.Subscription!,
-                options.LoadTestName!,
+                options.TestResourceName!,
                 options.LoadTestRunId!,
                 options.ResourceGroup,
                 options.Tenant,

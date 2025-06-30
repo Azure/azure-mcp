@@ -3,7 +3,7 @@
 
 using Azure.Core;
 using Azure.Developer.LoadTesting;
-using AzureMcp.Models.LoadTesting.LoadTest;
+using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Models.LoadTesting.LoadTestRun;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
@@ -17,7 +17,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private const string ARMEndpoint = "https://management.azure.com";
     private const string ControlPlaneApiVersion = "2022-12-01";
-    public async Task<List<LoadTestResource>> GetLoadTestsAsync(string subscriptionId, string? resourceGroup = null, string? loadTestName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<TestResource>> GetLoadTestResourcesAsync(string subscriptionId, string? resourceGroup = null, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId);
 
@@ -29,9 +29,9 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
             endpoint += $"/resourceGroups/{resourceGroup}";
         }
 
-        if (!string.IsNullOrEmpty(loadTestName))
+        if (!string.IsNullOrEmpty(testResourceName))
         {
-            endpoint += $"/providers/Microsoft.LoadTestService/loadTests/{loadTestName}?api-version={ControlPlaneApiVersion}";
+            endpoint += $"/providers/Microsoft.LoadTestService/loadTests/{testResourceName}?api-version={ControlPlaneApiVersion}";
         }
         else
         {
@@ -51,10 +51,10 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
             throw new Exception($"Failed to retrieve Azure Load Testing resources: {response.ReasonPhrase}");
         }
         var content = await response.Content.ReadAsStringAsync();
-        if (!string.IsNullOrEmpty(loadTestName))
+        if (!string.IsNullOrEmpty(testResourceName))
         {
-            var LoadTestResource = JsonConvert.DeserializeObject<LoadTestResource>(content);
-            return LoadTestResource != null ? new List<LoadTestResource> { LoadTestResource } : new List<LoadTestResource>();
+            var TestResource = JsonConvert.DeserializeObject<TestResource>(content);
+            return TestResource != null ? new List<TestResource> { TestResource } : new List<TestResource>();
         }
 
         // Azure ARM list APIs return an object with a 'value' property containing the array
@@ -63,13 +63,13 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         {
             throw new Exception($"Unexpected response format: missing 'value' array. Raw response: {content}");
         }
-        return JsonConvert.DeserializeObject<List<LoadTestResource>>(valueElement.GetRawText()) ?? new List<LoadTestResource>();
+        return JsonConvert.DeserializeObject<List<TestResource>>(valueElement.GetRawText()) ?? new List<TestResource>();
     }
 
     public async Task<LoadTestRunResource> GetLoadTestRunAsync(string subscriptionId, string loadTestName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
-        var loadTestResource = await GetLoadTestsAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
         if (loadTestResource.Count == 0)
         {
             throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
@@ -96,7 +96,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     public async Task<LoadTestRunResource> CreateLoadTestRunAsync(string subscriptionId, string loadTestName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
-        var loadTestResource = await GetLoadTestsAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
         if (loadTestResource.Count == 0)
         {
             throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");

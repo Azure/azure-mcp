@@ -1,32 +1,35 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Commands.LoadTesting;
-using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Options.LoadTesting.LoadTest;
+using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Commands.LoadTesting.LoadTest;
-public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
+namespace AzureMcp.Commands.LoadTesting.LoadTestResource;
+public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> logger)
     : BaseLoadTestingCommand<LoadTestListOptions>
 {
-    private const string _commandTitle = "Load Test List";
-    private readonly ILogger<LoadTestListCommand> _logger = logger;
+    private const string _commandTitle = "Test Resource List";
+    private readonly ILogger<TestResourceListCommand> _logger = logger;
 
     public override string Name => "list";
 
     public override string Description =>
         $"""
-        Fetches the Load Testing resources for the current selected subscription and tenant.
+        Fetches the Load Testing resources for the current selected subscription, resource group in the logged in tenant.
         Returns a list of Load Testing resources.
         
         Required arguments:
+        src
+        Areas
+        Commands
+        
         - subscription
         - resource-group
 
         Optional arguments:
-        - load-test-name
+        - test-resource-name
         """;
 
     public override string Title => _commandTitle;
@@ -52,16 +55,16 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
             var service = context.GetService<ILoadTestingService>();
 
             // Call service operation(s)
-            var results = await service.GetLoadTestsAsync(
+            var results = await service.GetLoadTestResourcesAsync(
                 options.Subscription!,
                 options.ResourceGroup,
-                options.LoadTestName,
+                options.TestResourceName,
                 options.Tenant,
                 options.RetryPolicy);
 
             // Set results if any were returned
             context.Response.Results = results?.Count > 0 ?
-                ResponseResult.Create(new LoadTestListCommandResult(results), LoadTestJsonContext.Default.LoadTestListCommandResult) :
+                ResponseResult.Create(new TestResourceListCommandResult(results), LoadTestJsonContext.Default.TestResourceListCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -74,5 +77,5 @@ public sealed class LoadTestListCommand(ILogger<LoadTestListCommand> logger)
 
         return context.Response;
     }
-    internal record LoadTestListCommandResult(List<LoadTestResource> LoadTests);
+    internal record TestResourceListCommandResult(List<TestResource> LoadTests);
 }

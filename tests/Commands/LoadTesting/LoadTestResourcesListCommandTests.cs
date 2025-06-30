@@ -3,26 +3,26 @@
 
 using System.CommandLine;
 using System.Text.Json;
-using AzureMcp.Commands.LoadTesting.LoadTest;
+using AzureMcp.Commands.LoadTesting.LoadTestResource;
 using AzureMcp.Models.Command;
-using AzureMcp.Models.LoadTesting.LoadTest;
+using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Options;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
-public class LoadTestListCommandTests
+public class TestResourceListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadTestingService _service;
-    private readonly ILogger<LoadTestListCommand> _logger;
-    private readonly LoadTestListCommand _command;
+    private readonly ILogger<TestResourceListCommand> _logger;
+    private readonly TestResourceListCommand _command;
 
-    public LoadTestListCommandTests()
+    public TestResourceListCommandTests()
     {
         _service = Substitute.For<ILoadTestingService>();
-        _logger = Substitute.For<ILogger<LoadTestListCommand>>();
+        _logger = Substitute.For<ILogger<TestResourceListCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_service);
@@ -44,11 +44,11 @@ public class LoadTestListCommandTests
     public async Task ExecuteAsync_ReturnsLoadTests_WhenLoadTestsExist()
     {
         // Arrange
-        var expectedLoadTests = new List<LoadTestResource> { new LoadTestResource { Id = "Id1", Name = "loadTest1" }, new LoadTestResource { Id = "Id2", Name = "loadTest2" } };
-        _service.GetLoadTestsAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+        var expectedLoadTests = new List<TestResource> { new TestResource { Id = "Id1", Name = "loadTest1" }, new TestResource { Id = "Id2", Name = "loadTest2" } };
+        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedLoadTests);
 
-        var command = new LoadTestListCommand(_logger);
+        var command = new TestResourceListCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
         var context = new CommandContext(_serviceProvider);
 
@@ -60,7 +60,7 @@ public class LoadTestListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<LoadTestListCommandResult>(json);
+        var result = JsonSerializer.Deserialize<TestResourceListCommandResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(expectedLoadTests.Count, result.LoadTests.Count);
@@ -74,10 +74,10 @@ public class LoadTestListCommandTests
     public async Task ExecuteAsync_ReturnsLoadTests_WhenLoadTestsNotExist()
     {
         // Arrange
-        _service.GetLoadTestsAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
              .Returns([]);
 
-        var command = new LoadTestListCommand(_logger);
+        var command = new TestResourceListCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
         var context = new CommandContext(_serviceProvider);
 
@@ -93,8 +93,8 @@ public class LoadTestListCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _service.GetLoadTestsAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
-            .Returns(Task.FromException<List<LoadTestResource>>(new Exception("Test error")));
+        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<List<TestResource>>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
@@ -108,8 +108,8 @@ public class LoadTestListCommandTests
         Assert.Contains("troubleshooting", response.Message);
     }
 
-    private class LoadTestListCommandResult
+    private class TestResourceListCommandResult
     {
-        public List<LoadTestResource> LoadTests { get; set; } = [];
+        public List<TestResource> LoadTests { get; set; } = [];
     }
 }
