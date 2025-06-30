@@ -4,7 +4,7 @@
 
 ### Features Added
 
-- App Configuration Put command now also supports setting the `ContentType` property. [#459](https://github.com/Azure/azure-mcp/pull/459)
+- App Configuration Put command now also supports setting the `ContentType` and `Tags` properties [#459](https://github.com/Azure/azure-mcp/pull/459)
 
 ### Breaking Changes
 
