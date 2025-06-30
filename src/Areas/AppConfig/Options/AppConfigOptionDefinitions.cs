@@ -10,6 +10,7 @@ public static class AppConfigOptionDefinitions
     public const string ValueName = "value";
     public const string LabelName = "label";
     public const string ContentTypeName = "content-type";
+    public const string TagsName = "tags";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -49,6 +50,15 @@ public static class AppConfigOptionDefinitions
     )
     {
         IsRequired = false
+    };
+
+    public static readonly Option<List<string>> Tags = new(
+        $"--{TagsName}",
+        "The tags to associate with the configuration key. Tags should be in the format 'key=value'. Multiple tags can be specified."
+    )
+    {
+        IsRequired = false,
+        AllowMultipleArgumentsPerToken = true
     };
 
     public static class KeyValueList
