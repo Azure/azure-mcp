@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.TableType;
 using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
@@ -11,6 +12,8 @@ namespace AzureMcp.Areas.Monitor.Commands.TableType;
 public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) : BaseMonitorCommand<TableTypeListOptions>()
 {
     private const string CommandTitle = "List Log Analytics Table Types";
+    private readonly Option<string> _workspaceOption = WorkspaceOptionDefinitions.Workspace;
+
     private readonly ILogger<TableTypeListCommand> _logger = logger;
 
     public override string Name => "list";
@@ -24,12 +27,14 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
     {
         base.RegisterOptions(command);
         command.AddOption(_resourceGroupOption); // inherited from base
+        command.AddOption(_workspaceOption);
     }
 
     protected override TableTypeListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
+        options.Workspace = parseResult.GetValueForOption(_workspaceOption);
         return options;
     }
 

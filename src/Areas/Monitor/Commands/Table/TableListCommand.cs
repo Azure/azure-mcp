@@ -14,12 +14,13 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
     private const string CommandTitle = "List Log Analytics Tables";
     private readonly ILogger<TableListCommand> _logger = logger;
     private readonly Option<string> _tableTypeOption = MonitorOptionDefinitions.TableType;
+    private readonly Option<string> _workspaceOption = WorkspaceOptionDefinitions.Workspace;
 
     public override string Name => "list";
 
     public override string Description =>
         $"""
-        List all tables in a Log Analytics workspace. Requires {WorkspaceLogQueryOptionDefinitions.WorkspaceIdOrName}.
+        List all tables in a Log Analytics workspace. Requires {WorkspaceOptionDefinitions.WorkspaceIdOrName}.
         Returns table names and schemas that can be used for constructing KQL queries.
         """;
 
@@ -30,6 +31,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         base.RegisterOptions(command);
         command.AddOption(_tableTypeOption);
         command.AddOption(_resourceGroupOption);
+        command.AddOption(_workspaceOption);
+
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
@@ -71,6 +74,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         var options = base.BindOptions(parseResult);
         options.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? MonitorOptionDefinitions.TableType.GetDefaultValue();
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? OptionDefinitions.Common.ResourceGroup.GetDefaultValue();
+        options.Workspace = parseResult.GetValueForOption(_workspaceOption);
         return options;
     }
 

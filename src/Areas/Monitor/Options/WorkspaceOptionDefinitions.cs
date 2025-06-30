@@ -3,7 +3,7 @@
 
 namespace AzureMcp.Areas.Monitor.Options;
 
-public static class WorkspaceLogQueryOptionDefinitions
+public static class WorkspaceOptionDefinitions
 {
     public const string WorkspaceIdOrName = "workspace";
 
