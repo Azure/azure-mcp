@@ -47,6 +47,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
 | azmcp-extension-az | List all virtual machines in my subscription |
 
+## Azure Developer CLI
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-extension-azd | Create a To-Do list application with name <project_name> that uses NodeJS and MongoDB |
+| azmcp-extension-azd | Deploy my application with name <project_name> to Azure App Service |
+
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |
