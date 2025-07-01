@@ -30,16 +30,14 @@ public static class OpenTelemetryExtensions
 
     private static bool TryEnableAzureMonitor(this IServiceCollection services)
     {
-        var isDebugging = Debugger.IsAttached;
-        if (isDebugging)
+#if DEBUG
+        services.AddSingleton(sp =>
         {
-            services.AddSingleton(sp =>
-            {
-                var forwarder = new AzureEventSourceLogForwarder(sp.GetRequiredService<ILoggerFactory>());
-                forwarder.Start();
-                return forwarder;
-            });
-        }
+            var forwarder = new AzureEventSourceLogForwarder(sp.GetRequiredService<ILoggerFactory>());
+            forwarder.Start();
+            return forwarder;
+        });
+#endif
 
         var appInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
 
@@ -69,9 +67,11 @@ public static class OpenTelemetryExtensions
             })
             .UseAzureMonitorExporter(options =>
             {
-                options.EnableLiveMetrics = isDebugging;
-                options.Diagnostics.IsLoggingEnabled = isDebugging;
-                options.Diagnostics.IsLoggingContentEnabled = isDebugging;
+#if DEBUG
+                options.EnableLiveMetrics = true;
+                options.Diagnostics.IsLoggingEnabled = true;
+                options.Diagnostics.IsLoggingContentEnabled = true;
+#endif
                 options.ConnectionString = appInsightsConnectionString;
             });
 
