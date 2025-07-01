@@ -29,7 +29,6 @@ resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2025-04-01-prev
   properties: {
     isAiFoundryType: true
     customSubDomainName: baseName
-    publicNetworkAccess: 'Enabled'
     dynamicThrottlingEnabled: false
     networkAcls: {
       defaultAction: 'Allow'
@@ -83,6 +82,7 @@ resource aiProjects 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pr
       defaultAction: 'Allow'
       virtualNetworkRules: []
       ipRules: []
+    }
   }
   sku: {
     name: 'S0'
