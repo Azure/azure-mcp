@@ -60,4 +60,8 @@ public class TelemetryService : ITelemetryService
 
         return activity;
     }
+
+    public void Dispose()
+    {
+    }
 }
