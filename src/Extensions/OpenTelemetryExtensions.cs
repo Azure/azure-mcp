@@ -2,9 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using AzureMcp.Configuration;
+using AzureMcp.Helpers;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,6 +25,34 @@ public static class OpenTelemetryExtensions
 
     public static void ConfigureOpenTelemetry(this IServiceCollection services)
     {
+        services.AddOptions<AzureMcpServerConfiguration>()
+            .Configure(options =>
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
+                if (assemblyName?.Version != null)
+                {
+                    options.Version = assemblyName.Version.ToString();
+                }
+
+                var collectTelemetry = Environment.GetEnvironmentVariable("AZURE_MCP_COLLECT_TELEMETRY");
+
+                options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
+                    || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
+
+                if (options.IsTelemetryEnabled)
+                {
+                    var address = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(x => x.OperationalStatus == OperationalStatus.Up)
+                    .Select(x => x.GetPhysicalAddress().ToString())
+                    .FirstOrDefault(string.Empty);
+
+                    options.MacAddressHash = Sha256Helper.GetHashedValue(address);
+                }
+            });
+
+        services.AddSingleton<ITelemetryService, TelemetryService>();
+
         if (!TryEnableAzureMonitor(services))
         {
             TryEnableOtlp(services);
