@@ -11,7 +11,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bicep-schema-get | Show me the Bicep schema for the resource type <resource_type> |
+| azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
 
 ## Resource Group
 
@@ -93,8 +93,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-extension-azd | Create a To-Do list web application with name <project_name> that uses NodeJS and MongoDB |
-| azmcp-extension-azd | Deploy my web application with name <project_name> to Azure App Service |
+| azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
+| azmcp-extension-azd | Deploy my web application to Azure App Service |
 
 ## Azure Key Vault
 
