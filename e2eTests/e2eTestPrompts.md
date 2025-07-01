@@ -144,16 +144,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-redis-cluster-database-list | List all databases in the Redis Cluster <cluster_name> |
-| azmcp-redis-cluster-database-list | Show me the databases in the Redis Cluster <cluster_name> |
-| azmcp-redis-cluster-list | List all Redis Clusters in my subscription |
-| azmcp-redis-cluster-list | Show me the Redis Clusters in my subscription |
-| azmcp-redis-cluster-list | Show me my Redis Clusters |
 | azmcp-redis-cache-list | List all Redis Caches in my subscription |
 | azmcp-redis-cache-list | Show me the Redis Caches in my subscription |
 | azmcp-redis-cache-list | Show me my Redis Caches |
 | azmcp-redis-cache-list-accesspolicy | List all access policies in the Redis Cache <cache_name> |
 | azmcp-redis-cache-list-accesspolicy | Show me the access policies in the Redis Cache <cache_name> |
+| azmcp-redis-cluster-database-list | List all databases in the Redis Cluster <cluster_name> |
+| azmcp-redis-cluster-database-list | Show me the databases in the Redis Cluster <cluster_name> |
+| azmcp-redis-cluster-list | List all Redis Clusters in my subscription |
+| azmcp-redis-cluster-list | Show me the Redis Clusters in my subscription |
+| azmcp-redis-cluster-list | Show me my Redis Clusters |
 
 ## Azure RBAC
 
@@ -191,9 +191,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-account-list | List all storage accounts in my subscription |
 | azmcp-storage-account-list | Show me the storage accounts in my subscription |
 | azmcp-storage-account-list | Show me my storage accounts |
+| azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
-| azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
