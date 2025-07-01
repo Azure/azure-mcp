@@ -47,13 +47,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
 | azmcp-extension-az | List all virtual machines in my subscription |
 
-## Azure Developer CLI
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-extension-azd | Create a To-Do list application with name <project_name> that uses NodeJS and MongoDB |
-| azmcp-extension-azd | Deploy my application with name <project_name> to Azure App Service |
-
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |
@@ -82,6 +75,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-kusto-table-list | List all tables in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-table-list | Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-table-schema | Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name> |
+
+## Azure Developer CLI
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-extension-azd | Create a To-Do list web application with name <project_name> that uses NodeJS and MongoDB |
+| azmcp-extension-azd | Deploy my web application with name <project_name> to Azure App Service |
 
 ## Azure Key Vault
 
