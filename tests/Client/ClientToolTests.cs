@@ -50,8 +50,12 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
     {
         var result = await _client.CallToolAsync("non_existent_tool", new Dictionary<string, object?>(), cancellationToken: TestContext.Current.CancellationToken);
 
+        // When calling a non-existent tool, the server should return an error response
+        Assert.True(result.IsError, "Expected error response for non-existent tool");
+
         string? content = McpTestUtilities.GetFirstText(result.Content);
-        Assert.True(string.IsNullOrWhiteSpace(content));
+        Assert.False(string.IsNullOrWhiteSpace(content), "Expected error message content");
+        Assert.Contains("Could not find command: non_existent_tool", content);
     }
 
     [Fact]

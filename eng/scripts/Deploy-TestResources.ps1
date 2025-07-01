@@ -42,13 +42,13 @@ try {
             -ResourceGroupName $ResourceGroupName `
             -BaseName $BaseName `
             -DeleteAfterHours $DeleteAfterHours `
-            -ArmTemplateParameters $armParameters
+            -AdditionalParameters $armParameters
     } else {
         ./eng/common/TestResources/New-TestResources.ps1 `
             -ResourceGroupName $ResourceGroupName `
             -BaseName $BaseName `
             -DeleteAfterHours $DeleteAfterHours `
-            -ArmTemplateParameters $armParameters
+            -AdditionalParameters $armParameters
     }
 }
 finally {
