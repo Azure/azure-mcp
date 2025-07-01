@@ -5,6 +5,7 @@ using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Cosmos.Commands;
@@ -36,7 +37,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var cosmosService = context.GetService<ICosmosService>();
             var accounts = await cosmosService.GetCosmosAccounts(

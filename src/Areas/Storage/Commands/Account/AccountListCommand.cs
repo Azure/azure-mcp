@@ -6,6 +6,7 @@ using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Account;
@@ -38,7 +39,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var accounts = await storageService.GetStorageAccounts(

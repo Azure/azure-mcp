@@ -7,6 +7,7 @@ using AzureMcp.Areas.Authorization.Services;
 using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Authorization.Commands;
@@ -53,7 +54,7 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var authService = context.GetService<IAuthorizationService>();
             var assignments = await authService.ListRoleAssignments(

@@ -6,6 +6,7 @@ using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Blob;
@@ -39,7 +40,7 @@ public sealed class BlobListCommand(ILogger<BlobListCommand> logger) : BaseConta
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var blobs = await storageService.ListBlobs(

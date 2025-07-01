@@ -6,6 +6,7 @@ using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Workspace;
@@ -38,7 +39,7 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var monitorService = context.GetService<IMonitorService>();
             var workspaces = await monitorService.ListWorkspaces(

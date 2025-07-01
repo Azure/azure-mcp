@@ -6,6 +6,7 @@ using AzureMcp.Areas.Redis.Options.ManagedRedis;
 using AzureMcp.Areas.Redis.Services;
 using AzureMcp.Commands.Redis;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
@@ -39,7 +40,8 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var clusters = await redisService.ListClustersAsync(

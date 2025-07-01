@@ -6,6 +6,7 @@ using AzureMcp.Areas.AzureIsv.Options.Datadog;
 using AzureMcp.Areas.AzureIsv.Services;
 using AzureMcp.Commands.AzureIsv.Datadog;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AzureIsv.Commands.Datadog;
@@ -54,7 +55,7 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(

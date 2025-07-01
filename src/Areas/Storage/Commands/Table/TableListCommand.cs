@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Storage.Options.Table;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Table;
@@ -36,7 +37,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var tables = await storageService.ListTables(

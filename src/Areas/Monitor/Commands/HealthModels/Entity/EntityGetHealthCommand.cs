@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.HealthModels.Entity;
 using AzureMcp.Areas.Monitor.Services;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.HealthModels.Entity;
@@ -57,7 +58,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IMonitorHealthModelService>();
             var result = await service.GetEntityHealth(

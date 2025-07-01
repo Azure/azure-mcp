@@ -6,6 +6,7 @@ using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 using AzureMcp.Models.ResourceGroup;
 using AzureMcp.Services.Azure.ResourceGroup;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Group.Commands;
@@ -38,7 +39,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var resourceGroupService = context.GetService<IResourceGroupService>();
             var groups = await resourceGroupService.GetResourceGroups(

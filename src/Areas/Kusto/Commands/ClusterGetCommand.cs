@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -35,7 +36,7 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
             var cluster = await kusto.GetCluster(

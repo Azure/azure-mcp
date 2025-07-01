@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -50,7 +51,7 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             List<JsonElement> results = [];
             var kusto = context.GetService<IKustoService>();
