@@ -8,13 +8,13 @@ using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.LoadTesting.LoadTestRun;
-public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> logger)
-    : BaseLoadTestingCommand<LoadTestRunCreateOptions>
+public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
+    : BaseLoadTestingCommand<TestRunCreateOptions>
 {
-    private const string _commandTitle = "Load Test Run Create";
-    private readonly ILogger<LoadTestRunCreateCommand> _logger = logger;
-    private readonly Option<string> _loadTestRunIdOption = OptionDefinitions.LoadTesting.LoadTestRun;
-    private readonly Option<string> _testIdOption = OptionDefinitions.LoadTesting.LoadTestId;
+    private const string _commandTitle = "Test Run Create";
+    private readonly ILogger<TestRunCreateCommand> _logger = logger;
+    private readonly Option<string> _loadTestRunIdOption = OptionDefinitions.LoadTesting.TestRun;
+    private readonly Option<string> _testIdOption = OptionDefinitions.LoadTesting.Test;
 
     public override string Name => "create";
 
@@ -26,7 +26,7 @@ public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> l
         Required arguments:
         - subscription
         - resource-group
-        - load-test-name
+        - test-resource-name
         """;
 
     public override string Title => _commandTitle;
@@ -38,11 +38,11 @@ public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> l
         command.AddOption(_testIdOption);
     }
 
-    protected override LoadTestRunCreateOptions BindOptions(ParseResult parseResult)
+    protected override TestRunCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.LoadTestRunId = parseResult.GetValueForOption(_loadTestRunIdOption);
-        options.LoadTestId = parseResult.GetValueForOption(_testIdOption);
+        options.TestRunId = parseResult.GetValueForOption(_loadTestRunIdOption);
+        options.TestId = parseResult.GetValueForOption(_testIdOption);
         return options;
     }
 
@@ -69,15 +69,15 @@ public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> l
             var results = await service.CreateLoadTestRunAsync(
                 options.Subscription!,
                 options.TestResourceName!,
-                options.LoadTestId!,
-                options.LoadTestRunId!,
+                options.TestId!,
+                options.TestRunId!,
                 options.ResourceGroup,
                 options.Tenant,
                 options.RetryPolicy);
 
             // Set results if any were returned
             context.Response.Results = results != null ?
-                ResponseResult.Create(new LoadTestRunCreateCommandResult(results), LoadTestJsonContext.Default.LoadTestRunCreateCommandResult) :
+                ResponseResult.Create(new TestRunCreateCommandResult(results), LoadTestJsonContext.Default.TestRunCreateCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -90,5 +90,5 @@ public sealed class LoadTestRunCreateCommand(ILogger<LoadTestRunCreateCommand> l
 
         return context.Response;
     }
-    internal record LoadTestRunCreateCommandResult(LoadTestRunResource LoadTestRun);
+    internal record TestRunCreateCommandResult(TestRun TestRun);
 }

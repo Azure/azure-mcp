@@ -13,17 +13,17 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-public class LoadTestRunCreateCommandTests
+public class TestRunGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadTestingService _service;
-    private readonly ILogger<LoadTestRunCreateCommand> _logger;
-    private readonly LoadTestRunCreateCommand _command;
+    private readonly ILogger<TestRunGetCommand> _logger;
+    private readonly TestRunGetCommand _command;
 
-    public LoadTestRunCreateCommandTests()
+    public TestRunGetCommandTests()
     {
         _service = Substitute.For<ILoadTestingService>();
-        _logger = Substitute.For<ILogger<LoadTestRunCreateCommand>>();
+        _logger = Substitute.For<ILogger<TestRunGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_service);
@@ -36,28 +36,27 @@ public class LoadTestRunCreateCommandTests
     public void Constructor_InitializesCommandCorrectly()
     {
         var command = _command.GetCommand();
-        Assert.Equal("create", command.Name);
+        Assert.Equal("get", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
     }
 
     [Fact]
-    public async Task ExecuteAsync_CreatesLoadTestRun()
+    public async Task ExecuteAsync_ReturnsLoadTestRun_WhenExists()
     {
         // Arrange
-        var expected = new LoadTestRunResource { TestId = "testId1", TestRunId = "testRunId1" };
-        _service.CreateLoadTestRunAsync(
-            Arg.Is("sub123"), Arg.Is("loadTestName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+        var expected = new TestRun { TestId = "testId1", TestRunId = "testRunId1" };
+        _service.GetLoadTestRunAsync(
+            Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expected);
 
-        var command = new LoadTestRunCreateCommand(_logger);
+        var command = new TestRunGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "resourceGroup123",
-            "--load-test-name", "loadTestName",
-            "--load-testrun-id", "run1",
-            "--tenant", "tenant123",
-            "--load-test-id", "testId1"
+            "--test-resource-name", "testResourceName",
+            "--testrun-id", "run1",
+            "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -67,31 +66,31 @@ public class LoadTestRunCreateCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<LoadTestRunCreateCommandResult>(json);
+        var result = JsonSerializer.Deserialize<TestRunGetCommandResult>(json);
 
         Assert.NotNull(result);
-        Assert.Equal(expected.TestId, result.LoadTestRun.TestId);
-        Assert.Equal(expected.TestRunId, result.LoadTestRun.TestRunId);
+        Assert.Equal(expected.TestId, result.TestRun.TestId);
+        Assert.Equal(expected.TestRunId, result.TestRun.TestRunId);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
         // Arrange
-        var expected = new LoadTestRunResource();
-        _service.CreateLoadTestRunAsync(
-            Arg.Is("sub123"), Arg.Is("loadTestName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+        var expected = new TestRun();
+        _service.GetLoadTestRunAsync(
+            Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expected);
 
-        var command = new LoadTestRunCreateCommand(_logger);
+        var command = new TestRunGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "resourceGroup123",
             "--load-test-name", "loadTestName",
-            "--tenant", "tenant123",
-            "--load-testrun-id", "run1"
+            "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -106,18 +105,17 @@ public class LoadTestRunCreateCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _service.CreateLoadTestRunAsync(
-            Arg.Is("sub123"), Arg.Is("loadTestName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
-            .Returns(Task.FromException<LoadTestRunResource>(new Exception("Test error")));
+        _service.GetLoadTestRunAsync(
+            Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<TestRun>(new Exception("Test error")));
 
-        var command = new LoadTestRunCreateCommand(_logger);
+        var command = new TestRunGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "resourceGroup123",
-            "--load-test-name", "loadTestName",
-            "--load-testrun-id", "run1",
-            "--tenant", "tenant123",
-            "--load-test-id", "testId1"
+            "--test-resource-name", "testResourceName",
+            "--testrun-id", "run1",
+            "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -130,8 +128,8 @@ public class LoadTestRunCreateCommandTests
         Assert.Contains("troubleshooting", response.Message);
     }
 
-    private class LoadTestRunCreateCommandResult
+    private class TestRunGetCommandResult
     {
-        public LoadTestRunResource LoadTestRun { get; set; } = new();
+        public TestRun TestRun { get; set; } = new();
     }
 }

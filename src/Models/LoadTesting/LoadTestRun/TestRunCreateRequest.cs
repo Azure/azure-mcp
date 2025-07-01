@@ -1,7 +1,7 @@
 
 namespace AzureMcp.Models.LoadTesting.LoadTestRun;
 
-public class LoadTestRunCreateRequest
+public class TestRunCreateRequest
 {
     public string TestId { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;

@@ -426,15 +426,15 @@ public class CommandFactory
             GetLogger<LoadTesting.LoadTestResource.TestResourceListCommand>()));
 
         resource = new CommandGroup(
-            "loadtestrun",
+            "testrun",
             "Load test run operations - Commands for listing, creating and managing Azure load test runs.");
         service.AddSubGroup(resource);
 
-        resource.AddCommand("get", new LoadTesting.LoadTestRun.LoadTestRunGetCommand(
-            GetLogger<LoadTesting.LoadTestRun.LoadTestRunGetCommand>()));
+        resource.AddCommand("get", new LoadTesting.LoadTestRun.TestRunGetCommand(
+            GetLogger<LoadTesting.LoadTestRun.TestRunGetCommand>()));
 
-        resource.AddCommand("create", new LoadTesting.LoadTestRun.LoadTestRunCreateCommand(
-            GetLogger<LoadTesting.LoadTestRun.LoadTestRunCreateCommand>()));
+        resource.AddCommand("create", new LoadTesting.LoadTestRun.TestRunCreateCommand(
+            GetLogger<LoadTesting.LoadTestRun.TestRunCreateCommand>()));
     }
 
     private void ConfigureCommands(CommandGroup group)

@@ -3,7 +3,7 @@
 
 namespace AzureMcp.Models.LoadTesting.LoadTestRun;
 
-public class LoadTestRunResource
+public class TestRun
 {
     public string TestId { get; set; } = string.Empty;
     public string? TestRunId { get; set; } = string.Empty;

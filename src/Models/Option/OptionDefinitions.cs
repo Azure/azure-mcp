@@ -694,8 +694,8 @@ public static class OptionDefinitions
     public static class LoadTesting
     {
         public const string TestResourceName = "test-resource-name";
-        public const string LoadTestRunId = "load-testrun-id";
-        public const string TestId = "load-test-id";
+        public const string TestRunId = "testrun-id";
+        public const string TestId = "test-id";
         public static readonly Option<string> TestResource = new(
             $"--{TestResourceName}",
             "The name of the load test resource for which you want to fetch the details."
@@ -704,14 +704,14 @@ public static class OptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string> LoadTestRun = new(
-            $"--{LoadTestRunId}",
+        public static readonly Option<string> TestRun = new(
+            $"--{TestRunId}",
             "The ID of the load test run for which you want to fetch the details."
         )
         {
             IsRequired = true
         };
-        public static readonly Option<string> LoadTestId = new(
+        public static readonly Option<string> Test = new(
             $"--{TestId}",
             "The ID of the load test for which you want to fetch the details."
         )

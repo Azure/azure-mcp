@@ -13,8 +13,8 @@ public class LoadTestingCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {
     private readonly string _subscriptionId;
-    private const string LoadTestName = "LoadTestName";
-    private const string LoadTestRunId = "LoadTestRunId";
+    private const string TestResourceName = "TestResourceName";
+    private const string TestRunId = "TestRunId";
 
 
     public LoadTestingCommandTests(LiveTestFixture fixture, ITestOutputHelper output)
@@ -30,7 +30,7 @@ public class LoadTestingCommandTests : CommandTestsBase,
     {
         // Arrange
         var result = await CallToolAsync(
-            "azmcp-loadtesting-loadtest-list",
+            "azmcp-loadtesting-testresource-list",
             new()
             {
                 { "subscription", _subscriptionId },

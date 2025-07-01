@@ -49,7 +49,12 @@ public class TestResourceListCommandTests
             .Returns(expectedLoadTests);
 
         var command = new TestResourceListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
+        var args = command.GetCommand().Parse([
+            "--subscription", "sub123",
+            "--resource-group", "resourceGroup123",
+            "--test-resource-name", "loadTestName",
+            "--tenant", "tenant123"
+        ]);
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -78,7 +83,12 @@ public class TestResourceListCommandTests
              .Returns([]);
 
         var command = new TestResourceListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
+        var args = command.GetCommand().Parse([
+            "--subscription", "sub123",
+            "--resource-group", "resourceGroup123",
+            "--test-resource-name", "loadTestName",
+            "--tenant", "tenant123"
+        ]);
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -97,7 +107,12 @@ public class TestResourceListCommandTests
             .Returns(Task.FromException<List<TestResource>>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "resourceGroup123", "--load-test-name", "loadTestName", "--tenant", "tenant123"]);
+        var parseResult = _command.GetCommand().Parse([
+            "--subscription", "sub123",
+            "--resource-group", "resourceGroup123",
+            "--test-resource-name", "loadTestName",
+            "--tenant", "tenant123"
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);

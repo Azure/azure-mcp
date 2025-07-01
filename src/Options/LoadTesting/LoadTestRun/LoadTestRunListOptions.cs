@@ -3,10 +3,10 @@
 
 namespace AzureMcp.Options.LoadTesting.LoadTestRun;
 
-public class LoadTestRunGetOptions : BaseLoadTestingOptions
+public class TestRunGetOptions : BaseLoadTestingOptions
 {
     /// <summary>
     /// The ID of the load test run resource.
     /// </summary>
-    public string? LoadTestRunId { get; set; }
+    public string? TestRunId { get; set; }
 }

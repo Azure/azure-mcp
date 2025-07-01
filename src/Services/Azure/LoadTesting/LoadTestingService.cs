@@ -66,18 +66,18 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         return JsonConvert.DeserializeObject<List<TestResource>>(valueElement.GetRawText()) ?? new List<TestResource>();
     }
 
-    public async Task<LoadTestRunResource> GetLoadTestRunAsync(string subscriptionId, string loadTestName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<TestRun> GetLoadTestRunAsync(string subscriptionId, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
-        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource.Count == 0)
         {
-            throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+            throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
         var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
-            throw new Exception($"Data Plane URI for Load Test '{loadTestName}' is not available.");
+            throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
         }
 
         var credential = await GetCredential(tenant);
@@ -90,27 +90,27 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         }
 
         var loadTestRun = loadTestRunResponse.Content.ToString();
-        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun) ?? new LoadTestRunResource();
+        return JsonConvert.DeserializeObject<TestRun>(loadTestRun) ?? new TestRun();
     }
-    
-    public async Task<LoadTestRunResource> CreateLoadTestRunAsync(string subscriptionId, string loadTestName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+
+    public async Task<TestRun> CreateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, loadTestName, testRunId);
-        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, loadTestName, tenant, retryPolicy);
+        ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource.Count == 0)
         {
-            throw new Exception($"Load Test '{loadTestName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+            throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
         var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
-            throw new Exception($"Data Plane URI for Load Test '{loadTestName}' is not available.");
+            throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
         }
 
         var credential = await GetCredential(tenant);
         var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
 
-        LoadTestRunCreateRequest createRequest = new LoadTestRunCreateRequest
+        TestRunCreateRequest createRequest = new TestRunCreateRequest
         {
             TestId = testId,
             DisplayName = "TestRun_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
@@ -124,6 +124,6 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         }
 
         var loadTestRun = loadTestRunResponse.Value.ToString();
-        return JsonConvert.DeserializeObject<LoadTestRunResource>(loadTestRun) ?? new LoadTestRunResource();
+        return JsonConvert.DeserializeObject<TestRun>(loadTestRun) ?? new TestRun();
     }
 }
