@@ -12,7 +12,7 @@ namespace AzureMcp.Services.Telemetry;
 /// <summary>
 /// Provides access to services.
 /// </summary>
-public class TelemetryService : ITelemetryService
+internal class TelemetryService : ITelemetryService
 {
     private readonly bool _isEnabled;
     private readonly List<KeyValuePair<string, object?>> _tagsList;
