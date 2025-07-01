@@ -7,6 +7,20 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-bestpractices-get | Fetch the latest Azure best practices |
 | azmcp-bestpractices-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
 
+## Bicep
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-bicep-schema-get | Show me the Bicep schema for the resource type <resource_type> |
+
+## Resource Group
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-group-list | List all resource groups in my subscription |
+| azmcp-group-list | Show me the resource groups in my subscription |
+| azmcp-group-list | Show me my resource groups |
+
 ## Subscription Management
 
 | Tool Name | Test Prompt |
@@ -16,13 +30,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-subscription-list | Show me my subscriptions |
 | azmcp-subscription-list | What is my current subscription? |
 
-## Resource Group
+## Tools
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-group-list | List all resource groups in my subscription |
-| azmcp-group-list | Show me the resource groups in my subscription |
-| azmcp-group-list | Show me my resource groups |
+| azmcp-tool-list | List all available tools in the Azure MCP server |
+| azmcp-tool-list | Show me the available tools in the Azure MCP server |
 
 ## Azure App Configuration
 
@@ -98,7 +111,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-monitor-healthmodels-entity-gethealth | Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name> |
-| azmcp-monitor-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-metrics-definitions | What metric definitions are available for the Application Insights resource <resource_name> |
 | azmcp-monitor-metrics-definitions | Show me all available metrics and their definitions for storage account <account_name> |
 | azmcp-monitor-metrics-definitions | Get metric definitions for <resource_type> <resource_name> from the namespace |
@@ -108,6 +120,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-metrics-query | Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period> |
 | azmcp-monitor-metrics-query | Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period> |
 | azmcp-monitor-metrics-query | Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with intervals |
+| azmcp-monitor-resource-logs-query | Show me the logs for the past hour for the resource <resource_name> in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | List all tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | Show me the tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-type-list | List all available table types in the Log Analytics workspace <workspace_name> |
@@ -115,6 +128,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | List all Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
+| azmcp-monitor-workspace-logs-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 
 ## Azure Native ISV
 
