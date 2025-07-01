@@ -1,12 +1,6 @@
 # Release History
 
-## 0.2.6 (Unreleased)
-
-### Features Added
-
-### Breaking Changes
-
-### Bugs Fixed
+## 0.2.6 (2025-07-01)
 
 ### Other Changes
 - Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
