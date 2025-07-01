@@ -69,7 +69,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 }
 
 resource aiProjects 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
-  name: '${baseName}/${baseName}-ai-projects'
+  parent: aiServicesAccount
+  name: '${baseName}-ai-projects'
   location: location
   kind: 'AIServices'
   identity: {
