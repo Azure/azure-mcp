@@ -6,16 +6,10 @@ using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public sealed class RegistryServerProvider : IMcpServerProvider
+public sealed class RegistryServerProvider(string id, RegistryServerInfo serverInfo) : IMcpServerProvider
 {
-    private readonly string _id;
-    private readonly RegistryServerInfo _serverInfo;
-
-    public RegistryServerProvider(string id, RegistryServerInfo serverInfo)
-    {
-        _id = id;
-        _serverInfo = serverInfo;
-    }
+    private readonly string _id = id;
+    private readonly RegistryServerInfo _serverInfo = serverInfo;
 
     public McpServerMetadata CreateMetadata()
     {

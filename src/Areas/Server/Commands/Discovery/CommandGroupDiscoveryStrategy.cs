@@ -7,20 +7,12 @@ using Microsoft.Extensions.Options;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public sealed class CommandGroupDiscoveryStrategy : BaseDiscoveryStrategy
+public sealed class CommandGroupDiscoveryStrategy(CommandFactory commandFactory, IOptions<ServiceStartOptions> options) : BaseDiscoveryStrategy()
 {
-    private readonly CommandFactory _commandFactory;
-    private readonly IOptions<ServiceStartOptions> _options;
+    private readonly CommandFactory _commandFactory = commandFactory;
+    private readonly IOptions<ServiceStartOptions> _options = options;
 
     public string? EntryPoint { get; set; } = null;
-
-    public CommandGroupDiscoveryStrategy(CommandFactory commandFactory, IOptions<ServiceStartOptions> options)
-    {
-        ArgumentNullException.ThrowIfNull(commandFactory);
-        ArgumentNullException.ThrowIfNull(options);
-        _commandFactory = commandFactory;
-        _options = options;
-    }
 
     public override Task<IEnumerable<IMcpServerProvider>> DiscoverServersAsync()
     {

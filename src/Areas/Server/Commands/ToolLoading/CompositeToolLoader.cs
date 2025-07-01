@@ -6,25 +6,11 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class CompositeToolLoader : IToolLoader
+public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : IToolLoader
 {
-    private readonly ILogger<CompositeToolLoader> _logger;
-    private readonly List<IToolLoader> _toolLoaders = new List<IToolLoader>();
-    private readonly Dictionary<string, IToolLoader> _toolLoaderMap = new Dictionary<string, IToolLoader>();
-
-    public bool ReadOnly { get; set; } = false;
-    public string? Namespace { get; set; } = null;
-
-    public CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        if (toolLoaders == null)
-        {
-            throw new ArgumentNullException(nameof(toolLoaders));
-        }
-
-        _toolLoaders.AddRange(toolLoaders);
-    }
+    private readonly ILogger<CompositeToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IEnumerable<IToolLoader> _toolLoaders = toolLoaders ?? throw new ArgumentNullException(nameof(toolLoaders));
+    private readonly Dictionary<string, IToolLoader> _toolLoaderMap = new();
 
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
@@ -51,18 +37,18 @@ public sealed class CompositeToolLoader : IToolLoader
         return allToolsResponse;
     }
 
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -72,14 +58,14 @@ public sealed class CompositeToolLoader : IToolLoader
         var toolCaller = _toolLoaderMap[request.Params.Name];
         if (toolCaller == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "The tool ${request.Params.Name} was not found",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,

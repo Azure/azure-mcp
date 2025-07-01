@@ -12,35 +12,20 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class CommandFactoryToolLoader : IToolLoader
+public sealed class CommandFactoryToolLoader(
+    IServiceProvider serviceProvider,
+    CommandFactory commandFactory,
+    IOptions<ServiceStartOptions> options,
+    ILogger<CommandFactoryToolLoader> logger) : IToolLoader
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly CommandFactory _commandFactory;
-    private readonly IOptions<ServiceStartOptions> _options;
-    private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
-    private readonly ILogger<CommandFactoryToolLoader> _logger;
-
-    public CommandFactoryToolLoader(IServiceProvider serviceProvider, CommandFactory commandFactory, IOptions<ServiceStartOptions> options, ILogger<CommandFactoryToolLoader> logger)
-    {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        ArgumentNullException.ThrowIfNull(commandFactory);
-        ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(logger);
-
-        _serviceProvider = serviceProvider;
-        _commandFactory = commandFactory;
-        _options = options;
-        _logger = logger;
-
-        if (Namespaces == null || Namespaces.Length == 0)
-        {
-            _toolCommands = _commandFactory.AllCommands;
-        }
-        else
-        {
-            _toolCommands = _commandFactory.GroupCommands(Namespaces);
-        }
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly CommandFactory _commandFactory = commandFactory;
+    private readonly IOptions<ServiceStartOptions> _options = options;
+    private IReadOnlyDictionary<string, IBaseCommand> _toolCommands =
+        (options.Value.Service == null || options.Value.Service.Length == 0)
+            ? commandFactory.AllCommands
+            : commandFactory.GroupCommands(options.Value.Service);
+    private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
 
     private bool ReadOnly
     {
@@ -66,18 +51,18 @@ public sealed class CommandFactoryToolLoader : IToolLoader
         return ValueTask.FromResult(listToolsResult);
     }
 
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -87,14 +72,14 @@ public sealed class CommandFactoryToolLoader : IToolLoader
         var command = _toolCommands.GetValueOrDefault(request.Params.Name);
         if (command == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = $"Could not find command: {request.Params.Name}",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -112,12 +97,13 @@ public sealed class CommandFactoryToolLoader : IToolLoader
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [
-                    new Content {
-                        Text = jsonResponse,
-                        MimeType = "application/json" }],
+                    new TextContentBlock {
+                        Text = jsonResponse
+                    }
+                ],
             };
         }
         catch (Exception ex)

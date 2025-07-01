@@ -5,9 +5,9 @@ using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public abstract class BaseDiscoveryStrategy : IMcpDiscoveryStrategy
+public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
 {
-    public Dictionary<string, IMcpClient> _clientCache = new Dictionary<string, IMcpClient>();
+    protected readonly Dictionary<string, IMcpClient> _clientCache = new();
 
     public abstract Task<IEnumerable<IMcpServerProvider>> DiscoverServersAsync();
 
