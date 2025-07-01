@@ -4,7 +4,8 @@ param(
     [string] $TenantId,
     [string] $TestApplicationId,
     [string] $ResourceGroupName,
-    [string] $BaseName
+    [string] $BaseName,
+    [hashtable] $AdditionalParameters
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,7 +28,7 @@ $testSettingsPath = "$RepoRoot/.testsettings.json"
 # When using TME in CI, $context.Tenant.Name is empty so we use a map
 # $context.Tenant.Name still works for local dev
 $tenantName = switch($context.Tenant.Id) {
-    '70a036f6-8e4d-4615-bad6-149c02e7720d' { 'TME01' }
+    '70a036f6-8e4d-4615-bad6-149c02e7720d' { 'TME Organization' }
     '72f988bf-86f1-41af-91ab-2d7cd011db47' { 'Microsoft' }
     default { $context.Tenant.Name }
 }
@@ -44,8 +45,19 @@ $testSettings = [ordered]@{
 Write-Host "Creating test settings file at $testSettingsPath`:`n$testSettings"
 $testSettings | Set-Content -Path $testSettingsPath -Force -NoNewLine
 
-$servicePostScripts = Get-ChildItem -Path "$PSScriptRoot/services" -Filter "*-post.ps1" -Recurse -File
-foreach ($script in $servicePostScripts) {
-    Write-Host "Running post script: $($script.FullName)"
-    & $script.FullName -ResourceGroupName $ResourceGroupName -BaseName $BaseName
+$areas = $AdditionalParameters.areas
+
+if(!$areas) {
+    $areas = @(Get-ChildItem "$RepoRoot/src/Areas" -Directory | Select-Object -ExpandProperty Name)
+}
+
+Write-Host "Processing post scripts for areas: $($areas -join ',')"
+
+foreach($area in $areas)
+{
+    $areaPostScript = "$PSScriptRoot/services/$($area.ToLower())-post.ps1"
+    if(Test-Path $areaPostScript) {
+        Write-Host "Running post script: $areaPostScript"
+        & $areaPostScript -ResourceGroupName $ResourceGroupName -BaseName $BaseName
+    }
 }

@@ -7,6 +7,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class NpxTests : IClassFixture<LiveTestSettingsFixture>
 {
     private readonly LiveTestSettings _settings;

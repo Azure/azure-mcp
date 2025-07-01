@@ -14,7 +14,7 @@ public class ServiceStartOptions
     public int Port { get; set; }
 
     [JsonPropertyName("service")]
-    public string? Service { get; set; } = null;
+    public string[]? Service { get; set; } = null;
 
     [JsonPropertyName("readOnly")]
     public bool? ReadOnly { get; set; } = null;

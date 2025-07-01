@@ -26,13 +26,13 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | Best Practices | Returns secure, production-grade Azure SDK best practices. | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22bestpractices%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22bestpractices%22%2C%22--read-only%22%5D%7D) |
 | Cosmos DB    | Cosmos DB operations - Manage/query Cosmos DB resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_cosmos-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Cosmos&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22cosmos%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_cosmos-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Cosmos%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22cosmos%22%2C%22--read-only%22%5D%7D) |
 | Key Vault    | Key Vault operations - Manage/access Azure Key Vault resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_keyvault-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Key%20Vault&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22keyvault%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_keyvault-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Key%20Vault%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22keyvault%22%2C%22--read-only%22%5D%7D) |
-| Kusto        | Kusto operations - Manage/query Azure Data Explorer clusters. | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Kusto&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22kusto%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Kusto%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22kusto%22%2C%22--read-only%22%5D%7D) |
+| Azure Data Explorer        | Azure Data Explorer operations - Manage/query Azure Data Explorer clusters. | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Kusto&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22kusto%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Kusto%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22kusto%22%2C%22--read-only%22%5D%7D) |
 | Monitor      | Azure Monitor operations - Query/analyze logs and metrics. | [![Install](https://img.shields.io/badge/VS_Code-Install_monitor-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Monitor&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22monitor%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_monitor-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Monitor%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22monitor%22%2C%22--read-only%22%5D%7D) |
 | PostgreSQL   | PostgreSQL operations - Manage Azure Database for PostgreSQL - Flexible server. | [![Install](https://img.shields.io/badge/VS_Code-Install_postgres-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20PostgreSQL&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22postgres%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_postgres-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20PostgreSQL%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22postgres%22%2C%22--read-only%22%5D%7D) |
 | Role Based Access Control  | Azure RBAC Operations - List Azure RBAC role assignments. | [![Install](https://img.shields.io/badge/VS_Code-Install_rbac-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20RBAC&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22role%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_rbac-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20RBAC%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22role%22%2C%22--read-only%22%5D%7D) |
 | Redis Cache  | Redis Cache operations - Manage/access Azure Redis Cache resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_redis-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Redis%20Cache&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22redis%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_redis-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Redis%20Cache%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22redis%22%2C%22--read-only%22%5D%7D) |
 | Resource Group | Resource group operations - List/manage Azure resource groups. | [![Install](https://img.shields.io/badge/VS_Code-Install_group-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Resource%20Group&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22group%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_group-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Resource%20Group%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22group%22%2C%22--read-only%22%5D%7D) |
-| Search       | Search operations - Manage/list Azure AI Search services. | [![Install](https://img.shields.io/badge/VS_Code-Install_search-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Search&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22search%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_search-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Search%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22search%22%2C%22--read-only%22%5D%7D) |
+| Search       | Search operations - List/query Azure AI Search services. | [![Install](https://img.shields.io/badge/VS_Code-Install_search-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Search&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22search%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_search-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Search%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22search%22%2C%22--read-only%22%5D%7D) |
 | Service Bus  | Service Bus operations - Manage Azure Service Bus resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_servicebus-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Service%20Bus&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22servicebus%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_servicebus-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Service%20Bus%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22servicebus%22%2C%22--read-only%22%5D%7D) |
 | Storage      | Storage operations - Manage/access Azure Storage resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Storage&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22storage%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Storage%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22storage%22%2C%22--read-only%22%5D%7D) |
 | Subscription | Azure subscription operations - List/manage Azure subscriptions. | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Subscription&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22subscription%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Subscription%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22subscription%22%2C%22--read-only%22%5D%7D) |
@@ -59,8 +59,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Show me the tables in my Storage account"
 - "List containers in my Cosmos DB database"
 - "Get details about my Storage container"
-- "Get Kusto databases in cluster 'mycluster'"
-- "Sample 10 rows from table 'StormEvents' in Kusto database 'db1'"
+- "Get Azure Data Explorer databases in cluster 'mycluster'"
+- "Sample 10 rows from table 'StormEvents' in Azure Data Explorer database 'db1'"
 
 ### 📊 Query & Analyze
 - "Query my Log Analytics workspace"
@@ -98,12 +98,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - List, get configuration and get parameters for servers.
 
 ### 🧮 Azure Data Explorer
-- List Kusto clusters
-- List databases in a Kusto cluster
-- List tables in a Kusto database
-- Get schema for a Kusto table
-- Sample rows from a Kusto table
-- Query Kusto databases using KQL
+- List Azure Data Explorer clusters
+- List databases
+- List tables
+- Get schema for a table
+- Sample rows from a table
+- Query using KQL
 
 ### 💾 Azure Storage
 - List Storage accounts
@@ -119,6 +119,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 #### Health Models
 - Get health of an entity
+
+#### Metrics
+- Query Azure Monitor metrics for resources with time series data
+- List available metric definitions for resources
 
 ### ⚙️ Azure App Configuration
 - List App Configuration stores
@@ -296,31 +300,11 @@ See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLE
 <details>
 <summary>Authentication options including DefaultAzureCredential flow, RBAC permissions, troubleshooting, and production credentials</summary>
 
-The Azure MCP Server seamlessly integrates with your host operating system's authentication mechanisms, making it super easy to get started! We use Azure Identity under the hood via [`DefaultAzureCredential`](https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac), which tries these credentials in order:
-
-1. **Environment Variables** (`EnvironmentCredential`) - Perfect for CI/CD pipelines
-2. **Shared Token Cache** (`SharedTokenCacheCredential`) - Uses cached tokens from other tools
-3. **Visual Studio** (`VisualStudioCredential`) - Uses your Visual Studio credentials
-4. **Azure CLI** (`AzureCliCredential`) - Uses your existing Azure CLI login
-5. **Azure PowerShell** (`AzurePowerShellCredential`) - Uses your Az PowerShell login
-6. **Azure Developer CLI** (`AzureDeveloperCliCredential`) - Uses your azd login
-7. **Interactive Browser** (`InteractiveBrowserCredential`) - Falls back to browser-based login if needed
-
-If you're already logged in through any of these methods, the Azure MCP Server will automatically use those credentials. Ensure that you have the correct authorization permissions in Azure (e.g. read access to your Storage account) via RBAC (Role-Based Access Control). To learn more about Azure's RBAC authorization system, visit this [link](https://learn.microsoft.com/azure/role-based-access-control/overview).
+The Azure MCP Server uses the Azure Identity library for .NET to authenticate to Microsoft Entra ID. For detailed information, see [Authentication Fundamentals](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md#authentication-fundamentals).
 
 If you're running into any issues with authentication, visit our [troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#authentication).
 
-For enterprise authentication scenarios including network restrictions, security policies, and protected resources, see our [Authentication and Security guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md).
-
-### Production Credentials
-
-By default, the Azure MCP Server excludes production credentials like Managed Identity and Workload Identity. To enable these credentials, set the environment variable:
-
-```
-AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS=true
-```
-
-This is useful when running on Azure services where you want to use managed identities.
+For enterprise authentication scenarios, including network restrictions, security policies, and protected resources, see [Authentication Scenarios in Enterprise Environments](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md#authentication-scenarios-in-enterprise-environments).
 </details>
 
 ## 🛡️ Security Note

@@ -58,6 +58,8 @@ Instead of loading all tools, configure targeted MCP servers for your specific n
 *Available Azure Services for `--service` flag:*
 `storage`, `keyvault`, `cosmos`, `redis`, `servicebus`, `monitor`, `appconfig`, `kusto`, `postgres`, `search`
 
+You can start the server with multiple services by specifying after the `--service` flag, such as `--service storage keyvault`.
+
 **Option 3: Use Dynamic Tool Selection (Alternative Approach)**
 Use Azure MCP's dynamic proxy mode - exposes one tool that internally routes to all Azure services:
 
@@ -431,6 +433,12 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 1. Choose the option that best fits your scenario
 2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
+
+## Development in VS Code
+
+### Use your own language model key
+
+Follow the instructions in [Bring your own language model key](https://code.visualstudio.com/docs/copilot/language-models#_bring-your-own-language-model-key) docs to utilize your API Keys for the language model providers you already have in VS Code.
 
 ## Common issues
 

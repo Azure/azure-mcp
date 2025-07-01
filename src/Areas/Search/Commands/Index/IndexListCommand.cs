@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Search.Models;
 using AzureMcp.Areas.Search.Options;
 using AzureMcp.Areas.Search.Options.Index;
 using AzureMcp.Areas.Search.Services;
@@ -72,5 +73,5 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return context.Response;
     }
 
-    internal record IndexListCommandResult(List<string> Indexes);
+    internal record IndexListCommandResult(List<IndexInfo> Indexes);
 }

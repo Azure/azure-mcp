@@ -16,7 +16,7 @@ public class ToolOperations
     private readonly CommandFactory _commandFactory;
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
     private readonly ILogger<ToolOperations> _logger;
-    private string _commandGroup = string.Empty;
+    private string[]? _commandGroup = null;
 
     public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ILogger<ToolOperations> logger)
     {
@@ -36,13 +36,13 @@ public class ToolOperations
 
     public bool ReadOnly { get; set; } = false;
 
-    public string? CommandGroup
+    public string[]? CommandGroup
     {
         get => _commandGroup;
         set
         {
-            _commandGroup = value ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(_commandGroup))
+            _commandGroup = value;
+            if (_commandGroup == null || _commandGroup.Length == 0 || _commandGroup.All(string.IsNullOrWhiteSpace))
             {
                 _toolCommands = _commandFactory.AllCommands;
             }
@@ -66,19 +66,19 @@ public class ToolOperations
         return ValueTask.FromResult(listToolsResult);
     }
 
-    private async ValueTask<CallToolResponse> OnCallTools(RequestContext<CallToolRequestParams> parameters,
+    private async ValueTask<CallToolResult> OnCallTools(RequestContext<CallToolRequestParams> parameters,
         CancellationToken cancellationToken)
     {
         if (parameters.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -88,14 +88,14 @@ public class ToolOperations
         var command = _toolCommands.GetValueOrDefault(parameters.Params.Name);
         if (command == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = $"Could not find command: {parameters.Params.Name}",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -113,12 +113,12 @@ public class ToolOperations
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
-                Content = [
-                    new Content {
-                        Text = jsonResponse,
-                        MimeType = "application/json" }],
+                Content =
+                [
+                    new TextContentBlock { Text = jsonResponse }
+                ],
             };
         }
         catch (Exception ex)

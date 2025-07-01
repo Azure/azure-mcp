@@ -134,13 +134,15 @@ public static partial class OptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string?> ServiceType = new(
+        public static readonly Option<string[]?> ServiceType = new(
             $"--{ServiceName}",
             () => null,
             "The service to expose on the MCP server."
         )
         {
             IsRequired = false,
+            Arity = ArgumentArity.OneOrMore,
+            AllowMultipleArgumentsPerToken = true
         };
 
         public static readonly Option<bool?> ReadOnly = new(

@@ -9,6 +9,16 @@ namespace AzureMcp.Areas.Monitor.Services;
 
 public interface IMonitorService
 {
+    Task<List<JsonNode>> QueryResourceLogs(
+        string subscription,
+        string resourceId,
+        string query,
+        string table,
+        int? hours = 24,
+        int? limit = 20,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<List<JsonNode>> QueryWorkspace(
         string subscription,
         string workspace,
@@ -29,7 +39,7 @@ public interface IMonitorService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<List<JsonNode>> QueryLogs(
+    Task<List<JsonNode>> QueryWorkspaceLogs(
         string subscription,
         string workspace,
         string query,

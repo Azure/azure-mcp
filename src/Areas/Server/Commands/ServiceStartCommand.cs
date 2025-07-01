@@ -27,7 +27,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private const string CommandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
-    private readonly Option<string?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
+    private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
 
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
@@ -50,9 +50,7 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
-        var service = parseResult.GetValueForOption(_serviceTypeOption) == default
-            ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
-            : parseResult.GetValueForOption(_serviceTypeOption);
+        var serviceArray = parseResult.GetValueForOption(_serviceTypeOption) ?? OptionDefinitions.Service.ServiceType.GetDefaultValue();
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
@@ -62,7 +60,7 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
-            Service = service,
+            Service = serviceArray,
             ReadOnly = readOnly,
         };
 
@@ -134,13 +132,15 @@ public sealed class ServiceStartCommand : BaseCommand
             };
         });
 
+        var serviceArray = options.Service;
+
         // The "azure" mode contains a single "azure" tools that performs internal tool discovery and proxying.
-        if (options.Service == "azure")
+        if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "azure")
         {
             services.AddSingleton<McpServerTool, AzureProxyTool>();
         }
         // The "proxy" mode exposes a single tool per service/namespace and performs internal tool discovery and proxying.
-        else if (options.Service == "proxy")
+        else if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "proxy")
         {
             mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
             {
@@ -161,7 +161,7 @@ public sealed class ServiceStartCommand : BaseCommand
             mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
             {
                 toolOperations.ReadOnly = options.ReadOnly ?? false;
-                toolOperations.CommandGroup = options.Service;
+                toolOperations.CommandGroup = serviceArray;
 
                 mcpServerOptions.Capabilities = new ServerCapabilities
                 {

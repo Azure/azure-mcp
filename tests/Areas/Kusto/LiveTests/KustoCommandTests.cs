@@ -12,7 +12,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Kusto.LiveTests;
 
-
+[Trait("Area", "Kusto")]
 public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>, IAsyncLifetime
@@ -39,7 +39,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
                 { "cluster-name", Settings.ResourceBaseName }
                 });
             var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            var kustoClient = new KustoClient(clusterUri ?? string.Empty, new HttpClient(), credentials, "ua");
+            var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua");
             var resp = await kustoClient.ExecuteControlCommandAsync(
                 TestDatabaseName,
                 ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]",
