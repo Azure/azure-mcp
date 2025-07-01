@@ -141,9 +141,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - Cross-platform compatibility
 
 ### 📦 Azure Load Testing
-- List load tests
-- Get load test run
-- Create load test run
+- List load test resources
+- Get, list, create load test runs
 
 ### 🚀 Azure Developer CLI (azd) Extension
 - Execute Azure Developer CLI commands directly

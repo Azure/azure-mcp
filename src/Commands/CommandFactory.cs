@@ -432,7 +432,8 @@ public class CommandFactory
 
         resource.AddCommand("get", new LoadTesting.LoadTestRun.TestRunGetCommand(
             GetLogger<LoadTesting.LoadTestRun.TestRunGetCommand>()));
-
+        resource.AddCommand("list", new LoadTesting.LoadTestRun.TestRunListCommand(
+            GetLogger<LoadTesting.LoadTestRun.TestRunListCommand>()));
         resource.AddCommand("create", new LoadTesting.LoadTestRun.TestRunCreateCommand(
             GetLogger<LoadTesting.LoadTestRun.TestRunCreateCommand>()));
     }

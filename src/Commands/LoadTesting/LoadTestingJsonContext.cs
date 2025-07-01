@@ -10,6 +10,7 @@ namespace AzureMcp.Commands.LoadTesting;
 [JsonSerializable(typeof(TestResourceListCommand.TestResourceListCommandResult))]
 [JsonSerializable(typeof(TestRunGetCommand.TestRunGetCommandResult))]
 [JsonSerializable(typeof(TestRunCreateCommand.TestRunCreateCommandResult))]
+[JsonSerializable(typeof(TestRunListCommand.TestRunListCommandResult))]
 internal sealed partial class LoadTestJsonContext : JsonSerializerContext
 {
 }

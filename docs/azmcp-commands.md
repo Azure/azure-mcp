@@ -279,6 +279,9 @@ azmcp loadtesting testresource list --subscription <subscription> --resource-gro
 # Get load test run
 azmcp loadtesting testrun get --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --testrun-id <testrun-id>
 
+# List load test run
+azmcp loadtesting testrun list --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id>
+
 # Create load test run
 azmcp loadtesting testrun create --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id> --testrun-id <testrun-id>
 ```

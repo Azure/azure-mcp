@@ -93,6 +93,48 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         return JsonConvert.DeserializeObject<TestRun>(loadTestRun) ?? new TestRun();
     }
 
+    public async Task<List<TestRun>> GetLoadTestRunsFromTestIdAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
+        if (loadTestResource.Count == 0)
+        {
+            throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+        }
+        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        if (string.IsNullOrEmpty(dataPlaneUri))
+        {
+            throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
+        }
+
+        var credential = await GetCredential(tenant);
+        var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
+
+        var loadTestRunResponse = loadTestClient.GetTestRunsAsync(testId: testId);
+        if (loadTestRunResponse == null)
+        {
+            throw new Exception($"Failed to retrieve Azure Load Test Run: {loadTestRunResponse}");
+        }
+
+        var testRuns = new List<TestRun>();
+        await foreach (var binaryData in loadTestRunResponse)
+        {
+            var testRun = JsonConvert.DeserializeObject<TestRun>(binaryData.ToString());
+            if (testRun != null)
+            {
+                testRuns.Add(testRun);
+            }
+        }
+
+        if (testRuns.Count == 0)
+        {
+            throw new Exception($"No test runs found for test ID '{testId}' in Load Test '{testResourceName}'.");
+        }
+
+        Console.WriteLine($"Retrieved {JsonConvert.SerializeObject(testRuns)} test runs for test ID '{testId}' in Load Test '{testResourceName}'.");
+        return testRuns;
+    }
+
     public async Task<TestRun> CreateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);

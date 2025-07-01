@@ -21,7 +21,7 @@ Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
 Remove-Item "$RepoRoot/tests/xunit.runner.json" -Force
 Write-Output "Deleted existing xunit.runner.json file"
-Rename-Item "$RepoRoot/tests/xunit.runner.json" -NewName "xunit.runner.json"
+Rename-Item "$RepoRoot/tests/xunit.runner.ci.json" -NewName "xunit.runner.json"
 Write-Output "Renamed xunit.runner.ci.json to xunit.runner.json"
 $xunitJson = Get-Content "$RepoRoot/tests/xunit.runner.json" | ConvertFrom-Json
 Write-Output $xunitJson
