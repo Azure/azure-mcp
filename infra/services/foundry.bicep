@@ -66,24 +66,23 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource aiProjects 'Microsoft.MachineLearningServices/workspaces@2023-10-01' = {
-  name: '${baseName}-ai-projects'
+resource aiProjects 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
+  name: '${baseName}/${baseName}-ai-projects'
   location: location
+  kind: 'AIServices'
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-    friendlyName: '${baseName} AI Projects'
-    description: 'Azure AI Projects for Foundry operations'
-    storageAccount: storageAccount.id
-    hbiWorkspace: false
-    allowPublicAccessWhenBehindVnet: false
+    customSubDomainName: '${baseName}-ai-projects'
     publicNetworkAccess: 'Enabled'
-    v1LegacyMode: false
+    networkAcls: {
+      defaultAction: 'Allow'
+      virtualNetworkRules: []
+      ipRules: []
   }
   sku: {
-    name: 'Basic'
-    tier: 'Basic'
+    name: 'S0'
   }
 }
 
