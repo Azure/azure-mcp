@@ -9,7 +9,7 @@
 ### Bugs Fixed
 
 ### Other Changes
-- Updated the descriptions of the following tools for readability and to reflect their required parameters more accurately:
+- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
   - `azmcp-kusto-database-list`
