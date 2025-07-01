@@ -15,26 +15,18 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// Tools are loaded from each MCP server and exposed through the MCP server.
 /// It handles tool call proxying and provides a unified interface for tool operations.
 /// </summary>
-public sealed class RegistryToolLoader : IToolLoader
+
+public sealed class RegistryToolLoader(
+    IMcpDiscoveryStrategy discoveryStrategy,
+    IOptions<ServiceStartOptions> options,
+    ILogger<RegistryToolLoader> logger) : IToolLoader
 {
-    private readonly ILogger<RegistryToolLoader> _logger;
-    private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy;
-    private readonly IOptions<ServiceStartOptions> _options;
-    private Dictionary<string, IMcpClient> _toolClientMap = new Dictionary<string, IMcpClient>();
+    private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = discoveryStrategy;
+    private readonly IOptions<ServiceStartOptions> _options = options;
+    private readonly ILogger<RegistryToolLoader> _logger = logger;
+    private Dictionary<string, IMcpClient> _toolClientMap = new();
 
     public McpClientOptions ClientOptions { get; set; } = new McpClientOptions();
-
-    public RegistryToolLoader(IMcpDiscoveryStrategy discoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<RegistryToolLoader> logger)
-    {
-        ArgumentNullException.ThrowIfNull(discoveryStrategy);
-        ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(logger);
-
-        _serverDiscoveryStrategy = discoveryStrategy;
-        _options = options;
-        _options = options;
-        _logger = logger;
-    }
 
     private bool ReadOnly
     {
@@ -74,18 +66,18 @@ public sealed class RegistryToolLoader : IToolLoader
         return allToolsResponse;
     }
 
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -95,14 +87,14 @@ public sealed class RegistryToolLoader : IToolLoader
         var mcpClient = _toolClientMap[request.Params.Name];
         if (mcpClient == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "The tool ${request.Params.Name} was not found",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,

@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using AzureMcp.Areas.Server.Models;
 using AzureMcp.Models.Server;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public sealed class RegistryDiscoveryStrategy : BaseDiscoveryStrategy
+public sealed class RegistryDiscoveryStrategy() : BaseDiscoveryStrategy()
 {
     public override async Task<IEnumerable<IMcpServerProvider>> DiscoverServersAsync()
     {
@@ -17,7 +18,7 @@ public sealed class RegistryDiscoveryStrategy : BaseDiscoveryStrategy
         }
 
         return registryRoot
-            .Servers
+            .Servers!
             .Select(s => new RegistryServerProvider(s.Key, s.Value))
             .Cast<IMcpServerProvider>();
     }

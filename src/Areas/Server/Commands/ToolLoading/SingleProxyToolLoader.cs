@@ -117,8 +117,8 @@ public sealed class SingleProxyToolLoader : IToolLoader
     /// </summary>
     /// <param name="request">The request context containing parameters and metadata.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>A <see cref="CallToolResponse"/> representing the result of the operation.</returns>
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
+    /// <returns>A <see cref="CallToolResult"/> representing the result of the operation.</returns>
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
     {
         var args = request.Params?.Arguments;
         string? intent = null;
@@ -165,12 +165,11 @@ public sealed class SingleProxyToolLoader : IToolLoader
             return await CommandModeAsync(request, intent ?? "", tool!, command!, toolParams, cancellationToken);
         }
 
-        return new CallToolResponse
+        return new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = """
                         The "tool" and "command" parameters are required when not learning
                         Run again with the "learn" argument to get a list of available tools and their parameters.
@@ -222,15 +221,14 @@ public sealed class SingleProxyToolLoader : IToolLoader
         return toolsJson;
     }
 
-    private async Task<CallToolResponse> RootLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, CancellationToken cancellationToken)
+    private async Task<CallToolResult> RootLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, CancellationToken cancellationToken)
     {
         var toolsJson = await GetRootToolsJsonAsync();
-        var learnResponse = new CallToolResponse
+        var learnResponse = new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = $"""
                         Here are the available list of tools.
                         Next, identify the tool you want to learn about and run again with the "learn" argument and the "tool" name to get a list of available commands and their parameters.
@@ -253,7 +251,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
         return response;
     }
 
-    private async Task<CallToolResponse> ToolLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, CancellationToken cancellationToken)
+    private async Task<CallToolResult> ToolLearnModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, CancellationToken cancellationToken)
     {
         var toolsJson = await GetToolListJsonAsync(request, tool);
         if (string.IsNullOrEmpty(toolsJson))
@@ -261,12 +259,11 @@ public sealed class SingleProxyToolLoader : IToolLoader
             return await RootLearnModeAsync(request, intent, cancellationToken);
         }
 
-        var learnResponse = new CallToolResponse
+        var learnResponse = new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = $"""
                         Here are the available command and their parameters for '{tool}' tool.
                         If you do not find a suitable tool, run again with the "learn" argument and empty "tool" to get a list of available tools and their parameters.
@@ -290,7 +287,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
         return response;
     }
 
-    private async Task<CallToolResponse> CommandModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
+    private async Task<CallToolResult> CommandModeAsync(RequestContext<CallToolRequestParams> request, string intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
     {
         IMcpClient? client;
 
@@ -318,12 +315,11 @@ public sealed class SingleProxyToolLoader : IToolLoader
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content =
                 [
-                    new Content {
-                        Type = "text",
+                    new TextContentBlock {
                         Text = $"""
                             There was an error finding or calling tool and command.
                             Failed to call tool: {tool}, command: {command}
@@ -344,7 +340,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
 
     private static async Task NotifyProgressAsync(RequestContext<CallToolRequestParams> request, string message, CancellationToken cancellationToken)
     {
-        var progressToken = request.Params?.Meta?.ProgressToken;
+        var progressToken = request.Params?.ProgressToken;
         if (progressToken == null)
         {
             return;
@@ -368,8 +364,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new Content{
-                        Type = "text",
+                    Content = new TextContentBlock{
                         Text = $"""
                             The following is a list of available tools for the Azure server.
 
@@ -390,8 +385,9 @@ public sealed class SingleProxyToolLoader : IToolLoader
         };
         try
         {
-            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
-            var toolName = samplingResponse.Content.Text?.Trim();
+            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
+            var samplingContent = samplingResponse.Content as TextContentBlock;
+            var toolName = samplingContent?.Text?.Trim();
             if (!string.IsNullOrEmpty(toolName) && toolName != "Unknown")
             {
                 return toolName;
@@ -423,8 +419,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new Content{
-                        Type = "text",
+                    Content = new TextContentBlock{
                         Text = $"""
                             This is a list of available commands for the {tool} server.
 
@@ -454,8 +449,9 @@ public sealed class SingleProxyToolLoader : IToolLoader
         };
         try
         {
-            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
-            var toolCallJson = samplingResponse.Content.Text?.Trim();
+            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
+            var samplingContent = samplingResponse.Content as TextContentBlock;
+            var toolCallJson = samplingContent?.Text?.Trim();
             string? commandName = null;
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))

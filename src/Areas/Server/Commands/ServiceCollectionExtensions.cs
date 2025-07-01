@@ -49,7 +49,9 @@ public static class AzureMcpServiceCollectionExtensions
         // Register MCP runtimes
         services.AddSingleton<IMcpRuntime, McpRuntime>();
 
-        if (serviceStartOptions.Service[0] == "azure")
+        var firstService = serviceStartOptions.Service?.FirstOrDefault();
+
+        if (firstService == "azure")
         {
             services.AddSingleton<IMcpDiscoveryStrategy>(sp =>
             {
@@ -64,7 +66,7 @@ public static class AzureMcpServiceCollectionExtensions
 
             services.AddSingleton<IToolLoader, SingleProxyToolLoader>();
         }
-        else if (serviceStartOptions.Service[0] == "proxy")
+        else if (firstService == "proxy")
         {
             services.AddSingleton<IMcpDiscoveryStrategy>(sp =>
             {

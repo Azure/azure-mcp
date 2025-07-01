@@ -9,7 +9,7 @@ using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using Microsoft.Extensions.Options;
-using AzureMcp.Options.Server;
+using AzureMcp.Areas.Server.Options;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
@@ -28,14 +28,13 @@ internal partial class ServerToolLoaderSerializationContext : JsonSerializerCont
 
 public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : IToolLoader
 {
-    private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy;
-    private readonly IOptions<ServiceStartOptions> _options = options;
-    private readonly ILogger<ServerToolLoader> _logger = logger;
+    private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
+    private readonly ILogger<ServerToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
     private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, ServerToolLoaderSerializationContext.Default.JsonSchema);
 
-    public bool ReadOnly { get; set; } = false;
-    public string? Namespace { get; set; } = null;
+    public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
+    public string[]? Namespace { get; set; } = options?.Value?.Service ?? null;
 
     private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
         .Type(SchemaValueType.Object)
@@ -106,7 +105,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         return allToolsResponse;
     }
 
-    public async ValueTask<CallToolResponse> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Params?.Name))
         {
@@ -150,12 +149,11 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
             return await InvokeChildToolAsync(request, intent ?? "", tool, command, toolParams, cancellationToken);
         }
 
-        return new CallToolResponse
+        return new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = """
                         The "command" parameters are required when not learning
                         Run again with the "learn" argument to get a list of available tools and their parameters.
@@ -166,18 +164,18 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         };
     }
 
-    private async Task<CallToolResponse> InvokeChildToolAsync(RequestContext<CallToolRequestParams> request, string? intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
+    private async Task<CallToolResult> InvokeChildToolAsync(RequestContext<CallToolRequestParams> request, string? intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
-            var content = new Content
+            var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
 
             _logger.LogWarning(content.Text);
 
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
@@ -235,24 +233,22 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
             foreach (var content in toolCallResponse.Content)
             {
-                if (content.Type == "text")
+                var textContent = content as TextContentBlock;
+                if (textContent == null || string.IsNullOrWhiteSpace(textContent.Text))
                 {
-                    if (string.IsNullOrWhiteSpace(content.Text))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (content.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
+                if (textContent.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
+                {
+                    var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
 
-                        _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
-                        var finalResponse = new CallToolResponse
-                        {
-                            Content =
-                            [
-                                new Content {
-                                    Type = "text",
+                    _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
+                    var finalResponse = new CallToolResult
+                    {
+                        Content =
+                        [
+                            new TextContentBlock {
                                     Text = $"""
                                         The '{command}' command is missing required parameters.
 
@@ -266,12 +262,15 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                                         {childToolSpecJson}
                                         """
                                 }
-                            ]
-                        };
+                        ]
+                    };
 
-                        finalResponse.Content.AddRange(toolCallResponse.Content);
-                        return finalResponse;
+                    foreach (var contentBlock in toolCallResponse.Content)
+                    {
+                        finalResponse.Content.Add(contentBlock);
                     }
+
+                    return finalResponse;
                 }
             }
 
@@ -280,12 +279,11 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
-            return new CallToolResponse
+            return new CallToolResult
             {
                 Content =
                 [
-                    new Content {
-                        Type = "text",
+                    new TextContentBlock {
                         Text = $"""
                             There was an error finding or calling tool and command.
                             Failed to call tool: {tool}, command: {command}
@@ -299,16 +297,15 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         }
     }
 
-    private async Task<CallToolResponse> InvokeToolLearn(RequestContext<CallToolRequestParams> request, string? intent, string tool, CancellationToken cancellationToken)
+    private async Task<CallToolResult> InvokeToolLearn(RequestContext<CallToolRequestParams> request, string? intent, string tool, CancellationToken cancellationToken)
     {
         var toolsJson = await GetChildToolListJsonAsync(request, tool);
 
-        var learnResponse = new CallToolResponse
+        var learnResponse = new CallToolResult
         {
             Content =
             [
-                new Content {
-                    Type = "text",
+                new TextContentBlock {
                     Text = $"""
                         Here are the available command and their parameters for '{tool}' tool.
                         If you do not find a suitable command, run again with the "learn=true" to get a list of available commands and their parameters.
@@ -376,7 +373,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     private async Task<string> GetChildToolListJsonAsync(RequestContext<CallToolRequestParams> request, string tool)
     {
         var listTools = await GetChildToolListAsync(request, tool);
-        return JsonSerializer.Serialize(listTools, SingleProxyToolLoaderSerializationContext.Default.ListTool);
+        return JsonSerializer.Serialize(listTools, SingleProxyToolLoaderSerializationContext.Default.ListToolsResult);
     }
 
     private async Task<Tool> GetChildToolAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
@@ -398,7 +395,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
     private static async Task NotifyProgressAsync(RequestContext<CallToolRequestParams> request, string message, CancellationToken cancellationToken)
     {
-        var progressToken = request.Params?.Meta?.ProgressToken;
+        var progressToken = request.Params?.ProgressToken;
         if (progressToken == null)
         {
             return;
@@ -430,8 +427,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new Content{
-                        Type = "text",
+                    Content = new TextContentBlock{
                         Text = $"""
                             This is a list of available commands for the {tool} server.
 
@@ -459,8 +455,9 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         };
         try
         {
-            var samplingResponse = await request.Server.RequestSamplingAsync(samplingRequest, cancellationToken);
-            var toolCallJson = samplingResponse.Content.Text?.Trim();
+            var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
+            var samplingContent = samplingResponse.Content as TextContentBlock;
+            var toolCallJson = samplingContent?.Text?.Trim();
             string? commandName = null;
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))
