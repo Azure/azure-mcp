@@ -16,7 +16,7 @@ param testApplicationOid string
 
 var cognitiveServicesContributorRoleId = '25fbc0a9-bd7c-42a3-aa1a-3b75d497ee68' // Cognitive Services Contributor role
 
-resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2023-10-01-preview' = {
+resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
   name: baseName
   location: location
   kind: 'AIServices'
@@ -27,13 +27,16 @@ resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2023-10-01-prev
     name: 'S0'
   }
   properties: {
+    isAiFoundryType: true
     customSubDomainName: baseName
     publicNetworkAccess: 'Enabled'
-    disableLocalAuth: true
     dynamicThrottlingEnabled: false
     networkAcls: {
       defaultAction: 'Allow'
     }
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
+    allowProjectManagement: true
     encryption: {
       keySource: 'Microsoft.CognitiveServices'
     }
