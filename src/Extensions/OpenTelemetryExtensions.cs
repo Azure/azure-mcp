@@ -2,12 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using AzureMcp.Configuration;
-using AzureMcp.Helpers;
-using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
