@@ -3,8 +3,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Azure.Core;
-using AzureMcp.Helpers;
 using AzureMcp.Models.Option;
 using AzureMcp.Options;
 using AzureMcp.Services.Telemetry;
@@ -35,34 +33,4 @@ public abstract class SubscriptionCommand<
     {
         activity?.AddTag(TelemetryConstants.TagName.SubscriptionGuid, options.Subscription);
     }
-
-    protected void AddResourceInformation(Activity? activity, params string[] parts)
-    {
-        if (activity is null || parts.Length == 0)
-        {
-            return;
-        }
-
-        var constructed = string.Join('/', parts);
-        var hashedString = Sha256Helper.GetHashedValue(constructed);
-        activity.AddTag(TelemetryConstants.TagName.ResourceHash, hashedString);
-    }
-
-    protected void AddResourceInformation(Activity? activity, ResourceIdentifier? resourceIdentifier)
-    {
-        if (activity is null || resourceIdentifier is null)
-        {
-            return;
-        }
-
-        AddResourceInformation(activity, resourceIdentifier.ToString());
-    }
-
-    protected string GetResourceUri(string subscriptionId, string resourceGroup, string resourceProviderGroup, params string[] resources)
-    {
-        var remaining = string.Join('/', resources);
-
-        return $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/{resourceProviderGroup}/{remaining}";
-    }
-
 }
