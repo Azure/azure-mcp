@@ -8,7 +8,6 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.CognitiveServices;
 using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Areas.BicepSchema.Services.Support;
 using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Options;
@@ -220,6 +219,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                 };
             }
 
+            // Manually converting system data to a dictionary due to lack of available JsonSerializer support
             return new Dictionary<string, object>
             {
                 { "has_data", true },
@@ -227,7 +227,6 @@ public class FoundryService : BaseAzureService, IFoundryService
                 { "name", deployment.Data.Name },
                 { "type", deployment.Data.ResourceType.ToString() },
                 { "sku", deployment.Data.Sku },
-                { "system_data", deployment.Data.SystemData.ToJson() },
                 { "tags", deployment.Data.Tags },
                 { "properties", deployment.Data.Properties },
             };
