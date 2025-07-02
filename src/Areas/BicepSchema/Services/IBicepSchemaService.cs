@@ -3,13 +3,12 @@
 
 using AzureMcp.Areas.BicepSchema.Services.ResourceProperties.Entities;
 
-namespace AzureMcp.Areas.BicepSchema.Services
+namespace AzureMcp.Areas.BicepSchema.Services;
+
+public interface IBicepSchemaService
 {
-    public interface IBicepSchemaService
-    {
-        TypesDefinitionResult GetResourceTypeDefinitions(
-        IServiceProvider serviceProvider,
-        string resourceTypeName,
-        string? apiVersion = null);
-    }
+    TypesDefinitionResult GetResourceTypeDefinitions(
+    IServiceProvider serviceProvider,
+    string resourceTypeName,
+    string? apiVersion = null);
 }
