@@ -168,11 +168,8 @@ public class ToolOperations
             var arguments = new JsonObject();
             foreach (var option in options)
             {
-                arguments.Add(option.Name, new JsonObject()
-                {
-                    ["type"] = option.ValueType.ToJsonType(),
-                    ["description"] = option.Description,
-                });
+                var optionSchema = TypeToJsonTypeMapper.CreateOptionSchema(option.ValueType, option.Description);
+                arguments.Add(option.Name, optionSchema);
             }
 
             schema["properties"] = arguments;

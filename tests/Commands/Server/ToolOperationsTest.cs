@@ -93,6 +93,19 @@ public class ToolOperationsTest
 
                     Assert.NotNull(value);
                     Assert.Contains(value, s_jsonSchemaDataTypes);
+
+                    // If the type is array, verify it has an items property
+                    if (value == "array")
+                    {
+                        Assert.True(argument.Value.TryGetProperty("items", out var itemsProperty), 
+                            $"Array parameter '{argument.Name}' is missing required 'items' property");
+                        Assert.Equal(JsonValueKind.Object, itemsProperty.ValueKind);
+                        Assert.True(itemsProperty.TryGetProperty("type", out var itemTypeProperty), 
+                            $"Array parameter '{argument.Name}' items property is missing 'type'");
+                        var itemType = itemTypeProperty.GetString();
+                        Assert.NotNull(itemType);
+                        Assert.Contains(itemType, s_jsonSchemaDataTypes);
+                    }
                 }
             }
         }
