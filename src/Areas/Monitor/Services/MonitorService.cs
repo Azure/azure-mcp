@@ -13,6 +13,7 @@ using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Services;
 
@@ -20,12 +21,18 @@ public class MonitorService : BaseAzureService, IMonitorService
 {
     private readonly ISubscriptionService _subscriptionService;
     private readonly IResourceGroupService _resourceGroupService;
+    private readonly ILogger<MonitorService> _logger;
 
-    public MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+    public MonitorService(
+        ISubscriptionService subscriptionService,
+        ITenantService tenantService,
+        IResourceGroupService resourceGroupService)
         : base(tenantService)
     {
         _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
         _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        _logger = loggerFactory.CreateLogger<MonitorService>();
     }
 
     public async Task<List<JsonNode>> QueryResourceLogs(
@@ -188,12 +195,14 @@ public class MonitorService : BaseAzureService, IMonitorService
                 .ToList();
 
             Console.WriteLine($"DEBUG: Found {result.Count} tables in workspace {workspace}");
-
+            _logger.LogInformation($"DEBUG: Found {result.Count} tables in workspace {workspace}");
+            
             return result;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"DEBUG: Error listing tables: {ex.Message}");
+            _logger.LogError(ex, "DEBUG: Error listing tables");
             throw new Exception($"Error listing tables: {ex.Message}", ex);
         }
     }

@@ -11,6 +11,7 @@ using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Monitor.LiveTests;
@@ -110,6 +111,12 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_table_types()
     {
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        var logger = loggerFactory.CreateLogger<MonitorService>();
+
+        logger.LogInformation("DEBUG: Listing monitor table types");
+        Console.WriteLine("DEBUG: Listing monitor table types");
+        
         var result = await CallToolAsync(
             "azmcp-monitor-table-type-list",
             new()
