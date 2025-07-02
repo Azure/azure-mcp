@@ -107,11 +107,11 @@ public class MockClientTests
             configureOptions: null,
             assertResult: response =>
             {
-                var CallToolResult = JsonSerializer.Deserialize<CallToolResult>(response);
-                Assert.NotNull(CallToolResult);
-                Assert.NotEmpty(CallToolResult.Content);
+                var callToolResponse = JsonSerializer.Deserialize<CallToolResult>(response);
+                Assert.NotNull(callToolResponse);
+                Assert.NotEmpty(callToolResponse.Content);
 
-                string? jsonContent = GetApplicationJsonText(CallToolResult.Content);
+                string? jsonContent = GetApplicationJsonText(callToolResponse.Content);
                 Assert.NotNull(jsonContent);
 
                 var json = JsonSerializer.Deserialize<JsonNode>(jsonContent);

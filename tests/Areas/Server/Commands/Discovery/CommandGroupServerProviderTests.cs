@@ -1,17 +1,27 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+<<<<<<<< HEAD:tests/Areas/Server/UnitTests/Tools/McpCommandGroupTests.cs
+========
+using AzureMcp.Areas.Server.Commands.Discovery;
+>>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/Commands/Discovery/CommandGroupServerProviderTests.cs
 using AzureMcp.Commands;
 using ModelContextProtocol.Client;
 using Xunit;
 
+<<<<<<<< HEAD:tests/Areas/Server/UnitTests/Tools/McpCommandGroupTests.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
 {
     [Trait("Area", "Server")]
     public class McpCommandGroupTests
+========
+namespace AzureMcp.Tests.Areas.Server
+{
+    public class CommandGroupServerProviderTests
+>>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/Commands/Discovery/CommandGroupServerProviderTests.cs
     {
         private readonly CommandFactory _commandFactory;
-        public McpCommandGroupTests()
+        public CommandGroupServerProviderTests()
         {
             _commandFactory = CommandFactoryHelpers.CreateCommandFactory();
         }
@@ -22,7 +32,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
             // Arrange
             // For testGroup, CommandFactory does not have it by default, so fallback to direct instantiation
             var commandGroup = new CommandGroup("testGroup", "Test Description");
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(commandGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(commandGroup);
 
             // Act
             var metadata = mcpCommandGroup.CreateMetadata();
@@ -47,7 +57,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
             var entryPoint = Path.Combine(testBinDir, exeName);
             Assert.True(File.Exists(entryPoint), $"{exeName} not found at {entryPoint}");
 
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
             mcpCommandGroup.EntryPoint = entryPoint;
             var options = new McpClientOptions();
 
@@ -65,7 +75,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
 
             // Act
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
 
             // Assert
             Assert.False(mcpCommandGroup.ReadOnly);
@@ -76,7 +86,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
 
             // Act
             mcpCommandGroup.ReadOnly = true;
@@ -90,7 +100,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
             var originalEntryPoint = mcpCommandGroup.EntryPoint;
             // Act
             mcpCommandGroup.EntryPoint = null!;
@@ -105,7 +115,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
             var originalEntryPoint = mcpCommandGroup.EntryPoint;
 
             // Act
@@ -121,7 +131,7 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
         {
             // Arrange
             var storageGroup = _commandFactory.RootGroup.SubGroup.First(g => g.Name == "storage");
-            var mcpCommandGroup = new CommandGroupMcpClientProvider(storageGroup);
+            var mcpCommandGroup = new CommandGroupServerProvider(storageGroup);
             var customEntryPoint = "/custom/path/to/executable";
 
             // Act
