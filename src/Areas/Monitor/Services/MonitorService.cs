@@ -180,12 +180,16 @@ public class MonitorService : BaseAzureService, IMonitorService
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            return tables
+            var result = tables
                 .Where(table => string.IsNullOrEmpty(tableType) || table.Data.Schema.TableType.ToString() == tableType)
                 .Select(table => table.Data.Name ?? string.Empty) // ensure non-null
                 .Where(name => !string.IsNullOrEmpty(name))
                 .OrderBy(name => name)
                 .ToList();
+
+            Console.WriteLine($"DEBUG: Found {result.Count} tables in workspace {workspace}");
+
+            return result;
         }
         catch (Exception ex)
         {
@@ -346,6 +350,8 @@ public class MonitorService : BaseAzureService, IMonitorService
                 .Distinct()
                 .OrderBy(type => type)
                 .ToList();
+
+            Console.WriteLine($"DEBUG: Found {tableTypes.Count} table types in workspace {workspace}");
 
             return tableTypes;
         }
