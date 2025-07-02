@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections;
+using System.Text.Json.Nodes;
 
 namespace AzureMcp.Core.Areas.Server.Commands;
 
@@ -57,6 +58,13 @@ public static class TypeToJsonTypeMapper
             return "null";
         }
 
+        // Handle nullable types - get the underlying type
+        var underlyingType = Nullable.GetUnderlyingType(type);
+        if (underlyingType != null)
+        {
+            type = underlyingType;
+        }
+
         if (s_typeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
         {
             return jsonType;
@@ -73,5 +81,73 @@ public static class TypeToJsonTypeMapper
         }
 
         return "object";
+    }
+
+    /// <summary>
+    /// Gets the element type of an array or collection type.
+    /// </summary>
+    /// <param name="type">The array or collection type to analyze.</param>
+    /// <returns>The element type if the type is an array or collection, otherwise null.</returns>
+    public static Type? GetArrayElementType(Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        // Handle arrays
+        if (type.IsArray)
+        {
+            return type.GetElementType();
+        }
+
+        // Handle generic collections like List<T>, IEnumerable<T>, etc.
+        if (type.IsGenericType)
+        {
+            var genericArgs = type.GetGenericArguments();
+            if (genericArgs.Length == 1)
+            {
+                return genericArgs[0];
+            }
+        }
+
+        // Handle non-generic IEnumerable
+        if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
+        {
+            // Default to object for non-generic collections
+            return typeof(object);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Creates a JSON schema object for a given option type.
+    /// </summary>
+    /// <param name="optionType">The type of the option to create schema for.</param>
+    /// <param name="description">The description for the option.</param>
+    /// <returns>A JsonObject representing the JSON schema for the option.</returns>
+    public static JsonObject CreateOptionSchema(Type optionType, string? description)
+    {
+        ArgumentNullException.ThrowIfNull(optionType);
+
+        var jsonType = optionType.ToJsonType();
+        var optionSchema = new JsonObject()
+        {
+            ["type"] = jsonType,
+            ["description"] = description ?? string.Empty,
+        };
+
+        // If the type is an array, we need to specify the items type
+        if (jsonType == "array")
+        {
+            var elementType = GetArrayElementType(optionType);
+            if (elementType != null)
+            {
+                optionSchema["items"] = new JsonObject()
+                {
+                    ["type"] = elementType.ToJsonType()
+                };
+            }
+        }
+
+        return optionSchema;
     }
 }
