@@ -1,6 +1,6 @@
 # Release History
 
-## 0.2.5 (Unreleased)
+## 0.2.7 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,23 @@
 ### Bugs Fixed
 
 ### Other Changes
+
+## 0.2.6 (2025-07-01)
+
+### Other Changes
+- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
+  - `azmcp-datadog-monitoredresources-list`
+  - `azmcp-kusto-cluster-list`
+  - `azmcp-kusto-database-list`
+  - `azmcp-kusto-sample`
+  - `azmcp-kusto-table-list`
+  - `azmcp-kusto-table-schema`
+
+## 0.2.5 (2025-06-26)
+
+### Bugs Fixed
+- Fixed issue where tool listing incorrectly returned resources instead of text. [#465](https://github.com/Azure/azure-mcp/issues/465)
+- Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
 
 ## 0.2.4 (2025-06-24)
 

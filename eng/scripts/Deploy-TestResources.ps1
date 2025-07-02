@@ -32,7 +32,7 @@ if(!$ResourceGroupName) {
 
 Push-Location $RepoRoot
 try {
-    $armParameters = @{ areas=$areas }
+    $armParameters = @{ areas = ($Areas ?? @()) }
 
     Write-Host "Deploying:`n  ResourceGroupName: `"$ResourceGroupName`"`n  BaseName: `"$BaseName`"`n  DeleteAfterHours: $DeleteAfterHours`n  ArmTemplateParameters: $(ConvertTo-Json $armParameters -Compress)"
 
@@ -42,13 +42,13 @@ try {
             -ResourceGroupName $ResourceGroupName `
             -BaseName $BaseName `
             -DeleteAfterHours $DeleteAfterHours `
-            -ArmTemplateParameters $armParameters
+            -AdditionalParameters $armParameters
     } else {
         ./eng/common/TestResources/New-TestResources.ps1 `
             -ResourceGroupName $ResourceGroupName `
             -BaseName $BaseName `
             -DeleteAfterHours $DeleteAfterHours `
-            -ArmTemplateParameters $armParameters
+            -AdditionalParameters $armParameters
     }
 }
 finally {
