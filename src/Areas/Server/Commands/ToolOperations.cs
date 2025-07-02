@@ -112,6 +112,7 @@ public class ToolOperations
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
             var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
+            var isError = commandResponse.Status < 200 || commandResponse.Status >= 300;
 
             return new CallToolResult
             {
@@ -119,6 +120,7 @@ public class ToolOperations
                 [
                     new TextContentBlock { Text = jsonResponse }
                 ],
+                IsError = isError,
             };
         }
         catch (Exception ex)

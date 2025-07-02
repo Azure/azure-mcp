@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Fix bug where CallToolResult is always successful.
+
 ### Other Changes
 
 ## 0.2.6 (2025-07-01)
