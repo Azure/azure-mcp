@@ -8,6 +8,7 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.CognitiveServices;
 using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.Resources;
+using AzureMcp.Areas.BicepSchema.Services.Support;
 using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Options;
@@ -222,12 +223,11 @@ public class FoundryService : BaseAzureService, IFoundryService
             return new Dictionary<string, object>
             {
                 { "has_data", true },
-                { "id", deployment.Data.Id },
+                { "id", deployment.Data.Id.ToString() },
                 { "name", deployment.Data.Name },
-                { "type", deployment.Data.ResourceType },
+                { "type", deployment.Data.ResourceType.ToString() },
                 { "sku", deployment.Data.Sku },
-                { "system_data", deployment.Data.SystemData },
-                { "etag", deployment.Data.ETag ?? new Azure.ETag() },
+                { "system_data", deployment.Data.SystemData.ToJson() },
                 { "tags", deployment.Data.Tags },
                 { "properties", deployment.Data.Properties },
             };
