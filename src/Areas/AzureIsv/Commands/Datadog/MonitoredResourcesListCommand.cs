@@ -21,7 +21,8 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
     public override string Description =>
         """
         List monitored resources in Datadog for a datadog resource taken as input from the user. 
-        This command retrieves all monitored azure resources available. Requires `datadog-resource`, `resource-group` and `subscription`.
+        This command retrieves all monitored azure resources available.
+        Requires `datadog-resource`, `resource-group` and `subscription`.
         Result is a list of monitored resources as a JSON array.
         """;
 

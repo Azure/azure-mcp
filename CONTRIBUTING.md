@@ -65,6 +65,7 @@ The project is organized as follows:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
+   - Add sample prompts to `/e2eTests/e2eTestPrompts.md`
    - Follow the code style requirements
 
 ## Development Process
