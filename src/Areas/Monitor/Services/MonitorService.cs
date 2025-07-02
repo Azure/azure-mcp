@@ -193,6 +193,7 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"DEBUG: Error listing tables: {ex.Message}");
             throw new Exception($"Error listing tables: {ex.Message}", ex);
         }
     }
@@ -357,6 +358,7 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"DEBUG: Error listing table types: {ex.Message}");
             throw new Exception($"Error listing table types: {ex.Message}", ex);
         }
     }
