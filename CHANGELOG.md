@@ -8,7 +8,7 @@
 
 ### Bugs Fixed
 
-- Fix bug where CallToolResult is always successful.
+- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
 
 ### Other Changes
 
