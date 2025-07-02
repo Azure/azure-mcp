@@ -8,6 +8,5 @@ namespace AzureMcp.Areas.Marketplace.Commands;
 
 [JsonSerializable(typeof(ProductGetCommand.ProductGetCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
-internal sealed partial class MarketplaceJsonContext : JsonSerializerContext
-{
-}
+internal sealed partial class MarketplaceJsonContext : JsonSerializerContext;
+

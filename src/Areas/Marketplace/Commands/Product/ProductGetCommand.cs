@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net;
 using System.Text.Json.Nodes;
 using AzureMcp.Areas.Marketplace.Commands;
 using AzureMcp.Areas.Marketplace.Options.Product;
@@ -22,42 +23,37 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
     private readonly Option<string> _languageOption = OptionDefinitions.Marketplace.Language;
     private readonly Option<string> _marketOption = OptionDefinitions.Marketplace.Market;
     private readonly Option<bool> _lookupOfferInTenantLevelOption = OptionDefinitions.Marketplace.LookupOfferInTenantLevel;
-    private readonly Option<bool> _includeHiddenPlansOption = OptionDefinitions.Marketplace.IncludeHiddenPlans;
     private readonly Option<string> _planIdOption = OptionDefinitions.Marketplace.PlanId;
     private readonly Option<string> _skuIdOption = OptionDefinitions.Marketplace.SkuId;
     private readonly Option<bool> _includeServiceInstructionTemplatesOption = OptionDefinitions.Marketplace.IncludeServiceInstructionTemplates;
     private readonly Option<string> _partnerTenantIdOption = OptionDefinitions.Marketplace.PartnerTenantId;
     private readonly Option<string> _pricingAudienceOption = OptionDefinitions.Marketplace.PricingAudience;
-    private readonly Option<string> _objectIdOption = OptionDefinitions.Marketplace.ObjectId;
-    private readonly Option<string> _altSecIdOption = OptionDefinitions.Marketplace.AltSecId;
+
     public override string Name => "get";
 
     public override string Description =>
         $"""
         Retrieves a single private product (offer) for a given subscription from Azure Marketplace.
         Returns detailed information about the specified marketplace product including plans, pricing, and metadata.
-        
+
         Required options:
-        - --{OptionDefinitions.Common.SubscriptionName}: Azure subscription ID
-        - --{OptionDefinitions.Marketplace.ProductIdName}: Product ID to retrieve
-        
+        - --{OptionDefinitions.Common.SubscriptionName}
+        - --{OptionDefinitions.Marketplace.ProductIdName}
+
         Optional filtering options:
-        - --{OptionDefinitions.Marketplace.LanguageName}: Product language (default: en)
-        - --{OptionDefinitions.Marketplace.MarketName}: Product market (default: US)
-        - --{OptionDefinitions.Marketplace.PlanIdName}: Filter by specific plan ID
-        - --{OptionDefinitions.Marketplace.SkuIdName}: Filter by specific SKU ID
-        
+        - --{OptionDefinitions.Marketplace.LanguageName}
+        - --{OptionDefinitions.Marketplace.MarketName}
+        - --{OptionDefinitions.Marketplace.PlanIdName}
+        - --{OptionDefinitions.Marketplace.SkuIdName}
+
         Optional inclusion options:
-        - --{OptionDefinitions.Marketplace.IncludeStopSoldPlansName}: Include stop-sold plans
-        - --{OptionDefinitions.Marketplace.IncludeHiddenPlansName}: Include hidden plans
-        - --{OptionDefinitions.Marketplace.IncludeServiceInstructionTemplatesName}: Include service instruction templates
-        - --{OptionDefinitions.Marketplace.LookupOfferInTenantLevelName}: Check tenant private audience
-        
+        - --{OptionDefinitions.Marketplace.IncludeStopSoldPlansName}
+        - --{OptionDefinitions.Marketplace.IncludeServiceInstructionTemplatesName}
+        - --{OptionDefinitions.Marketplace.LookupOfferInTenantLevelName}
+
         Optional header options:
-        - --{OptionDefinitions.Marketplace.PartnerTenantIdName}: Partner tenant ID
-        - --{OptionDefinitions.Marketplace.PricingAudienceName}: Pricing audience
-        - --{OptionDefinitions.Marketplace.ObjectIdName}: AAD user ID
-        - --{OptionDefinitions.Marketplace.AltSecIdName}: Alternate Security ID (for MSA users)
+        - --{OptionDefinitions.Marketplace.PartnerTenantIdName}
+        - --{OptionDefinitions.Marketplace.PricingAudienceName}
         """;
 
     public override string Title => CommandTitle;
@@ -70,14 +66,11 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         command.AddOption(_languageOption);
         command.AddOption(_marketOption);
         command.AddOption(_lookupOfferInTenantLevelOption);
-        command.AddOption(_includeHiddenPlansOption);
         command.AddOption(_planIdOption);
         command.AddOption(_skuIdOption);
         command.AddOption(_includeServiceInstructionTemplatesOption);
         command.AddOption(_partnerTenantIdOption);
         command.AddOption(_pricingAudienceOption);
-        command.AddOption(_objectIdOption);
-        command.AddOption(_altSecIdOption);
     }
 
     protected override ProductGetOptions BindOptions(ParseResult parseResult)
@@ -88,14 +81,11 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         options.Language = parseResult.GetValueForOption(_languageOption);
         options.Market = parseResult.GetValueForOption(_marketOption);
         options.LookupOfferInTenantLevel = parseResult.GetValueForOption(_lookupOfferInTenantLevelOption);
-        options.IncludeHiddenPlans = parseResult.GetValueForOption(_includeHiddenPlansOption);
         options.PlanId = parseResult.GetValueForOption(_planIdOption);
         options.SkuId = parseResult.GetValueForOption(_skuIdOption);
         options.IncludeServiceInstructionTemplates = parseResult.GetValueForOption(_includeServiceInstructionTemplatesOption);
         options.PartnerTenantId = parseResult.GetValueForOption(_partnerTenantIdOption);
         options.PricingAudience = parseResult.GetValueForOption(_pricingAudienceOption);
-        options.ObjectId = parseResult.GetValueForOption(_objectIdOption);
-        options.AltSecId = parseResult.GetValueForOption(_altSecIdOption);
         return options;
     }
 
@@ -126,14 +116,11 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
                 options.Language,
                 options.Market,
                 options.LookupOfferInTenantLevel,
-                options.IncludeHiddenPlans,
                 options.PlanId,
                 options.SkuId,
                 options.IncludeServiceInstructionTemplates,
                 options.PartnerTenantId,
                 options.PricingAudience,
-                options.ObjectId,
-                options.AltSecId,
                 options.Tenant,
                 options.RetryPolicy);
 
@@ -159,12 +146,8 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
     // Implementation-specific error handling
     protected override string GetErrorMessage(Exception ex) => ex switch
     {
-        HttpRequestException httpEx when httpEx.Message.Contains("404") =>
+        HttpRequestException httpEx when httpEx.StatusCode == HttpStatusCode.NotFound =>
             "Marketplace product not found. Verify the product ID exists and you have access to it.",
-        HttpRequestException httpEx when httpEx.Message.Contains("403") =>
-            "Authorization failed accessing the marketplace product. Verify your permissions and subscription access.",
-        HttpRequestException httpEx when httpEx.Message.Contains("401") =>
-            "Authentication failed. Please run 'az login' to sign in or verify your credentials.",
         HttpRequestException httpEx =>
             $"Service unavailable or connectivity issues. Details: {httpEx.Message}",
         ArgumentException argEx =>
@@ -174,10 +157,7 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
 
     protected override int GetStatusCode(Exception ex) => ex switch
     {
-        HttpRequestException httpEx when httpEx.Message.Contains("404") => 404,
-        HttpRequestException httpEx when httpEx.Message.Contains("403") => 403,
-        HttpRequestException httpEx when httpEx.Message.Contains("401") => 401,
-        HttpRequestException => 503,
+        HttpRequestException httpEx => (int)httpEx.StatusCode.GetValueOrDefault(HttpStatusCode.InternalServerError),
         ArgumentException => 400,
         _ => base.GetStatusCode(ex)
     };

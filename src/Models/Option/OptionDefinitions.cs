@@ -171,14 +171,11 @@ public static partial class OptionDefinitions
         public const string LanguageName = "language";
         public const string MarketName = "market";
         public const string LookupOfferInTenantLevelName = "lookup-offer-in-tenant-level";
-        public const string IncludeHiddenPlansName = "include-hidden-plans";
         public const string PlanIdName = "plan-id";
         public const string SkuIdName = "sku-id";
         public const string IncludeServiceInstructionTemplatesName = "include-service-instruction-templates";
         public const string PartnerTenantIdName = "partner-tenant-id";
         public const string PricingAudienceName = "pricing-audience";
-        public const string ObjectIdName = "object-id";
-        public const string AltSecIdName = "alt-sec-id";
 
         public static readonly Option<string> ProductId = new(
             $"--{ProductIdName}",
@@ -219,15 +216,6 @@ public static partial class OptionDefinitions
             $"--{LookupOfferInTenantLevelName}",
             () => false,
             "Check against tenant private audience when retrieving the product."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<bool> IncludeHiddenPlans = new(
-            $"--{IncludeHiddenPlansName}",
-            () => false,
-            "Include hidden plans in the response."
         )
         {
             IsRequired = false
@@ -274,20 +262,5 @@ public static partial class OptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string> ObjectId = new(
-            $"--{ObjectIdName}",
-            "AAD user ID for the request header."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<string> AltSecId = new(
-            $"--{AltSecIdName}",
-            "Alternate Security ID (for MSA users) for the request header."
-        )
-        {
-            IsRequired = false
-        };
     }
 }

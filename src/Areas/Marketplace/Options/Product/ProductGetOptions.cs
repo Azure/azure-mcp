@@ -12,12 +12,9 @@ public class ProductGetOptions : SubscriptionOptions
     public string? Language { get; set; }
     public string? Market { get; set; }
     public bool? LookupOfferInTenantLevel { get; set; }
-    public bool? IncludeHiddenPlans { get; set; }
     public string? PlanId { get; set; }
     public string? SkuId { get; set; }
     public bool? IncludeServiceInstructionTemplates { get; set; }
     public string? PartnerTenantId { get; set; }
     public string? PricingAudience { get; set; }
-    public string? ObjectId { get; set; }
-    public string? AltSecId { get; set; }
 }

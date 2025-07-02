@@ -29,14 +29,11 @@ public class MarketplaceService(ITenantService tenantService)
     /// <param name="language">Product language (default: en).</param>
     /// <param name="market">Product market (default: US).</param>
     /// <param name="lookupOfferInTenantLevel">Check against tenant private audience.</param>
-    /// <param name="includeHiddenPlans">Include hidden plans.</param>
     /// <param name="planId">Filter by plan ID.</param>
     /// <param name="skuId">Filter by SKU ID.</param>
     /// <param name="includeServiceInstructionTemplates">Include service instruction templates.</param>
     /// <param name="partnerTenantId">Partner tenant ID.</param>
     /// <param name="pricingAudience">Pricing audience.</param>
-    /// <param name="objectId">AAD user ID.</param>
-    /// <param name="altSecId">Alternate Security ID (for MSA users).</param>
     /// <param name="tenant">Optional. The Azure tenant ID for authentication.</param>
     /// <param name="retryPolicy">Optional. Policy parameters for retrying failed requests.</param>
     /// <returns>A JSON node containing the product information.</returns>
@@ -49,24 +46,21 @@ public class MarketplaceService(ITenantService tenantService)
         string? language = null,
         string? market = null,
         bool? lookupOfferInTenantLevel = null,
-        bool? includeHiddenPlans = null,
         string? planId = null,
         string? skuId = null,
         bool? includeServiceInstructionTemplates = null,
         string? partnerTenantId = null,
         string? pricingAudience = null,
-        string? objectId = null,
-        string? altSecId = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(productId, subscription);
 
         string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market,
-            lookupOfferInTenantLevel, includeHiddenPlans, planId, skuId, includeServiceInstructionTemplates);
+            lookupOfferInTenantLevel, planId, skuId, includeServiceInstructionTemplates);
 
         string productResponseString = await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
-            pricingAudience, objectId, altSecId, tenant);
+            pricingAudience, tenant);
 
         return JsonNode.Parse(productResponseString) ?? throw new Exception("Failed to parse product response to JSON.");
     }
@@ -78,7 +72,6 @@ public class MarketplaceService(ITenantService tenantService)
         string? language,
         string? market,
         bool? lookupOfferInTenantLevel,
-        bool? includeHiddenPlans,
         string? planId,
         string? skuId,
         bool? includeServiceInstructionTemplates)
@@ -100,9 +93,6 @@ public class MarketplaceService(ITenantService tenantService)
         if (lookupOfferInTenantLevel.HasValue)
             queryParams.Add($"lookupOfferInTenantLevel={lookupOfferInTenantLevel.Value.ToString().ToLower()}");
 
-        if (includeHiddenPlans.HasValue)
-            queryParams.Add($"includeHiddenPlans={includeHiddenPlans.Value.ToString().ToLower()}");
-
         if (!string.IsNullOrEmpty(planId))
             queryParams.Add($"planId={Uri.EscapeDataString(planId)}");
 
@@ -117,7 +107,7 @@ public class MarketplaceService(ITenantService tenantService)
     }
 
     private async Task<string> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
-        string? pricingAudience, string? objectId, string? altSecId, string? tenant)
+        string? pricingAudience, string? tenant)
     {
         string accessToken = await GetAccessTokenAsync(tenant);
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -129,12 +119,6 @@ public class MarketplaceService(ITenantService tenantService)
 
         if (!string.IsNullOrEmpty(pricingAudience))
             request.Headers.Add("PricingAudience", pricingAudience);
-
-        if (!string.IsNullOrEmpty(objectId))
-            request.Headers.Add("ObjectId", objectId);
-
-        if (!string.IsNullOrEmpty(altSecId))
-            request.Headers.Add("AltSecId", altSecId);
 
         HttpResponseMessage response = await s_sharedHttpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();

@@ -34,6 +34,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-key-get | Get the details about the key <key_name> in <key_vault_account_name> |
 | azmcp-keyvault-key-list | List all the keys in <key_vault_account_name> |
 
+## Marketplace
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-marketplace-product-get | Get details about marketplace product <product_name> |
+
 ## Azure Data Explorer
 
 | Tool Name | Test Prompt |

@@ -275,6 +275,12 @@ azmcp keyvault key get --subscription <subscription> --vault <vault-name> --key 
 azmcp keyvault key create --subscription <subscription> --vault <vault-name> --key <key-name> --key-type <key-type>
 ```
 
+### Azure Marketplace Operations
+```bash
+# Get details about a marketplace product
+azmcp marketplace product get --subscription <subscription> --product-name <product-name>
+```
+
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue
