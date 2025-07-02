@@ -16,6 +16,10 @@ using OpenTelemetry.Trace;
 
 namespace AzureMcp.Areas.Server.Commands;
 
+/// <summary>
+/// Command to start the MCP server with specified configuration options.
+/// This command is hidden from the main command list.
+/// </summary>
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
@@ -23,13 +27,27 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
-
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
+    /// <summary>
+    /// Gets the name of the command.
+    /// </summary>
     public override string Name => "start";
+
+    /// <summary>
+    /// Gets the description of the command.
+    /// </summary>
     public override string Description => "Starts Azure MCP Server.";
+
+    /// <summary>
+    /// Gets the title of the command.
+    /// </summary>
     public override string Title => CommandTitle;
 
+    /// <summary>
+    /// Registers command options for the service start command.
+    /// </summary>
+    /// <param name="command">The command to register options with.</param>
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -39,6 +57,12 @@ public sealed class ServiceStartCommand : BaseCommand
         command.AddOption(_readOnlyOption);
     }
 
+    /// <summary>
+    /// Executes the service start command, creating and starting the MCP server.
+    /// </summary>
+    /// <param name="context">The command execution context.</param>
+    /// <param name="parseResult">The parsed command options.</param>
+    /// <returns>A command response indicating the result of the operation.</returns>
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var port = parseResult.GetValueForOption(_portOption) == default
@@ -68,6 +92,11 @@ public sealed class ServiceStartCommand : BaseCommand
         return context.Response;
     }
 
+    /// <summary>
+    /// Creates the host for the MCP server with the specified options.
+    /// </summary>
+    /// <param name="serverOptions">The server configuration options.</param>
+    /// <returns>An IHost instance configured for the MCP server.</returns>
     private IHost CreateHost(ServiceStartOptions serverOptions)
     {
         if (serverOptions.Transport == TransportTypes.Sse)
@@ -109,6 +138,11 @@ public sealed class ServiceStartCommand : BaseCommand
         }
     }
 
+    /// <summary>
+    /// Configures the MCP server services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="options">The server configuration options.</param>
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
         services.AddSingleton<AzureEventSourceLogForwarder>();
@@ -116,6 +150,9 @@ public sealed class ServiceStartCommand : BaseCommand
         services.AddAzureMcpServer(options);
     }
 
+    /// <summary>
+    /// Hosted service for running the MCP server using standard input/output.
+    /// </summary>
     private sealed class StdioMcpServerHostedService(IMcpServer session) : BackgroundService
     {
         /// <inheritdoc />
@@ -123,7 +160,7 @@ public sealed class ServiceStartCommand : BaseCommand
     }
 
     /// <summary>
-    /// Resolves (and starts) the OpenTelemetry services.
+    /// Resolves and starts the OpenTelemetry services.
     /// </summary>
     private sealed class OtelService : BackgroundService
     {
@@ -132,6 +169,10 @@ public sealed class ServiceStartCommand : BaseCommand
         private readonly LoggerProvider? _loggerProvider;
         private readonly AzureEventSourceLogForwarder _logForwarder;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OtelService"/> class.
+        /// </summary>
+        /// <param name="provider">The service provider.</param>
         public OtelService(IServiceProvider provider)
         {
             _meterProvider = provider.GetService<MeterProvider>();
@@ -141,8 +182,10 @@ public sealed class ServiceStartCommand : BaseCommand
             _logForwarder.Start();
         }
 
+        /// <inheritdoc />
         protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
 
+        /// <inheritdoc />
         public override void Dispose()
         {
             _meterProvider?.Dispose();

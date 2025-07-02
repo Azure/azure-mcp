@@ -33,19 +33,19 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public void FindServerProvider_WithEmptyDiscovery_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithEmptyDiscovery_ThrowsKeyNotFoundException()
     {
         // Arrange
         var strategy = CreateMockStrategy();
 
         // Act & Assert
-        var exception = Assert.Throws<KeyNotFoundException>(() => strategy.FindServerProvider("notfound"));
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync("notfound"));
         Assert.Contains("notfound", exception.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("No MCP server found with the name", exception.Message);
     }
 
     [Fact]
-    public void FindServerProvider_WithNonExistentServer_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithNonExistentServer_ThrowsKeyNotFoundException()
     {
         // Arrange
         var provider1 = CreateMockServerProvider("server1");
@@ -53,12 +53,12 @@ public class BaseDiscoveryStrategyTests
         var strategy = CreateMockStrategy(provider1, provider2);
 
         // Act & Assert
-        var exception = Assert.Throws<KeyNotFoundException>(() => strategy.FindServerProvider("nonexistent"));
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync("nonexistent"));
         Assert.Contains("nonexistent", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void FindServerProvider_WithExistingServer_ReturnsCorrectProvider()
+    public async Task FindServerProvider_WithExistingServer_ReturnsCorrectProvider()
     {
         // Arrange
         var provider1 = CreateMockServerProvider("server1");
@@ -66,23 +66,23 @@ public class BaseDiscoveryStrategyTests
         var strategy = CreateMockStrategy(provider1, provider2);
 
         // Act
-        var result = strategy.FindServerProvider("server1");
+        var result = await strategy.FindServerProviderAsync("server1");
 
         // Assert
         Assert.Same(provider1, result);
     }
 
     [Fact]
-    public void FindServerProvider_WithCaseInsensitiveMatch_ReturnsCorrectProvider()
+    public async Task FindServerProvider_WithCaseInsensitiveMatch_ReturnsCorrectProvider()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act
-        var result1 = strategy.FindServerProvider("testserver");
-        var result2 = strategy.FindServerProvider("TESTSERVER");
-        var result3 = strategy.FindServerProvider("TestServer");
+        var result1 = await strategy.FindServerProviderAsync("testserver");
+        var result2 = await strategy.FindServerProviderAsync("TESTSERVER");
+        var result3 = await strategy.FindServerProviderAsync("TestServer");
 
         // Assert
         Assert.Same(provider, result1);
@@ -91,7 +91,7 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public void FindServerProvider_WithMultipleServers_ReturnsCorrectOne()
+    public async Task FindServerProvider_WithMultipleServers_ReturnsCorrectOne()
     {
         // Arrange
         var provider1 = CreateMockServerProvider("azure-storage");
@@ -100,7 +100,7 @@ public class BaseDiscoveryStrategyTests
         var strategy = CreateMockStrategy(provider1, provider2, provider3);
 
         // Act
-        var result = strategy.FindServerProvider("azure-keyvault");
+        var result = await strategy.FindServerProviderAsync("azure-keyvault");
 
         // Assert
         Assert.Same(provider2, result);
@@ -226,26 +226,26 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public void FindServerProvider_WithNullName_ThrowsArgumentException()
+    public async Task FindServerProvider_WithNullName_ThrowsKeyNotFoundException()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act & Assert
-        var exception = Assert.Throws<KeyNotFoundException>(() => strategy.FindServerProvider(null!));
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync(null!));
         Assert.Contains("No MCP server found with the name", exception.Message);
     }
 
     [Fact]
-    public void FindServerProvider_WithEmptyName_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithEmptyName_ThrowsKeyNotFoundException()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act & Assert
-        var exception = Assert.Throws<KeyNotFoundException>(() => strategy.FindServerProvider(""));
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync(""));
         Assert.Contains("No MCP server found with the name", exception.Message);
     }
 
@@ -278,41 +278,39 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public async Task GetOrCreateClientAsync_CacheUsesDifferentKeysForDifferentCasing_CreatesSeparateClientsFromSameProvider()
+    public async Task GetOrCreateClientAsync_CacheUsesSameKeyForDifferentCasing_ReusesCachedClient()
     {
         // Arrange
         var mockClient1 = Substitute.For<IMcpClient>();
-        var mockClient2 = Substitute.For<IMcpClient>();
-        var mockClient3 = Substitute.For<IMcpClient>();
         var provider = CreateMockServerProvider("TestServer");
 
-        // Setup provider to return different clients for each call
+        // Setup provider to return a client for the first call
         provider.CreateClientAsync(Arg.Any<McpClientOptions>())
-            .Returns(mockClient1, mockClient2, mockClient3);
+            .Returns(mockClient1);
 
         var strategy = CreateMockStrategy(provider);
 
-        // Act - Different casings use different cache keys but find the same provider
+        // Act - Different casings use the same cache key because we use StringComparer.OrdinalIgnoreCase
         var result1 = await strategy.GetOrCreateClientAsync("TestServer");
         var result2 = await strategy.GetOrCreateClientAsync("testserver");
         var result3 = await strategy.GetOrCreateClientAsync("TESTSERVER");
 
-        // Assert - Different clients because cache keys are different
+        // Assert - Same client because cache keys are case-insensitive
         Assert.Same(mockClient1, result1);
-        Assert.Same(mockClient2, result2);
-        Assert.Same(mockClient3, result3);
+        Assert.Same(mockClient1, result2);
+        Assert.Same(mockClient1, result3);
 
-        // Verify provider was called 3 times (once for each cache key)
-        await provider.Received(3).CreateClientAsync(Arg.Any<McpClientOptions>());
+        // Verify provider was called only once (the same cached client is returned for all casing variants)
+        await provider.Received(1).CreateClientAsync(Arg.Any<McpClientOptions>());
 
-        // Verify subsequent calls with same casing return cached clients
+        // Verify subsequent calls with any casing return the same cached client
         var result1b = await strategy.GetOrCreateClientAsync("TestServer");
         var result2b = await strategy.GetOrCreateClientAsync("testserver");
 
         Assert.Same(result1, result1b);
         Assert.Same(result2, result2b);
 
-        // Still only 3 calls total (no additional calls for cached entries)
-        await provider.Received(3).CreateClientAsync(Arg.Any<McpClientOptions>());
+        // Still only 1 call total (all calls use the cached entry regardless of casing)
+        await provider.Received(1).CreateClientAsync(Arg.Any<McpClientOptions>());
     }
 }
