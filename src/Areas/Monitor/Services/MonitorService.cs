@@ -189,7 +189,7 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error listing tables: {ex.Message}", ex);
+            throw new Exception($"Error listing tables for workspace {workspace}: {ex.Message}", ex);
         }
     }
 
@@ -351,7 +351,7 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error listing table types: {ex.Message}", ex);
+            throw new Exception($"Error listing table types for workspace {workspace}: {ex.Message}", ex);
         }
     }
 
