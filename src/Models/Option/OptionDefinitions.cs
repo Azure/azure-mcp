@@ -696,6 +696,9 @@ public static class OptionDefinitions
         public const string TestResourceName = "test-resource-name";
         public const string TestRunId = "testrun-id";
         public const string TestId = "test-id";
+        public const string DisplayNameOption = "display-name";
+        public const string DescriptionOption = "description";
+        public const string OldTestRunIdOption = "old-testrun-id";
         public static readonly Option<string> TestResource = new(
             $"--{TestResourceName}",
             "The name of the load test resource for which you want to fetch the details."
@@ -717,6 +720,27 @@ public static class OptionDefinitions
         )
         {
             IsRequired = true
+        };
+        public static readonly Option<string> DisplayName = new(
+            $"--{DisplayNameOption}",
+            "The display name for the load test run. This is a user-friendly name to identify the test run."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> Description = new(
+            $"--{DescriptionOption}",
+            "The description for the load test run. This provides additional context about the test run."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> OldTestRunId = new(
+            $"--{OldTestRunIdOption}",
+            "The ID of an existing test run to update. If provided, the command will trigger a rerun of the given test run id."
+        )
+        {
+            IsRequired = false
         };
     }
 }

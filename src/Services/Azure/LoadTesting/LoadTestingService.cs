@@ -130,12 +130,10 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         {
             throw new Exception($"No test runs found for test ID '{testId}' in Load Test '{testResourceName}'.");
         }
-
-        Console.WriteLine($"Retrieved {JsonConvert.SerializeObject(testRuns)} test runs for test ID '{testId}' in Load Test '{testResourceName}'.");
         return testRuns;
     }
 
-    public async Task<TestRun> CreateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<TestRun> CreateOrUpdateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? oldTestRunId = null, string? resourceGroup = null, string? tenant = null, string? displayName = null, string? description = null, bool? debugMode = false, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
@@ -152,14 +150,16 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         var credential = await GetCredential(tenant);
         var loadTestClient = new LoadTestRunClient(new Uri($"https://{dataPlaneUri}"), credential);
 
-        TestRunCreateRequest createRequest = new TestRunCreateRequest
+        TestRunRequest requestBody = new TestRunRequest
         {
             TestId = testId,
-            DisplayName = "TestRun_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
+            DisplayName = displayName ?? "TestRun_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
+            Description = description,
+            DebugLogsEnabled = debugMode ?? false,
+            RequestDataLevel = debugMode == true ? RequestDataLevel.ERRORS : RequestDataLevel.NONE,
         };
 
-        RequestContent content = RequestContent.Create(JsonConvert.SerializeObject(createRequest));
-        var loadTestRunResponse = await loadTestClient.BeginTestRunAsync(0, testRunId, content);
+        var loadTestRunResponse = await loadTestClient.BeginTestRunAsync(0, testRunId, RequestContent.Create(requestBody), oldTestRunId: oldTestRunId);
         if (loadTestRunResponse == null)
         {
             throw new Exception($"Failed to retrieve Azure Load Test Run: {loadTestRunResponse}");
