@@ -15,7 +15,6 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// Tools are loaded from each MCP server and exposed through the MCP server.
 /// It handles tool call proxying and provides a unified interface for tool operations.
 /// </summary>
-
 public sealed class RegistryToolLoader(
     IMcpDiscoveryStrategy discoveryStrategy,
     IOptions<ServiceStartOptions> options,
@@ -26,6 +25,9 @@ public sealed class RegistryToolLoader(
     private readonly ILogger<RegistryToolLoader> _logger = logger;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
 
+    /// <summary>
+    /// Gets or sets the client options used when creating MCP clients.
+    /// </summary>
     public McpClientOptions ClientOptions { get; set; } = new McpClientOptions();
 
     private bool ReadOnly
@@ -33,6 +35,12 @@ public sealed class RegistryToolLoader(
         get => _options.Value.ReadOnly ?? false;
     }
 
+    /// <summary>
+    /// Lists all tools available from registered MCP servers.
+    /// </summary>
+    /// <param name="request">The request context containing parameters and metadata.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A result containing the list of available tools.</returns>
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
@@ -66,6 +74,12 @@ public sealed class RegistryToolLoader(
         return allToolsResponse;
     }
 
+    /// <summary>
+    /// Handles tool calls by routing them to the appropriate MCP client.
+    /// </summary>
+    /// <param name="request">The request context containing parameters and metadata.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The result of the tool call operation.</returns>
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
@@ -105,6 +119,11 @@ public sealed class RegistryToolLoader(
         return await mcpClient.CallToolAsync(request.Params.Name, parameters, cancellationToken: cancellationToken);
     }
 
+    /// <summary>
+    /// Extracts a parameters dictionary from tool call arguments.
+    /// </summary>
+    /// <param name="args">The arguments to extract parameters from.</param>
+    /// <returns>A dictionary of parameter names and values.</returns>
     private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)

@@ -9,13 +9,23 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.Runtime;
 
-
+/// <summary>
+/// Implementation of the MCP runtime that delegates tool discovery and invocation to a tool loader.
+/// Provides logging and configuration support for the MCP server.
+/// </summary>
 public sealed class McpRuntime : IMcpRuntime
 {
     private readonly IToolLoader _toolLoader;
     private readonly IOptions<ServiceStartOptions> _options;
     private readonly ILogger<McpRuntime> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the McpRuntime class.
+    /// </summary>
+    /// <param name="toolLoader">The tool loader responsible for discovering and loading tools.</param>
+    /// <param name="options">Configuration options for the MCP server.</param>
+    /// <param name="logger">Logger for runtime operations.</param>
+    /// <exception cref="ArgumentNullException">Thrown if any required dependencies are null.</exception>
     public McpRuntime(
         IToolLoader toolLoader,
         IOptions<ServiceStartOptions> options,
@@ -30,9 +40,21 @@ public sealed class McpRuntime : IMcpRuntime
         _logger.LogInformation("Namespace is set to {Namespace}.", string.Join(",", _options.Value.Service ?? Array.Empty<string>()));
     }
 
+    /// <summary>
+    /// Delegates tool invocation requests to the configured tool loader.
+    /// </summary>
+    /// <param name="request">The request context containing the tool name and parameters.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the output of the tool invocation.</returns>
     public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
         => _toolLoader.CallToolHandler(request, cancellationToken);
 
+    /// <summary>
+    /// Delegates tool discovery requests to the configured tool loader.
+    /// </summary>
+    /// <param name="request">The request context containing metadata and parameters.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the list of available tools.</returns>
     public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
         => _toolLoader.ListToolsHandler(request, cancellationToken);
 }

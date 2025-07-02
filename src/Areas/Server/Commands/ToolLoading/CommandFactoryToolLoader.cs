@@ -12,6 +12,10 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
+/// <summary>
+/// A tool loader that creates MCP tools from the registered command factory.
+/// Exposes AzureMcp commands as MCP tools that can be invoked through the MCP protocol.
+/// </summary>
 public sealed class CommandFactoryToolLoader(
     IServiceProvider serviceProvider,
     CommandFactory commandFactory,
@@ -27,16 +31,28 @@ public sealed class CommandFactoryToolLoader(
             : commandFactory.GroupCommands(options.Value.Service);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
 
+    /// <summary>
+    /// Gets whether the tool loader operates in read-only mode.
+    /// </summary>
     private bool ReadOnly
     {
         get => _options.Value.ReadOnly ?? false;
     }
 
+    /// <summary>
+    /// Gets the namespaces to filter commands by.
+    /// </summary>
     private string[]? Namespaces
     {
         get => _options.Value.Service;
     }
 
+    /// <summary>
+    /// Lists all tools available from the command factory.
+    /// </summary>
+    /// <param name="request">The request context containing parameters and metadata.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A result containing the list of available tools.</returns>
     public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
@@ -51,6 +67,12 @@ public sealed class CommandFactoryToolLoader(
         return ValueTask.FromResult(listToolsResult);
     }
 
+    /// <summary>
+    /// Handles tool calls by executing the corresponding command from the command factory.
+    /// </summary>
+    /// <param name="request">The request context containing parameters and metadata.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The result of the tool call operation.</returns>
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
@@ -118,6 +140,12 @@ public sealed class CommandFactoryToolLoader(
         }
     }
 
+    /// <summary>
+    /// Converts a command to an MCP tool definition.
+    /// </summary>
+    /// <param name="fullName">The full name of the command.</param>
+    /// <param name="command">The command to convert.</param>
+    /// <returns>An MCP tool definition.</returns>
     private static Tool GetTool(string fullName, IBaseCommand command)
     {
         var underlyingCommand = command.GetCommand();

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Reflection;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
@@ -9,14 +12,17 @@ using ModelContextProtocol.Protocol;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for configuring Azure MCP server services.
+/// </summary>
 public static class AzureMcpServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the Azure MCP server services to the specified <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="serviceStartOptions"></param>
-    /// <returns></returns>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="serviceStartOptions">The options for configuring the server.</param>
+    /// <returns>The service collection with MCP server services added.</returns>
     public static IServiceCollection AddAzureMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
     {
         // Register options for service start
