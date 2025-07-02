@@ -9,8 +9,22 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : IToolLoader
 {
     private readonly ILogger<CompositeToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly IEnumerable<IToolLoader> _toolLoaders = toolLoaders ?? throw new ArgumentNullException(nameof(toolLoaders));
+    private readonly IEnumerable<IToolLoader> _toolLoaders = InitializeToolLoaders(toolLoaders);
     private readonly Dictionary<string, IToolLoader> _toolLoaderMap = new();
+
+    private static IEnumerable<IToolLoader> InitializeToolLoaders(IEnumerable<IToolLoader> toolLoaders)
+    {
+        ArgumentNullException.ThrowIfNull(toolLoaders);
+
+        var loadersList = toolLoaders.ToList();
+
+        if (loadersList.Count == 0)
+        {
+            throw new ArgumentException("At least one tool loader must be provided.", nameof(toolLoaders));
+        }
+
+        return loadersList;
+    }
 
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
@@ -55,8 +69,7 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
             };
         }
 
-        var toolCaller = _toolLoaderMap[request.Params.Name];
-        if (toolCaller == null)
+        if (!_toolLoaderMap.TryGetValue(request.Params.Name, out var toolCaller))
         {
             var content = new TextContentBlock
             {

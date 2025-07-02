@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.Server.Commands.Discovery;
+using AzureMcp.Areas.Server.Options;
 using Json.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
-using AzureMcp.Areas.Server.Commands.Discovery;
-using Microsoft.Extensions.Options;
-using AzureMcp.Areas.Server.Options;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
