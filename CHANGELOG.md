@@ -10,6 +10,8 @@
 
 ### Bugs Fixed
 
+- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
+
 ### Other Changes
 
 ## 0.2.6 (2025-07-01)
