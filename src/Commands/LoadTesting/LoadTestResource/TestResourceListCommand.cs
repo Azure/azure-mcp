@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Options.LoadTesting.LoadTestResource;
-using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using AzureMcp.Models.LoadTesting.LoadTestResource;
 
 namespace AzureMcp.Commands.LoadTesting.LoadTestResource;
 public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> logger)
@@ -63,7 +63,7 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
                 options.RetryPolicy);
 
             // Set results if any were returned
-            context.Response.Results = results?.Count > 0 ?
+            context.Response.Results = results != null ?
                 ResponseResult.Create(new TestResourceListCommandResult(results), LoadTestJsonContext.Default.TestResourceListCommandResult) :
                 null;
         }
@@ -77,5 +77,5 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
 
         return context.Response;
     }
-    internal record TestResourceListCommandResult(List<TestResource> LoadTests);
+    internal record TestResourceListCommandResult(List<TestResource> LoadTest);
 }

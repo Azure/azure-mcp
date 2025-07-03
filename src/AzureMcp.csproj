@@ -54,6 +54,7 @@
     <PackageReference Include="Azure.ResourceManager.PostgreSql" />
     <PackageReference Include="Azure.ResourceManager.Redis" />
     <PackageReference Include="Azure.ResourceManager.RedisEnterprise" />
+    <PackageReference Include="Azure.ResourceManager.LoadTesting" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />

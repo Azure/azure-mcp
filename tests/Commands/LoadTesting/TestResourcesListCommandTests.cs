@@ -41,18 +41,17 @@ public class TestResourceListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsLoadTests_WhenLoadTestsExist()
+    public async Task ExecuteAsync_ReturnsLoadTests_FromResourceGroup()
     {
         // Arrange
         var expectedLoadTests = new List<TestResource> { new TestResource { Id = "Id1", Name = "loadTest1" }, new TestResource { Id = "Id2", Name = "loadTest2" } };
-        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is((string?)null), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedLoadTests);
 
         var command = new TestResourceListCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "resourceGroup123",
-            "--test-resource-name", "loadTestName",
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -68,19 +67,52 @@ public class TestResourceListCommandTests
         var result = JsonSerializer.Deserialize<TestResourceListCommandResult>(json);
 
         Assert.NotNull(result);
-        Assert.Equal(expectedLoadTests.Count, result.LoadTests.Count);
-        Assert.Collection(result.LoadTests,
+        Assert.Equal(expectedLoadTests.Count, result.LoadTest.Count);
+        Assert.Collection(result.LoadTest,
             item => Assert.Equal("Id1", item.Id),
             item => Assert.Equal("loadTest2", item.Name));
     }
 
 
     [Fact]
+    public async Task ExecuteAsync_ReturnsLoadTests_FromTestResource()
+    {
+        // Arrange
+        var expectedLoadTests = new List<TestResource> { new TestResource { Id = "Id1", Name = "loadTest1" } };
+        _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("testResourceName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedLoadTests);
+
+        var command = new TestResourceListCommand(_logger);
+        var args = command.GetCommand().Parse([
+            "--subscription", "sub123",
+            "--resource-group", "resourceGroup123",
+            "--test-resource-name", "testResourceName",
+            "--tenant", "tenant123"
+        ]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<TestResourceListCommandResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedLoadTests.Count, result.LoadTest.Count);
+        Assert.Collection(result.LoadTest,
+            item => Assert.Equal("Id1", item.Id));
+    }
+
+    [Fact]
     public async Task ExecuteAsync_ReturnsLoadTests_WhenLoadTestsNotExist()
     {
         // Arrange
         _service.GetLoadTestResourcesAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
-             .Returns([]);
+             .Returns(new List<TestResource>());
 
         var command = new TestResourceListCommand(_logger);
         var args = command.GetCommand().Parse([
@@ -96,7 +128,11 @@ public class TestResourceListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<TestResourceListCommandResult>(json);
+
+        Assert.Empty(result!.LoadTest);
     }
 
     [Fact]
@@ -125,6 +161,6 @@ public class TestResourceListCommandTests
 
     private class TestResourceListCommandResult
     {
-        public List<TestResource> LoadTests { get; set; } = [];
+        public List<TestResource> LoadTest { get; set; } = [];
     }
 }

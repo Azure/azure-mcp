@@ -3,6 +3,9 @@
 
 using Azure.Core;
 using Azure.Developer.LoadTesting;
+using Azure.ResourceManager;
+using Azure.ResourceManager.LoadTesting;
+using Azure.ResourceManager.Resources;
 using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Models.LoadTesting.LoadTestRun;
@@ -23,59 +26,63 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         ValidateRequiredParameters(subscriptionId);
 
         var credential = await GetCredential(tenant);
-        var endpoint = $"{ARMEndpoint}/subscriptions/{subscriptionId}";
 
-        if (!string.IsNullOrEmpty(resourceGroup))
-        {
-            endpoint += $"/resourceGroups/{resourceGroup}";
-        }
-
+        var client = new ArmClient(credential);
         if (!string.IsNullOrEmpty(testResourceName))
         {
-            endpoint += $"/providers/Microsoft.LoadTestService/loadTests/{testResourceName}?api-version={ControlPlaneApiVersion}";
+            var resourceId = LoadTestingResource.CreateResourceIdentifier(subscriptionId, resourceGroup, testResourceName);
+            var response = await client.GetLoadTestingResource(resourceId).GetAsync();
+
+            if (response == null)
+            {
+                throw new Exception($"Failed to retrieve Azure Load Testing resources: {response}");
+            }
+            return new List<TestResource>
+            {
+                new TestResource
+                {
+                    Id = response.Value.Data.Id!,
+                    Name = response.Value.Data.Name,
+                    Location = response.Value.Data.Location,
+                    DataPlaneUri = response.Value.Data.DataPlaneUri,
+                    ProvisioningState = response.Value.Data.ProvisioningState?.ToString(),
+                }
+            };
         }
         else
         {
-            endpoint += $"/providers/Microsoft.LoadTestService/loadTests?api-version={ControlPlaneApiVersion}";
-        }
+            var rgResource = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup);
+            var response = client.GetResourceGroupResource(rgResource).GetLoadTestingResources().ToList();
 
-        var client = new HttpClient();
-        var token = (await credential.GetTokenAsync(new TokenRequestContext(new[] { "https://management.azure.com/.default" }), CancellationToken.None)).Token;
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        client.DefaultRequestHeaders.Add("x-ms-client-request-id", Guid.NewGuid().ToString());
-        client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-
-        var response = await client.GetAsync(endpoint);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception($"Failed to retrieve Azure Load Testing resources: {response.ReasonPhrase}");
+            if (response == null || response.Count == 0)
+            {
+                throw new Exception($"Failed to retrieve Azure Load Testing resources: {response}");
+            }
+            var loadTestResources = new List<TestResource>();
+            foreach (var resource in response)
+            {
+                loadTestResources.Add(new TestResource
+                {
+                    Id = resource.Data.Id!,
+                    Name = resource.Data.Name,
+                    Location = resource.Data.Location,
+                    DataPlaneUri = resource.Data.DataPlaneUri,
+                    ProvisioningState = resource.Data.ProvisioningState?.ToString(),
+                });
+            }
+            return loadTestResources;
         }
-        var content = await response.Content.ReadAsStringAsync();
-        if (!string.IsNullOrEmpty(testResourceName))
-        {
-            var TestResource = JsonConvert.DeserializeObject<TestResource>(content);
-            return TestResource != null ? new List<TestResource> { TestResource } : new List<TestResource>();
-        }
-
-        // Azure ARM list APIs return an object with a 'value' property containing the array
-        using var doc = JsonDocument.Parse(content);
-        if (!doc.RootElement.TryGetProperty("value", out var valueElement) || valueElement.ValueKind != JsonValueKind.Array)
-        {
-            throw new Exception($"Unexpected response format: missing 'value' array. Raw response: {content}");
-        }
-        return JsonConvert.DeserializeObject<List<TestResource>>(valueElement.GetRawText()) ?? new List<TestResource>();
     }
 
     public async Task<TestRun> GetLoadTestRunAsync(string subscriptionId, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
-        if (loadTestResource.Count == 0)
+        if (loadTestResource == null)
         {
             throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
-        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        var dataPlaneUri = loadTestResource[0]?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
             throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
@@ -98,11 +105,11 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testId);
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
-        if (loadTestResource.Count == 0)
+        if (loadTestResource == null)
         {
             throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
-        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        var dataPlaneUri = loadTestResource[0]?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
             throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
@@ -138,11 +145,11 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
-        if (loadTestResource.Count == 0)
+        if (loadTestResource == null)
         {
             throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
-        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        var dataPlaneUri = loadTestResource[0]?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
             throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
@@ -174,11 +181,11 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testId);
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
-        if (loadTestResource.Count == 0)
+        if (loadTestResource == null)
         {
             throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
         }
-        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        var dataPlaneUri = loadTestResource[0]?.DataPlaneUri;
         if (string.IsNullOrEmpty(dataPlaneUri))
         {
             throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
