@@ -327,29 +327,54 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Key Vault Operations
 
 ```bash
-# Lists keys in vault
+# Lists keys in a key vault
 azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
                         --include-managed <true/false>
 
-# Gets a key in vault
+# Gets a key in a key vault
 azmcp keyvault key get --subscription <subscription> \
                        --vault <vault-name> \
                        --key <key-name>
 
-# Create a key in vault
+# Create a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
                           --vault <vault-name> \
                           --key <key-name> \
                           --key-type <key-type>
 
-# Gets a secret in vault
+# Lists secrets in a key vault
+azmcp keyvault secret list --subscription <subscription> \
+                           --vault <vault-name>
+
+# Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
                           --vault <vault-name> \
                           --name <secret-name>
+
+# Creates a secret in a key vault
+azmcp keyvault secret create --subscription <subscription> \
+                             --vault <vault-name> \
+                             --name <secret-name> \
+                             --value <secret-value
+
+# Lists certificates in a key vault
+azmcp keyvault certificate list --subscription <subscription> \
+                                --vault <vault-name>
+
+# Gets a certificate in a key vault
+azmcp keyvault certificate get --subscription <subscription> \
+                               --vault <vault-name> \
+                               --name <certificate-name>
+
+# Creates a certificate in a key vault with the default policy
+azmcp keyvault certificate create --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --name <certificate-name>
 ```
 
 ### Azure Load Testing Operations
+
 ```bash
 # Execute load test command to get all the commands details
 azmcp loadtesting 
