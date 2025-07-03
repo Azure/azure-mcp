@@ -211,6 +211,7 @@
         "Runtimes",
         "servicebus",
         "setparam",
+        "terraformbestpractices",
         "testsettings",
         "timespan",
         "toolsets",
@@ -223,6 +224,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "winget",
         "Xunit"
     ]
 }
