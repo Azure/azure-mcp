@@ -1,12 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
+using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Areas.Server.Commands;
 
@@ -14,14 +17,16 @@ public class ToolOperations
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly CommandFactory _commandFactory;
+    private readonly ITelemetryService _telemetry;
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands;
     private readonly ILogger<ToolOperations> _logger;
     private string[]? _commandGroup = null;
 
-    public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ILogger<ToolOperations> logger)
+    public ToolOperations(IServiceProvider serviceProvider, CommandFactory commandFactory, ITelemetryService telemetry, ILogger<ToolOperations> logger)
     {
         _serviceProvider = serviceProvider;
         _commandFactory = commandFactory;
+        _telemetry = telemetry;
         _logger = logger;
         _toolCommands = _commandFactory.AllCommands;
 
@@ -52,8 +57,11 @@ public class ToolOperations
             }
         }
     }
+
     private ValueTask<ListToolsResult> OnListTools(RequestContext<ListToolsRequestParams> requestContext, CancellationToken cancellationToken)
     {
+        using var listActivity = _telemetry.StartActivity(nameof(OnListTools), requestContext.Server.ClientInfo);
+
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
             .Where(tool => !ReadOnly || tool.Annotations?.ReadOnlyHint == true)
@@ -69,6 +77,8 @@ public class ToolOperations
     private async ValueTask<CallToolResult> OnCallTools(RequestContext<CallToolRequestParams> parameters,
         CancellationToken cancellationToken)
     {
+        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, parameters.Server.ClientInfo);
+
         if (parameters.Params == null)
         {
             var content = new TextContentBlock
@@ -76,7 +86,7 @@ public class ToolOperations
                 Text = "Cannot call tools with null parameters.",
             };
 
-            _logger.LogWarning(content.Text);
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
 
             return new CallToolResult
             {
@@ -85,15 +95,19 @@ public class ToolOperations
             };
         }
 
-        var command = _toolCommands.GetValueOrDefault(parameters.Params.Name);
+        var toolName = parameters.Params.Name;
+
+        activity?.AddTag(TagName.ToolName, toolName);
+
+        var command = _toolCommands.GetValueOrDefault(toolName);
         if (command == null)
         {
             var content = new TextContentBlock
             {
-                Text = $"Could not find command: {parameters.Params.Name}",
+                Text = $"Could not find command: {toolName}",
             };
 
-            _logger.LogWarning(content.Text);
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
 
             return new CallToolResult
             {
@@ -101,7 +115,8 @@ public class ToolOperations
                 IsError = true,
             };
         }
-        var commandContext = new CommandContext(_serviceProvider);
+
+        var commandContext = new CommandContext(_serviceProvider, activity);
 
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(parameters.Params.Arguments);
@@ -126,6 +141,8 @@ public class ToolOperations
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred running '{Tool}'. ", realCommand.Name);
+
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
 
             throw;
         }

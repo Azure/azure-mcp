@@ -63,10 +63,10 @@
 # ServiceOwners:                       @ArthurMa1978
 
 # PRLabel: %area-Foundry
-/src/Areas/Foundry/                   @jayzzh @Azure/azure-mcp
+/src/Areas/Foundry/                   @jayzzh @xiangyan99 @Azure/azure-mcp
 
 # ServiceLabel: %area-Foundry
-# ServiceOwners:                      @jayzzh
+# ServiceOwners:                      @jayzzh @xiangyan99
 
 # PRLabel: %area-KeyVault
 /src/Areas/KeyVault/                   @vcolin7 @JonathanCrd @Azure/azure-mcp

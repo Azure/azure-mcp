@@ -11,6 +11,7 @@ using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Monitor.LiveTests;
@@ -29,7 +30,11 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync()
+    {
+        base.Dispose();
+        return ValueTask.CompletedTask;
+    }
 
     private static IMonitorService GetMonitorService()
     {
@@ -41,7 +46,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         return new MonitorService(subscriptionService, tenantService, resourceGroupService);
     }
 
-    [Fact(Skip = "Temporary skip to fix the test")]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_tables()
     {
@@ -106,7 +111,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             failMessage: $"No logs found in {TestLogType} table after waiting 60 seconds");
     }
 
-    [Fact(Skip = "Temporary skip to fix the test")]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_table_types()
     {

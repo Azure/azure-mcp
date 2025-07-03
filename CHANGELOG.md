@@ -10,6 +10,9 @@
   - `azmcp-keyvault-secret-list`
   - `azmcp-keyvault-secret-create`
 
+- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
+- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
+
 ### Breaking Changes
 
 ### Bugs Fixed
@@ -42,7 +45,6 @@
 - Added support for starting the server with a subset of services using the `--service` flag - https://github.com/Azure/azure-mcp/pull/424
 - Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.) - https://github.com/Azure/azure-mcp/pull/440
 - Added new commands for querying metrics with Azure Monitor with command paths `azmcp-monitor-metrics-query` and `azmcp-monitor-metrics-definitions`. - https://github.com/Azure/azure-mcp/pull/428
-- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
 
 ### Breaking Changes
 

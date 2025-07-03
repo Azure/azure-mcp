@@ -5,6 +5,7 @@ using AzureMcp.Areas.Foundry.Options;
 using AzureMcp.Areas.Foundry.Options.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 
 namespace AzureMcp.Areas.Foundry.Commands.Models;
 
@@ -79,6 +80,8 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var service = context.GetService<IFoundryService>();
             var deploymentResource = await service.DeployModel(
                 options.DeploymentName!,
@@ -102,7 +105,7 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

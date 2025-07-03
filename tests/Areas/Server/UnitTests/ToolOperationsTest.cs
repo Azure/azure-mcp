@@ -5,6 +5,7 @@ using System.Text.Json;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
@@ -32,16 +33,20 @@ public class ToolOperationsTest
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
+    private readonly ITelemetryService _telemetry;
     private readonly ILogger<ToolOperations> _logger;
     private readonly ILogger<CommandFactory> _commandFactoryLogger;
     private readonly IMcpServer _server;
+    private readonly ITelemetryService _telemetryService;
 
     public ToolOperationsTest()
     {
         _logger = Substitute.For<ILogger<ToolOperations>>();
         _commandFactoryLogger = Substitute.For<ILogger<CommandFactory>>();
         _server = Substitute.For<IMcpServer>();
+        _telemetryService = Substitute.For<ITelemetryService>();
         _keyVaultService = Substitute.For<IKeyVaultService>();
+        _telemetry = Substitute.For<ITelemetryService>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_ => _keyVaultService);
@@ -53,7 +58,7 @@ public class ToolOperationsTest
     [Fact]
     public async Task GetsAllTools()
     {
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger);
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger);
         var requestContext = new RequestContext<ListToolsRequestParams>(_server);
 
         var handler = operations.ToolsCapability.ListToolsHandler;
@@ -108,7 +113,7 @@ public class ToolOperationsTest
     public async Task GetsToolsByCommandGroup(string? commandGroup)
     {
         string[]? groupArray = commandGroup == null ? null : commandGroup.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
         {
             CommandGroup = groupArray
         };
@@ -140,7 +145,7 @@ public class ToolOperationsTest
     {
         var ex = await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
-            var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+            var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
             {
                 CommandGroup = new[] { "unknown-group" }
             };
@@ -156,7 +161,7 @@ public class ToolOperationsTest
     public async Task ReadOnlyMode_FiltersToolsByReadOnlyHint()
     {
         // Run with ReadOnly = false
-        var operations = new ToolOperations(_serviceProvider, _commandFactory, _logger)
+        var operations = new ToolOperations(_serviceProvider, _commandFactory, _telemetryService, _logger)
         {
             ReadOnly = false
         };

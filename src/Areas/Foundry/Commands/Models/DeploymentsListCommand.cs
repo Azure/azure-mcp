@@ -72,7 +72,7 @@ public sealed class DeploymentsListCommand : GlobalCommand<DeploymentsListOption
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

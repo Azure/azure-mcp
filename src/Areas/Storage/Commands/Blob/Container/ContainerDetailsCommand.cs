@@ -7,6 +7,7 @@ using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.Blob.Container;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Blob.Container;
@@ -38,6 +39,8 @@ public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> log
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var storageService = context.GetService<IStorageService>();
             var details = await storageService.GetContainerDetails(
                 options.Account!,
@@ -54,7 +57,7 @@ public sealed class ContainerDetailsCommand(ILogger<ContainerDetailsCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting container details. Account: {Account}, Container: {Container}.", options.Account, options.Container);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
             return context.Response;
         }
     }

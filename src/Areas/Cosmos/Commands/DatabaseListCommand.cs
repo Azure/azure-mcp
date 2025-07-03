@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Cosmos.Commands;
@@ -35,6 +36,8 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var cosmosService = context.GetService<ICosmosService>();
             var databases = await cosmosService.ListDatabases(
                 options.Account!,
@@ -52,7 +55,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing databases. Account: {Account}.", options.Account);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

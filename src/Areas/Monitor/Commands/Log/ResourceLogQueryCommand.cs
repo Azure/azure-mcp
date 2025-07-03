@@ -3,11 +3,12 @@
 
 using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Services;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Log;
 
-public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> logger) : BaseMonitorCommand<ResourceLogQueryOptions>()
+public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> logger) : SubscriptionCommand<ResourceLogQueryOptions>()
 {
     private const string CommandTitle = "Query Logs for Azure Resource";
     private readonly ILogger<ResourceLogQueryCommand> _logger = logger;
@@ -73,7 +74,7 @@ public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing log query resource command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

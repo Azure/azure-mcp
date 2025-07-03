@@ -6,6 +6,7 @@ using AzureMcp.Areas.AzureIsv.Options.Datadog;
 using AzureMcp.Areas.AzureIsv.Services;
 using AzureMcp.Commands.AzureIsv.Datadog;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AzureIsv.Commands.Datadog;
@@ -49,6 +50,13 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         var options = BindOptions(parseResult);
         try
         {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            context.Activity?.WithSubscriptionTag(options);
+
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(
                 options.ResourceGroup!,
@@ -62,9 +70,9 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while executing the command.");
-            context.Response.Status = 500;
-            context.Response.Message = ex.Message;
+            HandleException(context, ex);
         }
+
         return context.Response;
     }
 

@@ -49,8 +49,8 @@ module appConfiguration 'services/appConfiguration.bicep' = if (empty(areas) || 
   }
 }
 
-module monitoring 'services/monitoring.bicep' = if (empty(areas) || contains(areas, 'Monitoring')) {
-  name: '${deploymentName}-monitoring'
+module monitoring 'services/monitor.bicep' = if (empty(areas) || contains(areas, 'Monitor')) {
+  name: '${deploymentName}-monitor'
   params: {
     baseName: baseName
     location: location
