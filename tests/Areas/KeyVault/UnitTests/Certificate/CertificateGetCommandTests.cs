@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Security.KeyVault.Certificates;
 using AzureMcp.Areas.KeyVault.Commands.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
@@ -27,6 +25,10 @@ public class CertificateGetCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
+    private readonly string _knownSubscriptionId = "knownSubscription";
+    private readonly string _knownVaultName = "knownVaultName";
+    private readonly string _knownCertificateName = "knownCertificateName";
+
     public CertificateGetCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
@@ -36,9 +38,46 @@ public class CertificateGetCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new CertificateGetCommand(_logger);
-        _context = new CommandContext(_serviceProvider);
-        _parser = new Parser(_command.GetCommand());
+        _command = new (_logger);
+        _context = new (_serviceProvider);
+        _parser = new (_command.GetCommand());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsServiceCorrectly()
+    {
+        // Arrange
+        var expectedError = "Expected test error";
+
+        // TODO (vcolin7): Find a way to mock KeyVaultCertificateWithPolicy
+        // We'll test that the service is called correctly, but let it fail since mocking the return is complex
+        _keyVaultService.GetCertificate(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownCertificateName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
+
+        var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert - Verify the service was called with correct parameters
+        await _keyVaultService.Received(1).GetCertificate(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownCertificateName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>());
+
+        // Should handle the exception
+        Assert.Equal(500, response.Status);
     }
 
     [Fact]
@@ -46,17 +85,19 @@ public class CertificateGetCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var certificateName = "cert1";
 
-        _keyVaultService.GetCertificate(vaultName, certificateName, Arg.Is(subscriptionId), 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.GetCertificate(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownCertificateName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--certificate", certificateName,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -66,35 +107,6 @@ public class CertificateGetCommandTests
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expectedError, response.Message);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_CallsServiceCorrectly()
-    {
-        // Arrange
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var certificateName = "cert1";
-
-        // We'll test that the service is called correctly, but let it fail since mocking the return is complex
-        _keyVaultService.GetCertificate(Arg.Is(vaultName), Arg.Is(certificateName), Arg.Is(subscriptionId), 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Expected test failure"));
-
-        var args = _parser.Parse([
-            "--vault", vaultName,
-            "--certificate", certificateName,
-            "--subscription", subscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert - Verify the service was called with correct parameters
-        await _keyVaultService.Received(1).GetCertificate(vaultName, certificateName, subscriptionId, 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
-        
-        // Should handle the exception
-        Assert.Equal(500, response.Status);
     }
 
     private class CertificateGetResult

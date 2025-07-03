@@ -27,6 +27,11 @@ public class CertificateCreateCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
+    private readonly string _knownSubscriptionId = "knownSubscription";
+    private readonly string _knownVaultName = "knownVaultName";
+    private readonly string _knownCertificateName = "knownCertificateName";
+    private readonly string _knownSubject = "CN=test.example.com";
+
     public CertificateCreateCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
@@ -36,38 +41,47 @@ public class CertificateCreateCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new CertificateCreateCommand(_logger);
-        _context = new CommandContext(_serviceProvider);
-        _parser = new Parser(_command.GetCommand());
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
     public async Task ExecuteAsync_CallsServiceCorrectly()
     {
         // Arrange
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var certificateName = "cert1";
-        var subject = "CN=test.example.com";
+        var expectedError = "Expected test error";
 
-        // Since CertificateOperation is complex to mock, test service call and exception handling
-        _keyVaultService.CreateCertificate(Arg.Is(vaultName), Arg.Is(certificateName), Arg.Is(subject), 
-            Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Expected test failure"));
+        // TODO (vcolin7): Find a way to mock CertificateOperation
+        // We'll test that the service is called correctly, but let it fail since mocking the return is complex
+        _keyVaultService.CreateCertificate(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownCertificateName),
+            Arg.Is(_knownSubject),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--certificate", certificateName,
-            "--subject", subject,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
+            "--subject", _knownSubject,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert - Verify the service was called with correct parameters
-        await _keyVaultService.Received(1).CreateCertificate(vaultName, certificateName, subject, subscriptionId, 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
-        
+        await _keyVaultService.Received(1).CreateCertificate(
+            _knownVaultName,
+            _knownCertificateName,
+            _knownSubject,
+            _knownSubscriptionId,
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>());
+
         // Should handle the exception
         Assert.Equal(500, response.Status);
     }
@@ -77,19 +91,21 @@ public class CertificateCreateCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var certificateName = "cert1";
-        var subject = "CN=test.example.com";
 
-        _keyVaultService.CreateCertificate(vaultName, certificateName, subject, Arg.Is(subscriptionId), 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.CreateCertificate(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownCertificateName),
+            Arg.Is(_knownSubject),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--certificate", certificateName,
-            "--subject", subject,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
+            "--subject", _knownSubject,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
