@@ -27,8 +27,8 @@ public class KeyListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private readonly string _knownSubscriptionId = "knownSubscriptionId";
-    private readonly string _knownVaultName = "knownVaultName";
+    private const string _knownSubscriptionId = "knownSubscriptionId";
+    private const string _knownVaultName = "knownVaultName";
 
     public KeyListCommandTests()
     {

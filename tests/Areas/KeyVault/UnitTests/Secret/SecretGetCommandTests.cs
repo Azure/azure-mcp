@@ -37,6 +37,7 @@ public class SecretGetCommandTests
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
         _logger = Substitute.For<ILogger<SecretGetCommand>>();
+
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
 
