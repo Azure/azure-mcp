@@ -70,7 +70,7 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing secrets from vault {VaultName}", options.VaultName);
+            _logger.LogError(ex, "An exception occurred listing secrets from vault {VaultName}.", options.VaultName);
             HandleException(context.Response, ex);
         }
 

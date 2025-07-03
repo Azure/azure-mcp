@@ -142,7 +142,6 @@ public interface IKeyVaultService
     /// </summary>
     /// <param name="vaultName">The name of the Key Vault</param>
     /// <param name="certificateName">The name of the certificate to create</param>
-    /// <param name="subject">The subject name of the certificate (e.g., CN=example.com)</param>
     /// <param name="subscriptionId">The subscription ID or name</param>
     /// <param name="tenantId">Optional tenant ID for cross-tenant operations</param>
     /// <param name="retryPolicy">Optional retry policy for the operation</param>
@@ -150,7 +149,6 @@ public interface IKeyVaultService
     Task<CertificateOperation> CreateCertificate(
         string vaultName,
         string certificateName,
-        string subject,
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);

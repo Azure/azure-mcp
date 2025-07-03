@@ -16,7 +16,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
     private readonly ILogger<CertificateCreateCommand> _logger = logger;
     private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
     private readonly Option<string> _certificateOption = KeyVaultOptionDefinitions.CertificateName;
-    private readonly Option<string> _subjectOption = KeyVaultOptionDefinitions.Subject;
 
     public override string Name => "create";
 
@@ -24,14 +23,13 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
 
     public override string Description =>
         """
-        Creates a new self-signed certificate in an Azure Key Vault. This command creates a certificate with the specified name and subject
-        in the given vault.
+        Creates a new certificate in an Azure Key Vault. This command creates a certificate with the specified name and
+        the default policy in the given vault.
 
         Required arguments:
         - subscription
         - vault
         - certificate
-        - subject
         """;
 
     protected override void RegisterOptions(Command command)
@@ -39,7 +37,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         base.RegisterOptions(command);
         command.AddOption(_vaultOption);
         command.AddOption(_certificateOption);
-        command.AddOption(_subjectOption);
     }
 
     protected override CertificateCreateOptions BindOptions(ParseResult parseResult)
@@ -47,7 +44,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         var options = base.BindOptions(parseResult);
         options.VaultName = parseResult.GetValueForOption(_vaultOption);
         options.CertificateName = parseResult.GetValueForOption(_certificateOption);
-        options.Subject = parseResult.GetValueForOption(_subjectOption);
         return options;
     }
 
@@ -67,13 +63,15 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
             var operation = await keyVaultService.CreateCertificate(
                 options.VaultName!,
                 options.CertificateName!,
-                options.Subject!,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new CertificateCreateCommandResult(operation.Value.Name, operation.Properties.Status, operation.Properties.RequestId),
+                new CertificateCreateCommandResult(
+                    operation.Value.Name,
+                    operation.Properties.Status,
+                    operation.Properties.RequestId),
                 KeyVaultJsonContext.Default.CertificateCreateCommandResult);
         }
         catch (Exception ex)
@@ -85,5 +83,5 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         return context.Response;
     }
 
-    internal record CertificateCreateCommandResult(string Name, string Status, string? RequestId);
+    internal record CertificateCreateCommandResult(string Name, string Status, string RequestId);
 }

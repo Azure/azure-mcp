@@ -192,15 +192,13 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_create_certificate()
     {
         var certificateName = Settings.ResourceBaseName + Random.Shared.NextInt64();
-        var subject = "CN=" + certificateName;
         var result = await CallToolAsync(
             "azmcp-keyvault-certificate-create",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "vault", Settings.ResourceBaseName },
-                { "certificate", certificateName},
-                { "subject", subject }
+                { "certificate", certificateName}
             });
 
         var createdCertificateName = result.AssertProperty("name");

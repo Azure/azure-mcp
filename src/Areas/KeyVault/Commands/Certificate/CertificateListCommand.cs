@@ -62,16 +62,15 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
                 options.Tenant,
                 options.RetryPolicy);
 
-            if (certificates.Count > 0)
-            {
-                context.Response.Results = ResponseResult.Create(
+            context.Response.Results = certificates?.Count > 0 ?
+                ResponseResult.Create(
                     new CertificateListCommandResult(certificates),
-                    KeyVaultJsonContext.Default.CertificateListCommandResult);
-            }
+                    KeyVaultJsonContext.Default.CertificateListCommandResult) :
+                null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing certificates in vault {VaultName}", options.VaultName);
+            _logger.LogError(ex, "An exception occurred listing certificates from vault {VaultName}.", options.VaultName);
             HandleException(context.Response, ex);
         }
 

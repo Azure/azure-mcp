@@ -30,7 +30,6 @@ public class CertificateCreateCommandTests
     private readonly string _knownSubscriptionId = "knownSubscription";
     private readonly string _knownVaultName = "knownVaultName";
     private readonly string _knownCertificateName = "knownCertificateName";
-    private readonly string _knownSubject = "CN=test.example.com";
 
     public CertificateCreateCommandTests()
     {
@@ -57,7 +56,6 @@ public class CertificateCreateCommandTests
         _keyVaultService.CreateCertificate(
             Arg.Is(_knownVaultName),
             Arg.Is(_knownCertificateName),
-            Arg.Is(_knownSubject),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
@@ -66,7 +64,6 @@ public class CertificateCreateCommandTests
         var args = _parser.Parse([
             "--vault", _knownVaultName,
             "--certificate", _knownCertificateName,
-            "--subject", _knownSubject,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -77,7 +74,6 @@ public class CertificateCreateCommandTests
         await _keyVaultService.Received(1).CreateCertificate(
             _knownVaultName,
             _knownCertificateName,
-            _knownSubject,
             _knownSubscriptionId,
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
@@ -95,7 +91,6 @@ public class CertificateCreateCommandTests
         _keyVaultService.CreateCertificate(
             Arg.Is(_knownVaultName),
             Arg.Is(_knownCertificateName),
-            Arg.Is(_knownSubject),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
@@ -104,7 +99,6 @@ public class CertificateCreateCommandTests
         var args = _parser.Parse([
             "--vault", _knownVaultName,
             "--certificate", _knownCertificateName,
-            "--subject", _knownSubject,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -126,6 +120,6 @@ public class CertificateCreateCommandTests
         public string Status { get; set; } = string.Empty;
 
         [JsonPropertyName("requestId")]
-        public string? RequestId { get; set; }
+        public string RequestId { get; set; } = string.Empty;
     }
 }

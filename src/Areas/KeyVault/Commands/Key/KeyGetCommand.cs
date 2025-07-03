@@ -19,6 +19,8 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
 
     public override string Name => "get";
 
+    public override string Title => CommandTitle;
+
     public override string Description =>
         """
         Get a key from an Azure Key Vault. This command retrieves and displays details
@@ -29,8 +31,6 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         - vault
         - key
         """;
-
-    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -68,7 +68,14 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new KeyGetCommandResult(key.Name, key.KeyType.ToString(), key.Properties.Enabled, key.Properties.NotBefore, key.Properties.ExpiresOn, key.Properties.CreatedOn, key.Properties.UpdatedOn),
+                new KeyGetCommandResult(
+                    key.Name,
+                    key.KeyType.ToString(),
+                    key.Properties.Enabled,
+                    key.Properties.NotBefore,
+                    key.Properties.ExpiresOn,
+                    key.Properties.CreatedOn,
+                    key.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.KeyGetCommandResult);
         }
         catch (Exception ex)

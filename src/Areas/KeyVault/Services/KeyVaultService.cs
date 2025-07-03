@@ -245,7 +245,6 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
     public async Task<CertificateOperation> CreateCertificate(
         string vaultName,
         string certificateName,
-        string subject,
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
@@ -257,18 +256,12 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
             throw new ArgumentException("Certificate name cannot be null or empty", nameof(certificateName));
         }
 
-        if (string.IsNullOrWhiteSpace(subject))
-        {
-            throw new ArgumentException("Subject cannot be null or empty", nameof(subject));
-        }
-
         var credential = await GetCredential(tenantId);
         var client = new CertificateClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
 
         try
         {
-            var policy = new CertificatePolicy(WellKnownIssuerNames.Self, subject);
-            return await client.StartCreateCertificateAsync(certificateName, policy);
+            return await client.StartCreateCertificateAsync(certificateName, CertificatePolicy.Default);
         }
         catch (Exception ex)
         {
