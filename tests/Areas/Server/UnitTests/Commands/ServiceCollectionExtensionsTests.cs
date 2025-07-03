@@ -6,6 +6,7 @@ using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(CommandFactoryHelpers.CreateCommandFactory);
+        services.AddSingleton<ITelemetryService, CommandFactoryHelpers.NoOpTelemetryService>();
 
         return services;
     }

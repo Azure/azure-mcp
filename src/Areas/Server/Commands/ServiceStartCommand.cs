@@ -27,6 +27,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
+
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
     /// <summary>

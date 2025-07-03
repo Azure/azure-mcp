@@ -17,6 +17,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class AzureMcpServiceCollectionExtensions
 {
+    private const string DefaultServerName = "Azure MCP Server";
+
     /// <summary>
     /// Adds the Azure MCP server services to the specified <see cref="IServiceCollection"/>.
     /// </summary>
@@ -110,7 +112,7 @@ public static class AzureMcpServiceCollectionExtensions
                 var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
                 var entryAssembly = Assembly.GetEntryAssembly();
                 var assemblyName = entryAssembly?.GetName();
-                var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "Azure MCP Server";
+                var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? DefaultServerName;
 
                 mcpServerOptions.ProtocolVersion = "2024-11-05";
                 mcpServerOptions.ServerInfo = new Implementation
@@ -138,8 +140,6 @@ public static class AzureMcpServiceCollectionExtensions
         else
         {
             mcpServerBuilder.WithHttpTransport();
-
-            // Port configuration is handled at the Kestrel level in ServiceStartCommand.cs
         }
 
         return services;
