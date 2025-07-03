@@ -5,6 +5,7 @@ using AzureMcp.Areas.Redis.Models.CacheForRedis;
 using AzureMcp.Areas.Redis.Options.CacheForRedis;
 using AzureMcp.Areas.Redis.Services;
 using AzureMcp.Commands.Redis;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Redis.Commands.CacheForRedis;
@@ -38,6 +39,8 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var accessPolicyAssignments = await redisService.ListAccessPolicyAssignmentsAsync(
                 options.Cache!,
@@ -56,7 +59,7 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to list Redis Access Policy Assignments");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

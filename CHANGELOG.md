@@ -4,11 +4,14 @@
 
 ### Features Added
 
+- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
 - Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
 
 ### Breaking Changes
 
 ### Bugs Fixed
+
+- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
 
 ### Other Changes
 

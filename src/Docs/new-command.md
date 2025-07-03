@@ -159,6 +159,8 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
                 return context.Response;
             }
 
+            AddSubscriptionInformation(context.Activity, options); 
+
             // Get the appropriate service from DI
             var service = context.GetService<I{Service}Service>();
 

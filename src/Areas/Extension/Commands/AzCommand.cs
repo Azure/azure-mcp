@@ -177,7 +177,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred executing command. Command: {Command}.", options.Command);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -73,7 +73,7 @@ public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing log query resource command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

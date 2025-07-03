@@ -5,6 +5,7 @@ using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Table;
@@ -44,6 +45,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var monitorService = context.GetService<IMonitorService>();
             var tables = await monitorService.ListTables(
                 options.Subscription!,
@@ -60,7 +63,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing tables.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using ModelContextProtocol.Client;
 using Xunit;
 
