@@ -32,10 +32,10 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_get_marketplace_product_microsoft_AzureSQL()
+    public async Task Should_get_marketplace_product()
     {
-        // Arrange - Microsoft.AzureSQL is a well-known Azure Marketplace product
-        const string productId = "Microsoft.AzureSQL";
+        // Arrange - DZH318Z0HWCB is a well-known Azure Marketplace product
+        const string productId = "DZH318Z0HWCB";
 
         // Act
         var result = await CallToolAsync(
@@ -59,7 +59,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.String, displayName.ValueKind);
         Assert.NotEmpty(displayName.GetString()!);
 
-        // Verify properties specific to Microsoft.AzureSQL
+        // Verify properties specific to DZH318Z0HWCB
         var properties = product.AssertProperty("properties");
         Assert.Equal(JsonValueKind.Object, properties.ValueKind);
 
@@ -73,7 +73,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_get_marketplace_product_with_language_option()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
         const string language = "en";
 
         // Act
@@ -99,7 +99,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_get_marketplace_product_with_market_option()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
         const string market = "US";
 
         // Act
@@ -125,7 +125,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_get_marketplace_product_with_include_hidden_plans()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
 
         // Act
         var result = await CallToolAsync(
@@ -157,7 +157,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_get_marketplace_product_with_service_instruction_templates()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
 
         // Act
         var result = await CallToolAsync(
@@ -205,7 +205,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_validate_required_subscription_parameter()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
 
         // Act & Assert
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
@@ -246,7 +246,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
     public async Task Should_get_marketplace_product_with_multiple_options()
     {
         // Arrange
-        const string productId = "Microsoft.AzureSQL";
+        const string productId = "DZH318Z0HWCB";
         const string language = "en";
         const string market = "US";
 

@@ -3,6 +3,7 @@
 
 using System.Text.Json.Nodes;
 using Azure.Core;
+using Azure.Core.Pipeline;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Tenant;
@@ -15,7 +16,6 @@ public class MarketplaceService(ITenantService tenantService)
     private const int TokenExpirationBuffer = 300;
     private const string ManagementApiBaseUrl = "https://management.azure.com";
     private const string ApiVersion = "2023-01-01-preview";
-    private static readonly HttpClient s_sharedHttpClient = new HttpClient();
 
     private string? _cachedAccessToken;
     private DateTimeOffset _tokenExpiryTime;
@@ -60,9 +60,9 @@ public class MarketplaceService(ITenantService tenantService)
             lookupOfferInTenantLevel, planId, skuId, includeServiceInstructionTemplates);
 
         string productResponseString = await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
-            pricingAudience, tenant);
+            pricingAudience, tenant, retryPolicy);
 
-        return JsonNode.Parse(productResponseString) ?? throw new Exception("Failed to parse product response to JSON.");
+        return JsonNode.Parse(productResponseString) ?? throw new JsonException("Failed to parse product response to JSON.");
     }
 
     private static string BuildProductUrl(
@@ -107,11 +107,30 @@ public class MarketplaceService(ITenantService tenantService)
     }
 
     private async Task<string> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
-        string? pricingAudience, string? tenant)
+        string? pricingAudience, string? tenant, RetryPolicyOptions? retryPolicy = null)
     {
+        // Use Azure Core pipeline approach consistently
+        var clientOptions = AddDefaultPolicies(new MarketplaceClientOptions());
+
+        // Configure retry policy if provided
+        if (retryPolicy != null)
+        {
+            clientOptions.Retry.MaxRetries = retryPolicy.MaxRetries;
+            clientOptions.Retry.Mode = retryPolicy.Mode;
+            clientOptions.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            clientOptions.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            clientOptions.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
+
+        // Create pipeline
+        var pipeline = HttpPipelineBuilder.Build(clientOptions);
+
         string accessToken = await GetAccessTokenAsync(tenant);
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        var request = pipeline.CreateRequest();
+        request.Method = RequestMethod.Get;
+        request.Uri.Reset(new Uri(url));
+        request.Headers.Add("Authorization", $"Bearer {accessToken}");
 
         // Add optional headers as specified in the API
         if (!string.IsNullOrEmpty(partnerTenantId))
@@ -120,11 +139,14 @@ public class MarketplaceService(ITenantService tenantService)
         if (!string.IsNullOrEmpty(pricingAudience))
             request.Headers.Add("PricingAudience", pricingAudience);
 
-        HttpResponseMessage response = await s_sharedHttpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        var response = await pipeline.SendRequestAsync(request, CancellationToken.None);
 
-        string responseString = await response.Content.ReadAsStringAsync();
-        return responseString;
+        if (!response.IsError)
+        {
+            return response.Content.ToString();
+        }
+
+        throw new HttpRequestException($"Request failed with status {response.Status}: {response.ReasonPhrase}");
     }
 
     private async Task<string> GetAccessTokenAsync(string? tenant = null)
@@ -143,7 +165,7 @@ public class MarketplaceService(ITenantService tenantService)
 
     private async Task<AccessToken> GetEntraIdAccessTokenAsync(string resource, string? tenant = null)
     {
-        var tokenRequestContext = new TokenRequestContext(new[] { $"{resource}/.default" });
+        var tokenRequestContext = new TokenRequestContext([$"{resource}/.default"]);
         var tokenCredential = await GetCredential(tenant);
         return await tokenCredential
             .GetTokenAsync(tokenRequestContext, CancellationToken.None)
