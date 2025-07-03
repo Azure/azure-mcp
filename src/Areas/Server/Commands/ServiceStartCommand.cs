@@ -110,7 +110,6 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
                 .ConfigureLogging(logging =>
                 {
-                    logging.SetMinimumLevel(LogLevel.Information);
                     logging.AddEventSourceLogger();
                 });
 
@@ -125,7 +124,6 @@ public sealed class ServiceStartCommand : BaseCommand
             return Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                 {
-                    logging.SetMinimumLevel(LogLevel.Information);
                     logging.ClearProviders();
                     logging.AddEventSourceLogger();
                     logging.AddConsole();

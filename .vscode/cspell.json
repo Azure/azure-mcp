@@ -230,6 +230,7 @@
         "servicebus",
         "setparam",
         "skillset",
+        "syslib",
         "skillsets",
         "submode",
         "testsettings",
