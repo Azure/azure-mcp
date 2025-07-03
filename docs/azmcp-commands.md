@@ -839,6 +839,47 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Azure App Service Operations
+
+```bash
+# Add a database connection to an App Service application
+azmcp appservice database add --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --app-name <app-name> \
+                              --database-type <database-type> \
+                              --database-server <database-server> \
+                              --database-name <database-name> \
+                              [--connection-string <connection-string>]
+```
+
+**Parameters:**
+- `--app-name`: Name of the Azure App Service application
+- `--resource-group`: Resource group containing the App Service
+- `--database-type`: Type of database (SqlServer, MySql, PostgreSql, CosmosDb)
+- `--database-server`: Database server name or endpoint
+- `--database-name`: Name of the database to connect to
+- `--connection-string`: Optional custom connection string (generated if not provided)
+
+**Example:**
+```bash
+# Add a SQL Server database connection
+azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
+                              --resource-group "my-resource-group" \
+                              --app-name "my-web-app" \
+                              --database-type "SqlServer" \
+                              --database-server "myserver.database.windows.net" \
+                              --database-name "MyDatabase"
+
+# Add a PostgreSQL database connection with custom connection string
+azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
+                              --resource-group "my-resource-group" \
+                              --app-name "my-web-app" \
+                              --database-type "PostgreSql" \
+                              --database-server "myserver.postgres.database.azure.com" \
+                              --database-name "MyDatabase" \
+                              --connection-string "Host=myserver.postgres.database.azure.com;Database=MyDatabase;Username=myuser;Password=mypassword;"
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:
