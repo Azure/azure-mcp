@@ -122,9 +122,14 @@ public class KeyCreateCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.CreateKey(Arg.Is(_knownVaultName), Arg.Is(_knownKeyName), Arg.Is(_knownKeyType.ToString()),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.CreateKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownKeyName),
+            Arg.Is(_knownKeyType.ToString()),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,

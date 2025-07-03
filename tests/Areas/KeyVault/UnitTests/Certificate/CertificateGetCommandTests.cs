@@ -112,7 +112,7 @@ public class CertificateGetCommandTests
     private class CertificateGetResult
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
 
         [JsonPropertyName("id")]
         public Uri Id { get; set; } = new Uri("about:blank");
@@ -139,9 +139,9 @@ public class CertificateGetCommandTests
         public DateTimeOffset? UpdatedOn { get; set; }
 
         [JsonPropertyName("subject")]
-        public string Subject { get; set; } = string.Empty;
+        public string Subject { get; set; } = null!;
 
         [JsonPropertyName("issuerName")]
-        public string IssuerName { get; set; } = string.Empty;
+        public string IssuerName { get; set; } = null!;
     }
 }
