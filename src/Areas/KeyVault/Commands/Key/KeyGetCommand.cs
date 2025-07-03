@@ -62,8 +62,8 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var service = context.GetService<IKeyVaultService>();
-            var key = await service.GetKey(
+            var keyVaultService = context.GetService<IKeyVaultService>();
+            var key = await keyVaultService.GetKey(
                 options.VaultName!,
                 options.KeyName!,
                 options.Subscription!,

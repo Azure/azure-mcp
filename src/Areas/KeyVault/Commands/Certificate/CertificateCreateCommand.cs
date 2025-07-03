@@ -6,6 +6,7 @@ using AzureMcp.Areas.KeyVault.Options.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.KeyVault.Commands.Certificate;
@@ -59,6 +60,8 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var keyVaultService = context.GetService<IKeyVaultService>();
             var operation = await keyVaultService.CreateCertificate(
                 options.VaultName!,
@@ -77,7 +80,7 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating certificate {CertificateName} in vault {VaultName}", options.CertificateName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
