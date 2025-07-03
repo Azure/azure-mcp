@@ -1,19 +1,17 @@
 # Release History
 
-## 0.2.7 (Unreleased)
+## 0.3.0 (2025-07-03)
 
 ### Features Added
 
-- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
-- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
-
-### Breaking Changes
+- Added support for Azure AI Foundry [[#274](https://github.com/Azure/azure-mcp/pull/274)]. The following tools are now available:
+  - `azmcp-foundry-models-list`
+  - `azmcp-foundry-models-deploy`
+  - `azmcp-foundry-models-deployments-list`
+- Added support for telemetry [[#386](https://github.com/Azure/azure-mcp/pull/386)]. Telemetry is enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`.
 
 ### Bugs Fixed
-
-- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
-
-### Other Changes
+- Fixed a bug where `CallToolResult` was always successful. [[#511](https://github.com/Azure/azure-mcp/pull/511)]
 
 ## 0.2.6 (2025-07-01)
 
