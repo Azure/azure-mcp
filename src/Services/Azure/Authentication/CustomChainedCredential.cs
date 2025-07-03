@@ -61,9 +61,25 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             return CreateBrowserCredential(tenantId, authRecord);
         }
 
-        return new ChainedTokenCredential(
-            CreateDefaultCredential(tenantId),
-            CreateBrowserCredential(tenantId, authRecord));
+        var creds = new List<TokenCredential>();
+        var vsCodeCred = CreateVsCodeBrokerCredential(tenantId);
+        bool isVsCodeContext = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSCODE_PID"));
+
+        if (isVsCodeContext && vsCodeCred != null)
+        {
+            creds.Add(vsCodeCred);
+            creds.Add(CreateDefaultCredential(tenantId));
+        }
+        else
+        {
+            creds.Add(CreateDefaultCredential(tenantId));
+            if (vsCodeCred != null)
+            {
+                creds.Add(vsCodeCred);
+            }
+        }
+        creds.Add(CreateBrowserCredential(tenantId, authRecord));
+        return new ChainedTokenCredential(creds.ToArray());
     }
 
     private static string TokenCacheName = "azure-mcp-msal.cache";
@@ -122,20 +138,20 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
 
     private static TokenCredential? CreateVsCodeBrokerCredential(string? tenantId)
     {
-        // VS Code Azure extension client ID
         const string vsCodeClientId = "aebc6443-996d-45c2-90f0-388ff96faa56";
-        string authRecordPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".azure",
-            "ms-azuretools.vscode-azureresourcegroups",
-            "authRecord.json");
-
+        string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string authRecordPath = Path.Combine(userProfile, ".azure", "ms-azuretools.vscode-azureresourcegroups", "authRecord.json");
         if (!File.Exists(authRecordPath))
         {
-            return null;
+            // Try .Azure if .azure is not present
+            authRecordPath = Path.Combine(userProfile, ".Azure", "ms-azuretools.vscode-azureresourcegroups", "authRecord.json");
+            if (!File.Exists(authRecordPath))
+            {
+                return null;
+            }
         }
 
-        AuthenticationRecord? authRecord = null;
+        AuthenticationRecord? authRecord;
         try
         {
             using var stream = File.OpenRead(authRecordPath);
@@ -143,28 +159,52 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         }
         catch
         {
+            // Deserialization failed
             return null;
         }
 
-        // Fallback to tenantId from auth record if not provided
+        if (authRecord is null)
+            return null;
+
+        // Validate client ID
+        if (!string.Equals(authRecord.ClientId, vsCodeClientId, StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        // Validate tenant ID if present
+        if (!string.IsNullOrEmpty(authRecord.TenantId) && !IsValidTenantId(authRecord.TenantId))
+            return null;
+
+        // Prefer explicit tenantId, else use from auth record
         string? effectiveTenantId = !string.IsNullOrEmpty(tenantId)
             ? tenantId
-            : authRecord?.TenantId;
+            : authRecord.TenantId;
 
-        var brokerOptions = new InteractiveBrowserCredentialBrokerOptions(0)
+        var options = new InteractiveBrowserCredentialBrokerOptions(0)
         {
             ClientId = vsCodeClientId,
             TenantId = effectiveTenantId,
-            AuthenticationRecord = authRecord,
-            TokenCachePersistenceOptions = new TokenCachePersistenceOptions()
-            {
-                Name = "azure-mcp-msal.cache",
-            }
+            AuthenticationRecord = authRecord
         };
 
-        var browserCredential = new InteractiveBrowserCredential(brokerOptions);
-
-        // Optional: set a timeout if desired
-        return browserCredential;
+        return new InteractiveBrowserCredential(options);
     }
+
+    private static bool IsValidTenantId(string tenantId)
+    {
+        foreach (char c in tenantId)
+        {
+            if (!IsValidTenantCharacter(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Helper to validate tenant ID: only hex digits and dashes allowed
+    private static bool IsValidTenantCharacter(char c)
+    {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '.') || (c == '-');
+    }
+
 }
