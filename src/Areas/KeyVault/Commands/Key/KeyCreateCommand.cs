@@ -71,8 +71,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var service = context.GetService<IKeyVaultService>();
-            var key = await service.CreateKey(
+            var keyVaultService = context.GetService<IKeyVaultService>();
+            var key = await keyVaultService.CreateKey(
                 options.VaultName!,
                 options.KeyName!,
                 options.KeyType!,
@@ -81,7 +81,14 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new KeyCreateCommandResult(key.Name, key.KeyType.ToString(), key.Properties.Enabled, key.Properties.NotBefore, key.Properties.ExpiresOn, key.Properties.CreatedOn, key.Properties.UpdatedOn),
+                new KeyCreateCommandResult(
+                    key.Name,
+                    key.KeyType.ToString(),
+                    key.Properties.Enabled,
+                    key.Properties.NotBefore,
+                    key.Properties.ExpiresOn,
+                    key.Properties.CreatedOn,
+                    key.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.KeyCreateCommandResult);
         }
         catch (Exception ex)
