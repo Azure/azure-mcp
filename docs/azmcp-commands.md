@@ -23,22 +23,74 @@ The following options are available for all commands:
 ## Available Commands
 
 ### Server Operations
+
+The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
+
+#### Default Mode
+
+Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
+
 ```bash
-# Start the MCP Server
+# Start MCP Server with all tools exposed individually
 azmcp server start \
     [--transport <transport>] \
     [--port <port>] \
-    [--service <service-name>] \
     [--read-only]
 ```
 
-> **Note:** Replace `<service-name>` with an available top level command group.
-> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+#### Service Mode
+
+Exposes only tools for specific Azure services. Use multiple `--service` parameters to include multiple services.
+
+```bash
+# Start MCP Server with only Storage tools
+azmcp server start \
+    --service storage \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Start MCP Server with Storage and Key Vault tools
+azmcp server start \
+    --service storage \
+    --service keyvault \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### Service Proxy Mode
+
+Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
+
+```bash
+# Start MCP Server with service proxy tools
+azmcp server start \
+    --service proxy \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### Single Tool Proxy Mode
+
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+
+```bash
+# Start MCP Server with single Azure tool proxy
+azmcp server start \
+    --service azure \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+> **Note:**
 >
-> To enable single tool proxy mode set `--service` parameter to `azure`.
-> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
->
-> When launched with the `--read-only` flag the tool list will be filtered to only contain tools that provide read only tool annotation.
+> - For service mode, replace `<service-name>` with available top level command groups. Run `azmcp -h` to review available services. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
+> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
+> - Multiple `--service` parameters can be used together to expose tools for multiple specific services.
+
 
 ### Subscription Management
 ```bash
