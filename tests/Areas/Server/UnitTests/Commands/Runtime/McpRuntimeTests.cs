@@ -17,8 +17,9 @@ using ModelContextProtocol.Server;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.Runtime;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Runtime;
 
+[Trait("Area", "Server")]
 public class McpRuntimeTests
 {
     private static ServiceProvider CreateServiceProvider()

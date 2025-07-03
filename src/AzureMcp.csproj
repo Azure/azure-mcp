@@ -17,6 +17,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
+    <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
   </PropertyGroup>
 
   <!-- Debug configuration -->

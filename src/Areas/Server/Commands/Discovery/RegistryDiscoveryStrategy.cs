@@ -48,7 +48,7 @@ public sealed class RegistryDiscoveryStrategy() : BaseDiscoveryStrategy()
         }
 
         await using var stream = assembly.GetManifestResourceStream(resourceName)!;
-        var registry = await JsonSerializer.DeserializeAsync(stream, RegistryJsonContext.Default.RegistryRoot);
+        var registry = await JsonSerializer.DeserializeAsync(stream, ServerJsonContext.Default.RegistryRoot);
 
         if (registry?.Servers != null)
         {

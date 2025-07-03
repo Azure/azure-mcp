@@ -8,8 +8,9 @@ using ModelContextProtocol.Client;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.Discovery;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
 
+[Trait("Area", "Server")]
 public class BaseDiscoveryStrategyTests
 {
     private static IMcpServerProvider CreateMockServerProvider(string name, string id = "", string description = "Test server")

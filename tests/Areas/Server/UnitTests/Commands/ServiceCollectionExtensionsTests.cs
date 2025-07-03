@@ -13,8 +13,9 @@ using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands;
 
+[Trait("Area", "Server")]
 public class ServiceCollectionExtensionsTests
 {
     // TransportTypes is internal, so we'll use strings directly

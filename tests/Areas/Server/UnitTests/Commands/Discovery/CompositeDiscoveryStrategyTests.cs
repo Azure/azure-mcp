@@ -9,8 +9,9 @@ using AzureMcp.Areas.Server.Commands.Discovery;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.Discovery;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
 
+[Trait("Area", "Server")]
 public class CompositeDiscoveryStrategyTests
 {
     private static IMcpDiscoveryStrategy CreateMockStrategy(params IMcpServerProvider[] providers)

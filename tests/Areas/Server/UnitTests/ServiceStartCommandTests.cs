@@ -7,11 +7,7 @@ using AzureMcp.Areas.Server.Commands;
 using AzureMcp.Models.Option;
 using Xunit;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/ServiceStartCommandTests.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests;
-========
-namespace AzureMcp.Tests.Areas.Server;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/ServiceStartCommandTests.cs
 
 [Trait("Area", "Server")]
 public class ServiceStartCommandTests

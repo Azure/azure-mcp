@@ -9,11 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/CommandFactoryHelpers.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests;
-========
-namespace AzureMcp.Tests.Areas.Server;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/CommandFactoryHelpers.cs
 
 internal class CommandFactoryHelpers
 {

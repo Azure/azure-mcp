@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.Discovery;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
 
+[Trait("Area", "Server")]
 public class RegistryDiscoveryStrategyTests
 {
     private static RegistryDiscoveryStrategy CreateStrategy() => new();
