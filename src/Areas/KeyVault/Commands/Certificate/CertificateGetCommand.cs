@@ -70,12 +70,16 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
             context.Response.Results = ResponseResult.Create(
                 new CertificateGetCommandResult(
                     certificate.Name,
+                    certificate.Id,
+                    certificate.KeyId,
+                    certificate.SecretId,
                     certificate.Properties.Enabled,
                     certificate.Properties.NotBefore,
                     certificate.Properties.ExpiresOn,
                     certificate.Properties.CreatedOn,
                     certificate.Properties.UpdatedOn,
-                    certificate.Policy?.Subject),
+                    certificate.Policy.Subject,
+                    certificate.Policy.IssuerName),
                 KeyVaultJsonContext.Default.CertificateGetCommandResult);
         }
         catch (Exception ex)
@@ -87,5 +91,5 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
         return context.Response;
     }
 
-    internal record CertificateGetCommandResult(string Name, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn, string? Subject);
+    internal record CertificateGetCommandResult(string Name, Uri Id, Uri KeyId, Uri SecretId, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn, string Subject, string IssuerName);
 }

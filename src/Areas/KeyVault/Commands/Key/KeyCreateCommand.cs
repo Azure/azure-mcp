@@ -21,6 +21,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 
     public override string Name => "create";
 
+    public override string Title => CommandTitle;
+
     public override string Description =>
         """
         Create a new key in an Azure Key Vault. This command creates a key with the specified name and type
@@ -37,8 +39,6 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         - EC: Elliptic Curve key pair
         - OCT: ES cryptographic pair
         """;
-
-    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {

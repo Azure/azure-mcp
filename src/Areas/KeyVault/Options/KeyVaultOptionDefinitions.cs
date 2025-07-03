@@ -12,7 +12,6 @@ public static class KeyVaultOptionDefinitions
     public const string SecretNameParam = "secret";
     public const string SecretValueParam = "value";
     public const string CertificateNameParam = "certificate";
-    public const string SubjectParam = "subject";
 
     public static readonly Option<string> VaultName = new(
         $"--{VaultNameParam}",
@@ -65,14 +64,6 @@ public static class KeyVaultOptionDefinitions
     public static readonly Option<string> CertificateName = new(
         $"--{CertificateNameParam}",
         "The name of the certificate."
-    )
-    {
-        IsRequired = true
-    };
-
-    public static readonly Option<string> Subject = new(
-        $"--{SubjectParam}",
-        "The subject name of the certificate (e.g., CN=example.com)."
     )
     {
         IsRequired = true

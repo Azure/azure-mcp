@@ -115,13 +115,13 @@ public class CertificateGetCommandTests
         public string Name { get; set; } = string.Empty;
 
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Uri Id { get; set; } = new Uri("about:blank");
 
         [JsonPropertyName("keyId")]
-        public string KeyId { get; set; } = string.Empty;
+        public Uri KeyId { get; set; } = new Uri("about:blank");
 
         [JsonPropertyName("secretId")]
-        public string SecretId { get; set; } = string.Empty;
+        public Uri SecretId { get; set; } = new Uri("about:blank");
 
         [JsonPropertyName("enabled")]
         public bool? Enabled { get; set; }
@@ -137,5 +137,11 @@ public class CertificateGetCommandTests
 
         [JsonPropertyName("updatedOn")]
         public DateTimeOffset? UpdatedOn { get; set; }
+
+        [JsonPropertyName("subject")]
+        public string Subject { get; set; } = string.Empty;
+
+        [JsonPropertyName("issuerName")]
+        public string IssuerName { get; set; } = string.Empty;
     }
 }
