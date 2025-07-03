@@ -38,9 +38,9 @@ public class CertificateListCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new (_logger);
-        _context = new (_serviceProvider);
-        _parser = new (_command.GetCommand());
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
