@@ -3,6 +3,7 @@
 
 using Azure.Core;
 using Azure.Developer.LoadTesting;
+using AzureMcp.Models.LoadTesting.LoadTest;
 using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Models.LoadTesting.LoadTestRun;
 using AzureMcp.Options;
@@ -167,5 +168,32 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
 
         var loadTestRun = loadTestRunResponse.Value.ToString();
         return JsonConvert.DeserializeObject<TestRun>(loadTestRun) ?? new TestRun();
+    }
+
+    public async Task<Test> GetTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
+        if (loadTestResource.Count == 0)
+        {
+            throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+        }
+        var dataPlaneUri = loadTestResource[0].Properties?.DataPlaneUri;
+        if (string.IsNullOrEmpty(dataPlaneUri))
+        {
+            throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
+        }
+
+        var credential = await GetCredential(tenant);
+        var loadTestClient = new LoadTestAdministrationClient(new Uri($"https://{dataPlaneUri}"), credential);
+
+        var loadTestResponse = await loadTestClient.GetTestAsync(testId);
+        if (loadTestResponse == null || loadTestResponse.IsError)
+        {
+            throw new Exception($"Failed to retrieve Azure Load Test: {loadTestResponse}");
+        }
+
+        var loadTest = loadTestResponse.Content.ToString();
+        return JsonConvert.DeserializeObject<Test>(loadTest) ?? new Test();
     }
 }

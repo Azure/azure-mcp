@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Options.LoadTesting.LoadTest;
+using AzureMcp.Options.LoadTesting.LoadTestResource;
 using AzureMcp.Models.LoadTesting.LoadTestResource;
 using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.LoadTesting.LoadTestResource;
 public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> logger)
-    : BaseLoadTestingCommand<LoadTestListOptions>
+    : BaseLoadTestingCommand<TestResourceListOptions>
 {
     private const string _commandTitle = "Test Resource List";
     private readonly ILogger<TestResourceListCommand> _logger = logger;

@@ -276,6 +276,9 @@ azmcp loadtesting loadtest
 # List load test resources 
 azmcp loadtesting testresource list --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name>
 
+# Get load test
+azmcp loadtesting test get --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id>
+
 # Get load test run
 azmcp loadtesting testrun get --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --testrun-id <testrun-id>
 

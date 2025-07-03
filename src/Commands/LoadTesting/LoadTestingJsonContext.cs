@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Commands.LoadTesting.LoadTest;
 using AzureMcp.Commands.LoadTesting.LoadTestResource;
 using AzureMcp.Commands.LoadTesting.LoadTestRun;
 
@@ -12,6 +13,7 @@ namespace AzureMcp.Commands.LoadTesting;
 [JsonSerializable(typeof(TestRunCreateCommand.TestRunCreateCommandResult))]
 [JsonSerializable(typeof(TestRunListCommand.TestRunListCommandResult))]
 [JsonSerializable(typeof(TestRunUpdateCommand.TestRunUpdateCommandResult))]
+[JsonSerializable(typeof(TestGetCommand.TestGetCommandResult))]
 internal sealed partial class LoadTestJsonContext : JsonSerializerContext
 {
 }
