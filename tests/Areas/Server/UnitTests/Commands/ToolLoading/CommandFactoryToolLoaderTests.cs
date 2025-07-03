@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
+using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using AzureMcp.Tests.Areas.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,10 +24,11 @@ public class CommandFactoryToolLoaderTests
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory(serviceProvider);
+        var telemetryService = new CommandFactoryHelpers.NoOpTelemetryService();
         var logger = loggerFactory.CreateLogger<CommandFactoryToolLoader>();
         var serviceOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ServiceStartOptions());
 
-        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, serviceOptions, logger);
+        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, serviceOptions, telemetryService, logger);
         return (toolLoader, commandFactory);
     }
 
@@ -214,5 +218,81 @@ public class CommandFactoryToolLoaderTests
             // It means the filtering is working as expected
             Assert.True(true, "Service filtering correctly rejected non-existent service groups");
         }
+    }
+
+    [Fact]
+    public async Task CallToolHandler_WithValidTool_ExecutesSuccessfully()
+    {
+        var (toolLoader, commandFactory) = CreateToolLoader();
+
+        // Get the first available command for testing
+        var availableCommands = CommandFactory.GetVisibleCommands(commandFactory.AllCommands);
+        var firstCommand = availableCommands.First();
+
+        var mockServer = Substitute.For<ModelContextProtocol.Server.IMcpServer>();
+        var request = new ModelContextProtocol.Server.RequestContext<CallToolRequestParams>(mockServer)
+        {
+            Params = new CallToolRequestParams
+            {
+                Name = firstCommand.Key,
+                Arguments = new Dictionary<string, JsonElement>()
+            }
+        };
+
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Content);
+        Assert.NotEmpty(result.Content);
+    }
+
+    [Fact]
+    public async Task CallToolHandler_WithNullParams_ReturnsError()
+    {
+        var (toolLoader, _) = CreateToolLoader();
+
+        var mockServer = Substitute.For<ModelContextProtocol.Server.IMcpServer>();
+        var request = new ModelContextProtocol.Server.RequestContext<CallToolRequestParams>(mockServer)
+        {
+            Params = null
+        };
+
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = result.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.Contains("Cannot call tools with null parameters", textContent.Text);
+    }
+
+    [Fact]
+    public async Task CallToolHandler_WithUnknownTool_ReturnsError()
+    {
+        var (toolLoader, _) = CreateToolLoader();
+
+        var mockServer = Substitute.For<ModelContextProtocol.Server.IMcpServer>();
+        var request = new ModelContextProtocol.Server.RequestContext<CallToolRequestParams>(mockServer)
+        {
+            Params = new CallToolRequestParams
+            {
+                Name = "non-existent-tool",
+                Arguments = new Dictionary<string, JsonElement>()
+            }
+        };
+
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = result.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.Contains("Could not find command: non-existent-tool", textContent.Text);
     }
 }
