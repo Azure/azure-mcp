@@ -58,6 +58,20 @@ public interface IKeyVaultService
         RetryPolicyOptions? retryPolicy = null);
 
     /// <summary>
+    /// List all secrets in a Key Vault.
+    /// </summary>
+    /// <param name="vaultName">Name of the Key Vault.</param>
+    /// <param name="subscriptionId">Subscription ID containing the Key Vault.</param>
+    /// <param name="tenantId">Optional tenant ID for cross-tenant operations.</param>
+    /// <param name="retryPolicy">Optional retry policy for the operation.</param>
+    /// <returns>List of secret names in the vault.</returns>
+    Task<List<string>> ListSecrets(
+        string vaultName,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    /// <summary>
     /// Gets a secret from a Key Vault.
     /// </summary>
     /// <param name="vaultName">The name of the Key Vault</param>

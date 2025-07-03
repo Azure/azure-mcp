@@ -99,6 +99,33 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         }
     }
 
+    public async Task<List<string>> ListSecrets(
+        string vaultName,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(vaultName, subscriptionId);
+
+        var credential = await GetCredential(tenantId);
+        var client = new SecretClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
+        var secrets = new List<string>();
+
+        try
+        {
+            await foreach (var secret in client.GetPropertiesOfSecretsAsync())
+            {
+                secrets.Add(secret.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving secrets from vault {vaultName}: {ex.Message}", ex);
+        }
+
+        return secrets;
+    }
+
     public async Task<string> GetSecret(
         string vaultName,
         string secretName,
