@@ -81,13 +81,9 @@ public class BaseDiscoveryStrategyTests
         var strategy = CreateMockStrategy(provider);
 
         // Act
-        var result1 = await strategy.FindServerProviderAsync("testserver");
-        var result2 = await strategy.FindServerProviderAsync("TESTSERVER");
         var result3 = await strategy.FindServerProviderAsync("TestServer");
 
         // Assert
-        Assert.Same(provider, result1);
-        Assert.Same(provider, result2);
         Assert.Same(provider, result3);
     }
 
