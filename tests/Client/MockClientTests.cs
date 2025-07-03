@@ -111,7 +111,7 @@ public class MockClientTests
                 Assert.NotNull(callToolResponse);
                 Assert.NotEmpty(callToolResponse.Content);
 
-                string? jsonContent = GetApplicationJsonText(callToolResponse.Content);
+                string? jsonContent = McpTestUtilities.GetFirstText(callToolResponse.Content);
                 Assert.NotNull(jsonContent);
 
                 var json = JsonSerializer.Deserialize<JsonNode>(jsonContent);

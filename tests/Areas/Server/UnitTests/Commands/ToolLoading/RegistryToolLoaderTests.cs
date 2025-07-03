@@ -11,8 +11,9 @@ using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.ToolLoading;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.ToolLoading;
 
+[Trait("Area", "Server")]
 public class RegistryToolLoaderTests
 {
     private static (RegistryToolLoader toolLoader, IMcpDiscoveryStrategy mockDiscoveryStrategy) CreateToolLoader(ServiceStartOptions? options = null)

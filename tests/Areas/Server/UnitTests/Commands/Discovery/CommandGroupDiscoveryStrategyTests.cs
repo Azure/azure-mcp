@@ -13,8 +13,9 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.Discovery;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
 
+[Trait("Area", "Server")]
 public class CommandGroupDiscoveryStrategyTests
 {
     private static string GetAzmcpExecutablePath()

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,16 @@ using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
+
+[JsonSerializable(typeof(Dictionary<string, object?>))]
+[JsonSourceGenerationOptions(
+    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    WriteIndented = true
+)]
+internal partial class RegistryToolLoaderSerializationContext : JsonSerializerContext
+{
+}
 
 /// <summary>
 /// RegistryToolLoader is a tool loader that retrieves tools from a registry.
@@ -128,7 +139,7 @@ public sealed class RegistryToolLoader(
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), SingleProxyToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
+            return JsonSerializer.Deserialize(parametersElem.GetRawText(), RegistryToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
         }
 
         return [];

@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
-using Json.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol;
@@ -13,68 +11,57 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-[JsonSerializable(typeof(JsonSchema))]
-[JsonSerializable(typeof(Tool))]
-[JsonSerializable(typeof(List<Tool>))]
-[JsonSerializable(typeof(Dictionary<string, object?>))]
-[JsonSourceGenerationOptions(
-    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    WriteIndented = true
-)]
-internal partial class ServerToolLoaderSerializationContext : JsonSerializerContext
-{
-}
-
 public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : IToolLoader
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
     private readonly ILogger<ServerToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly string ToolCallProxySchemaJson = JsonSerializer.Serialize(ToolCallProxySchema, ServerToolLoaderSerializationContext.Default.JsonSchema);
+    private const string ToolCallProxySchema = """
+        {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "description": "The name of the tool to call."
+            },
+            "parameters": {
+              "type": "object",
+              "description": "A key/value pair of parameters names nad values to pass to the tool call command."
+            }
+          },
+          "additionalProperties": false
+        }
+        """;
 
     public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
     public string[]? Namespace { get; set; } = options?.Value?.Service ?? null;
 
-    private static readonly JsonSchema ToolSchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("intent", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Required()
-                .Description("The intent of the operation to perform.")
-            ),
-            ("command", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The sub command to invoke to within the tool.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("Wrapped set of arguments to pass to the sub command.")
-            ),
-            ("learn", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Boolean)
-                .Description("When set to true returns a list of available sub commands and their parameters.")
-                .Default(false)
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
-
-    private static readonly JsonSchema ToolCallProxySchema = new JsonSchemaBuilder()
-        .Type(SchemaValueType.Object)
-        .Properties(
-            ("tool", new JsonSchemaBuilder()
-                .Type(SchemaValueType.String)
-                .Description("The name of the tool to call.")
-            ),
-            ("parameters", new JsonSchemaBuilder()
-                .Type(SchemaValueType.Object)
-                .Description("A key/value pair of parameters names nad values to pass to the tool call command.")
-            )
-        )
-        .AdditionalProperties(false)
-        .Build();
+    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
+        {
+            "type": "object",
+            "properties": {
+            "intent": {
+                "type": "string",
+                "description": "The intent of the azure operation to perform."
+            },
+            "command": {
+                "type": "string",
+                "description": "The command to execute against the specified tool."
+            },
+            "parameters": {
+                "type": "object",
+                "description": "The parameters to pass to the tool command."
+            },
+            "learn": {
+                "type": "boolean",
+                "description": "To learn about the tool and its supported child tools and parameters.",
+                "default": false
+            }
+            },
+            "required": ["intent"],
+            "additionalProperties": false
+        }
+        """, ServerJsonContext.Default.JsonElement);
 
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
@@ -96,7 +83,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                     To invoke a command, set "command" and wrap its args in "parameters".
                     Set "learn=true" to discover available sub commands.
                     """,
-                InputSchema = JsonSerializer.SerializeToElement(ToolSchema, ServerToolLoaderSerializationContext.Default.JsonSchema),
+                InputSchema = ToolSchema,
             };
 
             allToolsResponse.Tools.Add(tool);
@@ -373,7 +360,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     private async Task<string> GetChildToolListJsonAsync(RequestContext<CallToolRequestParams> request, string tool)
     {
         var listTools = await GetChildToolListAsync(request, tool);
-        return JsonSerializer.Serialize(listTools, SingleProxyToolLoaderSerializationContext.Default.ListToolsResult);
+        return JsonSerializer.Serialize(listTools, ServerJsonContext.Default.ListTool);
     }
 
     private async Task<Tool> GetChildToolAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
@@ -385,7 +372,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     private async Task<string> GetChildToolJsonAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
     {
         var tool = await GetChildToolAsync(request, toolName, commandName);
-        return JsonSerializer.Serialize(tool, ServerToolLoaderSerializationContext.Default.Tool);
+        return JsonSerializer.Serialize(tool, ServerJsonContext.Default.Tool);
     }
 
     private static bool SupportsSampling(IMcpServer server)
@@ -418,8 +405,8 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
         var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerToolLoaderSerializationContext.Default.DictionaryStringObject);
-        var availableToolsJson = JsonSerializer.Serialize(availableTools, ServerToolLoaderSerializationContext.Default.ListTool);
+        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        var availableToolsJson = JsonSerializer.Serialize(availableTools, ServerJsonContext.Default.ListTool);
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -440,7 +427,9 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                             - If no command matches, return JSON schema with "Unknown" tool name.
 
                             Result Schema:
-                            {ToolCallProxySchemaJson}                            Intent:
+                            {ToolCallProxySchema}
+
+                            Intent:
                             {intent ?? "No specific intent provided"}
 
                             Known Parameters:
@@ -470,7 +459,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
+                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -490,7 +479,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerToolLoaderSerializationContext.Default.DictionaryStringObject) ?? [];
+            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
         }
 
         return [];

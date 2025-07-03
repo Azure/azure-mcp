@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 using System.Collections;
 using AzureMcp.Areas.Server.Commands;
 using Xunit;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/TypeToJsonTypeMapperTests.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests;
-========
-namespace AzureMcp.Tests.Areas.Server;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/TypeToJsonTypeMapperTests.cs
 
 [Trait("Area", "Server")]
 public class TypeToJsonTypeMapperTests

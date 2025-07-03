@@ -11,8 +11,9 @@ using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Server.Commands.ToolLoading;
+namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.ToolLoading;
 
+[Trait("Area", "Server")]
 public class SingleProxyToolLoaderTests
 {
     private static (SingleProxyToolLoader toolLoader, IMcpDiscoveryStrategy discoveryStrategy) CreateToolLoader(bool useRealDiscovery = true)

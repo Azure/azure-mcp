@@ -5,11 +5,7 @@ using System.Text.Json;
 using AzureMcp.Areas.Server.Models;
 using Xunit;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/Models/RegistryRootTests.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Models;
-========
-namespace AzureMcp.Tests.Areas.Server.Models;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/Models/RegistryRootTests.cs
 
 [Trait("Area", "Server")]
 public class RegistryRootTests

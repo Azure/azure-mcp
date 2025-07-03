@@ -5,11 +5,7 @@ using System.Reflection;
 using ModelContextProtocol.Server;
 using Xunit;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/McpServerToolAttributeTests.cs
 namespace AzureMcp.Tests.Areas.Server.UnitTests;
-========
-namespace AzureMcp.Tests.Areas.Server;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/McpServerToolAttributeTests.cs
 
 [Trait("Area", "Server")]
 public class McpServerToolAttributeTests
