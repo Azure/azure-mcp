@@ -133,10 +133,25 @@ Update your mcp.json to point to the locally built azmcp executable. This setup 
 }
 ```
 
-An optional `--service` parameter can also be set to minimize the number of loaded tools for the MCP server.
+An optional `--service` parameter can be used to configure different server modes:
 
+**Default Mode** (no `--service` parameter):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start"
+      ]
+    }
+  }
+}
+```
 
-
+**Service Mode** (expose specific services):
 ```json
 {
   "servers": {
@@ -147,8 +162,45 @@ An optional `--service` parameter can also be set to minimize the number of load
         "server",
         "start",
         "--service",
-        "<service-name-1>",
-        "<optional-service-name-2>"
+        "storage",
+        "--service",
+        "keyvault"
+      ]
+    }
+  }
+}
+```
+
+**Service Proxy Mode** (collapse tools by namespace - useful for VS Code's 128 tool limit):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "proxy"
+      ]
+    }
+  }
+}
+```
+
+**Single Tool Proxy Mode** (single "azure" tool with internal routing):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--service",
+        "azure"
       ]
     }
   }
@@ -159,11 +211,14 @@ An optional `--service` parameter can also be set to minimize the number of load
 > On **Windows**, use `azmcp.exe`.
 > On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
 
-> **Note:** Replace `<service-name>` with an available top level command group.
-> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+> **Note:** For service mode, replace `<service-name>` with available top level command groups.
+> Run `azmcp -h` to review available services. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 >
-> To enable single tool proxy mode set `--service` parameter to `azure`.
-> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
+> **Service Modes:**
+> - **Default Mode**: No `--service` parameter - exposes all tools individually
+> - **Service Mode**: `--service <service-name>` - expose specific services (can use multiple `--service` parameters)
+> - **Service Proxy Mode**: `--service proxy` - collapse tools by namespace (useful for VS Code's 128 tool limit)
+> - **Single Tool Proxy Mode**: `--service azure` - single "azure" tool with internal routing
 
 #### 3. Start from IDE or Tooling
 
