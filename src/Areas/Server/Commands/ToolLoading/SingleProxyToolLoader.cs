@@ -70,9 +70,6 @@ public sealed class SingleProxyToolLoader : IToolLoader
         }
         """, ServerJsonContext.Default.JsonElement);
 
-    public bool ReadOnly { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public string? Namespace { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
     public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         var toolsResult = new ListToolsResult
