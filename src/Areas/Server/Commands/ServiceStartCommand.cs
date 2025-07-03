@@ -126,7 +126,6 @@ public sealed class ServiceStartCommand : BaseCommand
                 {
                     logging.ClearProviders();
                     logging.AddEventSourceLogger();
-                    logging.AddConsole();
                 })
                 .ConfigureServices(services =>
                 {
@@ -144,8 +143,6 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <param name="options">The server configuration options.</param>
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
-        services.AddSingleton<AzureEventSourceLogForwarder>();
-        services.AddHostedService<OtelService>();
         services.AddAzureMcpServer(options);
     }
 
@@ -156,41 +153,5 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         /// <inheritdoc />
         protected override Task ExecuteAsync(CancellationToken stoppingToken) => session.RunAsync(stoppingToken);
-    }
-
-    /// <summary>
-    /// Resolves and starts the OpenTelemetry services.
-    /// </summary>
-    private sealed class OtelService : BackgroundService
-    {
-        private readonly MeterProvider? _meterProvider;
-        private readonly TracerProvider? _tracerProvider;
-        private readonly LoggerProvider? _loggerProvider;
-        private readonly AzureEventSourceLogForwarder _logForwarder;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OtelService"/> class.
-        /// </summary>
-        /// <param name="provider">The service provider.</param>
-        public OtelService(IServiceProvider provider)
-        {
-            _meterProvider = provider.GetService<MeterProvider>();
-            _tracerProvider = provider.GetService<TracerProvider>();
-            _loggerProvider = provider.GetService<LoggerProvider>();
-            _logForwarder = provider.GetRequiredService<AzureEventSourceLogForwarder>();
-            _logForwarder.Start();
-        }
-
-        /// <inheritdoc />
-        protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
-
-        /// <inheritdoc />
-        public override void Dispose()
-        {
-            _meterProvider?.Dispose();
-            _tracerProvider?.Dispose();
-            _loggerProvider?.Dispose();
-            _logForwarder.Dispose();
-        }
     }
 }

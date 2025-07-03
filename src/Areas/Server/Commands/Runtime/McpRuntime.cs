@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Services.Telemetry;
@@ -52,10 +53,27 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="request">The request context containing the tool name and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>
-    public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        using var listActivity = _telemetry.StartActivity(ActivityName.ToolExecuted, request?.Server?.ClientInfo);
-        return _toolLoader.CallToolHandler(request!, cancellationToken);
+        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, request?.Server?.ClientInfo);
+
+        if (request?.Params == null)
+        {
+            var content = new TextContentBlock
+            {
+                Text = "Cannot call tools with null parameters.",
+            };
+
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
+
+            return new CallToolResult
+            {
+                Content = [content],
+                IsError = true,
+            };
+        }
+
+        return await _toolLoader.CallToolHandler(request!, cancellationToken);
     }
 
     /// <summary>
@@ -64,9 +82,9 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="request">The request context containing metadata and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the list of available tools.</returns>
-    public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        using var listActivity = _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
-        return _toolLoader.ListToolsHandler(request!, cancellationToken);
+        using var activity = _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
+        return await _toolLoader.ListToolsHandler(request!, cancellationToken);
     }
 }

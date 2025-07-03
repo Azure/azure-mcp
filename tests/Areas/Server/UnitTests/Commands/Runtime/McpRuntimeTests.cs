@@ -409,7 +409,7 @@ public class McpRuntimeTests
     }
 
     [Fact]
-    public async Task CallToolHandler_WithNullRequest_DelegatesToToolLoader()
+    public async Task CallToolHandler_WithNullRequest_ReturnsError()
     {
         // Arrange
         var serviceProvider = CreateServiceProvider();
@@ -418,16 +418,21 @@ public class McpRuntimeTests
         var options = CreateOptions();
         var runtime = new McpRuntime(mockToolLoader, options, CreateMockTelemetryService(), logger);
 
-        var expectedResult = new CallToolResult { Content = new List<ContentBlock>() };
-        mockToolLoader.CallToolHandler(null!, Arg.Any<CancellationToken>())
-            .Returns(new ValueTask<CallToolResult>(expectedResult));
-
         // Act
         var result = await runtime.CallToolHandler(null!, CancellationToken.None);
 
         // Assert
-        Assert.Equal(expectedResult, result);
-        await mockToolLoader.Received(1).CallToolHandler(null!, Arg.Any<CancellationToken>());
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = result.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.Contains("Cannot call tools with null parameters", textContent.Text);
+
+        // Verify that the tool loader was NOT called since the null request is handled at the runtime level
+        await mockToolLoader.DidNotReceive().CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
