@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using Azure.Core;
 using Azure.Developer.LoadTesting;
 using Azure.ResourceManager;
@@ -15,12 +16,8 @@ using Newtonsoft.Json;
 
 namespace AzureMcp.Services.Azure.LoadTesting;
 
-public class LoadTestingService(ISubscriptionService subscriptionService) : BaseAzureService, ILoadTestingService
+public class LoadTestingService() : BaseAzureService, ILoadTestingService
 {
-
-    private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
-    private const string ARMEndpoint = "https://management.azure.com";
-    private const string ControlPlaneApiVersion = "2022-12-01";
     public async Task<List<TestResource>> GetLoadTestResourcesAsync(string subscriptionId, string? resourceGroup = null, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId);
@@ -32,7 +29,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         {
             var resourceId = LoadTestingResource.CreateResourceIdentifier(subscriptionId, resourceGroup, testResourceName);
             var response = await client.GetLoadTestingResource(resourceId).GetAsync();
-
+            
             if (response == null)
             {
                 throw new Exception($"Failed to retrieve Azure Load Testing resources: {response}");
@@ -74,6 +71,34 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         }
     }
 
+    public async Task<TestResource> CreateOrUpdateLoadTestingResourceAsync(string subscriptionId, string resourceGroup, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, resourceGroup);
+
+        var credential = await GetCredential(tenant);
+
+        var client = new ArmClient(credential);
+        var rgResource = client.GetResourceGroupResource(ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup));
+        if (testResourceName == null)
+        {
+            testResourceName = "TestRun_" + DateTime.UtcNow.ToString("dd-MM-yyyy") + "_" + DateTime.UtcNow.ToString("HH-mm-ss");
+        }
+        var location = rgResource.Get().Value.Data.Location;
+        var response = await rgResource.GetLoadTestingResources().CreateOrUpdateAsync(WaitUntil.Completed, testResourceName, new LoadTestingResourceData(location));
+        if (response == null || response.Value == null)
+        {
+            throw new Exception($"Failed to create or update Azure Load Testing resource: {response}");
+        }
+
+        return new TestResource
+        {
+            Id = response.Value.Data.Id!,
+            Name = response.Value.Data.Name,
+            Location = response.Value.Data.Location,
+            DataPlaneUri = response.Value.Data.DataPlaneUri,
+            ProvisioningState = response.Value.Data.ProvisioningState?.ToString(),
+        };
+    }
     public async Task<TestRun> GetLoadTestRunAsync(string subscriptionId, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);

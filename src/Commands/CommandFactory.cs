@@ -424,6 +424,8 @@ public class CommandFactory
 
         resource.AddCommand("list", new LoadTesting.LoadTestResource.TestResourceListCommand(
             GetLogger<LoadTesting.LoadTestResource.TestResourceListCommand>()));
+        resource.AddCommand("create", new LoadTesting.LoadTestResource.TestResourceCreateCommand(
+            GetLogger<LoadTesting.LoadTestResource.TestResourceCreateCommand>()));
 
         resource = new CommandGroup(
             "test",
