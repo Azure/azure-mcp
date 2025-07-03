@@ -18,7 +18,11 @@ extends:
         value: $(Build.SourcesDirectory)
       - name: containerRegistry
         value: 'azuresdkimages'
-      - name: imageRepository
+
+      # Image can be deployed in environments like public, internal, staging, etc.
+      - name: deploymentEnvironment
+        value: 'public'
+      - name: imageName
         value: 'azure/azure-mcp'
       - name: imageTag
         value: $(build.buildid)
@@ -36,7 +40,7 @@ extends:
           - output: containerImage
             image: image:tag
             remoteImage:
-            - $(containerRegistry).azurecr.io/$(imageRepository):$(imageTag)
+            - $(containerRegistry).azurecr.io/$(deploymentEnvironment)/$(imageName):$(imageTag)
 
         steps:
 
