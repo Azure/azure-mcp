@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.Security.KeyVault.Certificates;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Secrets;
-using Azure.Security.KeyVault.Certificates;
 using AzureMcp.Options;
 
 namespace AzureMcp.Areas.KeyVault.Services;

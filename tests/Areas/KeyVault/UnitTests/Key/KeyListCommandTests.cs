@@ -26,7 +26,7 @@ public class KeyListCommandTests
     private readonly KeyListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    
+
     private readonly string _knownSubscriptionId = "knownSubscriptionId";
     private readonly string _knownVaultName = "knownVaultName";
 

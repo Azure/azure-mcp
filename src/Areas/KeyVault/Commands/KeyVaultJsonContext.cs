@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Areas.KeyVault.Commands.Certificate;
 using AzureMcp.Areas.KeyVault.Commands.Key;
 using AzureMcp.Areas.KeyVault.Commands.Secret;
-using AzureMcp.Areas.KeyVault.Commands.Certificate;
 
 namespace AzureMcp.Commands.KeyVault;
 
