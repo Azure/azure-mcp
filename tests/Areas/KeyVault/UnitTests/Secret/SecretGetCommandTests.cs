@@ -4,6 +4,7 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Azure.Security.KeyVault.Secrets;
 using AzureMcp.Areas.KeyVault.Commands.Secret;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
@@ -30,19 +31,21 @@ public class SecretGetCommandTests
     private const string _knownVaultName = "knownVaultName";
     private const string _knownSecretName = "knownSecretName";
     private const string _knownSecretValue = "knownSecretValue";
+    private readonly KeyVaultSecret _knownKeyVaultSecret;
 
     public SecretGetCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
         _logger = Substitute.For<ILogger<SecretGetCommand>>();
-
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new (_logger);
-        _context = new (_serviceProvider);
-        _parser = new (_command.GetCommand());
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
+
+        _knownKeyVaultSecret = new KeyVaultSecret(_knownSecretName, _knownSecretValue);
     }
 
     [Fact]
@@ -55,7 +58,7 @@ public class SecretGetCommandTests
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(_knownSecretValue);
+            .Returns(_knownKeyVaultSecret);
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,

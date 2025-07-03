@@ -100,7 +100,7 @@ public interface IKeyVaultService
     /// <param name="tenantId">Optional tenant ID for cross-tenant operations</param>
     /// <param name="retryPolicy">Optional retry policy for the operation</param>
     /// <returns>The secret value</returns>
-    Task<string> GetSecret(
+    Task<KeyVaultSecret> GetSecret(
         string vaultName,
         string secretName,
         string subscriptionId,
