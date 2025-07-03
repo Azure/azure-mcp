@@ -42,6 +42,7 @@ public static class AzureMcpServiceCollectionExtensions
 
         services.AddSingleton<SingleProxyToolLoader>();
         services.AddSingleton<CompositeToolLoader>();
+        services.AddSingleton<ServerToolLoader>();
 
         // Register server discovery strategies
         services.AddSingleton<CommandGroupDiscoveryStrategy>();
@@ -137,6 +138,8 @@ public static class AzureMcpServiceCollectionExtensions
         else
         {
             mcpServerBuilder.WithHttpTransport();
+
+            // Port configuration is handled at the Kestrel level in ServiceStartCommand.cs
         }
 
         return services;
