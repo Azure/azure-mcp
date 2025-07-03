@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
@@ -18,19 +19,20 @@ namespace AzureMcp.Services.Azure.Authentication;
 /// 1. DefaultAzureCredential chain (environment variables, managed identity, CLI, etc.)
 /// 2. Interactive browser authentication with Identity Broker (supporting Windows Hello, biometrics, etc.)
 /// </remarks>
-public class CustomChainedCredential(string? tenantId = null) : TokenCredential
+public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChainedCredential>? logger = null) : TokenCredential
 {
     private TokenCredential? _credential;
+    private readonly ILogger<CustomChainedCredential>? _logger = logger;
 
     public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        _credential ??= CreateCredential(tenantId);
+        _credential ??= CreateCredential(tenantId, _logger);
         return _credential.GetToken(requestContext, cancellationToken);
     }
 
     public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
     {
-        _credential ??= CreateCredential(tenantId);
+        _credential ??= CreateCredential(tenantId, _logger);
         return _credential.GetTokenAsync(requestContext, cancellationToken);
     }
 
@@ -45,7 +47,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         return EnvironmentHelpers.GetEnvironmentVariableAsBool(OnlyUseBrokerCredentialEnvVarName);
     }
 
-    private static TokenCredential CreateCredential(string? tenantId)
+    private static TokenCredential CreateCredential(string? tenantId, ILogger<CustomChainedCredential>? logger = null)
     {
         string? authRecordJson = Environment.GetEnvironmentVariable(AuthenticationRecordEnvVarName);
         AuthenticationRecord? authRecord = null;
@@ -62,11 +64,14 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         }
 
         var creds = new List<TokenCredential>();
-        var vsCodeCred = CreateVsCodeBrokerCredential(tenantId);
+        var vsCodeCred = CreateVsCodeBrokerCredential(tenantId, logger);
+
+        // Check if we are running in a VS Code context. VSCODE_PID is set by VS Code when launching processes, and is a reliable indicator for VS Code-hosted processes.
         bool isVsCodeContext = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VSCODE_PID"));
 
         if (isVsCodeContext && vsCodeCred != null)
         {
+            logger?.LogDebug("VS Code context detected (VSCODE_PID set). Prioritizing VS Code Broker Credential in chain.");
             creds.Add(vsCodeCred);
             creds.Add(CreateDefaultCredential(tenantId));
         }
@@ -136,7 +141,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
         return new DefaultAzureCredential(defaultCredentialOptions);
     }
 
-    private static TokenCredential? CreateVsCodeBrokerCredential(string? tenantId)
+    private static TokenCredential? CreateVsCodeBrokerCredential(string? tenantId, Microsoft.Extensions.Logging.ILogger<CustomChainedCredential>? logger = null)
     {
         const string vsCodeClientId = "aebc6443-996d-45c2-90f0-388ff96faa56";
         string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -147,6 +152,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             authRecordPath = Path.Combine(userProfile, ".Azure", "ms-azuretools.vscode-azureresourcegroups", "authRecord.json");
             if (!File.Exists(authRecordPath))
             {
+                logger?.LogDebug("VS Code authRecord.json not found in either .azure or .Azure directory.");
                 return null;
             }
         }
@@ -157,25 +163,27 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             using var stream = File.OpenRead(authRecordPath);
             authRecord = AuthenticationRecord.Deserialize(stream);
         }
-        catch
+        catch (Exception ex)
         {
-            // Deserialization failed
+            logger?.LogDebug(ex, "Failed to deserialize VS Code authRecord.json at {Path}", authRecordPath);
             return null;
         }
 
         if (authRecord is null)
+        {
+            logger?.LogDebug("Deserialized VS Code AuthenticationRecord is null from {Path}", authRecordPath);
             return null;
+        }
 
         // Validate client ID
         if (!string.Equals(authRecord.ClientId, vsCodeClientId, StringComparison.OrdinalIgnoreCase))
+        {
+            logger?.LogDebug("VS Code AuthenticationRecord clientId mismatch. Expected {Expected}, got {Actual}", vsCodeClientId, authRecord.ClientId);
             return null;
-
-        // Validate tenant ID if present
-        if (!string.IsNullOrEmpty(authRecord.TenantId) && !IsValidTenantId(authRecord.TenantId))
-            return null;
+        }
 
         // Prefer explicit tenantId, else use from auth record
-        string? effectiveTenantId = !string.IsNullOrEmpty(tenantId)
+        string effectiveTenantId = !string.IsNullOrEmpty(tenantId)
             ? tenantId
             : authRecord.TenantId;
 
@@ -186,25 +194,7 @@ public class CustomChainedCredential(string? tenantId = null) : TokenCredential
             AuthenticationRecord = authRecord
         };
 
+        logger?.LogDebug("Successfully created VS Code Broker Credential for tenantId {TenantId}", effectiveTenantId);
         return new InteractiveBrowserCredential(options);
     }
-
-    private static bool IsValidTenantId(string tenantId)
-    {
-        foreach (char c in tenantId)
-        {
-            if (!IsValidTenantCharacter(c))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Helper to validate tenant ID: only hex digits and dashes allowed
-    private static bool IsValidTenantCharacter(char c)
-    {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '.') || (c == '-');
-    }
-
 }
