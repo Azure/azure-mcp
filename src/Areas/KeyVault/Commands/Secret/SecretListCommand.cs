@@ -62,7 +62,7 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = secrets.Count > 0 ?
+            context.Response.Results = secrets?.Count > 0 ?
                 ResponseResult.Create(
                     new SecretListCommandResult(secrets),
                     KeyVaultJsonContext.Default.SecretListCommandResult) :
