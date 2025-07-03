@@ -1,0 +1,31 @@
+# Node modules and build output
+node_modules/
+out/
+dist/
+.vscode-test/
+.vscode-test-web/
+
+# Server binaries (platform-specific)
+server/win-x64/
+server/osx-x64/
+server/linux-x64/
+
+# VS Code extension package files
+*.vsix
+
+# Logs and temp files
+*.log
+*.tmp
+
+# VS Code test runner artifacts
+.vscode-test.js
+.vscode-test.json
+.vscode-test.mjs
+
+# Environment and config files
+.env
+.env.local
+
+# Coverage and test output
+coverage/
+*.tsbuildinfo
