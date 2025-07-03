@@ -84,3 +84,46 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
     value: 'foo-bar-value'
   }
 }
+
+resource certificate 'Microsoft.KeyVault/vaults/certificates@2021-11-01-preview' = {
+  name: 'foo-bar-certificate'
+  parent: keyVault
+  properties: {
+    certificatePolicy: {
+      issuerParameters: {
+        name: 'Self'
+      }
+      keyProperties: {
+        exportable: true
+        keySize: 2048
+        keyType: 'RSA'
+        reuseKey: false
+      }
+      lifetimeActions: [
+        {
+          action: {
+            actionType: 'AutoRenew'
+          }
+          trigger: {
+            daysBeforeExpiry: 90
+          }
+        }
+      ]
+      secretProperties: {
+        contentType: 'application/x-pkcs12'
+      }
+      x509CertificateProperties: {
+        keyUsage: [
+          'cRLSign'
+          'dataEncipherment'
+          'digitalSignature'
+          'keyEncipherment'
+          'keyAgreement'
+          'keyCertSign'
+        ]
+        subject: 'CN=foo-bar-certificate'
+        validityInMonths: 12
+      }
+    }
+  }
+}
