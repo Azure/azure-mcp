@@ -23,7 +23,7 @@ extends:
       - name: deploymentEnvironment
         value: 'public'
       - name: imageName
-        value: 'azure/azure-mcp'
+        value: 'azure-sdk/azure-mcp'
       - name: imageTag
         value: $(build.buildid)
 
