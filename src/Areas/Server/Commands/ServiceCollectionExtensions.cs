@@ -66,8 +66,8 @@ public static class AzureMcpServiceCollectionExtensions
             {
                 var toolLoaders = new List<IMcpDiscoveryStrategy>
                 {
-                    sp.GetRequiredService<CommandGroupDiscoveryStrategy>(),
                     sp.GetRequiredService<RegistryDiscoveryStrategy>(),
+                    sp.GetRequiredService<CommandGroupDiscoveryStrategy>(),
                 };
 
                 return new CompositeDiscoveryStrategy(toolLoaders);
@@ -81,8 +81,8 @@ public static class AzureMcpServiceCollectionExtensions
             {
                 var discoveryStrategies = new List<IMcpDiscoveryStrategy>
                 {
-                    sp.GetRequiredService<CommandGroupDiscoveryStrategy>(),
                     sp.GetRequiredService<RegistryDiscoveryStrategy>(),
+                    sp.GetRequiredService<CommandGroupDiscoveryStrategy>(),
                 };
 
                 return new CompositeDiscoveryStrategy(discoveryStrategies);
@@ -92,13 +92,14 @@ public static class AzureMcpServiceCollectionExtensions
         }
         else
         {
+            services.AddSingleton<IMcpDiscoveryStrategy, RegistryDiscoveryStrategy>();
             services.AddSingleton<IToolLoader>(sp =>
             {
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var toolLoaders = new List<IToolLoader>
                 {
-                    sp.GetRequiredService<CommandFactoryToolLoader>(),
                     sp.GetRequiredService<RegistryToolLoader>(),
+                    sp.GetRequiredService<CommandFactoryToolLoader>(),
                 };
 
                 return new CompositeToolLoader(toolLoaders, loggerFactory.CreateLogger<CompositeToolLoader>());
