@@ -3,9 +3,11 @@
 
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
+using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Areas.Server.Commands.Runtime;
 
@@ -19,6 +21,8 @@ public sealed class McpRuntime : IMcpRuntime
     private readonly IOptions<ServiceStartOptions> _options;
     private readonly ILogger<McpRuntime> _logger;
 
+    private readonly ITelemetryService _telemetry;
+
     /// <summary>
     /// Initializes a new instance of the McpRuntime class.
     /// </summary>
@@ -29,10 +33,12 @@ public sealed class McpRuntime : IMcpRuntime
     public McpRuntime(
         IToolLoader toolLoader,
         IOptions<ServiceStartOptions> options,
+        ITelemetryService telemetry,
         ILogger<McpRuntime> logger)
     {
         _toolLoader = toolLoader ?? throw new ArgumentNullException(nameof(toolLoader));
         _options = options ?? throw new ArgumentNullException(nameof(options));
+        _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _logger.LogInformation("McpRuntime initialized with tool loader of type {ToolLoaderType}.", _toolLoader.GetType().Name);
@@ -47,7 +53,10 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>
     public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
-        => _toolLoader.CallToolHandler(request, cancellationToken);
+    {
+        using var listActivity = _telemetry.StartActivity(ActivityName.ToolExecuted, request?.Server?.ClientInfo);
+        return _toolLoader.CallToolHandler(request!, cancellationToken);
+    }
 
     /// <summary>
     /// Delegates tool discovery requests to the configured tool loader.
@@ -56,5 +65,8 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the list of available tools.</returns>
     public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
-        => _toolLoader.ListToolsHandler(request, cancellationToken);
+    {
+        using var listActivity = _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
+        return _toolLoader.ListToolsHandler(request!, cancellationToken);
+    }
 }
