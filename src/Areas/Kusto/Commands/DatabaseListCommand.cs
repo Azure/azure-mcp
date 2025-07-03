@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -17,7 +18,9 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
 
     public override string Description =>
         """
-        List all databases in a Kusto cluster. Requires `cluster-uri` ( or `subscription` and `cluster-name`). Result is a list of database names, returned as a JSON array.
+        List all databases in a Kusto cluster.
+        Requires `cluster-uri` ( or `subscription` and `cluster-name`).
+        Result is a list of database names, returned as a JSON array.
         """;
 
     public override string Title => CommandTitle;
@@ -33,6 +36,8 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
             {
                 return context.Response;
             }
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
 
@@ -63,7 +68,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing databases. Cluster: {Cluster}.", options.ClusterUri ?? options.ClusterName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

@@ -65,8 +65,8 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
                 { "subscription", Settings.SubscriptionId },
             });
 
-        var deploymentResource = result.AssertProperty("deploymentResource");
-        Assert.Equal(JsonValueKind.Array, deploymentResource.ValueKind);
-        Assert.NotEmpty(deploymentResource.EnumerateArray());
+        var deploymentResource = result.AssertProperty("deploymentData");
+        Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
+        Assert.NotEmpty(deploymentResource.EnumerateObject());
     }
 }

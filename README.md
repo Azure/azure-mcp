@@ -37,8 +37,6 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | Storage      | Storage operations - Manage/access Azure Storage resources. | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Storage&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22storage%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Storage%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22storage%22%2C%22--read-only%22%5D%7D) |
 | Subscription | Azure subscription operations - List/manage Azure subscriptions. | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Subscription&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22subscription%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20Subscription%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--service%22%2C%22subscription%22%2C%22--read-only%22%5D%7D) |
 
-
-
 ###  ▶️ Getting Started
 1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
 2. You should see the Azure MCP Server in the list of tools
@@ -286,10 +284,18 @@ Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. Fo
     }
    ```
 
-
 More end-to-end MCP client/agent guides are coming soon!
 </details>
 
+## Data Collection
+
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at https://go.microsoft.com/fwlink/?LinkId=521839. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+
+### Telemetry Configuration
+
+Telemetry collection is on by default.
+
+To opt out, set the environment variable `AZURE_MCP_COLLECT_TELEMETRY` to `false` in your environment.
 
 ## 📝 Troubleshooting
 

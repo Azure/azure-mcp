@@ -7,6 +7,7 @@ using AzureMcp.Areas.Authorization.Services;
 using AzureMcp.Commands.Authorization;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Authorization.Commands;
@@ -53,6 +54,8 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var authService = context.GetService<IAuthorizationService>();
             var assignments = await authService.ListRoleAssignments(
                 options.Scope,
@@ -68,7 +71,7 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing role assignments.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

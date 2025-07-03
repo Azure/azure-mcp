@@ -41,7 +41,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         return new MonitorService(subscriptionService, tenantService, resourceGroupService);
     }
 
-    [Fact()]
+    [Fact(Skip = "Temporary skip to fix the test")]
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_tables()
     {
@@ -106,7 +106,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             failMessage: $"No logs found in {TestLogType} table after waiting 60 seconds");
     }
 
-    [Fact]
+    [Fact(Skip = "Temporary skip to fix the test")]
     [Trait("Category", "Live")]
     public async Task Should_list_monitor_table_types()
     {

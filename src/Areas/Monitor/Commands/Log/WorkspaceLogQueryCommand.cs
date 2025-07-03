@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Services;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Log;
@@ -53,6 +54,8 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var monitorService = context.GetService<IMonitorService>();
             var results = await monitorService.QueryWorkspaceLogs(
                 options.Subscription!,
@@ -69,7 +72,7 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing log query command.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

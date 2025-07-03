@@ -16,7 +16,7 @@ param testApplicationOid string
 
 var cognitiveServicesContributorRoleId = '25fbc0a9-bd7c-42a3-aa1a-3b75d497ee68' // Cognitive Services Contributor role
 
-resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2023-10-01-preview' = {
+resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
   name: baseName
   location: location
   kind: 'AIServices'
@@ -27,13 +27,15 @@ resource aiServicesAccount 'Microsoft.CognitiveServices/accounts@2023-10-01-prev
     name: 'S0'
   }
   properties: {
+    isAiFoundryType: true
     customSubDomainName: baseName
-    publicNetworkAccess: 'Enabled'
-    disableLocalAuth: true
     dynamicThrottlingEnabled: false
     networkAcls: {
       defaultAction: 'Allow'
     }
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
+    allowProjectManagement: true
     encryption: {
       keySource: 'Microsoft.CognitiveServices'
     }
@@ -66,24 +68,25 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource aiProjects 'Microsoft.MachineLearningServices/workspaces@2023-10-01' = {
+resource aiProjects 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
+  parent: aiServicesAccount
   name: '${baseName}-ai-projects'
   location: location
+  kind: 'AIServices'
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-    friendlyName: '${baseName} AI Projects'
-    description: 'Azure AI Projects for Foundry operations'
-    storageAccount: storageAccount.id
-    hbiWorkspace: false
-    allowPublicAccessWhenBehindVnet: false
+    customSubDomainName: '${baseName}-ai-projects'
     publicNetworkAccess: 'Enabled'
-    v1LegacyMode: false
+    networkAcls: {
+      defaultAction: 'Allow'
+      virtualNetworkRules: []
+      ipRules: []
+    }
   }
   sku: {
-    name: 'Basic'
-    tier: 'Basic'
+    name: 'S0'
   }
 }
 
