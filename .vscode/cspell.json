@@ -206,6 +206,7 @@
         "proxying",
         "pscore",
         "pscustomobject",
+        "rainfly",
         "RediSearch",
         "resourcegroup",
         "resourcegroups",
