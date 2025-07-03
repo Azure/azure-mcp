@@ -1,7 +1,7 @@
 targetScope = 'resourceGroup'
 
 @minLength(5)
-@maxLength(24)
+@maxLength(20)
 @description('The base resource name.')
 param baseName string = resourceGroup().name
 
@@ -18,6 +18,10 @@ param testApplicationOid string
 param areas string[] = []
 
 var deploymentName = deployment().name
+
+var staticSuffix = toLower(substring(subscription().subscriptionId, 0, 4))
+var staticBaseName = 'mcp${staticSuffix}'
+var staticResourceGroupName = 'mcp-static-${staticSuffix}'
 
 module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'Storage')) {
   name: '${deploymentName}-storage'
@@ -124,5 +128,17 @@ module authorization 'services/authorization.bicep' = if (empty(areas) || contai
   name: '${deploymentName}-authorization'
   params: {
     testApplicationOid: testApplicationOid
+  }
+}
+
+module aiSearch 'services/search.bicep' = if (empty(areas) || contains(areas, 'Search')) {
+  name: '${deploymentName}-search'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+    staticBaseName: staticBaseName
+    staticResourceGroupName: staticResourceGroupName
   }
 }
