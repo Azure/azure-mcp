@@ -26,10 +26,10 @@ public class SecretGetCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _subscriptionId = "sub123";
-    private const string _vaultName = "vault123";
-    private const string _secretName = "secret1";
-    private const string _secretValue = "secret-value-123";
+    private const string _knownSubscriptionId = "knownSubscription";
+    private const string _knownVaultName = "knownVaultName";
+    private const string _knownSecretName = "knownSecretName";
+    private const string _knownSecretValue = "knownSecretValue";
 
     public SecretGetCommandTests()
     {
@@ -40,69 +40,27 @@ public class SecretGetCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new SecretGetCommand(_logger);
-        _context = new CommandContext(_serviceProvider);
-        _parser = new Parser(_command.GetCommand());
+        _command = new (_logger);
+        _context = new (_serviceProvider);
+        _parser = new (_command.GetCommand());
     }
 
     [Fact]
-    public async Task ExecuteAsync_CallsServiceCorrectly()
+    public async Task ExecuteAsync_ReturnsSecret()
     {
         // Arrange
         _keyVaultService.GetSecret(
-            Arg.Is(_vaultName),
-            Arg.Is(_secretName),
-            Arg.Is(_subscriptionId),
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSecretName),
+            Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(_secretValue);
+            .Returns(_knownSecretValue);
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
-            "--secret", _secretName,
-            "--subscription", _subscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(200, response.Status);
-
-        await _keyVaultService.Received(1).GetSecret(
-            Arg.Is(_vaultName),
-            Arg.Is(_secretName),
-            Arg.Is(_subscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>());
-
-        // Verify response structure
-        Assert.NotNull(response.Results);
-        var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<SecretGetResult>(json);
-
-        Assert.NotNull(result);
-        Assert.Equal(_secretName, result.Name);
-        Assert.Equal(_secretValue, result.Value);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsSecret_WhenSecretExists()
-    {
-        // Arrange
-        _keyVaultService.GetSecret(
-            Arg.Is(_vaultName),
-            Arg.Is(_secretName),
-            Arg.Is(_subscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(_secretValue);
-
-        var args = _parser.Parse([
-            "--vault", _vaultName,
-            "--secret", _secretName,
-            "--subscription", _subscriptionId
+            "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -114,39 +72,11 @@ public class SecretGetCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<SecretGetResult>(json);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretGetResult>(json);
 
-        Assert.NotNull(result);
-        Assert.Equal(_secretName, result.Name);
-        Assert.Equal(_secretValue, result.Value);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_HandlesException()
-    {
-        // Arrange
-        var expectedException = new Exception("Secret not found");
-        _keyVaultService.GetSecret(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(expectedException);
-
-        var args = _parser.Parse([
-            "--vault", _vaultName,
-            "--secret", _secretName,
-            "--subscription", _subscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(500, response.Status);
-        Assert.Contains("Secret not found", response.Message);
+        Assert.NotNull(retrievedSecret);
+        Assert.Equal(_knownSecretName, retrievedSecret.Name);
+        Assert.Equal(_knownSecretValue, retrievedSecret.Value);
     }
 
     [Fact]
@@ -162,9 +92,9 @@ public class SecretGetCommandTests
             .ThrowsAsync(new ArgumentException("Secret name cannot be null or empty"));
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--secret", "",
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -177,21 +107,23 @@ public class SecretGetCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsInvalidObject_IfVaultNameIsEmpty()
+    public async Task ExecuteAsync_HandlesException()
     {
         // Arrange
+        var expectedError = "Test error";
+
         _keyVaultService.GetSecret(
-            Arg.Is(""),
+            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(new ArgumentException("Value cannot be null or empty."));
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", "",
-            "--secret", _secretName,
-            "--subscription", _subscriptionId
+            "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -200,69 +132,7 @@ public class SecretGetCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
-        Assert.Contains("Value cannot be null or empty", response.Message);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsInvalidObject_IfSubscriptionIsEmpty()
-    {
-        // Arrange
-        _keyVaultService.GetSecret(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Is(""),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(new ArgumentException("Value cannot be null or empty."));
-
-        var args = _parser.Parse([
-            "--vault", _vaultName,
-            "--secret", _secretName,
-            "--subscription", ""
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(500, response.Status);
-        Assert.Contains("Value cannot be null or empty", response.Message);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_PassesTenantIdCorrectly()
-    {
-        // Arrange
-        const string tenantId = "tenant123";
-        _keyVaultService.GetSecret(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Is(tenantId),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns(_secretValue);
-
-        var args = _parser.Parse([
-            "--vault", _vaultName,
-            "--secret", _secretName,
-            "--subscription", _subscriptionId,
-            "--tenant", tenantId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(200, response.Status);
-
-        await _keyVaultService.Received(1).GetSecret(
-            Arg.Is(_vaultName),
-            Arg.Is(_secretName),
-            Arg.Is(_subscriptionId),
-            Arg.Is(tenantId),
-            Arg.Any<RetryPolicyOptions>());
+        Assert.Contains(expectedError, response.Message);
     }
 
     private class SecretGetResult

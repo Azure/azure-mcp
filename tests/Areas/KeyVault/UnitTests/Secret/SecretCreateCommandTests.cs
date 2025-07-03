@@ -27,6 +27,12 @@ public class SecretCreateCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
+    private readonly string _knownSubscriptionId = "knownSubscription";
+    private readonly string _knownVaultName = "knownVaultName";
+    private readonly string _knownSecretName = "knownSecretName";
+    private readonly string _knownSecretValue = "knownSecretValue";
+    private readonly KeyVaultSecret _knownKeyVaultSecret;
+
     public SecretCreateCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
@@ -36,33 +42,31 @@ public class SecretCreateCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new SecretCreateCommand(_logger);
-        _context = new CommandContext(_serviceProvider);
-        _parser = new Parser(_command.GetCommand());
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
+
+        _knownKeyVaultSecret = new KeyVaultSecret(_knownSecretName, _knownSecretValue);
     }
 
     [Fact]
     public async Task ExecuteAsync_CreatesSecret_WhenValidInput()
     {
         // Arrange
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var secretName = "secret1";
-        var secretValue = "secretValue123";
-        var createdOn = DateTimeOffset.UtcNow;
-        var updatedOn = DateTimeOffset.UtcNow;
-
-        // Create a real KeyVaultSecret object for testing
-        var mockSecret = new KeyVaultSecret(secretName, secretValue);
-
-        _keyVaultService.CreateSecret(Arg.Is(vaultName), Arg.Is(secretName), Arg.Is(secretValue), 
-            Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(mockSecret);
+        _keyVaultService.CreateSecret(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSecretName),
+            Arg.Is(_knownSecretValue),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(_knownKeyVaultSecret);
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--secret", secretName,
-            "--value", secretValue,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--value", _knownSecretValue,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -73,10 +77,40 @@ public class SecretCreateCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<SecretCreateResult>(json);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretCreateResult>(json);
 
-        Assert.NotNull(result);
-        Assert.Equal(secretName, result.Name);
+        Assert.NotNull(retrievedSecret);
+        Assert.Equal(_knownSecretName, retrievedSecret.Name);
+        Assert.Equal(_knownSecretValue, retrievedSecret.Value);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
+    {
+        // Arrange
+        _keyVaultService.CreateSecret(Arg.Is(_knownVaultName), Arg.Is(""), Arg.Is(_knownSecretValue),
+            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ReturnsNull();
+
+        var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--secret", "",
+            "--value", _knownSecretValue,
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretCreateResult>(json);
+
+        Assert.NotNull(retrievedSecret);
+        Assert.Null(retrievedSecret.Name);
+        Assert.Null(retrievedSecret.Value);
     }
 
     [Fact]
@@ -84,19 +118,21 @@ public class SecretCreateCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-        var secretName = "secret1";
-        var secretValue = "secretValue123";
 
-        _keyVaultService.CreateSecret(vaultName, secretName, secretValue, Arg.Is(subscriptionId), 
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.CreateSecret(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSecretName),
+            Arg.Is(_knownSecretValue),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--secret", secretName,
-            "--value", secretValue,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--value", _knownSecretValue,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -112,6 +148,9 @@ public class SecretCreateCommandTests
     {
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = string.Empty;
 
         [JsonPropertyName("enabled")]
         public bool? Enabled { get; set; }

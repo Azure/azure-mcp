@@ -26,6 +26,9 @@ public class SecretListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
+    private readonly string _knownSubscriptionId = "knownSubscriptionId";
+    private readonly string _knownVaultName = "knownVaultName";
+
     public SecretListCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
@@ -35,25 +38,27 @@ public class SecretListCommandTests
         collection.AddSingleton(_keyVaultService);
 
         _serviceProvider = collection.BuildServiceProvider();
-        _command = new SecretListCommand(_logger);
-        _context = new CommandContext(_serviceProvider);
-        _parser = new Parser(_command.GetCommand());
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsSecrets_WhenSecretsExist()
     {
         // Arrange
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
         var expectedSecrets = new List<string> { "secret1", "secret2" };
 
-        _keyVaultService.ListSecrets(Arg.Is(vaultName), Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).Returns(expectedSecrets);
+        _keyVaultService.ListSecrets(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedSecrets);
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -74,15 +79,16 @@ public class SecretListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoSecrets()
     {
         // Arrange
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
-
-        _keyVaultService.ListSecrets(vaultName, Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).Returns([]);
+        _keyVaultService.ListSecrets(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns([]);
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -98,15 +104,17 @@ public class SecretListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
-        var vaultName = "vault123";
 
-        _keyVaultService.ListSecrets(vaultName, Arg.Is(subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.ListSecrets(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", vaultName,
-            "--subscription", subscriptionId
+            "--vault", _knownVaultName,
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
