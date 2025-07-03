@@ -849,18 +849,49 @@ azmcp appservice database add --subscription <subscription> \
                               --database-type <database-type> \
                               --database-server <database-server> \
                               --database-name <database-name> \
-                              [--connection-string <connection-string>]
+                              [--connection-string <connection-string>] \
+                              [--tenant-id <tenant-id>] \
+                              [--auth-method <auth-method>] \
+                              [--retry-max-retries <retries>]
 ```
 
 **Parameters:**
-- `--app-name`: Name of the Azure App Service application
-- `--resource-group`: Resource group containing the App Service
-- `--database-type`: Type of database (SqlServer, MySql, PostgreSql, CosmosDb)
-- `--database-server`: Database server name or endpoint
-- `--database-name`: Name of the database to connect to
+- `--subscription`: Azure subscription ID (required)
+- `--resource-group`: Resource group containing the App Service (required)
+- `--app-name`: Name of the Azure App Service application (required)
+- `--database-type`: Type of database - SqlServer, MySql, PostgreSql, or CosmosDb (required)
+- `--database-server`: Database server name or endpoint (required)
+- `--database-name`: Name of the database to connect to (required)
 - `--connection-string`: Optional custom connection string (generated if not provided)
+- `--tenant-id`: Azure tenant ID for authentication (optional)
+- `--auth-method`: Authentication method - 'credential', 'key', or 'connectionString' (optional, defaults to 'credential')
+- `--retry-max-retries`: Maximum retry attempts for failed operations (optional, defaults to 3)
 
-**Example:**
+**Required Permissions:**
+- Contributor role on the Azure App Service resource
+- Read access to the resource group
+
+**Returns:**
+JSON response containing:
+```json
+{
+  "status": 200,
+  "results": {
+    "databaseConnection": {
+      "databaseType": "SqlServer",
+      "databaseServer": "myserver.database.windows.net",
+      "databaseName": "MyDatabase",
+      "connectionString": "Server=myserver.database.windows.net;Database=MyDatabase;...",
+      "connectionStringName": "MyDatabaseConnection",
+      "isConfigured": true,
+      "configuredAt": "2025-07-03T10:30:00Z"
+    }
+  }
+}
+```
+
+**Examples:**
+
 ```bash
 # Add a SQL Server database connection
 azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
@@ -868,6 +899,14 @@ azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789a
                               --app-name "my-web-app" \
                               --database-type "SqlServer" \
                               --database-server "myserver.database.windows.net" \
+                              --database-name "MyDatabase"
+
+# Add a MySQL database connection
+azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
+                              --resource-group "my-resource-group" \
+                              --app-name "my-web-app" \
+                              --database-type "MySql" \
+                              --database-server "myserver.mysql.database.azure.com" \
                               --database-name "MyDatabase"
 
 # Add a PostgreSQL database connection with custom connection string
@@ -878,7 +917,21 @@ azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789a
                               --database-server "myserver.postgres.database.azure.com" \
                               --database-name "MyDatabase" \
                               --connection-string "Host=myserver.postgres.database.azure.com;Database=MyDatabase;Username=myuser;Password=mypassword;"
+
+# Add a Cosmos DB connection
+azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
+                              --resource-group "my-resource-group" \
+                              --app-name "my-web-app" \
+                              --database-type "CosmosDb" \
+                              --database-server "mycosmosdb" \
+                              --database-name "MyDatabase"
 ```
+
+**Common Errors:**
+- `403 Forbidden`: Insufficient permissions - ensure you have Contributor role on the App Service
+- `404 Not Found`: App Service or resource group not found - verify names and subscription
+- `400 Bad Request`: Invalid database type or malformed connection string
+- `409 Conflict`: App Service is not in a valid state for configuration changes
 
 ## Response Format
 
