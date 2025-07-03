@@ -31,6 +31,7 @@ if($isTmeTenant) {
 $token = Get-AzAccessToken -ResourceUrl https://search.azure.com -AsSecureString | Select-Object -ExpandProperty Token
 $uri = "https://$BaseName.search.windows.net"
 $storageAccountName = "$($BaseName)ais"
+$containerName = 'searchdocs'
 
 $apiVersion = "2024-09-01-preview"
 
@@ -47,15 +48,6 @@ $indexDefinition = [ordered]@{
     @{ name = "text_vector"; type = "Collection(Edm.Single)"; dimensions = 1536; vectorSearchProfile = "products-azureOpenAi-text-profile" }
     @{ name = "category"; searchable = $false; filterable = $true; facetable = $true }
   )
-  scoringProfiles = @()
-  suggesters = @()
-  analyzers = @()
-  tokenizers = @()
-  tokenFilters = @()
-  charFilters = @()
-  similarity = @{
-    '@odata.type' = "#Microsoft.Azure.Search.BM25Similarity"
-  }
   semantic = @{
     defaultConfiguration = "products-semantic-configuration"
     configurations = @(
@@ -130,7 +122,7 @@ $dataSourceDefinition = @{
   name = "products-datasource"
   type = "azureblob"
   credentials = @{ connectionString = "ResourceId=/subscriptions/$subscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Storage/storageAccounts/$storageAccountName;" }
-  container = @{ name = "searchdocs" }
+  container = @{ name = $containerName }
   identity= @{
     "@odata.type"= "#Microsoft.Azure.Search.DataUserAssignedIdentity"
     userAssignedIdentity= $managedIdentity.Id
@@ -237,6 +229,18 @@ $indexerDefinition = @{
   outputFieldMappings = @()
 }
 
+# Upload sample files
+$context = New-AzStorageContext -StorageAccountName $storageAccountName -UseConnectedAccount
+$categories = @('A', 'B', 'C')
+Write-Host "Uploading sample files to blob storage: $storageAccountName/$containerName" -ForegroundColor Yellow
+$files = Get-ChildItem -Path "$PSScriptRoot/../samples" -Filter '*.md'
+$i = 0;
+foreach ($file in $files) {
+    $category = $categories[$i++ % $categories.Count]
+    Write-Host "  $($file.Name)`: { category: $category }" -ForegroundColor Yellow
+    Set-AzStorageBlobContent -File $file.FullName -Container $containerName -Blob $file.Name -Metadata @{ category = $category } -Context $context -Force -ProgressAction SilentlyContinue | Out-Null
+}
+
 # Create the index
 Write-Host "Creating index" -ForegroundColor Yellow
 Invoke-RestMethod `
@@ -276,16 +280,3 @@ Invoke-RestMethod `
     -Token $token `
     -ContentType 'application/json' `
     -Body (ConvertTo-Json $indexerDefinition -Depth 10)
-
-# Upload sample files
-$context = New-AzStorageContext -StorageAccountName $storageAccountName -UseConnectedAccount
-$container = 'searchdocs'
-$categories = @('A', 'B', 'C')
-Write-Host "Uploading sample files to blob storage: $storageAccountName/$container" -ForegroundColor Yellow
-$files = Get-ChildItem -Path "$PSScriptRoot/../samples" -Filter '*.md'
-$i = 0;
-foreach ($file in $files) {
-    $category = $categories[$i++ % $categories.Count]
-    Write-Host "  $($file.Name)`: { category: $category }" -ForegroundColor Yellow
-    Set-AzStorageBlobContent -File $file.FullName -Container $container -Blob $file.Name -Metadata @{ category = $category } -Context $context -Force -ProgressAction SilentlyContinue | Out-Null
-}
