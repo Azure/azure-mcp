@@ -160,7 +160,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         }
     }
 
-    public async Task<string> GetSecret(
+    public async Task<KeyVaultSecret> GetSecret(
         string vaultName,
         string secretName,
         string subscriptionId,
@@ -180,7 +180,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         try
         {
             var response = await client.GetSecretAsync(secretName);
-            return response.Value.Value;
+            return response.Value;
         }
         catch (Exception ex)
         {

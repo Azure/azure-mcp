@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Secret;
@@ -88,8 +89,14 @@ public class SecretCreateCommandTests
     public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
     {
         // Arrange
-        _keyVaultService.CreateSecret(Arg.Is(_knownVaultName), Arg.Is(""), Arg.Is(_knownSecretValue),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ReturnsNull();
+        _keyVaultService.CreateSecret(
+            Arg.Is(_knownVaultName),
+            Arg.Is(""),
+            Arg.Is(_knownSecretValue),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ReturnsNull();
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
@@ -147,10 +154,10 @@ public class SecretCreateCommandTests
     private class SecretCreateResult
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
 
         [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; set; } = null!;
 
         [JsonPropertyName("enabled")]
         public bool? Enabled { get; set; }

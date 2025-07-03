@@ -99,8 +99,13 @@ public class KeyGetCommandTests
     public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsEmpty()
     {
         // Arrange
-        _keyVaultService.GetKey(Arg.Is(_knownVaultName), "", Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).ReturnsNull();
+        _keyVaultService.GetKey(
+            Arg.Is(_knownVaultName),
+            "",
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ReturnsNull();
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,

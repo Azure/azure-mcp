@@ -141,9 +141,24 @@ public class SecretGetCommandTests
     private class SecretGetResult
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
 
         [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; set; } = null!;
+
+        [JsonPropertyName("enabled")]
+        public bool? Enabled { get; set; }
+
+        [JsonPropertyName("notBefore")]
+        public DateTimeOffset? NotBefore { get; set; }
+
+        [JsonPropertyName("expiresOn")]
+        public DateTimeOffset? ExpiresOn { get; set; }
+
+        [JsonPropertyName("createdOn")]
+        public DateTimeOffset? CreatedOn { get; set; }
+
+        [JsonPropertyName("updatedOn")]
+        public DateTimeOffset? UpdatedOn { get; set; }
     }
 }
