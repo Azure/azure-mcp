@@ -4,6 +4,12 @@
 
 ### Features Added
 - Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
+- Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
 
 - Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
 
