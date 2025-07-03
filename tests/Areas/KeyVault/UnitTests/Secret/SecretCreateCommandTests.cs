@@ -4,7 +4,8 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.KeyVault.Commands.Key;
+using Azure.Security.KeyVault.Secrets;
+using AzureMcp.Areas.KeyVault.Commands.Secret;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -12,28 +13,31 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Key;
+namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Secret;
 
 [Trait("Area", "KeyVault")]
-public class KeyListCommandTests
+public class SecretCreateCommandTests
 {
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
-    private readonly ILogger<KeyListCommand> _logger;
-    private readonly KeyListCommand _command;
+    private readonly ILogger<SecretCreateCommand> _logger;
+    private readonly SecretCreateCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "knownSubscriptionId";
+    private const string _knownSubscriptionId = "knownSubscription";
     private const string _knownVaultName = "knownVaultName";
+    private const string _knownSecretName = "knownSecretName";
+    private const string _knownSecretValue = "knownSecretValue";
+    private readonly KeyVaultSecret _knownKeyVaultSecret;
 
-    public KeyListCommandTests()
+    public SecretCreateCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
-        _logger = Substitute.For<ILogger<KeyListCommand>>();
+        _logger = Substitute.For<ILogger<SecretCreateCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
@@ -42,24 +46,63 @@ public class KeyListCommandTests
         _command = new(_logger);
         _context = new(_serviceProvider);
         _parser = new(_command.GetCommand());
+
+        _knownKeyVaultSecret = new KeyVaultSecret(_knownSecretName, _knownSecretValue);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsKeys_WhenKeysExist()
+    public async Task ExecuteAsync_CreatesSecret_WhenValidInput()
     {
         // Arrange
-        var expectedKeys = new List<string> { "key1", "key2" };
-
-        _keyVaultService.ListKeys(
+        _keyVaultService.CreateSecret(
             Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
+            Arg.Is(_knownSecretName),
+            Arg.Is(_knownSecretValue),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedKeys);
+            .Returns(_knownKeyVaultSecret);
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--value", _knownSecretValue,
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretCreateResult>(json);
+
+        Assert.NotNull(retrievedSecret);
+        Assert.Equal(_knownSecretName, retrievedSecret.Name);
+        Assert.Equal(_knownSecretValue, retrievedSecret.Value);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
+    {
+        // Arrange
+        _keyVaultService.CreateSecret(
+            Arg.Is(_knownVaultName),
+            Arg.Is(""),
+            Arg.Is(_knownSecretValue),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ReturnsNull();
+
+        var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--secret", "",
+            "--value", _knownSecretValue,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -71,35 +114,11 @@ public class KeyListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyListResult>(json);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretCreateResult>(json);
 
-        Assert.NotNull(result);
-        Assert.Equal(expectedKeys, result.Keys);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoKeys()
-    {
-        // Arrange
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns([]);
-
-        var args = _parser.Parse([
-            "--vault", _knownVaultName,
-            "--subscription", _knownSubscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(retrievedSecret);
+        Assert.Null(retrievedSecret.Name);
+        Assert.Null(retrievedSecret.Value);
     }
 
     [Fact]
@@ -108,9 +127,10 @@ public class KeyListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.ListKeys(
+        _keyVaultService.CreateSecret(
             Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
+            Arg.Is(_knownSecretName),
+            Arg.Is(_knownSecretValue),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
@@ -118,6 +138,8 @@ public class KeyListCommandTests
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--value", _knownSecretValue,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -130,9 +152,27 @@ public class KeyListCommandTests
         Assert.StartsWith(expectedError, response.Message);
     }
 
-    private class KeyListResult
+    private class SecretCreateResult
     {
-        [JsonPropertyName("keys")]
-        public List<string> Keys { get; set; } = [];
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = null!;
+
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = null!;
+
+        [JsonPropertyName("enabled")]
+        public bool? Enabled { get; set; }
+
+        [JsonPropertyName("notBefore")]
+        public DateTimeOffset? NotBefore { get; set; }
+
+        [JsonPropertyName("expiresOn")]
+        public DateTimeOffset? ExpiresOn { get; set; }
+
+        [JsonPropertyName("createdOn")]
+        public DateTimeOffset? CreatedOn { get; set; }
+
+        [JsonPropertyName("updatedOn")]
+        public DateTimeOffset? UpdatedOn { get; set; }
     }
 }

@@ -28,9 +28,10 @@ public class KeyCreateCommandTests
     private readonly KeyCreateCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _subscriptionId = "knownSubscription";
-    private readonly string _vaultName = "knownVaultName";
-    private readonly string _knownKeyName = "knownKeyName";
+
+    private const string _knownSubscriptionId = "knownSubscription";
+    private const string _knownVaultName = "knownVaultName";
+    private const string _knownKeyName = "knownKeyName";
     private readonly KeyType _knownKeyType = KeyType.Rsa;
     private readonly KeyVaultKey _knownKeyVaultKey;
 
@@ -61,17 +62,23 @@ public class KeyCreateCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsKey()
+    public async Task ExecuteAsync_CreatesKey_WithValidInput()
     {
         // Arrange
-        _keyVaultService.CreateKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_knownKeyType.ToString()),
-            Arg.Is(_subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(_knownKeyVaultKey);
+        _keyVaultService.CreateKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownKeyName),
+            Arg.Is(_knownKeyType.ToString()),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(_knownKeyVaultKey);
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", _knownKeyName,
             "--key-type", _knownKeyType.ToString(),
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -93,14 +100,20 @@ public class KeyCreateCommandTests
     public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsEmpty()
     {
         // Arrange
-        _keyVaultService.CreateKey(Arg.Is(_vaultName), Arg.Is(""), Arg.Is(_knownKeyType.ToString()),
-            Arg.Is(_subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).ReturnsNull();
+        _keyVaultService.CreateKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(""),
+            Arg.Is(_knownKeyType.ToString()),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ReturnsNull();
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", "",
             "--key-type", _knownKeyType.ToString(),
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -124,15 +137,20 @@ public class KeyCreateCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.CreateKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_knownKeyType.ToString()),
-            Arg.Is(_subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.CreateKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownKeyName),
+            Arg.Is(_knownKeyType.ToString()),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", _knownKeyName,
             "--key-type", _knownKeyType.ToString(),
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act

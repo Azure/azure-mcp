@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Security.KeyVault.Keys;
-using AzureMcp.Areas.KeyVault.Commands.Key;
+using AzureMcp.Areas.KeyVault.Commands.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -13,32 +11,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Key;
+namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Certificate;
 
 [Trait("Area", "KeyVault")]
-public class KeyGetCommandTests
+public class CertificateGetCommandTests
 {
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
-    private readonly ILogger<KeyGetCommand> _logger;
-    private readonly KeyGetCommand _command;
+    private readonly ILogger<CertificateGetCommand> _logger;
+    private readonly CertificateGetCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
     private const string _knownSubscriptionId = "knownSubscription";
     private const string _knownVaultName = "knownVaultName";
-    private const string _knownKeyName = "knownKeyName";
-    private readonly KeyType _knownKeyType = KeyType.Rsa;
-    private readonly KeyVaultKey _knownKeyVaultKey;
+    private const string _knownCertificateName = "knownCertificateName";
 
-    public KeyGetCommandTests()
+    public CertificateGetCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
-        _logger = Substitute.For<ILogger<KeyGetCommand>>();
+        _logger = Substitute.For<ILogger<CertificateGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
@@ -47,85 +41,43 @@ public class KeyGetCommandTests
         _command = new(_logger);
         _context = new(_serviceProvider);
         _parser = new(_command.GetCommand());
-
-        _knownKeyVaultKey = new KeyVaultKey(_knownKeyName);
-
-        var jsonWebKey = new JsonWebKey([KeyOperation.Encrypt])
-        {
-            KeyType = _knownKeyType
-        };
-
-        // Use reflection to set the internal Key property, which holds KeyType and is required in KeyVaultKey
-        var keyProperty = typeof(KeyVaultKey).GetProperty("Key", System.Reflection.BindingFlags.Instance
-            | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-        keyProperty?.SetValue(_knownKeyVaultKey, jsonWebKey);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsKey()
+    public async Task ExecuteAsync_CallsServiceCorrectly()
     {
         // Arrange
-        _keyVaultService.GetKey(
+        var expectedError = "Expected test error";
+
+        // TODO (vcolin7): Find a way to mock KeyVaultCertificateWithPolicy
+        // We'll test that the service is called correctly, but let it fail since mocking the return is complex
+        _keyVaultService.GetCertificate(
             Arg.Is(_knownVaultName),
-            Arg.Is(_knownKeyName),
+            Arg.Is(_knownCertificateName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(_knownKeyVaultKey);
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
-            "--key", _knownKeyName,
+            "--certificate", _knownCertificateName,
             "--subscription", _knownSubscriptionId
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(200, response.Status);
-        Assert.NotNull(response.Results);
-
-        var json = JsonSerializer.Serialize(response.Results);
-        var retrievedKey = JsonSerializer.Deserialize<KeyGetResult>(json);
-
-        Assert.NotNull(retrievedKey);
-        Assert.Equal(_knownKeyName, retrievedKey.Name);
-        Assert.Equal(_knownKeyType.ToString(), retrievedKey.KeyType);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsEmpty()
-    {
-        // Arrange
-        _keyVaultService.GetKey(
+        // Assert - Verify the service was called with correct parameters
+        await _keyVaultService.Received(1).GetCertificate(
             Arg.Is(_knownVaultName),
-            "",
+            Arg.Is(_knownCertificateName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ReturnsNull();
+            Arg.Any<RetryPolicyOptions>());
 
-        var args = _parser.Parse([
-            "--vault", _knownVaultName,
-            "--key", "",
-            "--subscription", _knownSubscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.Results);
-
-        var json = JsonSerializer.Serialize(response.Results);
-        var retrievedKey = JsonSerializer.Deserialize<KeyGetResult>(json);
-
-        Assert.NotNull(retrievedKey);
-        Assert.Null(retrievedKey.Name);
-        Assert.Null(retrievedKey.KeyType);
+        // Should handle the exception
+        Assert.Equal(500, response.Status);
     }
 
     [Fact]
@@ -134,9 +86,9 @@ public class KeyGetCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.GetKey(
+        _keyVaultService.GetCertificate(
             Arg.Is(_knownVaultName),
-            Arg.Is(_knownKeyName),
+            Arg.Is(_knownCertificateName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
@@ -144,7 +96,7 @@ public class KeyGetCommandTests
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
-            "--key", _knownKeyName,
+            "--certificate", _knownCertificateName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -157,13 +109,19 @@ public class KeyGetCommandTests
         Assert.StartsWith(expectedError, response.Message);
     }
 
-    private class KeyGetResult
+    private class CertificateGetResult
     {
         [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        [JsonPropertyName("keyType")]
-        public string KeyType { get; set; } = null!;
+        [JsonPropertyName("id")]
+        public Uri Id { get; set; } = new Uri("about:blank");
+
+        [JsonPropertyName("keyId")]
+        public Uri KeyId { get; set; } = new Uri("about:blank");
+
+        [JsonPropertyName("secretId")]
+        public Uri SecretId { get; set; } = new Uri("about:blank");
 
         [JsonPropertyName("enabled")]
         public bool? Enabled { get; set; }
@@ -179,5 +137,11 @@ public class KeyGetCommandTests
 
         [JsonPropertyName("updatedOn")]
         public DateTimeOffset? UpdatedOn { get; set; }
+
+        [JsonPropertyName("subject")]
+        public string Subject { get; set; } = null!;
+
+        [JsonPropertyName("issuerName")]
+        public string IssuerName { get; set; } = null!;
     }
 }

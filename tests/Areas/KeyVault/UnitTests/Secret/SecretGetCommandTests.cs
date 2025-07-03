@@ -4,7 +4,8 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.KeyVault.Commands.Key;
+using Azure.Security.KeyVault.Secrets;
+using AzureMcp.Areas.KeyVault.Commands.Secret;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -14,26 +15,28 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Key;
+namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Secret;
 
 [Trait("Area", "KeyVault")]
-public class KeyListCommandTests
+public class SecretGetCommandTests
 {
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
-    private readonly ILogger<KeyListCommand> _logger;
-    private readonly KeyListCommand _command;
+    private readonly ILogger<SecretGetCommand> _logger;
+    private readonly SecretGetCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "knownSubscriptionId";
+    private const string _knownSubscriptionId = "knownSubscription";
     private const string _knownVaultName = "knownVaultName";
+    private const string _knownSecretName = "knownSecretName";
+    private const string _knownSecretValue = "knownSecretValue";
+    private readonly KeyVaultSecret _knownKeyVaultSecret;
 
-    public KeyListCommandTests()
+    public SecretGetCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
-        _logger = Substitute.For<ILogger<KeyListCommand>>();
+        _logger = Substitute.For<ILogger<SecretGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
@@ -42,24 +45,25 @@ public class KeyListCommandTests
         _command = new(_logger);
         _context = new(_serviceProvider);
         _parser = new(_command.GetCommand());
+
+        _knownKeyVaultSecret = new KeyVaultSecret(_knownSecretName, _knownSecretValue);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsKeys_WhenKeysExist()
+    public async Task ExecuteAsync_ReturnsSecret()
     {
         // Arrange
-        var expectedKeys = new List<string> { "key1", "key2" };
-
-        _keyVaultService.ListKeys(
+        _keyVaultService.GetSecret(
             Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
+            Arg.Is(_knownSecretName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedKeys);
+            .Returns(_knownKeyVaultSecret);
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -68,56 +72,32 @@ public class KeyListCommandTests
 
         // Assert
         Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyListResult>(json);
+        var retrievedSecret = JsonSerializer.Deserialize<SecretGetResult>(json);
 
-        Assert.NotNull(result);
-        Assert.Equal(expectedKeys, result.Keys);
+        Assert.NotNull(retrievedSecret);
+        Assert.Equal(_knownSecretName, retrievedSecret.Name);
+        Assert.Equal(_knownSecretValue, retrievedSecret.Value);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoKeys()
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
     {
         // Arrange
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
+        _keyVaultService.GetSecret(
+            Arg.Any<string>(),
+            Arg.Is(""),
+            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns([]);
+            .ThrowsAsync(new ArgumentException("Secret name cannot be null or empty"));
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
-            "--subscription", _knownSubscriptionId
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Null(response.Results);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_HandlesException()
-    {
-        // Arrange
-        var expectedError = "Test error";
-
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(new Exception(expectedError));
-
-        var args = _parser.Parse([
-            "--vault", _knownVaultName,
+            "--secret", "",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -127,12 +107,59 @@ public class KeyListCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
-        Assert.StartsWith(expectedError, response.Message);
+        Assert.Contains("Secret name cannot be null or empty", response.Message);
     }
 
-    private class KeyListResult
+    [Fact]
+    public async Task ExecuteAsync_HandlesException()
     {
-        [JsonPropertyName("keys")]
-        public List<string> Keys { get; set; } = [];
+        // Arrange
+        var expectedError = "Test error";
+
+        _keyVaultService.GetSecret(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
+
+        var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--secret", _knownSecretName,
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(500, response.Status);
+        Assert.Contains(expectedError, response.Message);
+    }
+
+    private class SecretGetResult
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = null!;
+
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = null!;
+
+        [JsonPropertyName("enabled")]
+        public bool? Enabled { get; set; }
+
+        [JsonPropertyName("notBefore")]
+        public DateTimeOffset? NotBefore { get; set; }
+
+        [JsonPropertyName("expiresOn")]
+        public DateTimeOffset? ExpiresOn { get; set; }
+
+        [JsonPropertyName("createdOn")]
+        public DateTimeOffset? CreatedOn { get; set; }
+
+        [JsonPropertyName("updatedOn")]
+        public DateTimeOffset? UpdatedOn { get; set; }
     }
 }

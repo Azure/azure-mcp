@@ -20,6 +20,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
 
     public override string Name => "list";
 
+    public override string Title => CommandTitle;
+
     public override string Description =>
         """
         List all keys in an Azure Key Vault. This command retrieves and displays the names of all keys
@@ -29,8 +31,6 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger) : Subscriptio
         - subscription
         - vault
         """;
-
-    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {

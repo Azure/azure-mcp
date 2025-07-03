@@ -3,6 +3,12 @@
 ## 0.2.7 (Unreleased)
 
 ### Features Added
+- Added more tools for Azure Key Vault: [#517](https://github.com/Azure/azure-mcp/pull/517)
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
 
 - Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
 - Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
@@ -10,7 +16,6 @@
 ### Breaking Changes
 
 ### Bugs Fixed
-
 - Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
 
 ### Other Changes
