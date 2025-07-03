@@ -73,7 +73,14 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new SecretCreateCommandResult(secret.Name, secret.Properties.Enabled, secret.Properties.NotBefore, secret.Properties.ExpiresOn, secret.Properties.CreatedOn, secret.Properties.UpdatedOn),
+                new SecretCreateCommandResult(
+                    secret.Name,
+                    secret.Value,
+                    secret.Properties.Enabled,
+                    secret.Properties.NotBefore,
+                    secret.Properties.ExpiresOn,
+                    secret.Properties.CreatedOn,
+                    secret.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.SecretCreateCommandResult);
         }
         catch (Exception ex)
@@ -85,5 +92,5 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
         return context.Response;
     }
 
-    internal record SecretCreateCommandResult(string Name, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
+    internal record SecretCreateCommandResult(string Name, string Value, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
 }

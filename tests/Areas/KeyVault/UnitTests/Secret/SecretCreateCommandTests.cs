@@ -28,10 +28,10 @@ public class SecretCreateCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private readonly string _knownSubscriptionId = "knownSubscription";
-    private readonly string _knownVaultName = "knownVaultName";
-    private readonly string _knownSecretName = "knownSecretName";
-    private readonly string _knownSecretValue = "knownSecretValue";
+    private const string _knownSubscriptionId = "knownSubscription";
+    private const string _knownVaultName = "knownVaultName";
+    private const string _knownSecretName = "knownSecretName";
+    private const string _knownSecretValue = "knownSecretValue";
     private readonly KeyVaultSecret _knownKeyVaultSecret;
 
     public SecretCreateCommandTests()
@@ -75,6 +75,7 @@ public class SecretCreateCommandTests
 
         // Assert
         Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);

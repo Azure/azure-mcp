@@ -25,9 +25,9 @@ public class CertificateGetCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private readonly string _knownSubscriptionId = "knownSubscription";
-    private readonly string _knownVaultName = "knownVaultName";
-    private readonly string _knownCertificateName = "knownCertificateName";
+    private const string _knownSubscriptionId = "knownSubscription";
+    private const string _knownVaultName = "knownVaultName";
+    private const string _knownCertificateName = "knownCertificateName";
 
     public CertificateGetCommandTests()
     {
