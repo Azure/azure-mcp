@@ -1,3 +1,5 @@
+# Azure MCP End-to-End Test Prompts
+
 This file contains prompts used for end-to-end testing to ensure each tool is invoked properly by MCP clients. The tables are organized by Azure MCP Server areas in alphabetical order.
 
 ## Best Practices
@@ -36,6 +38,28 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-tool-list | List all available tools in the Azure MCP server |
 | azmcp-tool-list | Show me the available tools in the Azure MCP server |
+
+## Azure AI Search
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-search-index-describe | Show me the details of the index \<index-name> in Cognitive Search service \<service-name> |
+| azmcp-search-index-list | List all indexes in the Cognitive Search service \<service-name> |
+| azmcp-search-index-list | Show me the indexes in the Cognitive Search service \<service-name> |
+| azmcp-search-index-query | Search for instances of \<search_term> in the index \<index-name> in Cognitive Search service \<service-name> |
+| azmcp-search-list | List all Cognitive Search services in my subscription |
+| azmcp-search-list | Show me the Cognitive Search services in my subscription |
+| azmcp-search-list | Show me my Cognitive Search services |
+
+## Azure AI Foundry
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-foundry-models-list | List all AI Foundry models |
+| azmcp-foundry-models-list | Show me the available AI Foundry models |
+| azmcp-foundry-models-deploy | Deploy a GPT4o instance on my resource \<resource-name> |
+| azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
+| azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
 
 ## Azure App Configuration
 
@@ -141,18 +165,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-postgres-database-list | List all PostgreSQL databases in server <server> |
-| azmcp-postgres-database-list | Show me the PostgreSQL databases in server <server> |
-| azmcp-postgres-database-query | Show me all items that contain the word <search_term> in the PostgreSQL database <database> in server <server> |
-| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server <server> |
+| azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server \<server> |
 | azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
 | azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
 | azmcp-postgres-server-list | Show me my PostgreSQL servers |
-| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server <server> has replication enabled |
-| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server <server> |
-| azmcp-postgres-table-list | List all tables in the PostgreSQL database <database> in server <server> |
-| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database <database> in server <server> |
-| azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database <database> in server <server> |
+| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
+| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server \<server> |
+| azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
 
 ## Azure Redis
 
@@ -175,18 +199,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-role-assignment-list | List all available role assignments in my subscription |
 | azmcp-role-assignment-list | Show me the available role assignments in my subscription |
-
-## Azure AI Search
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-search-index-describe | Show me the details of the index <index-name> in Cognitive Search service <service-name> |
-| azmcp-search-index-list | List all indexes in the Cognitive Search service <service-name> |
-| azmcp-search-index-list | Show me the indexes in the Cognitive Search service <service-name> |
-| azmcp-search-index-query | Search for instances of <search_term> in the index <index-name> in Cognitive Search service <service-name> |
-| azmcp-search-list | List all Cognitive Search services in my subscription |
-| azmcp-search-list | Show me the Cognitive Search services in my subscription |
-| azmcp-search-list | Show me my Cognitive Search services |
 
 ## Azure Service Bus
 
