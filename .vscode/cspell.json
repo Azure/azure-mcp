@@ -215,6 +215,8 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
-        "Xunit"
+        "Xunit",
+        "azuretools",
+        "azureresourcegroups"
     ]
 }
