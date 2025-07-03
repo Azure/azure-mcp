@@ -3,11 +3,16 @@
 ## 0.2.7 (Unreleased)
 
 ### Features Added
+- Added more tools for Azure Key Vault:
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
 
 ### Breaking Changes
 
 ### Bugs Fixed
-
 - Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
 
 ### Other Changes
