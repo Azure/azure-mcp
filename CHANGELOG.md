@@ -3,7 +3,7 @@
 ## 0.2.7 (Unreleased)
 
 ### Features Added
-- Added more tools for Azure Key Vault:
+- Added more tools for Azure Key Vault: [#517](https://github.com/Azure/azure-mcp/pull/517)
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`
   - `azmcp-keyvault-certificate-create`
