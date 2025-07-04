@@ -38,22 +38,22 @@ azmcp server start \
     [--read-only]
 ```
 
-#### Service Mode
+#### Namespace Mode
 
-Exposes only tools for specific Azure services. Use multiple `--service` parameters to include multiple services.
+Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
 
 ```bash
 # Start MCP Server with only Storage tools
 azmcp server start \
-    --service storage \
+    --namespace storage \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
 
 # Start MCP Server with Storage and Key Vault tools
 azmcp server start \
-    --service storage \
-    --service keyvault \
+    --namespace storage \
+    --namespace keyvault \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
@@ -66,7 +66,7 @@ Collapses all tools within each namespace into a single tool (e.g., all storage 
 ```bash
 # Start MCP Server with service proxy tools
 azmcp server start \
-    --service proxy \
+    --proxy namespace \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
@@ -79,7 +79,7 @@ Exposes a single "azure" tool that handles internal routing across all Azure MCP
 ```bash
 # Start MCP Server with single Azure tool proxy
 azmcp server start \
-    --service azure \
+    --proxy single \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
@@ -87,9 +87,9 @@ azmcp server start \
 
 > **Note:**
 >
-> - For service mode, replace `<service-name>` with available top level command groups. Run `azmcp -h` to review available services. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
+> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 > - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
-> - Multiple `--service` parameters can be used together to expose tools for multiple specific services.
+> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
 
 
 ### Subscription Management

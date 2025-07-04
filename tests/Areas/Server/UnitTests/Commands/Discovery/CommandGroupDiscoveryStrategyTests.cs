@@ -523,4 +523,80 @@ public class CommandGroupDiscoveryStrategyTests
         var expectedDirectory = Path.GetDirectoryName(azmcpPath);
         Assert.Equal(testDirectory, expectedDirectory);
     }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithNamespaceFilter_ReturnsOnlySpecifiedNamespaces()
+    {
+        // Arrange
+        var options = new ServiceStartOptions
+        {
+            Namespace = new[] { "storage", "keyvault" }
+        };
+        var strategy = CreateStrategy(options: options);
+
+        // Act
+        var servers = await strategy.DiscoverServersAsync();
+        var serverNames = servers.Select(s => s.CreateMetadata().Name).ToList();
+
+        // Assert
+        Assert.NotNull(servers);
+        Assert.Equal(2, serverNames.Count);
+        Assert.Contains("storage", serverNames);
+        Assert.Contains("keyvault", serverNames);
+
+        // Should not contain other namespaces
+        Assert.DoesNotContain("cosmos", serverNames);
+        Assert.DoesNotContain("monitor", serverNames);
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithEmptyNamespaceFilter_ReturnsAllNamespaces()
+    {
+        // Arrange
+        var options = new ServiceStartOptions
+        {
+            Namespace = Array.Empty<string>()
+        };
+        var strategy = CreateStrategy(options: options);
+
+        // Act
+        var servers = await strategy.DiscoverServersAsync();
+        var serverNames = servers.Select(s => s.CreateMetadata().Name).ToList();
+
+        // Assert
+        Assert.NotNull(servers);
+        Assert.True(serverNames.Count > 2); // Should have more than just storage and keyvault
+
+        // Should contain expected namespaces (but not ignored ones)
+        Assert.Contains("storage", serverNames);
+        Assert.Contains("keyvault", serverNames);
+        Assert.DoesNotContain("server", serverNames); // Should be ignored
+        Assert.DoesNotContain("extension", serverNames); // Should be ignored
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithNullNamespaceFilter_ReturnsAllNamespaces()
+    {
+        // Arrange
+        var options = new ServiceStartOptions
+        {
+            Namespace = null
+        };
+        var strategy = CreateStrategy(options: options);
+
+        // Act
+        var servers = await strategy.DiscoverServersAsync();
+        var serverNames = servers.Select(s => s.CreateMetadata().Name).ToList();
+
+        // Assert
+        Assert.NotNull(servers);
+        Assert.True(serverNames.Count > 2); // Should have more than just storage and keyvault
+
+        // Should contain expected namespaces (but not ignored ones)
+        Assert.Contains("storage", serverNames);
+        Assert.Contains("keyvault", serverNames);
+        Assert.DoesNotContain("server", serverNames); // Should be ignored
+        Assert.DoesNotContain("extension", serverNames); // Should be ignored
+    }
+
 }

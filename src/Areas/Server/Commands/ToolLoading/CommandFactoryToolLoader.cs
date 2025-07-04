@@ -31,9 +31,9 @@ public sealed class CommandFactoryToolLoader(
     private readonly IOptions<ServiceStartOptions> _options = options;
     private readonly ITelemetryService _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands =
-        (options.Value.Service == null || options.Value.Service.Length == 0)
+        (options.Value.Namespace == null || options.Value.Namespace.Length == 0)
             ? commandFactory.AllCommands
-            : commandFactory.GroupCommands(options.Value.Service);
+            : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
 
     /// <summary>
@@ -49,7 +49,7 @@ public sealed class CommandFactoryToolLoader(
     /// </summary>
     private string[]? Namespaces
     {
-        get => _options.Value.Service;
+        get => _options.Value.Namespace;
     }
 
     /// <summary>

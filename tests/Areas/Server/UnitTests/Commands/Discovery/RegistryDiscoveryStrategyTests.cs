@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
+using AzureMcp.Areas.Server.Options;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
@@ -12,7 +14,11 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
 [Trait("Area", "Server")]
 public class RegistryDiscoveryStrategyTests
 {
-    private static RegistryDiscoveryStrategy CreateStrategy() => new();
+    private static RegistryDiscoveryStrategy CreateStrategy(ServiceStartOptions? options = null)
+    {
+        var serviceOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ServiceStartOptions());
+        return new RegistryDiscoveryStrategy(serviceOptions);
+    }
 
     [Fact]
     public void Constructor_InitializesCorrectly()
@@ -302,7 +308,7 @@ public class RegistryDiscoveryStrategyTests
     [Fact]
     public async Task ShouldDiscoverServers()
     {
-        var strategy = new RegistryDiscoveryStrategy();
+        var strategy = CreateStrategy();
         var result = await strategy.DiscoverServersAsync();
         Assert.NotNull(result);
     }
@@ -310,7 +316,7 @@ public class RegistryDiscoveryStrategyTests
     [Fact]
     public async Task ShouldDiscoverServers_ReturnsExpectedProviders()
     {
-        var strategy = new RegistryDiscoveryStrategy();
+        var strategy = CreateStrategy();
         var result = (await strategy.DiscoverServersAsync()).ToList();
         Assert.NotEmpty(result);
         // Should contain the 'learn' server from registry.json
@@ -320,5 +326,119 @@ public class RegistryDiscoveryStrategyTests
         Assert.Equal("learn", metadata.Id);
         Assert.Equal("learn", metadata.Name);
         Assert.Contains("documentation", metadata.Description, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Namespace filtering tests
+    [Fact]
+    public async Task DiscoverServersAsync_WithNullNamespace_ReturnsAllServers()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = null };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        Assert.NotEmpty(result);
+        // Should contain all servers when namespace is null
+        var serverIds = result.Select(p => p.CreateMetadata().Id).ToList();
+        Assert.Contains("learn", serverIds);
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithEmptyNamespace_ReturnsAllServers()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = [] };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        Assert.NotEmpty(result);
+        // Should contain all servers when namespace is empty
+        var serverIds = result.Select(p => p.CreateMetadata().Id).ToList();
+        Assert.Contains("learn", serverIds);
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithMatchingNamespace_ReturnsFilteredServers()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = ["learn"] };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        var providers = result.ToList();
+        Assert.NotEmpty(providers);
+
+        // Should only contain servers that match the namespace filter
+        var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
+        Assert.Contains("learn", serverIds);
+
+        // All returned servers should match the namespace filter
+        Assert.All(serverIds, id => Assert.Contains(id, options.Namespace, StringComparer.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithNonMatchingNamespace_ReturnsEmptyResult()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = ["nonexistent"] };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        var providers = result.ToList();
+        Assert.Empty(providers);
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_WithMultipleNamespaces_ReturnsMatchingServers()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = ["learn", "another"] };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        var providers = result.ToList();
+        Assert.NotEmpty(providers);
+
+        // Should contain servers that match any of the namespaces
+        var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
+        Assert.Contains("learn", serverIds);
+
+        // All returned servers should match at least one namespace in the filter
+        Assert.All(serverIds, id =>
+            Assert.Contains(id, options.Namespace!, StringComparer.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task DiscoverServersAsync_NamespaceFilteringIsCaseInsensitive()
+    {
+        // Arrange
+        var options = new ServiceStartOptions { Namespace = ["LEARN"] };
+        var strategy = CreateStrategy(options);
+
+        // Act
+        var result = await strategy.DiscoverServersAsync();
+
+        // Assert
+        var providers = result.ToList();
+        Assert.NotEmpty(providers);
+
+        // Should find "learn" server even with uppercase namespace filter
+        var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
+        Assert.Contains("learn", serverIds);
     }
 }

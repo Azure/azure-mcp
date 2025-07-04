@@ -64,14 +64,14 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithAzureService_RegistersSingleProxyToolLoader()
+    public void AddAzureMcpServer_WithSingleProxy_RegistersSingleProxyToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Service = new[] { "azure" }
+            Proxy = "single"
         };
 
         // Act
@@ -90,14 +90,14 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithProxyService_RegistersServerToolLoader()
+    public void AddAzureMcpServer_WithNamespaceProxy_RegistersServerToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Service = new[] { "proxy" }
+            Proxy = "namespace"
         };
 
         // Act
@@ -145,8 +145,8 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            // Define service as "azure" to prevent CompositeDiscoveryStrategy error
-            Service = new[] { "azure" }
+            // Define proxy as "single" to prevent CompositeDiscoveryStrategy error
+            Proxy = "single"
         };
 
         // Act
@@ -172,8 +172,8 @@ public class ServiceCollectionExtensionsTests
         {
             Transport = SseTransport,
             Port = 8080,
-            // Define service as "azure" to prevent CompositeDiscoveryStrategy error
-            Service = new[] { "azure" }
+            // Define proxy as "single" to prevent CompositeDiscoveryStrategy error
+            Proxy = "single"
         };
 
         // Act
@@ -278,7 +278,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Service = new[] { "keyvault", "storage" }
+            Namespace = new[] { "keyvault", "storage" }
         };
 
         // Act
@@ -310,7 +310,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Service = new[] { serviceArea }
+            Namespace = new[] { serviceArea }
         };
 
         // Act
@@ -326,5 +326,49 @@ public class ServiceCollectionExtensionsTests
         // Verify runtime
         Assert.NotNull(provider.GetService<IMcpRuntime>());
         Assert.IsType<McpRuntime>(provider.GetService<IMcpRuntime>());
+    }
+
+    [Fact]
+    public void AddAzureMcpServer_WithInvalidProxyMode_UsesDefaultLoader()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport,
+            Proxy = "invalid-mode"
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+
+        // Should default to CompositeToolLoader (normal mode) when proxy mode is invalid
+        Assert.NotNull(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+    }
+
+    [Fact]
+    public void AddAzureMcpServer_WithNullProxy_UsesDefaultLoader()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport,
+            Proxy = null
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+
+        // Should use CompositeToolLoader (normal mode) when proxy is null
+        Assert.NotNull(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
     }
 }

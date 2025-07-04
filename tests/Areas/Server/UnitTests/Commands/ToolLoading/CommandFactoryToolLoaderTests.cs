@@ -108,7 +108,7 @@ public class CommandFactoryToolLoaderTests
         // Try to filter by a specific service/group - using a common Azure service name
         var filteredOptions = new ServiceStartOptions
         {
-            Service = new[] { "storage" }  // Assuming there's a storage service group
+            Namespace = new[] { "storage" }  // Assuming there's a storage service group
         };
         var (toolLoader, _) = CreateToolLoader(filteredOptions);
         var request = CreateRequest();
@@ -147,7 +147,7 @@ public class CommandFactoryToolLoaderTests
         // Try to filter by multiple real service/group names from the codebase
         var multiServiceOptions = new ServiceStartOptions
         {
-            Service = new[] { "storage", "appconfig", "search" }  // Real Azure service groups from the codebase
+            Namespace = new[] { "storage", "appconfig", "search" }  // Real Azure service groups from the codebase
         };
         var (toolLoader, commandFactory) = CreateToolLoader(multiServiceOptions);
         var request = CreateRequest();
@@ -164,9 +164,9 @@ public class CommandFactoryToolLoaderTests
             var expectedCommands = new List<string>();
             var existingServices = new List<string>();
 
-            var serviceCommands = commandFactory.GroupCommands(multiServiceOptions.Service);
+            var serviceCommands = commandFactory.GroupCommands(multiServiceOptions.Namespace);
             expectedCommands.AddRange(serviceCommands.Keys);
-            existingServices.AddRange(multiServiceOptions.Service);
+            existingServices.AddRange(multiServiceOptions.Namespace);
 
             if (expectedCommands.Count > 0)
             {
