@@ -349,6 +349,12 @@ azmcp keyvault secret get --subscription <subscription> \
                           --name <secret-name>
 ```
 
+### Azure Marketplace Operations
+```bash
+# Get details about a marketplace product
+azmcp marketplace product get --subscription <subscription> --product-name <product-name>
+```
+
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue
