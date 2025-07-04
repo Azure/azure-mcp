@@ -103,6 +103,15 @@ module kusto 'services/kusto.bicep' = if (empty(areas) || contains(areas, 'Kusto
   }
 }
 
+module sql 'services/sql.bicep' = if (empty(areas) || contains(areas, 'Sql')) {
+  name: '${deploymentName}-sql'
+  params: {
+    baseName: baseName
+    location: location
+    testApplicationOid: testApplicationOid
+  }
+}
+
 module foundry 'services/foundry.bicep' = if (contains(areas, 'Foundry')) {
   name: '${deploymentName}-foundry'
   params: {

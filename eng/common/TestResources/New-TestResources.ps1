@@ -229,10 +229,10 @@ try {
     # string.
     if (!$Location) {
         $Location = @{
-            'AzureCloud' = 'westus';
+            'AzureCloud' = 'westus2';
             'AzureUSGovernment' = 'usgovvirginia';
             'AzureChinaCloud' = 'chinaeast2';
-            'Dogfood' = 'westus'
+            'Dogfood' = 'westus2'
         }[$Environment]
 
         Write-Verbose "Location was not set. Using default location for environment: '$Location'"
@@ -843,10 +843,10 @@ This is used for CI automation.
 Optional location where resources should be created. If left empty, the default
 is based on the cloud to which the template is being deployed:
 
-* AzureCloud -> 'westus'
+* AzureCloud -> 'westus2'
 * AzureUSGovernment -> 'usgovvirginia'
 * AzureChinaCloud -> 'chinaeast2'
-* Dogfood -> 'westus'
+* Dogfood -> 'westus2'
 
 .PARAMETER Environment
 Optional name of the cloud environment. The default is the Azure Public Cloud

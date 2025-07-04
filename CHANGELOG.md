@@ -1,9 +1,9 @@
 # Release History
 
-## 0.3.1 (Unreleased)
+## 0.3.1 (2025-07-08)
 
 ### Features Added
-
+- Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
 ### Breaking Changes
 
 ### Bugs Fixed

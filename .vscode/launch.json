@@ -425,6 +425,32 @@
             "env": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        {
+            "name": "Debug SQL Database Show",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "sql",
+                "db",
+                "show",
+                "--subscription",
+                "${input:subscription}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--server",
+                "${input:sqlServerName}",
+                "--database",
+                "${input:sqlDatabaseName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
@@ -512,6 +538,18 @@
             "type": "promptString",
             "description": "Monitor Table Name",
             "default": ""
+        },
+        {
+            "id": "sqlServerName",
+            "type": "promptString",
+            "description": "SQL Server Name",
+            "default": ""
+        },
+        {
+            "id": "sqlDatabaseName",
+            "type": "promptString",
+            "description": "SQL Database Name",
+            "default": "testdb"
         }
     ]
 }

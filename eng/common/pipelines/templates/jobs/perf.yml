@@ -118,7 +118,7 @@ jobs:
   - template: /eng/common/TestResources/deploy-test-resources.yml
     parameters:
       ServiceDirectory: ${{ parameters.ServiceDirectory }}
-      Location: westus
+      Location: westus2
       ResourceType: perf
       ServiceConnection: azure-sdk-tests-public
 

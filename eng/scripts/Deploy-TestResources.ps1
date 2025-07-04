@@ -5,6 +5,7 @@ param(
     [string]$BaseName,
     [string[]]$Areas,
     [int]$DeleteAfterHours = 12,
+    [string]$Location,
     [switch]$Unique
 )
 
@@ -21,6 +22,7 @@ function New-StringHash($string) {
 }
 
 $suffix = ($Unique ? [guid]::NewGuid().ToString() : (New-StringHash $account.Id)).ToLower().Substring(0, 8)
+$suffix = $suffix.ToLower().Substring(0, 8)
 
 if(!$BaseName) {
     $BaseName = "mcp$($suffix)"
@@ -35,22 +37,24 @@ Push-Location $RepoRoot
 try {
     $armParameters = @{ areas = ($Areas ?? @()) }
 
-    Write-Host "Deploying:`n  ResourceGroupName: `"$ResourceGroupName`"`n  BaseName: `"$BaseName`"`n  DeleteAfterHours: $DeleteAfterHours`n  ArmTemplateParameters: $(ConvertTo-Json $armParameters -Compress)"
+    Write-Host "Deploying:`n  ResourceGroupName: `"$ResourceGroupName`"`n  BaseName: `"$BaseName`"`n  DeleteAfterHours: $DeleteAfterHours`n  Location: `"$(if ($Location) { $Location } else { 'default' })`"`n  ArmTemplateParameters: $(ConvertTo-Json $armParameters -Compress)"
 
-    if($SubscriptionId) {
-        ./eng/common/TestResources/New-TestResources.ps1 `
-            -SubscriptionId $SubscriptionId `
-            -ResourceGroupName $ResourceGroupName `
-            -BaseName $BaseName `
-            -DeleteAfterHours $DeleteAfterHours `
-            -AdditionalParameters $armParameters
-    } else {
-        ./eng/common/TestResources/New-TestResources.ps1 `
-            -ResourceGroupName $ResourceGroupName `
-            -BaseName $BaseName `
-            -DeleteAfterHours $DeleteAfterHours `
-            -AdditionalParameters $armParameters
+    $deployParams = @{
+        ResourceGroupName = $ResourceGroupName
+        BaseName = $BaseName
+        DeleteAfterHours = $DeleteAfterHours
+        AdditionalParameters = $armParameters
     }
+    
+    if($SubscriptionId) {
+        $deployParams.SubscriptionId = $SubscriptionId
+    }
+    
+    if($Location) {
+        $deployParams.Location = $Location
+    }
+    
+    ./eng/common/TestResources/New-TestResources.ps1 @deployParams
 }
 finally {
     Pop-Location

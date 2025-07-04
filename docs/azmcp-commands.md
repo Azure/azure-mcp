@@ -173,6 +173,15 @@ azmcp postgres server setparam --subscription <subscription> \
                                --value <value>
 ```
 
+### Azure SQL Database Operations
+```bash
+# Show details of a specific SQL database
+azmcp sql db show --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name> \
+                  --database <database-name>
+```
+
 ### Azure Storage Operations
 ```bash
 # List Storage accounts in a subscription
