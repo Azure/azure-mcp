@@ -7,8 +7,10 @@ using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.Tenant;
 
-public class TenantService(ICacheService cacheService)
-    : BaseAzureService, ITenantService
+using Microsoft.Extensions.Logging;
+
+public class TenantService(ICacheService cacheService, ILoggerFactory loggerFactory)
+    : BaseAzureService(null, loggerFactory), ITenantService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string CacheGroup = "tenant";
