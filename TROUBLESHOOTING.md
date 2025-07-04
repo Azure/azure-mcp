@@ -11,8 +11,7 @@ When configuring Azure MCP with 'all' toolsets for convenience, you may encounte
 ![128 tools limit error](docs/images/128-tools-limit-error.png)
 
 ### Root Cause
-VS Code Copilot has a limitation of 128 tools maximum per request. When you combine multiple comprehensive toolsets (like GitHub MCP 'all' + Azure MCP 'all'), the total number of available tools exceeds this limit.
-
+  VS Code Copilot has a limitation of 128 tools maximum per request. When you combine multiple comprehensive toolsets (like GitHub MCP 'all' + Azure MCP 'all'), the total number of available tools exceeds this limit.  The solution to this problem is discussed in the VS Code repo [here](https://github.com/microsoft/vscode/issues/248021).
 ### Workarounds
 
 **Option 1: Use VS Code Custom Chat Modes (Recommended)**
