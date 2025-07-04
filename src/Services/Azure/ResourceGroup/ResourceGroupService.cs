@@ -9,8 +9,10 @@ using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.ResourceGroup;
 
-public class ResourceGroupService(ICacheService cacheService, ISubscriptionService subscriptionService)
-    : BaseAzureService, IResourceGroupService
+using Microsoft.Extensions.Logging;
+
+public class ResourceGroupService(ICacheService cacheService, ISubscriptionService subscriptionService, ILoggerFactory loggerFactory)
+    : BaseAzureService(null, loggerFactory), IResourceGroupService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
