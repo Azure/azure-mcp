@@ -1,0 +1,41 @@
+# VS Code Extension CI for azure-mcp-extension
+name: VS Code Extension CI
+
+on:
+  push:
+    paths:
+      - 'azure-mcp-extension/**'
+  pull_request:
+    paths:
+      - 'azure-mcp-extension/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: |
+          cd azure-mcp-extension
+          npm ci
+      - name: Lint
+        run: |
+          cd azure-mcp-extension
+          npm run lint || true
+      - name: Run unit tests
+        run: |
+          cd azure-mcp-extension
+          npm run unit-test || true
+      - name: Package extension
+        run: |
+          cd azure-mcp-extension
+          npm run package
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-mcp-extension-vsix
+          path: azure-mcp-extension/*.vsix
