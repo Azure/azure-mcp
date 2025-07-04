@@ -34,7 +34,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         """;
 
     public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
-    public string[]? Namespace { get; set; } = options?.Value?.Service ?? null;
+    public string[]? Namespace { get; set; } = options?.Value?.Namespace ?? null;
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
         {

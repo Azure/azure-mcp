@@ -29,7 +29,7 @@ public class SingleProxyToolLoaderTests
                 CommandFactoryHelpers.CreateCommandFactory(serviceProvider),
                 options
             );
-            var registryDiscoveryStrategy = new RegistryDiscoveryStrategy();
+            var registryDiscoveryStrategy = new RegistryDiscoveryStrategy(options);
             var compositeDiscoveryStrategy = new CompositeDiscoveryStrategy([
                 commandGroupDiscoveryStrategy,
                 registryDiscoveryStrategy

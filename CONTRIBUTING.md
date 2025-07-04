@@ -133,9 +133,9 @@ Update your mcp.json to point to the locally built azmcp executable. This setup 
 }
 ```
 
-An optional `--service` parameter can be used to configure different server modes:
+Optional `--namespace` and `--proxy` parameters can be used to configure different server modes:
 
-**Default Mode** (no `--service` parameter):
+**Default Mode** (no additional parameters):
 ```json
 {
   "servers": {
@@ -151,7 +151,7 @@ An optional `--service` parameter can be used to configure different server mode
 }
 ```
 
-**Service Mode** (expose specific services):
+**Namespace Mode** (expose specific services):
 ```json
 {
   "servers": {
@@ -161,9 +161,9 @@ An optional `--service` parameter can be used to configure different server mode
       "args": [
         "server",
         "start",
-        "--service",
+        "--namespace",
         "storage",
-        "--service",
+        "--namespace",
         "keyvault"
       ]
     }
@@ -171,7 +171,7 @@ An optional `--service` parameter can be used to configure different server mode
 }
 ```
 
-**Service Proxy Mode** (collapse tools by namespace - useful for VS Code's 128 tool limit):
+**Namespace Proxy Mode** (collapse tools by namespace - useful for VS Code's 128 tool limit):
 ```json
 {
   "servers": {
@@ -181,8 +181,8 @@ An optional `--service` parameter can be used to configure different server mode
       "args": [
         "server",
         "start",
-        "--service",
-        "proxy"
+        "--proxy",
+        "namespace"
       ]
     }
   }
@@ -199,8 +199,30 @@ An optional `--service` parameter can be used to configure different server mode
       "args": [
         "server",
         "start",
-        "--service",
-        "azure"
+        "--proxy",
+        "single"
+      ]
+    }
+  }
+}
+```
+
+**Combined Mode** (filter namespaces with proxy mode):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--namespace",
+        "storage",
+        "--namespace",
+        "keyvault",
+        "--proxy",
+        "namespace"
       ]
     }
   }
@@ -211,14 +233,16 @@ An optional `--service` parameter can be used to configure different server mode
 > On **Windows**, use `azmcp.exe`.
 > On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
 
-> **Note:** For service mode, replace `<service-name>` with available top level command groups.
+> **Note:** For namespace mode, replace `<service-name>` with available top level command groups.
 > Run `azmcp -h` to review available services. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 >
-> **Service Modes:**
-> - **Default Mode**: No `--service` parameter - exposes all tools individually
-> - **Service Mode**: `--service <service-name>` - expose specific services (can use multiple `--service` parameters)
-> - **Service Proxy Mode**: `--service proxy` - collapse tools by namespace (useful for VS Code's 128 tool limit)
-> - **Single Tool Proxy Mode**: `--service azure` - single "azure" tool with internal routing
+> **Server Modes:**
+>
+> * **Default Mode**: No additional parameters - exposes all tools individually
+> * **Namespace Mode**: `--namespace <service-name>` - expose specific services (can use multiple `--namespace` parameters)
+> * **Namespace Proxy Mode**: `--proxy namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
+> * **Single Tool Proxy Mode**: `--proxy single` - single "azure" tool with internal routing
+> * **Combined Mode**: Both `--namespace` and `--proxy` can be used together to filter namespaces and use proxy mode
 
 #### 3. Start from IDE or Tooling
 

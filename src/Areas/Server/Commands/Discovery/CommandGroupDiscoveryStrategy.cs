@@ -34,6 +34,9 @@ public sealed class CommandGroupDiscoveryStrategy(CommandFactory commandFactory,
 
         var providers = _commandFactory.RootGroup.SubGroup
             .Where(group => !ignoreCommandGroups.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
+            .Where(group => _options.Value.Namespace == null ||
+                           _options.Value.Namespace.Length == 0 ||
+                           _options.Value.Namespace.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
             .Select(group => new CommandGroupServerProvider(group)
             {
                 ReadOnly = _options.Value.ReadOnly ?? false,

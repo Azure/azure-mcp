@@ -42,7 +42,7 @@ public sealed class CommandGroupServerProvider(CommandGroup commandGroup) : IMcp
             throw new InvalidOperationException("EntryPoint must be set before creating the MCP client.");
         }
 
-        var arguments = new List<string> { "server", "start", "--service", _commandGroup.Name };
+        var arguments = new List<string> { "server", "start", "--namespace", _commandGroup.Name };
 
         if (ReadOnly)
         {

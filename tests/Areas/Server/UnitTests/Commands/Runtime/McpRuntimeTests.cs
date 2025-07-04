@@ -156,7 +156,7 @@ public class McpRuntimeTests
         var options = CreateOptions(new ServiceStartOptions
         {
             ReadOnly = true,
-            Service = new[] { "storage", "keyvault" }
+            Namespace = new[] { "storage", "keyvault" }
         });
 
         // Act
@@ -344,7 +344,7 @@ public class McpRuntimeTests
         var options2 = CreateOptions(new ServiceStartOptions
         {
             ReadOnly = null,
-            Service = new[] { "storage", "keyvault", "monitor" }
+            Namespace = new[] { "storage", "keyvault", "monitor" }
         });
         var runtime2 = new McpRuntime(mockToolLoader, options2, CreateMockTelemetryService(), logger);
         Assert.NotNull(runtime2);
@@ -353,7 +353,7 @@ public class McpRuntimeTests
         var options3 = CreateOptions(new ServiceStartOptions
         {
             ReadOnly = true,
-            Service = Array.Empty<string>()
+            Namespace = Array.Empty<string>()
         });
         var runtime3 = new McpRuntime(mockToolLoader, options3, CreateMockTelemetryService(), logger);
         Assert.NotNull(runtime3);
@@ -442,7 +442,7 @@ public class McpRuntimeTests
         var serviceProvider = CreateServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
         var mockToolLoader = Substitute.For<IToolLoader>();
-        var options = CreateOptions(new ServiceStartOptions { Service = null });
+        var options = CreateOptions(new ServiceStartOptions { Namespace = null });
 
         // Act
         var runtime = new McpRuntime(mockToolLoader, options, CreateMockTelemetryService(), logger);

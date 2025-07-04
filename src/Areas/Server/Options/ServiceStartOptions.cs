@@ -24,11 +24,18 @@ public class ServiceStartOptions
     public int Port { get; set; }
 
     /// <summary>
-    /// Gets or sets the service types to expose through the server.
-    /// When null, all available services are exposed.
+    /// Gets or sets the service namespaces to expose through the server.
+    /// When null, all available namespaces are exposed.
     /// </summary>
-    [JsonPropertyName("service")]
-    public string[]? Service { get; set; } = null;
+    [JsonPropertyName("namespace")]
+    public string[]? Namespace { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the proxy mode for the server.
+    /// When null, services are exposed individually.
+    /// </summary>
+    [JsonPropertyName("proxy")]
+    public string? Proxy { get; set; } = null;
 
     /// <summary>
     /// Gets or sets whether the server should operate in read-only mode.

@@ -4,6 +4,8 @@
 using System.Reflection;
 using System.Text.Json;
 using AzureMcp.Areas.Server.Models;
+using AzureMcp.Areas.Server.Options;
+using Microsoft.Extensions.Options;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
@@ -11,8 +13,10 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// Discovers MCP servers from an embedded registry.json resource file.
 /// This strategy loads server configurations from a JSON resource bundled with the assembly.
 /// </summary>
-public sealed class RegistryDiscoveryStrategy() : BaseDiscoveryStrategy()
+/// <param name="options">Options for configuring the service behavior.</param>
+public sealed class RegistryDiscoveryStrategy(IOptions<ServiceStartOptions> options) : BaseDiscoveryStrategy()
 {
+    private readonly IOptions<ServiceStartOptions> _options = options;
     /// <summary>
     /// Discovers available MCP servers from the embedded registry.
     /// </summary>
@@ -27,6 +31,9 @@ public sealed class RegistryDiscoveryStrategy() : BaseDiscoveryStrategy()
 
         return registryRoot
             .Servers!
+            .Where(s => _options.Value.Namespace == null ||
+                       _options.Value.Namespace.Length == 0 ||
+                       _options.Value.Namespace.Contains(s.Key, StringComparer.OrdinalIgnoreCase))
             .Select(s => new RegistryServerProvider(s.Key, s.Value))
             .Cast<IMcpServerProvider>();
     }

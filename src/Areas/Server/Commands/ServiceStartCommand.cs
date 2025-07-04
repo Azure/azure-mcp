@@ -26,8 +26,8 @@ public sealed class ServiceStartCommand : BaseCommand
     private const string CommandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
-    private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
-
+    private readonly Option<string[]?> _namespaceOption = OptionDefinitions.Service.Namespace;
+    private readonly Option<string?> _proxyOption = OptionDefinitions.Service.Proxy;
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
     /// <summary>
@@ -54,7 +54,8 @@ public sealed class ServiceStartCommand : BaseCommand
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
-        command.AddOption(_serviceTypeOption);
+        command.AddOption(_namespaceOption);
+        command.AddOption(_proxyOption);
         command.AddOption(_readOnlyOption);
     }
 
@@ -70,9 +71,13 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
-        var service = parseResult.GetValueForOption(_serviceTypeOption) == default
-            ? OptionDefinitions.Service.ServiceType.GetDefaultValue()
-            : parseResult.GetValueForOption(_serviceTypeOption);
+        var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
+            ? OptionDefinitions.Service.Namespace.GetDefaultValue()
+            : parseResult.GetValueForOption(_namespaceOption);
+
+        var proxy = parseResult.GetValueForOption(_proxyOption) == default
+            ? OptionDefinitions.Service.Proxy.GetDefaultValue()
+            : parseResult.GetValueForOption(_proxyOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
@@ -82,7 +87,8 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
-            Service = service,
+            Namespace = namespaces,
+            Proxy = proxy,
             ReadOnly = readOnly,
         };
 
