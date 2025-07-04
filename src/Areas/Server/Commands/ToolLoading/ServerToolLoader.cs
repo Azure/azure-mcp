@@ -1,61 +1,21 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
-using AzureMcp.Areas.Server.Commands.Tools;
-using AzureMcp.Commands.Server.Tools;
+using AzureMcp.Areas.Server.Commands.Discovery;
+using AzureMcp.Areas.Server.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 
-namespace AzureMcp.Commands.Server;
+namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-[JsonSerializable(typeof(Tool))]
-[JsonSerializable(typeof(List<Tool>))]
-[JsonSerializable(typeof(Dictionary<string, object?>))]
-[JsonSourceGenerationOptions(
-    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    WriteIndented = true
-)]
-internal partial class ProxyToolOperationsSerializationContext : JsonSerializerContext;
-
-public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<ProxyToolOperations> logger)
+public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : IToolLoader
 {
-    private readonly IMcpClientService _mcpClientService = mcpClientService;
-    private readonly ILogger<ProxyToolOperations> _logger = logger;
+    private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
+    private readonly ILogger<ServerToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
-
-    public bool ReadOnly { get; set; } = false;
-
-    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
-        {
-          "type": "object",
-          "properties": {
-            "intent": {
-              "type": "string",
-              "description": "The intent of the azure operation to perform."
-            },
-            "command": {
-              "type": "string",
-              "description": "The sub command to invoke to within the tool."
-            },
-            "parameters": {
-              "type": "object",
-              "description": "Wrapped set of arguments to pass to the sub command."
-            },
-            "learn": {
-              "type": "boolean",
-              "description": "When set to true returns a list of available sub commands and their parameters.",
-              "default": false
-            }
-          },
-          "required": ["intent"],
-          "additionalProperties": false
-        }
-        """, AzureProxyToolSerializationContext.Default.JsonElement);
-
     private const string ToolCallProxySchema = """
         {
           "type": "object",
@@ -73,10 +33,48 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         }
         """;
 
-    public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
+    public string[]? Namespace { get; set; } = options?.Value?.Namespace ?? null;
+
+    private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
+        {
+            "type": "object",
+            "properties": {
+            "intent": {
+                "type": "string",
+                "description": "The intent of the azure operation to perform."
+            },
+            "command": {
+                "type": "string",
+                "description": "The command to execute against the specified tool."
+            },
+            "parameters": {
+                "type": "object",
+                "description": "The parameters to pass to the tool command."
+            },
+            "learn": {
+                "type": "boolean",
+                "description": "To learn about the tool and its supported child tools and parameters.",
+                "default": false
+            }
+            },
+            "required": ["intent"],
+            "additionalProperties": false
+        }
+        """, ServerJsonContext.Default.JsonElement);
+
+    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        var tools = _mcpClientService.ListProviderMetadata()
-            .Select(metadata => new Tool
+        var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
+        var allToolsResponse = new ListToolsResult
+        {
+            Tools = new List<Tool>()
+        };
+
+        foreach (var server in serverList)
+        {
+            var metadata = server.CreateMetadata();
+            var tool = new Tool
             {
                 Name = metadata.Name,
                 Description = metadata.Description + """
@@ -86,14 +84,12 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                     Set "learn=true" to discover available sub commands.
                     """,
                 InputSchema = ToolSchema,
-            });
+            };
 
-        var listToolsResult = new ListToolsResult
-        {
-            Tools = [.. tools],
-        };
+            allToolsResponse.Tools.Add(tool);
+        }
 
-        return ValueTask.FromResult(listToolsResult);
+        return allToolsResponse;
     }
 
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
@@ -157,12 +153,27 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
 
     private async Task<CallToolResult> InvokeChildToolAsync(RequestContext<CallToolRequestParams> request, string? intent, string tool, string command, Dictionary<string, object?> parameters, CancellationToken cancellationToken)
     {
-        IMcpClient? client;
+        if (request.Params == null)
+        {
+            var content = new TextContentBlock
+            {
+                Text = "Cannot call tools with null parameters.",
+            };
 
+            _logger.LogWarning(content.Text);
+
+            return new CallToolResult
+            {
+                Content = [content],
+                IsError = true,
+            };
+        }
+
+        IMcpClient client;
         try
         {
             var clientOptions = CreateClientOptions(request.Server);
-            client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
+            client = await _serverDiscoveryStrategy.GetOrCreateClientAsync(tool, clientOptions);
             if (client == null)
             {
                 _logger.LogError("Failed to get provider client for tool: {Tool}", tool);
@@ -209,23 +220,22 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
 
             foreach (var content in toolCallResponse.Content)
             {
-                if (content is TextContentBlock textContent)
+                var textContent = content as TextContentBlock;
+                if (textContent == null || string.IsNullOrWhiteSpace(textContent.Text))
                 {
-                    if (string.IsNullOrWhiteSpace(textContent.Text))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (textContent.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
+                if (textContent.Text.Contains("Missing required options", StringComparison.OrdinalIgnoreCase))
+                {
+                    var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
 
-                        _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
-                        return new CallToolResult
-                        {
-                            Content =
-                            [
-                                new TextContentBlock {
+                    _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
+                    var finalResponse = new CallToolResult
+                    {
+                        Content =
+                        [
+                            new TextContentBlock {
                                     Text = $"""
                                         The '{command}' command is missing required parameters.
 
@@ -238,11 +248,16 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                                         Command Spec:
                                         {childToolSpecJson}
                                         """
-                                },
-                                .. toolCallResponse.Content
-                            ]
-                        };
+                                }
+                        ]
+                    };
+
+                    foreach (var contentBlock in toolCallResponse.Content)
+                    {
+                        finalResponse.Content.Add(contentBlock);
                     }
+
+                    return finalResponse;
                 }
             }
 
@@ -314,8 +329,13 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
             return cachedList;
         }
 
+        if (string.IsNullOrWhiteSpace(request.Params?.Name))
+        {
+            throw new ArgumentNullException(nameof(request.Params.Name), "Tool name cannot be null or empty.");
+        }
+
         var clientOptions = CreateClientOptions(request.Server);
-        var client = await _mcpClientService.GetProviderClientAsync(tool, clientOptions);
+        var client = await _serverDiscoveryStrategy.GetOrCreateClientAsync(request.Params.Name, clientOptions);
         if (client == null)
         {
             return [];
@@ -340,7 +360,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
     private async Task<string> GetChildToolListJsonAsync(RequestContext<CallToolRequestParams> request, string tool)
     {
         var listTools = await GetChildToolListAsync(request, tool);
-        return JsonSerializer.Serialize(listTools, AzureProxyToolSerializationContext.Default.IEnumerableTool);
+        return JsonSerializer.Serialize(listTools, ServerJsonContext.Default.ListTool);
     }
 
     private async Task<Tool> GetChildToolAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
@@ -352,7 +372,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
     private async Task<string> GetChildToolJsonAsync(RequestContext<CallToolRequestParams> request, string toolName, string commandName)
     {
         var tool = await GetChildToolAsync(request, toolName, commandName);
-        return JsonSerializer.Serialize(tool, ProxyToolOperationsSerializationContext.Default.Tool);
+        return JsonSerializer.Serialize(tool, ServerJsonContext.Default.Tool);
     }
 
     private static bool SupportsSampling(IMcpServer server)
@@ -385,8 +405,8 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
         var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ProxyToolOperationsSerializationContext.Default.DictionaryStringObject);
-        var availableToolsJson = JsonSerializer.Serialize(availableTools, ProxyToolOperationsSerializationContext.Default.ListTool);
+        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        var availableToolsJson = JsonSerializer.Serialize(availableTools, ServerJsonContext.Default.ListTool);
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -394,7 +414,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                 new SamplingMessage
                 {
                     Role = Role.Assistant,
-                    Content = new TextContentBlock {
+                    Content = new TextContentBlock{
                         Text = $"""
                             This is a list of available commands for the {tool} server.
 
@@ -425,7 +445,8 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
         try
         {
             var samplingResponse = await request.Server.SampleAsync(samplingRequest, cancellationToken);
-            var toolCallJson = (samplingResponse.Content as TextContentBlock)?.Text?.Trim();
+            var samplingContent = samplingResponse.Content as TextContentBlock;
+            var toolCallJson = samplingContent?.Text?.Trim();
             string? commandName = null;
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))
@@ -438,7 +459,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ProxyToolOperationsSerializationContext.Default.DictionaryStringObject) ?? [];
+                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -458,7 +479,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ProxyToolOperationsSerializationContext.Default.DictionaryStringObject) ?? [];
+            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
         }
 
         return [];

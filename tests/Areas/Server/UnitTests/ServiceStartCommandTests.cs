@@ -38,7 +38,7 @@ public class ServiceStartCommandTests
         var parseResult = CreateParseResult(inputService);
 
         // Act
-        var actualServiceArray = parseResult.GetValueForOption(OptionDefinitions.Service.ServiceType);
+        var actualServiceArray = parseResult.GetValueForOption(OptionDefinitions.Service.Namespace);
         var actualService = (actualServiceArray != null && actualServiceArray.Length > 0) ? actualServiceArray[0] : "";
         var actualPort = parseResult.GetValueForOption(OptionDefinitions.Service.Port);
         var actualTransport = parseResult.GetValueForOption(OptionDefinitions.Service.Transport);
@@ -53,14 +53,14 @@ public class ServiceStartCommandTests
     {
         var root = new RootCommand
         {
-            OptionDefinitions.Service.ServiceType,
+            OptionDefinitions.Service.Namespace,
             OptionDefinitions.Service.Port,
             OptionDefinitions.Service.Transport
         };
         var args = new List<string>();
         if (!string.IsNullOrEmpty(serviceValue))
         {
-            args.Add("--service");
+            args.Add("--namespace");
             args.Add(serviceValue);
         }
         // Add required port/transport defaults for test

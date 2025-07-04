@@ -4,19 +4,23 @@
 using AzureMcp.Areas.Server.Models;
 using ModelContextProtocol.Client;
 
-namespace AzureMcp.Areas.Server.Commands.Tools;
+namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public sealed class RegistryMcpClientProvider : IMcpClientProvider
+/// <summary>
+/// Provides an MCP server implementation based on registry configuration.
+/// Supports both SSE (Server-Sent Events) and stdio transport mechanisms.
+/// </summary>
+/// <param name="id">The unique identifier for the server.</param>
+/// <param name="serverInfo">Configuration information for the server.</param>
+public sealed class RegistryServerProvider(string id, RegistryServerInfo serverInfo) : IMcpServerProvider
 {
-    private readonly string _id;
-    private readonly RegistryServerInfo _serverInfo;
+    private readonly string _id = id;
+    private readonly RegistryServerInfo _serverInfo = serverInfo;
 
-    public RegistryMcpClientProvider(string id, RegistryServerInfo serverInfo)
-    {
-        _id = id;
-        _serverInfo = serverInfo;
-    }
-
+    /// <summary>
+    /// Creates metadata that describes this registry-based server.
+    /// </summary>
+    /// <returns>A metadata object containing the server's identity and description.</returns>
     public McpServerMetadata CreateMetadata()
     {
         return new McpServerMetadata
@@ -27,6 +31,12 @@ public sealed class RegistryMcpClientProvider : IMcpClientProvider
         };
     }
 
+    /// <summary>
+    /// Creates an MCP client for this registry-based server.
+    /// </summary>
+    /// <param name="clientOptions">Options to configure the client behavior.</param>
+    /// <returns>A configured MCP client ready for use.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the server configuration doesn't specify a valid transport mechanism.</exception>
     public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
         if (!string.IsNullOrWhiteSpace(_serverInfo.Url))
@@ -43,6 +53,11 @@ public sealed class RegistryMcpClientProvider : IMcpClientProvider
         }
     }
 
+    /// <summary>
+    /// Creates an MCP client that communicates with the server using SSE (Server-Sent Events).
+    /// </summary>
+    /// <param name="clientOptions">Options to configure the client behavior.</param>
+    /// <returns>A configured MCP client using SSE transport.</returns>
     private async Task<IMcpClient> CreateSseClientAsync(McpClientOptions clientOptions)
     {
         var transportOptions = new SseClientTransportOptions
@@ -55,6 +70,12 @@ public sealed class RegistryMcpClientProvider : IMcpClientProvider
         return await McpClientFactory.CreateAsync(clientTransport, clientOptions);
     }
 
+    /// <summary>
+    /// Creates an MCP client that communicates with the server using stdio (standard input/output).
+    /// </summary>
+    /// <param name="clientOptions">Options to configure the client behavior.</param>
+    /// <returns>A configured MCP client using stdio transport.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the server configuration doesn't specify a valid command for stdio transport.</exception>
     private async Task<IMcpClient> CreateStdioClientAsync(McpClientOptions clientOptions)
     {
         if (string.IsNullOrWhiteSpace(_serverInfo.Command))
