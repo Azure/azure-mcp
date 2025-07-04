@@ -75,9 +75,9 @@ public class RegistryToolLoaderTests
         // Arrange - use real RegistryDiscoveryStrategy
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        var discoveryStrategy = new RegistryDiscoveryStrategy();
-        var logger = loggerFactory.CreateLogger<RegistryToolLoader>();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var discoveryStrategy = new RegistryDiscoveryStrategy(options);
+        var logger = loggerFactory.CreateLogger<RegistryToolLoader>();
 
         var toolLoader = new RegistryToolLoader(discoveryStrategy, options, logger);
         var request = CreateRequest();
@@ -108,9 +108,9 @@ public class RegistryToolLoaderTests
         var readOnlyOptions = new ServiceStartOptions { ReadOnly = true };
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        var discoveryStrategy = new RegistryDiscoveryStrategy();
-        var logger = loggerFactory.CreateLogger<RegistryToolLoader>();
         var serviceOptions = Microsoft.Extensions.Options.Options.Create(readOnlyOptions);
+        var discoveryStrategy = new RegistryDiscoveryStrategy(serviceOptions);
+        var logger = loggerFactory.CreateLogger<RegistryToolLoader>();
 
         var toolLoader = new RegistryToolLoader(discoveryStrategy, serviceOptions, logger);
         var request = CreateRequest();
