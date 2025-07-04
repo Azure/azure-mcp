@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Identity.Broker;
 using AzureMcp.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure.Authentication;
 
@@ -152,7 +152,7 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
             authRecordPath = Path.Combine(userProfile, ".Azure", "ms-azuretools.vscode-azureresourcegroups", "authRecord.json");
             if (!File.Exists(authRecordPath))
             {
-                logger?.LogDebug("VS Code authRecord.json not found in either .azure or .Azure directory.");
+                logger?.LogDebug("VS Code Broker Credential -> authRecord.json not found in either .azure or .Azure directory.");
                 return null;
             }
         }
@@ -165,20 +165,20 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
         }
         catch (Exception ex)
         {
-            logger?.LogDebug(ex, "Failed to deserialize VS Code authRecord.json at {Path}", authRecordPath);
+            logger?.LogDebug(ex, "VS Code Broker Credential -> Failed to deserialize VS Code authRecord.json at {Path}", authRecordPath);
             return null;
         }
 
         if (authRecord is null)
         {
-            logger?.LogDebug("Deserialized VS Code AuthenticationRecord is null from {Path}", authRecordPath);
+            logger?.LogDebug("VS Code Broker Credential ->Deserialized VS Code AuthenticationRecord is null from {Path}", authRecordPath);
             return null;
         }
 
         // Validate client ID
         if (!string.Equals(authRecord.ClientId, vsCodeClientId, StringComparison.OrdinalIgnoreCase))
         {
-            logger?.LogDebug("VS Code AuthenticationRecord clientId mismatch. Expected {Expected}, got {Actual}", vsCodeClientId, authRecord.ClientId);
+            logger?.LogDebug("VS Code Broker Credential -> VS Code AuthenticationRecord clientId mismatch. Expected {Expected}, got {Actual}", vsCodeClientId, authRecord.ClientId);
             return null;
         }
 
@@ -194,7 +194,7 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
             AuthenticationRecord = authRecord
         };
 
-        logger?.LogDebug("Successfully created VS Code Broker Credential for tenantId {TenantId}", effectiveTenantId);
+        logger?.LogDebug("VS Code Broker Credential -> Successfully created VS Code Broker Credential");
         return new InteractiveBrowserCredential(options);
     }
 }
