@@ -170,6 +170,7 @@
         "filefilters",
         "gethealth",
         "healthmodels",
+        "healthcheck",
         "kcsb",
         "keyspace",
         "Kusto",
@@ -196,6 +197,7 @@
         "MACOS",
         "MACPOOL",
         "MACVMIMAGE",
+        "netstat",
         "Newtonsoft",
         "Npgsql",
         "npmjs",
@@ -208,6 +210,8 @@
         "payg",
         "paygo",
         "pgrep",
+        "pids",
+        "procps",
         "portalsettings",
         "privatepreview",
         "proxying",
@@ -225,6 +229,7 @@
         "skillsets",
         "submode",
         "testsettings",
+        "tlnp",
         "timespan",
         "toolsets",
         "vectorizable",
@@ -237,6 +242,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "xargs",
         "Xunit"
     ]
 }
