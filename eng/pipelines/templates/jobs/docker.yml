@@ -8,13 +8,6 @@ parameters:
 - name: ReleaseRun
   type: boolean
   default: false
-- name: Version
-  type: string
-
-variables:
-  imageName: ${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}
-  containerRegistryUrl: ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}
-  isRelease: ${{ eq(parameters.ReleaseRun, 'true') }}
 
 jobs:
 - job: DockerBuildAndPublish
@@ -23,18 +16,18 @@ jobs:
     image: $(LINUXVMIMAGE)
     os: linux
 
-  ${{ if $isRelease }}:
+  ${{ if eq(parameters.ReleaseRun, 'true') }}:
     templateContext:
       outputs:
       - output: containerImage
         image: image:tag
         remoteImage:
-        - $(containerRegistryUrl).azurecr.io/$(imageName):$(parameters.Version)
+        - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}.azurecr.io/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:$(variables.Version)
 
   steps:
 
   - task: AzureCLI@2
-    condition: and(succeeded(), $isRelease)
+    condition: and(succeeded(), eq(parameters.ReleaseRun, 'true'))
     displayName: Login to ${{ parameters.ContainerRegistry }}
     inputs:
       azureSubscription: "Azure SDK Engineering System"
@@ -48,5 +41,5 @@ jobs:
     inputs:
       path: $(configPath)
       image: image:tag
-      enableNetwork: ${{ if $isRelease }}
-      useBuildKit: ${{ if $isRelease }}
+      enableNetwork: ${{ eq(parameters.ReleaseRun, 'true') }}
+      useBuildKit: ${{ eq(parameters.ReleaseRun, 'true') }}

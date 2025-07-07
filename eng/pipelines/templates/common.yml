@@ -104,7 +104,7 @@ extends:
               Cloud: Public
               ServiceConnection: azure-sdk-tests-public
 
-    # # All builds in the internal project get signing
+    # All builds in the internal project get signing
     - stage: SignAndPack
       ${{ if parameters.SkipSigning }}:
         displayName: 'Pack'
@@ -171,6 +171,30 @@ extends:
             parameters:
               SkipSigning: ${{ parameters.SkipSigning }}
               ArtifactName: ${{ artifact }}
+
+    - stage: Docker
+      ${{ if eq(parameters.ReleaseRun, 'true') }}:
+        displayName: 'Docker Build and Publish'
+      ${{ else }}:
+        displayName: 'Docker Build'
+      dependsOn:
+      - Initialize
+      - Build
+      pool:
+        name: $(LINUXPOOL)
+        image: $(LINUXVMIMAGE)
+        os: linux
+      variables:
+      - template: /eng/pipelines/templates/variables/image.yml
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - name: Version
+        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
+      jobs:
+      - template: /eng/pipelines/templates/jobs/docker.yml
+        parameters:
+          ContainerRegistry: azuresdkimages
+          DeploymentEnvironment: public
+          ReleaseRun: ${{ parameters.ReleaseRun }}
 
     - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
