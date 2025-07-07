@@ -1,24 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/Tools/McpCommandGroupTests.cs
-========
 using AzureMcp.Areas.Server.Commands.Discovery;
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/Commands/Discovery/CommandGroupServerProviderTests.cs
 using AzureMcp.Commands;
+using AzureMcp.Tests.Areas.Server.UnitTests;
 using ModelContextProtocol.Client;
 using Xunit;
 
-<<<<<<<< HEAD:tests/Areas/Server/UnitTests/Tools/McpCommandGroupTests.cs
-namespace AzureMcp.Tests.Areas.Server.UnitTests.Tools
-{
-    [Trait("Area", "Server")]
-    public class McpCommandGroupTests
-========
 namespace AzureMcp.Tests.Areas.Server
 {
+    [Trait("Area", "Server")]
     public class CommandGroupServerProviderTests
->>>>>>>> fce46ac (Adds unit tests for server discovery and tool loading strategies):tests/Areas/Server/Commands/Discovery/CommandGroupServerProviderTests.cs
     {
         private readonly CommandFactory _commandFactory;
         public CommandGroupServerProviderTests()
