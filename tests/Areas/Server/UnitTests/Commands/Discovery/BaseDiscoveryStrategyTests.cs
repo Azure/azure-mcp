@@ -34,7 +34,7 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public async Task FindServerProvider_WithEmptyDiscovery_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithEmptyDiscovery_ThrowsArgumentException()
     {
         // Arrange
         var strategy = CreateMockStrategy();
@@ -223,27 +223,28 @@ public class BaseDiscoveryStrategyTests
     }
 
     [Fact]
-    public async Task FindServerProvider_WithNullName_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithNullName_ThrowsArgumentNullException()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync(null!));
-        Assert.Contains("No MCP server found with the name", exception.Message);
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => strategy.FindServerProviderAsync(null!));
+        Assert.Equal("name", exception.ParamName);
     }
 
     [Fact]
-    public async Task FindServerProvider_WithEmptyName_ThrowsKeyNotFoundException()
+    public async Task FindServerProvider_WithEmptyName_ThrowsArgumentNullException()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => strategy.FindServerProviderAsync(""));
-        Assert.Contains("No MCP server found with the name", exception.Message);
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => strategy.FindServerProviderAsync(""));
+        Assert.Equal("name", exception.ParamName);
+        Assert.Contains("Server name cannot be null or empty", exception.Message);
     }
 
     [Fact]
@@ -257,21 +258,22 @@ public class BaseDiscoveryStrategyTests
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(
             () => strategy.GetOrCreateClientAsync(null!));
 
-        Assert.Equal("key", exception.ParamName);
+        Assert.Equal("name", exception.ParamName);
     }
 
     [Fact]
-    public async Task GetOrCreateClientAsync_WithEmptyName_ThrowsKeyNotFoundException()
+    public async Task GetOrCreateClientAsync_WithEmptyName_ThrowsArgumentNullException()
     {
         // Arrange
         var provider = CreateMockServerProvider("TestServer");
         var strategy = CreateMockStrategy(provider);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
             () => strategy.GetOrCreateClientAsync(""));
 
-        Assert.Contains("No MCP server found with the name", exception.Message);
+        Assert.Equal("name", exception.ParamName);
+        Assert.Contains("Server name cannot be null or empty", exception.Message);
     }
 
     [Fact]

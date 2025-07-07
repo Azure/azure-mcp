@@ -30,7 +30,13 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
     /// <exception cref="KeyNotFoundException">Thrown when no server with the specified name is found.</exception>
     public async Task<IMcpServerProvider> FindServerProviderAsync(string name)
     {
-        var serverProviders = await DiscoverServersAsync().ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentNullException(nameof(name), "Server name cannot be null or empty.");
+        }
+
+        var serverProviders = await DiscoverServersAsync();
         foreach (var serverProvider in serverProviders)
         {
             var metadata = serverProvider.CreateMetadata();
@@ -53,11 +59,10 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
     /// <exception cref="KeyNotFoundException">Thrown when no server with the specified name is found.</exception>
     public async Task<IMcpClient> GetOrCreateClientAsync(string name, McpClientOptions? clientOptions = null)
     {
-        ArgumentNullException.ThrowIfNull(name, "key");
-
-        if (string.IsNullOrEmpty(name))
+        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        if (string.IsNullOrWhiteSpace(name))
         {
-            throw new KeyNotFoundException($"No MCP server found with the name '{name}'.");
+            throw new ArgumentNullException(nameof(name), "Server name cannot be null or empty.");
         }
 
         if (_clientCache.TryGetValue(name, out var client))
@@ -65,8 +70,8 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
             return client;
         }
 
-        var serverProvider = await FindServerProviderAsync(name).ConfigureAwait(false);
-        client = await serverProvider.CreateClientAsync(clientOptions ?? new McpClientOptions()).ConfigureAwait(false);
+        var serverProvider = await FindServerProviderAsync(name);
+        client = await serverProvider.CreateClientAsync(clientOptions ?? new McpClientOptions());
         _clientCache[name] = client;
 
         return client;
