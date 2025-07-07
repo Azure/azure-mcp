@@ -77,7 +77,7 @@ The Azure MCP Server can run in multiple modes. Review your MCP configuration to
 
 When configuring Azure MCP with 'all' toolsets, you may encounter this error:
 
-![128 tools limit error](docs/images/128-tools-limit-error.png)
+![128 tools limit error](https://github.com/Azure/azure-mcp/blob/main/docs/images/128-tools-limit-error.png)
 
 #### Root Cause
 VS Code Copilot has a 128-tool limit per request. Combining multiple comprehensive toolsets (like GitHub MCP 'all' + Azure MCP 'all') exceeds this limit. See the [VS Code discussion](https://github.com/microsoft/vscode/issues/248021) for more details.
@@ -494,7 +494,7 @@ docker run --rm -it -d \
 
 To export telemetry to Azure Monitor, set the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable.
 
-![image](/docs/images/mcp-trace-aspire.png)
+![image](https://github.com/Azure/azure-mcp/blob/main/docs/images/mcp-trace-aspire.png)
 
 ## Development Environment
 
