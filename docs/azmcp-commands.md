@@ -90,7 +90,7 @@ azmcp server start \
 > - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 > - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
 > - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
-> - The `--namspace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
 
 
 ### Subscription Management

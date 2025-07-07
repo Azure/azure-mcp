@@ -248,6 +248,84 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 
 With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.
 
+### Configuring External MCP Servers
+
+The Azure MCP Server supports connecting to external MCP servers through an embedded `registry.json` configuration file. This enables the server to act as a proxy, aggregating tools from multiple MCP servers into a single interface. The registry follows the same configuration schema as VS Code's `mcp.json`.
+
+#### Registry Configuration
+
+External MCP servers are defined in the embedded resource file `src/Areas/Server/Resources/registry.json`. This file contains server configurations that support both SSE (Server-Sent Events) and stdio transport mechanisms, following the standard MCP configuration format.
+
+The registry structure follows this format:
+
+```json
+{
+  "servers": {
+    "server-id": {
+      "url": "https://example.com/api/mcp",
+      "description": "Description of what this server provides"
+    },
+    "another-server": {
+      "type": "stdio",
+      "command": "path/to/executable",
+      "args": ["arg1", "arg2"],
+      "env": {
+        "ENV_VAR": "value"
+      },
+      "description": "Another MCP server using stdio transport"
+    }
+  }
+}
+```
+
+#### Transport Types
+
+**SSE (Server-Sent Events) Transport:**
+
+* Use the `url` property to specify the endpoint
+* Supports HTTP-based communication with automatic transport mode detection
+* Best for web-based MCP servers and remote endpoints
+
+**Stdio Transport:**
+
+* Use `type: "stdio"` with the `command` property
+* Supports launching external processes that communicate via standard input/output
+* Use `args` array for command-line arguments
+* Use `env` object for environment variables
+* Best for local executables, command-line tools, and local MCP servers
+
+#### Server Discovery and Namespace Filtering
+
+External servers are automatically discovered when the Azure MCP Server starts. They can be filtered using the same namespace mechanisms as built-in commands:
+
+```bash
+# Include only specific external servers
+azmcp server start --namespace documentation --namespace another-server
+
+# Use namespace mode to group tools exposed by external servers
+azmcp server start --mode namespace
+```
+
+#### Adding New External MCP Servers
+
+To add a new external MCP server to the registry:
+
+1. Edit `src/Areas/Server/Resources/registry.json`
+2. Add your server configuration under the `servers` object using VS Code's MCP configuration schema
+3. Use a unique identifier as the key
+4. Provide either a `url` for SSE transport or `type: "stdio"` with `command` for stdio transport
+5. Include a descriptive `description` field
+6. Rebuild the project to embed the updated registry
+
+#### Example External Servers
+
+The current registry includes:
+
+* **documentation**: Microsoft Learn documentation search via SSE transport
+* Additional external servers can be added following the same pattern as VS Code's mcp.json
+
+External servers integrate seamlessly with the Azure MCP Server's tool aggregation, appearing alongside native Azure commands in the unified tool interface. This allows you to combine local MCP servers, remote MCP endpoints, and Azure-specific tools in a single interface.
+
 ### Live Tests
 
 > ⚠️ If you are a Microsoft employee with Azure source permissions then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake).  Team members can run live tests by adding this comment to the PR `/azp run azure - mcp` to start the run.
