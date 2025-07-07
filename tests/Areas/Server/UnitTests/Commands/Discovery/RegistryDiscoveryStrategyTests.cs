@@ -57,12 +57,12 @@ public class RegistryDiscoveryStrategyTests
         Assert.NotEmpty(result);
 
         // Should contain the 'learn' server from registry.json
-        var learnProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "learn");
-        Assert.NotNull(learnProvider);
+        var documentationProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "documentation");
+        Assert.NotNull(documentationProvider);
 
-        var metadata = learnProvider.CreateMetadata();
-        Assert.Equal("learn", metadata.Id);
-        Assert.Equal("learn", metadata.Name);
+        var metadata = documentationProvider.CreateMetadata();
+        Assert.Equal("documentation", metadata.Id);
+        Assert.Equal("documentation", metadata.Name);
         Assert.Contains("documentation", metadata.Description, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -176,25 +176,25 @@ public class RegistryDiscoveryStrategyTests
 
         // Verify we get expected server(s) from the registry
         var serverIds = result.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds); // Known server from registry.json
+        Assert.Contains("documentation", serverIds); // Known server from registry.json
     }
 
     [Fact]
-    public async Task DiscoverServersAsync_LearnServerHasExpectedProperties()
+    public async Task DiscoverServersAsync_DocumentationServerHasExpectedProperties()
     {
         // Arrange
         var strategy = CreateStrategy();
 
         // Act
         var result = await strategy.DiscoverServersAsync();
-        var learnProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "learn");
+        var documentationProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "documentation");
 
         // Assert
-        Assert.NotNull(learnProvider);
+        Assert.NotNull(documentationProvider);
 
-        var metadata = learnProvider.CreateMetadata();
-        Assert.Equal("learn", metadata.Id);
-        Assert.Equal("learn", metadata.Name);
+        var metadata = documentationProvider.CreateMetadata();
+        Assert.Equal("documentation", metadata.Id);
+        Assert.Equal("documentation", metadata.Name);
         Assert.NotEmpty(metadata.Description);
 
         // Description should contain key terms related to Microsoft documentation
@@ -254,19 +254,19 @@ public class RegistryDiscoveryStrategyTests
 
         // Act
         var result = await strategy.DiscoverServersAsync();
-        var learnProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "learn");
+        var documentationProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "documentation");
 
         // Assert
-        Assert.NotNull(learnProvider);
+        Assert.NotNull(documentationProvider);
 
-        // Learn server should be SSE-based (has URL)
-        var registryProvider = (RegistryServerProvider)learnProvider;
+        // Documentation server should be SSE-based (has URL)
+        var registryProvider = (RegistryServerProvider)documentationProvider;
         Assert.NotNull(registryProvider);
 
         // Should not throw when creating metadata
         var metadata = registryProvider.CreateMetadata();
         Assert.NotNull(metadata);
-        Assert.Equal("learn", metadata.Name);
+        Assert.Equal("documentation", metadata.Name);
     }
 
     [Fact]
@@ -319,12 +319,12 @@ public class RegistryDiscoveryStrategyTests
         var strategy = CreateStrategy();
         var result = (await strategy.DiscoverServersAsync()).ToList();
         Assert.NotEmpty(result);
-        // Should contain the 'learn' server from registry.json
-        var learnProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "learn");
-        Assert.NotNull(learnProvider);
-        var metadata = learnProvider.CreateMetadata();
-        Assert.Equal("learn", metadata.Id);
-        Assert.Equal("learn", metadata.Name);
+        // Should contain the 'documentation' server from registry.json
+        var documentationProvider = result.FirstOrDefault(p => p.CreateMetadata().Name == "documentation");
+        Assert.NotNull(documentationProvider);
+        var metadata = documentationProvider.CreateMetadata();
+        Assert.Equal("documentation", metadata.Id);
+        Assert.Equal("documentation", metadata.Name);
         Assert.Contains("documentation", metadata.Description, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -343,7 +343,7 @@ public class RegistryDiscoveryStrategyTests
         Assert.NotEmpty(result);
         // Should contain all servers when namespace is null
         var serverIds = result.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds);
+        Assert.Contains("documentation", serverIds);
     }
 
     [Fact]
@@ -360,14 +360,14 @@ public class RegistryDiscoveryStrategyTests
         Assert.NotEmpty(result);
         // Should contain all servers when namespace is empty
         var serverIds = result.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds);
+        Assert.Contains("documentation", serverIds);
     }
 
     [Fact]
     public async Task DiscoverServersAsync_WithMatchingNamespace_ReturnsFilteredServers()
     {
         // Arrange
-        var options = new ServiceStartOptions { Namespace = ["learn"] };
+        var options = new ServiceStartOptions { Namespace = ["documentation"] };
         var strategy = CreateStrategy(options);
 
         // Act
@@ -379,7 +379,7 @@ public class RegistryDiscoveryStrategyTests
 
         // Should only contain servers that match the namespace filter
         var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds);
+        Assert.Contains("documentation", serverIds);
 
         // All returned servers should match the namespace filter
         Assert.All(serverIds, id => Assert.Contains(id, options.Namespace, StringComparer.OrdinalIgnoreCase));
@@ -404,7 +404,7 @@ public class RegistryDiscoveryStrategyTests
     public async Task DiscoverServersAsync_WithMultipleNamespaces_ReturnsMatchingServers()
     {
         // Arrange
-        var options = new ServiceStartOptions { Namespace = ["learn", "another"] };
+        var options = new ServiceStartOptions { Namespace = ["documentation", "another"] };
         var strategy = CreateStrategy(options);
 
         // Act
@@ -416,7 +416,7 @@ public class RegistryDiscoveryStrategyTests
 
         // Should contain servers that match any of the namespaces
         var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds);
+        Assert.Contains("documentation", serverIds);
 
         // All returned servers should match at least one namespace in the filter
         Assert.All(serverIds, id =>
@@ -427,7 +427,7 @@ public class RegistryDiscoveryStrategyTests
     public async Task DiscoverServersAsync_NamespaceFilteringIsCaseInsensitive()
     {
         // Arrange
-        var options = new ServiceStartOptions { Namespace = ["LEARN"] };
+        var options = new ServiceStartOptions { Namespace = ["DOCUMENTATION"] };
         var strategy = CreateStrategy(options);
 
         // Act
@@ -437,8 +437,8 @@ public class RegistryDiscoveryStrategyTests
         var providers = result.ToList();
         Assert.NotEmpty(providers);
 
-        // Should find "learn" server even with uppercase namespace filter
+        // Should find "documentation" server even with uppercase namespace filter
         var serverIds = providers.Select(p => p.CreateMetadata().Id).ToList();
-        Assert.Contains("learn", serverIds);
+        Assert.Contains("documentation", serverIds);
     }
 }

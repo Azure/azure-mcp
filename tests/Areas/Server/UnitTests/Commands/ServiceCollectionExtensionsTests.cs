@@ -71,7 +71,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Proxy = "single"
+            Mode = "single"
         };
 
         // Act
@@ -97,7 +97,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Proxy = "namespace"
+            Mode = "namespace"
         };
 
         // Act
@@ -146,7 +146,7 @@ public class ServiceCollectionExtensionsTests
         {
             Transport = StdioTransport,
             // Define proxy as "single" to prevent CompositeDiscoveryStrategy error
-            Proxy = "single"
+            Mode = "single"
         };
 
         // Act
@@ -173,7 +173,7 @@ public class ServiceCollectionExtensionsTests
             Transport = SseTransport,
             Port = 8080,
             // Define proxy as "single" to prevent CompositeDiscoveryStrategy error
-            Proxy = "single"
+            Mode = "single"
         };
 
         // Act
@@ -336,7 +336,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Proxy = "invalid-mode"
+            Mode = "invalid-mode"
         };
 
         // Act
@@ -358,7 +358,7 @@ public class ServiceCollectionExtensionsTests
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            Proxy = null
+            Mode = null
         };
 
         // Act

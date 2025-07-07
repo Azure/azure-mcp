@@ -31,11 +31,11 @@ public class ServiceStartOptions
     public string[]? Namespace { get; set; } = null;
 
     /// <summary>
-    /// Gets or sets the proxy mode for the server.
+    /// Gets or sets the mode mode for the server.
     /// When null, services are exposed individually.
     /// </summary>
-    [JsonPropertyName("proxy")]
-    public string? Proxy { get; set; } = null;
+    [JsonPropertyName("mode")]
+    public string? Mode { get; set; } = null;
 
     /// <summary>
     /// Gets or sets whether the server should operate in read-only mode.

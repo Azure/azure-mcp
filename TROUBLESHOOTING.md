@@ -42,7 +42,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
       "args": [
         "server",
         "start",
-        "--service",
+        "--namespace",
         "storage"
       ]
     },
@@ -52,7 +52,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
       "args": [
         "server",
         "start",
-        "--service",
+        "--namespace",
         "keyvault"
       ]
     }
@@ -65,8 +65,9 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
 The Azure MCP Server can run in multiple modes. Review your MCP configuration to ensure it matches your expectations:
 
 - `azmcp server start` - Launches an MCP server with all tools enabled
-- `azmcp server start --service <service-name>` - Launches an MCP server with tools for the specified service (e.g., `storage`, `keyvault`)
-- `azmcp server start --service azure` - Launches an MCP server with a single `azure` tool that performs internal dynamic proxy and tool selection
+- `azmcp server start --namespace <service-name>` - Launches an MCP server with tools for the specified service (e.g., `storage`, `keyvault`)
+- `azmcp server start --mode single` - Launches an MCP server with a single `azure` tool that performs internal dynamic proxy and tool selection
+- `azmcp server start --mode namespace` - Launches an MCP server with a tool registered for each Azure service/namespace.
 
 ## Tool Limitations
 
@@ -107,12 +108,12 @@ Configure targeted MCP servers for specific needs instead of loading all tools:
     "Azure Storage": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "storage"]
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--namespace", "storage"]
     },
     "Azure KeyVault": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "keyvault"]
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--namespace", "keyvault"]
     },
     "GitHub Issues": {
       "type": "stdio",
@@ -124,10 +125,10 @@ Configure targeted MCP servers for specific needs instead of loading all tools:
 ```
 *Result: ~15-20 tools total instead of 128+*
 
-*Available Azure Services:*
+*Available Azure Services for `--namespace` flag:*
 See the complete list of [Available Azure MCP Servers](https://github.com/Azure/azure-mcp/blob/main/README.md#-available-azure-mcp-servers) in the README.
 
-You can specify multiple services: `--service storage keyvault`
+You can start the server with multiple services by specifying after the `--namespace` flag, such as `--namespace storage --namespace keyvault`.
 
 **Option 3: Use Dynamic Tool Selection**
 
@@ -140,18 +141,18 @@ Azure MCP's dynamic proxy mode exposes one tool that routes to all Azure service
     "Azure Dynamic": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@azure/mcp@latest", "server", "start", "--service", "azure"]
+      "args": ["-y", "@azure/mcp@latest", "server", "start", "--mode", "single"]
     }
   }
 }
 ```
 
-> [!NOTE] 
+> [!NOTE]
 > This counts as 1 tool but can access all Azure services. However, combining with other comprehensive toolsets may still hit the 128-tool limit.
 
 #### How to Check Your Tool Count
 1. Open VS Code Command Palette (Ctrl+Shift+P)
-2. Run "MCP: List Servers"  
+2. Run "MCP: List Servers"
 3. Check the tool count for each server in the output window
 
 ## Authentication
@@ -268,7 +269,7 @@ Azure MCP Server requires network connectivity to Azure services and authenticat
    ```bash
    # Test authentication endpoint
    curl -I https://login.microsoftonline.com
-   
+
    # Test resource management endpoint
    curl -I https://management.azure.com
    ```
@@ -305,7 +306,7 @@ In environments where interactive authentication isn't suitable or allowed:
    Ask your Azure administrator to create a service principal with this information:
    ```
    Application Name: Azure MCP Server - [Your Name/Team]
-   Required Permissions: 
+   Required Permissions:
    - Reader role at subscription/resource group level
    - Data plane roles for specific resources (e.g., Storage Blob Data Reader)
    Justification: Development/testing with Azure MCP Server
@@ -340,7 +341,7 @@ Organizations may enforce Conditional Access policies that affect authentication
 **Working with Identity Administrators:**
 
 1. **Check Policy Impact:**
-   
+
    Questions to ask:
    - Are there Conditional Access policies affecting my authentication?
    - Is my device compliant with organizational policies?
@@ -358,28 +359,28 @@ Organizations may enforce Conditional Access policies that affect authentication
 When resources are heavily restricted:
 
 1. **Minimum Required Information to Gather:**
-   
+
    **Resource Details:**
    - Resource names and types
    - Resource group and subscription
    - Whether private endpoints are used
    - Network restrictions (IP allowlists, VNet integration)
-   
+
    **Access Requirements:**
    - Required RBAC roles
    - Network access requirements
    - Authentication method preferences
 
 2. **Escalation Path:**
-   
+
    **Level 1: Resource Administrator**
    - Resource-specific permissions
    - RBAC role assignments
-   
-   **Level 2: Network Administrator**  
+
+   **Level 2: Network Administrator**
    - Firewall rules and network access
    - Private endpoint connectivity
-   
+
    **Level 3: Identity Administrator**
    - Conditional Access policies
    - Service principal creation
@@ -412,7 +413,7 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 **Option 4: Create a Microsoft Entra ID Tenant for Your Personal Account**
 - If you must use a personal account, create a new Microsoft Entra ID tenant first
 - Then associate your Azure subscription with this tenant
-- Learn more: 
+- Learn more:
   - [Quickstart: Create a new tenant in Microsoft Entra ID](https://learn.microsoft.com/entra/fundamentals/create-new-tenant)
   - [Set up a new Microsoft Entra tenant](https://learn.microsoft.com/entra/identity-platform/quickstart-create-new-tenant)
 

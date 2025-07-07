@@ -27,7 +27,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _namespaceOption = OptionDefinitions.Service.Namespace;
-    private readonly Option<string?> _proxyOption = OptionDefinitions.Service.Proxy;
+    private readonly Option<string?> _modeOption = OptionDefinitions.Service.Mode;
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
     /// <summary>
@@ -55,7 +55,7 @@ public sealed class ServiceStartCommand : BaseCommand
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
         command.AddOption(_namespaceOption);
-        command.AddOption(_proxyOption);
+        command.AddOption(_modeOption);
         command.AddOption(_readOnlyOption);
     }
 
@@ -75,9 +75,9 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Namespace.GetDefaultValue()
             : parseResult.GetValueForOption(_namespaceOption);
 
-        var proxy = parseResult.GetValueForOption(_proxyOption) == default
-            ? OptionDefinitions.Service.Proxy.GetDefaultValue()
-            : parseResult.GetValueForOption(_proxyOption);
+        var mode = parseResult.GetValueForOption(_modeOption) == default
+            ? OptionDefinitions.Service.Mode.GetDefaultValue()
+            : parseResult.GetValueForOption(_modeOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
@@ -88,7 +88,7 @@ public sealed class ServiceStartCommand : BaseCommand
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
             Namespace = namespaces,
-            Proxy = proxy,
+            Mode = mode,
             ReadOnly = readOnly,
         };
 
