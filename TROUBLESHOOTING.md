@@ -8,6 +8,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Console window is empty when running Azure MCP Server](#console-window-is-empty-when-running-azure-mcp-server)
   - [Can I select what tools to load in the MCP server?](#can-i-select-what-tools-to-load-in-the-mcp-server)
   - [Why does VS Code only show a subset of tools available?](#why-does-vs-code-only-show-a-subset-of-tools-available)
+  - [Bring your own language model key](#bring-your-own-language-model-key)
 - [Tool Limitations](#tool-limitations)
   - [128-Tool Limit Issue](#128-tool-limit-issue)
 - [Authentication](#authentication)
@@ -94,9 +95,6 @@ VS Code supports [custom chat modes](https://code.visualstudio.com/docs/copilot/
 4. Use the tool picker to discover and add tools as needed
 5. Stay within the 128-tool limit per mode while maintaining flexibility
 
-> [!NOTE]
-> This approach works well once VS Code resolves bugs where certain tools don't appear in the picker.
-
 **Option 2: Use Selective Tool Loading**
 Configure targeted MCP servers for specific needs instead of loading all tools:
 
@@ -152,9 +150,6 @@ Azure MCP's dynamic proxy mode exposes one tool that routes to all Azure service
 1. Open VS Code Command Palette (Ctrl+Shift+P)
 2. Run "MCP: List Servers"  
 3. Check the tool count for each server in the output window
-
-#### Future Considerations
-VS Code Copilot plans to address the tool limit in a future update.
 
 ## Authentication
 
@@ -500,6 +495,7 @@ To export telemetry to Azure Monitor, set the `APPLICATIONINSIGHTS_CONNECTION_ST
 
 ### Development in VS Code
 
-#### Use your own language model key
+#### Bring your own language model key
 
-Follow the instructions in [Bring your own language model key](https://code.visualstudio.com/docs/copilot/language-models#_bring-your-own-language-model-key) to utilize your API keys for language model providers in VS Code.
+[Bring your own language model key](https://code.visualstudio.com/docs/copilot/language-models#_bring-your-own-language-model-key)
+If you already have an API key for a language model provider, you can use their models in chat in VS Code, in addition to the built-in models that Copilot provides. You can use models from the following providers: Anthropic, Azure, Google Gemini, Groq, Ollama, OpenAI, and OpenRouter.
