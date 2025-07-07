@@ -202,7 +202,7 @@ public class ProxyToolOperations(IMcpClientService mcpClientService, ILogger<Pro
             // At this point we should always have a valid command (child tool) call to invoke.
             await NotifyProgressAsync(request, $"Calling {tool} {command}...", cancellationToken);
             var toolCallResponse = await client.CallToolAsync(command, parameters, cancellationToken: cancellationToken);
-            if (toolCallResponse.IsError)
+            if (toolCallResponse.IsError is true)
             {
                 _logger.LogWarning("Tool {Tool} command {Command} returned an error.", tool, command);
             }
