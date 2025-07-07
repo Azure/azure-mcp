@@ -86,6 +86,7 @@ VS Code Copilot has a 128-tool limit per request. Combining multiple comprehensi
 #### Workarounds
 
 **Option 1: Use VS Code Custom Chat Modes (Recommended)**
+
 VS Code supports [custom chat modes](https://code.visualstudio.com/docs/copilot/chat/chat-modes#_custom-chat-modes) for scenario-specific tool configurations:
 
 *Setup Steps:*
@@ -96,6 +97,7 @@ VS Code supports [custom chat modes](https://code.visualstudio.com/docs/copilot/
 5. Stay within the 128-tool limit per mode while maintaining flexibility
 
 **Option 2: Use Selective Tool Loading**
+
 Configure targeted MCP servers for specific needs instead of loading all tools:
 
 *Example Configuration:*
@@ -128,6 +130,7 @@ Configure targeted MCP servers for specific needs instead of loading all tools:
 You can specify multiple services: `--service storage keyvault`
 
 **Option 3: Use Dynamic Tool Selection**
+
 Azure MCP's dynamic proxy mode exposes one tool that routes to all Azure services:
 
 *Example Configuration:*
@@ -193,15 +196,18 @@ This error indicates that the access token doesn't have sufficient permissions t
 #### Possible Causes and Resolutions
 
 - **Insufficient RBAC Permissions**
-    Ensure that the service principal or user principal has appropriate **Role-Based Access Control (RBAC)** permissions at the correct scope (resource group, subscription, or resource level).
+
+        Ensure that the service principal or user principal has appropriate **Role-Based Access Control (RBAC)** permissions at the correct scope (resource group, subscription, or resource level).
 
 - **Incorrect Subscription or Tenant Context**
-    Verify that the subscription and tenant are properly specified. When using an LLM (e.g., via Copilot Chat), provide explicit context:
+
+        Verify that the subscription and tenant are properly specified. When using an LLM (e.g., via Copilot Chat), provide explicit context:
 
     > List all my storage accounts in subscription `<subscription-id-or-name>`, located in tenant `<tenant-id-or-name>`.
 
 - **Unintended Account Being Used**
-    If you have multiple accounts signed in, the authentication process may be using a different account than intended.
+
+        If you have multiple accounts signed in, the authentication process may be using a different account than intended.
     To ensure the correct account is used, set this environment variable and restart both your IDE and the MCP server:
 
     ```bash
@@ -334,13 +340,12 @@ Organizations may enforce Conditional Access policies that affect authentication
 **Working with Identity Administrators:**
 
 1. **Check Policy Impact:**
-   ```
+   
    Questions to ask:
    - Are there Conditional Access policies affecting my authentication?
    - Is my device compliant with organizational policies?
    - Do I need to use a specific authentication method?
    - Can I get an exception for development scenarios?
-   ```
 
 2. **Policy Compliance Steps:**
    - Ensure your device is Azure AD joined or hybrid joined
@@ -353,33 +358,31 @@ Organizations may enforce Conditional Access policies that affect authentication
 When resources are heavily restricted:
 
 1. **Minimum Required Information to Gather:**
-   ```
-   Resource Details:
+   
+   **Resource Details:**
    - Resource names and types
    - Resource group and subscription
    - Whether private endpoints are used
    - Network restrictions (IP allowlists, VNet integration)
    
-   Access Requirements:
+   **Access Requirements:**
    - Required RBAC roles
    - Network access requirements
    - Authentication method preferences
-   ```
 
 2. **Escalation Path:**
-   ```
-   Level 1: Resource Administrator
+   
+   **Level 1: Resource Administrator**
    - Resource-specific permissions
    - RBAC role assignments
    
-   Level 2: Network Administrator  
+   **Level 2: Network Administrator**  
    - Firewall rules and network access
    - Private endpoint connectivity
    
-   Level 3: Identity Administrator
+   **Level 3: Identity Administrator**
    - Conditional Access policies
    - Service principal creation
-   ```
 
 ### AADSTS500200 error: User account is a personal Microsoft account
 
