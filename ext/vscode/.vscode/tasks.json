@@ -1,12 +1,15 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-            "label": "watch",
-            "dependsOn": [
-                "npm: watch:tsc",
-                "npm: watch:esbuild"
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm watch",
+            "type": "npm",
+            "script": "watch",
+            "problemMatcher": [
+                "$ts-webpack-watch",
+                "$tslint-webpack-watch"
             ],
+            "isBackground": true,
             "presentation": {
                 "reveal": "never"
             },
@@ -15,48 +18,21 @@
                 "isDefault": true
             }
         },
+
         {
+            "label": "npm dev-build",
             "type": "npm",
-            "script": "watch:esbuild",
-            "group": "build",
-            "problemMatcher": "$esbuild-watch",
-            "isBackground": true,
-            "label": "npm: watch:esbuild",
+            "script": "dev-build",
+            "problemMatcher": [
+                "$ts-webpack-watch",
+                "$tslint-webpack-watch"
+            ],
             "presentation": {
-                "group": "watch",
                 "reveal": "never"
+            },
+            "group": {
+                "kind": "build"
             }
-        },
-		{
-            "type": "npm",
-            "script": "watch:tsc",
-            "group": "build",
-            "problemMatcher": "$tsc-watch",
-            "isBackground": true,
-            "label": "npm: watch:tsc",
-            "presentation": {
-                "group": "watch",
-                "reveal": "never"
-            }
-        },
-		{
-			"type": "npm",
-			"script": "watch-tests",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "never",
-				"group": "watchers"
-			},
-			"group": "build"
-		},
-		{
-			"label": "tasks: watch-tests",
-			"dependsOn": [
-				"npm: watch",
-				"npm: watch-tests"
-			],
-			"problemMatcher": []
-		}
-	]
+        }
+    ]
 }

@@ -1,0 +1,127 @@
+stages:
+  - stage: PublishIntegration
+    dependsOn: Sign
+
+    variables:
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - template: /eng/pipelines/templates/variables/image.yml
+
+    jobs:
+      - deployment: Publish_Continuous_Deployment
+        environment: none
+        condition: >-
+          and(
+            succeeded(),
+            ne(variables['Skip.Release'], 'true'),
+            or(
+              in(variables['BuildReasonOverride'], 'IndividualCI', 'BatchedCI'),
+              and(
+                eq('', variables['BuildReasonOverride']),
+                in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI')
+              )
+            )
+          )
+
+        pool:
+          name: azsdk-pool
+          image: ubuntu-22.04
+          os: linux
+
+        templateContext:
+          type: releaseJob
+          isProduction: false
+          inputs:
+            - input: pipelineArtifact
+              artifactName: signed
+              targetPath: signed
+
+            - input: pipelineArtifact
+              artifactName: changelog
+              targetPath: changelog
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: /eng/pipelines/templates/steps/vscode-set-metadata-variables.yml
+                  parameters:
+                    Use1ESArtifactTask: true
+
+                - template: /eng/pipelines/templates/steps/publish-vscode.yml
+                  parameters:
+                    PublishLocations: azd/vscode/release/daily;azd/vscode/daily/archive/$(Build.BuildId)-$(Build.SourceVersion)
+
+      - deployment: Publish_For_PR
+        environment: none
+        condition: >-
+          and(
+            succeeded(),
+            ne(variables['Skip.Release'], 'true'),
+            or(
+              eq('PullRequest', variables['BuildReasonOverride']),
+              and(
+                eq('', variables['BuildReasonOverride']),
+                eq(variables['Build.Reason'], 'PullRequest')
+              )
+            )
+          )
+
+        pool:
+          name: azsdk-pool
+          image: ubuntu-22.04
+          os: linux
+
+        templateContext:
+          type: releaseJob
+          isProduction: false
+          inputs:
+            - input: pipelineArtifact
+              artifactName: signed
+              targetPath: signed
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: /eng/pipelines/templates/steps/vscode-set-metadata-variables.yml
+                  parameters:
+                    Use1ESArtifactTask: true
+
+                - pwsh: |
+                    $PRNumber = '$(System.PullRequest.PullRequestNumber)'
+                    if ($env:PRNUMBEROVERRIDE) {
+                      Write-Host "PR Number override: $($env:PRNUMBEROVERRIDE)"
+                      $PRNumber = $env:PRNUMBEROVERRIDE
+                    }
+                    Write-Host "##vso[task.setvariable variable=PRNumber]$PRNumber"
+                  displayName: Set PR Number Variable
+
+                - template: /eng/pipelines/templates/steps/publish-vscode.yml
+                  parameters:
+                    PublishLocations: azd/vscode/pr/$(PRNumber)
+
+                - pwsh: |
+                    $downloadUrl = "$(publish-storage-static-host)/azd/vscode/pr/$(PRNumber)/azure-dev-$(VSIX_VERSION).vsix"
+
+                    $content = @"
+                    <!-- #comment-vscode-pr -->
+                    ## VSCode Extension Installation Instructions
+
+                    1. Download the extension at $downloadUrl
+                    2. Extract the extension from the compressed file
+                    3. In vscode
+                      a. Open "Extensions" (Ctrl+Shift+X)
+                      b. Click the \`...\` menu at top of Extensions sidebar
+                      c. Click "Install from VSIX"
+                      d. Select location of downloaded file
+                    "@
+                    $file = New-TemporaryFile
+                    Set-Content -Path $file -Value $content
+                    Write-Host "##vso[task.setvariable variable=CommentBodyFile]$file"
+                  displayName: Write body content to temporary file
+
+                - template: /eng/pipelines/templates/steps/update-prcomment.yml
+                  parameters:
+                    PrNumber: $(PRNumber)
+                    Tag: '<!-- #comment-vscode-pr -->'
+                    BodyFile: $(CommentBodyFile)

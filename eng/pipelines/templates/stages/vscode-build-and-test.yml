@@ -1,0 +1,110 @@
+parameters:
+  - name: BuildMatrix
+    type: object
+    default:
+      Windows:
+        Pool: $(WINDOWSPOOL)
+        ImageKey: image
+        OSVmImage: $(WINDOWSVMIMAGE)
+        OS: windows
+        Variables: {}
+
+      Linux:
+        Pool: $(LINUXPOOL)
+        ImageKey: image
+        OSVmImage: $(LINUXVMIMAGE)
+        OS: linux
+        Variables: 
+          UploadArtifact: 'true'
+          Codeql.Enabled: true
+          Codeql.SkipTaskAutoInjection: false
+          Codeql.BuildIdentifier: vscode_linux
+
+      Mac:
+        Pool: Azure Pipelines
+        ImageKey: vmImage
+        OSVmImage: $(MACVMIMAGE)
+        OS: macOS
+        Variables: {}
+
+stages:
+  - stage: BuildAndTest
+    variables: 
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - template: /eng/pipelines/templates/variables/image.yml
+
+    jobs:
+      - ${{ each build in parameters.BuildMatrix }}:
+          - template: /eng/pipelines/templates/jobs/vscode-build.yml
+            parameters:
+              NameSuffix: ${{ build.key }}
+              Pool: ${{ build.value.Pool }}
+              ImageKey: ${{ build.value.ImageKey }}
+              OSVmImage: ${{ build.value.OSVmImage }}
+              OS: ${{ build.value.OS }}
+              Variables: ${{ build.value.Variables }} 
+      
+      - job: GenerateReleaseArtifacts
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+
+        steps:
+          - checkout: self
+
+          - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}:
+            - pwsh: |
+                $packageJson = Get-Content -Raw ext/vscode/package.json
+                $package = ConvertFrom-Json $packageJson
+                $package.version = "$($package.version)-beta.$(Build.BuildId)"
+                $outputContent = ConvertTo-Json $package -Depth 100
+                Set-Content -Path ext/vscode/package.json -Value $outputContent
+              displayName: Set Dev Version in package.json
+
+          - task: PowerShell@2
+            inputs:
+              pwsh: true
+              targetType: filePath
+              filePath: eng/scripts/Set-VsixVersionVariable.ps1
+            displayName: Set VSIX_VERSION
+
+          # Changelog
+          - pwsh: New-Item -ItemType Directory -Path changelog/
+            displayName: Create changelog directory
+
+          - task: PowerShell@2
+            inputs:
+              targetType: filePath
+              filePath: eng/scripts/New-ReleaseNotesFile.ps1
+              arguments: >-
+                -ChangeLogPath ext/vscode/CHANGELOG.md
+                -Version $(VSIX_VERSION)
+                -OutputPath changelog/CHANGELOG.md
+            displayName: Set release changelog content
+
+          # Release metadata
+          - pwsh: |
+              $packageJson = Get-Content -Raw ext/vscode/package.json
+              $package = ConvertFrom-Json $packageJson
+
+              $releaseMetadata = @{ 
+                vsixVersion = "$(VSIX_VERSION)";
+                packageVersion = $package.version;
+                ghReleaseTag = 'azure-dev-vscode_$(VSIX_VERSION)';
+              }
+              New-Item -ItemType Directory -Path release-metadata
+              $releaseMetadata | ConvertTo-Json -Depth 100 | Set-Content -Path release-metadata/metadata.json
+            displayName: Set Release Metadata
+
+        templateContext:
+          outputs: 
+            - output: pipelineArtifact
+              path: release-metadata
+              condition: succeeded()
+              artifact: release-metadata
+              displayName: Upload release metadata
+
+            - output: pipelineArtifact
+              artifact: changelog
+              path: changelog

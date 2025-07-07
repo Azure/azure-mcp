@@ -1,0 +1,83 @@
+parameters:
+  TagRepository: false
+  VsixVersion: $(VSIX_VERSION)
+  StorageContainerName: '`$web'
+  PublishToMarketplace: false
+
+steps:
+  - ${{ if eq('true', parameters.TagRepository) }}:
+    # Perform tag verification before publishing anything
+    - pwsh: |
+        $existingTag = gh api /repos/$(Build.Repository.Name)/tags --paginate | ConvertFrom-Json | Where-Object { $_.name -eq $tag }
+        if ($existingTag) {
+            Write-Error "Tag ($(GH_RELEASE_TAG)) exists. Exiting."
+            exit 1
+        }
+
+        gh release view $(GH_RELEASE_TAG) --repo $(Build.Repository.Name)
+        if ($LASTEXITCODE -eq 0) {
+            Write-Error "Release ($(GH_RELEASE_TAG)) exists. Exiting."
+            exit 1
+        }
+        exit 0
+      displayName: Check for existing tag or release
+      env:
+        GH_TOKEN: $(azuresdk-github-pat)
+
+  - pwsh: |
+      New-Item -ItemType Directory -Path release -Force
+      Copy-Item signed/vsix/*.vsix release/
+      Copy-Item signed/vsix/*.p7s release/
+      Copy-Item signed/vsix/*.manifest release/
+      Write-Host "Signed:"
+      Get-ChildItem signed/
+
+      Write-Host "Release:"
+      Get-ChildItem release/
+    displayName: Copy signed vsix to release location
+
+  - task: AzurePowerShell@5
+    displayName: Publish files to storage locations
+    inputs:
+      azureSubscription: 'Azure SDK Artifacts'
+      azurePowerShellVersion: LatestVersion
+      pwsh: true
+      ScriptType: InlineScript
+      Inline: |
+        $publishLocations = "${{ parameters.PublishLocations }}" -split ';'
+        foreach ($location in $publishLocations) {
+          Write-Host "Publishing to $location"
+          azcopy copy "release/*" "$(publish-storage-location)/${{ parameters.StorageContainerName }}/$location" --overwrite=true
+        }
+    env:
+      AZCOPY_AUTO_LOGIN_TYPE: 'PSCRED'
+
+  - ${{ if eq('true', parameters.TagRepository) }}:
+    - pwsh: |
+        gh release create `
+          "$(GH_RELEASE_TAG)" `
+          --title "$(GH_RELEASE_TAG)" `
+          --notes-file changelog/CHANGELOG.md `
+          --repo $(Build.Repository.Name)
+
+        gh release upload $(GH_RELEASE_TAG) release/* --repo $(Build.Repository.Name)
+      displayName: Create GitHub Release and upload artifacts
+      env:
+        GH_TOKEN: $(azuresdk-github-pat)
+
+  - ${{ if eq('true', parameters.PublishToMarketplace) }}:
+    - task: AzureCLI@2
+      displayName: Publish (using vsce)
+      inputs:
+        azureSubscription: azure-sdk-vsmarketplace
+        scriptType: pscore
+        scriptLocation: inlineScript
+        workingDirectory: release
+        inlineScript: |
+          npm install -g @vscode/vsce
+          $baseName = "azure-dev-${{ parameters.VsixVersion }}"
+          vsce publish `
+            --azure-credential `
+            --packagePath "$($baseName).vsix" `
+            --manifestPath "$($baseName).manifest" `
+            --signaturePath "$($baseName).signature.p7s"
