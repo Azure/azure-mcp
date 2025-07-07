@@ -133,7 +133,7 @@ Update your mcp.json to point to the locally built azmcp executable. This setup 
 }
 ```
 
-Optional `--namespace` and `--proxy` parameters can be used to configure different server modes:
+Optional `--namespace` and `--mode` parameters can be used to configure different server modes:
 
 **Default Mode** (no additional parameters):
 ```json
@@ -181,7 +181,7 @@ Optional `--namespace` and `--proxy` parameters can be used to configure differe
       "args": [
         "server",
         "start",
-        "--proxy",
+        "--mode",
         "namespace"
       ]
     }
@@ -199,7 +199,7 @@ Optional `--namespace` and `--proxy` parameters can be used to configure differe
       "args": [
         "server",
         "start",
-        "--proxy",
+        "--mode",
         "single"
       ]
     }
@@ -221,7 +221,7 @@ Optional `--namespace` and `--proxy` parameters can be used to configure differe
         "storage",
         "--namespace",
         "keyvault",
-        "--proxy",
+        "--mode",
         "namespace"
       ]
     }
@@ -240,9 +240,9 @@ Optional `--namespace` and `--proxy` parameters can be used to configure differe
 >
 > * **Default Mode**: No additional parameters - exposes all tools individually
 > * **Namespace Mode**: `--namespace <service-name>` - expose specific services (can use multiple `--namespace` parameters)
-> * **Namespace Proxy Mode**: `--proxy namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
-> * **Single Tool Proxy Mode**: `--proxy single` - single "azure" tool with internal routing
-> * **Combined Mode**: Both `--namespace` and `--proxy` can be used together to filter namespaces and use proxy mode
+> * **Namespace Mode**: `--mode namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
+> * **Single Tool Mode**: `--mode single` - single "azure" tool with internal routing
+> * **Combined Mode**: Both `--namespace` and `--mode` can be used together to filter namespaces and use mode
 
 #### 3. Start from IDE or Tooling
 

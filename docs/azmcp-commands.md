@@ -66,7 +66,7 @@ Collapses all tools within each namespace into a single tool (e.g., all storage 
 ```bash
 # Start MCP Server with service proxy tools
 azmcp server start \
-    --proxy namespace \
+    --mode namespace \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
@@ -79,7 +79,7 @@ Exposes a single "azure" tool that handles internal routing across all Azure MCP
 ```bash
 # Start MCP Server with single Azure tool proxy
 azmcp server start \
-    --proxy single \
+    --mode single \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
