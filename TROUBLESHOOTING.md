@@ -125,7 +125,7 @@ Configure targeted MCP servers for specific needs instead of loading all tools:
 *Result: ~15-20 tools total instead of 128+*
 
 *Available Azure Services:*
-`storage`, `keyvault`, `cosmos`, `redis`, `servicebus`, `monitor`, `appconfig`, `kusto`, `postgres`, `search`
+See the complete list of [Available Azure MCP Servers](https://github.com/Azure/azure-mcp/blob/main/README.md#-available-azure-mcp-servers) in the README.
 
 You can specify multiple services: `--service storage keyvault`
 
