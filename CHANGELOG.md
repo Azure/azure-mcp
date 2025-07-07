@@ -4,7 +4,11 @@
 
 ### Features Added
 - Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
+- Updates support for launching Azure MCP in different tool loading configurations. [#513](https://github.com/Azure/azure-mcp/pull/513)
+
 ### Breaking Changes
+
+- `--service` flag deprecated. Use `--namespace` and `--mode` options. [#513](https://github.com/Azure/azure-mcp/pull/513)
 
 ### Bugs Fixed
 
