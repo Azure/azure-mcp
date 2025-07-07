@@ -23,11 +23,31 @@ var staticSuffix = toLower(substring(subscription().subscriptionId, 0, 4))
 var staticBaseName = 'mcp${staticSuffix}'
 var staticResourceGroupName = 'mcp-static-${staticSuffix}'
 
-module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'Storage')) {
-  name: '${deploymentName}-storage'
+// Please keep this module list alphabetical
+
+module appConfiguration 'services/appConfig.bicep' = if (empty(areas) || contains(areas, 'AppConfig')) {
+  name: '${deploymentName}-appConfig'
   params: {
     baseName: baseName
     location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
+
+module authorization 'services/authorization.bicep' = if (empty(areas) || contains(areas, 'Authorization')) {
+  name: '${deploymentName}-authorization'
+  params: {
+    testApplicationOid: testApplicationOid
+  }
+}
+
+// This module is conditionally deployed only for the specific tenant ID.
+module azureIsv 'services/azureIsv.bicep' = if ((empty(areas) || contains(areas, 'AzureIsv')) && tenantId == '888d76fa-54b2-4ced-8ee5-aac1585adee7') {
+  name: '${deploymentName}-azureIsv'
+  params: {
+    baseName: baseName
+    location: 'westus2'
     tenantId: tenantId
     testApplicationOid: testApplicationOid
   }
@@ -43,18 +63,8 @@ module cosmos 'services/cosmos.bicep' = if (empty(areas) || contains(areas, 'Cos
   }
 }
 
-module appConfiguration 'services/appConfiguration.bicep' = if (empty(areas) || contains(areas, 'AppConfiguration')) {
-  name: '${deploymentName}-appConfiguration'
-  params: {
-    baseName: baseName
-    location: location
-    tenantId: tenantId
-    testApplicationOid: testApplicationOid
-  }
-}
-
-module monitoring 'services/monitor.bicep' = if (empty(areas) || contains(areas, 'Monitor')) {
-  name: '${deploymentName}-monitor'
+module foundry 'services/foundry.bicep' = if (contains(areas, 'Foundry')) {
+  name: '${deploymentName}-foundry'
   params: {
     baseName: baseName
     location: location
@@ -73,8 +83,18 @@ module keyvault 'services/keyvault.bicep' = if (empty(areas) || contains(areas, 
   }
 }
 
-module servicebus 'services/servicebus.bicep' = if (empty(areas) || contains(areas, 'Servicebus')) {
-  name: '${deploymentName}-servicebus'
+module kusto 'services/kusto.bicep' = if (empty(areas) || contains(areas, 'Kusto')) {
+  name: '${deploymentName}-kusto'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
+
+module monitoring 'services/monitor.bicep' = if (empty(areas) || contains(areas, 'Monitor')) {
+  name: '${deploymentName}-monitor'
   params: {
     baseName: baseName
     location: location
@@ -93,8 +113,21 @@ module redis 'services/redis.bicep' = if (empty(areas) || contains(areas, 'Redis
   }
 }
 
-module kusto 'services/kusto.bicep' = if (empty(areas) || contains(areas, 'Kusto')) {
-  name: '${deploymentName}-kusto'
+module aiSearch 'services/search.bicep' = if (empty(areas) || contains(areas, 'Search')) {
+  name: '${deploymentName}-search'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+    staticBaseName: staticBaseName
+    staticResourceGroupName: staticResourceGroupName
+  }
+}
+
+
+module servicebus 'services/servicebus.bicep' = if (empty(areas) || contains(areas, 'ServiceBus')) {
+  name: '${deploymentName}-servicebus'
   params: {
     baseName: baseName
     location: location
@@ -112,42 +145,12 @@ module sql 'services/sql.bicep' = if (empty(areas) || contains(areas, 'Sql')) {
   }
 }
 
-module foundry 'services/foundry.bicep' = if (contains(areas, 'Foundry')) {
-  name: '${deploymentName}-foundry'
+module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'Storage')) {
+  name: '${deploymentName}-storage'
   params: {
     baseName: baseName
     location: location
     tenantId: tenantId
     testApplicationOid: testApplicationOid
-  }
-}
-
-// This module is conditionally deployed only for the specific tenant ID.
-module azureIsv 'services/azureIsv.bicep' = if ((empty(areas) || contains(areas, 'AzureIsv')) && tenantId == '888d76fa-54b2-4ced-8ee5-aac1585adee7') {
-  name: '${deploymentName}-azureIsv'
-  params: {
-    baseName: baseName
-    location: 'westus2'
-    tenantId: tenantId
-    testApplicationOid: testApplicationOid
-  }
-}
-
-module authorization 'services/authorization.bicep' = if (empty(areas) || contains(areas, 'Authorization')) {
-  name: '${deploymentName}-authorization'
-  params: {
-    testApplicationOid: testApplicationOid
-  }
-}
-
-module aiSearch 'services/search.bicep' = if (empty(areas) || contains(areas, 'Search')) {
-  name: '${deploymentName}-search'
-  params: {
-    baseName: baseName
-    location: location
-    tenantId: tenantId
-    testApplicationOid: testApplicationOid
-    staticBaseName: staticBaseName
-    staticResourceGroupName: staticResourceGroupName
   }
 }
