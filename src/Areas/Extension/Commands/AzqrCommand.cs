@@ -73,8 +73,17 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
 
             // TODO: Make Azure Quick Review CLI produce a json report that the LLM may read and summarize because the LLM doesn't support reading xlsx files.
             // Azure Quick Review always appends the file extension to the report file's name, we need to create a new path with the file extension to check for the existence of the report file.
-            var reportFilePath = $"{reportFileName}.xlsx";
+            var xlsxReportFilePath = $"{reportFileName}.xlsx";
+            var jsonReportFilePath = $"{reportFileName}.json";
             command += $" --output-name \"{reportFileName}\"";
+
+            // Azure Quick Review CLI can easily get throttle errors when scanning subscriptions with many resources with costs enabled.
+            // Unfortunately, getting such an error will abort the entire job and waste all the partial results.
+            // To reduce the chance of throttling, we disable costs reporting by default.
+            command += " --costs=false";
+
+            // Also generate a JSON report for users who don't have access to Excel.
+            command += " --json";
 
             var processService = context.GetService<IExternalProcessService>();
             var result = await processService.ExecuteAsync(azqrPath, command, _processTimeoutSeconds);
@@ -86,13 +95,13 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
                 return response;
             }
 
-            if (!File.Exists(reportFilePath))
+            if (!File.Exists(xlsxReportFilePath) && !File.Exists(jsonReportFilePath))
             {
                 response.Status = 500;
-                response.Message = $"Report file '{reportFilePath}' was not found after azqr execution.";
+                response.Message = $"Report file '{xlsxReportFilePath}' and '{jsonReportFilePath}' were not found after azqr execution.";
                 return response;
             }
-            var resultObj = new AzqrReportResult(reportFilePath, result.Output);
+            var resultObj = new AzqrReportResult(xlsxReportFilePath, jsonReportFilePath, result.Output);
             response.Results = ResponseResult.Create(resultObj, JsonSourceGenerationContext.Default.AzqrReportResult);
             response.Status = 200;
             response.Message = "azqr report generated successfully.";
