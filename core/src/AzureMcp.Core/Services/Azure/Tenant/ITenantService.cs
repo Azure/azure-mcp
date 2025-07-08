@@ -12,4 +12,5 @@ public interface ITenantService
     Task<string?> GetTenantIdByName(string tenantName);
     Task<string?> GetTenantNameById(string tenantId);
     bool IsTenantId(string tenant);
+    Task GetArmClientAsync(string subscription);
 }

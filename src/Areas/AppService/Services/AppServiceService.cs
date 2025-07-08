@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure.Core;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Resources;
+using Azure.Core.Pipeline;
 using AzureMcp.Areas.AppService.Models;
 using AzureMcp.Services.Azure.Tenant;
 using Microsoft.Extensions.Logging;
@@ -71,5 +70,10 @@ public class AppServiceService(
             "cosmosdb" => $"AccountEndpoint=https://{databaseServer}.documents.azure.com:443/;AccountKey={{key}};Database={databaseName};",
             _ => throw new ArgumentException($"Unsupported database type: {databaseType}")
         };
+    }
+
+    public Task<DatabaseConnectionInfo> AddDatabaseAsync(string v1, string v2, string v3, string v4, string v5, string? connectionString, object v6, RetryPolicy retryPolicy)
+    {
+        throw new NotImplementedException();
     }
 }

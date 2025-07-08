@@ -3,8 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.AppService.Options;
+using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.AppService.Commands;
 
@@ -14,7 +14,6 @@ public abstract class BaseAppServiceCommand<
     where T : BaseAppServiceOptions, new()
 {
     protected readonly Option<string> _appNameOption = AppServiceOptionDefinitions.AppName;
-    protected readonly Option<string> _resourceGroupOption = OptionDefinitions.Common.ResourceGroup;
 
     protected override void RegisterOptions(Command command)
     {

@@ -1,28 +1,29 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.AppService.Commands;
+using AzureMcp.Areas.AppService.Models;
 using AzureMcp.Areas.AppService.Options;
 using AzureMcp.Areas.AppService.Options.Database;
 using AzureMcp.Areas.AppService.Services;
-using AzureMcp.Commands;
-using AzureMcp.Commands.Attributes;
-using AzureMcp.Models;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppService.Commands.Database;
 
-public sealed class DatabaseAddCommand(ILogger<DatabaseAddCommand> logger)
-    : BaseAppServiceCommand<DatabaseAddOptions>
+public sealed class DatabaseAddCommand : BaseAppServiceCommand<DatabaseAddOptions>
 {
     private const string CommandTitle = "Add Database to App Service";
-    private readonly ILogger<DatabaseAddCommand> _logger = logger;
+    private readonly ILogger<DatabaseAddCommand> _logger;
 
     // Define options from AppServiceOptionDefinitions
     private readonly Option<string> _databaseTypeOption = AppServiceOptionDefinitions.DatabaseType;
     private readonly Option<string> _databaseServerOption = AppServiceOptionDefinitions.DatabaseServer;
     private readonly Option<string> _databaseNameOption = AppServiceOptionDefinitions.DatabaseName;
     private readonly Option<string> _connectionStringOption = AppServiceOptionDefinitions.ConnectionString;
+
+    public DatabaseAddCommand(ILogger<DatabaseAddCommand> logger)
+    {
+        _logger = logger;
+    }
 
     public override string Name => "add";
 
@@ -90,7 +91,7 @@ public sealed class DatabaseAddCommand(ILogger<DatabaseAddCommand> logger)
                 options.DatabaseName!,
                 options.ConnectionString,
                 options.Subscription!,
-                options.RetryPolicy);
+                options.RetryPolicy!);
 
             // Set results
             context.Response.Results = ResponseResult.Create(
