@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using Azure.Core;
 using Azure.Identity;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Tests.Client;
