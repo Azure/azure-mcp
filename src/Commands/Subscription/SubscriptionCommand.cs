@@ -23,7 +23,15 @@ public abstract class SubscriptionCommand<
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.Subscription = parseResult.GetValueForOption(_subscriptionOption);
+
+        // Get subscription from command line option or fallback to environment variable
+        var subscriptionValue = parseResult.GetValueForOption(_subscriptionOption);
+        options.Subscription = string.IsNullOrEmpty(subscriptionValue)
+            || subscriptionValue.Contains("subscription")
+            || subscriptionValue.Contains("default")
+            ? Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID")
+            : subscriptionValue;
+
         return options;
     }
 }
