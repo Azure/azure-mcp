@@ -25,9 +25,7 @@ public abstract class SubscriptionCommand<
             var envSubscription = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
 
             // Check if both subscription option and environment variable are missing or invalid
-            var hasValidSubscription = !string.IsNullOrEmpty(subscriptionValue) &&
-                                     !subscriptionValue.Contains("subscription") &&
-                                     !subscriptionValue.Contains("default");
+            var hasValidSubscription = !string.IsNullOrEmpty(subscriptionValue);
 
             var hasValidEnvVar = !string.IsNullOrEmpty(envSubscription);
 
