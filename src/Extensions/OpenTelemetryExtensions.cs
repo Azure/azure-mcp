@@ -52,6 +52,14 @@ public static class OpenTelemetryExtensions
         EnableAzureMonitor(services);
     }
 
+    public static void ConfigureOpenTelemetryLogger(this ILoggingBuilder builder)
+    {
+        builder.AddOpenTelemetry(logger =>
+        {
+            logger.AddProcessor(new LogRecordProcessor());
+        });
+    }
+
     private static void EnableAzureMonitor(this IServiceCollection services)
     {
 #if DEBUG
