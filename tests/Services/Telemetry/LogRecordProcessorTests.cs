@@ -234,14 +234,10 @@ public class LogRecordProcessorTests
     }
 
     /// <summary>
-    /// Helper method to create a LogRecord for testing.
-    /// Note: LogRecord constructor may vary based on OpenTelemetry version.
-    /// Adjust this method based on your specific OpenTelemetry package version.
+    /// Helper method to create a LogRecord.
     /// </summary>
     private static LogRecord CreateLogRecord()
     {
-        // This is a simplified creation. In practice, you might need to use
-        // LogRecordBuilder or mock the LogRecord depending on your OpenTelemetry version
         var record = Activator.CreateInstance(typeof(LogRecord), true);
 
         Assert.NotNull(record);
