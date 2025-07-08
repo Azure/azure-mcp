@@ -699,6 +699,10 @@ public static class OptionDefinitions
         public const string DisplayNameOption = "display-name";
         public const string DescriptionOption = "description";
         public const string OldTestRunIdOption = "old-testrun-id";
+        public const string VirtualUsersOption = "virtual-users";
+        public const string DurationOption = "duration";
+        public const string RampUpTimeOption = "ramp-up-time";
+        public const string EndpointOption = "endpoint";
         public static readonly Option<string> TestResource = new(
             $"--{TestResourceName}",
             "The name of the load test resource for which you want to fetch the details."
@@ -738,6 +742,37 @@ public static class OptionDefinitions
         public static readonly Option<string> OldTestRunId = new(
             $"--{OldTestRunIdOption}",
             "The ID of an existing test run to update. If provided, the command will trigger a rerun of the given test run id."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> VirtualUsers = new(
+            $"--{VirtualUsersOption}",
+            () => 50,
+            "Virtual users is a measure of load that is simulated to test the HTTP endpoint. (Default - 50)"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> Duration = new(
+            $"--{DurationOption}",
+            () => 20,
+            "This is the duration for which the load is simulated against the endpoint. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 20 mins"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> RampUpTime = new(
+            $"--{RampUpTimeOption}",
+            () => 1,
+            "The ramp-up time is the time it takes for the system to ramp-up to the total load specified. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 1 min"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> Endpoint = new(
+            $"--{EndpointOption}",
+            "The endpoint URL to be tested. This is the URL of the HTTP endpoint that will be subjected to load testing."
         )
         {
             IsRequired = false

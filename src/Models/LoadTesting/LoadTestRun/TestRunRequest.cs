@@ -1,3 +1,4 @@
+using AzureMcp.Models.LoadTesting.LoadTest;
 using Newtonsoft.Json;
 
 namespace AzureMcp.Models.LoadTesting.LoadTestRun;
@@ -30,10 +31,4 @@ public class TestRunRequest
     
     [JsonProperty("requestDataLevel")]
     public RequestDataLevel? RequestDataLevel { get; set; }
-}
-
-public class LoadTestConfiguration
-{
-    [JsonProperty("optionalLoadTestConfig")]
-    public object? OptionalLoadTestConfig { get; set; } = null;
 }

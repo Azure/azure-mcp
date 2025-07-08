@@ -8,5 +8,5 @@ public class InputArtifacts
     public TestScriptFileInfo? TestScriptFileInfo { get; set; }
 
     [JsonProperty("additionalFileInfo")]
-    public List<AdditionalFileInfo> AdditionalFileInfo { get; set; } = new();
+    public List<AdditionalFileInfo>? AdditionalFileInfo { get; set; } = new();
 }

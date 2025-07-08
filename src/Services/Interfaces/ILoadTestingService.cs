@@ -15,4 +15,7 @@ public interface ILoadTestingService
     Task<TestRun> CreateOrUpdateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? oldTestRunId = null, string? resourceGroup = null, string? tenant = null, string? displayName = null, string? description = null, bool? debugMode = false, RetryPolicyOptions? retryPolicy = null);
     Task<List<TestRun>> GetLoadTestRunsFromTestIdAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
     Task<Test> GetTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+    Task<Test> CreateTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null,
+        string? displayName = null, string? description = null,
+        int? duration = 20, int? virtualUsers = 50, int? rampUpTime = 1, string? endpointUrl = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
 }

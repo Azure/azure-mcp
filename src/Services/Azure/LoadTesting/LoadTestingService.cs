@@ -18,6 +18,8 @@ namespace AzureMcp.Services.Azure.LoadTesting;
 
 public class LoadTestingService() : BaseAzureService, ILoadTestingService
 {
+
+    /* Load Testing Resource APIs Start */
     public async Task<List<TestResource>> GetLoadTestResourcesAsync(string subscriptionId, string? resourceGroup = null, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId);
@@ -29,7 +31,7 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         {
             var resourceId = LoadTestingResource.CreateResourceIdentifier(subscriptionId, resourceGroup, testResourceName);
             var response = await client.GetLoadTestingResource(resourceId).GetAsync();
-            
+
             if (response == null)
             {
                 throw new Exception($"Failed to retrieve Azure Load Testing resources: {response}");
@@ -99,6 +101,9 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
             ProvisioningState = response.Value.Data.ProvisioningState?.ToString(),
         };
     }
+    /* Load Testing Resource APIs End */
+
+    /* Load Testing Run APIs Start */
     public async Task<TestRun> GetLoadTestRunAsync(string subscriptionId, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
@@ -201,7 +206,9 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTestRun = loadTestRunResponse.Value.ToString();
         return JsonConvert.DeserializeObject<TestRun>(loadTestRun) ?? new TestRun();
     }
+    /* Load Test Run APIs End */
 
+    /* Load Test APIs Start */
     public async Task<Test> GetTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId, testResourceName, testId);
@@ -228,4 +235,52 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTest = loadTestResponse.Content.ToString();
         return JsonConvert.DeserializeObject<Test>(loadTest) ?? new Test();
     }
+    public async Task<Test> CreateTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null,
+        string? displayName = null, string? description = null,
+        int? duration = 20, int? virtualUsers = 50, int? rampUpTime = 1, string? endpointUrl = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
+        if (loadTestResource == null)
+        {
+            throw new Exception($"Load Test '{testResourceName}' not found in subscription '{subscriptionId}' and resource group '{resourceGroup}'.");
+        }
+        var dataPlaneUri = loadTestResource[0]?.DataPlaneUri;
+        if (string.IsNullOrEmpty(dataPlaneUri))
+        {
+            throw new Exception($"Data Plane URI for Load Test '{testResourceName}' is not available.");
+        }
+
+        var credential = await GetCredential(tenant);
+        var loadTestClient = new LoadTestAdministrationClient(new Uri($"https://{dataPlaneUri}"), credential);
+        OptionalLoadTestConfig optionalLoadTestConfig = new OptionalLoadTestConfig
+        {
+            Duration = duration ?? 20 * 60, // Convert minutes to seconds
+            EndpointUrl = endpointUrl ?? "https://example.com",
+            RampUpTime = rampUpTime ?? 1 * 60, // Convert minutes to seconds
+            VirtualUsers = virtualUsers ?? 50,
+        };
+        TestRequestPayload testRequestPayload = new TestRequestPayload
+        {
+            TestId = testId,
+            DisplayName = displayName ?? "Test_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
+            Description = description,
+            LoadTestConfiguration = new LoadTestConfiguration
+            {
+                OptionalLoadTestConfig = optionalLoadTestConfig,
+                QuickStartTest = true, // Set to true for quick start tests (URL BASIC Test)
+            }
+        };
+
+        var loadTestResponse = await loadTestClient.CreateOrUpdateTestAsync(testId, RequestContent.Create(testRequestPayload));
+        if (loadTestResponse == null || loadTestResponse.IsError)
+        {
+            throw new Exception($"Failed to create Azure Load Test: {loadTestResponse}");
+        }
+
+        var loadTest = loadTestResponse.Content.ToString();
+        return JsonConvert.DeserializeObject<Test>(loadTest) ?? new Test();
+    }
+
+    /* Load Test APIs End */
 }

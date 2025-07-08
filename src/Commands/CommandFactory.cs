@@ -434,6 +434,8 @@ public class CommandFactory
 
         resource.AddCommand("get", new LoadTesting.LoadTest.TestGetCommand(
             GetLogger<LoadTesting.LoadTest.TestGetCommand>()));
+        resource.AddCommand("create", new LoadTesting.LoadTest.TestCreateCommand(
+            GetLogger<LoadTesting.LoadTest.TestCreateCommand>()));
 
         resource = new CommandGroup(
             "testrun",
