@@ -33,6 +33,10 @@ $tenantName = switch($context.Tenant.Id) {
     default { $context.Tenant.Name }
 }
 
+$staticSuffix = $context.Subscription.Id.SubString(0, 4)
+$staticResourceGroupName = "mcp-static-$staticSuffix"
+$staticBaseName = "mcp$staticSuffix"
+
 $testSettings = [ordered]@{
     TenantId = $context.Tenant.Id
     TenantName = $tenantName
@@ -40,6 +44,8 @@ $testSettings = [ordered]@{
     SubscriptionName = $context.Subscription.Name
     ResourceGroupName = $ResourceGroupName
     ResourceBaseName = $BaseName
+    StaticResourceGroupName = $staticResourceGroupName
+    StaticResourceBaseName = $staticBaseName
 } | ConvertTo-Json
 
 Write-Host "Creating test settings file at $testSettingsPath`:`n$testSettings"
@@ -58,6 +64,6 @@ foreach($area in $areas)
     $areaPostScript = "$PSScriptRoot/services/$($area.ToLower())-post.ps1"
     if(Test-Path $areaPostScript) {
         Write-Host "Running post script: $areaPostScript"
-        & $areaPostScript -ResourceGroupName $ResourceGroupName -BaseName $BaseName
+        & $areaPostScript -ResourceGroupName $ResourceGroupName -BaseName $BaseName -StaticResourceGroupName $staticResourceGroupName -StaticBaseName $staticBaseName
     }
 }

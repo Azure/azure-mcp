@@ -1,8 +1,11 @@
 # Release History
 
-## 0.2.7 (Unreleased)
+## 0.3.1 (2025-07-08)
 
 ### Features Added
+
+- Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
+- Updates support for launching Azure MCP in different tool loading configurations. [#513](https://github.com/Azure/azure-mcp/pull/513)
 - Added more tools for Azure Key Vault: [#517](https://github.com/Azure/azure-mcp/pull/517)
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`
@@ -10,19 +13,32 @@
   - `azmcp-keyvault-secret-list`
   - `azmcp-keyvault-secret-create`
 
-- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
-- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
-
 ### Breaking Changes
 
+- `--service` flag deprecated. Use `--namespace` and `--mode` options. [#513](https://github.com/Azure/azure-mcp/pull/513)
+
 ### Bugs Fixed
-- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
 
 ### Other Changes
+
+## 0.3.0 (2025-07-03)
+
+### Features Added
+
+- Added support for Azure AI Foundry [[#274](https://github.com/Azure/azure-mcp/pull/274)]. The following tools are now available:
+  - `azmcp-foundry-models-list`
+  - `azmcp-foundry-models-deploy`
+  - `azmcp-foundry-models-deployments-list`
+- Added support for telemetry [[#386](https://github.com/Azure/azure-mcp/pull/386)]. Telemetry is enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`.
+
+### Bugs Fixed
+
+- Fixed a bug where `CallToolResult` was always successful. [[#511](https://github.com/Azure/azure-mcp/pull/511)]
 
 ## 0.2.6 (2025-07-01)
 
 ### Other Changes
+
 - Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`

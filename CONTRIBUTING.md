@@ -133,10 +133,25 @@ Update your mcp.json to point to the locally built azmcp executable. This setup 
 }
 ```
 
-An optional `--service` parameter can also be set to minimize the number of loaded tools for the MCP server.
+Optional `--namespace` and `--mode` parameters can be used to configure different server modes:
 
+**Default Mode** (no additional parameters):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start"
+      ]
+    }
+  }
+}
+```
 
-
+**Namespace Mode** (expose specific services):
 ```json
 {
   "servers": {
@@ -146,9 +161,68 @@ An optional `--service` parameter can also be set to minimize the number of load
       "args": [
         "server",
         "start",
-        "--service",
-        "<service-name-1>",
-        "<optional-service-name-2>"
+        "--namespace",
+        "storage",
+        "--namespace",
+        "keyvault"
+      ]
+    }
+  }
+}
+```
+
+**Namespace Proxy Mode** (collapse tools by namespace - useful for VS Code's 128 tool limit):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--mode",
+        "namespace"
+      ]
+    }
+  }
+}
+```
+
+**Single Tool Proxy Mode** (single "azure" tool with internal routing):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--mode",
+        "single"
+      ]
+    }
+  }
+}
+```
+
+**Combined Mode** (filter namespaces with proxy mode):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "args": [
+        "server",
+        "start",
+        "--namespace",
+        "storage",
+        "--namespace",
+        "keyvault",
+        "--mode",
+        "namespace"
       ]
     }
   }
@@ -159,15 +233,98 @@ An optional `--service` parameter can also be set to minimize the number of load
 > On **Windows**, use `azmcp.exe`.
 > On **macOS/Linux**, use `azmcp` (without the `.exe` extension).
 
-> **Note:** Replace `<service-name>` with an available top level command group.
-> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+> **Note:** For namespace mode, replace `<service-name>` with available top level command groups.
+> Run `azmcp -h` to review available services. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 >
-> To enable single tool proxy mode set `--service` parameter to `azure`.
-> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
+> **Server Modes:**
+>
+> * **Default Mode**: No additional parameters - exposes all tools individually
+> * **Namespace Mode**: `--namespace <service-name>` - expose specific services (can use multiple `--namespace` parameters)
+> * **Namespace Mode**: `--mode namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
+> * **Single Tool Mode**: `--mode single` - single "azure" tool with internal routing
+> * **Combined Mode**: Both `--namespace` and `--mode` can be used together to filter namespaces and use mode
 
 #### 3. Start from IDE or Tooling
 
 With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.
+
+### Configuring External MCP Servers
+
+The Azure MCP Server supports connecting to external MCP servers through an embedded `registry.json` configuration file. This enables the server to act as a proxy, aggregating tools from multiple MCP servers into a single interface. The registry follows the same configuration schema as VS Code's `mcp.json`.
+
+#### Registry Configuration
+
+External MCP servers are defined in the embedded resource file `src/Areas/Server/Resources/registry.json`. This file contains server configurations that support both SSE (Server-Sent Events) and stdio transport mechanisms, following the standard MCP configuration format.
+
+The registry structure follows this format:
+
+```json
+{
+  "servers": {
+    "server-id": {
+      "url": "https://example.com/api/mcp",
+      "description": "Description of what this server provides"
+    },
+    "another-server": {
+      "type": "stdio",
+      "command": "path/to/executable",
+      "args": ["arg1", "arg2"],
+      "env": {
+        "ENV_VAR": "value"
+      },
+      "description": "Another MCP server using stdio transport"
+    }
+  }
+}
+```
+
+#### Transport Types
+
+**SSE (Server-Sent Events) Transport:**
+
+* Use the `url` property to specify the endpoint
+* Supports HTTP-based communication with automatic transport mode detection
+* Best for web-based MCP servers and remote endpoints
+
+**Stdio Transport:**
+
+* Use `type: "stdio"` with the `command` property
+* Supports launching external processes that communicate via standard input/output
+* Use `args` array for command-line arguments
+* Use `env` object for environment variables
+* Best for local executables, command-line tools, and local MCP servers
+
+#### Server Discovery and Namespace Filtering
+
+External servers are automatically discovered when the Azure MCP Server starts. They can be filtered using the same namespace mechanisms as built-in commands:
+
+```bash
+# Include only specific external servers
+azmcp server start --namespace documentation --namespace another-server
+
+# Use namespace mode to group tools exposed by external servers
+azmcp server start --mode namespace
+```
+
+#### Adding New External MCP Servers
+
+To add a new external MCP server to the registry:
+
+1. Edit `src/Areas/Server/Resources/registry.json`
+2. Add your server configuration under the `servers` object using VS Code's MCP configuration schema
+3. Use a unique identifier as the key
+4. Provide either a `url` for SSE transport or `type: "stdio"` with `command` for stdio transport
+5. Include a descriptive `description` field
+6. Rebuild the project to embed the updated registry
+
+#### Example External Servers
+
+The current registry includes:
+
+* **documentation**: Microsoft Learn documentation search via SSE transport
+* Additional external servers can be added following the same pattern as VS Code's mcp.json
+
+External servers integrate seamlessly with the Azure MCP Server's tool aggregation, appearing alongside native Azure commands in the unified tool interface. This allows you to combine local MCP servers, remote MCP endpoints, and Azure-specific tools in a single interface.
 
 ### Live Tests
 

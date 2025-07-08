@@ -113,7 +113,8 @@ public static partial class OptionDefinitions
     {
         public const string TransportName = "transport";
         public const string PortName = "port";
-        public const string ServiceName = "service";
+        public const string NamespaceName = "namespace";
+        public const string ModeName = "mode";
         public const string ReadOnlyName = "read-only";
 
         public static readonly Option<string> Transport = new(
@@ -134,15 +135,24 @@ public static partial class OptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string[]?> ServiceType = new(
-            $"--{ServiceName}",
+        public static readonly Option<string[]?> Namespace = new(
+            $"--{NamespaceName}",
             () => null,
-            "The service to expose on the MCP server."
+            "The Azure service namespaces to expose on the MCP server (e.g., storage, keyvault, cosmos)."
         )
         {
             IsRequired = false,
             Arity = ArgumentArity.OneOrMore,
             AllowMultipleArgumentsPerToken = true
+        };
+
+        public static readonly Option<string?> Mode = new Option<string?>(
+            $"--{ModeName}",
+            () => null,
+            "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' exposes one tool per service namespace."
+        )
+        {
+            IsRequired = false
         };
 
         public static readonly Option<bool?> ReadOnly = new(

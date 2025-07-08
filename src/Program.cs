@@ -9,7 +9,6 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
-using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -71,6 +70,7 @@ internal class Program
             new AzureMcp.Areas.Redis.RedisSetup(),
             new AzureMcp.Areas.Search.SearchSetup(),
             new AzureMcp.Areas.ServiceBus.ServiceBusSetup(),
+            new AzureMcp.Areas.Sql.SqlSetup(),
             new AzureMcp.Areas.Storage.StorageSetup(),
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
         ];

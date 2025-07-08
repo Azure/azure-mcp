@@ -1,58 +1,83 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Reflection;
-using AzureMcp.Areas.Server.Commands.Tools;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Commands.Server;
-using AzureMcp.Commands.Server.Tools;
 using AzureMcp.Models.Option;
-using AzureMcp.Services.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 namespace AzureMcp.Areas.Server.Commands;
 
+/// <summary>
+/// Command to start the MCP server with specified configuration options.
+/// This command is hidden from the main command list.
+/// </summary>
 [HiddenCommand]
 public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
-    private const string DefaultServerName = "Azure MCP Server";
-
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
-    private readonly Option<string[]?> _serviceTypeOption = OptionDefinitions.Service.ServiceType;
-
+    private readonly Option<string[]?> _namespaceOption = OptionDefinitions.Service.Namespace;
+    private readonly Option<string?> _modeOption = OptionDefinitions.Service.Mode;
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
+    /// <summary>
+    /// Gets the name of the command.
+    /// </summary>
     public override string Name => "start";
+
+    /// <summary>
+    /// Gets the description of the command.
+    /// </summary>
     public override string Description => "Starts Azure MCP Server.";
+
+    /// <summary>
+    /// Gets the title of the command.
+    /// </summary>
     public override string Title => CommandTitle;
 
+    /// <summary>
+    /// Registers command options for the service start command.
+    /// </summary>
+    /// <param name="command">The command to register options with.</param>
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
-        command.AddOption(_serviceTypeOption);
+        command.AddOption(_namespaceOption);
+        command.AddOption(_modeOption);
         command.AddOption(_readOnlyOption);
     }
 
+    /// <summary>
+    /// Executes the service start command, creating and starting the MCP server.
+    /// </summary>
+    /// <param name="context">The command execution context.</param>
+    /// <param name="parseResult">The parsed command options.</param>
+    /// <returns>A command response indicating the result of the operation.</returns>
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var port = parseResult.GetValueForOption(_portOption) == default
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
-        var serviceArray = parseResult.GetValueForOption(_serviceTypeOption) ?? OptionDefinitions.Service.ServiceType.GetDefaultValue();
+        var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
+            ? OptionDefinitions.Service.Namespace.GetDefaultValue()
+            : parseResult.GetValueForOption(_namespaceOption);
+
+        var mode = parseResult.GetValueForOption(_modeOption) == default
+            ? OptionDefinitions.Service.Mode.GetDefaultValue()
+            : parseResult.GetValueForOption(_modeOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
@@ -62,7 +87,8 @@ public sealed class ServiceStartCommand : BaseCommand
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Port = port,
-            Service = serviceArray,
+            Namespace = namespaces,
+            Mode = mode,
             ReadOnly = readOnly,
         };
 
@@ -73,6 +99,11 @@ public sealed class ServiceStartCommand : BaseCommand
         return context.Response;
     }
 
+    /// <summary>
+    /// Creates the host for the MCP server with the specified options.
+    /// </summary>
+    /// <param name="serverOptions">The server configuration options.</param>
+    /// <returns>An IHost instance configured for the MCP server.</returns>
     private IHost CreateHost(ServiceStartOptions serverOptions)
     {
         if (serverOptions.Transport == TransportTypes.Sse)
@@ -111,89 +142,19 @@ public sealed class ServiceStartCommand : BaseCommand
         }
     }
 
+    /// <summary>
+    /// Configures the MCP server services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="options">The server configuration options.</param>
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
-        var entryAssembly = Assembly.GetEntryAssembly();
-        var assemblyName = entryAssembly?.GetName() ?? new AssemblyName();
-        var assemblyVersion = assemblyName?.Version?.ToString() ?? "1.0.0-beta";
-
-        services.AddSingleton<ToolOperations>();
-        services.AddSingleton<ProxyToolOperations>();
-        services.AddSingleton<IMcpClientService, McpClientService>();
-
-        var mcpServerOptionsBuilder = services.AddOptions<McpServerOptions>();
-        var serverName = entryAssembly?.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? DefaultServerName;
-
-        mcpServerOptionsBuilder.Configure<ITelemetryService>((mcpServerOptions, telemetryService) =>
-        {
-            mcpServerOptions.ProtocolVersion = "2024-11-05";
-            mcpServerOptions.ServerInfo = new Implementation
-            {
-                Name = serverName,
-                Version = assemblyName?.Version?.ToString() ?? "1.0.0-beta"
-            };
-
-            if (mcpServerOptions.Capabilities == null)
-            {
-                mcpServerOptions.Capabilities = new ServerCapabilities();
-            }
-        });
-
-        var serviceArray = options.Service;
-
-        // The "azure" mode contains a single "azure" tools that performs internal tool discovery and proxying.
-        if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "azure")
-        {
-            services.AddSingleton<McpServerTool, AzureProxyTool>();
-        }
-        // The "proxy" mode exposes a single tool per service/namespace and performs internal tool discovery and proxying.
-        else if (serviceArray != null && serviceArray.Length == 1 && serviceArray[0] == "proxy")
-        {
-            mcpServerOptionsBuilder.Configure<ProxyToolOperations>((mcpServerOptions, toolOperations) =>
-            {
-                toolOperations.ReadOnly = options.ReadOnly ?? false;
-
-                if (mcpServerOptions.Capabilities == null)
-                {
-                    mcpServerOptions.Capabilities = new ServerCapabilities();
-                }
-
-                mcpServerOptions.Capabilities.Tools = new ToolsCapability()
-                {
-                    CallToolHandler = toolOperations.CallToolHandler,
-                    ListToolsHandler = toolOperations.ListToolsHandler,
-                };
-            });
-        }
-        // The default mode loads all tools from the default ToolOperations service.
-        else
-        {
-            mcpServerOptionsBuilder.Configure<ToolOperations>((mcpServerOptions, toolOperations) =>
-            {
-                toolOperations.ReadOnly = options.ReadOnly ?? false;
-                toolOperations.CommandGroup = serviceArray;
-
-                if (mcpServerOptions.Capabilities == null)
-                {
-                    mcpServerOptions.Capabilities = new ServerCapabilities();
-                }
-
-                mcpServerOptions.Capabilities.Tools = toolOperations.ToolsCapability;
-            });
-        }
-
-        var mcpServerBuilder = services.AddMcpServer();
-
-        if (options.Transport != TransportTypes.Sse)
-        {
-            mcpServerBuilder.WithStdioServerTransport();
-        }
-        else
-        {
-            mcpServerBuilder.WithHttpTransport();
-        }
+        services.AddAzureMcpServer(options);
     }
 
+    /// <summary>
+    /// Hosted service for running the MCP server using standard input/output.
+    /// </summary>
     private sealed class StdioMcpServerHostedService(IMcpServer session) : BackgroundService
     {
         /// <inheritdoc />
