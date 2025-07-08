@@ -22,7 +22,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         var databaseName = "testdb";
 
         var result = await CallToolAsync(
-            "azmcp-sql-db-show",
+            "azmcp_sql_db_show",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -56,7 +56,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         // and we need to catch any exceptions or check the response manually
         try
         {
-            var result = await CallToolAsync("azmcp-sql-db-show",
+            var result = await CallToolAsync("azmcp_sql_db_show",
                 new Dictionary<string, object?> { { "args", argsString } });
 
             // If we get here, the command didn't fail as expected
