@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
+using Azure;
 using Azure.Core;
 using Azure.Data.AppConfiguration;
 using Azure.ResourceManager.AppConfiguration;
@@ -106,7 +108,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
                 Value = setting.Value,
                 Label = setting.Label ?? string.Empty,
                 ContentType = setting.ContentType ?? string.Empty,
-                ETag = new ETag { Value = setting.ETag.ToString() },
+                ETag = new Models.ETag { Value = setting.ETag.ToString() },
                 LastModified = setting.LastModified,
                 Locked = setting.IsReadOnly
             });
@@ -128,7 +130,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
             Value = setting.Value,
             Label = setting.Label ?? string.Empty,
             ContentType = setting.ContentType ?? string.Empty,
-            ETag = new ETag { Value = setting.ETag.ToString() },
+            ETag = new Models.ETag { Value = setting.ETag.ToString() },
             LastModified = setting.LastModified,
             Locked = setting.IsReadOnly
         };
@@ -156,6 +158,117 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         ValidateRequiredParameters(accountName, key, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
+    }
+
+    public async Task SetFeatureFlag(
+        string accountName,
+        string featureFlagName,
+        string subscriptionId,
+        bool? enabled = null,
+        string? description = null,
+        string? displayName = null,
+        string? conditions = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null,
+        string? label = null)
+    {
+        ValidateRequiredParameters(accountName, featureFlagName, subscriptionId);
+        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+
+        FeatureFlagConfigurationSetting featureFlagSetting;
+
+        try
+        {
+            // Try to get existing feature flag to preserve existing data
+            var existingResponse = await client.GetConfigurationSettingAsync(
+                FeatureFlagConfigurationSetting.KeyPrefix + featureFlagName,
+                label,
+                cancellationToken: default);
+
+            if (existingResponse.Value is FeatureFlagConfigurationSetting existingFeatureFlag)
+            {
+                // Start with existing configuration
+                featureFlagSetting = existingFeatureFlag;
+            }
+            else
+            {
+                // Existing setting is not a feature flag, create new one
+                featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled ?? false, label);
+            }
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            // Feature flag doesn't exist, create a new one
+            featureFlagSetting = new FeatureFlagConfigurationSetting(featureFlagName, enabled ?? false, label);
+        }
+
+        // Update basic properties if provided
+        if (enabled.HasValue)
+        {
+            featureFlagSetting.IsEnabled = enabled.Value;
+        }
+
+        if (description != null)
+        {
+            featureFlagSetting.Description = description;
+        }
+
+        if (displayName != null)
+        {
+            featureFlagSetting.DisplayName = displayName;
+        }
+
+        // Parse and update complex JSON properties
+        await UpdateFeatureFlagJsonProperties(featureFlagSetting, conditions);
+
+        await client.SetConfigurationSettingAsync(featureFlagSetting, cancellationToken: default);
+    }
+
+    private static async Task UpdateFeatureFlagJsonProperties(
+        FeatureFlagConfigurationSetting featureFlagSetting,
+        string? conditions)
+    {
+        // Update conditions (client filters and requirement type)
+        if (!string.IsNullOrEmpty(conditions))
+        {
+            try
+            {
+                var conditionsDoc = JsonDocument.Parse(conditions);
+                var root = conditionsDoc.RootElement;
+
+                // Handle client_filters
+                if (root.TryGetProperty("client_filters", out var filtersElement) && filtersElement.ValueKind == JsonValueKind.Array)
+                {
+                    featureFlagSetting.ClientFilters.Clear();
+
+                    foreach (var filterElement in filtersElement.EnumerateArray())
+                    {
+                        if (filterElement.TryGetProperty("name", out var nameElement))
+                        {
+                            var filterName = nameElement.GetString() ?? string.Empty;
+                            var parameters = new Dictionary<string, object>();
+                            if (filterElement.TryGetProperty("parameters", out var paramsElement))
+                            {
+                                var paramDict = JsonSerializer.Deserialize(paramsElement.GetRawText(), JsonSourceGenerationContext.Default.DictionaryStringObject) ?? new Dictionary<string, object?>();
+                                foreach (var (key, value) in paramDict)
+                                {
+                                    parameters[key] = value;
+                                }
+                            }
+
+                            featureFlagSetting.ClientFilters.Add(new FeatureFlagFilter(filterName, parameters));
+                        }
+                    }
+                }
+                // Note: requirement_type handling may require custom logic or may not be directly supported by this SDK version
+            }
+            catch (JsonException ex)
+            {
+                throw new ArgumentException($"Invalid JSON format for conditions: {ex.Message}", nameof(conditions));
+            }
+        }
+
+        await Task.CompletedTask;
     }
 
     private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
