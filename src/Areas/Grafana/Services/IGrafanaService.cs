@@ -12,13 +12,11 @@ public interface IGrafanaService
     /// </summary>
     /// <param name="subscription">The subscription ID or name</param>
     /// <param name="tenant">Optional tenant ID for cross-tenant operations</param>
-    /// <param name="authMethod">Authentication method to use</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <returns>List of Grafana workspace details</returns>
     /// <exception cref="Exception">When the service request fails</exception>
     Task<IEnumerable<Models.Workspace.Workspace>> ListWorkspacesAsync(
         string subscription,
         string? tenant = null,
-        AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 }

@@ -1,0 +1,183 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AzureMcp.Areas.Grafana.Commands.Workspace;
+using AzureMcp.Areas.Grafana.Models.Workspace;
+using AzureMcp.Areas.Grafana.Services;
+using AzureMcp.Models.Command;
+using AzureMcp.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using Xunit;
+
+namespace AzureMcp.Tests.Areas.Grafana.UnitTests;
+
+[Trait("Area", "Grafana")]
+public sealed class WorkspaceListCommandTests
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IGrafanaService _grafana;
+    private readonly ILogger<WorkspaceListCommand> _logger;
+
+    public WorkspaceListCommandTests()
+    {
+        _grafana = Substitute.For<IGrafanaService>();
+        _logger = Substitute.For<ILogger<WorkspaceListCommand>>();
+
+        var collection = new ServiceCollection();
+        collection.AddSingleton(_grafana);
+
+        _serviceProvider = collection.BuildServiceProvider();
+    }
+
+    [Fact]
+    [Trait("Category", "Unit")]
+    public void Constructor_Should_Initialize_Command_Properly()
+    {
+        // Arrange & Act
+        var command = new WorkspaceListCommand(_logger);
+
+        // Assert
+        Assert.NotNull(command);
+        Assert.Equal("list", command.Name);
+        Assert.Equal("List Grafana Workspaces", command.Title);
+        Assert.Contains("List all Grafana workspace resources", command.Description);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsWorkspaces_WhenWorkspacesExist()
+    {
+        // Arrange
+        var expectedWorkspaces = new List<Workspace>
+        {
+            new()
+            {
+                Name = "grafana-workspace-1",
+                ResourceGroupName = "rg-test",
+                SubscriptionId = "sub123",
+                Location = "East US",
+                ProvisioningState = "Succeeded",
+                Endpoint = "https://grafana1.grafana.azure.com"
+            },
+            new()
+            {
+                Name = "grafana-workspace-2",
+                ResourceGroupName = "rg-test2",
+                SubscriptionId = "sub123",
+                Location = "West US",
+                ProvisioningState = "Succeeded",
+                Endpoint = "https://grafana2.grafana.azure.com"
+            }
+        };
+
+        _grafana.ListWorkspacesAsync("sub123", null, null)
+            .Returns(expectedWorkspaces);
+
+        var command = new WorkspaceListCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", "sub123"]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<WorkspaceListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Workspaces);
+        Assert.Equal(2, result.Workspaces.Count());
+
+        var workspacesList = result.Workspaces.ToList();
+        Assert.Equal("grafana-workspace-1", workspacesList[0].Name);
+        Assert.Equal("grafana-workspace-2", workspacesList[1].Name);
+        Assert.Equal("rg-test", workspacesList[0].ResourceGroupName);
+        Assert.Equal("East US", workspacesList[0].Location);
+        Assert.Equal("https://grafana1.grafana.azure.com", workspacesList[0].Endpoint);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsNull_WhenNoWorkspacesExist()
+    {
+        // Arrange
+        _grafana.ListWorkspacesAsync("sub123", null, null)
+            .Returns(new List<Workspace>());
+
+        var command = new WorkspaceListCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", "sub123"]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Null(response.Results);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithTenant_PassesTenantToService()
+    {
+        // Arrange
+        var expectedWorkspaces = new List<Workspace>
+        {
+            new()
+            {
+                Name = "grafana-workspace",
+                ResourceGroupName = "rg-test",
+                SubscriptionId = "sub123"
+            }
+        };
+
+        _grafana.ListWorkspacesAsync("sub123", "tenant456", null)
+            .Returns(expectedWorkspaces);
+
+        var command = new WorkspaceListCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--tenant", "tenant456"]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesException_AndSetsException()
+    {
+        // Arrange
+        var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
+        var subscriptionId = "sub123";
+
+        _grafana.ListWorkspacesAsync(subscriptionId, null, Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<IEnumerable<Workspace>>(new Exception("Test error")));
+
+        var command = new WorkspaceListCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", subscriptionId]);
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var response = await command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(500, response.Status);
+        Assert.Equal(expectedError, response.Message);
+    }
+
+    private sealed class WorkspaceListResult
+    {
+        [JsonPropertyName("workspaces")]
+        public IEnumerable<Workspace>? Workspaces { get; set; }
+    }
+}

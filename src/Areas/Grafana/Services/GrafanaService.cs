@@ -16,7 +16,6 @@ public class GrafanaService(ISubscriptionService _subscriptionService, ITenantSe
     public async Task<IEnumerable<Models.Workspace.Workspace>> ListWorkspacesAsync(
         string subscriptionId,
         string? tenant = null,
-        AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscriptionId);
