@@ -61,6 +61,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
 | azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
 
+## Azure Managed Grafana
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
+
+
 ## Azure App Configuration
 
 | Tool Name | Test Prompt |
