@@ -260,3 +260,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+
+## Azure Quick Review CLI
+
+| Tool Name | Test Prompt |
+| --------- | ----------- |
+| azmcp-extension-azqr | Scan my Azure subscription for compliance recommendations |
