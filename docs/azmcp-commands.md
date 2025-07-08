@@ -495,6 +495,12 @@ azmcp foundry models deploy --subscription <subscription> --resource-group <reso
 azmcp foundry models deployments list --endpoint <endpoint>
 ```
 
+### Azure Managed Grafana Operations
+```bash
+# List Azure Managed Grafana
+azmcp grafana list --subscription <subscription>
+```
+
 ### Azure CLI Extension Operations
 ```bash
 # Execute any Azure CLI command
