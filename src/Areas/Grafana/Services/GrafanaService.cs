@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+// cSpell:ignore Grafanas
 
 using Azure.ResourceManager.Grafana;
 using AzureMcp.Models.Identity;
