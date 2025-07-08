@@ -73,18 +73,16 @@ public class GrafanaCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
             });
 
         var workspaces = result.AssertProperty("workspaces").EnumerateArray();
-        var testWorkspace = workspaces.FirstOrDefault(w => 
-            w.GetProperty("name").GetString()?.StartsWith(Settings.ResourceBaseName) == true);
+        var testWorkspace = workspaces.FirstOrDefault(w => w.GetProperty("name").GetString()?.StartsWith(Settings.ResourceBaseName) == true);
 
-        Assert.True(testWorkspace.ValueKind != JsonValueKind.Undefined, 
-            $"Expected to find test Grafana workspace starting with '{Settings.ResourceBaseName}' in the subscription");
-        
+        Assert.True(testWorkspace.ValueKind != JsonValueKind.Undefined, $"Expected to find test Grafana workspace starting with '{Settings.ResourceBaseName}' in the subscription");
+
         // Verify workspace properties
         Assert.NotNull(testWorkspace.GetProperty("name").GetString());
         Assert.NotNull(testWorkspace.GetProperty("id").GetString());
         Assert.NotNull(testWorkspace.GetProperty("location").GetString());
         Assert.NotNull(testWorkspace.GetProperty("resourceGroupName").GetString());
-        
+
         // Verify it's in the correct resource group
         Assert.Equal(Settings.ResourceGroupName, testWorkspace.GetProperty("resourceGroupName").GetString());
     }
