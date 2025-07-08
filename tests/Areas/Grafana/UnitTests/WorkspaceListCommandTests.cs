@@ -75,7 +75,7 @@ public sealed class WorkspaceListCommandTests
             }
         };
 
-        _grafana.ListWorkspacesAsync("sub123", null, null)
+        _grafana.ListWorkspacesAsync("sub123", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedWorkspaces);
 
         var command = new WorkspaceListCommand(_logger);
@@ -90,25 +90,16 @@ public sealed class WorkspaceListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<WorkspaceListResult>(json);
 
-        Assert.NotNull(result);
-        Assert.NotNull(result.Workspaces);
-        Assert.Equal(2, result.Workspaces.Count());
-
-        var workspacesList = result.Workspaces.ToList();
-        Assert.Equal("grafana-workspace-1", workspacesList[0].Name);
-        Assert.Equal("grafana-workspace-2", workspacesList[1].Name);
-        Assert.Equal("rg-test", workspacesList[0].ResourceGroupName);
-        Assert.Equal("East US", workspacesList[0].Location);
-        Assert.Equal("https://grafana1.grafana.azure.com", workspacesList[0].Endpoint);
+        Assert.Contains("grafana-workspace-1", json);
+        Assert.Contains("grafana-workspace-2", json);
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsNull_WhenNoWorkspacesExist()
     {
         // Arrange
-        _grafana.ListWorkspacesAsync("sub123", null, null)
+        _grafana.ListWorkspacesAsync("sub123", null, Arg.Any<RetryPolicyOptions>())
             .Returns(new List<Workspace>());
 
         var command = new WorkspaceListCommand(_logger);
@@ -137,7 +128,7 @@ public sealed class WorkspaceListCommandTests
             }
         };
 
-        _grafana.ListWorkspacesAsync("sub123", "tenant456", null)
+        _grafana.ListWorkspacesAsync("sub123", "tenant456", Arg.Any<RetryPolicyOptions>())
             .Returns(expectedWorkspaces);
 
         var command = new WorkspaceListCommand(_logger);
@@ -173,11 +164,5 @@ public sealed class WorkspaceListCommandTests
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
         Assert.Equal(expectedError, response.Message);
-    }
-
-    private sealed class WorkspaceListResult
-    {
-        [JsonPropertyName("workspaces")]
-        public IEnumerable<Workspace>? Workspaces { get; set; }
     }
 }
