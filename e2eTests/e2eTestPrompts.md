@@ -144,7 +144,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-metrics-query | Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period> |
 | azmcp-monitor-metrics-query | Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period> |
 | azmcp-monitor-metrics-query | Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with intervals |
-| azmcp-monitor-resource-logs-query | Show me the logs for the past hour for the resource <resource_name> in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-resource-log-query | Show me the logs for the past hour for the resource <resource_name> in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | List all tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | Show me the tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-type-list | List all available table types in the Log Analytics workspace <workspace_name> |
@@ -152,7 +152,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | List all Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
-| azmcp-monitor-workspace-logs-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 
 ## Azure Native ISV
 
