@@ -15,7 +15,7 @@ param tenantId string = '72f988bf-86f1-41af-91ab-2d7cd011db47'
 param testApplicationOid string
 
 // Generate a unique name for the Grafana workspace
-var grafanaName = '${baseName}-grafana'
+var grafanaName = '${baseName}-amg'
 
 resource grafanaWorkspace 'Microsoft.Dashboard/grafana@2023-09-01' = {
   name: grafanaName
