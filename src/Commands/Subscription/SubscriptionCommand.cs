@@ -25,12 +25,19 @@ public abstract class SubscriptionCommand<
         var options = base.BindOptions(parseResult);
 
         // Get subscription from command line option or fallback to environment variable
-        var subscriptionValue = parseResult.GetValueForOption(_subscriptionOption);
-        options.Subscription = string.IsNullOrEmpty(subscriptionValue)
-            || subscriptionValue.Contains("subscription")
-            || subscriptionValue.Contains("default")
-            ? Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID")
-            : subscriptionValue;
+        try
+        {
+            var subscriptionValue = parseResult.GetValueForOption(_subscriptionOption);
+            options.Subscription = string.IsNullOrEmpty(subscriptionValue)
+                || subscriptionValue.Contains("subscription")
+                || subscriptionValue.Contains("default")
+                ? Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID")
+                : subscriptionValue;
+        }
+        catch (Exception)    // subscription id is missing
+        {
+            options.Subscription = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
+        }
 
         return options;
     }
