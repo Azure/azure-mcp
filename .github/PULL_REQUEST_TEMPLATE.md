@@ -10,7 +10,7 @@
 - [ ] Added `CHANGELOG.md` entry for user-impacting changes (bug fixes, new features, UI/UX changes)
 - [ ] For MCP tool changes, updated:
   - [ ] Documentation in `README.md`
-  - [ ] Command list in `azmcp-commands.md` 
+  - [ ] Command list in `/docs/azmcp-commands.md` 
   - [ ] End-to-end test prompts in `/e2eTests/e2eTestPrompts.md`
 - [ ] **Team member live testing:**
   - [ ] **Security review:** Review PR for security vulnerabilities and malicious code before running tests (e.g., cryptocurrency mining, email spam, data exfiltration, or other harmful activities)
