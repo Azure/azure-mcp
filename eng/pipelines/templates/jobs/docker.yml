@@ -16,7 +16,7 @@ jobs:
     image: $(LINUXVMIMAGE)
     os: linux
 
-  ${{ if eq(parameters.ReleaseRun, 'true') }}:
+  ${{ if eq(parameters.ReleaseRun, true) }}:
     templateContext:
       outputs:
       - output: containerImage
@@ -27,7 +27,7 @@ jobs:
   steps:
 
   - task: AzureCLI@2
-    condition: and(succeeded(), eq(parameters.ReleaseRun, 'true'))
+    condition: and(succeeded(), ${{ eq(parameters.ReleaseRun, true) }})
     displayName: Login to ${{ parameters.ContainerRegistry }}
     inputs:
       azureSubscription: "Azure SDK Engineering System"
@@ -41,5 +41,5 @@ jobs:
     inputs:
       path: $(configPath)
       image: image:tag
-      enableNetwork: ${{ eq(parameters.ReleaseRun, 'true') }}
-      useBuildKit: ${{ eq(parameters.ReleaseRun, 'true') }}
+      enableNetwork: ${{ eq(parameters.ReleaseRun, true) }}
+      useBuildKit: ${{ eq(parameters.ReleaseRun, true) }}
