@@ -6,6 +6,7 @@ using AzureMcp.Areas.AppConfig.Options.Account;
 using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppConfig.Commands.Account;
@@ -37,6 +38,8 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             var accounts = await appConfigService.GetAppConfigAccounts(
                 options.Subscription!,
@@ -52,7 +55,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing accounts.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

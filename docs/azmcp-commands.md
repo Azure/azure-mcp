@@ -23,22 +23,75 @@ The following options are available for all commands:
 ## Available Commands
 
 ### Server Operations
+
+The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
+
+#### Default Mode
+
+Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
+
 ```bash
-# Start the MCP Server
+# Start MCP Server with all tools exposed individually
 azmcp server start \
     [--transport <transport>] \
     [--port <port>] \
-    [--service <service-name>] \
     [--read-only]
 ```
 
-> **Note:** Replace `<service-name>` with an available top level command group.
-> Run `azmcp -h` to review the available top level command groups available to be set in this parameter. Examples include `storage`, `keyvault`, etc.
+#### Namespace Mode
+
+Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
+
+```bash
+# Start MCP Server with only Storage tools
+azmcp server start \
+    --namespace storage \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Start MCP Server with Storage and Key Vault tools
+azmcp server start \
+    --namespace storage \
+    --namespace keyvault \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### Service Proxy Mode
+
+Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
+
+```bash
+# Start MCP Server with service proxy tools
+azmcp server start \
+    --mode namespace \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### Single Tool Proxy Mode
+
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+
+```bash
+# Start MCP Server with single Azure tool proxy
+azmcp server start \
+    --mode single \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+> **Note:**
 >
-> To enable single tool proxy mode set `--service` parameter to `azure`.
-> This will enable `azmcp` to expose a single `azure` tool that uses internal dynamic tool loading and selection.
->
-> When launched with the `--read-only` flag the tool list will be filtered to only contain tools that provide read only tool annotation.
+> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
+> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
+> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
+> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+
 
 ### Subscription Management
 ```bash
@@ -171,6 +224,15 @@ azmcp postgres server setparam --subscription <subscription> \
                                --server <server> \
                                --param <parameter> \
                                --value <value>
+```
+
+### Azure SQL Database Operations
+```bash
+# Show details of a specific SQL database
+azmcp sql db show --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name> \
+                  --database <database-name>
 ```
 
 ### Azure Storage Operations
@@ -425,6 +487,18 @@ azmcp role assignment list --subscription <subscription> \
 ```bash
 # List resource groups in a subscription
 azmcp group list --subscription <subscription>
+```
+
+### Azure AI Foundry Operations
+```bash
+# List AI Foundry models
+azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] [--publisher-name <publisher-name>] [--license-name <license-name>] [--model-name <model-name>]
+
+# Deploy an AI Foundry model
+azmcp foundry models deploy --subscription <subscription> --resource-group <resource-group>  --deployment-name <deployment-name> --model-name <model-name> --model-format <model-format> --azure-ai-services-name <azure-ai-services-name> [--model-version <model-version>] [--model-source <model-source>] [--sku-name <sku-name>] [--sku-capacity <sku-capacity>] [--scale-type <scale-type>] [--scale-capacity <scale-capacity>]
+
+# List AI Foundry model deployments
+azmcp foundry models deployments list --endpoint <endpoint>
 ```
 
 ### Azure CLI Extension Operations

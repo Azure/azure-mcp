@@ -73,7 +73,7 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing search query");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

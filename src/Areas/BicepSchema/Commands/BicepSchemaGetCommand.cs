@@ -71,7 +71,7 @@ namespace AzureMcp.Areas.BicepSchema.Commands
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An exception occurred fetching Bicep schema.");
-                HandleException(context.Response, ex);
+                HandleException(context, ex);
             }
             return Task.FromResult(context.Response);
 

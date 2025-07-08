@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.2.7</Version>
+    <Version>0.3.1</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
@@ -17,6 +17,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
+    <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
   </PropertyGroup>
 
   <!-- Debug configuration -->
@@ -41,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.Projects" />
     <PackageReference Include="Azure.Bicep.Types" />
     <PackageReference Include="Azure.Bicep.Types.Az" />
     <PackageReference Include="Azure.Core" />
@@ -52,10 +56,12 @@
     <PackageReference Include="Azure.Monitor.Query" />
     <PackageReference Include="Azure.ResourceManager.AppConfiguration" />
     <PackageReference Include="Azure.ResourceManager.Authorization" />
+    <PackageReference Include="Azure.ResourceManager.CognitiveServices" />
     <PackageReference Include="Azure.ResourceManager.Kusto" />
     <PackageReference Include="Azure.ResourceManager.PostgreSql" />
     <PackageReference Include="Azure.ResourceManager.Redis" />
     <PackageReference Include="Azure.ResourceManager.RedisEnterprise" />
+    <PackageReference Include="Azure.ResourceManager.Sql" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" />
     <PackageReference Include="Azure.Storage.Blobs" />
