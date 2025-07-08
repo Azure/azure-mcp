@@ -10,6 +10,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<LiveTestFixture>
 {
     private readonly IMcpClient _client = liveTestFixture.Client;
@@ -29,7 +30,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?> { },
             cancellationToken: TestContext.Current.CancellationToken);
 
-        var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
+        string? content = McpTestUtilities.GetFirstText(result.Content);
 
         Assert.False(string.IsNullOrWhiteSpace(content));
 
@@ -49,8 +50,12 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
     {
         var result = await _client.CallToolAsync("non_existent_tool", new Dictionary<string, object?>(), cancellationToken: TestContext.Current.CancellationToken);
 
-        var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
-        Assert.True(string.IsNullOrWhiteSpace(content));
+        // When calling a non-existent tool, the server should return an error response
+        Assert.True(result.IsError, "Expected error response for non-existent tool");
+
+        string? content = McpTestUtilities.GetFirstText(result.Content);
+        Assert.False(string.IsNullOrWhiteSpace(content), "Expected error message content");
+        Assert.Contains("Could not find command: non_existent_tool", content);
     }
 
     [Fact]

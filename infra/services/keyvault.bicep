@@ -76,3 +76,11 @@ resource keyVaultKey 'Microsoft.KeyVault/vaults/keys@2021-11-01-preview' = {
     kty: 'RSA'
   }
 }
+
+resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  name: 'foo-bar-secret'
+  parent: keyVault
+  properties: {
+    value: 'foo-bar-value'
+  }
+}

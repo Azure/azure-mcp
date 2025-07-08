@@ -7,6 +7,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Options;
 
+[Trait("Area", "Core")]
 public class RetryPolicyOptionsTests
 {
     [Fact]

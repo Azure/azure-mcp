@@ -17,7 +17,6 @@ jobs:
 - job: Build_${{ parameters.OSName }}
   displayName: "Build"
   dependsOn:
-  - Initialize
   - ${{ parameters.DependsOn }}
   strategy:
     matrix: $[ ${{ parameters.Matrix }} ]
@@ -28,8 +27,6 @@ jobs:
     ${{ else }}:
       image: $(OSVmImage)
     os: ${{ parameters.OSName }}
-  variables:
-    Version: $[ dependencies.Initialize.outputs['Version.Version'] ]
   steps:
   - checkout: self
 
@@ -59,6 +56,8 @@ jobs:
     inputs:
       pwsh: true
       filePath:  $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
+      arguments: >
+        -CoverageSummary:$${{ eq(parameters.OSName, 'linux') }}
       workingDirectory: $(Build.SourcesDirectory)
 
   - task: PublishTestResults@2
@@ -80,4 +79,4 @@ jobs:
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)
       ArtifactName: $(PipelineArtifactName)_$(System.JobName)
-      CustomCondition: succeededOrFailed()
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}

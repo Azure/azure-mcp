@@ -9,13 +9,15 @@ using Azure.Identity.Broker;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Subscription;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Caching;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Services.Azure.Authentication;
 
+[Trait("Area", "Core")]
 public class AuthenticationIntegrationTests : IAsyncLifetime
 {
     private readonly ServiceProvider _serviceProvider;
@@ -94,10 +96,10 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
         }
 
         // Output subscriptions for manual verification
-        var jsonString = JsonSerializer.Serialize(subscriptions, _writeIndentedOptions);
+        var jsonString = JsonSerializer.Serialize(subscriptions, s_writeIndentedOptions);
         _output.WriteLine($"Retrieved {subscriptions.Count} subscriptions:");
         _output.WriteLine(jsonString);
     }
 
-    private static readonly JsonSerializerOptions _writeIndentedOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions s_writeIndentedOptions = new() { WriteIndented = true };
 }

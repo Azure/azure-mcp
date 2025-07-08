@@ -2,6 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "PowerShell Interactive Session",
+            "type": "PowerShell",
+            "request": "launch",
+            "cwd": "${cwd}"
+        },
+        {
             "name": "Debug Cosmos Databases List",
             "type": "coreclr",
             "request": "launch",
@@ -15,7 +21,7 @@
                 "${input:subscription}",
                 "--account-name",
                 "${input:cosmosAccountName}",
-                "--retry-max-retries", 
+                "--retry-max-retries",
                 "0"
             ],
             "cwd": "${workspaceFolder}",
@@ -26,7 +32,7 @@
             }
         },
         {
-            "name": "Debug Kusto Cluster List",
+            "name": "Debug Azure Data Explorer Cluster List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -46,7 +52,7 @@
             }
         },
         {
-            "name": "Debug Kusto Cluster Get",
+            "name": "Debug Azure Data Explorer Cluster Get",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -68,7 +74,7 @@
             }
         },
         {
-            "name": "Debug Kusto Database List",
+            "name": "Debug Azure Data Explorer Database List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -90,7 +96,7 @@
             }
         },
         {
-            "name": "Debug Kusto Databases List with Cluster URI",
+            "name": "Debug Azure Data Explorer Databases List with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -110,7 +116,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table List",
+            "name": "Debug Azure Data Explorer Table List",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -134,7 +140,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table List with Cluster URI",
+            "name": "Debug Azure Data Explorer Table List with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -156,7 +162,7 @@
             }
         },
         {
-            "name": "Debug Kusto Table Schema",
+            "name": "Debug Azure Data Explorer Table Schema",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -182,7 +188,7 @@
             }
         },
         {
-            "name": "Debug Kusto Sample",
+            "name": "Debug Azure Data Explorer Sample",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -209,7 +215,7 @@
             }
         },
         {
-            "name": "Debug Kusto Query",
+            "name": "Debug Azure Data Explorer Query",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -234,7 +240,7 @@
             }
         },
         {
-            "name": "Debug Kusto Query with Cluster URI",
+            "name": "Debug Azure Data Explorer Query with Cluster URI",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -285,6 +291,10 @@
                 "list",
                 "--subscription",
                 "${input:subscription}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--workspace",
+                "${input:workspace}"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -315,7 +325,7 @@
                 "DOTNET_ENVIRONMENT": "Development"
             }
         },
-        {            
+        {
             "name": "Debug Monitor Log Query",
             "type": "coreclr",
             "request": "launch",
@@ -415,12 +425,41 @@
             "env": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
+        },
+        {
+            "name": "Debug SQL Database Show",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "sql",
+                "db",
+                "show",
+                "--subscription",
+                "${input:subscription}",
+                "--resource-group",
+                "${input:resourceGroup}",
+                "--server",
+                "${input:sqlServerName}",
+                "--database",
+                "${input:sqlDatabaseName}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
         {
             "name": "Debug MCP Server",
-            "configurations": ["Launch MCP Server", "Attach to MCP Server"]
+            "configurations": [
+                "Launch MCP Server",
+                "Attach to MCP Server"
+            ]
         }
     ],
     "inputs": [
@@ -487,7 +526,8 @@
             "type": "promptString",
             "description": "Cosmos DB Container Name",
             "default": ""
-        },        {
+        },
+        {
             "id": "resourceGroup",
             "type": "promptString",
             "description": "Azure Resource Group",
@@ -498,6 +538,18 @@
             "type": "promptString",
             "description": "Monitor Table Name",
             "default": ""
+        },
+        {
+            "id": "sqlServerName",
+            "type": "promptString",
+            "description": "SQL Server Name",
+            "default": ""
+        },
+        {
+            "id": "sqlDatabaseName",
+            "type": "promptString",
+            "description": "SQL Database Name",
+            "default": "testdb"
         }
     ]
 }
