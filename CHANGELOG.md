@@ -3,11 +3,14 @@
 ## 0.3.2 (Unreleased)
 
 ### Features Added
+
 - Support for Azure Managed Grafana operations - List Azure Managed Grafana details. [#532](https://github.com/Azure/azure-mcp/pull/532)
 
 ### Breaking Changes
 
 ### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [#540](https://github.com/Azure/azure-mcp/pull/540/)
 
 ### Other Changes
 
