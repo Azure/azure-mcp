@@ -192,7 +192,8 @@ public class CompositeToolLoaderTests
         Assert.NotNull(result.Content);
         Assert.Single(result.Content);
         var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
-        Assert.Equal("The tool ${request.Params.Name} was not found", textContent.Text);
+        Assert.NotNull(callRequest.Params);
+        Assert.Equal($"The tool {callRequest.Params.Name} was not found", textContent.Text);
     }
 
     [Fact]
