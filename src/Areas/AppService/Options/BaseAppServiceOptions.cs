@@ -1,10 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
+using AzureMcp.Options;
 namespace AzureMcp.Areas.AppService.Options;
 
-public class BaseAppServiceOptions
+public class BaseAppServiceOptions : SubscriptionOptions
 {
-    public string? ResourceGroup { get; set; }
     public string? AppName { get; set; }
 }

@@ -3,7 +3,9 @@
 
 using Azure.Core;
 using Azure.Core.Pipeline;
+using Azure.ResourceManager;
 using AzureMcp.Areas.AppService.Models;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Tenant;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +13,7 @@ namespace AzureMcp.Areas.AppService.Services;
 
 public class AppServiceService(
     ITenantService tenantService,
-    ILogger<AppServiceService> logger) : IAppServiceService
+    ILogger<AppServiceService> logger) : BaseAzureService(tenantService), IAppServiceService
 {
     private readonly ITenantService _tenantService = tenantService;
     private readonly ILogger<AppServiceService> _logger = logger;
@@ -22,15 +24,15 @@ public class AppServiceService(
         string databaseType,
         string databaseServer,
         string databaseName,
-        string? connectionString,
+        string connectionString,
+        string clientId,
         string subscription,
-        RetryPolicy retryPolicy)
+        AzureMcp.Options.RetryPolicyOptions? retryPolicy)
     {
         _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", 
             appName, resourceGroup);
-
-        var client = await _tenantService.GetArmClientAsync(subscription);
-        var subscriptionResource = await client.GetDefaultSubscriptionAsync();
+        ArmClient armClient = await CreateArmClientAsync(tenantId, retryPolicy);
+        var subscriptionResource = await armClient.GetDefaultSubscriptionAsync();
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
         
         // For now, we'll simulate the operation since Azure.ResourceManager.AppService is not available

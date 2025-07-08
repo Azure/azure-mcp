@@ -5,13 +5,12 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.AppService.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-
 namespace AzureMcp.Areas.AppService.Commands;
 
 public abstract class BaseAppServiceCommand<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
-    : SubscriptionCommand<T>
-    where T : BaseAppServiceOptions, new()
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
+    : SubscriptionCommand<TOptions>
+    where TOptions : BaseAppServiceOptions, new()
 {
     protected readonly Option<string> _appNameOption = AppServiceOptionDefinitions.AppName;
 
@@ -22,7 +21,7 @@ public abstract class BaseAppServiceCommand<
         command.AddOption(_resourceGroupOption);
     }
 
-    protected override T BindOptions(ParseResult parseResult)
+    protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.AppName = parseResult.GetValueForOption(_appNameOption);

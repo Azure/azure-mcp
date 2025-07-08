@@ -11,6 +11,4 @@ public class DatabaseAddOptions : BaseAppServiceOptions
     public string? DatabaseServer { get; set; }
     public string? DatabaseName { get; set; }
     public string? ConnectionString { get; set; }
-    public object? Subscription { get; internal set; }
-    public RetryPolicy? RetryPolicy { get; internal set; }
 }
