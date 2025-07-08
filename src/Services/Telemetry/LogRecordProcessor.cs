@@ -6,6 +6,9 @@ using OpenTelemetry.Logs;
 
 namespace AzureMcp.Services.Telemetry;
 
+/// <summary>
+/// Removes Attributes, Body, and FormattedMessage from <see cref="LogRecord"/>.
+/// </summary>
 internal class LogRecordProcessor : BaseProcessor<LogRecord>
 {
     private static readonly IReadOnlyList<KeyValuePair<string, object?>> EmptyAttributes = new List<KeyValuePair<string, object?>>().AsReadOnly();
