@@ -78,7 +78,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         try
         {
             var result = await CallToolAsync(
-                "azmcp-sql-db-show",
+                "azmcp_sql_db_show",
                 new Dictionary<string, object?>
                 {
                     { "subscription", Settings.SubscriptionId }
