@@ -271,19 +271,26 @@ azmcp monitor table list --subscription <subscription> \
                          --resource-group <resource-group>
 
 # Query logs from Azure Monitor using KQL
-azmcp monitor log query --subscription <subscription> \
-                        --workspace <workspace> \
-                        --table-name <table-name> \
-                        --query "<kql-query>" \
-                        [--hours <hours>] \
-                        [--limit <limit>]
+azmcp monitor workspace log query --subscription <subscription> \
+                                  --workspace <workspace> \
+                                  --table-name <table-name> \
+                                  --query "<kql-query>" \
+                                  [--hours <hours>] \
+                                  [--limit <limit>]
+
+azmcp monitor resource log query --subscription <subscription> \
+                                 --resource-id <resource-id> \
+                                 --table-name <table-name> \
+                                 --query "<kql-query>" \
+                                 [--hours <hours>] \
+                                 [--limit <limit>]
 
 # Examples:
 # Query logs from a specific table
-azmcp monitor log query --subscription <subscription> \
-                        --workspace <workspace> \
-                        --table-name "AppEvents_CL" \
-                        --query "| order by TimeGenerated desc"
+azmcp monitor workspace log query --subscription <subscription> \
+                                  --workspace <workspace> \
+                                  --table-name "AppEvents_CL" \
+                                  --query "| order by TimeGenerated desc"
 ```
 
 #### Health Models
