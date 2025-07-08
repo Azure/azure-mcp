@@ -14,7 +14,7 @@ param tenantId string = '72f988bf-86f1-41af-91ab-2d7cd011db47'
 @description('The client OID to grant access to test resources.')
 param testApplicationOid string
 
-// Generate a unique name for the Grafana workspace
+// Generate a unique name for the Grafana workspace. The name must be between 2 to 23 characters long.
 var grafanaName = '${baseName}-amg'
 
 resource grafanaWorkspace 'Microsoft.Dashboard/grafana@2023-09-01' = {
