@@ -33,7 +33,7 @@ public abstract class SubscriptionCommand<
 
             if (!hasValidSubscription && !hasValidEnvVar)
             {
-                result.ErrorMessage = "Subscription is required. Provide --subscription option or set AZURE_SUBSCRIPTION_ID environment variable.";
+                result.ErrorMessage = "Missing Required options: --subscription";
             }
         });
     }
