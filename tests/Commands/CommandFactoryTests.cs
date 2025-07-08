@@ -31,10 +31,10 @@ public class CommandFactoryTests
     {
         // This test verifies our fix for supporting dashes in command names
         // by ensuring the separator is underscore instead of dash
-        
+
         // Arrange & Act
         var separator = CommandFactory.Separator;
-        
+
         // Assert
         Assert.Equal('_', separator);
     }
@@ -48,10 +48,10 @@ public class CommandFactoryTests
     {
         // This test verifies that command hierarchies are joined with underscores
         // which allows commands to use dashes naturally without conflicting with separators
-        
+
         // Arrange & Act
         var result = CallGetPrefix(currentPrefix, additional);
-        
+
         // Assert
         Assert.Equal(expected, result);
     }
@@ -61,7 +61,7 @@ public class CommandFactoryTests
     {
         // Arrange & Act
         var result = CallGetPrefix(string.Empty, "subscription");
-        
+
         // Assert
         Assert.Equal("subscription", result);
     }
@@ -71,7 +71,7 @@ public class CommandFactoryTests
     {
         // Arrange & Act
         var result = CallGetPrefix(null, "subscription");
-        
+
         // Assert
         Assert.Equal("subscription", result);
     }
@@ -84,18 +84,18 @@ public class CommandFactoryTests
     {
         // This test verifies that command names containing dashes don't conflict
         // with our underscore separator, which was the core issue we're solving
-        
+
         // Arrange
         var prefix = "azmcp_role";
-        
+
         // Act
         var result = CallGetPrefix(prefix, commandNameWithDash);
-        
+
         // Assert
         Assert.Contains('_', result); // Should contain our separator
         Assert.Contains('-', result); // Should preserve dashes in command names
         Assert.Equal($"{prefix}_{commandNameWithDash}", result);
-        
+
         // Verify the dash in the command name doesn't interfere with parsing
         var parts = result.Split('_');
         Assert.True(parts.Length >= 2);
@@ -109,9 +109,9 @@ public class CommandFactoryTests
     /// </summary>
     private static string CallGetPrefix(string? currentPrefix, string additional)
     {
-        var method = typeof(CommandFactory).GetMethod("GetPrefix", 
+        var method = typeof(CommandFactory).GetMethod("GetPrefix",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        
+
         return (string)method!.Invoke(null, new object?[] { currentPrefix, additional })!;
     }
 
@@ -119,17 +119,17 @@ public class CommandFactoryTests
     public void CommandFactory_Should_Create_Command_Dictionary_With_Underscore_Separators()
     {
         // This is an integration test to verify the entire flow works correctly
-        
+
         // Arrange
         var mockAreaSetup = Substitute.For<IAreaSetup>();
         var serviceAreas = new[] { mockAreaSetup };
-        
+
         // Act
         var factory = new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger);
-        
+
         // Assert
         Assert.NotNull(factory.AllCommands);
-        
+
         // Verify that any command names in the dictionary use underscore separators
         foreach (var commandName in factory.AllCommands.Keys)
         {
@@ -138,7 +138,7 @@ public class CommandFactoryTests
                 // If it contains underscores, it should not contain dashes as separators
                 // (dashes can still exist within individual command parts)
                 var parts = commandName.Split('_');
-                Assert.True(parts.Length >= 1, 
+                Assert.True(parts.Length >= 1,
                     $"Command '{commandName}' should have at least one part when split by underscore");
             }
         }
