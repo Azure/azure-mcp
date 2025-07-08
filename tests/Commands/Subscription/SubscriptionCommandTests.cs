@@ -41,7 +41,7 @@ public class SubscriptionCommandTests
     {
         // Arrange
         var originalValue = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
-        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subscription");
+        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subs");
 
         try
         {
@@ -62,13 +62,13 @@ public class SubscriptionCommandTests
     {
         // Arrange
         var originalValue = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
-        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subscription");
+        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subs");
 
         try
         {
             var expectedAccounts = new List<string> { "account1", "account2" };
 
-            _storageService.GetStorageAccounts(Arg.Is("env-subscription"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            _storageService.GetStorageAccounts(Arg.Is("env-subs"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(expectedAccounts);
 
             var parseResult = _parser.Parse([]);
@@ -80,7 +80,7 @@ public class SubscriptionCommandTests
             Assert.NotNull(response);
 
             // Verify the service was called with the environment variable subscription
-            await _storageService.Received(1).GetStorageAccounts("env-subscription", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            await _storageService.Received(1).GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
         }
         finally
         {
@@ -94,16 +94,16 @@ public class SubscriptionCommandTests
     {
         // Arrange
         var originalValue = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
-        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subscription");
+        Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", "env-subs");
 
         try
         {
             var expectedAccounts = new List<string> { "account1", "account2" };
 
-            _storageService.GetStorageAccounts(Arg.Is("option-subscription"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            _storageService.GetStorageAccounts(Arg.Is("option-subs"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(expectedAccounts);
 
-            var parseResult = _parser.Parse(["--subscription", "option-subscription"]);
+            var parseResult = _parser.Parse(["--subscription", "option-subs"]);
 
             // Act
             var response = await _command.ExecuteAsync(_context, parseResult);
@@ -112,8 +112,8 @@ public class SubscriptionCommandTests
             Assert.NotNull(response);
 
             // Verify the service was called with the option subscription, not the environment variable
-            await _storageService.Received(1).GetStorageAccounts("option-subscription", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
-            await _storageService.DidNotReceive().GetStorageAccounts("env-subscription", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            await _storageService.Received(1).GetStorageAccounts("option-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            await _storageService.DidNotReceive().GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
         }
         finally
         {

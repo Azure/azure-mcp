@@ -18,6 +18,24 @@ public abstract class SubscriptionCommand<
     {
         base.RegisterOptions(command);
         command.AddOption(_subscriptionOption);
+
+        command.AddValidator(result =>
+        {
+            var subscriptionValue = result.GetValueForOption(_subscriptionOption);
+            var envSubscription = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
+
+            // Check if both subscription option and environment variable are missing or invalid
+            var hasValidSubscription = !string.IsNullOrEmpty(subscriptionValue) &&
+                                     !subscriptionValue.Contains("subscription") &&
+                                     !subscriptionValue.Contains("default");
+
+            var hasValidEnvVar = !string.IsNullOrEmpty(envSubscription);
+
+            if (!hasValidSubscription && !hasValidEnvVar)
+            {
+                result.ErrorMessage = "Subscription is required. Provide --subscription option or set AZURE_SUBSCRIPTION_ID environment variable.";
+            }
+        });
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
@@ -25,19 +43,12 @@ public abstract class SubscriptionCommand<
         var options = base.BindOptions(parseResult);
 
         // Get subscription from command line option or fallback to environment variable
-        try
-        {
-            var subscriptionValue = parseResult.GetValueForOption(_subscriptionOption);
-            options.Subscription = string.IsNullOrEmpty(subscriptionValue)
-                || subscriptionValue.Contains("subscription")
-                || subscriptionValue.Contains("default")
-                ? Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID")
-                : subscriptionValue;
-        }
-        catch (Exception)    // subscription id is missing
-        {
-            options.Subscription = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
-        }
+        var subscriptionValue = parseResult.GetValueForOption(_subscriptionOption);
+        options.Subscription = string.IsNullOrEmpty(subscriptionValue)
+            || subscriptionValue.Contains("subscription")
+            || subscriptionValue.Contains("default")
+            ? Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID")
+            : subscriptionValue;
 
         return options;
     }
