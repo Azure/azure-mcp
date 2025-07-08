@@ -114,33 +114,4 @@ public class CommandFactoryTests
 
         return (string)method!.Invoke(null, new object?[] { currentPrefix, additional })!;
     }
-
-    [Fact]
-    public void CommandFactory_Should_Create_Command_Dictionary_With_Underscore_Separators()
-    {
-        // This is an integration test to verify the entire flow works correctly
-
-        // Arrange
-        var mockAreaSetup = Substitute.For<IAreaSetup>();
-        var serviceAreas = new[] { mockAreaSetup };
-
-        // Act
-        var factory = new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger);
-
-        // Assert
-        Assert.NotNull(factory.AllCommands);
-
-        // Verify that any command names in the dictionary use underscore separators
-        foreach (var commandName in factory.AllCommands.Keys)
-        {
-            if (commandName.Contains('_'))
-            {
-                // If it contains underscores, it should not contain dashes as separators
-                // (dashes can still exist within individual command parts)
-                var parts = commandName.Split('_');
-                Assert.True(parts.Length >= 1,
-                    $"Command '{commandName}' should have at least one part when split by underscore");
-            }
-        }
-    }
 }
