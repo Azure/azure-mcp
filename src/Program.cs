@@ -11,7 +11,6 @@ using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenAI.Audio;
 
 internal class Program
 {
