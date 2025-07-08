@@ -10,6 +10,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class MockClientTests
 {
     private readonly McpServerOptions _options;
@@ -74,13 +75,12 @@ public class MockClientTests
                     {
                         if (request.Params?.Name == "azmcp-subscription-list")
                         {
-                            return ValueTask.FromResult(new CallToolResponse
+                            return ValueTask.FromResult(new CallToolResult
                             {
                                 Content =
                                 [
-                                    new Content
+                                    new TextContentBlock
                                     {
-                                        Type = "application/json",
                                         Text = JsonSerializer.Serialize(new
                                         {
                                             subscriptions = new[]
@@ -107,14 +107,14 @@ public class MockClientTests
             configureOptions: null,
             assertResult: response =>
             {
-                var callToolResponse = JsonSerializer.Deserialize<CallToolResponse>(response);
+                var callToolResponse = JsonSerializer.Deserialize<CallToolResult>(response);
                 Assert.NotNull(callToolResponse);
                 Assert.NotEmpty(callToolResponse.Content);
 
-                var jsonContent = callToolResponse.Content.FirstOrDefault(c => c.Type == "application/json");
+                string? jsonContent = McpTestUtilities.GetFirstText(callToolResponse.Content);
                 Assert.NotNull(jsonContent);
 
-                var json = JsonSerializer.Deserialize<JsonNode>(jsonContent!.Text!);
+                var json = JsonSerializer.Deserialize<JsonNode>(jsonContent);
                 var subs = json?["subscriptions"]?.AsArray();
                 Assert.NotNull(subs);
                 Assert.NotEmpty(subs!);
@@ -163,9 +163,9 @@ public class MockClientTests
                 {
                     CallToolHandler = (request, ct) =>
                     {
-                        return ValueTask.FromResult(new CallToolResponse
+                        return ValueTask.FromResult(new CallToolResult
                         {
-                            Content = [new Content { Text = "dummyTool" }]
+                            Content = [new TextContentBlock { Text = "dummyTool" }]
                         });
                     },
                     ListToolsHandler = (request, ct) => throw new NotImplementedException(),
@@ -174,10 +174,10 @@ public class MockClientTests
             configureOptions: null,
             assertResult: response =>
             {
-                var result = JsonSerializer.Deserialize<CallToolResponse>(response);
+                var result = JsonSerializer.Deserialize<CallToolResult>(response);
                 Assert.NotNull(result);
                 Assert.NotEmpty(result.Content);
-                Assert.Equal("dummyTool", result.Content[0].Text);
+                Assert.Equal("dummyTool", (result.Content[0] as TextContentBlock)?.Text);
             });
     }
 

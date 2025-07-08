@@ -4,12 +4,13 @@
 using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using AzureMcp.Services.Interfaces;
+using AzureMcp.Services.Azure.Tenant;
 using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Services.Azure;
 
+[Trait("Area", "Core")]
 public class BaseAzureServiceTests
 {
     private const string TenantId = "test-tenant-id";

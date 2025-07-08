@@ -30,7 +30,7 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
 
         var result = await Client.CallToolAsync(command, parameters);
 
-        var content = result.Content.FirstOrDefault(c => c.MimeType == "application/json")?.Text;
+        var content = McpTestUtilities.GetFirstText(result.Content);
         if (string.IsNullOrWhiteSpace(content))
         {
             Output.WriteLine($"response: {JsonSerializer.Serialize(result)}");

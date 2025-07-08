@@ -8,6 +8,7 @@ param(
     [switch] $SelfContained,
     [switch] $ReadyToRun,
     [switch] $Trimmed,
+    [switch] $DebugBuild,
     [Parameter(Mandatory=$true, ParameterSetName='Named')]
     [ValidateSet('windows','linux','macOS')]
     [string] $OperatingSystem,
@@ -72,7 +73,8 @@ try {
     # Copy the platform package files to the output directory
     Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
 
-    $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version" 
+    $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
+    $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
     
     if($SelfContained) {
         $command += " --self-contained"

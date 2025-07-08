@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Areas.Subscription.Commands;
 
 namespace AzureMcp;
 

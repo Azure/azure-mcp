@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Services.Caching;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 
 namespace AzureMcp.Tests.Services.Caching;
 
+[Trait("Area", "Core")]
 public class CacheServiceTests
 {
     private readonly ICacheService _cacheService;
