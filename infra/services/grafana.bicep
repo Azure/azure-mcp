@@ -47,7 +47,6 @@ resource grafanaAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@202
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '22926164-76b3-42b3-bc55-97df8dab3e41') // Grafana Admin role
     principalId: testApplicationOid
-    principalType: 'ServicePrincipal'
   }
 }
 
