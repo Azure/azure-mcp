@@ -605,6 +605,17 @@ azmcp subscription list [--tenant-id <tenant-id>]
 azmcp azureterraformbestpractices get
 ```
 
+### Azure Quick Review CLI Extension Operations
+```base
+# Scan a subscription for recommendations
+azmcp extension azqr --subscription-id "<subscriptionId>"
+
+# Scan a subscription and scope to a specific resource group
+azmcp extension azqr --subscription-id "<subscription-id>" --resource-group-name "<resource-group-name>"
+```
+
+### Azure AI Search
+
 ### Bicep
 
 ```bash

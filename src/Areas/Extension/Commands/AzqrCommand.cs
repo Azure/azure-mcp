@@ -110,7 +110,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred executing azqr command.");
-            HandleException(response, ex);
+            HandleException(context, ex);
             return response;
         }
     }
