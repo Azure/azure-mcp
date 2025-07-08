@@ -6,6 +6,7 @@
 - Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
 - Updates support for launching Azure MCP in different tool loading configurations. [#513](https://github.com/Azure/azure-mcp/pull/513)
 
+- Support for Azure SQL Server Entra ID administrator operations - List Microsoft Entra ID administrators for a SQL server. [#529](https://github.com/Azure/azure-mcp/pull/529)
 ### Breaking Changes
 
 - `--service` flag deprecated. Use `--namespace` and `--mode` options. [#513](https://github.com/Azure/azure-mcp/pull/513)
