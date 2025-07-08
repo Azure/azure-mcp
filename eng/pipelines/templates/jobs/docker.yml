@@ -39,7 +39,7 @@ jobs:
   - task: 1ES.BuildContainerImage@1
     displayName: Build Docker Image
     inputs:
-      path: $(configPath)
+      path: $(Build.SourcesDirectory)
       image: image:tag
       enableNetwork: ${{ eq(parameters.ReleaseRun, true) }}
       useBuildKit: ${{ eq(parameters.ReleaseRun, true) }}
