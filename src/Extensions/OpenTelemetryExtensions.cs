@@ -56,7 +56,7 @@ public static class OpenTelemetryExtensions
     {
         builder.AddOpenTelemetry(logger =>
         {
-            logger.AddProcessor(new LogRecordProcessor());
+            logger.AddProcessor(new TelemetryLogRecordEraser());
         });
     }
 

@@ -7,13 +7,13 @@ using Xunit;
 
 namespace AzureMcp.Tests.Services.Telemetry;
 
-public class LogRecordProcessorTests
+public class TelemetryLogRecordEraserTests
 {
-    private readonly LogRecordProcessor _processor;
+    private readonly TelemetryLogRecordEraser _processor;
 
-    public LogRecordProcessorTests()
+    public TelemetryLogRecordEraserTests()
     {
-        _processor = new LogRecordProcessor();
+        _processor = new TelemetryLogRecordEraser();
     }
 
     [Fact]

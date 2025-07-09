@@ -7,9 +7,10 @@ using OpenTelemetry.Logs;
 namespace AzureMcp.Services.Telemetry;
 
 /// <summary>
-/// Removes Attributes, Body, and FormattedMessage from <see cref="LogRecord"/>.
+/// Prevents emitting telemetry events by OpenTelemetryExporter.  Accomplishes this by clearing the log contents
+/// sent when calling any log methods on <see cref="Microsoft.Extensions.Logging.ILogger"/>.
 /// </summary>
-internal class LogRecordProcessor : BaseProcessor<LogRecord>
+internal class TelemetryLogRecordEraser : BaseProcessor<LogRecord>
 {
     private static readonly IReadOnlyList<KeyValuePair<string, object?>> EmptyAttributes = new List<KeyValuePair<string, object?>>().AsReadOnly();
 
