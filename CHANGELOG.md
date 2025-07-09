@@ -9,6 +9,8 @@
 
 ### Bugs Fixed
 
+- Fixed the issue that was unable to find az from user environment PATH. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
+
 ### Other Changes
 
 ## 0.3.1 (2025-07-08)
