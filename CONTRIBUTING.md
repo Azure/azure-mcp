@@ -503,8 +503,8 @@ We're building this in the open.  Your feedback is much appreciated, and will he
 
 ### Code of Conduct
 
-This project adheres to a standard code of conduct. By participating, you are expected to uphold this code.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments. By participating, you are expected to uphold this code.
 
 ### License
 
-By contributing, you agree that your contributions will be licensed under the project's license.
+By contributing, you agree that your contributions will be licensed under the project's [license](https://github.com/Azure/azure-mcp/blob/main/LICENSE).
