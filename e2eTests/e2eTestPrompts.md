@@ -137,6 +137,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-key-list | Show me the keys in the key vault <key_vault_account_name> |
 | azmcp-keyvault-secret-get | Show me the details about the secret <secret_name> in the key vault <key_vault_account_name> |
 
+## Azure Load Testing
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <rgName> in my subscription |
+| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> | 
+| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <rgName>. Use the name of test run <display-name> and description as <description> |
+| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <rgName>.|
+
 ## Azure Monitor
 
 | Tool Name | Test Prompt |
@@ -241,15 +253,3 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
-
-## Azure Load Testing
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
-| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
-| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
-| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <rgName> in my subscription |
-| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> | 
-| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
-| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <rgName>. Use the name of test run <display-name> and description as <description> |
-| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <rgName>.|
