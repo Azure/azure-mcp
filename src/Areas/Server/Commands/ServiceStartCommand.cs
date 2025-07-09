@@ -116,6 +116,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
                 .ConfigureLogging(logging =>
                 {
+                    logging.ConfigureOpenTelemetryLogger();
                     logging.AddEventSourceLogger();
                 });
 
@@ -131,6 +132,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
+                    logging.ConfigureOpenTelemetryLogger();
                     logging.AddEventSourceLogger();
                 })
                 .ConfigureServices(services =>
