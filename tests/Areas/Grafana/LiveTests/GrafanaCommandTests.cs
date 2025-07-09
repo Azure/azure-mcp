@@ -46,11 +46,14 @@ public class GrafanaCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
 
         // Verify workspace properties
         Assert.NotNull(testWorkspace.GetProperty("name").GetString());
-        Assert.NotNull(testWorkspace.GetProperty("id").GetString());
+        Assert.NotNull(testWorkspace.GetProperty("subscriptionId").GetString());
         Assert.NotNull(testWorkspace.GetProperty("location").GetString());
         Assert.NotNull(testWorkspace.GetProperty("resourceGroupName").GetString());
+        Assert.NotNull(testWorkspace.GetProperty("endpoint").GetString());
+        Assert.NotNull(testWorkspace.GetProperty("zoneRedundancy").GetString());
+        Assert.NotNull(testWorkspace.GetProperty("publicNetworkAccess").GetString());
 
-        // Verify it's in the correct resource group
         Assert.Equal(Settings.ResourceGroupName, testWorkspace.GetProperty("resourceGroupName").GetString());
+        Assert.Equal(Settings.SubscriptionId, testWorkspace.GetProperty("subscriptionId").GetString());
     }
 }
