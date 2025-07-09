@@ -29,6 +29,12 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
 
     public override string Title => CommandTitle;
 
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_resourceGroupOption);
+    }
+
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
