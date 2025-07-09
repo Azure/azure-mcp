@@ -73,4 +73,50 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
             throw;
         }
     }
+
+    public async Task<List<SqlServerEntraAdministrator>> GetEntraAdministratorsAsync(
+        string serverName,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var entraAdministrators = new List<SqlServerEntraAdministrator>();
+
+            await foreach (var adminResource in sqlServerResource.Value.GetSqlServerAzureADAdministrators().GetAllAsync(cancellationToken))
+            {
+                var admin = adminResource.Data;
+                entraAdministrators.Add(new SqlServerEntraAdministrator(
+                    Name: admin.Name,
+                    Id: admin.Id.ToString(),
+                    Type: admin.ResourceType.ToString(),
+                    AdministratorType: admin.AdministratorType?.ToString(),
+                    Login: admin.Login,
+                    Sid: admin.Sid?.ToString(),
+                    TenantId: admin.TenantId?.ToString(),
+                    AzureADOnlyAuthentication: admin.IsAzureADOnlyAuthenticationEnabled
+                ));
+            }
+
+            return entraAdministrators;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting SQL server Entra ID administrators. Server: {Server}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, resourceGroup, subscription);
+            throw;
+        }
+    }
 }

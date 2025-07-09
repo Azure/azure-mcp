@@ -73,6 +73,16 @@ module foundry 'services/foundry.bicep' = if (contains(areas, 'Foundry')) {
   }
 }
 
+module grafana 'services/grafana.bicep' = if (empty(areas) || contains(areas, 'Grafana')) {
+  name: '${deploymentName}-grafana'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
+
 module keyvault 'services/keyvault.bicep' = if (empty(areas) || contains(areas, 'KeyVault')) {
   name: '${deploymentName}-keyvault'
   params: {

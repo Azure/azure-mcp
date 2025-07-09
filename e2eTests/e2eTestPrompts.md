@@ -61,6 +61,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
 | azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
 
+## Azure Managed Grafana
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
+
+
 ## Azure App Configuration
 
 | Tool Name | Test Prompt |
@@ -144,7 +151,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-metrics-query | Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period> |
 | azmcp-monitor-metrics-query | Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period> |
 | azmcp-monitor-metrics-query | Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with intervals |
-| azmcp-monitor-resource-logs-query | Show me the logs for the past hour for the resource <resource_name> in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-resource-log-query | Show me the logs for the past hour for the resource <resource_name> in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | List all tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-list | Show me the tables in the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-table-type-list | List all available table types in the Log Analytics workspace <workspace_name> |
@@ -152,7 +159,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | List all Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
-| azmcp-monitor-workspace-logs-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 
 ## Azure Native ISV
 
@@ -216,6 +223,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
 | azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
+| azmcp-sql-server-entraadmin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
+| azmcp-sql-server-entraadmin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
+| azmcp-sql-server-entraadmin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 
 ## Azure Storage
 

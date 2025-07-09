@@ -261,9 +261,9 @@ The registry structure follows this format:
 ```json
 {
   "servers": {
-    "server-id": {
-      "url": "https://example.com/api/mcp",
-      "description": "Description of what this server provides"
+    "documentation": {
+      "url": "https://learn.microsoft.com/api/mcp",
+      "description": "Search official Microsoft/Azure documentation..."
     },
     "another-server": {
       "type": "stdio",
