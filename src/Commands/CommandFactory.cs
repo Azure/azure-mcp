@@ -103,7 +103,7 @@ public class CommandFactory
             area.RegisterCommands(_rootGroup, loggerFactory);
         }
     }
-    
+
     private void ConfigureCommands(CommandGroup group)
     {
         // Configure direct commands in this group

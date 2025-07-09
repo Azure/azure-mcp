@@ -237,6 +237,7 @@
         "syslib",
         "skillsets",
         "submode",
+        "testresource",
         "testrun",
         "testsettings",
         "timespan",

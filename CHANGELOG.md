@@ -1,5 +1,8 @@
 # Release History
 
+### Features Added
+- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
+
 ## 0.3.1 (2025-07-08)
 
 ### Features Added

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using Azure;
 using Azure.Core;
 using Azure.Developer.LoadTesting;
@@ -13,7 +14,6 @@ using AzureMcp.Areas.LoadTesting.Models.LoadTestingResource;
 using AzureMcp.Areas.LoadTesting.Models.LoadTestRun;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
-using System.Text.Json.Serialization;
 
 namespace AzureMcp.Areas.LoadTesting.Services;
 

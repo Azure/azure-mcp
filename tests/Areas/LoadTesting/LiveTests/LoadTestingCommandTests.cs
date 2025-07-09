@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text;
 using System.Text.Json;
-using AzureMcp.Models;
 using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;

@@ -26,7 +26,7 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
 
     public override string Description =>
         $"""
-        Create a new load test with the specified parameters. Currently we are supporting BASIC URL test create scneario.
+        Create a new load test with the specified parameters. Currently we are supporting BASIC URL test create scenario.
         
         Required arguments:
         - subscription

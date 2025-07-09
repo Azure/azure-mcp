@@ -19,7 +19,7 @@ public class TestCreateOptions : BaseLoadTestingOptions
     /// The display name of the load test.
     /// </summary>
     public string? Description { get; set; }
-    
+
     /// <summary>
     /// The display name of the load test.
     /// </summary>

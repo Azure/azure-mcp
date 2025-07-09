@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 
 namespace AzureMcp.Areas.LoadTesting.Models.LoadTest;
@@ -20,5 +23,5 @@ public class OptionalLoadTestConfig
     public int? RequestsPerSecond { get; set; }
 
     [JsonPropertyName("virtualUsers")]
-    public int?  VirtualUsers { get; set; }
+    public int? VirtualUsers { get; set; }
 }

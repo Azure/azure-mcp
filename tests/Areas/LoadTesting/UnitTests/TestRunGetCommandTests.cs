@@ -3,11 +3,11 @@
 
 using System.CommandLine;
 using System.Text.Json;
-using AzureMcp.Commands.LoadTesting.LoadTestRun;
+using AzureMcp.Areas.LoadTesting.Commands.LoadTestRun;
+using AzureMcp.Areas.LoadTesting.Models.LoadTestRun;
+using AzureMcp.Areas.LoadTesting.Services;
 using AzureMcp.Models.Command;
-using AzureMcp.Models.LoadTesting.LoadTestRun;
 using AzureMcp.Options;
-using AzureMcp.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
