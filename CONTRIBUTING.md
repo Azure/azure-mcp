@@ -93,7 +93,8 @@ The project is organized as follows:
 4. **Follow implementation guidelines** in [src/Docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/src/Docs/new-command.md)
 
 5. **Add documentation**:
-   - Update [azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - Update [/docs/azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - Update [/e2eTests/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/e2eTests/e2eTestPrompts.md)
    - Update [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
 
 6. **Add CODEOWNERS entry** in [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
@@ -487,9 +488,9 @@ Instructions for consuming the package from the dev feed can be found in the "Ex
 
 ### Questions and Support
 
-- Create an issue for questions
-- Tag @jongio for specific help or clarification
-- Join our community discussions
+We're building this in the open.  Your feedback is much appreciated, and will help us shape the future of the Azure MCP server.
+
+👉 [Open an issue in the public repository](https://github.com/Azure/azure-mcp/issues/new/choose).
 
 ### Additional Resources
 
