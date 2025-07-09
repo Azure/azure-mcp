@@ -84,7 +84,7 @@ The project is organized as follows:
    - Open the Copilot Chat view
    - Select "Agent" mode
 
-3. **Generate the command** using Copilot:
+3. **Generate the command using Copilot**:
    ```
    Execute in Copilot Chat:
    "create [namespace] [resource] [operation] command using #new-command.md as a reference"
