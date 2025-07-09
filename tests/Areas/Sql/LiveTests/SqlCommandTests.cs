@@ -95,4 +95,42 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
             Assert.Contains("required", ex.Message.ToLower());
         }
     }
+
+    [Fact]
+    public async Task Should_ListSqlServerEntraAdmins_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp-sql-server-entraadmin-list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed, but results may be null if no Entra admins are configured
+        if (result.HasValue)
+        {
+            // If there are results, verify the structure
+            var admins = result.Value.AssertProperty("administrators");
+            Assert.Equal(JsonValueKind.Array, admins.ValueKind);
+
+            // If there are admins, verify their structure
+            if (admins.GetArrayLength() > 0)
+            {
+                var firstAdmin = admins.EnumerateArray().First();
+                Assert.Equal(JsonValueKind.Object, firstAdmin.ValueKind);
+
+                // Verify required properties exist
+                Assert.True(firstAdmin.TryGetProperty("administratorType", out _));
+                Assert.True(firstAdmin.TryGetProperty("login", out _));
+                Assert.True(firstAdmin.TryGetProperty("sid", out _));
+            }
+        }
+        // If result is null, that's valid - it means no AD administrators are configured
+        // The test passes as long as the command executed successfully (no exception thrown)
+    }
 }

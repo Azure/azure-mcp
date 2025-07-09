@@ -55,7 +55,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
 
         string? content = McpTestUtilities.GetFirstText(result.Content);
         Assert.False(string.IsNullOrWhiteSpace(content), "Expected error message content");
-        Assert.Contains("Could not find command: non_existent_tool", content);
+        Assert.Contains("The tool non_existent_tool was not found", content);
     }
 
     [Fact]

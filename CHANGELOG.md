@@ -4,9 +4,11 @@
 
 ### Features Added
 
-- Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
-- Updates support for launching Azure MCP in different tool loading configurations. [#513](https://github.com/Azure/azure-mcp/pull/513)
-- Added more tools for Azure Key Vault: [#517](https://github.com/Azure/azure-mcp/pull/517)
+- Added support for the following SQL operations:
+  - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
+  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+- Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+- Added support for more Azure Key Vault operations: [#517](https://github.com/Azure/azure-mcp/pull/517)
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`
   - `azmcp-keyvault-certificate-create`
@@ -15,11 +17,7 @@
 
 ### Breaking Changes
 
-- `--service` flag deprecated. Use `--namespace` and `--mode` options. [#513](https://github.com/Azure/azure-mcp/pull/513)
-
-### Bugs Fixed
-
-### Other Changes
+- Deprecated the `--service` flag. Use `--namespace` and `--mode` options to specify the service and mode the server will run in. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
 
 ## 0.3.0 (2025-07-03)
 
@@ -50,6 +48,7 @@
 ## 0.2.5 (2025-06-26)
 
 ### Bugs Fixed
+
 - Fixed issue where tool listing incorrectly returned resources instead of text. [#465](https://github.com/Azure/azure-mcp/issues/465)
 - Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
 

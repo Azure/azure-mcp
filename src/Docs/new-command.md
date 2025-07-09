@@ -66,6 +66,10 @@ This keeps all code, options, models, and tests for a service together. See `src
    - Validated before execution
    - Returns a standardized response format
 
+   **IMPORTANT**: Command group names cannot contain dashes. Use camelCase or concatenated names instead:
+   - ✅ Good: `new CommandGroup("entraadmin", "Entra admin operations")`
+   - ❌ Bad: `new CommandGroup("ad-admin", "AD admin operations")`
+
 
 ### Required Files
 
@@ -524,7 +528,12 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 
     resource.AddCommand("operation", new {Service}.{Resource}{Operation}Command(
         loggerFactory.CreateLogger<{Resource}{Operation}Command>()));
+}
 ```
+
+**IMPORTANT**: Command group names cannot contain dashes or special characters. Use camelCase or concatenated names:
+- ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`
+- ❌ Bad: `"entra-admin"`, `"resource-group"`, `"storage-account"`
 
 ### 7. Area registration
 ```csharp
@@ -676,6 +685,19 @@ public async Task ExecuteAsync_HandlesServiceError()
     Assert.Contains("Test error", response.Message);
     Assert.Contains("troubleshooting", response.Message);
 }
+```
+
+**Running Tests Efficiently:**
+When developing new commands, run only your specific tests to save time:
+```bash
+# Run only tests for your specific command class
+dotnet test --filter "FullyQualifiedName~YourCommandNameTests" --verbosity normal
+
+# Example: Run only SQL AD Admin tests
+dotnet test --filter "FullyQualifiedName~EntraAdminListCommandTests" --verbosity normal
+
+# Run all tests for a specific area
+dotnet test --filter "Area=Sql" --verbosity normal
 ```
 
 ### Integration Tests
@@ -992,6 +1014,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Deploy overly expensive test resources
    - Forget to assign RBAC permissions to test application
    - Hard-code resource names in live tests
+   - Use dashes in command group names
 
 2. Always:
    - Use OptionDefinitions for options
@@ -1005,6 +1028,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Include live test infrastructure for Azure services
    - Use consistent resource naming patterns (check existing services in `/infra/services/`)
    - Output resource identifiers from Bicep templates
+   - Use concatenated all lowercase names for command groups (no dashes)
 
 ## Troubleshooting Common Issues
 
@@ -1119,12 +1143,14 @@ Before submitting:
 - [ ] Error handling implemented
 - [ ] Documentation complete
 - [ ] No compiler warnings
-- [ ] Tests pass
+- [ ] Tests pass (run specific tests: `dotnet test --filter "FullyQualifiedName~YourCommandTests"`)
 - [ ] Build succeeds with `dotnet build`
 - [ ] Code formatting applied with `dotnet format`
+- [ ] Spelling check passes with `.\eng\common\spelling\Invoke-Cspell.ps1`
+- [ ] **Remove unnecessary using statements from all C# files** (use IDE cleanup or `dotnet format analyzers`)
 - [ ] Azure Resource Manager package added to both Directory.Packages.props and AzureMcp.csproj
 - [ ] All Azure SDK property names verified and correct
-- [ ] Resource access patterns use collections (e.g., `.GetSqlServers().GetAsync()`)
+- [ ] Resource access patterns use collections (e.g., `.GetSqlServers().GetAsync()`
 - [ ] Subscription resolution uses `ISubscriptionService.GetSubscription()`
 - [ ] Service constructor includes `ISubscriptionService` injection for Azure resources
 - [ ] JSON serialization context includes all new model types
@@ -1140,12 +1166,14 @@ Before submitting:
 
 - [ ] **CHANGELOG.md**: Add entry under "Unreleased" section describing the new command(s)
 - [ ] **docs/azmcp-commands.md**: Add command documentation with description, syntax, parameters, and examples
-- [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s)
+- [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s) in the appropriate service section
 - [ ] **e2eTests/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
 
 **Documentation Standards**:
 - Use consistent command paths in all documentation (e.g., `azmcp sql db show`, not `azmcp sql database show`)
-- Provide clear, actionable examples in README.md that users can run
+- Organize example prompts by service in README.md under service-specific sections (e.g., `### 🗄️ Azure SQL Database`)
+- Place new commands in the appropriate service section, or create a new service section if needed
+- Provide clear, actionable examples that users can run with placeholder values
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations

@@ -17,7 +17,7 @@ public static partial class OptionDefinitions
 
         public static readonly Option<string> Tenant = new(
             $"--{TenantName}",
-            "The Azure Active Directory tenant ID or name. This can be either the GUID identifier or the display name of your Azure AD tenant."
+            "The Microsoft Entra ID tenant ID or name. This can be either the GUID identifier or the display name of your Entra ID tenant."
         )
         {
             IsRequired = false,
