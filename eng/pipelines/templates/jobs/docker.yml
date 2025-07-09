@@ -41,5 +41,5 @@ jobs:
     inputs:
       path: $(Build.SourcesDirectory)
       image: image:tag
-      enableNetwork: ${{ eq(parameters.ReleaseRun, true) }}
-      useBuildKit: ${{ eq(parameters.ReleaseRun, true) }}
+      enableNetwork: true
+      useBuildKit: true
