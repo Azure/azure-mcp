@@ -68,24 +68,4 @@ public static class ExtensionOptionDefinitions
             IsRequired = false
         };
     }
-
-    public static class Azqr
-    {
-        public const string SubscriptionIdName = "subscription-id";
-        public const string ResourceGroupIdName = "resource-group-name";
-
-        public static readonly Option<string> SubscriptionId = new(
-            $"--{SubscriptionIdName}",
-            "The Azure subscription ID to use. This is required.")
-        {
-            IsRequired = true
-        };
-
-        public static readonly Option<string> ResourceGroupName = new(
-            $"--{ResourceGroupName}",
-            "The Azure resource group name to use. This is optional.")
-        {
-            IsRequired = false
-        };
-    }
 }
