@@ -204,7 +204,7 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
             throw new Exception($"Failed to retrieve Azure Load Test Run: {loadTestRunResponse}");
         }
 
-        var loadTestRun = loadTestRunResponse.Value.ToString();
+        var loadTestRun = loadTestRunResponse.WaitForCompletionAsync().Result.Value.ToString();
         return JsonSerializer.Deserialize<TestRun>(loadTestRun, LoadTestJsonContext.Default.TestRun) ?? new TestRun();
     }
     /* Load Test Run APIs End */
@@ -256,9 +256,9 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTestClient = new LoadTestAdministrationClient(new Uri($"https://{dataPlaneUri}"), credential);
         OptionalLoadTestConfig optionalLoadTestConfig = new OptionalLoadTestConfig
         {
-            Duration = duration ?? 20 * 60, // Convert minutes to seconds
+            Duration = (duration ?? 20) * 60, // Convert minutes to seconds
             EndpointUrl = endpointUrl ?? "https://example.com",
-            RampUpTime = rampUpTime ?? 1 * 60, // Convert minutes to seconds
+            RampUpTime = (rampUpTime ?? 1) * 60, // Convert minutes to seconds
             VirtualUsers = virtualUsers ?? 50,
         };
         TestRequestPayload testRequestPayload = new TestRequestPayload
