@@ -6,11 +6,4 @@ using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Extension.Options;
 
-public class AzqrOptions : GlobalOptions
-{
-    [JsonPropertyName(ExtensionOptionDefinitions.Azqr.SubscriptionIdName)]
-    public string SubscriptionId { get; set; } = string.Empty;
-
-    [JsonPropertyName(ExtensionOptionDefinitions.Azqr.ResourceGroupIdName)]
-    public string? ResourceGroupName { get; set; }
-}
+public class AzqrOptions : SubscriptionOptions;

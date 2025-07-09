@@ -1,23 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Runtime.InteropServices;
 using AzureMcp.Areas.Extension.Options;
-using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Extension.Commands;
 
-public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzqrOptions>()
+public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutSeconds = 300) : SubscriptionCommand<AzqrOptions>()
 {
     private const string CommandTitle = "Azure Quick Review CLI Command";
     private readonly ILogger<AzqrCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
-    private readonly Option<string> _subscriptionIdOption = ExtensionOptionDefinitions.Azqr.SubscriptionId;
-    private readonly Option<string> _resourceGroupNameOption = ExtensionOptionDefinitions.Azqr.ResourceGroupName;
     private static string? _cachedAzqrPath;
 
     public override string Name => "azqr";
@@ -27,24 +24,10 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
         Runs Azure Quick Review CLI (azqr) commands to generate compliance/security reports for Azure resources.
         This tool should be used when the user wants to identify any non-compliant configurations or areas for improvement in their Azure resources.
         Requires a subscription id and optionally a resource group name. Returns the generated report file's path.
+        Note that Azure Quick Review CLI (azqr) is different from Azure CLI (az).
         """;
 
     public override string Title => CommandTitle;
-
-    protected override void RegisterOptions(Command command)
-    {
-        base.RegisterOptions(command);
-        command.AddOption(_subscriptionIdOption);
-        command.AddOption(_resourceGroupNameOption);
-    }
-
-    protected override AzqrOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.SubscriptionId = parseResult.GetValueForOption(_subscriptionIdOption)!;
-        options.ResourceGroupName = parseResult.GetValueForOption(_resourceGroupNameOption);
-        return options;
-    }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -54,22 +37,29 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
         try
         {
             if (!Validate(parseResult.CommandResult, response).IsValid)
+            {
                 return response;
+            }
 
-            ArgumentNullException.ThrowIfNull(options.SubscriptionId);
+            ArgumentNullException.ThrowIfNull(options.Subscription);
+
 
             var azqrPath = FindAzqrCliPath() ?? throw new FileNotFoundException("Azure Quick Review CLI (azqr) executable not found in PATH. Please ensure azqr is installed.");
 
+            var subscriptionService = context.GetService<ISubscriptionService>();
+            var subscriptionIdOrName = options.Subscription;
+            var subscription = await subscriptionService.GetSubscription(subscriptionIdOrName, options.Tenant);
+
             // Compose azqr command
-            var command = $"scan --subscription-id {options.SubscriptionId}";
-            if (!string.IsNullOrWhiteSpace(options.ResourceGroupName))
+            var command = $"scan --subscription-id {subscription.Id}";
+            if (!string.IsNullOrWhiteSpace(options.ResourceGroup))
             {
-                command += $" --resource-group {options.ResourceGroupName}";
+                command += $" --resource-group {options.ResourceGroup}";
             }
 
             var tempDir = Path.GetTempPath();
             var dateString = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-            var reportFileName = Path.Combine(tempDir, $"azqr-report-{options.SubscriptionId}-{dateString}");
+            var reportFileName = Path.Combine(tempDir, $"azqr-report-{options.Subscription}-{dateString}");
 
             // TODO: Make Azure Quick Review CLI produce a json report that the LLM may read and summarize because the LLM doesn't support reading xlsx files.
             // Azure Quick Review always appends the file extension to the report file's name, we need to create a new path with the file extension to check for the existence of the report file.
