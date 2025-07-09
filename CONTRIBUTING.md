@@ -87,7 +87,7 @@ The project is organized as follows:
 3. **Generate the command** using Copilot:
    ```
    Execute in Copilot Chat:
-   "create [service] [resource] [operation] command using #new-command.md as a reference"
+   "create [namespace] [resource] [operation] command using #new-command.md as a reference"
    ```
 
 4. **Follow implementation guidelines** in [src/Docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/src/Docs/new-command.md)
