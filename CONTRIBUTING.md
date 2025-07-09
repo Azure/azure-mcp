@@ -77,7 +77,7 @@ The project is organized as follows:
 
 ### Adding a New Command
 
-1. **Create an issue** with title: "Add command: azmcp [service] [resource] [operation]" and detailed description
+1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
 2. **Set up development environment**:
    - Open VS Code Insiders
@@ -160,6 +160,8 @@ Update your mcp.json to point to the locally built azmcp executable:
 > On **Windows**, use `azmcp.exe`. On **macOS/Linux**, use `azmcp`.
 
 #### Server Modes
+
+Optional `--namespace` and `--mode` parameters can be used to configure different server modes:
 
 **Default Mode** (no additional parameters):
 ```json
