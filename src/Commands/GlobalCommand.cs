@@ -44,6 +44,7 @@ public abstract class GlobalCommand<
         command.AddOption(_retryMaxRetries);
         command.AddOption(_retryModeOption);
         command.AddOption(_retryNetworkTimeoutOption);
+        command.AddOption(_resourceGroupOption);
     }
 
     // Helper to get the command path for examples
