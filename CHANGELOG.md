@@ -3,17 +3,15 @@
 ## 0.3.1 (2025-07-08)
 
 ### Features Added
-- Support for Azure SQL Database operations - Show Azure SQL Database details. [#516](https://github.com/Azure/azure-mcp/pull/516)
-- Updates support for launching Azure MCP in different tool loading configurations. [#513](https://github.com/Azure/azure-mcp/pull/513)
 
-- Support for Azure SQL Server Entra ID administrator operations - List Microsoft Entra ID administrators for a SQL server. [#529](https://github.com/Azure/azure-mcp/pull/529)
+- Added support for the following SQL operations:
+  - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
+  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+- Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+
 ### Breaking Changes
 
-- `--service` flag deprecated. Use `--namespace` and `--mode` options. [#513](https://github.com/Azure/azure-mcp/pull/513)
-
-### Bugs Fixed
-
-### Other Changes
+- Deprecated the `--service` flag. Use `--namespace` and `--mode` options to specify the service and mode the server will run in. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
 
 ## 0.3.0 (2025-07-03)
 
@@ -26,11 +24,13 @@
 - Added support for telemetry [[#386](https://github.com/Azure/azure-mcp/pull/386)]. Telemetry is enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`.
 
 ### Bugs Fixed
+
 - Fixed a bug where `CallToolResult` was always successful. [[#511](https://github.com/Azure/azure-mcp/pull/511)]
 
 ## 0.2.6 (2025-07-01)
 
 ### Other Changes
+
 - Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
@@ -42,6 +42,7 @@
 ## 0.2.5 (2025-06-26)
 
 ### Bugs Fixed
+
 - Fixed issue where tool listing incorrectly returned resources instead of text. [#465](https://github.com/Azure/azure-mcp/issues/465)
 - Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
 
