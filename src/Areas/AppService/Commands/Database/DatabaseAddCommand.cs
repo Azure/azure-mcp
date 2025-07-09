@@ -89,7 +89,7 @@ public sealed class DatabaseAddCommand : BaseAppServiceCommand<DatabaseAddOption
                 options.DatabaseType!,
                 options.DatabaseServer!,
                 options.DatabaseName!,
-                options.ConnectionString,
+                options.ConnectionString!,
                 options.Subscription!,
                 options.RetryPolicy!);
 
@@ -128,5 +128,5 @@ public sealed class DatabaseAddCommand : BaseAppServiceCommand<DatabaseAddOption
     };
 
     // Strongly-typed result record
-    internal record DatabaseAddCommandResult(DatabaseConnectionInfo DatabaseConnection);
+    public record DatabaseAddCommandResult(DatabaseConnectionInfo DatabaseConnection);
 }

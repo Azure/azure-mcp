@@ -25,13 +25,13 @@ public class AppServiceService(
         string databaseServer,
         string databaseName,
         string connectionString,
-        string clientId,
         string subscription,
         AzureMcp.Options.RetryPolicyOptions? retryPolicy)
     {
         _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", 
             appName, resourceGroup);
-        ArmClient armClient = await CreateArmClientAsync(tenantId, retryPolicy);
+        var tenantId = await ResolveTenantIdAsync(null);
+        var armClient = await CreateArmClientAsync(tenant: tenantId, retryPolicy: null);
         var subscriptionResource = await armClient.GetDefaultSubscriptionAsync();
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
         

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.AppService.Commands.Database;
 using AzureMcp.Areas.AppService.Models;
 using static AzureMcp.Areas.AppService.Commands.Database.DatabaseAddCommand;
 
