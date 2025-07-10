@@ -140,7 +140,7 @@
 
 
 # PRLabel: %area-LoadTesting
-/src/Areas/LoadTesting/                  @nishtha489 @knarayanana @krchanda @Azure/azure-mcp
+/src/Areas/LoadTesting/                  @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
 
 # ServiceLabel: %area-LoadTesting
-# ServiceOwners:                       @nishtha489  @knarayanana @krchanda
+# ServiceOwners:                       @nishtha489 @knarayanana @krchanda @johnsta
