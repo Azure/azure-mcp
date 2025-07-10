@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+
 ### Breaking Changes
 
 ### Bugs Fixed
