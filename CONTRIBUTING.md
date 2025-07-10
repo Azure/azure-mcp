@@ -38,6 +38,8 @@ If you are contributing significant changes, or if the issue is already assigned
 
 ## Getting Started
 
+> ⚠️ If you are a Microsoft employee then please also review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake) for getting setup
+
 ### Prerequisites
 
 1. **VS Code**: Install either [stable](https://code.visualstudio.com/download) or [Insiders](https://code.visualstudio.com/insiders) release
