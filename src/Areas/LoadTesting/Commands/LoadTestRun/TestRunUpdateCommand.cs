@@ -64,7 +64,6 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
     Destructive = false,
     ReadOnly = true,
     Title = _commandTitle)]
-
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

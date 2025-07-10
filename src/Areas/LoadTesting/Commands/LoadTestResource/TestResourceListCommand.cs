@@ -38,7 +38,6 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
         Destructive = false,
         ReadOnly = true,
         Title = _commandTitle)]
-
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

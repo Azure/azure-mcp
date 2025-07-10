@@ -33,7 +33,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
         Destructive = false,
         ReadOnly = true,
         Title = _commandTitle)]
-
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
