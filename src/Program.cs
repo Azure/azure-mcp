@@ -25,6 +25,7 @@ internal class Program
 
             services.AddLogging(builder =>
             {
+                builder.ConfigureOpenTelemetryLogger();
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
             });
@@ -63,6 +64,7 @@ internal class Program
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Areas.Cosmos.CosmosSetup(),
             new AzureMcp.Areas.Foundry.FoundrySetup(),
+            new AzureMcp.Areas.Grafana.GrafanaSetup(),
             new AzureMcp.Areas.KeyVault.KeyVaultSetup(),
             new AzureMcp.Areas.Kusto.KustoSetup(),
             new AzureMcp.Areas.Marketplace.MarketplaceSetup(),
