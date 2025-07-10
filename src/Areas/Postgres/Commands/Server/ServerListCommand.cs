@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Postgres.Options.Server;
 using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Postgres.Commands.Server;
@@ -30,6 +31,8 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> servers = await pgService.ListServersAsync(options.Subscription!, options.ResourceGroup!, options.User!);
             context.Response.Results = servers?.Count > 0 ?
@@ -41,7 +44,7 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred while listing servers");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

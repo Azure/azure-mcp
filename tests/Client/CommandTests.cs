@@ -7,6 +7,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>

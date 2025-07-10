@@ -13,6 +13,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.AppConfig.LiveTests;
 
+[Trait("Area", "AppConfig")]
 public class AppConfigCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {

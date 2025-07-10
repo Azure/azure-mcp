@@ -5,6 +5,7 @@ using AzureMcp.Areas.Postgres.Options;
 using AzureMcp.Areas.Postgres.Options.Server;
 using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Postgres.Commands.Server;
@@ -45,6 +46,8 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             var parameterValue = await pgService.GetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!);
             context.Response.Results = parameterValue?.Length > 0 ?
@@ -56,7 +59,7 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred retrieving the parameter.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

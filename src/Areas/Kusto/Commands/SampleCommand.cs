@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -33,7 +34,7 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
     public override string Description =>
         """
         Return a sample of rows from the specified table in an Kusto table.
-        Requires `cluster-uri` (or `cluster-name`), `database-name`, and `table-name`. 
+        Requires `cluster-uri` (or `cluster-name`), `database-name`, and `table`. 
         Results are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.
         """;
 
@@ -50,6 +51,8 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
             {
                 return context.Response;
             }
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
             List<JsonElement> results;
@@ -84,7 +87,7 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred sampling table. Cluster: {Cluster}, Database: {Database}, Table: {Table}.", options.ClusterUri ?? options.ClusterName, options.Database, options.Table);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

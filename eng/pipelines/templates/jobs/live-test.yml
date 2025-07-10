@@ -30,8 +30,6 @@ jobs:
     ${{ else }}:
       image: $(OSVmImage)
     os: ${{ parameters.OSName }}
-  variables:
-    Version: $[ dependencies.Initialize.outputs['Version.Version'] ]
   steps:
   - checkout: self
 
@@ -53,6 +51,7 @@ jobs:
         Location: ${{ parameters.CloudConfig.Location }}
         SubscriptionConfiguration: $(SubscriptionConfiguration)
         ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
+        ArmTemplateParameters: '@{ areas = [array](ConvertFrom-Json $env:TESTAREAS) }'
         PersistOidcToken: true
         EnvVars:
           Pool: $(Pool)
@@ -75,9 +74,10 @@ jobs:
       inputs:
         azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
         azurePowerShellVersion: 'LatestVersion'
-        scriptType: FilePath
-        scriptPath: $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
-        scriptArguments: -Live -CoverageSummary
+        scriptType: InlineScript
+        Inline: |
+          ./eng/scripts/Test-Code.ps1 -Live -CoverageSummary -Areas (ConvertFrom-Json $env:TESTAREAS)
+          exit $LastExitCode
         pwsh: true
         workingDirectory: $(Build.SourcesDirectory)
 

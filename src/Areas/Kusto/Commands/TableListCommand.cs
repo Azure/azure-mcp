@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -16,7 +17,11 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     public override string Name => "list";
 
     public override string Description =>
-        "List all tables in a specific Kusto database. Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name` .Returns table names as a JSON array.";
+        """
+        List all tables in a specific Kusto database.
+        Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name`.
+        Returns table names as a JSON array.
+        """;
 
     public override string Title => CommandTitle;
 
@@ -31,6 +36,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
             {
                 return context.Response;
             }
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
             List<string> tableNames = [];
@@ -62,7 +69,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing tables. Cluster: {Cluster}, Database: {Database}.", options.ClusterUri ?? options.ClusterName, options.Database);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

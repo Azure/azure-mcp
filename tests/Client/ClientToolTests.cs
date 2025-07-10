@@ -10,6 +10,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<LiveTestFixture>
 {
     private readonly IMcpClient _client = liveTestFixture.Client;
@@ -29,7 +30,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?> { },
             cancellationToken: TestContext.Current.CancellationToken);
 
-        string? content = GetApplicationJsonText(result.Content);
+        string? content = McpTestUtilities.GetFirstText(result.Content);
 
         Assert.False(string.IsNullOrWhiteSpace(content));
 
@@ -49,8 +50,12 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
     {
         var result = await _client.CallToolAsync("non_existent_tool", new Dictionary<string, object?>(), cancellationToken: TestContext.Current.CancellationToken);
 
-        string? content = GetApplicationJsonText(result.Content);
-        Assert.True(string.IsNullOrWhiteSpace(content));
+        // When calling a non-existent tool, the server should return an error response
+        Assert.True(result.IsError, "Expected error response for non-existent tool");
+
+        string? content = McpTestUtilities.GetFirstText(result.Content);
+        Assert.False(string.IsNullOrWhiteSpace(content), "Expected error message content");
+        Assert.Contains("The tool non_existent_tool was not found", content);
     }
 
     [Fact]
@@ -130,18 +135,5 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         var ex = await Assert.ThrowsAsync<McpException>(async () => await _client.GetPromptAsync("unsupported_prompt", cancellationToken: TestContext.Current.CancellationToken));
         Assert.Contains("Request failed", ex.Message);
         Assert.Equal(McpErrorCode.MethodNotFound, ex.ErrorCode);
-    }
-
-    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
-    {
-        foreach (var c in contents)
-        {
-            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
-            {
-                return text.Text;
-            }
-        }
-
-        return null;
     }
 }

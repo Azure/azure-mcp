@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Commands.Extensions;
 
+[Trait("Area", "Core")]
 public class CommandExtensionsTests
 {
     [Fact]

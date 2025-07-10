@@ -24,6 +24,12 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Analyze-Code.ps1
 
+  # Run AOT analysis only on Linux x64
+  - template: /eng/pipelines/templates/steps/analyze-aot-compact.yml
+    parameters:
+      runtime: 'linux-x64'
+      sourceDirectory: $(Build.SourcesDirectory)
+
   - template: /eng/common/pipelines/templates/steps/check-spelling.yml
     parameters:
       ContinueOnError: false

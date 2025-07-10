@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
@@ -31,46 +30,43 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
 
         var result = await Client.CallToolAsync(command, parameters);
 
-        var content = GetApplicationJsonText(result.Content);
+        var content = McpTestUtilities.GetFirstText(result.Content);
         if (string.IsNullOrWhiteSpace(content))
         {
-            Output.WriteLine($"response: {JsonSerializer.Serialize(result)}");
+            writeOutput($"response: {JsonSerializer.Serialize(result)}");
             throw new Exception("No JSON content found in the response.");
         }
 
-        var root = JsonSerializer.Deserialize<JsonElement>(content!);
-        if (root.ValueKind != JsonValueKind.Object)
+        JsonElement root;
+        try
         {
-            Output.WriteLine($"response: {JsonSerializer.Serialize(result)}");
-            throw new Exception("Invalid JSON response.");
-        }
+            root = JsonSerializer.Deserialize<JsonElement>(content!);
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                throw new Exception("Invalid JSON response.");
+            }
 
-        // Remove the `args` property and log the content
-        var trimmed = root.Deserialize<JsonObject>()!;
-        trimmed.Remove("args");
-        writeOutput($"response content: {trimmed.ToJsonString(new JsonSerializerOptions { WriteIndented = true })}");
+            // Remove the `args` property and log the content
+            var trimmed = root.Deserialize<JsonObject>()!;
+            trimmed.Remove("args");
+            writeOutput($"response: {trimmed.ToJsonString(new JsonSerializerOptions { WriteIndented = true })}");
+        }
+        catch (Exception ex)
+        {
+            // If we can't json parse the content as a JsonObject, log the content and throw an exception
+            writeOutput($"response: {content}");
+            throw new Exception("Failed to deserialize JSON response.", ex);
+        }
 
         return root.TryGetProperty("results", out var property) ? property : null;
     }
 
     public void Dispose()
     {
-        if (!Settings.DebugOutput && TestContext.Current.TestState?.Result == TestResult.Failed && FailureOutput.Length > 0)
+        // Failure output may contain request and response details that should be output for failed tests.
+        if (TestContext.Current.TestState?.Result == TestResult.Failed && FailureOutput.Length > 0)
         {
             Output.WriteLine(FailureOutput.ToString());
         }
-    }
-
-    private static string? GetApplicationJsonText(IList<ContentBlock> contents)
-    {
-        foreach (var c in contents)
-        {
-            if (c is EmbeddedResourceBlock { Resource: TextResourceContents { MimeType: "application/json" } text })
-            {
-                return text.Text;
-            }
-        }
-
-        return null;
     }
 }

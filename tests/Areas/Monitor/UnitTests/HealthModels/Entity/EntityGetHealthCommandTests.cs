@@ -17,6 +17,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Monitor.UnitTests.HealthModels.Entity;
 
+[Trait("Area", "Monitor")]
 public class EntityGetHealthCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

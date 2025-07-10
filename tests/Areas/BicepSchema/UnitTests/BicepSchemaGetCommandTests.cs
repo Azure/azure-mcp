@@ -14,6 +14,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.BicepSchema.UnitTests;
 
+[Trait("Area", "BicepSchema")]
 public class BicepSchemaGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
