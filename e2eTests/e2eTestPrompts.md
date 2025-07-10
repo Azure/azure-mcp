@@ -61,6 +61,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
 | azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
 
+## Azure Managed Grafana
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
+
+
 ## Azure App Configuration
 
 | Tool Name | Test Prompt |
@@ -216,6 +223,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
 | azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
+| azmcp-sql-server-entraadmin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
+| azmcp-sql-server-entraadmin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
+| azmcp-sql-server-entraadmin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 
 ## Azure Storage
 

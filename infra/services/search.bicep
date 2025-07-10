@@ -35,13 +35,14 @@ resource openai 'Microsoft.CognitiveServices/accounts@2023-05-01' = if (!isTmeTe
   properties: {
     customSubDomainName:  toLower(baseName)
     publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
   }
   // Deployment of the text-embedding-3-small model
   resource openaiDeployment 'deployments' = {
     name: 'embedding-model'
     sku: {
         name: 'Standard'
-        capacity: 100 // This is the Tokens Per Minute (TPM) capacity for the model
+        capacity: 50 // This is the Tokens Per Minute (TPM) capacity for the model
     }
     properties: {
         model: {
@@ -94,6 +95,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   properties: {
     allowSharedKeyAccess: false
+    allowBlobPublicAccess: false
+    minimumTlsVersion: 'TLS1_2'
   }
 
   resource blobServices 'blobServices' = {
