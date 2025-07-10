@@ -26,7 +26,8 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
 
     public override string Description =>
         $"""
-        Create a new load test with the specified parameters. Currently we are supporting BASIC URL test create scenario.
+        Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance 
+        and scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.
         
         Required arguments:
         - subscription
@@ -35,12 +36,12 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
         - test-id
 
         Options arguments:
-        --description - Update the description of the test run
-        --display-name - Update the display name of the test run
-        --endpoint - The endpoint you want to test (GET Request)
-        --virtual-users - Virtual users is a measure of load that is simulated to test the HTTP endpoint. (default - 50)
-        --test-duration - This is the duration for which the load is simulated against the endpoint. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 20 mins
-        --ramp-up-time - The ramp-up time is the time it takes for the system to ramp-up to the total load specified. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 1 min
+        --description
+        --display-name
+        --endpoint
+        --virtual-users
+        --test-duration
+        --ramp-up-time
         """;
 
     public override string Title => _commandTitle;
@@ -74,7 +75,6 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
     Destructive = false,
     ReadOnly = true,
     Title = _commandTitle)]
-
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

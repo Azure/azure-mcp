@@ -19,8 +19,9 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
 
     public override string Description =>
         $"""
-        Get the details of the specified load test run given the load test run id in the specified subscription and tenant.
-        Returns the details of the specified load test run.
+        Retrieves comprehensive details and status information for a specific load test run execution. 
+        This command provides real-time insights into test performance metrics, execution timeline, 
+        and final results to help you analyze your application's behavior under load.
         
         Required arguments:
         - subscription

@@ -23,9 +23,10 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
 
     public override string Description =>
         $"""
-        Create and give the details of the specified load test run in the specified subscription and tenant.
-        Returns the details of the specified load test run.
-        
+        Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution 
+        of a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run 
+        the same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.
+    
         Required arguments:
         - subscription
         - resource-group
@@ -34,9 +35,9 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
         - test-id
 
         Optional arguments:
-        - display-name: The display name for the load test run. This is a user-friendly name to identify the test run.
-        - description: The description for the load test run. This provides additional context about the test run.
-        - old-testrun-id: The ID of an existing test run to update. If provided, the command will trigger a rerun of the given test run id.
+        - display-name
+        - description
+        - old-testrun-id
         """;
 
     public override string Title => _commandTitle;

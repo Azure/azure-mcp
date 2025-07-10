@@ -22,8 +22,10 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
 
     public override string Description =>
         $"""
-        Update the details of the specified load test run in the specified subscription and tenant.
-        Returns the details of the specified load test run.
+        Updates the metadata and display properties of a completed or in-progress load test run execution. 
+        This command allows you to modify descriptive information for better organization, documentation, 
+        and identification of test runs without affecting the actual test execution or results.
+        
         
         Required arguments:
         - subscription
@@ -33,8 +35,8 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
         - test-id
 
         Optional arguments:
-        - display-name: The display name for the load test run. This is a user-friendly name to identify the test run.
-        - description: The description for the load test run. This provides additional context about the test run.
+        - display-name
+        - description
         """;
 
     public override string Title => _commandTitle;
