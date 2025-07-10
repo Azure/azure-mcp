@@ -104,6 +104,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-cosmos-database-list | List all the databases in the cosmosdb account <account_name> |
 | azmcp-cosmos-database-list | Show me the databases in the cosmosdb account <account_name> |
 
+## Marketplace
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-marketplace-product-get | Get details about marketplace product <product_name> |
+
 ## Azure Data Explorer
 
 | Tool Name | Test Prompt |

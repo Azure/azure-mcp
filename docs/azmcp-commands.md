@@ -475,6 +475,12 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
 azmcp group list --subscription <subscription>
 ```
 
+### Azure Marketplace Operations
+```bash
+# Get details about a marketplace product
+azmcp marketplace product get --subscription <subscription> --product-name <product-name>
+```
+
 ### Azure Service Bus Operations
 ```bash
 # Peeks at messages in a Service Bus queue
