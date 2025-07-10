@@ -145,6 +145,11 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
     {
         const string vsCodeClientId = "aebc6443-996d-45c2-90f0-388ff96faa56";
         string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (string.IsNullOrEmpty(userProfile))
+        {
+            logger?.LogDebug("VS Code Broker Credential -> User profile directory is null or empty. Cannot locate VS Code authRecord.json.");
+            return null;
+        }
         string authRecordPath = Path.Combine(userProfile, ".azure", "ms-azuretools.vscode-azureresourcegroups", "authRecord.json");
         if (!File.Exists(authRecordPath))
         {
@@ -165,20 +170,20 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
         }
         catch (Exception ex)
         {
-            logger?.LogDebug(ex, "VS Code Broker Credential -> Failed to deserialize VS Code authRecord.json at {Path}", authRecordPath);
+            logger?.LogDebug(ex, "VS Code Broker Credential -> Failed to deserialize VS Code authRecord.json");
             return null;
         }
 
         if (authRecord is null)
         {
-            logger?.LogDebug("VS Code Broker Credential ->Deserialized VS Code AuthenticationRecord is null from {Path}", authRecordPath);
+            logger?.LogDebug("VS Code Broker Credential -> Deserialized VS Code AuthenticationRecord is null.");
             return null;
         }
 
         // Validate client ID
         if (!string.Equals(authRecord.ClientId, vsCodeClientId, StringComparison.OrdinalIgnoreCase))
         {
-            logger?.LogDebug("VS Code Broker Credential -> VS Code AuthenticationRecord clientId mismatch. Expected {Expected}, got {Actual}", vsCodeClientId, authRecord.ClientId);
+            logger?.LogDebug("VS Code Broker Credential -> VS Code AuthenticationRecord clientId mismatch. Expected {Expected}", vsCodeClientId);
             return null;
         }
 
