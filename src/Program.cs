@@ -9,6 +9,7 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
+using AzureMcp.Services.ToolInstallation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -59,6 +60,7 @@ internal class Program
             new AzureMcp.Areas.Tools.ToolsSetup(),
 
             // Register Azure service areas
+            new AzureMcp.Areas.Aks.AksSetup(),
             new AzureMcp.Areas.AppConfig.AppConfigSetup(),
             new AzureMcp.Areas.Authorization.AuthorizationSetup(),
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
@@ -110,7 +112,6 @@ internal class Program
     {
         Console.WriteLine(JsonSerializer.Serialize(response, ModelsJsonContext.Default.CommandResponse));
     }
-
     internal static void ConfigureServices(IServiceCollection services)
     {
         services.ConfigureOpenTelemetry();
