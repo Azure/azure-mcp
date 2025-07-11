@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using AzureMcp.Areas.Group.Commands;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
