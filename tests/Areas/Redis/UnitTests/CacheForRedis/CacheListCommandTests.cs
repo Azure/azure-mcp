@@ -39,7 +39,7 @@ public class CacheListCommandTests
     public async Task ExecuteAsync_ReturnsCaches_WhenCachesExist()
     {
         var expectedCaches = new CacheModel[] { new() { Name = "cache1" }, new() { Name = "cache2" } };
-        _redisService.ListCachesAsync("sub123", Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListCachesAsync("sub123", Arg.Any<string>(), Arg.Any<AzureMcp.Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedCaches);
 
         var command = new CacheListCommand(_logger);
@@ -84,7 +84,7 @@ public class CacheListCommandTests
     public async Task ExecuteAsync_HandlesException()
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
-        _redisService.ListCachesAsync("sub123", Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListCachesAsync("sub123", Arg.Any<string>(), Arg.Any<AzureMcp.Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
         var command = new CacheListCommand(_logger);
