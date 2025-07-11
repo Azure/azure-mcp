@@ -1,17 +1,27 @@
 # Release History
 
-## 0.3.2 (Unreleased)
+## 0.3.3 (Unreleased)
 
 ### Features Added
-- Support for Azure Managed Grafana operations - List Azure Managed Grafana details. [#532](https://github.com/Azure/azure-mcp/pull/532)
-- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
-
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+
+## 0.3.2 (2025-07-10)
+
+### Features Added
+
+- Added support for listing Azure Managed Grafana details via the command: `azmcp-grafana-list`. [[#532](https://github.com/Azure/azure-mcp/pull/532)]
+- Added agent best practices for Azure Terraform commands. [[#420](https://github.com/Azure/azure-mcp/pull/420)]
+- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
+
+### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [[#540](https://github.com/Azure/azure-mcp/pull/540/)]
+- Fixed an issue that prevented the Azure MCP from finding the Azure CLI if it was installed on a path other than the default global one. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ## 0.3.1 (2025-07-08)
 

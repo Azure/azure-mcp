@@ -21,3 +21,4 @@
 - Include appropriate documentation
 - Include tests that cover your changes
 - Update CHANGELOG.md with your changes
+- Run `.\eng\common\spelling\Invoke-Cspell.ps1`

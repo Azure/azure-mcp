@@ -168,6 +168,7 @@
         "azureblob",
         "azuremcp",
         "azuresdk",
+        "azureterraformbestpractices",
         "codeium",
         "cslschema",
         "bdylan",
@@ -263,6 +264,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "winget",
         "Xunit"
     ]
 }

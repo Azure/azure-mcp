@@ -1177,3 +1177,12 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+
+**README.md Table Formatting Standards**:
+- Badge text must use the pattern `Install_{namespace}` (e.g., `Install_storage`, `Install_cosmos`)
+- All badge URLs must use stable `vscode.dev` format with proper URL encoding
+- Use blue badge color `#0098FF` consistently across all install buttons
+- Service descriptions should be concise (under 50 characters), action-oriented, and end with a period
+- Follow the pattern: "Manage/Query/Monitor [what] [and/or additional context]."
+- Examples: "Manage storage accounts and blob data.", "Query AI Search services and indexes."
+- Ensure proper URL encoding in badge links (e.g., `Azure%20Foundry` not `Azure%Foundry`)
