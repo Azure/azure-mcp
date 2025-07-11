@@ -9,7 +9,7 @@ namespace AzureMcp.Services.Azure.Tenant;
 
 using Microsoft.Extensions.Logging;
 
-public class TenantService(ICacheService cacheService, ILoggerFactory loggerFactory)
+public class TenantService(ICacheService cacheService, ILoggerFactory? loggerFactory = null)
     : BaseAzureService(null, loggerFactory), ITenantService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));

@@ -11,7 +11,7 @@ namespace AzureMcp.Services.Azure.ResourceGroup;
 
 using Microsoft.Extensions.Logging;
 
-public class ResourceGroupService(ICacheService cacheService, ISubscriptionService subscriptionService, ILoggerFactory loggerFactory)
+public class ResourceGroupService(ICacheService cacheService, ISubscriptionService subscriptionService, ILoggerFactory? loggerFactory = null)
     : BaseAzureService(null, loggerFactory), IResourceGroupService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));

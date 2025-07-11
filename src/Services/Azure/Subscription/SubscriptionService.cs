@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure.Subscription;
 
-public class SubscriptionService(ICacheService cacheService, ITenantService tenantService, ILoggerFactory loggerFactory)
+public class SubscriptionService(ICacheService cacheService, ITenantService tenantService, ILoggerFactory? loggerFactory = null)
     : BaseAzureService(tenantService, loggerFactory), ISubscriptionService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
