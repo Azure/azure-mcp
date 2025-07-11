@@ -548,9 +548,6 @@ azmcp storage blob container details --subscription <subscription> \
                                      --container-name <container-name>
 ```
 
-```
-
-
 ### Azure Load Testing Operations
 ```bash
 # Execute load test command to get all the commands details
