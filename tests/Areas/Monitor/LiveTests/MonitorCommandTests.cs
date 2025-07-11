@@ -11,7 +11,6 @@ using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Monitor.LiveTests;
@@ -83,32 +82,68 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         Assert.NotEmpty(array);
     }
 
-    [Fact(Skip = "Temporary skip to fix the test")]
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_get_table_contents()
+    {
+        // Query AzureMetrics table - fastest to propagate and most reliable
+        await QueryForLogsAsync(
+            async args => await CallToolAsync("azmcp-monitor-workspace-log-query", args),
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "workspace", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "query", "AzureMetrics | where ResourceProvider == 'MICROSOFT.STORAGE' | project TimeGenerated, MetricName, Total, ResourceId" },
+                { "table-name", "AzureMetrics" },
+                { "limit", 5 },
+                { "hours", 24 }
+            },
+            $"AzureMetrics | where ResourceProvider == 'MICROSOFT.STORAGE' and TimeGenerated > datetime({DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}) | project TimeGenerated, MetricName, Total, ResourceId",
+            sendLogInfo: "Generating storage metrics...",
+            sendLogAction: async () =>
+            {
+                // Generate minimal storage activity to ensure metrics are created
+                await CallToolAsync("azmcp-storage-account-list", new()
+                {
+                    { "subscription", Settings.SubscriptionId }
+                });
+                Output.WriteLine("Listed storage accounts to ensure metrics are generated");
+            },
+            output: Output,
+            cancellationToken: TestContext.Current.CancellationToken,
+            maxWaitTimeSeconds: 180, // 3 minutes - metrics are faster than logs
+            failMessage: "No storage metrics found after waiting 180 seconds");
+    }
+
+    [Fact]
     [Trait("Category", "Live")]
     public async Task Should_query_monitor_logs()
     {
         await QueryForLogsAsync(
-            async args => await CallToolAsync("azmcp-monitor-workspace-logs-query", args),
-            new Dictionary<string, object?>
+            async args => await CallToolAsync("azmcp-monitor-workspace-log-query", args),
+            new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "workspace", Settings.ResourceBaseName },
-                { "query", $"{TestLogType} | where TimeGenerated > ago(24h) | limit 1 | project TimeGenerated, Message" },
-                { "table-name", TestLogType },
                 { "resource-group", Settings.ResourceGroupName },
-                { "hours", "24" }
+                { "table-name", "StorageBlobLogs" },
+                { "query", "StorageBlobLogs | project TimeGenerated, OperationName, StatusText" },
+                { "limit", 1 },
+                { "hours", 24 }
             },
-            $"{TestLogType} | where TimeGenerated > datetime({DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}) | limit 1 | project TimeGenerated, Message",
-            sendLogInfo: null,
+            $"StorageBlobLogs | where TimeGenerated > datetime({DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}) | project TimeGenerated, OperationName, StatusText",
+            sendLogInfo: "Generating storage blob logs...",
             sendLogAction: async () =>
             {
-                var status = await _logHelper!.SendInfoLogAsync(TestContext.Current.CancellationToken);
-                Output.WriteLine($"Info log sent with status code: {status}");
+                // Generate some storage activity to create logs
+                await GenerateStorageActivityAsync();
+                Output.WriteLine("Storage activity generated to create diagnostic logs");
             },
             output: Output,
             cancellationToken: TestContext.Current.CancellationToken,
-            maxWaitTimeSeconds: 60,
-            failMessage: $"No logs found in {TestLogType} table after waiting 60 seconds");
+            maxWaitTimeSeconds: 300, // 5 minutes - realistic for storage diagnostic logs
+            failMessage: "No storage blob logs found after waiting 300 seconds");
     }
 
     [Fact]
@@ -130,28 +165,34 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         Assert.NotEmpty(array);
     }
 
-    [Fact(Skip = "Temporary skip to fix the test")]
+    [Fact]
     [Trait("Category", "Live")]
     public async Task Should_query_monitor_logs_by_resource_id()
     {
         var storageResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
         await QueryForLogsAsync(
-            async args => await CallToolAsync("azmcp-monitor-resource-logs-query", args),
-            new Dictionary<string, object?>
+            async args => await CallToolAsync("azmcp-monitor-resource-log-query", args),
+            new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-id", storageResourceId },
-                { "query", "AzureActivity | limit 1 | project TimeGenerated, ActivityStatusValue" },
-                { "table-name", "AzureActivity" },
-                { "hours", "24" }
+                { "table-name", "StorageBlobLogs" },
+                { "query", "StorageBlobLogs | project TimeGenerated, OperationName, StatusText" },
+                { "limit", 1 },
+                { "hours", 24 }
             },
-            "AzureActivity | limit 1 | project TimeGenerated, ActivityStatusValue",
-            sendLogInfo: null,
-            sendLogAction: null,
+            $"StorageBlobLogs | where TimeGenerated > datetime({DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}) | project TimeGenerated, OperationName, StatusText",
+            sendLogInfo: "Generating storage blob logs for resource query...",
+            sendLogAction: async () =>
+            {
+                // Generate some storage activity to create logs
+                await GenerateStorageActivityAsync();
+                Output.WriteLine("Storage activity generated to create diagnostic logs");
+            },
             output: Output,
             cancellationToken: TestContext.Current.CancellationToken,
-            maxWaitTimeSeconds: 60,
-            failMessage: $"No logs found in {TestLogType} table after waiting 60 seconds");
+            maxWaitTimeSeconds: 300, // 5 minutes - realistic for storage diagnostic logs
+            failMessage: "No storage blob logs found for resource after waiting 300 seconds");
     }
 
     private static async Task QueryForLogsAsync(
@@ -165,8 +206,8 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         int maxWaitTimeSeconds = 60,
         string? failMessage = null)
     {
-        // First try to find any existing logs from last 24 hours
-        output?.WriteLine($"Checking for existing logs in the last 24 hours...");
+        // First try to find any existing logs
+        output?.WriteLine($"Checking for existing logs...");
         var queryStartTime = DateTime.UtcNow;
         var result = await callToolAsync(initialQueryArgs);
         Assert.NotNull(result);
@@ -176,7 +217,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
 
         if (logs.Any())
         {
-            output?.WriteLine($"Found existing logs from last 24 hours");
+            output?.WriteLine($"Found existing logs");
             output?.WriteLine($"Query performance: {queryDuration:F1}s to execute");
             return;
         }
@@ -362,5 +403,67 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         Assert.False(string.IsNullOrEmpty(interval.GetString()));
         // Verify it follows duration format (starts with PT)
         Assert.StartsWith("PT", interval.GetString());
+    }
+
+    private async Task GenerateStorageActivityAsync()
+    {
+        try
+        {
+            // First, generate basic activity (creates metrics)
+            var listResult = await CallToolAsync("azmcp-storage-blob-container-list", new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "account-name", Settings.ResourceBaseName }
+            });
+
+            Output.WriteLine("Listed storage containers to generate metrics");
+
+            // Try to list blobs in a container if any exist (also generates metrics)
+            var containersArray = listResult?.GetProperty("containers");
+            if (containersArray?.ValueKind == JsonValueKind.Array && containersArray.Value.EnumerateArray().Any())
+            {
+                var firstContainer = containersArray.Value.EnumerateArray().First();
+                if (firstContainer.TryGetProperty("name", out var containerName))
+                {
+                    var blobListResult = await CallToolAsync("azmcp-storage-blob-list", new()
+                    {
+                        { "subscription", Settings.SubscriptionId },
+                        { "account-name", Settings.ResourceBaseName },
+                        { "container-name", containerName.GetString() }
+                    });
+
+                    Output.WriteLine($"Listed blobs in container '{containerName.GetString()}' to generate metrics");
+
+                    // Try to get properties of a blob if any exist (generates StorageBlobLogs)
+                    var blobsArray = blobListResult?.GetProperty("blobs");
+                    if (blobsArray?.ValueKind == JsonValueKind.Array && blobsArray.Value.EnumerateArray().Any())
+                    {
+                        var firstBlob = blobsArray.Value.EnumerateArray().First();
+                        if (firstBlob.TryGetProperty("name", out var blobName))
+                        {
+                            try
+                            {
+                                // Note: This would require a blob details command if available
+                                // For now, the list operations should generate some transaction logs
+                                Output.WriteLine($"Found blob '{blobName.GetString()}' - operations should generate diagnostic logs");
+                            }
+                            catch
+                            {
+                                // Ignore blob property errors
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Even if no blobs exist, the container/blob listing operations
+            // will generate transaction metrics that should appear in AzureMetrics table
+            Output.WriteLine("Storage operations completed - should generate metrics and potentially some blob logs");
+        }
+        catch (Exception ex)
+        {
+            Output.WriteLine($"Note: Storage activity generation encountered an issue: {ex.Message}");
+            // Don't fail the test if storage activity generation fails
+        }
     }
 }

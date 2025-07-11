@@ -1,9 +1,7 @@
 # Azure MCP CLI Command Reference
 
 > [!IMPORTANT]
-
 > The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
-
 
 ## Global Options
 
@@ -92,20 +90,104 @@ azmcp server start \
 > - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
 > - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
 
+### Azure AI Foundry Operations
 
-### Subscription Management
 ```bash
-# List available Azure subscriptions
-azmcp subscription list [--tenant-id <tenant-id>]
+# List AI Foundry models
+azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] [--publisher-name <publisher-name>] [--license-name <license-name>] [--model-name <model-name>]
+
+# Deploy an AI Foundry model
+azmcp foundry models deploy --subscription <subscription> --resource-group <resource-group>  --deployment-name <deployment-name> --model-name <model-name> --model-format <model-format> --azure-ai-services-name <azure-ai-services-name> [--model-version <model-version>] [--model-source <model-source>] [--sku-name <sku-name>] [--sku-capacity <sku-capacity>] [--scale-type <scale-type>] [--scale-capacity <scale-capacity>]
+
+# List AI Foundry model deployments
+azmcp foundry models deployments list --endpoint <endpoint>
 ```
 
-### Best Practices
+### Azure AI Search Operations
+
 ```bash
-# Get secure, production-grade Azure SDK best practices for effective code generation.
-azmcp bestpractices get
+# List AI Search accounts in a subscription
+azmcp search list --subscription <subscription>
+
+# List AI Search indexes in account
+azmcp search index list --subscription <subscription> \
+                        --service-name <service-name>
+
+# Get AI Search index
+azmcp search index describe --subscription <subscription> \
+                            --service-name <service-name> \
+                            --index-name <index-name>
+
+# Query AI Search index
+azmcp search index query --subscription <subscription> \
+                         --service-name <service-name> \
+                         --index-name <index-name> \
+                         --query <query>
+```
+
+### Azure App Configuration Operations
+
+```bash
+# List App Configuration stores in a subscription
+azmcp appconfig account list --subscription <subscription>
+
+# List all key-value settings in an App Configuration store
+azmcp appconfig kv list --subscription <subscription> \
+                        --account-name <account-name> \
+                        [--key <key>] \
+                        [--label <label>]
+
+# Show a specific key-value setting
+azmcp appconfig kv show --subscription <subscription> \
+                        --account-name <account-name> \
+                        --key <key> \
+                        [--label <label>]
+
+# Set a key-value setting
+azmcp appconfig kv set --subscription <subscription> \
+                       --account-name <account-name> \
+                       --key <key> \
+                       --value <value> \
+                       [--label <label>]
+
+# Lock a key-value setting (make it read-only)
+azmcp appconfig kv lock --subscription <subscription> \
+                        --account-name <account-name> \
+                        --key <key> \
+                        [--label <label>]
+
+# Unlock a key-value setting (make it editable)
+azmcp appconfig kv unlock --subscription <subscription> \
+                          --account-name <account-name> \
+                          --key <key> \
+                          [--label <label>]
+
+# Delete a key-value setting
+azmcp appconfig kv delete --subscription <subscription> \
+                          --account-name <account-name> \
+                          --key <key> \
+                          [--label <label>]
+```
+
+### Azure CLI Operations
+
+```bash
+# Execute any Azure CLI command
+azmcp extension az --command "<command>"
+
+# Examples:
+# List resource groups
+azmcp extension az --command "group list"
+
+# Get storage account details
+azmcp extension az --command "storage account show --name <account-name> --resource-group <resource-group>"
+
+# List virtual machines
+azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
 ### Azure Cosmos DB Operations
+
 ```bash
 # List Cosmos DB accounts in a subscription
 azmcp cosmos account list --subscription <subscription>
@@ -128,6 +210,7 @@ azmcp cosmos database container item query --subscription <subscription> \
 ```
 
 ### Azure Data Explorer Operations
+
 ```bash
 # List Azure Data Explorer clusters in a subscription
 azmcp kusto cluster list --subscription <subscription>
@@ -161,8 +244,10 @@ azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> 
 
 ```
 
-### Azure DB for PostgreSQL Operations
+### Azure Database for PostgreSQL Operations
+
 #### Database commands
+
 ```bash
 # List all databases in a PostgreSQL server
 azmcp postgres database list --subscription <subscription> \
@@ -180,6 +265,7 @@ azmcp postgres database query --subscription <subscription> \
 ```
 
 #### Table Commands
+
 ```bash
 # List all tables in a PostgreSQL database
 azmcp postgres table list --subscription <subscription> \
@@ -198,6 +284,7 @@ azmcp postgres table schema --subscription <subscription> \
 ```
 
 #### Server Commands
+
 ```bash
 # List all PostgreSQL servers in a subscription & resource group
 azmcp postgres server list --subscription <subscription> \
@@ -226,41 +313,65 @@ azmcp postgres server setparam --subscription <subscription> \
                                --value <value>
 ```
 
-### Azure SQL Database Operations
+### Azure Developer CLI Operations
+
 ```bash
-# Show details of a specific SQL database
-azmcp sql db show --subscription <subscription> \
-                  --resource-group <resource-group> \
-                  --server <server-name> \
-                  --database <database-name>
+# Execute any Azure CLI command
+azmcp extension azd --command "<command>"
+
+# Examples:
+# Create a sample todo list app with NodeJS and MongoDB
+azmcp extension azd --command "init --template todo-nodejs-mongo"
+
+### Azure Key Vault Operations
+```bash
+# Lists keys in vault
+azmcp keyvault key list --subscription <subscription> \
+                        --vault <vault-name> \
+                        --include-managed <true/false>
+
+# Gets a key in vault
+azmcp keyvault key get --subscription <subscription> \
+                       --vault <vault-name> \
+                       --key <key-name>
+
+# Create a key in vault
+azmcp keyvault key create --subscription <subscription> \
+                          --vault <vault-name> \
+                          --key <key-name> \
+                          --key-type <key-type>
+
+# Gets a secret in vault
+azmcp keyvault secret get --subscription <subscription> \
+                          --vault <vault-name> \
+                          --name <secret-name>
 ```
 
-### Azure Storage Operations
+### Azure Managed Grafana Operations
+
 ```bash
-# List Storage accounts in a subscription
-azmcp storage account list --subscription <subscription>
+# List Azure Managed Grafana
+azmcp grafana list --subscription <subscription>
+```
 
-# List tables in a Storage account
-azmcp storage table list --subscription <subscription> \
-                         --account-name <account-name>
+### Azure MCP Best Practices
 
-# List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> \
-                        --account-name <account-name> \
-                        --container-name <container-name>
+```bash
+# Get secure, production-grade Azure SDK best practices for effective code generation.
+azmcp bestpractices get
+```
 
-# List containers in a Storage blob service
-azmcp storage blob container list --subscription <subscription> \
-                                  --account-name <account-name>
+### Azure MCP Tools
 
-# Get detailed properties of a storage container
-azmcp storage blob container details --subscription <subscription> \
-                                     --account-name <account-name> \
-                                     --container-name <container-name>
+```bash
+# List all available tools in the Azure MCP server
+azmcp tool list
 ```
 
 ### Azure Monitor Operations
+
 #### Log Analytics
+
 ```bash
 # List Log Analytics workspaces in a subscription
 azmcp monitor workspace list --subscription <subscription>
@@ -271,22 +382,30 @@ azmcp monitor table list --subscription <subscription> \
                          --resource-group <resource-group>
 
 # Query logs from Azure Monitor using KQL
-azmcp monitor log query --subscription <subscription> \
-                        --workspace <workspace> \
-                        --table-name <table-name> \
-                        --query "<kql-query>" \
-                        [--hours <hours>] \
-                        [--limit <limit>]
+azmcp monitor workspace log query --subscription <subscription> \
+                                  --workspace <workspace> \
+                                  --table-name <table-name> \
+                                  --query "<kql-query>" \
+                                  [--hours <hours>] \
+                                  [--limit <limit>]
+
+azmcp monitor resource log query --subscription <subscription> \
+                                 --resource-id <resource-id> \
+                                 --table-name <table-name> \
+                                 --query "<kql-query>" \
+                                 [--hours <hours>] \
+                                 [--limit <limit>]
 
 # Examples:
 # Query logs from a specific table
-azmcp monitor log query --subscription <subscription> \
-                        --workspace <workspace> \
-                        --table-name "AppEvents_CL" \
-                        --query "| order by TimeGenerated desc"
+azmcp monitor workspace log query --subscription <subscription> \
+                                  --workspace <workspace> \
+                                  --table-name "AppEvents_CL" \
+                                  --query "| order by TimeGenerated desc"
 ```
 
 #### Health Models
+
 ```bash
 # Get the health of an entity
 azmcp monitor healthmodels entity gethealth --subscription <subscription> \
@@ -296,6 +415,7 @@ azmcp monitor healthmodels entity gethealth --subscription <subscription> \
 ```
 
 #### Metrics
+
 ```bash
 # Query Azure Monitor metrics for a resource
 azmcp monitor metrics query --subscription <subscription> \
@@ -344,74 +464,52 @@ azmcp monitor metrics definitions --subscription <subscription> \
                                   --search-string "transaction"
 ```
 
-### Azure App Configuration Operations
+### Azure Native ISV Operations
+
 ```bash
-# List App Configuration stores in a subscription
-azmcp appconfig account list --subscription <subscription>
-
-# List all key-value settings in an App Configuration store
-azmcp appconfig kv list --subscription <subscription> \
-                        --account-name <account-name> \
-                        [--key <key>] \
-                        [--label <label>]
-
-# Show a specific key-value setting
-azmcp appconfig kv show --subscription <subscription> \
-                        --account-name <account-name> \
-                        --key <key> \
-                        [--label <label>]
-
-# Set a key-value setting
-azmcp appconfig kv set --subscription <subscription> \
-                       --account-name <account-name> \
-                       --key <key> \
-                       --value <value> \
-                       [--label <label>]
-
-# Lock a key-value setting (make it read-only)
-azmcp appconfig kv lock --subscription <subscription> \
-                        --account-name <account-name> \
-                        --key <key> \
-                        [--label <label>]
-
-# Unlock a key-value setting (make it editable)
-azmcp appconfig kv unlock --subscription <subscription> \
-                          --account-name <account-name> \
-                          --key <key> \
-                          [--label <label>]
-
-# Delete a key-value setting
-azmcp appconfig kv delete --subscription <subscription> \
-                          --account-name <account-name> \
-                          --key <key> \
-                          [--label <label>]
+# List monitored resources in Datadog
+azmcp datadog monitoredresources list --subscription <subscription> \
+                                      --resource-group <resource-group> \
+                                      --datadog-resource <datadog-resource>
 ```
 
-### Azure Key Vault Operations
+### Azure RBAC Operations
+
 ```bash
-# Lists keys in vault
-azmcp keyvault key list --subscription <subscription> \
-                        --vault <vault-name> \
-                        --include-managed <true/false>
+# List Azure RBAC role assignments
+azmcp role assignment list --subscription <subscription> \
+                           --scope <scope>
+```
 
-# Gets a key in vault
-azmcp keyvault key get --subscription <subscription> \
-                       --vault <vault-name> \
-                       --key <key-name>
+### Azure Redis Operations
 
-# Create a key in vault
-azmcp keyvault key create --subscription <subscription> \
-                          --vault <vault-name> \
-                          --key <key-name> \
-                          --key-type <key-type>
+```bash
+# Lists Redis Clusters in the Azure Managed Redis or Azure Redis Enterprise services
+azmcp redis cluster list --subscription <subscription>
 
-# Gets a secret in vault
-azmcp keyvault secret get --subscription <subscription> \
-                          --vault <vault-name> \
-                          --name <secret-name>
+# Lists Databases in an Azure Redis Cluster
+azmcp redis cluster database list --subscription <subscription> \
+                                  --resource-group <resource-group> \
+                                  --cluster <cluster-name>
+
+# Lists Redis Caches in the Azure Cache for Redis service
+azmcp redis cache list --subscription <subscription>
+
+# Lists Access Policy Assignments in an Azure Redis Cache
+azmcp redis cache list accesspolicy --subscription <subscription> \
+                                    --resource-group <resource-group> \
+                                    --cache <cache-name>
+```
+
+### Azure Resource Group Operations
+
+```bash
+# List resource groups in a subscription
+azmcp group list --subscription <subscription>
 ```
 
 ### Azure Service Bus Operations
+
 ```bash
 # Peeks at messages in a Service Bus queue
 azmcp servicebus queue peek --subscription <subscription> \
@@ -443,99 +541,75 @@ azmcp servicebus topic subscription details --subscription <subscription> \
                                             --subscription-name <subscription-name>
 ```
 
-### Azure Redis Operations
+### Azure SQL Database Operations
+
 ```bash
-# Lists Redis Clusters in the Azure Managed Redis or Azure Redis Enterprise services
-azmcp redis cluster list --subscription <subscription>
-
-# Lists Databases in an Azure Redis Cluster
-azmcp redis cluster database list --subscription <subscription> \
-                                  --resource-group <resource-group> \
-                                  --cluster <cluster-name>
-
-# Lists Redis Caches in the Azure Cache for Redis service
-azmcp redis cache list --subscription <subscription>
-
-# Lists Access Policy Assignments in an Azure Redis Cache
-azmcp redis cache list accesspolicy --subscription <subscription> \
-                                    --resource-group <resource-group> \
-                                    --cache <cache-name>
+# Show details of a specific SQL database
+azmcp sql db show --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name> \
+                  --database <database-name>
 ```
 
-### Azure Native ISV Operations
+### Azure SQL Server Operations
+
 ```bash
-# List monitored resources in Datadog
-azmcp datadog monitoredresources list --subscription <subscription> \
-                                      --resource-group <resource-group> \
-                                      --datadog-resource <datadog-resource>
+# List Microsoft Entra ID administrators for a SQL server
+azmcp sql server entraadmin list --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --server <server-name>
 ```
 
-### Azure RBAC Operations
+### Azure Storage Operations
+
 ```bash
-# List Azure RBAC role assignments
-azmcp role assignment list --subscription <subscription> \
-                           --scope <scope>
+# List Storage accounts in a subscription
+azmcp storage account list --subscription <subscription>
+
+# List tables in a Storage account
+azmcp storage table list --subscription <subscription> \
+                         --account-name <account-name>
+
+# List blobs in a Storage container
+azmcp storage blob list --subscription <subscription> \
+                        --account-name <account-name> \
+                        --container-name <container-name>
+
+# List containers in a Storage blob service
+azmcp storage blob container list --subscription <subscription> \
+                                  --account-name <account-name>
+
+# Get detailed properties of a storage container
+azmcp storage blob container details --subscription <subscription> \
+                                     --account-name <account-name> \
+                                     --container-name <container-name>
 ```
 
-### Azure Resource Group Operations
+### Azure Subscription Management
+
 ```bash
-# List resource groups in a subscription
-azmcp group list --subscription <subscription>
+# List available Azure subscriptions
+azmcp subscription list [--tenant-id <tenant-id>]
 ```
 
-### Azure AI Foundry Operations
+## Azure Terraform Best Practices
+
 ```bash
-# List AI Foundry models
-azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] [--publisher-name <publisher-name>] [--license-name <license-name>] [--model-name <model-name>]
-
-# Deploy an AI Foundry model
-azmcp foundry models deploy --subscription <subscription> --resource-group <resource-group>  --deployment-name <deployment-name> --model-name <model-name> --model-format <model-format> --azure-ai-services-name <azure-ai-services-name> [--model-version <model-version>] [--model-source <model-source>] [--sku-name <sku-name>] [--sku-capacity <sku-capacity>] [--scale-type <scale-type>] [--scale-capacity <scale-capacity>]
-
-# List AI Foundry model deployments
-azmcp foundry models deployments list --endpoint <endpoint>
+# Get secure, production-grade Azure Terraform best practices for effective code generation and command execution.
+azmcp azureterraformbestpractices get
 ```
 
-### Azure CLI Extension Operations
-```bash
-# Execute any Azure CLI command
-azmcp extension az --command "<command>"
-
-# Examples:
-# List resource groups
-azmcp extension az --command "group list"
-
-# Get storage account details
-azmcp extension az --command "storage account show --name <account-name> --resource-group <resource-group>"
-
-# List virtual machines
-azmcp extension az --command "vm list --resource-group <resource-group>"
-```
-
-### Azure AI Search
+### Bicep
 
 ```bash
-# List AI Search accounts in a subscription
-azmcp search list --subscription <subscription>
-
-# List AI Search indexes in account
-azmcp search index list --subscription <subscription> \
-                        --service-name <service-name>
-
-# Get AI Search index
-azmcp search index describe --subscription <subscription> \
-                            --service-name <service-name> \
-                            --index-name <index-name>
-
-# Query AI Search index
-azmcp search index query --subscription <subscription> \
-                         --service-name <service-name> \
-                         --index-name <index-name> \
-                         --query <query>
+# Get Bicep schema for a specific Azure resource type
+azmcp bicepschema get --resource-type <resource-type> \
 ```
 
 ## Response Format
 
 All responses follow a consistent JSON format:
+
 ```json
 {
   "status": "200|403|500, etc",
@@ -549,5 +623,6 @@ All responses follow a consistent JSON format:
 ## Error Handling
 
 The CLI returns structured JSON responses for errors, including:
+
 - Service availability issues
 - Authentication errors
