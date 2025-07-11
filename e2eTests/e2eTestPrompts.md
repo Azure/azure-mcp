@@ -247,6 +247,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
 
+## Azure Virtual Machines
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-virtualmachines-vm-list | List all virtual machines in my subscription |
+| azmcp-virtualmachines-vm-list | Show me all my virtual machines |
+| azmcp-virtualmachines-vm-list | What VMs do I have in my production resource group? |
+| azmcp-virtualmachines-vm-list | List VMs in resource group \<resource-group-name> |
+
 ## Bicep
 
 | Tool Name | Test Prompt |

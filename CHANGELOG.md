@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- **Virtual Machines**: Added `azmcp virtualmachines vm list` command to list virtual machines in a subscription or resource group
+
 ### Breaking Changes
 
 ### Bugs Fixed

@@ -606,6 +606,17 @@ azmcp azureterraformbestpractices get
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Azure Virtual Machines Operations
+
+```bash
+# List virtual machines in a subscription
+azmcp virtualmachines vm list --subscription <subscription>
+
+# List virtual machines in a specific resource group
+azmcp virtualmachines vm list --subscription <subscription> \
+                              --resource-group <resource-group>
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:

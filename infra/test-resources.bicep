@@ -164,3 +164,12 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
     testApplicationOid: testApplicationOid
   }
 }
+
+module virtualmachines 'services/virtualmachines.bicep' = if (empty(areas) || contains(areas, 'VirtualMachines')) {
+  name: '${deploymentName}-virtualmachines'
+  params: {
+    baseName: baseName
+    location: location
+    testApplicationOid: testApplicationOid
+  }
+}
