@@ -15,6 +15,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Postgres.UnitTests.Server;
 
+[Trait("Area", "Postgres")]
 public class GetConfigCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

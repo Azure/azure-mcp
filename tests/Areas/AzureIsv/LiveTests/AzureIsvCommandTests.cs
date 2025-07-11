@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.AzureIsv.LiveTests;
 
+[Trait("Area", "AzureIsv")]
 public class AzureIsvCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>

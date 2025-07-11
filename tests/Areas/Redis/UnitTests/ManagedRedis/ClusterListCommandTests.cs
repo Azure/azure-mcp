@@ -17,6 +17,7 @@ using ClusterModel = AzureMcp.Areas.Redis.Models.ManagedRedis.Cluster;
 
 namespace AzureMcp.Tests.Areas.Redis.UnitTests.ManagedRedis;
 
+[Trait("Area", "Redis")]
 public class ClusterListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

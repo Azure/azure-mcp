@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Storage.UnitTests.Account;
 
+[Trait("Area", "Storage")]
 public class AccountListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

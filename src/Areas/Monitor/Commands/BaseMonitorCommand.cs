@@ -14,7 +14,7 @@ public abstract class BaseMonitorCommand<
     : SubscriptionCommand<TOptions>
     where TOptions : SubscriptionOptions, IWorkspaceOptions, new()
 {
-    protected readonly Option<string> _workspaceOption = MonitorOptionDefinitions.Workspace;
+    private readonly Option<string> _workspaceOption = WorkspaceOptionDefinitions.Workspace;
 
     protected override void RegisterOptions(Command command)
     {

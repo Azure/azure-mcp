@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Cosmos.LiveTests;
 
+[Trait("Area", "Cosmos")]
 public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>,

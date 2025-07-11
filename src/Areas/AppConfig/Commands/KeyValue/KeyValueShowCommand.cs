@@ -5,6 +5,7 @@ using AzureMcp.Areas.AppConfig.Models;
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
 using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
@@ -38,6 +39,8 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             var setting = await appConfigService.GetKeyValue(
                 options.Account!,
@@ -55,7 +58,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred getting value. Key: {Key}.", options.Key);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -6,6 +6,7 @@ using AzureMcp.Areas.KeyVault.Options.Key;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.KeyVault.Commands.Key;
@@ -68,6 +69,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var service = context.GetService<IKeyVaultService>();
             var key = await service.CreateKey(
                 options.VaultName!,
@@ -84,7 +87,7 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating key {KeyName} in vault {VaultName}", options.KeyName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

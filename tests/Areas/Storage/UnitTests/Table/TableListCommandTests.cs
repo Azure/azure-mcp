@@ -18,6 +18,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Storage.UnitTests.Table;
 
+[Trait("Area", "Storage")]
 public class TableListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

@@ -1,14 +1,20 @@
-﻿using System.Text.Json.Nodes;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Text.Json.Nodes;
 using Azure.Core;
 
 namespace AzureMcp.Areas.Kusto.Services;
 
-public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredential tokenCredential, string userAgent)
+public class KustoClient(
+    string clusterUri,
+    TokenCredential tokenCredential,
+    string userAgent)
 {
     private readonly string _clusterUri = clusterUri;
-    private readonly HttpClient _httpClient = httpClient;
     private readonly TokenCredential _tokenCredential = tokenCredential;
     private readonly string _userAgent = userAgent;
+    private readonly HttpClient _httpClient = new() { BaseAddress = new Uri(clusterUri) };
     private static readonly string s_application = "AzureMCP";
     private static readonly string s_clientRequestIdPrefix = "AzMcp";
     private static readonly string s_default_scope = "https://kusto.kusto.windows.net/.default";
@@ -23,7 +29,6 @@ public class KustoClient(string clusterUri, HttpClient httpClient, TokenCredenti
     {
         var uri = _clusterUri + endpoint;
         var httpRequest = await GenerateRequestAsync(uri, database, text, cancellationToken).ConfigureAwait(false);
-        _httpClient.BaseAddress = new Uri(_clusterUri);
         return await SendRequestAsync(_httpClient, httpRequest, cancellationToken).ConfigureAwait(false);
     }
 

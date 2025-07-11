@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Key;
 
+[Trait("Area", "KeyVault")]
 public class KeyListCommandTests
 {
 

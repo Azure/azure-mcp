@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.CommandLine;
@@ -15,6 +15,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.AzureIsv.UnitTests.Datadog;
 
+[Trait("Area", "AzureIsv")]
 public class MonitoredResourcesListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

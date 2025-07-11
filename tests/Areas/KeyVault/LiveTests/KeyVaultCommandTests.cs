@@ -9,6 +9,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.KeyVault.LiveTests;
 
+[Trait("Area", "KeyVault")]
 public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>

@@ -18,6 +18,7 @@ using static AzureMcp.Areas.Search.Commands.Index.IndexDescribeCommand;
 
 namespace AzureMcp.Tests.Areas.Search.UnitTests.Index;
 
+[Trait("Area", "Search")]
 public class IndexDescribeCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

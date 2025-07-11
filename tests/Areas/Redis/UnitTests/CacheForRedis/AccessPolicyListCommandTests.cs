@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Redis.UnitTests.CacheForRedis;
 
+[Trait("Area", "Redis")]
 public class AccessPolicyListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

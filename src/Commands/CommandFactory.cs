@@ -1,12 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Commands;
 
@@ -25,6 +28,7 @@ public class CommandFactory
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
+    private readonly ITelemetryService _telemetryService;
 
     // Add this new class inside CommandFactory
     private class StringConverter : JsonConverter<string>
@@ -41,7 +45,7 @@ public class CommandFactory
         }
     }
 
-    public CommandFactory(IServiceProvider serviceProvider, IEnumerable<IAreaSetup> serviceAreas, ILogger<CommandFactory> logger)
+    public CommandFactory(IServiceProvider serviceProvider, IEnumerable<IAreaSetup> serviceAreas, ITelemetryService telemetryService, ILogger<CommandFactory> logger)
     {
         _serviceAreas = serviceAreas?.ToArray() ?? throw new ArgumentNullException(nameof(serviceAreas));
         _serviceProvider = serviceProvider;
@@ -49,6 +53,7 @@ public class CommandFactory
         _rootGroup = new CommandGroup("azmcp", "Azure MCP Server");
         _rootCommand = CreateRootCommand();
         _commandMap = CreateCommmandDictionary(_rootGroup, string.Empty);
+        _telemetryService = telemetryService;
         _srcGenWithOptions = new ModelsJsonContext(new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -64,17 +69,30 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, IBaseCommand> AllCommands => _commandMap;
 
-    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string groupName)
+    public IReadOnlyDictionary<string, IBaseCommand> GroupCommands(string[] groupNames)
     {
-        foreach (CommandGroup group in _rootGroup.SubGroup)
+        if (groupNames is null)
         {
-            if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("groupNames cannot be null.");
+        }
+        Dictionary<string, IBaseCommand> commandsFromGroups = new();
+        foreach (string groupName in groupNames)
+        {
+            foreach (CommandGroup group in _rootGroup.SubGroup)
             {
-                return CreateCommmandDictionary(group, string.Empty);
+                if (string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase))
+                {
+                    Dictionary<string, IBaseCommand> commandsInGroup = CreateCommmandDictionary(group, string.Empty);
+                    foreach (var (key, value) in commandsInGroup)
+                    {
+                        commandsFromGroups[key] = value;
+                    }
+                    break;
+                }
             }
         }
 
-        throw new KeyNotFoundException($"Group '{groupName}' not found in command groups.");
+        return commandsFromGroups;
     }
     private void RegisterCommandGroup()
     {
@@ -132,7 +150,9 @@ public class CommandFactory
         {
             _logger.LogTrace("Executing '{Command}'.", command.Name);
 
-            var cmdContext = new CommandContext(_serviceProvider);
+            using var activity = _telemetryService.StartActivity(ActivityName.CommandExecuted);
+
+            var cmdContext = new CommandContext(_serviceProvider, activity);
             var startTime = DateTime.UtcNow;
             try
             {
@@ -153,17 +173,13 @@ public class CommandFactory
             {
                 _logger.LogError("An exception occurred while executing '{Command}'. Exception: {Exception}",
                     command.Name, ex);
+                activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
             }
             finally
             {
                 _logger.LogTrace("Finished running '{Command}'.", command.Name);
             }
         });
-    }
-
-    private ILogger<T> GetLogger<T>()
-    {
-        return _serviceProvider.GetRequiredService<ILogger<T>>();
     }
 
     private static IBaseCommand? FindCommandInGroup(CommandGroup group, Queue<string> nameParts)
@@ -197,7 +213,6 @@ public class CommandFactory
             foreach (var kvp in node.Commands)
             {
                 var key = GetPrefix(updatedPrefix, kvp.Key);
-
                 aggregated.Add(key, kvp.Value);
             }
         }
@@ -209,9 +224,7 @@ public class CommandFactory
 
         foreach (var command in node.SubGroup)
         {
-            var childPrefix = GetPrefix(updatedPrefix, command.Name);
             var subcommandsDictionary = CreateCommmandDictionary(command, updatedPrefix);
-
             foreach (var item in subcommandsDictionary)
             {
                 aggregated.Add(item.Key, item.Value);

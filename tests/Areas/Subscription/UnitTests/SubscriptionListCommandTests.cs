@@ -19,6 +19,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Subscription.UnitTests;
 
+[Trait("Area", "Subscription")]
 public class SubscriptionListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

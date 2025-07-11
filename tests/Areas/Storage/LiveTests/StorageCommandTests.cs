@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Storage.LiveTests
 {
+    [Trait("Area", "Storage")]
     public class StorageCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
     {

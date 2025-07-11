@@ -9,6 +9,7 @@ using Xunit;
 namespace AzureMcp.Tests.Areas.Authorization.LiveTests;
 
 
+[Trait("Area", "Authorization")]
 public class AuthorizationCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>

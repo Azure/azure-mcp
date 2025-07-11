@@ -12,6 +12,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
 {
+    [Trait("Area", "ServiceBus")]
     public class ServiceBusCommandTests : CommandTestsBase, IClassFixture<LiveTestFixture>
     {
         private const string QueueName = "queue1";

@@ -17,6 +17,7 @@ using CacheModel = AzureMcp.Areas.Redis.Models.CacheForRedis.Cache;
 
 namespace AzureMcp.Tests.Areas.Redis.UnitTests.CacheForRedis;
 
+[Trait("Area", "Redis")]
 public class CacheListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

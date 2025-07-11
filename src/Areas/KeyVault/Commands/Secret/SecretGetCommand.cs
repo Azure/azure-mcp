@@ -6,6 +6,7 @@ using AzureMcp.Areas.KeyVault.Options.Secret;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.KeyVault.Commands.Secret;
@@ -59,6 +60,8 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var keyVaultService = context.GetService<IKeyVaultService>();
             var result = await keyVaultService.GetSecret(
                 options.VaultName!,
@@ -74,7 +77,7 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting secret {SecretName} from vault {VaultName}", options.SecretName, options.VaultName);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

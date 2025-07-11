@@ -3,7 +3,9 @@
 
 using System.Text.Json.Nodes;
 using Azure;
+using Azure.Core;
 using Azure.Monitor.Query;
+using Azure.Monitor.Query.Models;
 using Azure.ResourceManager.OperationalInsights;
 using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Options;
@@ -14,11 +16,64 @@ using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.Monitor.Services;
 
-public class MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
-    : BaseAzureService(tenantService), IMonitorService
+public class MonitorService : BaseAzureService, IMonitorService
 {
-    private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
-    private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
+    private readonly ISubscriptionService _subscriptionService;
+    private readonly IResourceGroupService _resourceGroupService;
+
+    public MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+        : base(tenantService)
+    {
+        _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
+        _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
+    }
+
+    public async Task<List<JsonNode>> QueryResourceLogs(
+        string subscription,
+        string resourceId,
+        string query,
+        string table,
+        int? hours = 24,
+        int? limit = 20,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, resourceId, table);
+        query = BuildQuery(query, table, limit);
+
+        var credential = await GetCredential(tenant);
+        var options = AddDefaultPolicies(new LogsQueryClientOptions());
+
+        if (retryPolicy != null)
+        {
+            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            options.Retry.MaxRetries = retryPolicy.MaxRetries;
+            options.Retry.Mode = retryPolicy.Mode;
+            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
+        var client = new LogsQueryClient(credential, options);
+        var timeRange = new QueryTimeRange(TimeSpan.FromHours(hours ?? 24));
+
+        try
+        {
+            var response = await client.QueryResourceAsync(
+                ResourceIdentifier.Parse(resourceId),
+                query,
+                timeRange);
+            return ParseQueryResults(response.Value.Table);
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = ex switch
+            {
+                RequestFailedException rfe => $"Azure request failed: {rfe.Status} - {rfe.Message}",
+                TimeoutException => "The query timed out. Try simplifying your query or reducing the time range.",
+                _ => $"Error querying resource logs: {ex.Message}"
+            };
+            throw new Exception(errorMessage, ex);
+        }
+    }
 
     private const string TablePlaceholder = "{tableName}";
 
@@ -166,7 +221,7 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
             throw new Exception($"Error retrieving Log Analytics workspaces: {ex.Message}", ex);
         }
     }
-    public async Task<List<JsonNode>> QueryLogs(
+    public async Task<List<JsonNode>> QueryWorkspaceLogs(
         string subscription,
         string workspace,
         string query,
@@ -178,24 +233,9 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
     {
         ValidateRequiredParameters(subscription, workspace, table);
 
-        // Get the workspace ID and reuse it
         var (workspaceId, _) = await GetWorkspaceInfo(workspace, subscription, tenant, retryPolicy);
-
-        // Check if the query is a predefined query name
-        if (!string.IsNullOrEmpty(query) && s_predefinedQueries.ContainsKey(query.Trim().ToLower()))
-        {
-            query = s_predefinedQueries[query.Trim().ToLower()];
-            // Replace table placeholder with actual table name
-            query = query.Replace(TablePlaceholder, table);
-        }
-
+        query = BuildQuery(query, table, limit);
         ValidateRequiredParameters(query);
-
-        // Add limit to query if specified and not already present
-        if (limit.HasValue && !query.Contains("limit", StringComparison.CurrentCultureIgnoreCase))
-        {
-            query = $"{query}\n| limit {limit}";
-        }
 
         try
         {
@@ -217,26 +257,8 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
                 workspaceId,
                 query,
                 timeRange);
-            var results = new List<JsonNode>();
-            if (response.Value.Table != null)
-            {
-                var rows = response.Value.Table.Rows;
-                var columns = response.Value.Table.Columns;
 
-                if (rows != null && columns != null && rows.Any())
-                {
-                    foreach (var row in rows)
-                    {
-                        var rowDict = new JsonObject();
-                        for (int i = 0; i < columns.Count; i++)
-                        {
-                            rowDict[columns[i].Name] = JsonValue.Create(row[i]?.ToString() ?? "null");
-                        }
-                        results.Add(rowDict);
-                    }
-                }
-            }
-            return results;
+            return ParseQueryResults(response.Value.Table);
         }
         catch (Exception ex)
         {
@@ -250,6 +272,46 @@ public class MonitorService(ISubscriptionService subscriptionService, ITenantSer
 
             throw new Exception(errorMessage, ex);
         }
+    }
+
+    // Helper to build the query string with table and limit
+    private static string BuildQuery(string query, string table, int? limit)
+    {
+        if (!string.IsNullOrEmpty(query) && s_predefinedQueries.ContainsKey(query.Trim().ToLower()))
+        {
+            query = s_predefinedQueries[query.Trim().ToLower()];
+            query = query.Replace(TablePlaceholder, table);
+        }
+        // Add limit if not present
+        if (limit.HasValue && !query.Contains("limit", StringComparison.CurrentCultureIgnoreCase))
+        {
+            query = $"{query}\n| limit {limit}";
+        }
+        return query;
+    }
+
+    // Helper to parse query results from a LogsTable
+    private static List<JsonNode> ParseQueryResults(LogsTable? table)
+    {
+        var results = new List<JsonNode>();
+        if (table != null)
+        {
+            var rows = table.Rows;
+            var columns = table.Columns;
+            if (rows != null && columns != null && rows.Any())
+            {
+                foreach (var row in rows)
+                {
+                    var rowDict = new JsonObject();
+                    for (int i = 0; i < columns.Count; i++)
+                    {
+                        rowDict[columns[i].Name] = JsonValue.Create(row[i]?.ToString() ?? "null");
+                    }
+                    results.Add(rowDict);
+                }
+            }
+        }
+        return results;
     }
 
     public async Task<List<string>> ListTableTypes(

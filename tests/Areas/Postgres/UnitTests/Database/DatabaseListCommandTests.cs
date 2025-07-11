@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Postgres.UnitTests.Database;
 
+[Trait("Area", "Postgres")]
 public class DatabaseListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

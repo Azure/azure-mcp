@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Redis.UnitTests.ManagedRedis;
 
+[Trait("Area", "Redis")]
 public class DatabaseListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

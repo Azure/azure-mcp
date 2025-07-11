@@ -18,6 +18,8 @@ public sealed class CustomTestTransport : ITransport
 
     public Action<JsonRpcMessage>? MessageListener { get; set; }
 
+    public string? SessionId => null;
+
     public CustomTestTransport()
     {
         _messageChannel = Channel.CreateUnbounded<JsonRpcMessage>(new UnboundedChannelOptions

@@ -17,6 +17,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Cosmos.UnitTests;
 
+[Trait("Area", "Cosmos")]
 public class AccountListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

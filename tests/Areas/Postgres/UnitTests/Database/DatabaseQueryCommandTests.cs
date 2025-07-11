@@ -17,6 +17,7 @@ using Xunit;
 namespace AzureMcp.Tests.Areas.Postgres.UnitTests.Database;
 
 [DebuggerStepThrough]
+[Trait("Area", "Postgres")]
 public class DatabaseQueryCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

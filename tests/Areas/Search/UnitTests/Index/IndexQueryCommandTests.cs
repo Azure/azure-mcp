@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Search.UnitTests.Index;
 
+[Trait("Area", "Search")]
 public class IndexQueryCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

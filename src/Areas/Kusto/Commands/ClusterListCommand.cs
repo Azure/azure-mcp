@@ -5,6 +5,7 @@ using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -19,7 +20,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
     public override string Description =>
         """
         List all Kusto clusters in a subscription. This command retrieves all clusters
-        available in the specified subscription. Requires `cluster-name` and `subscription`.
+        available in the specified subscription. Requires `subscription`.
         Result is a list of cluster names as a JSON array.
         """;
 
@@ -37,6 +38,8 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var kusto = context.GetService<IKustoService>();
             var clusterNames = await kusto.ListClusters(
                 options.Subscription!,
@@ -50,7 +53,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing Kusto clusters. Subscription: {Subscription}.", options.Subscription);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

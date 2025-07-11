@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Redis.LiveTests;
 
+[Trait("Area", "Redis")]
 public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
 {

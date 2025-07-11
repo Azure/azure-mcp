@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Kusto.UnitTests;
 
+[Trait("Area", "Kusto")]
 public sealed class SampleCommandTests
 {
     private readonly IServiceProvider _serviceProvider;

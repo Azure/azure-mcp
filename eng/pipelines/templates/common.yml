@@ -24,7 +24,7 @@ extends:
   parameters:
     autoBaseline: ${{ and(eq(variables['Build.DefinitionName'], 'azure - mcp'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['System.TeamProject'], 'internal')) }}
     stages:
-    - stage: Build
+    - stage: Initialize
       pool:
         name: $(LINUXPOOL)
         image: $(LINUXVMIMAGE)
@@ -36,11 +36,23 @@ extends:
       - template: /eng/pipelines/templates/jobs/initialize.yml
         parameters:
           ReleaseRun: ${{ parameters.ReleaseRun }}
+    - stage: Build
+      dependsOn:
+      - Initialize
+      pool:
+        name: $(LINUXPOOL)
+        image: $(LINUXVMIMAGE)
+        os: linux
+      variables:
+      - template: /eng/pipelines/templates/variables/image.yml
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - name: Version
+        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
+      jobs:
       - template: /eng/pipelines/templates/jobs/analyze.yml
       - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
         parameters:
           SparseCheckout: false
-          DependsOn: Initialize
           JobTemplatePath: /eng/pipelines/templates/jobs/build.yml
           AdditionalParameters:
             TestTimeoutInMinutes: 10
@@ -53,7 +65,8 @@ extends:
     - ${{ if and(eq(variables['System.TeamProject'], 'internal'), eq(parameters.RunLiveTests, 'true')) }}:
       - stage: Test
         displayName: 'Live test'
-        dependsOn: []
+        dependsOn:
+        - Initialize
         pool:
           name: $(LINUXPOOL)
           image: $(LINUXVMIMAGE)
@@ -61,6 +74,9 @@ extends:
         variables:
         - template: /eng/pipelines/templates/variables/image.yml
         - template: /eng/pipelines/templates/variables/globals.yml
+        - name: TestAreas
+          value: $[ stageDependencies.Initialize.Initialize.outputs['GetTestAreas.TestAreas'] ]
+        condition: and(succeeded(), eq(dependencies.Initialize.outputs['Initialize.GetTestAreas.HasTestAreas'], 'True'))
         jobs:
         - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
           parameters:
@@ -85,12 +101,14 @@ extends:
         displayName: 'Pack'
       ${{ else }}:
         displayName: 'Sign and Pack'
-      dependsOn: Build
+      dependsOn:
+      - Initialize
+      - Build
       variables:
       - template: /eng/pipelines/templates/variables/image.yml
       - template: /eng/pipelines/templates/variables/globals.yml
       - name: Version
-        value: $[ stageDependencies.Build.Initialize.outputs['Version.Version'] ]
+        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
       jobs:
       - template: /eng/pipelines/templates/jobs/sign-and-pack.yml
         parameters:
@@ -100,7 +118,7 @@ extends:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release
           dependsOn:
-          - Build
+          - Initialize
           - SignAndPack
           pool:
             name: $(LINUXPOOL)
@@ -110,14 +128,14 @@ extends:
           - template: /eng/pipelines/templates/variables/image.yml
           - template: /eng/pipelines/templates/variables/globals.yml
           - name: Version
-            value: $[ stageDependencies.Build.Initialize.outputs['Version.Version'] ]
+            value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/release.yml
 
       - ${{ else }}:
         - stage: Integration
           dependsOn:
-          - Build
+          - Initialize
           - SignAndPack
           pool:
             name: $(LINUXPOOL)
@@ -127,6 +145,6 @@ extends:
           - template: /eng/pipelines/templates/variables/image.yml
           - template: /eng/pipelines/templates/variables/globals.yml
           - name: Version
-            value: $[ stageDependencies.Build.Initialize.outputs['Version.Version'] ]
+            value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/integration.yml

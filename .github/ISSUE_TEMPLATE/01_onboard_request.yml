@@ -8,8 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        **Microsoft Internal Developers Only:**  
-        Please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake) before submitting this request.
+        > ⚠️ If you are a Microsoft employee then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake).
   - type: input
     id: library
     attributes:

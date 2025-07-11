@@ -16,6 +16,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Storage.UnitTests.Blob.Container;
 
+[Trait("Area", "Storage")]
 public class ContainerListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
@@ -26,7 +27,6 @@ public class ContainerListCommandTests
     private readonly Parser _parser;
     private readonly string _knownAccountName = "account123";
     private readonly string _knownSubscriptionId = "sub123";
-    private readonly string _knownTenantId = "tenant123";
 
     public ContainerListCommandTests()
     {

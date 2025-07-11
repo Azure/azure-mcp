@@ -17,6 +17,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Search.UnitTests.Service;
 
+[Trait("Area", "Search")]
 public class ServiceListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
