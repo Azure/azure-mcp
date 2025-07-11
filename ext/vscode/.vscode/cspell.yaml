@@ -1,0 +1,28 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+# cspell settings for VS Code extension for Azure Developer CLI
+
+# Use global config
+import: ../../../.vscode/cspell.global.yaml
+
+# Use words for non-project-specific words only.
+# Use projectDictionary to add project-specific words.
+words:
+  - backoff
+  - Codespace
+  - Codespaces
+  - retval
+dictionaryDefinitions:
+  - name: projectDictionary
+    path: ./cspell-dictionary.txt
+    description: Custom Workspace Dictionary
+    addWords: true
+    scope: workspace
+dictionaries:
+  - projectDictionary
+overrides: 
+  - filename: env.ts
+    words:
+      - affordance
+

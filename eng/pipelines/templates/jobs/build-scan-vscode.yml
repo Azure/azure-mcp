@@ -1,0 +1,45 @@
+parameters:
+  - name: BuildMatrix
+    type: object
+    default:
+      # Disable Windows build until packaging fixed on Windows https://github.com/Azure/azure-dev/issues/1336
+      # Windows:
+      #   Pool: azsdk-pool
+      #   OSVmImage: windows-2022
+      Linux:
+        Pool: azsdk-pool
+        OSVmImage:  ubuntu-22.04
+      Mac:
+        Pool: Azure Pipelines
+        OSVmImage: macOS-latest
+        OS: mac
+
+jobs:
+  - ${{ each build in parameters.BuildMatrix }}:
+    - job: BuildScanVscode_${{ build.key}}
+
+      pool:
+        name: ${{ build.value.Pool }}
+        ${{ if eq('mac', build.value.OS) }}:
+          vmImage: ${{ build.value.OSVmImage }}
+        ${{ else }}:
+          demands: ImageOverride -equals ${{ build.value.OSVmImage }}
+
+      variables:
+        NodeVersion: 20.x
+
+      steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: $(NodeVersion)
+
+        - bash: |
+            npm install -g npm vsce
+            npm ci --no-optional
+          workingDirectory: ext/vscode
+
+        - pwsh: ./ci-package.ps1
+          workingDirectory: ext/vscode
+          displayName: Package
+
+        - task: ComponentGovernanceComponentDetection@0

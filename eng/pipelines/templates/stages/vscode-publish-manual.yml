@@ -1,0 +1,99 @@
+stages:
+  - stage: PublishManual
+    dependsOn: Sign
+    condition: >-
+      and(
+        succeeded(),
+        ne(variables['Skip.Release'], 'true'),
+        or(
+          eq('Manual', variables['BuildReasonOverride']),
+          and(
+            eq('', variables['BuildReasonOverride']),
+            eq(variables['Build.Reason'], 'Manual')
+          )
+        )
+      )
+
+    variables:
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - template: /eng/pipelines/templates/variables/image.yml
+
+    jobs:
+      - deployment: Publish_Release
+        environment: package-publish
+        pool:
+          name: azsdk-pool
+          image: ubuntu-22.04
+          os: linux
+
+        templateContext:
+          type: releaseJob
+          isProduction: true
+          inputs:
+            - input: pipelineArtifact
+              artifactName: signed
+              targetPath: signed
+
+            - input: pipelineArtifact
+              artifactName: changelog
+              targetPath: changelog
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: /eng/pipelines/templates/steps/vscode-set-metadata-variables.yml
+                  parameters:
+                    Use1ESArtifactTask: true
+
+                - template: /eng/pipelines/templates/steps/publish-vscode.yml
+                  parameters:
+                    PublishLocations: azd/vscode/release/$(VSIX_VERSION);azd/vscode/release/latest
+                    TagRepository: true
+                    PublishToMarketplace: true
+
+      - job: Publish_Shield
+        dependsOn: Publish_Release
+
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+
+        steps:
+          - template: /eng/pipelines/templates/steps/publish-shield.yml
+            parameters:
+              ArtifactName: shield-vscode
+              ArtifactDownloadPath: shields/vscode
+              ArtifactFilename: vscode.json
+              StorageContainerName: '`$web'
+              PublishDestination: azd/vscode/latest
+
+
+      - job: Increment_Version
+        condition: >-
+          and(
+            succeeded(),
+            ne('true', variables['Skip.IncrementVersion'])
+          )
+        dependsOn: Publish_Release
+
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+
+        steps:
+          - checkout: self
+          - task: PowerShell@2
+            inputs:
+              pwsh: true
+              targetType: filePath
+              filePath: eng/scripts/Update-VscodeExtensionVersion.ps1
+            displayName: Increment VSCode Extension version
+
+          - template: /eng/common/pipelines/templates/steps/create-pull-request.yml
+            parameters:
+              PRBranchName: vscode-version-increment-$(Build.BuildId)
+              CommitMsg: Increment VSCode Extension version after release
+              PRTitle: Increment VSCode Extension version after release
