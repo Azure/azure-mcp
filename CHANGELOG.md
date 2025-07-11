@@ -16,6 +16,7 @@
 - Fixed the issue that was unable to find az from user environment PATH. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ### Other Changes
+- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 
 ## 0.3.1 (2025-07-08)
 
