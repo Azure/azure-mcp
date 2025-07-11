@@ -5,7 +5,7 @@
 ### Features Added
 
 - Support for Azure Managed Grafana operations - List Azure Managed Grafana details. [#532](https://github.com/Azure/azure-mcp/pull/532)
-
+- Added support for Azure Terraform Best Practices with command path `azmcp-azureterraformbestpractices-get`. [#420](https://github.com/Azure/azure-mcp/pull/420)
 ### Breaking Changes
 
 ### Bugs Fixed

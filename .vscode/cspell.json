@@ -168,6 +168,9 @@
         "azureblob",
         "azuremcp",
         "azuresdk",
+        "azuretools",
+        "azureresourcegroups",
+        "azureterraformbestpractices",
         "codeium",
         "cslschema",
         "bdylan",
@@ -254,11 +257,10 @@
         "vsts",
         "westus",
         "westus2",
+        "winget",
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
-        "Xunit",
-        "azuretools",
-        "azureresourcegroups"
+        "Xunit"
     ]
 }
