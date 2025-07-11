@@ -43,7 +43,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         var tenantService = new TenantService(cacheService, loggerFactory);
         var subscriptionService = new SubscriptionService(cacheService, tenantService, loggerFactory);
         var resourceGroupService = new ResourceGroupService(cacheService, subscriptionService, loggerFactory);
-        return new MonitorService(subscriptionService, tenantService, resourceGroupService);
+        return new MonitorService(subscriptionService, tenantService, resourceGroupService, loggerFactory);
     }
 
     [Fact]

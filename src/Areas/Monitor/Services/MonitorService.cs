@@ -13,6 +13,7 @@ using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Services;
 
@@ -21,8 +22,8 @@ public class MonitorService : BaseAzureService, IMonitorService
     private readonly ISubscriptionService _subscriptionService;
     private readonly IResourceGroupService _resourceGroupService;
 
-    public MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
-        : base(tenantService)
+    public MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService, ILoggerFactory? loggerFactory = null)
+        : base(tenantService, loggerFactory)
     {
         _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
         _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
