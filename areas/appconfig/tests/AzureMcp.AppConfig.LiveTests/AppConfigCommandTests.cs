@@ -509,10 +509,10 @@ public class AppConfigCommandTests : CommandTestsBase,
         // arrange
         const string key = "tag-test-multiple";
         const string value = "tag-test-value-multiple";
-        var tags = new string[] 
+        var tags = new string[]
         {
-            "environment=staging", 
-            "version=1.0.0", 
+            "environment=staging",
+            "version=1.0.0",
             "region=westus2"
         };
 
@@ -537,7 +537,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             var tagsRead = setResult.AssertProperty("tags");
             Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
             var tagArray = tagsRead.EnumerateArray().ToArray();
-            
+
             Assert.Equal(tags.Length, tagArray.Length);
             foreach (var tag in tags)
             {
@@ -584,7 +584,7 @@ public class AppConfigCommandTests : CommandTestsBase,
         // arrange
         const string key = "tag-test-spaces";
         const string value = "tag-test-value-spaces";
-        var tags = new string[] 
+        var tags = new string[]
         {
             "complex key=complex value with spaces",
             "deployment environment=Production US West",
@@ -612,7 +612,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             var tagsRead = setResult.AssertProperty("tags");
             Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
             var tagArray = tagsRead.EnumerateArray().ToArray();
-            
+
             Assert.Equal(tags.Length, tagArray.Length);
             foreach (var tag in tags)
             {
