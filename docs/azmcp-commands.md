@@ -608,10 +608,10 @@ azmcp azureterraformbestpractices get
 ### Azure Quick Review CLI Extension Operations
 ```base
 # Scan a subscription for recommendations
-azmcp extension azqr --subscription "<subscription-name-or-id>"
+azmcp extension azqr --subscription "<subscription>"
 
 # Scan a subscription and scope to a specific resource group
-azmcp extension azqr --subscription "<subscription-name-or-id>" --resource-group "<resource-group-name>"
+azmcp extension azqr --subscription "<subscription>" --resource-group "<resource-group-name>"
 ```
 
 ### Azure AI Search
