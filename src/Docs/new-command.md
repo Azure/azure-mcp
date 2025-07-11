@@ -202,8 +202,6 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
         """
         Detailed description of what the command does.
         Returns description of return format.
-          Required options:
-        - list required options
         """;
 
     public override string Title => CommandTitle;

@@ -47,6 +47,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
 | azmcp-extension-az | List all virtual machines in my subscription |
 
+## Azure Container Apps
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-containerapps-list | List all Container Apps in my subscription |
+| azmcp-containerapps-list | Show me all Container Apps in my subscription |
+| azmcp-containerapps-list | List Container Apps in resource group <resource-group-name> |
+| azmcp-containerapps-list | Show me Container Apps in resource group <resource-group-name> |
+
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |

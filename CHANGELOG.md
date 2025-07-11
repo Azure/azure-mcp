@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for listing Azure Container Apps via the command: `azmcp-containerapps-list`. This command lists all Container Apps in a subscription or optionally filters by resource group.
+
 ### Breaking Changes
 
 ### Bugs Fixed
