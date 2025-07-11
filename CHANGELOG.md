@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added centralized HttpClient service with proxy support for enterprise environments. Supports `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, and `NO_PROXY` environment variables for consistent proxy configuration across all Azure MCP commands. [[#407](https://github.com/Azure/azure-mcp/issues/407)]
+
 ### Breaking Changes
 
 ### Bugs Fixed

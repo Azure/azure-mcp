@@ -8,6 +8,7 @@ using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
+using AzureMcp.Services.Http;
 using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -117,6 +118,7 @@ internal class Program
 
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
+        services.AddSingleton<IHttpClientService, HttpClientService>();
         services.AddSingleton<IExternalProcessService, ExternalProcessService>();
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
