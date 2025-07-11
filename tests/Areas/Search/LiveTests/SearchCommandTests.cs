@@ -22,7 +22,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
         Assert.NotNull(Settings.SubscriptionId);
 
         var result = await CallToolAsync(
-            "azmcp-search-service-list",
+            "azmcp_search_service_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -36,7 +36,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_search_services_by_subscription_name()
     {
         var result = await CallToolAsync(
-            "azmcp-search-service-list",
+            "azmcp_search_service_list",
             new()
             {
                 { "subscription", Settings.SubscriptionName }
@@ -50,7 +50,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_search_indexes_with_service_name()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-list",
+            "azmcp_search_index_list",
             new()
             {
                 { "service-name", Settings.ResourceBaseName }
@@ -64,7 +64,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_get_index_details()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-describe",
+            "azmcp_search_index_describe",
             new()
             {
                 { "service-name", Settings.ResourceBaseName },
@@ -82,7 +82,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_query_search_index()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-query",
+            "azmcp_search_index_query",
             new()
             {
                 { "service-name", Settings.ResourceBaseName },
@@ -99,7 +99,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_search_indexes()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-list",
+            "azmcp_search_index_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -115,7 +115,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_describe_search_index()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-describe",
+            "azmcp_search_index_describe",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -132,7 +132,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_query_search_index_with_documents_property()
     {
         var result = await CallToolAsync(
-            "azmcp-search-index-query",
+            "azmcp_search_index_query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
