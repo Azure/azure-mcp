@@ -1,21 +1,26 @@
 # Release History
 
-## 0.3.2 (Unreleased)
+## 0.3.3 (Unreleased)
 
 ### Features Added
-
-- Support for Azure Managed Grafana operations - List Azure Managed Grafana details. [#532](https://github.com/Azure/azure-mcp/pull/532)
 
 ### Breaking Changes
 
 ### Bugs Fixed
-- Updated README table with --namespace and update descriptions. [#551](https://github.com/Azure/azure-mcp/pull/551)
-
-- Fixed issue where trace logs could be collected as telemetry. [#540](https://github.com/Azure/azure-mcp/pull/540/)
-
-- Fixed the issue that was unable to find az from user environment PATH. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ### Other Changes
+
+## 0.3.2 (2025-07-10)
+
+### Features Added
+
+- Added support for listing Azure Managed Grafana details via the command: `azmcp-grafana-list`. [[#532](https://github.com/Azure/azure-mcp/pull/532)]
+- Added agent best practices for Azure Terraform commands. [[#420](https://github.com/Azure/azure-mcp/pull/420)]
+
+### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [[#540](https://github.com/Azure/azure-mcp/pull/540/)]
+- Fixed an issue that prevented the Azure MCP from finding the Azure CLI if it was installed on a path other than the default global one. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ## 0.3.1 (2025-07-08)
 
