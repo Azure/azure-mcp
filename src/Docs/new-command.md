@@ -50,14 +50,6 @@ This keeps all code, options, models, and tests for a service together. See `src
    ```
    azmcp <azure service> <resource> <operation>
    ```
-
-   **NAMING RULES**:
-    - All command parts must be lowercase
-    - Use single words only - no dashes, underscores, or spaces
-    - Resource names should be singular nouns (e.g., `container`, not `containers`)
-    - Operation names should be verbs (e.g., `list`, `show`, `create`, `delete`)
-    - If multi-word concepts are needed, concatenate them (e.g., `resourcegroup`, `storageaccount`)
-
    Example: `azmcp storage container list`
 
    Where:
@@ -66,22 +58,18 @@ This keeps all code, options, models, and tests for a service together. See `src
    - `operation`: Action to perform (verb, lowercase)
 
    Each command is:
-   - In code, to avoid ambiguity between service classes and Azure services, we refer to Azure services as Areas
+   - In code, to avoid ambiguity between service classes and Azure services, we
+     refer to Azure services as Areas
    - Registered in the RegisterCommands method of its service's Areas/{Area}/{Area}Setup.cs file
    - Organized in a hierarchy of command groups
    - Documented with a title, description and examples
    - Validated before execution
    - Returns a standardized response format
 
-   **CRITICAL**: Command group names cannot contain dashes, underscores, or special characters. Use camelCase or concatenated names instead:
+   **IMPORTANT**: Command group names cannot contain dashes. Use camelCase or concatenated names instead:
    - ✅ Good: `new CommandGroup("entraadmin", "Entra admin operations")`
-   - ✅ Good: `new CommandGroup("resourcegroup", "Resource group operations")`
-   - ✅ Good: `new CommandGroup("storageaccount", "Storage account operations")`
-   - ❌ Bad: `new CommandGroup("entra-admin", "Entra admin operations")`
-   - ❌ Bad: `new CommandGroup("resource-group", "Resource group operations")`
-   - ❌ Bad: `new CommandGroup("storage_account", "Storage account operations")`
+   - ❌ Bad: `new CommandGroup("ad-admin", "AD admin operations")`
 
-   This restriction applies to all levels of the command hierarchy including service names, resource types, and operations.
 
 ### Required Files
 
