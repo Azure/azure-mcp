@@ -1,9 +1,7 @@
 # Azure MCP CLI Command Reference
 
 > [!IMPORTANT]
-
 > The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
-
 
 ## Global Options
 
@@ -92,14 +90,8 @@ azmcp server start \
 > - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
 > - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
 
-
-### Subscription Management
-```bash
-# List available Azure subscriptions
-azmcp subscription list [--tenant-id <tenant-id>]
-```
-
 ### Azure AI Foundry Operations
+
 ```bash
 # List AI Foundry models
 azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] [--publisher-name <publisher-name>] [--license-name <license-name>] [--model-name <model-name>]
@@ -111,13 +103,8 @@ azmcp foundry models deploy --subscription <subscription> --resource-group <reso
 azmcp foundry models deployments list --endpoint <endpoint>
 ```
 
-### Azure Managed Grafana Operations
-```bash
-# List Azure Managed Grafana
-azmcp grafana list --subscription <subscription>
-```
-
 ### Azure AI Search Operations
+
 ```bash
 # List AI Search accounts in a subscription
 azmcp search list --subscription <subscription>
@@ -139,6 +126,7 @@ azmcp search index query --subscription <subscription> \
 ```
 
 ### Azure App Configuration Operations
+
 ```bash
 # List App Configuration stores in a subscription
 azmcp appconfig account list --subscription <subscription>
@@ -181,7 +169,8 @@ azmcp appconfig kv delete --subscription <subscription> \
                           [--label <label>]
 ```
 
-### Azure CLI Extension Operations
+### Azure CLI Operations
+
 ```bash
 # Execute any Azure CLI command
 azmcp extension az --command "<command>"
@@ -198,6 +187,7 @@ azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
 ### Azure Cosmos DB Operations
+
 ```bash
 # List Cosmos DB accounts in a subscription
 azmcp cosmos account list --subscription <subscription>
@@ -220,6 +210,7 @@ azmcp cosmos database container item query --subscription <subscription> \
 ```
 
 ### Azure Data Explorer Operations
+
 ```bash
 # List Azure Data Explorer clusters in a subscription
 azmcp kusto cluster list --subscription <subscription>
@@ -254,7 +245,9 @@ azmcp kusto sample [--cluster-uri <cluster-uri> | --subscription <subscription> 
 ```
 
 ### Azure Database for PostgreSQL Operations
+
 #### Database commands
+
 ```bash
 # List all databases in a PostgreSQL server
 azmcp postgres database list --subscription <subscription> \
@@ -272,6 +265,7 @@ azmcp postgres database query --subscription <subscription> \
 ```
 
 #### Table Commands
+
 ```bash
 # List all tables in a PostgreSQL database
 azmcp postgres table list --subscription <subscription> \
@@ -290,6 +284,7 @@ azmcp postgres table schema --subscription <subscription> \
 ```
 
 #### Server Commands
+
 ```bash
 # List all PostgreSQL servers in a subscription & resource group
 azmcp postgres server list --subscription <subscription> \
@@ -318,6 +313,16 @@ azmcp postgres server setparam --subscription <subscription> \
                                --value <value>
 ```
 
+### Azure Developer CLI Operations
+
+```bash
+# Execute any Azure CLI command
+azmcp extension azd --command "<command>"
+
+# Examples:
+# Create a sample todo list app with NodeJS and MongoDB
+azmcp extension azd --command "init --template todo-nodejs-mongo"
+
 ### Azure Key Vault Operations
 ```bash
 # Lists keys in vault
@@ -342,9 +347,31 @@ azmcp keyvault secret get --subscription <subscription> \
                           --name <secret-name>
 ```
 
+### Azure Managed Grafana Operations
+
+```bash
+# List Azure Managed Grafana
+azmcp grafana list --subscription <subscription>
+```
+
+### Azure MCP Best Practices
+
+```bash
+# Get secure, production-grade Azure SDK best practices for effective code generation.
+azmcp bestpractices get
+```
+
+### Azure MCP Tools
+
+```bash
+# List all available tools in the Azure MCP server
+azmcp tool list
+```
+
 ### Azure Monitor Operations
-### Azure Monitor Operations
+
 #### Log Analytics
+
 ```bash
 # List Log Analytics workspaces in a subscription
 azmcp monitor workspace list --subscription <subscription>
@@ -378,6 +405,7 @@ azmcp monitor workspace log query --subscription <subscription> \
 ```
 
 #### Health Models
+
 ```bash
 # Get the health of an entity
 azmcp monitor healthmodels entity gethealth --subscription <subscription> \
@@ -387,6 +415,7 @@ azmcp monitor healthmodels entity gethealth --subscription <subscription> \
 ```
 
 #### Metrics
+
 ```bash
 # Query Azure Monitor metrics for a resource
 azmcp monitor metrics query --subscription <subscription> \
@@ -436,6 +465,7 @@ azmcp monitor metrics definitions --subscription <subscription> \
 ```
 
 ### Azure Native ISV Operations
+
 ```bash
 # List monitored resources in Datadog
 azmcp datadog monitoredresources list --subscription <subscription> \
@@ -444,6 +474,7 @@ azmcp datadog monitoredresources list --subscription <subscription> \
 ```
 
 ### Azure RBAC Operations
+
 ```bash
 # List Azure RBAC role assignments
 azmcp role assignment list --subscription <subscription> \
@@ -451,6 +482,7 @@ azmcp role assignment list --subscription <subscription> \
 ```
 
 ### Azure Redis Operations
+
 ```bash
 # Lists Redis Clusters in the Azure Managed Redis or Azure Redis Enterprise services
 azmcp redis cluster list --subscription <subscription>
@@ -470,12 +502,14 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
 ```
 
 ### Azure Resource Group Operations
+
 ```bash
 # List resource groups in a subscription
 azmcp group list --subscription <subscription>
 ```
 
 ### Azure Service Bus Operations
+
 ```bash
 # Peeks at messages in a Service Bus queue
 azmcp servicebus queue peek --subscription <subscription> \
@@ -508,6 +542,7 @@ azmcp servicebus topic subscription details --subscription <subscription> \
 ```
 
 ### Azure SQL Database Operations
+
 ```bash
 # Show details of a specific SQL database
 azmcp sql db show --subscription <subscription> \
@@ -517,6 +552,7 @@ azmcp sql db show --subscription <subscription> \
 ```
 
 ### Azure SQL Server Operations
+
 ```bash
 # List Microsoft Entra ID administrators for a SQL server
 azmcp sql server entraadmin list --subscription <subscription> \
@@ -525,6 +561,7 @@ azmcp sql server entraadmin list --subscription <subscription> \
 ```
 
 ### Azure Storage Operations
+
 ```bash
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
@@ -548,15 +585,31 @@ azmcp storage blob container details --subscription <subscription> \
                                      --container-name <container-name>
 ```
 
-### Best Practices
+### Azure Subscription Management
+
 ```bash
-# Get secure, production-grade Azure SDK best practices for effective code generation.
-azmcp bestpractices get
+# List available Azure subscriptions
+azmcp subscription list [--tenant-id <tenant-id>]
+```
+
+## Azure Terraform Best Practices
+
+```bash
+# Get secure, production-grade Azure Terraform best practices for effective code generation and command execution.
+azmcp azureterraformbestpractices get
+```
+
+### Bicep
+
+```bash
+# Get Bicep schema for a specific Azure resource type
+azmcp bicepschema get --resource-type <resource-type> \
 ```
 
 ## Response Format
 
 All responses follow a consistent JSON format:
+
 ```json
 {
   "status": "200|403|500, etc",
@@ -570,5 +623,6 @@ All responses follow a consistent JSON format:
 ## Error Handling
 
 The CLI returns structured JSON responses for errors, including:
+
 - Service availability issues
 - Authentication errors
