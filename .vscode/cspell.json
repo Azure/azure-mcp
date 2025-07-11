@@ -55,6 +55,7 @@
                 "adadmin",
                 "addattachment",
                 "adminprovider",
+                "agentpool",
                 "apiview",
                 "apphost",
                 "aspnet",
@@ -65,6 +66,7 @@
                 "batchfile",
                 "bestpractices",
                 "buildtransitive",
+                "centralus",
                 "classdef",
                 "classfilters",
                 "cmds",
@@ -136,6 +138,7 @@
                 "securestring",
                 "Segoe",
                 "setvariable",
+                "skus",
                 "storageaccount",
                 "structs",
                 "stylecop",
@@ -169,6 +172,7 @@
         "azureblob",
         "azuremcp",
         "azuresdk",
+        "azureterraformbestpractices",
         "codeium",
         "cslschema",
         "bdylan",
@@ -258,6 +262,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "winget",
         "Xunit"
     ]
 }

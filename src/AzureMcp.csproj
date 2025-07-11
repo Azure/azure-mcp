@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.3.1</Version>
+    <Version>0.3.3</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
@@ -56,6 +56,7 @@
     <PackageReference Include="Azure.Monitor.Query" />
     <PackageReference Include="Azure.ResourceManager.AppConfiguration" />
     <PackageReference Include="Azure.ResourceManager.Authorization" />
+    <PackageReference Include="Azure.ResourceManager.ContainerService" />
     <PackageReference Include="Azure.ResourceManager.CognitiveServices" />
     <PackageReference Include="Azure.ResourceManager.Kusto" />
     <PackageReference Include="Azure.ResourceManager.PostgreSql" />
@@ -67,6 +68,7 @@
     <PackageReference Include="Azure.Security.KeyVault.Certificates" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
+    <PackageReference Include="Azure.ResourceManager.Grafana" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
     <PackageReference Include="Azure.ResourceManager.Search" />
     <PackageReference Include="Azure.ResourceManager.Storage" />
@@ -91,7 +93,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+	<EmbeddedResource Include="Areas\AzureTerraformBestPractices\Resources\terraform-best-practices-for-azure.txt" />
+	<EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
     <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
   </ItemGroup>

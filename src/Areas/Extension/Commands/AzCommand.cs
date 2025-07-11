@@ -71,6 +71,11 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             string fullPath = Path.Combine(path.Trim(), executableName);
             if (File.Exists(fullPath))
             {
+                _cachedAzPath = fullPath;
+                return _cachedAzPath;
+            }
+            else
+            {
                 var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 if (isWindows)
                 {
@@ -87,8 +92,6 @@ Your job is to answer questions about an Azure environment by executing Azure CL
                         return _cachedAzPath;
                     }
                 }
-                _cachedAzPath = fullPath;
-                return _cachedAzPath;
             }
         }
         return null;

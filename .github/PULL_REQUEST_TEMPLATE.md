@@ -8,6 +8,7 @@
 - [ ] Commit history is clean with informative messages (no previously merged commits appear in PR history). [See cleanup guide](https://github.com/Azure/azure-powershell/blob/master/documentation/development-docs/cleaning-up-commits.md)
 - [ ] Added comprehensive tests for core features
 - [ ] Added `CHANGELOG.md` entry for user-impacting changes (bug fixes, new features, UI/UX changes)
+- [ ] Spelling check passes with `.\eng\common\spelling\Invoke-Cspell.ps1`
 - [ ] For MCP tool changes, updated:
   - [ ] Documentation in `README.md`
   - [ ] Command list in `/docs/azmcp-commands.md` 

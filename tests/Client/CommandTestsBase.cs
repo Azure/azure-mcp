@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
@@ -28,7 +29,27 @@ public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOut
 
         writeOutput($"request: {JsonSerializer.Serialize(new { command, parameters })}");
 
-        var result = await Client.CallToolAsync(command, parameters);
+        CallToolResult result;
+        try
+        {
+            result = await Client.CallToolAsync(command, parameters);
+        }
+        catch (ModelContextProtocol.McpException ex)
+        {
+            // MCP client throws exceptions for error responses, but we want to handle them gracefully
+            // Check if the exception contains error response information that we can parse
+            writeOutput($"MCP exception: {ex.Message}");
+
+            // For validation errors, we'll return a synthetic error response
+            if (ex.Message.Contains("An error occurred"))
+            {
+                // Return null to indicate error response (no results)
+                writeOutput("synthetic error response: null (error response)");
+                return null;
+            }
+
+            throw; // Re-throw if we can't handle it
+        }
 
         var content = McpTestUtilities.GetFirstText(result.Content);
         if (string.IsNullOrWhiteSpace(content))

@@ -9,7 +9,8 @@ public static class BicepSchemaOptionDefinitions
 
     public static readonly Option<string> ResourceTypeName = new(
         $"--{ResourceType}",
-        "The name of the Bicep Resource Type (e.g., Microsoft.Storage/storageAccounts)."
+        "The name of the Bicep Resource Type and must be in the full Azure Resource Manager format '{ResourceProvider}/{ResourceType}'. " +
+        "(e.g., 'Microsoft.KeyVault/vaults', 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines')(e.g., Microsoft.Storage/storageAccounts)."
     )
     {
         IsRequired = true

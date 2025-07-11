@@ -1,0 +1,32 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Areas.Aks.Commands.Cluster;
+using AzureMcp.Areas.Aks.Services;
+using AzureMcp.Commands;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.Areas.Aks;
+
+public class AksSetup : IAreaSetup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IAksService, AksService>();
+    }
+
+    public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
+    {
+        // Create AKS command group
+        var aks = new CommandGroup("aks", "Azure Kubernetes Service operations - Commands for managing and listing Azure Kubernetes Service (AKS) clusters.");
+        rootGroup.AddSubGroup(aks);
+
+        // Create AKS subgroups
+        var cluster = new CommandGroup("cluster", "AKS cluster operations - Commands for listing and managing AKS clusters in your Azure subscription.");
+        aks.AddSubGroup(cluster);
+
+        // Register AKS commands
+        cluster.AddCommand("list", new ClusterListCommand(loggerFactory.CreateLogger<ClusterListCommand>()));
+    }
+}

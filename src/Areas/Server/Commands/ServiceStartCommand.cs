@@ -108,7 +108,11 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         if (serverOptions.Transport == TransportTypes.Sse)
         {
-            var builder = WebApplication.CreateBuilder([]);
+            var builder = WebApplication.CreateSlimBuilder([]);
+
+            builder.Services.AddLogging(); // For ILoggerFactory.
+            builder.Services.AddOptions(); // For IOptions<T> support.
+
             Program.ConfigureServices(builder.Services);
             ConfigureMcpServer(builder.Services, serverOptions);
 
@@ -116,6 +120,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
                 .ConfigureLogging(logging =>
                 {
+                    logging.ConfigureOpenTelemetryLogger();
                     logging.AddEventSourceLogger();
                 });
 
@@ -131,6 +136,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
+                    logging.ConfigureOpenTelemetryLogger();
                     logging.AddEventSourceLogger();
                 })
                 .ConfigureServices(services =>

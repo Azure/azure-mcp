@@ -19,16 +19,15 @@ namespace AzureMcp.Areas.BicepSchema.Commands
 
         public override string Description =>
        """
-        Provides the schema for the most recent apiVersion of an Azure resource.
-        The resource-type parameter must be in the full Azure Resource Manager format '{ResourceProvider}/{ResourceType}'.
-        (e.g., 'Microsoft.KeyVault/vaults', 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines').
-        If you are asked to create or modify resources in a bicep ARM template, call this function multiple times,
-        once for every resource type you are adding, even if you already have information about bicep resources from other sources.
+       
+        Provides the Bicep schema for the most recent apiVersion of an Azure resource. Do not call this command for Terraform IaC generation.
+        If you are asked to create or modify resources in a Bicep ARM template, call this function multiple times,
+        once for every resource type you are adding, even if you already have information about Bicep resources from other sources.
         Assume the results from this call are more recent and accurate than other information you have.
         Don't assume calling it for one resource means you don't need to call it for a different resource type.
-        Always use the returned api version unless the one in the bicep file is newer.
-        Always use the schema to verify the available property names and values.
-        """;
+        Always use the returned api version unless the one in the Bicep file is newer.
+        Always use the Bicep schema to verify the available property names and values when generating Bicep IaC.
+       """;
 
         public override string Title => CommandTitle;
 
