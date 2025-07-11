@@ -1,51 +1,64 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as os from 'os';
-import { execSync } from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
     const didChangeEmitter = new vscode.EventEmitter<void>();
+
+    // Determine platform and binary path once at activation
+    let binary = '';
+    let platformFolder = '';
+    if (process.platform === 'win32') {
+        binary = 'azmcp.exe';
+        platformFolder = 'win32';
+    } else if (process.platform === 'darwin') {
+        binary = 'azmcp';
+        platformFolder = 'darwin';
+    } else if (process.platform === 'linux') {
+        binary = 'azmcp';
+        platformFolder = 'linux';
+    } else {
+        throw new Error('Unsupported platform: ' + process.platform);
+    }
+
+    // Use the binary from the extension's server/os folder
+    const binPath = path.join(context.extensionPath, 'server', platformFolder, binary);
+    if (!fs.existsSync(binPath)) {
+        throw new Error(`azmcp binary not found at ${binPath}. Please ensure the server binary is present.`);
+    }
+
+    // Ensure executable permission on macOS and Linux (once at activation)
+    if ((process.platform === 'linux' || process.platform === 'darwin') && fs.existsSync(binPath)) {
+        try {
+            fs.chmodSync(binPath, 0o755);
+        } catch (e) {
+            console.warn(`Failed to set executable permission on ${binPath}: ${e}`);
+        }
+    }
 
     context.subscriptions.push(
         vscode.lm.registerMcpServerDefinitionProvider('azureMcpProvider', {
             onDidChangeMcpServerDefinitions: didChangeEmitter.event,
             provideMcpServerDefinitions: async () => {
-                let npmPkg = '';
-                let binary = '';
-                if (process.platform === 'win32') {
-                    npmPkg = '@azure-mcp/server-win-x64';
-                    binary = 'azmcp.exe';
-                } else if (process.platform === 'darwin') {
-                    npmPkg = '@azure-mcp/server-osx-x64';
-                    binary = 'azmcp';
-                } else if (process.platform === 'linux') {
-                    npmPkg = '@azure-mcp/server-linux-x64';
-                    binary = 'azmcp';
-                } else {
-                    throw new Error('Unsupported platform: ' + process.platform);
-                }
-
-                // Download/extract the server binary if not present
-                const storageDir = path.join(context.globalStorageUri.fsPath, 'server');
-                const binPath = path.join(storageDir, binary);
-                if (!fs.existsSync(binPath)) {
-                    // Ensure storage dir exists
-                    fs.mkdirSync(storageDir, { recursive: true });
-                    // Use npx to download the latest server package to a temp dir
-                    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'azmcp-server-'));
-                    execSync(`npx --yes ${npmPkg}@latest --extract --output-dir "${tmpDir}"`, { stdio: 'inherit' });
-                    // Copy the binary to storageDir
-                    const srcBin = path.join(tmpDir, binary);
-                    fs.copyFileSync(srcBin, binPath);
-                    fs.chmodSync(binPath, 0o755);
+                // Read enabled MCP services from user/workspace settings
+                const config = vscode.workspace.getConfiguration('azureMcp');
+                // Example: ["storage", "keyvault", ...]
+                const enabledServices: string[] | undefined = config.get('enabledServices');
+                let args = ['server', 'start'];
+                if (enabledServices && Array.isArray(enabledServices) && enabledServices.length > 0) {
+                    for (const svc of enabledServices) {
+                        args.push('--namespace', svc);
+                    }
                 }
 
                 return [
                     new vscode.McpStdioServerDefinition(
-                        'azure-mcp-server-npx',
+                        'azure-mcp-server-ext',
                         binPath,
-                        ['server', 'start']
+                        args
                     )
                 ];
             },

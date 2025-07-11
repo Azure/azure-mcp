@@ -21,25 +21,34 @@
         "ai"
     ],
     "bugs": {
-        "url": "https://github.com/Azure/azure-dev/issues"
+        "url": "https://github.com/Azure/azure-mcp/issues"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/azure/azure-dev"
+        "url": "https://github.com/azure/azure-mcp"
     },
     "activationEvents": [
         "*"
     ],
     "main": "./dist/extension.js",
-    "enabledApiProposals": [
-    ],
     "contributes": {
         "mcpServerDefinitionProviders": [
             {
                 "id": "azureMcpProvider",
                 "label": "Azure MCP Server Provider"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Azure MCP",
+            "properties": {
+                "azureMcp.enabledServices": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "List of Azure MCP services to enable. If empty or unset, all services are enabled by default."
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run build",

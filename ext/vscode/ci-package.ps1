@@ -5,8 +5,10 @@ param(
 # Define OS targets and corresponding RIDs
 $osList = @(
     @{ Name = "win-x64"; Rid = "win-x64" },
+    @{ Name = "win-arm64"; Rid = "win-arm64" },
     @{ Name = "linux-x64"; Rid = "linux-x64" },
-    @{ Name = "osx-x64"; Rid = "osx-x64" }
+    @{ Name = "osx-x64"; Rid = "osx-x64" },
+    @{ Name = "osx-arm64"; Rid = "osx-arm64" }
 )
 # Define project and destination base paths
 $projectPath = Resolve-Path "../../src"
