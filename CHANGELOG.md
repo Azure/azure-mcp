@@ -1,6 +1,14 @@
-# CHANGELOG 📝
+# Release History
 
-The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
+## 0.3.3 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
 
 ## 0.3.2 (2025-07-10)
 
