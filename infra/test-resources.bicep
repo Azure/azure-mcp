@@ -164,3 +164,12 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
     testApplicationOid: testApplicationOid
   }
 }
+module postgres 'services/postgres.bicep' = {
+  name: '${deploymentName}-postgres'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
