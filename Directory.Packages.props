@@ -16,6 +16,7 @@
     <PackageVersion Include="Azure.Monitor.Query" Version="1.6.0" />
     <PackageVersion Include="Azure.ResourceManager.AppConfiguration" Version="1.4.0" />
     <PackageVersion Include="Azure.ResourceManager.Authorization" Version="1.1.4" />
+    <PackageVersion Include="Azure.ResourceManager.ContainerService" Version="1.2.3" />
     <PackageVersion Include="Azure.ResourceManager.Kusto" Version="1.6.0" />
     <PackageVersion Include="Azure.ResourceManager.CognitiveServices" Version="1.4.0" />
     <PackageVersion Include="Azure.ResourceManager.PostgreSql" Version="1.2.0" />

@@ -39,6 +39,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-appconfig-kv-show | Show the content for the key <key_name> in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-unlock | Unlock the key <key_name> in App Configuration store <app_config_store_name> |
 
+## Azure Kubernetes Service (AKS)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-aks-cluster-list | List all AKS clusters in my subscription |
+| azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
+| azmcp-aks-cluster-list | What AKS clusters do I have? |
+
 ## Azure CLI
 
 | Tool Name | Test Prompt |

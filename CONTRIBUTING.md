@@ -333,6 +333,16 @@ Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds. Run `dotnet format` before submitting to catch format errors early.
 
+**Spelling Check**
+
+To ensure consistent spelling across the codebase, run the spelling check before submitting:
+
+```pwsh
+.\eng\common\spelling\Invoke-Cspell.ps1
+```
+
+This will check all files for spelling errors using the project's dictionary. Add any new technical terms or proper nouns to `.vscode/cspell.json` if needed.
+
 **Requirements:**
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)

@@ -178,7 +178,7 @@ IMPORTANT:
 - Never redefine properties from base classes
 - Make properties nullable if not required
 - Use consistent parameter names across services:
-  - Use `subscription` instead of `subscriptionId`
+  - **CRITICAL**: Always use `subscription` (never `subscriptionId`) for subscription parameters - this allows the parameter to accept both subscription IDs and subscription names, which are resolved internally by `ISubscriptionService.GetSubscription()`
   - Use `resourceGroup` instead of `resourceGroupName`
   - Use singular nouns for resource names (e.g., `server` not `serverName`)
   - Keep parameter names consistent with Azure SDK parameters when possible
@@ -307,7 +307,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.{Service};
 
-// Base command for all service commands
+// Base command for all service commands (if no members needed, use concise syntax)
+public abstract class Base{Service}Command<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
+    : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new();
+
+// Base command for all service commands (if members are needed, use full syntax)
 public abstract class Base{Service}Command<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new()
@@ -987,7 +992,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Follow existing response patterns
 
 4. Documentation:
-   - Clear command description
+   - Clear command description without repeating the service name (e.g., use "List and manage clusters" instead of "AKS operations - List and manage AKS clusters")
    - List all required options
    - Describe return format
    - Include examples in description
@@ -1003,6 +1008,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 ## Common Pitfalls to Avoid
 
 1. Do not:
+   - **CRITICAL**: Use `subscriptionId` as parameter name - Always use `subscription` to support both IDs and names
    - Redefine base class properties in Options classes
    - Skip base.RegisterOptions() call
    - Skip base.Dispose() call

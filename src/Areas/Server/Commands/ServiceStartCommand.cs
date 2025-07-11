@@ -108,7 +108,11 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         if (serverOptions.Transport == TransportTypes.Sse)
         {
-            var builder = WebApplication.CreateBuilder([]);
+            var builder = WebApplication.CreateSlimBuilder([]);
+
+            builder.Services.AddLogging(); // For ILoggerFactory.
+            builder.Services.AddOptions(); // For IOptions<T> support.
+
             Program.ConfigureServices(builder.Services);
             ConfigureMcpServer(builder.Services, serverOptions);
 
