@@ -3,6 +3,29 @@
 > [!IMPORTANT]
 > The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
 
+## Quick Start Examples
+
+Here are common server startup scenarios with the improved, self-documenting parameters:
+
+```bash
+# Start with all Azure tools (default)
+azmcp server start
+
+# Start with only storage and key vault tools using the descriptive parameter
+azmcp server start --service-areas storage keyvault
+
+# Start with one tool per Azure service using descriptive mode
+azmcp server start --tool-grouping per-service
+
+# Start with a single unified Azure tool using descriptive mode
+azmcp server start --tool-grouping unified-tool
+
+# Start in read-only mode with only monitoring tools
+azmcp server start --service-areas monitor --read-only
+```
+
+> **Tip**: Use `azmcp server start --help` to see all available options with detailed descriptions and examples.
+
 ## Global Options
 
 The following options are available for all commands:
@@ -24,9 +47,9 @@ The following options are available for all commands:
 
 The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
 
-#### Default Mode
+#### Default Mode (Individual Tools)
 
-Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
+Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool. This provides the most granular control but may hit tool limits in some MCP clients.
 
 ```bash
 # Start MCP Server with all tools exposed individually
@@ -36,19 +59,26 @@ azmcp server start \
     [--read-only]
 ```
 
-#### Namespace Mode
+#### Service Area Filtering
 
-Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
+Exposes only tools for specific Azure service areas. Use multiple `--service-areas` (or `--namespace`) parameters to include multiple services.
 
 ```bash
 # Start MCP Server with only Storage tools
 azmcp server start \
-    --namespace storage \
+    --service-areas storage \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
 
 # Start MCP Server with Storage and Key Vault tools
+azmcp server start \
+    --service-areas storage keyvault \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Alternative using the traditional parameter name
 azmcp server start \
     --namespace storage \
     --namespace keyvault \
@@ -57,12 +87,19 @@ azmcp server start \
     [--read-only]
 ```
 
-#### Service Proxy Mode
+#### Per-Service Tool Mode
 
-Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
+Groups all operations within each Azure service area into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
 
 ```bash
-# Start MCP Server with service proxy tools
+# Start MCP Server with per-service tools (new descriptive option)
+azmcp server start \
+    --tool-grouping per-service \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Alternative using traditional parameter
 azmcp server start \
     --mode namespace \
     [--transport <transport>] \
@@ -70,12 +107,19 @@ azmcp server start \
     [--read-only]
 ```
 
-#### Single Tool Proxy Mode
+#### Unified Tool Mode
 
-Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools. This is the most minimal approach, useful for MCP clients with very strict tool limits.
 
 ```bash
-# Start MCP Server with single Azure tool proxy
+# Start MCP Server with single unified Azure tool (new descriptive option)
+azmcp server start \
+    --tool-grouping unified-tool \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Alternative using traditional parameter
 azmcp server start \
     --mode single \
     [--transport <transport>] \
@@ -83,12 +127,26 @@ azmcp server start \
     [--read-only]
 ```
 
-> **Note:**
+> **Tool Organization Options:**
 >
-> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
-> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
-> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
-> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+> - **Individual tools** (default): Each Azure operation is a separate tool. Most granular but may hit tool limits.
+> - **Per-service tools** (`--tool-grouping per-service`): One tool per Azure service area (storage, keyvault, etc.). Good balance of organization and tool count.
+> - **Unified tool** (`--tool-grouping unified-tool`): Single Azure tool handling all operations. Lowest tool count.
+>
+> **Service Area Filtering:**
+> - Use `--service-areas` (or `--namespace`) to limit which Azure services are exposed
+> - Available service areas: `storage`, `keyvault`, `cosmos`, `monitor`, `search`, `servicebus`, etc.
+> - Run `azmcp -h` to see all available service areas
+> - Multiple service areas can be specified: `--service-areas storage keyvault cosmos`
+>
+> **Read-Only Mode:**
+> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations
+> - When enabled, only operations like list, get, describe, and query are available
+> - Write operations like create, update, delete, and set are excluded
+>
+> **Backward Compatibility:**
+> - Traditional parameter names (`--mode`, `--namespace`) continue to work
+> - New descriptive parameter names (`--tool-grouping`, `--service-areas`) provide better self-documentation
 
 ### Azure AI Foundry Operations
 

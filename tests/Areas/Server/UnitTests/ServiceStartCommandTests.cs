@@ -4,6 +4,7 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Server.Options;
 using AzureMcp.Models.Option;
 using Xunit;
 
@@ -49,6 +50,84 @@ public class ServiceStartCommandTests
         Assert.Equal(expectedTransport, actualTransport);
     }
 
+    [Theory]
+    [InlineData("single", "single")]
+    [InlineData("namespace", "namespace")]
+    [InlineData("unified-tool", "single")]
+    [InlineData("per-service", "namespace")]
+    public void ModeTypes_GetCanonicalMode_MapsCorrectly(string inputMode, string expectedCanonicalMode)
+    {
+        // Act
+        var actualMode = ModeTypes.GetCanonicalMode(inputMode);
+
+        // Assert
+        Assert.Equal(expectedCanonicalMode, actualMode);
+    }
+
+    [Theory]
+    [InlineData("storage", "storage")]
+    [InlineData("keyvault", "keyvault")]
+    [InlineData("storage keyvault", "storage", "keyvault")]
+    public void ServiceAreasOption_ParsesCorrectly(string inputServices, params string[] expectedServices)
+    {
+        // Arrange
+        var parseResult = CreateServiceAreasParseResult(inputServices.Split(' '));
+
+        // Act
+        var actualServices = parseResult.GetValueForOption(OptionDefinitions.Service.ServiceAreas);
+
+        // Assert
+        Assert.NotNull(actualServices);
+        Assert.Equal(expectedServices.Length, actualServices.Length);
+        for (int i = 0; i < expectedServices.Length; i++)
+        {
+            Assert.Equal(expectedServices[i], actualServices[i]);
+        }
+    }
+
+    [Theory]
+    [InlineData("unified-tool")]
+    [InlineData("per-service")]
+    public void ToolGroupingOption_ParsesCorrectly(string inputMode)
+    {
+        // Arrange
+        var parseResult = CreateToolGroupingParseResult(inputMode);
+
+        // Act
+        var actualMode = parseResult.GetValueForOption(OptionDefinitions.Service.ToolGrouping);
+
+        // Assert
+        Assert.Equal(inputMode, actualMode);
+    }
+
+    [Fact]
+    public void ModeTypes_AllModeValues_ContainsExpectedValues()
+    {
+        // Act
+        var allModes = ModeTypes.AllModeValues;
+
+        // Assert
+        Assert.Contains("single", allModes);
+        Assert.Contains("namespace", allModes);
+        Assert.Contains("unified-tool", allModes);
+        Assert.Contains("per-service", allModes);
+    }
+
+    [Fact]
+    public void ServiceOptions_ContainsBothTraditionalAndDescriptiveOptions()
+    {
+        // Arrange
+        var command = _command.GetCommand();
+
+        // Act & Assert - Check that both traditional and new options are registered
+        var options = command.Options.Select(o => o.Name).ToList();
+        
+        Assert.Contains("namespace", options);
+        Assert.Contains("service-areas", options);
+        Assert.Contains("mode", options);
+        Assert.Contains("tool-grouping", options);
+    }
+
     private static ParseResult CreateParseResult(string? serviceValue)
     {
         var root = new RootCommand
@@ -68,6 +147,27 @@ public class ServiceStartCommandTests
         args.Add("1234");
         args.Add("--transport");
         args.Add("stdio");
+        return new Parser(root).Parse(args.ToArray());
+    }
+
+    private static ParseResult CreateServiceAreasParseResult(string[] serviceValues)
+    {
+        var root = new RootCommand
+        {
+            OptionDefinitions.Service.ServiceAreas
+        };
+        var args = new List<string> { "--service-areas" };
+        args.AddRange(serviceValues);
+        return new Parser(root).Parse(args.ToArray());
+    }
+
+    private static ParseResult CreateToolGroupingParseResult(string modeValue)
+    {
+        var root = new RootCommand
+        {
+            OptionDefinitions.Service.ToolGrouping
+        };
+        var args = new List<string> { "--tool-grouping", modeValue };
         return new Parser(root).Parse(args.ToArray());
     }
 }

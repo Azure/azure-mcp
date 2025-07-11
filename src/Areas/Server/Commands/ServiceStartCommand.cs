@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine;
+using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
@@ -27,7 +29,9 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
     private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
     private readonly Option<string[]?> _namespaceOption = OptionDefinitions.Service.Namespace;
+    private readonly Option<string[]?> _serviceAreasOption = OptionDefinitions.Service.ServiceAreas;
     private readonly Option<string?> _modeOption = OptionDefinitions.Service.Mode;
+    private readonly Option<string?> _toolGroupingOption = OptionDefinitions.Service.ToolGrouping;
     private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
 
     /// <summary>
@@ -55,7 +59,9 @@ public sealed class ServiceStartCommand : BaseCommand
         command.AddOption(_transportOption);
         command.AddOption(_portOption);
         command.AddOption(_namespaceOption);
+        command.AddOption(_serviceAreasOption);
         command.AddOption(_modeOption);
+        command.AddOption(_toolGroupingOption);
         command.AddOption(_readOnlyOption);
     }
 
@@ -71,13 +77,21 @@ public sealed class ServiceStartCommand : BaseCommand
             ? OptionDefinitions.Service.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
-        var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
-            ? OptionDefinitions.Service.Namespace.GetDefaultValue()
-            : parseResult.GetValueForOption(_namespaceOption);
+        // Handle both --namespace and --service-areas options (prefer --service-areas if provided)
+        var namespaces = parseResult.GetValueForOption(_serviceAreasOption) 
+            ?? parseResult.GetValueForOption(_namespaceOption)
+            ?? OptionDefinitions.Service.Namespace.GetDefaultValue();
 
-        var mode = parseResult.GetValueForOption(_modeOption) == default
-            ? OptionDefinitions.Service.Mode.GetDefaultValue()
-            : parseResult.GetValueForOption(_modeOption);
+        // Handle both --mode and --tool-grouping options (prefer --tool-grouping if provided)
+        var mode = parseResult.GetValueForOption(_toolGroupingOption)
+            ?? parseResult.GetValueForOption(_modeOption)
+            ?? OptionDefinitions.Service.Mode.GetDefaultValue();
+
+        // Map descriptive mode values to canonical values
+        if (mode != null)
+        {
+            mode = ModeTypes.GetCanonicalMode(mode);
+        }
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
             ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()

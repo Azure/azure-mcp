@@ -18,4 +18,39 @@ internal static class ModeTypes
     /// (e.g., all storage operations become one "storage" tool with internal routing).
     /// </summary>
     public const string NamespaceProxy = "namespace";
+
+    // More descriptive aliases for improved usability
+    /// <summary>
+    /// Alias for SingleToolProxy - exposes a single unified Azure tool.
+    /// </summary>
+    public const string UnifiedTool = "unified-tool";
+
+    /// <summary>
+    /// Alias for NamespaceProxy - exposes one tool per Azure service area.
+    /// </summary>
+    public const string PerServiceTool = "per-service";
+
+    /// <summary>
+    /// Gets all valid mode values including aliases.
+    /// </summary>
+    public static readonly string[] AllModeValues = 
+    {
+        SingleToolProxy,
+        NamespaceProxy,
+        UnifiedTool,
+        PerServiceTool
+    };
+
+    /// <summary>
+    /// Maps descriptive mode values to their canonical equivalents.
+    /// </summary>
+    public static string GetCanonicalMode(string mode)
+    {
+        return mode switch
+        {
+            UnifiedTool => SingleToolProxy,
+            PerServiceTool => NamespaceProxy,
+            _ => mode
+        };
+    }
 }
