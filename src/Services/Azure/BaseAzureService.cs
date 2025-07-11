@@ -8,10 +8,11 @@ using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Tenant;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure;
 
-public abstract class BaseAzureService(ITenantService? tenantService = null)
+public abstract class BaseAzureService(ITenantService? tenantService = null, ILoggerFactory? loggerFactory = null)
 {
     private static readonly UserAgentPolicy s_sharedUserAgentPolicy;
     internal static readonly string s_defaultUserAgent;
@@ -22,6 +23,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
     private string? _lastArmClientTenantId;
     private RetryPolicyOptions? _lastRetryPolicy;
     private readonly ITenantService? _tenantService = tenantService;
+    private readonly ILoggerFactory? _loggerFactory = loggerFactory;
 
     static BaseAzureService()
     {
@@ -55,9 +57,9 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
         try
         {
-            _credential = new CustomChainedCredential(tenantId);
+            ILogger<CustomChainedCredential>? logger = _loggerFactory?.CreateLogger<CustomChainedCredential>();
+            _credential = new CustomChainedCredential(tenantId, logger);
             _lastTenantId = tenantId;
-
             return _credential;
         }
         catch (Exception ex)
