@@ -1,18 +1,3 @@
-parameters:
-# required matrix parameters
-- name: UsePlatformContainer
-  type: boolean
-- name: OSName
-  type: string
-- name: Matrix
-  type: object
-- name: DependsOn
-  type: string
-- name: CloudConfig
-  type: object
-- name: TestTimeoutInMinutes
-  type: number
-
 jobs:
 - job: Build_${{ parameters.OSName }}
   displayName: "Build"
@@ -70,42 +55,32 @@ jobs:
       mergeTestResults: true
 
   - task: PublishCodeCoverageResults@2
-    displayName: Publish Code Coverage Reports
+    displayName: "Publish Code Coverage Reports"
     condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
     inputs:
       summaryFileLocation: $(CoverageFile)
+
+  # --- VS Code Extension Packaging Steps ---
+  - task: NodeTool@0
+    displayName: "Use Node.js 20.x"
+    inputs:
+      versionSpec: 20.x
+
+  - bash: |
+      npm install -g npm vsce
+      npm ci --no-optional
+    displayName: "Install npm dependencies and vsce"
+    workingDirectory: ext/vscode
+
+  - pwsh: ./ci-package.ps1
+    workingDirectory: ext/vscode
+    displayName: "Package VS Code Extension"
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: "Component Governance Detection"
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)
       ArtifactName: $(PipelineArtifactName)_$(System.JobName)
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
-
-# --- New VS Code Extension Build/Scan Job ---
-- job: BuildScanVscode_${{ build.key }}
-  displayName: "Build and Scan VS Code Extension (${{ build.key }})"
-  pool:
-    name: ${{ build.value.Pool }}
-    ${{ if eq('mac', build.value.OS) }}:
-      vmImage: ${{ build.value.OSVmImage }}
-    ${{ else }}:
-      demands: ImageOverride -equals ${{ build.value.OSVmImage }}
-
-  variables:
-    NodeVersion: 20.x
-
-  steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: $(NodeVersion)
-
-    - bash: |
-        npm install -g npm vsce
-        npm ci --no-optional
-      workingDirectory: ext/vscode
-
-    - pwsh: ./ci-package.ps1
-      workingDirectory: ext/vscode
-      displayName: Package
-
-    - task: ComponentGovernanceComponentDetection@0
