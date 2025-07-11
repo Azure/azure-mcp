@@ -5,11 +5,11 @@
 ### Features Added
 
 ### Breaking Changes
+- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 
 ### Bugs Fixed
 
 ### Other Changes
-- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 
 ## 0.3.2 (2025-07-10)
 
