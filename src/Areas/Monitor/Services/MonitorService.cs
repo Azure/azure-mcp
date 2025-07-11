@@ -21,8 +21,8 @@ public class MonitorService : BaseAzureService, IMonitorService
     private readonly ISubscriptionService _subscriptionService;
     private readonly IResourceGroupService _resourceGroupService;
 
-    public MonitorService(ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
-        : base(tenantService)
+    public MonitorService(AzureClientService azureClientService, ISubscriptionService subscriptionService, ITenantService tenantService, IResourceGroupService resourceGroupService)
+        : base(azureClientService, tenantService)
     {
         _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
         _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
@@ -41,18 +41,7 @@ public class MonitorService : BaseAzureService, IMonitorService
         ValidateRequiredParameters(subscription, resourceId, table);
         query = BuildQuery(query, table, limit);
 
-        var credential = await GetCredential(tenant);
-        var options = AddDefaultPolicies(new LogsQueryClientOptions());
-
-        if (retryPolicy != null)
-        {
-            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-            options.Retry.MaxRetries = retryPolicy.MaxRetries;
-            options.Retry.Mode = retryPolicy.Mode;
-            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-        }
-        var client = new LogsQueryClient(credential, options);
+        var client = await CreateLogsQueryClientAsync(tenant, retryPolicy);
         var timeRange = new QueryTimeRange(TimeSpan.FromHours(hours ?? 24));
 
         try
@@ -100,18 +89,7 @@ public class MonitorService : BaseAzureService, IMonitorService
     {
         ValidateRequiredParameters(subscription, workspace, query);
 
-        var credential = await GetCredential(tenant);
-        var options = AddDefaultPolicies(new LogsQueryClientOptions());
-
-        if (retryPolicy != null)
-        {
-            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-            options.Retry.MaxRetries = retryPolicy.MaxRetries;
-            options.Retry.Mode = retryPolicy.Mode;
-            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-        }
-        var client = new LogsQueryClient(credential, options);
+        var client = await CreateLogsQueryClientAsync(tenant, retryPolicy);
 
         try
         {
@@ -239,18 +217,7 @@ public class MonitorService : BaseAzureService, IMonitorService
 
         try
         {
-            var credential = await GetCredential(tenant);
-            var options = AddDefaultPolicies(new LogsQueryClientOptions());
-
-            if (retryPolicy != null)
-            {
-                options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-                options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-                options.Retry.MaxRetries = retryPolicy.MaxRetries;
-                options.Retry.Mode = retryPolicy.Mode;
-                options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-            }
-            var client = new LogsQueryClient(credential, options);
+            var client = await CreateLogsQueryClientAsync(tenant, retryPolicy);
             var timeRange = new QueryTimeRange(TimeSpan.FromHours(hours ?? 24));
 
             var response = await client.QueryWorkspaceAsync(

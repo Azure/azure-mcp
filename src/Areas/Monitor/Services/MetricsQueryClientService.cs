@@ -8,8 +8,10 @@ using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Areas.Monitor.Services;
 
-public class MetricsQueryClientService(ITenantService tenantService) : BaseAzureService(tenantService), IMetricsQueryClientService
+public class MetricsQueryClientService(AzureClientService azureClientService, ITenantService tenantService) : BaseAzureService(azureClientService, tenantService), IMetricsQueryClientService
 {
+    private readonly AzureClientService _azureClientService = azureClientService ?? throw new ArgumentNullException(nameof(azureClientService));
+
     public async Task<MetricsQueryClient> CreateClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         var credential = await GetCredential(tenant);
@@ -24,6 +26,6 @@ public class MetricsQueryClientService(ITenantService tenantService) : BaseAzure
             options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
         }
 
-        return new MetricsQueryClient(credential, options);
+        return _azureClientService.GetMetricsQueryClient(credential, options);
     }
 }

@@ -17,17 +17,25 @@ public class BaseAzureServiceTests
     private const string TenantName = "test-tenant-name";
 
     private readonly ITenantService _tenantService = Substitute.For<ITenantService>();
+    private readonly AzureClientService _azureClientService = Substitute.For<AzureClientService>();
     private readonly TestAzureService _azureService;
 
     public BaseAzureServiceTests()
     {
-        _azureService = new TestAzureService();
+        _azureService = new TestAzureService(_azureClientService);
         _tenantService.GetTenantId(TenantName).Returns(TenantId);
     }
 
     [Fact]
     public async Task CreateArmClientAsync_CreatesAndUsesCachedClient()
     {
+        // Arrange
+        var mockArmClient = Substitute.For<ArmClient>();
+        var mockArmClient2 = Substitute.For<ArmClient>();
+        
+        _azureClientService.GetArmClient(Arg.Any<Azure.Core.TokenCredential>(), Arg.Any<ArmClientOptions>())
+            .Returns(mockArmClient, mockArmClient2);
+
         // Act
         var tenantName2 = "Other-Tenant-Name";
         var tenantId2 = "Other-Tenant-Id";
@@ -54,7 +62,7 @@ public class BaseAzureServiceTests
     [Fact]
     public async Task ResolveTenantIdAsync_ReturnsValueNoService()
     {
-        var testAzureService = new TestAzureService(null);
+        var testAzureService = new TestAzureService(_azureClientService, null);
 
         string? actual = await testAzureService.ResolveTenantId(TenantName);
         Assert.Equal(TenantName, actual);
@@ -63,7 +71,7 @@ public class BaseAzureServiceTests
         Assert.Null(actual2);
     }
 
-    private sealed class TestAzureService(ITenantService? tenantService = null) : BaseAzureService(tenantService)
+    private sealed class TestAzureService(AzureClientService azureClientService, ITenantService? tenantService = null) : BaseAzureService(azureClientService, tenantService)
     {
         public Task<ArmClient> GetArmClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null) =>
             CreateArmClientAsync(tenant, retryPolicy);
