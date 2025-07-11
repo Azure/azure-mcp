@@ -551,6 +551,15 @@ azmcp sql db show --subscription <subscription> \
                   --database <database-name>
 ```
 
+### Azure SQL Elastic Pool Operations
+
+```bash
+# List all elastic pools in a SQL server
+azmcp sql elastic-pool list --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --server <server-name>
+```
+
 ### Azure SQL Server Operations
 
 ```bash
