@@ -24,11 +24,11 @@ namespace AzureMcp.Areas.Server.Commands;
 public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
-    private readonly Option<string> _transportOption = OptionDefinitions.Service.Transport;
-    private readonly Option<int> _portOption = OptionDefinitions.Service.Port;
-    private readonly Option<string[]?> _namespaceOption = OptionDefinitions.Service.Namespace;
-    private readonly Option<string?> _modeOption = OptionDefinitions.Service.Mode;
-    private readonly Option<bool?> _readOnlyOption = OptionDefinitions.Service.ReadOnly;
+    private readonly Option<string> _transportOption = ServiceOptionDefinitions.Transport;
+    private readonly Option<int> _portOption = ServiceOptionDefinitions.Port;
+    private readonly Option<string[]?> _namespaceOption = ServiceOptionDefinitions.Namespace;
+    private readonly Option<string?> _modeOption = ServiceOptionDefinitions.Mode;
+    private readonly Option<bool?> _readOnlyOption = ServiceOptionDefinitions.ReadOnly;
 
     /// <summary>
     /// Gets the name of the command.
@@ -68,19 +68,19 @@ public sealed class ServiceStartCommand : BaseCommand
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var port = parseResult.GetValueForOption(_portOption) == default
-            ? OptionDefinitions.Service.Port.GetDefaultValue()
+            ? ServiceOptionDefinitions.Port.GetDefaultValue()
             : parseResult.GetValueForOption(_portOption);
 
         var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
-            ? OptionDefinitions.Service.Namespace.GetDefaultValue()
+            ? ServiceOptionDefinitions.Namespace.GetDefaultValue()
             : parseResult.GetValueForOption(_namespaceOption);
 
         var mode = parseResult.GetValueForOption(_modeOption) == default
-            ? OptionDefinitions.Service.Mode.GetDefaultValue()
+            ? ServiceOptionDefinitions.Mode.GetDefaultValue()
             : parseResult.GetValueForOption(_modeOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
-            ? OptionDefinitions.Service.ReadOnly.GetDefaultValue()
+            ? ServiceOptionDefinitions.ReadOnly.GetDefaultValue()
             : parseResult.GetValueForOption(_readOnlyOption);
 
         var serverOptions = new ServiceStartOptions
