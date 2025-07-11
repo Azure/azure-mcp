@@ -133,4 +133,40 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         // If result is null, that's valid - it means no AD administrators are configured
         // The test passes as long as the command executed successfully (no exception thrown)
     }
+
+    [Fact]
+    public async Task Should_ListElasticPools_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp-sql-elasticpool-list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed and return elastic pools (may be empty array)
+        var elasticPools = result.AssertProperty("elasticPools");
+        Assert.Equal(JsonValueKind.Array, elasticPools.ValueKind);
+
+        // If there are elastic pools, verify their structure
+        if (elasticPools.GetArrayLength() > 0)
+        {
+            var firstPool = elasticPools.EnumerateArray().First();
+            Assert.Equal(JsonValueKind.Object, firstPool.ValueKind);
+
+            // Verify required properties exist
+            Assert.True(firstPool.TryGetProperty("name", out _));
+            Assert.True(firstPool.TryGetProperty("id", out _));
+            Assert.True(firstPool.TryGetProperty("type", out _));
+            Assert.True(firstPool.TryGetProperty("location", out _));
+
+            var poolType = firstPool.GetProperty("type").GetString();
+            Assert.Equal("Microsoft.Sql/servers/elasticPools", poolType);
+        }
+    }
 }

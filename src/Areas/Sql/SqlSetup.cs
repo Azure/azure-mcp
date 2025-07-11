@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Sql.Commands.Database;
+using AzureMcp.Areas.Sql.Commands.ElasticPool;
 using AzureMcp.Areas.Sql.Commands.EntraAdmin;
 using AzureMcp.Areas.Sql.Services;
 using AzureMcp.Commands;
@@ -29,6 +30,11 @@ public class SqlSetup : IAreaSetup
 
         var server = new CommandGroup("server", "SQL server operations");
         sql.AddSubGroup(server);
+
+        var elasticPool = new CommandGroup("elasticpool", "SQL elastic pool operations");
+        sql.AddSubGroup(elasticPool);
+
+        elasticPool.AddCommand("list", new ElasticPoolListCommand(loggerFactory.CreateLogger<ElasticPoolListCommand>()));
 
         var entraAdmin = new CommandGroup("entraadmin", "SQL server Microsoft Entra ID administrator operations");
         server.AddSubGroup(entraAdmin);
