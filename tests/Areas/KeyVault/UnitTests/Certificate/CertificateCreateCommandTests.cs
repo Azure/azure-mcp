@@ -4,7 +4,8 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.KeyVault.Commands.Key;
+using Azure.Security.KeyVault.Certificates;
+using AzureMcp.Areas.KeyVault.Commands.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -14,26 +15,26 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Key;
+namespace AzureMcp.Tests.Areas.KeyVault.UnitTests.Certificate;
 
 [Trait("Area", "KeyVault")]
-public class KeyListCommandTests
+public class CertificateCreateCommandTests
 {
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IKeyVaultService _keyVaultService;
-    private readonly ILogger<KeyListCommand> _logger;
-    private readonly KeyListCommand _command;
+    private readonly ILogger<CertificateCreateCommand> _logger;
+    private readonly CertificateCreateCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "knownSubscriptionId";
+    private const string _knownSubscriptionId = "knownSubscription";
     private const string _knownVaultName = "knownVaultName";
+    private const string _knownCertificateName = "knownCertificateName";
 
-    public KeyListCommandTests()
+    public CertificateCreateCommandTests()
     {
         _keyVaultService = Substitute.For<IKeyVaultService>();
-        _logger = Substitute.For<ILogger<KeyListCommand>>();
+        _logger = Substitute.For<ILogger<CertificateCreateCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_keyVaultService);
@@ -45,61 +46,59 @@ public class KeyListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsKeys_WhenKeysExist()
+    public async Task ExecuteAsync_CallsServiceCorrectly()
     {
         // Arrange
-        var expectedKeys = new List<string> { "key1", "key2" };
+        var expectedError = "Expected test error";
 
-        _keyVaultService.ListKeys(
+        // TODO (vcolin7): Find a way to mock CertificateOperation
+        // We'll test that the service is called correctly, but let it fail since mocking the return is complex
+        _keyVaultService.CreateCertificate(
             Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
+            Arg.Is(_knownCertificateName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedKeys);
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
             "--subscription", _knownSubscriptionId
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.Results);
+        // Assert - Verify the service was called with correct parameters
+        await _keyVaultService.Received(1).CreateCertificate(
+            _knownVaultName,
+            _knownCertificateName,
+            _knownSubscriptionId,
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>());
 
-        var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<KeyListResult>(json);
-
-        Assert.NotNull(result);
-        Assert.Equal(expectedKeys, result.Keys);
+        // Should handle the exception
+        Assert.Equal(500, response.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoKeys()
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfCertificateNameIsEmpty()
     {
-        // Arrange
-        _keyVaultService.ListKeys(
-            Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .Returns([]);
-
+        // Arrange - No need to mock service since validation should fail before service is called
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--certificate", "",
             "--subscription", _knownSubscriptionId
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
+        // Assert - Should return validation error response
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("required", response.Message.ToLower());
     }
 
     [Fact]
@@ -108,9 +107,9 @@ public class KeyListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.ListKeys(
+        _keyVaultService.CreateCertificate(
             Arg.Is(_knownVaultName),
-            Arg.Any<bool>(),
+            Arg.Is(_knownCertificateName),
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
@@ -118,6 +117,7 @@ public class KeyListCommandTests
 
         var args = _parser.Parse([
             "--vault", _knownVaultName,
+            "--certificate", _knownCertificateName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -130,9 +130,15 @@ public class KeyListCommandTests
         Assert.StartsWith(expectedError, response.Message);
     }
 
-    private class KeyListResult
+    private class CertificateCreateResult
     {
-        [JsonPropertyName("keys")]
-        public List<string> Keys { get; set; } = [];
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = string.Empty;
+
+        [JsonPropertyName("requestId")]
+        public string RequestId { get; set; } = string.Empty;
     }
 }

@@ -2,53 +2,53 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.KeyVault.Options;
-using AzureMcp.Areas.KeyVault.Options.Key;
+using AzureMcp.Areas.KeyVault.Options.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.KeyVault.Commands.Key;
+namespace AzureMcp.Areas.KeyVault.Commands.Certificate;
 
-public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionCommand<KeyGetOptions>
+public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> logger) : SubscriptionCommand<CertificateCreateOptions>
 {
-    private const string CommandTitle = "Get Key Vault Key";
-    private readonly ILogger<KeyGetCommand> _logger = logger;
+    private const string CommandTitle = "Create Key Vault Certificate";
+    private readonly ILogger<CertificateCreateCommand> _logger = logger;
     private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
-    private readonly Option<string> _keyOption = KeyVaultOptionDefinitions.KeyName;
+    private readonly Option<string> _certificateOption = KeyVaultOptionDefinitions.CertificateName;
 
-    public override string Name => "get";
+    public override string Name => "create";
 
     public override string Title => CommandTitle;
 
     public override string Description =>
         """
-        Get a key from an Azure Key Vault. This command retrieves and displays details
-        about a specific key in the specified vault.
+        Creates a new certificate in an Azure Key Vault. This command creates a certificate with the specified name and
+        the default policy in the given vault.
 
         Required arguments:
         - subscription
         - vault
-        - key
+        - certificate
         """;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_vaultOption);
-        command.AddOption(_keyOption);
+        command.AddOption(_certificateOption);
     }
 
-    protected override KeyGetOptions BindOptions(ParseResult parseResult)
+    protected override CertificateCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.VaultName = parseResult.GetValueForOption(_vaultOption);
-        options.KeyName = parseResult.GetValueForOption(_keyOption);
+        options.CertificateName = parseResult.GetValueForOption(_certificateOption);
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -63,32 +63,28 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
             context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
-            var key = await keyVaultService.GetKey(
+            var operation = await keyVaultService.CreateCertificate(
                 options.VaultName!,
-                options.KeyName!,
+                options.CertificateName!,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new KeyGetCommandResult(
-                    key.Name,
-                    key.KeyType.ToString(),
-                    key.Properties.Enabled,
-                    key.Properties.NotBefore,
-                    key.Properties.ExpiresOn,
-                    key.Properties.CreatedOn,
-                    key.Properties.UpdatedOn),
-                KeyVaultJsonContext.Default.KeyGetCommandResult);
+                new CertificateCreateCommandResult(
+                    operation.Value.Name,
+                    operation.Properties.Status,
+                    operation.Properties.RequestId),
+                KeyVaultJsonContext.Default.CertificateCreateCommandResult);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting key {KeyName} from vault {VaultName}", options.KeyName, options.VaultName);
+            _logger.LogError(ex, "Error creating certificate {CertificateName} in vault {VaultName}", options.CertificateName, options.VaultName);
             HandleException(context, ex);
         }
 
         return context.Response;
     }
 
-    internal record KeyGetCommandResult(string Name, string KeyType, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
+    internal record CertificateCreateCommandResult(string Name, string Status, string RequestId);
 }

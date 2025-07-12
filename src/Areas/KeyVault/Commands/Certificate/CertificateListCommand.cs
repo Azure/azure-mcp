@@ -2,49 +2,45 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.KeyVault.Options;
-using AzureMcp.Areas.KeyVault.Options.Secret;
+using AzureMcp.Areas.KeyVault.Options.Certificate;
 using AzureMcp.Areas.KeyVault.Services;
 using AzureMcp.Commands.KeyVault;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.KeyVault.Commands.Secret;
+namespace AzureMcp.Areas.KeyVault.Commands.Certificate;
 
-public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : SubscriptionCommand<SecretGetOptions>
+public sealed class CertificateListCommand(ILogger<CertificateListCommand> logger) : SubscriptionCommand<CertificateListOptions>
 {
-    private const string _commandTitle = "Get Key Vault Secret";
-    private readonly ILogger<SecretGetCommand> _logger = logger;
+    private const string _commandTitle = "List Key Vault Certificates";
+    private readonly ILogger<CertificateListCommand> _logger = logger;
     private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
-    private readonly Option<string> _secretOption = KeyVaultOptionDefinitions.SecretName;
 
-    public override string Name => "get";
+    public override string Name => "list";
 
     public override string Title => _commandTitle;
 
     public override string Description =>
         """
-        Gets a secret from an Azure Key Vault. This command retrieves and displays the value
-        of a specific secret from the specified vault.
+        List all certificates in an Azure Key Vault. This command retrieves and displays the names of all certificates
+        stored in the specified vault.
 
         Required arguments:
         - subscription
         - vault
-        - secret
         """;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_vaultOption);
-        command.AddOption(_secretOption);
     }
 
-    protected override SecretGetOptions BindOptions(ParseResult parseResult)
+    protected override CertificateListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.VaultName = parseResult.GetValueForOption(_vaultOption);
-        options.SecretName = parseResult.GetValueForOption(_secretOption);
         return options;
     }
 
@@ -63,32 +59,26 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
             context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
-            var secret = await keyVaultService.GetSecret(
+            var certificates = await keyVaultService.ListCertificates(
                 options.VaultName!,
-                options.SecretName!,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(
-                new SecretGetCommandResult(
-                    secret.Name,
-                    secret.Value,
-                    secret.Properties.Enabled,
-                    secret.Properties.NotBefore,
-                    secret.Properties.ExpiresOn,
-                    secret.Properties.CreatedOn,
-                    secret.Properties.UpdatedOn),
-                KeyVaultJsonContext.Default.SecretGetCommandResult);
+            context.Response.Results = certificates?.Count > 0 ?
+                ResponseResult.Create(
+                    new CertificateListCommandResult(certificates),
+                    KeyVaultJsonContext.Default.CertificateListCommandResult) :
+                null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting secret {SecretName} from vault {VaultName}", options.SecretName, options.VaultName);
+            _logger.LogError(ex, "An exception occurred listing certificates from vault {VaultName}.", options.VaultName);
             HandleException(context, ex);
         }
 
         return context.Response;
     }
 
-    internal record SecretGetCommandResult(string Name, string Value, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
+    internal record CertificateListCommandResult(List<string> Certificates);
 }

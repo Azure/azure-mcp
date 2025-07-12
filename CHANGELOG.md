@@ -34,6 +34,12 @@
   - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
   - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
 - Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+- Added support for more Azure Key Vault operations: [#517](https://github.com/Azure/azure-mcp/pull/517)
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
 
 ### Breaking Changes
 
