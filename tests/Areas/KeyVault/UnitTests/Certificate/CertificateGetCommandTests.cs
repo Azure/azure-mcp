@@ -81,6 +81,25 @@ public class CertificateGetCommandTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_ReturnsInvalidObject_IfCertificateNameIsEmpty()
+    {
+        // Arrange - No need to mock service since validation should fail before service is called
+        var args = _parser.Parse([
+            "--vault", _knownVaultName,
+            "--certificate", "",
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert - Should return validation error response
+        Assert.NotNull(response);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("required", response.Message.ToLower());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_HandlesException()
     {
         // Arrange

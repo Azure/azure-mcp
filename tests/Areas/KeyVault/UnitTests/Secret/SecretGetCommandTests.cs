@@ -86,15 +86,7 @@ public class SecretGetCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
     {
-        // Arrange
-        _keyVaultService.GetSecret(
-            Arg.Any<string>(),
-            Arg.Is(""),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ThrowsAsync(new ArgumentException("Secret name cannot be null or empty"));
-
+        // Arrange - No need to mock service since validation should fail before service is called
         var args = _parser.Parse([
             "--vault", _knownVaultName,
             "--secret", "",
@@ -104,10 +96,10 @@ public class SecretGetCommandTests
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
+        // Assert - Should return validation error response
         Assert.NotNull(response);
-        Assert.Equal(500, response.Status);
-        Assert.Contains("Secret name cannot be null or empty", response.Message);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("required", response.Message.ToLower());
     }
 
     [Fact]

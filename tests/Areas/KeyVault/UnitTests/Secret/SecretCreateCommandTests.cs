@@ -89,36 +89,20 @@ public class SecretCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsInvalidObject_IfSecretNameIsEmpty()
     {
-        // Arrange
-        _keyVaultService.CreateSecret(
-            Arg.Is(_knownVaultName),
-            Arg.Is(""),
-            Arg.Is(_knownSecretValue),
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>())
-            .ReturnsNull();
-
+        // Arrange - No need to mock service since validation should fail before service is called
         var args = _parser.Parse([
             "--vault", _knownVaultName,
             "--secret", "",
-            "--value", _knownSecretValue,
             "--subscription", _knownSubscriptionId
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
+        // Assert - Should return validation error response
         Assert.NotNull(response);
-        Assert.NotNull(response.Results);
-
-        var json = JsonSerializer.Serialize(response.Results);
-        var retrievedSecret = JsonSerializer.Deserialize<SecretCreateResult>(json);
-
-        Assert.NotNull(retrievedSecret);
-        Assert.Null(retrievedSecret.Name);
-        Assert.Null(retrievedSecret.Value);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("required", response.Message.ToLower());
     }
 
     [Fact]
