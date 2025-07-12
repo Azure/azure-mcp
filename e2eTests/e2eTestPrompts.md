@@ -224,6 +224,22 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-sql-server-entraadmin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
 | azmcp-sql-server-entraadmin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 
+## Azure Support
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-support-ticket-list | List all support tickets in my subscription |
+| azmcp-support-ticket-list | Show me my Azure support tickets |
+| azmcp-support-ticket-list | What support tickets do I have? |
+| azmcp-support-ticket-list | List open support tickets |
+| azmcp-support-ticket-list | Show me support tickets with Open status |
+| azmcp-support-ticket-list | Find support tickets for billing issues |
+| azmcp-support-ticket-list | Show me support tickets created this year |
+| azmcp-support-ticket-list | Find support tickets with problem classification 'pricing' |
+| azmcp-support-ticket-list | Show me support tickets for billing service with pricing problem classification |
+| azmcp-support-ticket-list | Find support tickets for service 'Virtual Machine' |
+| azmcp-support-ticket-list | Show me support tickets filtered by service name 'Storage' |
+
 ## Azure Storage
 
 | Tool Name | Test Prompt |

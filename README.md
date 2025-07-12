@@ -88,6 +88,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "List my Azure CDN endpoints"
 - "Help me build an Azure application using Node.js"
 
+### 🎫 Azure Support
+- "List my support tickets"
+- "Show me open support tickets"
+- "Find support tickets for billing issues"
+
 
 ## 🛠️ Currently Supported Tools
 <details>
@@ -172,6 +177,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🗄️ Azure SQL Database
 - Show database details and properties
+
+### 🎫 Azure Support
+- List and filter support tickets
+- Natural language filtering by service name and problem classification
+- Query support tickets by status, creation date, and other criteria
 
 ### � Azure Storage
 - List Storage accounts

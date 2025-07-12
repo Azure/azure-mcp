@@ -173,3 +173,13 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
     testApplicationOid: testApplicationOid
   }
 }
+
+module support 'services/support.bicep' = if (empty(areas) || contains(areas, 'Support')) {
+  name: '${deploymentName}-support'
+  scope: subscription()
+  params: {
+    baseName: baseName
+    location: location
+    testApplicationOid: testApplicationOid
+  }
+}

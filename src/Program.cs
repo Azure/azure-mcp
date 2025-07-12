@@ -75,6 +75,7 @@ internal class Program
             new AzureMcp.Areas.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Areas.Sql.SqlSetup(),
             new AzureMcp.Areas.Storage.StorageSetup(),
+            new AzureMcp.Areas.Support.SupportSetup(),
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
         ];

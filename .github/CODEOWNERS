@@ -129,6 +129,14 @@
 # ServiceLabel: %area-ServiceBus
 # ServiceOwners:                       @shankarsama @EldertGrootenboer
 
+# PRLabel: %area-Support
+/src/Areas/Support/                    @jnajjar @Azure/azure-mcp
+/tests/Areas/Support/                  @jnajjar @Azure/azure-mcp
+/infra/services/support.bicep          @jnajjar @Azure/azure-mcp
+
+# ServiceLabel: %area-Support
+# ServiceOwners:                       @jnajjar
+
 # PRLabel: %area-Redis
 /src/Areas/Redis/                      @philon-msft @xiangyan99 @Azure/azure-mcp
 

@@ -566,6 +566,39 @@ azmcp sql server entraadmin list --subscription <subscription> \
                               --server <server-name>
 ```
 
+### Azure Support Operations
+
+```bash
+# List support tickets in a subscription
+azmcp support ticket list --subscription <subscription> \
+                          [--filter <odata-filter>] \
+                          [--top <count>]
+
+# Examples:
+# List all support tickets
+azmcp support ticket list --subscription "my-subscription"
+
+# List open support tickets
+azmcp support ticket list --subscription "my-subscription" \
+                          --filter "Status eq 'Open'"
+
+# List recent support tickets (created after a specific date)
+azmcp support ticket list --subscription "my-subscription" \
+                          --filter "CreatedDate ge 2024-01-01T00:00:00Z"
+
+# List support tickets with natural language service name filtering
+azmcp support ticket list --subscription "my-subscription" \
+                          --filter "serviceName eq 'Billing'"
+
+# List support tickets with problem classification filtering
+azmcp support ticket list --subscription "my-subscription" \
+                          --filter "serviceName eq 'Billing' and problemClassification eq 'pricing'"
+
+# Limit the number of results
+azmcp support ticket list --subscription "my-subscription" \
+                          --top 10
+```
+
 ### Azure Storage Operations
 
 ```bash
