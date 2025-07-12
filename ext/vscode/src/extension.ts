@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const config = vscode.workspace.getConfiguration('azureMcp');
                 // Example: ["storage", "keyvault", ...]
                 const enabledServices: string[] | undefined = config.get('enabledServices');
-                let args = ['server', 'start'];
+                const args = ['server', 'start'];
                 if (enabledServices && Array.isArray(enabledServices) && enabledServices.length > 0) {
                     for (const svc of enabledServices) {
                         args.push('--namespace', svc);
