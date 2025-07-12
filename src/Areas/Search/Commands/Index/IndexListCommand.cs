@@ -58,11 +58,9 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
                 options.Service!,
                 options.RetryPolicy);
 
-            context.Response.Results = indexes?.Count > 0
-                ? ResponseResult.Create(
+            context.Response.Results = ResponseResult.Create(
                     new IndexListCommandResult(indexes),
-                    SearchJsonContext.Default.IndexListCommandResult)
-                : null;
+                    SearchJsonContext.Default.IndexListCommandResult);
         }
         catch (Exception ex)
         {

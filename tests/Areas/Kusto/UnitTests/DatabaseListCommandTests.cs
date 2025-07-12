@@ -76,7 +76,7 @@ public sealed class DatabaseListCommandTests
 
     [Theory]
     [MemberData(nameof(DatabaseArgumentMatrix))]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoDatabasesExist(string cliArgs, bool useClusterUri)
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoDatabasesExist(string cliArgs, bool useClusterUri)
     {
         // Arrange
         if (useClusterUri)
@@ -92,6 +92,7 @@ public sealed class DatabaseListCommandTests
                 "sub1", "mycluster", Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
                 .Returns([]);
         }
+
         var command = new DatabaseListCommand(_logger);
         var parser = new Parser(command.GetCommand());
         var args = parser.Parse(cliArgs);
@@ -102,7 +103,14 @@ public sealed class DatabaseListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<DatabaseListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Databases);
+        Assert.Empty(result.Databases);
     }
 
     [Theory]
