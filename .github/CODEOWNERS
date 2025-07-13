@@ -106,7 +106,7 @@
 /src/Areas/Marketplace/                @meirloichter @Azure/azure-mcp
 
 # ServiceLabel: %area-Marketplace
-# ServiceOwners:                       @meirloichter @Azure/azure-mcp
+# ServiceOwners:                       @meirloichter
 
 
 # PRLabel: %area-Monitor
