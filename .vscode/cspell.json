@@ -54,6 +54,7 @@
                 "adadmin",
                 "addattachment",
                 "adminprovider",
+                "agentpool",
                 "apiview",
                 "apphost",
                 "aspnet",
@@ -64,6 +65,7 @@
                 "batchfile",
                 "bestpractices",
                 "buildtransitive",
+                "centralus",
                 "classdef",
                 "classfilters",
                 "cmds",
@@ -135,6 +137,7 @@
                 "securestring",
                 "Segoe",
                 "setvariable",
+                "skus",
                 "storageaccount",
                 "structs",
                 "stylecop",
@@ -168,6 +171,7 @@
         "azureblob",
         "azuremcp",
         "azuresdk",
+        "azureterraformbestpractices",
         "codeium",
         "cslschema",
         "bdylan",
@@ -183,6 +187,7 @@
         "datasources",
         "Distributedtask",
         "drawcord",
+        "DZH318Z0HWCB",
         "enumerables",
         "exfiltration",
         "filefilters",
@@ -257,7 +262,7 @@
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
-        "Xunit",
-        "DZH318Z0HWCB"
+        "winget",
+        "Xunit"
     ]
 }
