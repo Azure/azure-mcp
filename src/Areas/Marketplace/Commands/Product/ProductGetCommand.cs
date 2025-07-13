@@ -134,7 +134,7 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         {
             // Log error with all relevant context
             _logger.LogError(ex,
-                "Error getting marketplace product. ProductId: {ProductId}, Subscription: {Subscription}, Options: {@Options}",
+                "Error getting marketplace product. ProductId: {ProductId}, Subscription: {Subscription}, Options: {Options}",
                 options.ProductId, options.Subscription, options);
             HandleException(context, ex);
         }
