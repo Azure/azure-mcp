@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net;
-using System.Text.Json.Nodes;
-using AzureMcp.Areas.Marketplace.Commands;
+using AzureMcp.Areas.Marketplace.Models;
 using AzureMcp.Areas.Marketplace.Options.Product;
 using AzureMcp.Areas.Marketplace.Services;
 using AzureMcp.Commands.Subscription;
@@ -163,5 +162,5 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
     };
 
     // Strongly-typed result record
-    internal record ProductGetCommandResult(JsonNode Product);
+    internal record ProductGetCommandResult(ProductDetails Product);
 }

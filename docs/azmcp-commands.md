@@ -515,9 +515,20 @@ azmcp group list --subscription <subscription>
 ```
 
 ### Azure Marketplace Operations
+
 ```bash
-# Get details about a marketplace product
-azmcp marketplace product get --subscription <subscription> --product-name <product-name>
+# Get details about an Azure Marketplace product
+azmcp marketplace product get --subscription <subscription> \
+                              --product-id <product-id> \
+                              [--include-stop-sold-plans <true/false>] \
+                              [--language <language-code>] \
+                              [--market <market-code>] \
+                              [--lookup-offer-in-tenant-level <true/false>] \
+                              [--plan-id <plan-id>] \
+                              [--sku-id <sku-id>] \
+                              [--include-service-instruction-templates <true/false>] \
+                              [--partner-tenant-id <partner-tenant-id>] \
+                              [--pricing-audience <pricing-audience>]
 ```
 
 ### Azure Service Bus Operations

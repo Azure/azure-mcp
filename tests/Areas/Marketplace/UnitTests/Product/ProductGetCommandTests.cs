@@ -3,9 +3,9 @@
 
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas.Marketplace.Commands.Product;
+using AzureMcp.Areas.Marketplace.Models;
 using AzureMcp.Areas.Marketplace.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -55,7 +55,11 @@ public class ProductGetCommandTests
         // Arrange
         var subscriptionId = "test-sub";
         var productId = "test-product";
-        var expectedProduct = JsonNode.Parse("""{"id": "test-product", "name": "Test Product"}""");
+        var expectedProduct = new ProductDetails
+        {
+            Id = "test-product",
+            DisplayName = "Test Product"
+        };
 
         _marketplaceService.GetProduct(
             Arg.Is(productId),

@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
+using AzureMcp.Areas.Marketplace.Models;
 using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Marketplace.Services;
 
 public interface IMarketplaceService
 {
-    Task<JsonNode?> GetProduct(
+    Task<ProductDetails> GetProduct(
         string productId,
         string subscription,
         bool? includeStopSoldPlans = null,

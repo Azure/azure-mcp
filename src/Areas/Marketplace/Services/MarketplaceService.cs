@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
 using Azure.Core;
 using Azure.Core.Pipeline;
+using AzureMcp.Areas.Marketplace.Commands;
+using AzureMcp.Areas.Marketplace.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Tenant;
@@ -39,7 +40,7 @@ public class MarketplaceService(ITenantService tenantService)
     /// <returns>A JSON node containing the product information.</returns>
     /// <exception cref="ArgumentException">Thrown when required parameters are missing or invalid.</exception>
     /// <exception cref="Exception">Thrown when parsing the product response fails.</exception>
-    public async Task<JsonNode?> GetProduct(
+    public async Task<ProductDetails> GetProduct(
         string productId,
         string subscription,
         bool? includeStopSoldPlans = null,
@@ -59,10 +60,8 @@ public class MarketplaceService(ITenantService tenantService)
         string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market,
             lookupOfferInTenantLevel, planId, skuId, includeServiceInstructionTemplates);
 
-        string productResponseString = await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
+        return await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
             pricingAudience, tenant, retryPolicy);
-
-        return JsonNode.Parse(productResponseString) ?? throw new JsonException("Failed to parse product response to JSON.");
     }
 
     private static string BuildProductUrl(
@@ -106,7 +105,7 @@ public class MarketplaceService(ITenantService tenantService)
         return $"{ManagementApiBaseUrl}/subscriptions/{subscription}/providers/Microsoft.Marketplace/products/{productId}?{queryString}";
     }
 
-    private async Task<string> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
+    private async Task<ProductDetails> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
         string? pricingAudience, string? tenant, RetryPolicyOptions? retryPolicy = null)
     {
         // Use Azure Core pipeline approach consistently
@@ -143,7 +142,15 @@ public class MarketplaceService(ITenantService tenantService)
 
         if (!response.IsError)
         {
-            return response.Content.ToString();
+            try
+            {
+                var productDetails = JsonSerializer.Deserialize(response.Content.ToStream(), MarketplaceJsonContext.Default.ProductDetails);
+                return productDetails ?? throw new JsonException("Failed to deserialize marketplace response to ProductDetails.");
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to deserialize marketplace response: {ex.Message}", ex);
+            }
         }
 
         throw new HttpRequestException($"Request failed with status {response.Status}: {response.ReasonPhrase}");
@@ -168,7 +175,6 @@ public class MarketplaceService(ITenantService tenantService)
         var tokenRequestContext = new TokenRequestContext([$"{resource}/.default"]);
         var tokenCredential = await GetCredential(tenant);
         return await tokenCredential
-            .GetTokenAsync(tokenRequestContext, CancellationToken.None)
-            .ConfigureAwait(false);
+            .GetTokenAsync(tokenRequestContext, CancellationToken.None);
     }
 }
