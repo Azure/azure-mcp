@@ -516,7 +516,7 @@ azmcp group list --subscription <subscription>
 
 ### Azure Marketplace Operations
 ```bash
-# Get details about a marketplace product
+# Get details about a Marketplace product
 azmcp marketplace product get --subscription <subscription> --product-name <product-name>
 ```
 
