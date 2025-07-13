@@ -1,27 +1,34 @@
+
 param(
+    [string]$os,
     $PackageArguments
 )
 
 # Define OS targets and corresponding RIDs
-$osList = @(
-    @{ Name = "win-x64"; Rid = "win-x64" },
-    @{ Name = "win-arm64"; Rid = "win-arm64" },
-    @{ Name = "linux-x64"; Rid = "linux-x64" },
-    @{ Name = "osx-x64"; Rid = "osx-x64" },
-    @{ Name = "osx-arm64"; Rid = "osx-arm64" }
-)
+$osMap = @{
+    "win_x64"     = "win-x64"
+    "win_arm64"   = "win-arm64"
+    "linux_x64"   = "linux-x64"
+    "linux_arm64" = "linux-arm64"
+    "osx_x64"     = "osx-x64"
+    "osx_arm64"   = "osx-arm64"
+}
+
+if (-not $osMap.ContainsKey($os)) {
+    Write-Error "Unknown OS: $os. Valid options: $($osMap.Keys -join ', ')"
+    exit 1
+}
 # Define project and destination base paths
 $projectPath = Resolve-Path "../../src"
 $dstBase = Join-Path $PSScriptRoot "server"
 
-foreach ($os in $osList) {
-    $dstDir = Join-Path $dstBase $($os.Name)
-    if (!(Test-Path $dstDir)) {
-        New-Item -ItemType Directory -Path $dstDir | Out-Null
-    }
-    # Publish the .NET server for the target OS
-    dotnet publish $projectPath -c Release -r $($os.Rid) --self-contained true -o $dstDir
+
+# Build and package for the specified OS only
+$dstDir = Join-Path $dstBase $os
+if (!(Test-Path $dstDir)) {
+    New-Item -ItemType Directory -Path $dstDir | Out-Null
 }
+dotnet publish $projectPath -c Release -r $($osMap[$os]) --self-contained true -o $dstDir
 
 # Run the npm packaging step
 Invoke-Expression "npm run ci-package -- $PackageArguments"
