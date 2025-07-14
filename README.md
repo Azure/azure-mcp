@@ -25,6 +25,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | App Configuration | Manage configuration stores and key-value pairs. | [![Install](https://img.shields.io/badge/VS_Code-Install_appconfig-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20App%20Config&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22appconfig%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_appconfig-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20App%20Config%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22appconfig%22%2C%22--read-only%22%5D%7D) |
 | Azure Data Explorer        | Query and manage clusters and databases. | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Kusto&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22kusto%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Kusto%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22kusto%22%2C%22--read-only%22%5D%7D) |
 | Best Practices | Secure, production-grade Azure SDK guidance. | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22bestpractices%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22bestpractices%22%2C%22--read-only%22%5D%7D) |
+| Container Apps | Manage serverless container applications. | [![Install](https://img.shields.io/badge/VS_Code-Install_containerapps-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Container%20Apps&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22containerapps%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_containerapps-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Container%20Apps%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22containerapps%22%2C%22--read-only%22%5D%7D) |
 | Cosmos DB    | Manage NoSQL databases and containers. | [![Install](https://img.shields.io/badge/VS_Code-Install_cosmos-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Cosmos&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22cosmos%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_cosmos-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Cosmos%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22cosmos%22%2C%22--read-only%22%5D%7D) |
 | Foundry       | Manage AI model deployments and foundations. | [![Install](https://img.shields.io/badge/VS_Code-Install_foundry-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Foundry&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22foundry%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_foundry-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Foundry%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22foundry%22%2C%22--read-only%22%5D%7D) |
 | Grafana       | Monitor dashboards and analytics visualization. | [![Install](https://img.shields.io/badge/VS_Code-Install_grafana-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Grafana&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22grafana%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_grafana-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Grafana%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22grafana%22%2C%22--read-only%22%5D%7D) |
@@ -58,9 +59,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### ⚙️ Azure App Configuration
 - "List my App Configuration stores"
 
-### ☸️ Azure Kubernetes Service (AKS)
-- "List my AKS clusters in my subscription"
-- "Show me all my Azure Kubernetes Service clusters"
+### 📦 Azure Container Apps
+- "List all my Container Apps"
+- "Show Container Apps in a specific resource group"
 
 ### 📊 Azure Cosmos DB
 - "Show me all my Cosmos DB databases"
@@ -70,8 +71,17 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Get Azure Data Explorer databases in cluster 'mycluster'"
 - "Sample 10 rows from table 'StormEvents' in Azure Data Explorer database 'db1'"
 
+### ☸️ Azure Kubernetes Service (AKS)
+- "List my AKS clusters in my subscription"
+- "Show me all my Azure Kubernetes Service clusters"
+
 ### 📊 Azure Monitor
 - "Query my Log Analytics workspace"
+
+### 🔧 Azure Resource Management
+- "List my resource groups"
+- "List my Azure CDN endpoints"
+- "Help me build an Azure application using Node.js"
 
 ### �️ Azure SQL Database
 - "Show me details about my Azure SQL database 'mydb'"
@@ -82,11 +92,6 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Show me the tables in my Storage account"
 - "Get details about my Storage container"
 - "Show my key-value pairs in App Config"
-
-### 🔧 Azure Resource Management
-- "List my resource groups"
-- "List my Azure CDN endpoints"
-- "Help me build an Azure application using Node.js"
 
 
 ## 🛠️ Currently Supported Tools

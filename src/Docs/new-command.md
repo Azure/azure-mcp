@@ -174,10 +174,16 @@ public class {Resource}{Operation}Options : Base{Service}Options
 }
 ```
 
+**For base options classes with no additional properties, use primary constructor pattern:**
+```csharp
+public class Base{Service}Options : SubscriptionOptions;
+```
+
 IMPORTANT:
 - Inherit from appropriate base class (BaseServiceOptions, GlobalOptions, etc.)
-- Never redefine properties from base classes
+- Never redefine properties from base classes (e.g., ResourceGroup is already in SubscriptionOptions)
 - Make properties nullable if not required
+- Use primary constructor pattern for simple base classes with no additional properties
 - Use consistent parameter names across services:
   - **CRITICAL**: Always use `subscription` (never `subscriptionId`) for subscription parameters - this allows the parameter to accept both subscription IDs and subscription names, which are resolved internally by `ISubscriptionService.GetSubscription()`
   - Use `resourceGroup` instead of `resourceGroupName`
@@ -185,7 +191,7 @@ IMPORTANT:
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
-### 2. Command Class
+### 3. Command Class
 
 ```csharp
 public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger)
@@ -203,8 +209,9 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
         """
         Detailed description of what the command does.
         Returns description of return format.
-          Required options:
-        - list required options
+        
+        NOTE: Do not include command options/parameters in the description.
+        The description should focus on functionality, not syntax.
         """;
 
     public override string Title => CommandTitle;
@@ -290,7 +297,26 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     internal record {Resource}{Operation}CommandResult(List<ResultType> Results);
 }
 
-### 3. Base Service Command Classes
+### 4. JSON Serialization Context
+
+Each area should define a JSON serialization context for AOT compatibility. Use primary constructor pattern for simple contexts:
+
+```csharp
+[JsonSerializable(typeof({Service}CommandResult))]
+[JsonSerializable(typeof(List<{Resource}>))]
+[JsonSourceGenerationOptions(
+    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+internal sealed partial class {Service}JsonContext : JsonSerializerContext;
+```
+
+IMPORTANT:
+- Include all model types used in command responses
+- Use primary constructor pattern for the context class
+- Apply proper JSON serialization options for consistency
+- Register all command result types and model collections
+
+### 5. Base Service Command Classes
 
 Each service has its own hierarchy of base command classes that inherit from `GlobalCommand` or `SubscriptionCommand`. Services that work with Azure resources should inject `ISubscriptionService` for subscription resolution. For example:
 
@@ -366,7 +392,7 @@ public class {Service}Service(ISubscriptionService subscriptionService, ITenantS
 }
 ```
 
-### 4. Unit Tests
+### 6. Unit Tests
 
 Unit tests follow a standardized pattern that tests initialization, validation, and execution:
 
@@ -452,7 +478,7 @@ public class {Resource}{Operation}CommandTests
 }
 ```
 
-### 5. Integration Tests
+### 7. Integration Tests
 
 Integration tests inherit from `CommandTestsBase` and use test fixtures:
 
@@ -517,7 +543,7 @@ public class {Service}CommandTests : CommandTestsBase, IClassFixture<LiveTestFix
 }
 ```
 
-### 6. Command Registration
+### 8. Command Registration
 
 ```csharp
 private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
@@ -541,7 +567,7 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 - ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`
 - ❌ Bad: `"entra-admin"`, `"resource-group"`, `"storage-account"`
 
-### 7. Area registration
+### 9. Area registration
 ```csharp
     private static IAreaSetup[] RegisterAreas()
     {
@@ -1185,6 +1211,7 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+- **Avoid duplication**: Only include example prompts in README.md; detailed command capabilities should be documented in separate files to prevent README bloat
 
 **README.md Table Formatting Standards**:
 - Badge text must use the pattern `Install_{namespace}` (e.g., `Install_storage`, `Install_cosmos`)
