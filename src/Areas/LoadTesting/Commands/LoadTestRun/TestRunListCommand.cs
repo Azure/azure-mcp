@@ -14,18 +14,14 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
     private const string _commandTitle = "Test Run List";
     private readonly ILogger<TestRunListCommand> _logger = logger;
     private readonly Option<string> _loadTestIdOption = OptionDefinitions.LoadTesting.Test;
-
     public override string Name => "list";
-
     public override string Description =>
         $"""
         Retrieves a comprehensive list of all test run executions for a specific load test configuration. 
         This command provides an overview of test execution history, allowing you to track performance 
         trends, compare results across multiple runs, and analyze testing patterns over time.
         """;
-
     public override string Title => _commandTitle;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -53,10 +49,8 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-
             // Call service operation(s)
             var results = await service.GetLoadTestRunsFromTestIdAsync(
                 options.Subscription!,
@@ -65,7 +59,6 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
                 options.ResourceGroup,
                 options.Tenant,
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestRunListCommandResult(results), LoadTestJsonContext.Default.TestRunListCommandResult) :
@@ -78,7 +71,6 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestRunListCommandResult(List<TestRun> TestRun);

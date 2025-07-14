@@ -44,7 +44,6 @@ public class TestGetCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsLoadTest_WhenExists()
     {
-        // Arrange
         var expected = new Test { TestId = "testId1", DisplayName = "TestDisplayName", Description = "TestDescription" };
         _service.GetTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
@@ -59,11 +58,7 @@ public class TestGetCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
         Assert.Equal(200, response.Status);
@@ -80,7 +75,6 @@ public class TestGetCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        // Arrange
         var expected = new Test();
         _service.GetTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
@@ -94,18 +88,13 @@ public class TestGetCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(400, response.Status);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        // Arrange
         _service.GetTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Test>(new Exception("Test error")));
@@ -119,11 +108,7 @@ public class TestGetCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);

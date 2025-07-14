@@ -18,18 +18,14 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
     private readonly Option<string> _displayNameOption = OptionDefinitions.LoadTesting.DisplayName;
     private readonly Option<string> _descriptionOption = OptionDefinitions.LoadTesting.Description;
     private readonly Option<string> _oldTestRunIdOption = OptionDefinitions.LoadTesting.OldTestRunId;
-
     public override string Name => "create";
-
     public override string Description =>
         $"""
         Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution 
         of a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run 
         the same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.
         """;
-
     public override string Title => _commandTitle;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -65,10 +61,8 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-
             // Call service operation(s)
             var results = await service.CreateOrUpdateLoadTestRunAsync(
                 options.Subscription!,
@@ -82,7 +76,6 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
                 options.Description,
                 false, // DebugMode is not used in create
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestRunCreateCommandResult(results), LoadTestJsonContext.Default.TestRunCreateCommandResult) :
@@ -95,7 +88,6 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestRunCreateCommandResult(TestRun TestRun);

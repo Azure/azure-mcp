@@ -44,7 +44,6 @@ public class TestRunListCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsLoadTestRuns_WhenExists()
     {
-        // Arrange
         var expected = new List<TestRun>
         {
             new TestRun { TestId = "testId1", TestRunId = "testRunId1" },
@@ -63,11 +62,7 @@ public class TestRunListCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
         Assert.Equal(200, response.Status);
@@ -85,7 +80,6 @@ public class TestRunListCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        // Arrange
         var expected = new List<TestRun>();
         _service.GetLoadTestRunsFromTestIdAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
@@ -99,18 +93,13 @@ public class TestRunListCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(400, response.Status);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        // Arrange
         _service.GetLoadTestRunsFromTestIdAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<TestRun>>(new Exception("Test error")));
@@ -124,11 +113,7 @@ public class TestRunListCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);

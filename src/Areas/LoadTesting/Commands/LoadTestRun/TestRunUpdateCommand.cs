@@ -17,18 +17,14 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
     private readonly Option<string> _testIdOption = OptionDefinitions.LoadTesting.Test;
     private readonly Option<string> _displayNameOption = OptionDefinitions.LoadTesting.DisplayName;
     private readonly Option<string> _descriptionOption = OptionDefinitions.LoadTesting.Description;
-
     public override string Name => "update";
-
     public override string Description =>
         $"""
         Updates the metadata and display properties of a completed or in-progress load test run execution. 
         This command allows you to modify descriptive information for better organization, documentation, 
         and identification of test runs without affecting the actual test execution or results.
         """;
-
     public override string Title => _commandTitle;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -62,10 +58,8 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-
             // Call service operation(s)
             var results = await service.CreateOrUpdateLoadTestRunAsync(
                 options.Subscription!,
@@ -79,7 +73,6 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
                 options.Description,
                 debugMode: null, // Debug mode is not applicable for update
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestRunUpdateCommandResult(results), LoadTestJsonContext.Default.TestRunUpdateCommandResult) :
@@ -92,7 +85,6 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestRunUpdateCommandResult(TestRun TestRun);

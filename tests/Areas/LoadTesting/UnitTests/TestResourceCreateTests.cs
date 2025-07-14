@@ -43,7 +43,6 @@ public class TestResourceCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_CreateLoadTests()
     {
-        // Arrange
         var expectedLoadTests = new TestResource { Id = "Id1", Name = "loadTest1" };
         _service.CreateOrUpdateLoadTestingResourceAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("testResourceName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedLoadTests);
@@ -56,11 +55,7 @@ public class TestResourceCreateCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
 
@@ -76,7 +71,6 @@ public class TestResourceCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_CreateLoadTests_FromDefaultResource()
     {
-        // Arrange
         var expectedLoadTests = new TestResource { Id = "Id1", Name = "loadTest1" };
         _service.CreateOrUpdateLoadTestingResourceAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is((string?)null), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedLoadTests);
@@ -88,11 +82,7 @@ public class TestResourceCreateCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
 
@@ -107,7 +97,6 @@ public class TestResourceCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        // Arrange
         _service.CreateOrUpdateLoadTestingResourceAsync(Arg.Is("sub123"), Arg.Is("resourceGroup123"), Arg.Is("loadTestName"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<TestResource>(new Exception("Test error")));
 
@@ -118,11 +107,7 @@ public class TestResourceCreateCommandTests
             "--test-resource-name", "loadTestName",
             "--tenant", "tenant123"
         ]);
-
-        // Act
         var response = await _command.ExecuteAsync(context, parseResult);
-
-        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);

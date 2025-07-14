@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-
 using AzureMcp.Areas.LoadTesting.Models.LoadTest;
 using AzureMcp.Areas.LoadTesting.Options.LoadTest;
 using AzureMcp.Areas.LoadTesting.Services;
@@ -21,17 +20,13 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
     private readonly Option<int> _loadTestVirtualUsersOption = OptionDefinitions.LoadTesting.VirtualUsers;
     private readonly Option<int> _loadTestDurationOption = OptionDefinitions.LoadTesting.Duration;
     private readonly Option<int> _loadTestRampUpTimeOption = OptionDefinitions.LoadTesting.RampUpTime;
-
     public override string Name => "create";
-
     public override string Description =>
         $"""
         Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance 
         and scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.
         """;
-
     public override string Title => _commandTitle;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -102,7 +97,6 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestCreateCommandResult(Test Test);

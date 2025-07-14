@@ -12,14 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
-
 public class TestCreateCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadTestingService _service;
     private readonly ILogger<TestCreateCommand> _logger;
     private readonly TestCreateCommand _command;
-
     public TestCreateCommandTests()
     {
         _service = Substitute.For<ILoadTestingService>();
@@ -44,7 +42,6 @@ public class TestCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_CreateLoadTest_WhenExists()
     {
-        // Arrange
         var expected = new Test { TestId = "testId1", DisplayName = "TestDisplayName", Description = "TestDescription" };
         _service.CreateTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"),
@@ -89,7 +86,6 @@ public class TestCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        // Arrange
         var expected = new Test();
         _service.CreateTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"),
@@ -105,18 +101,13 @@ public class TestCreateCommandTests
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(400, response.Status);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        // Arrange
         _service.CreateTestAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("resourceGroup123"),
             Arg.Is("TestDisplayName"), Arg.Is("TestDescription"),
@@ -139,11 +130,7 @@ public class TestCreateCommandTests
             "--endpoint", "https://example.com/api/test"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);

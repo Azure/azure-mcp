@@ -14,18 +14,14 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
     private const string _commandTitle = "Test Run Get";
     private readonly ILogger<TestRunGetCommand> _logger = logger;
     private readonly Option<string> _loadTestRunIdOption = OptionDefinitions.LoadTesting.TestRun;
-
     public override string Name => "get";
-
     public override string Description =>
         $"""
         Retrieves comprehensive details and status information for a specific load test run execution. 
         This command provides real-time insights into test performance metrics, execution timeline, 
         and final results to help you analyze your application's behavior under load.
         """;
-
     public override string Title => _commandTitle;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -53,10 +49,8 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-
             // Call service operation(s)
             var results = await service.GetLoadTestRunAsync(
                 options.Subscription!,
@@ -65,7 +59,6 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
                 options.ResourceGroup,
                 options.Tenant,
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestRunGetCommandResult(results), LoadTestJsonContext.Default.TestRunGetCommandResult) :
@@ -78,7 +71,6 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestRunGetCommandResult(TestRun TestRun);

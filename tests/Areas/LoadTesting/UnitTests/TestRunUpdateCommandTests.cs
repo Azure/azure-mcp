@@ -44,7 +44,6 @@ public class TestRunUpdateCommandTests
     [Fact]
     public async Task ExecuteAsync_UpdateLoadTestRun_TestNotExisting()
     {
-        // Arrange
         var expected = new TestRun { TestId = "testId1", TestRunId = "testRunId1", DisplayName = "displayName" };
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is((string?)null), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is("displayName"), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
@@ -61,11 +60,7 @@ public class TestRunUpdateCommandTests
             "--display-name", "displayName"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
         Assert.Null(response.Results); // Wont find the test id 
@@ -74,7 +69,6 @@ public class TestRunUpdateCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        // Arrange
         var expected = new TestRun();
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is((string?)null), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is((string?)null), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
@@ -89,11 +83,7 @@ public class TestRunUpdateCommandTests
             "--testrun-id", "run1"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(400, response.Status);
     }
 

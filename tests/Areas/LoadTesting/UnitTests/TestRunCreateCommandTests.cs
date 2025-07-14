@@ -44,7 +44,6 @@ public class TestRunCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_CreatesLoadTestRun()
     {
-        // Arrange
         var expected = new TestRun { TestId = "testId1", TestRunId = "testRunId1", DisplayName = "displayName" };
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is((string?)null), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is("displayName"), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
@@ -61,11 +60,7 @@ public class TestRunCreateCommandTests
             "--display-name", "displayName"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
         Assert.Equal(200, response.Status);
@@ -82,7 +77,6 @@ public class TestRunCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_RerunLoadTestRun()
     {
-        // Arrange
         var expected = new TestRun { TestId = "testId1", TestRunId = "testRunId1" };
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is("oldId1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is((string?)null), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
@@ -99,11 +93,7 @@ public class TestRunCreateCommandTests
             "--old-testrun-id", "oldId1"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
         Assert.Equal(200, response.Status);
@@ -120,7 +110,6 @@ public class TestRunCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        // Arrange
         var expected = new TestRun();
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is((string?)null), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is((string?)null), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
@@ -135,18 +124,13 @@ public class TestRunCreateCommandTests
             "--testrun-id", "run1"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(400, response.Status);
     }
 
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        // Arrange
         _service.CreateOrUpdateLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("testId1"), Arg.Is("run1"), Arg.Is((string?)null), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Is((string?)null), Arg.Is((string?)null), Arg.Is(false), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<TestRun>(new Exception("Test error")));
@@ -161,11 +145,7 @@ public class TestRunCreateCommandTests
             "--test-id", "testId1"
         ]);
         var context = new CommandContext(_serviceProvider);
-
-        // Act
         var response = await command.ExecuteAsync(context, args);
-
-        // Assert
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);

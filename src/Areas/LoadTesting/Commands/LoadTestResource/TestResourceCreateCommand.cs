@@ -12,15 +12,12 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
 {
     private const string _commandTitle = "Test Resource Create";
     private readonly ILogger<TestResourceCreateCommand> _logger = logger;
-
     public override string Name => "create";
-
     public override string Description =>
         $"""
         Creates a new Azure Load Testing resource in the currently selected subscription and resource group for the logged-in tenant.
         Returns the created Load Testing resource.
         """;
-
     public override string Title => _commandTitle;
 
     [McpServerTool(
@@ -30,7 +27,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
-
         try
         {
             // Required validation step using the base Validate method
@@ -38,7 +34,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
 
@@ -49,7 +44,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
                 options.TestResourceName!,
                 options.Tenant,
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestResourceCreateCommandResult(results), LoadTestJsonContext.Default.TestResourceCreateCommandResult) :
@@ -62,7 +56,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestResourceCreateCommandResult(TestResource LoadTest);

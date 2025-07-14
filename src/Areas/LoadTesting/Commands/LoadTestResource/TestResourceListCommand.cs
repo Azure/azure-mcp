@@ -12,15 +12,12 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
 {
     private const string _commandTitle = "Test Resource List";
     private readonly ILogger<TestResourceListCommand> _logger = logger;
-
     public override string Name => "list";
-
     public override string Description =>
         $"""
         Fetches the Load Testing resources for the current selected subscription, resource group in the logged in tenant.
         Returns a list of Load Testing resources.
         """;
-
     public override string Title => _commandTitle;
 
     [McpServerTool(
@@ -30,7 +27,6 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
-
         try
         {
             // Required validation step using the base Validate method
@@ -38,10 +34,8 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
             {
                 return context.Response;
             }
-
             // Get the appropriate service from DI
             var service = context.GetService<ILoadTestingService>();
-
             // Call service operation(s)
             var results = await service.GetLoadTestResourcesAsync(
                 options.Subscription!,
@@ -49,7 +43,6 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
                 options.TestResourceName,
                 options.Tenant,
                 options.RetryPolicy);
-
             // Set results if any were returned
             context.Response.Results = results != null ?
                 ResponseResult.Create(new TestResourceListCommandResult(results), LoadTestJsonContext.Default.TestResourceListCommandResult) :
@@ -62,7 +55,6 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
             // Let base class handle standard error processing
             HandleException(context, ex);
         }
-
         return context.Response;
     }
     internal record TestResourceListCommandResult(List<TestResource> LoadTest);
