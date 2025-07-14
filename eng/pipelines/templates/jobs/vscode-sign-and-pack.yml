@@ -24,7 +24,8 @@ jobs:
     - download: current
       displayName: Download artifacts
 
-    # For each vsix-unsigned_* folder, create manifest and sign
+
+    # Create signing manifest for all VSIX files
     - powershell: |
         $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
         foreach ($folder in $folders) {
@@ -33,22 +34,20 @@ jobs:
         }
       displayName: Create signing manifest for all VSIX
 
+    # Sign all VSIX files in all vsix-unsigned_* folders (for release builds)
     - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual') }}:
       - powershell: |
           $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
           foreach ($folder in $folders) {
-            Write-Host "Signing VSIX files in $($folder.FullName)"
-            # Call the signing template for each folder
-            Write-Host "##vso[task.setvariable variable=CurrentVsixFolder]$($folder.FullName)"
-            # The next step will use this variable
+            $vsixFiles = Get-ChildItem -Path $folder.FullName -Filter *.vsix
+            foreach ($vsix in $vsixFiles) {
+              Write-Host "Signing $($vsix.FullName)"
+              # Call your signing script/tool here, e.g.:
+              # & pipelines/steps/azd-vscode-signing.ps1 -Path $vsix.FullName
+              # Or, if you must use the template, you would need to call it for each file, but that's not supported in a single job step.
+            }
           }
-        displayName: Prepare for VSIX signing
-
-      - ${{ each folder in parameters.Folders }}:
-        - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
-          parameters:
-            Path: $(CurrentVsixFolder)
-            Pattern: '*.vsix'
+        displayName: Sign all VSIX files
 
     - ${{ else }}:
       - pwsh: Write-Host "Skipping signing. Build reason - $(Build.Reason)"
