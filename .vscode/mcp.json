@@ -1,9 +1,0 @@
-{
-    "servers": {
-        "azure-mcp-server": {
-            "type": "stdio",
-            "command": "D:/dev/github.com/BrianCollet/azure-mcp/src/bin/Debug/net9.0/azmcp.exe",
-            "args": ["server", "start", "--service", "cosmos,redis"]
-        }
-    }
-}

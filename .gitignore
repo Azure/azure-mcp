@@ -8,6 +8,7 @@ obj/
 .vs/
 TestResults/
 *.binlog
+.vscode/mcp.json
 
 node_modules/
 .npmrc
