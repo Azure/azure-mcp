@@ -25,6 +25,15 @@ var staticResourceGroupName = 'mcp-static-${staticSuffix}'
 
 // Please keep this module list alphabetical
 
+module aks 'services/aks.bicep' = if (empty(areas) || contains(areas, 'Aks')) {
+  name: '${deploymentName}-aks'
+  params: {
+    baseName: baseName
+    location: 'westus2'  // AKS works more reliably in westus2
+    testApplicationOid: testApplicationOid
+  }
+}
+
 module appConfiguration 'services/appConfig.bicep' = if (empty(areas) || contains(areas, 'AppConfig')) {
   name: '${deploymentName}-appConfig'
   params: {

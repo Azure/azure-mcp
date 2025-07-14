@@ -169,6 +169,12 @@ azmcp appconfig kv delete --subscription <subscription> \
                           [--label <label>]
 ```
 
+### Azure Kubernetes Service (AKS) Operations
+```bash
+# List AKS clusters in a subscription
+azmcp aks cluster list --subscription <subscription>
+```
+
 ### Azure CLI Operations
 
 ```bash

@@ -91,10 +91,7 @@ public class KeyGetCommandTests
     [Fact]
     public async Task ExecuteAsync_ReturnsInvalidObject_IfKeyNameIsEmpty()
     {
-        // Arrange
-        _keyVaultService.GetKey(Arg.Is(_vaultName), "", Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).ReturnsNull();
-
+        // Arrange - No need to mock service since validation should fail before service is called
         var args = _parser.Parse([
             "--vault", _vaultName,
             "--key", "",
@@ -104,16 +101,10 @@ public class KeyGetCommandTests
         // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        // Assert
+        // Assert - Should return validation error response
         Assert.NotNull(response);
-        Assert.NotNull(response.Results);
-
-        var json = JsonSerializer.Serialize(response.Results);
-        var retrievedKey = JsonSerializer.Deserialize<KeyGetResult>(json);
-
-        Assert.NotNull(retrievedKey);
-        Assert.Null(retrievedKey.Name);
-        Assert.Null(retrievedKey.KeyType);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("required", response.Message.ToLower());
     }
 
     [Fact]

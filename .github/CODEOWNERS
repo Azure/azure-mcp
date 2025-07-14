@@ -28,6 +28,15 @@
 ##################
 # Services
 ##################
+# PRLabel: %area-AKS
+/src/Areas/Aks/                        @jongio @Azure/azure-mcp
+/tests/Areas/Aks/                      @jongio @Azure/azure-mcp
+/infra/services/aks.bicep              @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-AKS
+# ServiceOwners:                       @jongio
+
+
 # PRLabel: %area-AppConfig
 /src/Areas/AppConfig/                  @JonathanCrd @conniey @Azure/azure-mcp
 
