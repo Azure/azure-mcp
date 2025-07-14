@@ -6,7 +6,6 @@ using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Options.Metrics;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Monitor.Commands.Metrics;

@@ -49,7 +49,7 @@ public sealed class SubscriptionListCommand(ILogger<SubscriptionListCommand> log
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing subscriptions.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

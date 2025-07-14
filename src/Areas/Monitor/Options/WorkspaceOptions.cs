@@ -7,7 +7,7 @@ namespace AzureMcp.Areas.Monitor.Options
 {
     public abstract class WorkspaceOptions : BaseMonitorOptions, IWorkspaceOptions
     {
-        [JsonPropertyName(WorkspaceLogQueryOptionDefinitions.WorkspaceIdOrName)]
+        [JsonPropertyName(WorkspaceOptionDefinitions.WorkspaceIdOrName)]
         public string? Workspace { get; set; }
     }
 }

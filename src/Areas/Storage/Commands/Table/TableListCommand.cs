@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Storage.Options.Table;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.Table;
@@ -35,6 +36,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
             {
                 return context.Response;
             }
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var tables = await storageService.ListTables(
@@ -72,7 +75,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseSto
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing tables. Account: {Account}.", options.Account);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

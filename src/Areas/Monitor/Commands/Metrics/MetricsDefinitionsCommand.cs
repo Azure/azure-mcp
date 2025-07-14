@@ -119,7 +119,7 @@ public sealed class MetricsDefinitionsCommand(ILogger<MetricsDefinitionsCommand>
             _logger.LogError(ex,
                 "Error listing metric definitions. ResourceGroup: {ResourceGroup}, ResourceType: {ResourceType}, ResourceName: {ResourceName}, MetricNamespace: {MetricNamespace}, Options: {@Options}",
                 options.ResourceGroup, options.ResourceType, options.ResourceName, options.MetricNamespace, options);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

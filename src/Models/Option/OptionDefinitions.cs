@@ -17,7 +17,7 @@ public static partial class OptionDefinitions
 
         public static readonly Option<string> Tenant = new(
             $"--{TenantName}",
-            "The Azure Active Directory tenant ID or name. This can be either the GUID identifier or the display name of your Azure AD tenant."
+            "The Microsoft Entra ID tenant ID or name. This can be either the GUID identifier or the display name of your Entra ID tenant."
         )
         {
             IsRequired = false,
@@ -107,48 +107,6 @@ public static partial class OptionDefinitions
             IsRequired = false,
             IsHidden = true
         };
-    }
-
-    public static class Service
-    {
-        public const string TransportName = "transport";
-        public const string PortName = "port";
-        public const string ServiceName = "service";
-        public const string ReadOnlyName = "read-only";
-
-        public static readonly Option<string> Transport = new(
-            $"--{TransportName}",
-            () => TransportTypes.StdIo,
-            "Transport mechanism to use for Azure MCP Server."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<int> Port = new(
-            $"--{PortName}",
-            () => 5008,
-            "Port to use for Azure MCP Server."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<string[]?> ServiceType = new(
-            $"--{ServiceName}",
-            () => null,
-            "The service to expose on the MCP server."
-        )
-        {
-            IsRequired = false,
-            Arity = ArgumentArity.OneOrMore,
-            AllowMultipleArgumentsPerToken = true
-        };
-
-        public static readonly Option<bool?> ReadOnly = new(
-            $"--{ReadOnlyName}",
-            () => null,
-            "Whether the MCP server should be read-only. If true, no write operations will be allowed.");
     }
 
     public static class Authorization
