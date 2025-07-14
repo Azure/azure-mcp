@@ -30,9 +30,9 @@ public class ServiceStartCommandTests
     }
 
     [Theory]
-    [InlineData(null, "", 1234, "stdio")]
-    [InlineData("storage", "storage", 1234, "stdio")]
-    public void ServiceOption_ParsesCorrectly(string? inputService, string expectedService, int expectedPort, string expectedTransport)
+    [InlineData(null, "", "stdio")]
+    [InlineData("storage", "storage", "stdio")]
+    public void ServiceOption_ParsesCorrectly(string? inputService, string expectedService, string expectedTransport)
     {
         // Arrange
         var parseResult = CreateParseResult(inputService);
@@ -40,12 +40,10 @@ public class ServiceStartCommandTests
         // Act
         var actualServiceArray = parseResult.GetValueForOption(ServiceOptionDefinitions.Namespace);
         var actualService = (actualServiceArray != null && actualServiceArray.Length > 0) ? actualServiceArray[0] : "";
-        var actualPort = parseResult.GetValueForOption(ServiceOptionDefinitions.Port);
         var actualTransport = parseResult.GetValueForOption(ServiceOptionDefinitions.Transport);
 
         // Assert
         Assert.Equal(expectedService, actualService ?? "");
-        Assert.Equal(expectedPort, actualPort);
         Assert.Equal(expectedTransport, actualTransport);
     }
 
@@ -54,7 +52,6 @@ public class ServiceStartCommandTests
         var root = new RootCommand
         {
             ServiceOptionDefinitions.Namespace,
-            ServiceOptionDefinitions.Port,
             ServiceOptionDefinitions.Transport
         };
         var args = new List<string>();
@@ -63,9 +60,7 @@ public class ServiceStartCommandTests
             args.Add("--namespace");
             args.Add(serviceValue);
         }
-        // Add required port/transport defaults for test
-        args.Add("--port");
-        args.Add("1234");
+        // Add required transport default for test
         args.Add("--transport");
         args.Add("stdio");
         return new Parser(root).Parse(args.ToArray());

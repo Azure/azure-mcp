@@ -6,7 +6,6 @@ namespace AzureMcp.Areas.Server.Options;
 public static class ServiceOptionDefinitions
 {
     public const string TransportName = "transport";
-    public const string PortName = "port";
     public const string NamespaceName = "namespace";
     public const string ModeName = "mode";
     public const string ReadOnlyName = "read-only";
@@ -15,15 +14,6 @@ public static class ServiceOptionDefinitions
         $"--{TransportName}",
         () => TransportTypes.StdIo,
         "Transport mechanism to use for Azure MCP Server."
-    )
-    {
-        IsRequired = false
-    };
-
-    public static readonly Option<int> Port = new(
-        $"--{PortName}",
-        () => 5008,
-        "Port to use for Azure MCP Server."
     )
     {
         IsRequired = false

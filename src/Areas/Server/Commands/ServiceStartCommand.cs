@@ -21,7 +21,6 @@ public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = ServiceOptionDefinitions.Transport;
-    private readonly Option<int> _portOption = ServiceOptionDefinitions.Port;
     private readonly Option<string[]?> _namespaceOption = ServiceOptionDefinitions.Namespace;
     private readonly Option<string?> _modeOption = ServiceOptionDefinitions.Mode;
     private readonly Option<bool?> _readOnlyOption = ServiceOptionDefinitions.ReadOnly;
@@ -49,7 +48,6 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
-        command.AddOption(_portOption);
         command.AddOption(_namespaceOption);
         command.AddOption(_modeOption);
         command.AddOption(_readOnlyOption);
@@ -63,10 +61,6 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <returns>A command response indicating the result of the operation.</returns>
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var port = parseResult.GetValueForOption(_portOption) == default
-            ? ServiceOptionDefinitions.Port.GetDefaultValue()
-            : parseResult.GetValueForOption(_portOption);
-
         var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
             ? ServiceOptionDefinitions.Namespace.GetDefaultValue()
             : parseResult.GetValueForOption(_namespaceOption);
@@ -82,7 +76,6 @@ public sealed class ServiceStartCommand : BaseCommand
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
-            Port = port,
             Namespace = namespaces,
             Mode = mode,
             ReadOnly = readOnly,
