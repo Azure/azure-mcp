@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
 using Azure;
 using Azure.Core;
 using Azure.Developer.LoadTesting;
@@ -14,16 +13,17 @@ using AzureMcp.Areas.LoadTesting.Models.LoadTestingResource;
 using AzureMcp.Areas.LoadTesting.Models.LoadTestRun;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
+using AzureMcp.Services.Azure.Subscription;
 
 namespace AzureMcp.Areas.LoadTesting.Services;
 
-public class LoadTestingService() : BaseAzureService, ILoadTestingService
+public class LoadTestingService(ISubscriptionService subscriptionService) : BaseAzureService, ILoadTestingService
 {
-
-    /* Load Testing Resource APIs Start */
-    public async Task<List<TestResource>> GetLoadTestResourcesAsync(string subscriptionId, string? resourceGroup = null, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    ISubscriptionService _subscriptionService = subscriptionService;
+    public async Task<List<TestResource>> GetLoadTestResourcesAsync(string subscription, string? resourceGroup = null, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
 
         var credential = await GetCredential(tenant);
 
@@ -74,9 +74,10 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         }
     }
 
-    public async Task<TestResource> CreateOrUpdateLoadTestingResourceAsync(string subscriptionId, string resourceGroup, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<TestResource> CreateOrUpdateLoadTestingResourceAsync(string subscription, string resourceGroup, string? testResourceName = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroup);
+        ValidateRequiredParameters(subscription, resourceGroup);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
 
         var credential = await GetCredential(tenant);
 
@@ -102,12 +103,12 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
             ProvisioningState = response.Value.Data.ProvisioningState?.ToString(),
         };
     }
-    /* Load Testing Resource APIs End */
 
-    /* Load Testing Run APIs Start */
-    public async Task<TestRun> GetLoadTestRunAsync(string subscriptionId, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<TestRun> GetLoadTestRunAsync(string subscription, string testResourceName, string testRunId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
+        ValidateRequiredParameters(subscription, testResourceName, testRunId);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
+
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource == null)
         {
@@ -132,9 +133,10 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         return JsonSerializer.Deserialize(loadTestRun, LoadTestJsonContext.Default.TestRun) ?? new TestRun();
     }
 
-    public async Task<List<TestRun>> GetLoadTestRunsFromTestIdAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<TestRun>> GetLoadTestRunsFromTestIdAsync(string subscription, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        ValidateRequiredParameters(subscription, testResourceName, testId);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource == null)
         {
@@ -172,9 +174,11 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         return testRuns;
     }
 
-    public async Task<TestRun> CreateOrUpdateLoadTestRunAsync(string subscriptionId, string testResourceName, string testId, string? testRunId = null, string? oldTestRunId = null, string? resourceGroup = null, string? tenant = null, string? displayName = null, string? description = null, bool? debugMode = false, RetryPolicyOptions? retryPolicy = null)
+    public async Task<TestRun> CreateOrUpdateLoadTestRunAsync(string subscription, string testResourceName, string testId, string? testRunId = null, string? oldTestRunId = null, string? resourceGroup = null, string? tenant = null, string? displayName = null, string? description = null, bool? debugMode = false, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, testResourceName, testRunId);
+        ValidateRequiredParameters(subscription, testResourceName, testRunId);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
+
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource == null)
         {
@@ -207,12 +211,11 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTestRun = loadTestRunResponse.WaitForCompletionAsync().Result.Value.ToString();
         return JsonSerializer.Deserialize<TestRun>(loadTestRun, LoadTestJsonContext.Default.TestRun) ?? new TestRun();
     }
-    /* Load Test Run APIs End */
 
-    /* Load Test APIs Start */
-    public async Task<Test> GetTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Test> GetTestAsync(string subscription, string testResourceName, string testId, string? resourceGroup = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        ValidateRequiredParameters(subscription, testResourceName, testId);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource == null)
         {
@@ -236,11 +239,13 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTest = loadTestResponse.Content.ToString();
         return JsonSerializer.Deserialize(loadTest, LoadTestJsonContext.Default.Test) ?? new Test();
     }
-    public async Task<Test> CreateTestAsync(string subscriptionId, string testResourceName, string testId, string? resourceGroup = null,
+    public async Task<Test> CreateTestAsync(string subscription, string testResourceName, string testId, string? resourceGroup = null,
         string? displayName = null, string? description = null,
         int? duration = 20, int? virtualUsers = 50, int? rampUpTime = 1, string? endpointUrl = null, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, testResourceName, testId);
+        ValidateRequiredParameters(subscription, testResourceName, testId);
+        var subscriptionId = (await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)).Data.SubscriptionId;
+
         var loadTestResource = await GetLoadTestResourcesAsync(subscriptionId, resourceGroup, testResourceName, tenant, retryPolicy);
         if (loadTestResource == null)
         {
@@ -282,6 +287,4 @@ public class LoadTestingService() : BaseAzureService, ILoadTestingService
         var loadTest = loadTestResponse.Content.ToString();
         return JsonSerializer.Deserialize(loadTest, LoadTestJsonContext.Default.Test) ?? new Test();
     }
-
-    /* Load Test APIs End */
 }

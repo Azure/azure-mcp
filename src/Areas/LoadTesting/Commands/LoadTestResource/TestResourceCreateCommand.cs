@@ -19,12 +19,6 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
         $"""
         Creates a new Azure Load Testing resource in the currently selected subscription and resource group for the logged-in tenant.
         Returns the created Load Testing resource.
-        
-        Required arguments:
-        - subscription
-        - resource-group
-        - test-resource-name
-
         """;
 
     public override string Title => _commandTitle;

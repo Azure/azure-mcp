@@ -25,18 +25,6 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
         Updates the metadata and display properties of a completed or in-progress load test run execution. 
         This command allows you to modify descriptive information for better organization, documentation, 
         and identification of test runs without affecting the actual test execution or results.
-        
-        
-        Required arguments:
-        - subscription
-        - resource-group
-        - test-resource-name
-        - testrun-id
-        - test-id
-
-        Optional arguments:
-        - display-name
-        - description
         """;
 
     public override string Title => _commandTitle;

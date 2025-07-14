@@ -19,17 +19,6 @@ public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> log
         $"""
         Fetches the Load Testing resources for the current selected subscription, resource group in the logged in tenant.
         Returns a list of Load Testing resources.
-        
-        Required arguments:
-        src
-        Areas
-        Commands
-        
-        - subscription
-        - resource-group
-
-        Optional arguments:
-        - test-resource-name
         """;
 
     public override string Title => _commandTitle;

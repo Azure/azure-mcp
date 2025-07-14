@@ -6,21 +6,17 @@ using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Xunit;
-
 public class LoadTestingCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {
     private readonly string _subscriptionId;
     private const string TestResourceName = "TestResourceName";
     private const string TestRunId = "TestRunId";
-
-
     public LoadTestingCommandTests(LiveTestFixture fixture, ITestOutputHelper output)
         : base(fixture, output)
     {
         _subscriptionId = Settings.SubscriptionId;
     }
-
 
     [Fact]
     [Trait("Category", "Live")]

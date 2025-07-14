@@ -22,12 +22,6 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
         Retrieves comprehensive details and status information for a specific load test run execution. 
         This command provides real-time insights into test performance metrics, execution timeline, 
         and final results to help you analyze your application's behavior under load.
-        
-        Required arguments:
-        - subscription
-        - resource-group
-        - test-resource-name
-        - testrun-id
         """;
 
     public override string Title => _commandTitle;

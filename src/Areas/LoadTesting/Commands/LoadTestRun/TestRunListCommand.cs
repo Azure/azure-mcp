@@ -22,12 +22,6 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
         Retrieves a comprehensive list of all test run executions for a specific load test configuration. 
         This command provides an overview of test execution history, allowing you to track performance 
         trends, compare results across multiple runs, and analyze testing patterns over time.
-        
-        Required arguments:
-        - subscription
-        - resource-group
-        - test-resource-name
-        - test-id
         """;
 
     public override string Title => _commandTitle;
