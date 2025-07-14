@@ -12,4 +12,7 @@ public class BaseKeyValueOptions : BaseAppConfigOptions
 
     [JsonPropertyName(AppConfigOptionDefinitions.LabelName)]
     public string? Label { get; set; }
+
+    [JsonPropertyName(AppConfigOptionDefinitions.ContentTypeName)]
+    public string? ContentType { get; set; }
 }

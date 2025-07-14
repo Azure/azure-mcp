@@ -5,6 +5,7 @@
 ### Features Added
 
 - Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+- App Configuration Put command now also supports setting the `ContentType` and `Tags` properties [#459](https://github.com/Azure/azure-mcp/pull/459)
 
 - Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
 
