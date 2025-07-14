@@ -128,18 +128,18 @@ extends:
         - name: Version
           value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
       jobs:
-        - template: /eng/pipelines/templates/jobs/build-vscode.yml
+        - template: /eng/pipelines/templates/jobs/analyze.yml
+        - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
           parameters:
-            UsePlatformContainer: false
-            OSName: linux
-            Matrix:
-              linux:
-                Architecture: x64
-                RunTests: true
-                NoPackagesChanged: false
-            DependsOn: SignAndPack
-            CloudConfig: {}
-            TestTimeoutInMinutes: 30
+            SparseCheckout: false
+            JobTemplatePath: /eng/pipelines/templates/jobs/build-vscode.yml
+            AdditionalParameters:
+              TestTimeoutInMinutes: 10
+            MatrixConfigs:
+              - Name: build_matrix
+                Path: eng/pipelines/build-matrix.json
+                Selection: all
+                GenerateVMJobs: true
 
     - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
