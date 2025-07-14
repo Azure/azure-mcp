@@ -2,7 +2,7 @@
   "profiles": {
     "azmcp": {
       "commandName": "Project",
-      "commandLineArgs": "server start --transport stdio"
+      "commandLineArgs": "server start"
     }
   }
 }
