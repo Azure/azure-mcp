@@ -4,8 +4,8 @@
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Models.Command;
-using AzureMcp.Services.ProcessExecution;
 using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
