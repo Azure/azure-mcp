@@ -85,7 +85,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         var rgResource = client.GetResourceGroupResource(ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroup));
         if (testResourceName == null)
         {
-            testResourceName = "TestRun_" + DateTime.UtcNow.ToString("dd-MM-yyyy") + "_" + DateTime.UtcNow.ToString("HH-mm-ss");
+            testResourceName = $"TestRun_{DateTime.UtcNow:dd-MM-yyyy_HH-mm-ss}";
         }
         var location = rgResource.Get().Value.Data.Location;
         var response = await rgResource.GetLoadTestingResources().CreateOrUpdateAsync(WaitUntil.Completed, testResourceName, new LoadTestingResourceData(location));
@@ -196,7 +196,7 @@ public class LoadTestingService(ISubscriptionService subscriptionService) : Base
         TestRunRequest requestBody = new TestRunRequest
         {
             TestId = testId,
-            DisplayName = displayName ?? "TestRun_" + DateTime.UtcNow.ToString("dd/MM/yyyy") + "_" + DateTime.UtcNow.ToString("HH:mm:ss"),
+            DisplayName = displayName ?? $"TestRun_{DateTime.UtcNow:dd-MM-yyyy_HH-mm-ss}",
             Description = description,
             DebugLogsEnabled = debugMode ?? false,
             RequestDataLevel = debugMode == true ? RequestDataLevel.ERRORS : RequestDataLevel.NONE,
