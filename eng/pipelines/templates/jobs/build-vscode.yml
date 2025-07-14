@@ -30,6 +30,29 @@ jobs:
   steps:
   - checkout: self
 
+  # Download the signed MCP server binaries for this OS
+  - download: current
+    artifact: $(PipelineArtifactName)_signed
+    displayName: "Download signed MCP server binaries"
+
+  # Copy binaries to ext/vscode/server/<os>
+  - ${{ if eq(parameters.OSName, 'windows') }}:
+      - powershell: |
+          $dest = "ext/vscode/server/windows"
+          New-Item -ItemType Directory -Force -Path $dest
+          Copy-Item -Path "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/*" -Destination $dest -Recurse -Force
+        displayName: "Copy signed MCP server binaries to VSIX (Windows)"
+  - ${{ if eq(parameters.OSName, 'linux') }}:
+      - bash: |
+          mkdir -p ext/vscode/server/linux
+          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/* ext/vscode/server/linux/
+        displayName: "Copy signed MCP server binaries to VSIX (Linux)"
+  - ${{ if eq(parameters.OSName, 'macOS') }}:
+      - bash: |
+          mkdir -p ext/vscode/server/macos
+          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/* ext/vscode/server/macos/
+        displayName: "Copy signed MCP server binaries to VSIX (macOS)"
+
   # --- VS Code Extension Packaging Steps ---
   - task: NodeTool@0
     displayName: "Use Node.js 20.x"
