@@ -92,11 +92,6 @@ public class CommandFactory
             }
         }
 
-        if (commandsFromGroups.Count == 0)
-        {
-            throw new KeyNotFoundException($"No valid group in '[{string.Join(",", groupNames)}]' found in command groups.");
-        }
-
         return commandsFromGroups;
     }
     private void RegisterCommandGroup()
