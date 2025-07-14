@@ -138,7 +138,9 @@ public static partial class OptionDefinitions
         public static readonly Option<string[]?> Namespace = new(
             $"--{NamespaceName}",
             () => null,
-            "The Azure service namespaces to expose on the MCP server (e.g., storage, keyvault, cosmos)."
+            "Azure service areas to expose (e.g., storage, keyvault, cosmos, monitor). " +
+            "Limits MCP tools to only the specified Azure services. " +
+            "If not specified, all available Azure services will be exposed."
         )
         {
             IsRequired = false,
@@ -149,7 +151,10 @@ public static partial class OptionDefinitions
         public static readonly Option<string?> Mode = new Option<string?>(
             $"--{ModeName}",
             () => null,
-            "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' exposes one tool per service namespace."
+            "How to organize Azure MCP tools:\n" +
+            "  • 'single': Single unified Azure tool for all operations\n" +
+            "  • 'namespace': One tool per Azure service area (storage, keyvault, etc.)\n" +
+            "  • Default: Individual tools for each specific operation"
         )
         {
             IsRequired = false
@@ -158,7 +163,9 @@ public static partial class OptionDefinitions
         public static readonly Option<bool?> ReadOnly = new(
             $"--{ReadOnlyName}",
             () => null,
-            "Whether the MCP server should be read-only. If true, no write operations will be allowed.");
+            "Enable read-only mode to restrict MCP server to safe operations. " +
+            "When enabled, only read operations (list, get, query) are available. " +
+            "Write operations (create, update, delete) are excluded for safety.");
     }
 
     public static class Authorization
