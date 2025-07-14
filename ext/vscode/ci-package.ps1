@@ -6,12 +6,12 @@ param(
 
 # Define OS targets and corresponding RIDs
 $osMap = @{
-    "win_x64"     = "win-x64"
-    "win_arm64"   = "win-arm64"
+    "windows_x64"     = "win-x64"
+    "windows_arm64"   = "win-arm64"
     "linux_x64"   = "linux-x64"
     "linux_arm64" = "linux-arm64"
-    "osx_x64"     = "osx-x64"
-    "osx_arm64"   = "osx-arm64"
+    "macOS_x64"     = "osx-x64"
+    "macOS_arm64"   = "osx-arm64"
 }
 
 if (-not $osMap.ContainsKey($os)) {
