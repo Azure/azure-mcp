@@ -65,9 +65,11 @@ This keeps all code, options, models, and tests for a service together. See `src
    - Validated before execution
    - Returns a standardized response format
 
-   **CRITICAL**: Command group names can contain dashes. Use camelCase or concatenated names instead:
+   **IMPORTANT**: Command group names cannot contain underscores. Use camelCase or concatenated names or dash separator instead:
    - ✅ Good: `new CommandGroup("entraadmin", "Entra admin operations")`
-   - ✅ Good: `new CommandGroup("entra-admin", "Entra admin operations")`
+   - ✅ Good: `new CommandGroup("resourcegroup", "Resource group operations")`
+   - ✅ Good:`new CommandGroup("entra-admin", "Entra admin operations")`
+   - ❌ Bad: `new CommandGroup("entra_admin", "Entra admin operations")`
 
 ### Required Files
 
