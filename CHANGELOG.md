@@ -4,9 +4,11 @@
 
 ### Features Added
 
-- Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+- [AOT] Switching to trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
 
 - Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
+
+- [AOT] Switching to trimmer-friendly `npgsql` API, saving 2.69 MB in native executable [#592](https://github.com/Azure/azure-mcp/pull/592)
 
 ### Breaking Changes
 
