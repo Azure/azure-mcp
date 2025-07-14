@@ -53,13 +53,17 @@ namespace AzureMcp.Areas.BicepSchema.Commands
                 {
                     return Task.FromResult(context.Response);
                 }
-                var bicepSchemaService = context.GetService<IBicepSchemaService>() ?? throw new InvalidOperationException("Bicep schema service is not available.");
-                var resourceTypeDefinitions = bicepSchemaService.GetResourceTypeDefinitions(
-                    s_serviceProvider.Value,
-                    options.ResourceType!);
 
                 TypesDefinitionResult result = SchemaGenerator.GetResourceTypeDefinitions(s_serviceProvider.Value, options.ResourceType!);
                 List<ComplexType> response = SchemaGenerator.GetResponse(result);
+
+                // Only log the resource type if we are able to get the schema from it.
+                // There is a slight chance that the LLM hallucinates the resource type
+                // parameter with value containing data that we shouldn't log.
+                if (result is not null)
+                {
+                    context.Activity?.SetTag("resourceType", options.ResourceType);
+                }
 
                 context.Response.Results = response is not null ?
                     ResponseResult.Create(
