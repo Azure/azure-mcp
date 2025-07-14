@@ -4,12 +4,8 @@
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -106,46 +102,19 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <returns>An IHost instance configured for the MCP server.</returns>
     private IHost CreateHost(ServiceStartOptions serverOptions)
     {
-        if (serverOptions.Transport == TransportTypes.Sse)
-        {
-            var builder = WebApplication.CreateSlimBuilder([]);
-
-            builder.Services.AddLogging(); // For ILoggerFactory.
-            builder.Services.AddOptions(); // For IOptions<T> support.
-
-            Program.ConfigureServices(builder.Services);
-            ConfigureMcpServer(builder.Services, serverOptions);
-
-            builder.WebHost
-                .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
-                .ConfigureLogging(logging =>
-                {
-                    logging.ConfigureOpenTelemetryLogger();
-                    logging.AddEventSourceLogger();
-                });
-
-            var application = builder.Build();
-
-            application.MapMcp();
-
-            return application;
-        }
-        else
-        {
-            return Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.ConfigureOpenTelemetryLogger();
-                    logging.AddEventSourceLogger();
-                })
-                .ConfigureServices(services =>
-                {
-                    Program.ConfigureServices(services);
-                    ConfigureMcpServer(services, serverOptions);
-                })
-                .Build();
-        }
+        return Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.ConfigureOpenTelemetryLogger();
+                logging.AddEventSourceLogger();
+            })
+            .ConfigureServices(services =>
+            {
+                Program.ConfigureServices(services);
+                ConfigureMcpServer(services, serverOptions);
+            })
+            .Build();
     }
 
     /// <summary>
