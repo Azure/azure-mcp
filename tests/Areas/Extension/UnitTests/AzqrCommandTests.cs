@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.Subscription;
@@ -51,6 +53,17 @@ public sealed class AzqrCommandTests
         File.WriteAllText(xlsxReportFilePath, "");
         File.WriteAllText(jsonReportFilePath, "");
 
+        // Create a temporary fake azqr executable
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        var tempAzqrName = isWindows ? "azqr.exe" : "azqr";
+        var tempAzqrPath = Path.Combine(Path.GetTempPath(), tempAzqrName);
+        File.WriteAllText(tempAzqrPath, string.Empty); // Empty file is enough for path check
+
+        // Set the private static _cachedAzqrPath field via reflection
+        var field = typeof(AzqrCommand).GetField("_cachedAzqrPath", BindingFlags.Static | BindingFlags.NonPublic);
+        var originalAzqrPath = field?.GetValue(null);
+        field?.SetValue(null, tempAzqrPath);
+
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -58,22 +71,37 @@ public sealed class AzqrCommandTests
             Arg.Any<IEnumerable<string>>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, $"scan --subscription-id {mockSubscriptionId}"));
 
-        // Act
-        var response = await command.ExecuteAsync(context, args);
+        try
+        {
+            // Act
+            var response = await command.ExecuteAsync(context, args);
 
-        // Cleanup
-        File.Delete(xlsxReportFilePath);
-        File.Delete(jsonReportFilePath);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Equal(200, response.Status);
-        Assert.Equal("azqr report generated successfully.", response.Message);
-        await _processService.Received().ExecuteAsync(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>());
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(200, response.Status);
+            Assert.Equal("azqr report generated successfully.", response.Message);
+            await _processService.Received().ExecuteAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<int>(),
+                Arg.Any<IEnumerable<string>>());
+        }
+        finally
+        {
+            // Cleanup
+            if (File.Exists(xlsxReportFilePath))
+            {
+                File.Delete(xlsxReportFilePath);
+            }
+            if (File.Exists(jsonReportFilePath))
+            {
+                File.Delete(jsonReportFilePath);
+            }   
+            if (File.Exists(tempAzqrPath))
+            {
+                File.Delete(tempAzqrPath);
+            }
+        }
     }
 
     [Fact]
