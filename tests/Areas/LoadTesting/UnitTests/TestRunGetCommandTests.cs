@@ -74,7 +74,7 @@ public class TestRunGetCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesBadRequestErrors()
     {
-        
+
         var expected = new TestRun();
         _service.GetLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
@@ -95,7 +95,7 @@ public class TestRunGetCommandTests
     [Fact]
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
-        
+
         _service.GetLoadTestRunAsync(
             Arg.Is("sub123"), Arg.Is("testResourceName"), Arg.Is("run1"), Arg.Is("resourceGroup123"), Arg.Is("tenant123"), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<TestRun>(new Exception("Test error")));
