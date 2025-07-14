@@ -49,12 +49,10 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
 
             ArgumentNullException.ThrowIfNull(options.Subscription);
 
-
             var azqrPath = FindAzqrCliPath() ?? throw new FileNotFoundException("Azure Quick Review CLI (azqr) executable not found in PATH. Please ensure azqr is installed.");
 
             var subscriptionService = context.GetService<ISubscriptionService>();
-            var subscriptionIdOrName = options.Subscription;
-            var subscription = await subscriptionService.GetSubscription(subscriptionIdOrName, options.Tenant);
+            var subscription = await subscriptionService.GetSubscription(options.Subscription, options.Tenant);
 
             // Compose azqr command
             var command = $"scan --subscription-id {subscription.Id}";
@@ -67,7 +65,6 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
             var dateString = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
             var reportFileName = Path.Combine(tempDir, $"azqr-report-{options.Subscription}-{dateString}");
 
-            // TODO: Make Azure Quick Review CLI produce a json report that the LLM may read and summarize because the LLM doesn't support reading xlsx files.
             // Azure Quick Review always appends the file extension to the report file's name, we need to create a new path with the file extension to check for the existence of the report file.
             var xlsxReportFilePath = $"{reportFileName}.xlsx";
             var jsonReportFilePath = $"{reportFileName}.json";

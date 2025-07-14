@@ -1,3 +1,5 @@
+using AzureMcp.Models.Option;
+
 namespace AzureMcp.Areas.Extension.Options;
 
 public static class ExtensionOptionDefinitions
@@ -71,10 +73,8 @@ public static class ExtensionOptionDefinitions
 
     public static class Azqr
     {
-        public const string ResourceGroupName = "resource-group";
-
         public static readonly Option<string> ResourceGroup = new(
-            $"--{ResourceGroupName}",
+            $"--{OptionDefinitions.Common.ResourceGroupName}",
             "The name of the Azure resource group. This is a logical container for Azure resources."
         )
         {
