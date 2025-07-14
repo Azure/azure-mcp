@@ -9,11 +9,11 @@ parameters:
   type: string
 
 jobs:
-- job: SignAndPackVSIX_${{ parameters.ArtifactName }}
+- job: SignAndPackVSIX_${{ replace(parameters.ArtifactName, '-', '_') }}
   ${{ if parameters.SkipSigning }}:
-    displayName: "Pack VSIX (${{ parameters.ArtifactName }})"
+    displayName: "Pack VSIX (${{ replace(parameters.ArtifactName, '-', '_') }})"
   ${{ else }}:
-    displayName: "Sign and Pack VSIX (${{ parameters.ArtifactName }})"
+    displayName: "Sign and Pack VSIX (${{ replace(parameters.ArtifactName, '-', '_') }})"
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   pool:
