@@ -11,9 +11,23 @@ jobs:
   ${{ if parameters.SkipSigning }}:
     displayName: "Pack VSIX"
   ${{ else }}:
-    displayName: "VSIX Sign and Pack"
+    displayName: "Sign and Pack VSIX"
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+  strategy:
+    matrix:
+      linux_x64:
+        ArtifactName: vsix-unsigned_linux_x64
+      linux_arm64:
+        ArtifactName: vsix-unsigned_linux_arm64
+      osx_x64:
+        ArtifactName: vsix-unsigned_osx_x64
+      osx_arm64:
+        ArtifactName: vsix-unsigned_osx_arm64
+      win_x64:
+        ArtifactName: vsix-unsigned_win_x64
+      win_arm64:
+        ArtifactName: vsix-unsigned_win_arm64
   pool:
     name: $(MACPOOL)
     vmImage: $(MACVMIMAGE)
@@ -24,48 +38,32 @@ jobs:
     - download: current
       displayName: Download artifacts
 
+    - task: PowerShell@2
+      inputs:
+        targetType: filePath
+        filePath: eng/scripts/New-VsixSigningManifest.ps1
+        arguments: -Path $(Pipeline.Workspace)\${{ matrix.ArtifactName }}
+        pwsh: true
+      displayName: Create signing manifest
 
-    # Create signing manifest for all VSIX files
-    - powershell: |
-        $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
-        foreach ($folder in $folders) {
-          Write-Host "Creating signing manifest for $($folder.FullName)"
-          & eng/scripts/New-VsixSigningManifest.ps1 -Path $folder.FullName
-        }
-      displayName: Create signing manifest for all VSIX
-
-    # Sign all VSIX files in all vsix-unsigned_* folders (for release builds)
     - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual') }}:
-      - powershell: |
-          $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
-          foreach ($folder in $folders) {
-            $vsixFiles = Get-ChildItem -Path $folder.FullName -Filter *.vsix
-            foreach ($vsix in $vsixFiles) {
-              Write-Host "Signing $($vsix.FullName)"
-              # Call your signing script/tool here, e.g.:
-              # & pipelines/steps/azd-vscode-signing.ps1 -Path $vsix.FullName
-              # Or, if you must use the template, you would need to call it for each file, but that's not supported in a single job step.
-            }
-          }
-        displayName: Sign all VSIX files
+      - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
+        parameters:
+          Path: $(Pipeline.Workspace)\${{ matrix.ArtifactName }}
+          Pattern: '*.vsix'
 
     - ${{ else }}:
       - pwsh: Write-Host "Skipping signing. Build reason - $(Build.Reason)"
         displayName: Signing process skipped for non-release build
 
-    # Copy all signed VSIX files to a single 'signed' directory for publishing
-    - powershell: |
-        $dest = "$(Pipeline.Workspace)\signed"
-        New-Item -ItemType Directory -Path $dest -Force
-        $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
-        foreach ($folder in $folders) {
-          Copy-Item "$($folder.FullName)\*.vsix" $dest -Force
-        }
-      displayName: Copy all signed VSIX for publishing
+    - pwsh: |
+        New-Item -ItemType Directory -Path signed -Force
+        Copy-Item vsix\*.vsix signed\ -Force
+      displayName: Copy signed VSIX for publishing
       condition: always()
 
     - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
       parameters:
-        ArtifactPath: $(Build.ArtifactStagingDirectory)/packed
-        ArtifactName: $(PipelineArtifactName)_packed
+        ArtifactPath: signed
+        ArtifactName: vsix-signed_${{ matrix.ArtifactName }}
         SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
