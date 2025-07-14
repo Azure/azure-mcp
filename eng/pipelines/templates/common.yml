@@ -141,6 +141,24 @@ extends:
                 Selection: all
                 GenerateVMJobs: true
 
+        # # All builds in the internal project get signing
+    - stage: SignAndPackVSIX
+      ${{ if parameters.SkipSigning }}:
+        displayName: 'Pack VSIX'
+      ${{ else }}:
+        displayName: 'VSIX Sign and Pack'
+      dependsOn:
+      - BuildVSIX
+      variables:
+      - template: /eng/pipelines/templates/variables/image.yml
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - name: Version
+        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
+      jobs:
+      - template: /eng/pipelines/templates/jobs/vscode-sign-and-pack.yml
+        parameters:
+          SkipSigning: ${{ parameters.SkipSigning }}
+
     - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release

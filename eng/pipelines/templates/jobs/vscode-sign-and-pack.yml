@@ -1,0 +1,72 @@
+parameters:
+- name: TimeoutInMinutes
+  type: number
+  default: 120
+- name: SkipSigning
+  type: boolean
+  default: false
+
+jobs:
+- job: SignAndPackVSIX
+  ${{ if parameters.SkipSigning }}:
+    displayName: "Pack VSIX"
+  ${{ else }}:
+    displayName: "VSIX Sign and Pack"
+  condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
+  timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+  pool:
+    name: $(MACPOOL)
+    vmImage: $(MACVMIMAGE)
+    os: macos
+  steps:
+    - checkout: self
+
+    - download: current
+      displayName: Download artifacts
+
+    # For each vsix-unsigned_* folder, create manifest and sign
+    - powershell: |
+        $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
+        foreach ($folder in $folders) {
+          Write-Host "Creating signing manifest for $($folder.FullName)"
+          & eng/scripts/New-VsixSigningManifest.ps1 -Path $folder.FullName
+        }
+      displayName: Create signing manifest for all VSIX
+
+    - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual') }}:
+      - powershell: |
+          $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
+          foreach ($folder in $folders) {
+            Write-Host "Signing VSIX files in $($folder.FullName)"
+            # Call the signing template for each folder
+            Write-Host "##vso[task.setvariable variable=CurrentVsixFolder]$($folder.FullName)"
+            # The next step will use this variable
+          }
+        displayName: Prepare for VSIX signing
+
+      - ${{ each folder in parameters.Folders }}:
+        - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
+          parameters:
+            Path: $(CurrentVsixFolder)
+            Pattern: '*.vsix'
+
+    - ${{ else }}:
+      - pwsh: Write-Host "Skipping signing. Build reason - $(Build.Reason)"
+        displayName: Signing process skipped for non-release build
+
+    # Copy all signed VSIX files to a single 'signed' directory for publishing
+    - powershell: |
+        $dest = "$(Pipeline.Workspace)\signed"
+        New-Item -ItemType Directory -Path $dest -Force
+        $folders = Get-ChildItem -Path "$(Pipeline.Workspace)" -Directory | Where-Object { $_.Name -like "vsix-unsigned_*" }
+        foreach ($folder in $folders) {
+          Copy-Item "$($folder.FullName)\*.vsix" $dest -Force
+        }
+      displayName: Copy all signed VSIX for publishing
+      condition: always()
+
+    - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+      parameters:
+        ArtifactPath: $(Build.ArtifactStagingDirectory)/packed
+        ArtifactName: $(PipelineArtifactName)_packed
+        SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
