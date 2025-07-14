@@ -1,0 +1,57 @@
+parameters:
+# required matrix parameters
+- name: UsePlatformContainer
+  type: boolean
+- name: OSName
+  type: string
+- name: Matrix
+  type: object
+- name: DependsOn
+  type: string
+- name: CloudConfig
+  type: object
+- name: TestTimeoutInMinutes
+  type: number
+
+jobs:
+- job: Build_${{ parameters.OSName }}
+  displayName: "Build"
+  dependsOn:
+  - ${{ parameters.DependsOn }}
+  strategy:
+    matrix: $[ ${{ parameters.Matrix }} ]
+  pool:
+    name: $(Pool)
+    ${{ if eq(parameters.OSName, 'macOS') }}:
+      vmImage: $(OSVmImage)
+    ${{ else }}:
+      image: $(OSVmImage)
+    os: ${{ parameters.OSName }}
+  steps:
+  - checkout: self
+
+  # --- VS Code Extension Packaging Steps ---
+  - task: NodeTool@0
+    displayName: "Use Node.js 20.x"
+    inputs:
+      versionSpec: 20.x
+
+  - bash: |
+      npm install -g npm vsce
+      npm ci --no-optional
+    displayName: "Install npm dependencies and vsce"
+    workingDirectory: ext/vscode
+
+  - pwsh: ./ci-package.ps1
+    workingDirectory: ext/vscode
+    displayName: "Package VS Code Extension"
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: "Component Governance Detection"
+
+  # Publish the VSIX extension artifact using 1ES-compliant template
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: ext/vscode
+      ArtifactName: vsix-unsigned_$(System.JobName)
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
