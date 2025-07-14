@@ -3,7 +3,6 @@
 
 using System.Text.Json.Serialization;
 
-
 namespace AzureMcp.Areas.LoadTesting.Models.LoadTest;
 
 public class AutoStopCriteria
