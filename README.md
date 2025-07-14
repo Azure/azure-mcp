@@ -161,6 +161,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### ⚙️ Azure Native ISV Services
 - List Monitored Resources in a Datadog Monitor
 
+### Azure Quick Review CLI Extension
+- Scan Azure resources for compliance related recommendations
+
 ### � Azure Resource Groups
 - List resource groups
 
@@ -178,9 +181,6 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - Manage blob containers and blobs
 - List and query Storage tables
 - Get container properties and metadata
-
-### Azure Quick Review CLI Extension
-- Scan Azure resources for compliance related recommendations
 
 Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/src/Areas/Extension/Resources/azd-best-practices.txt).
 
