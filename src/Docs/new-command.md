@@ -73,18 +73,19 @@ This keeps all code, options, models, and tests for a service together. See `src
 
 A complete command requires:
 
-1. Options class: `src/Areas/{Area}/Options/{Resource}/{Operation}Options.cs`
-2. Command class: `src/Areas/{Area}/Commands/{Resource}/{Resource}{Operation}Command.cs`
-3. Service interface: `src/Areas/{Area}/Services/I{Service}Service.cs`
-4. Service implementation: `src/Areas/{Area}/Services/{Service}Service.cs`
+1. OptionDefinitions static class: `src/Areas/{Area}/Options/{Area}OptionDefinitions.cs`
+2. Options class: `src/Areas/{Area}/Options/{Resource}/{Operation}Options.cs`
+3. Command class: `src/Areas/{Area}/Commands/{Resource}/{Resource}{Operation}Command.cs`
+4. Service interface: `src/Areas/{Area}/Services/I{Service}Service.cs`
+5. Service implementation: `src/Areas/{Area}/Services/{Service}Service.cs`
    - {Area} and {Service} should not be considered synonymous
    - It's common for an area to have a single service class named after the
      area but some areas will have multiple service classes
-5. Unit test: `tests/Areas/{Area}/UnitTests/{Resource}/{Resource}{Operation}CommandTests.cs`
-6. Integration test: `tests/Areas/{Area}/LiveTests/{Area}CommandTests.cs`
-7. Command registration in RegisterCommands(): `src/Areas/{Area}/{Area}Setup.cs`
-8. Area registration in RegisterAreas(): `src/Program.cs`
-9. **Live test infrastructure** (if needed):
+6. Unit test: `tests/Areas/{Area}/UnitTests/{Resource}/{Resource}{Operation}CommandTests.cs`
+7. Integration test: `tests/Areas/{Area}/LiveTests/{Area}CommandTests.cs`
+8. Command registration in RegisterCommands(): `src/Areas/{Area}/{Area}Setup.cs`
+9. Area registration in RegisterAreas(): `src/Program.cs`
+10. **Live test infrastructure** (if needed):
    - Bicep template: `/infra/services/{area}.bicep`
    - Module registration in: `/infra/test-resources.bicep`
    - Optional post-deployment script: `/infra/services/{area}-post.ps1`
@@ -176,7 +177,7 @@ IMPORTANT:
 - Never redefine properties from base classes
 - Make properties nullable if not required
 - Use consistent parameter names across services:
-  - Use `subscription` instead of `subscriptionId`
+  - **CRITICAL**: Always use `subscription` (never `subscriptionId`) for subscription parameters - this allows the parameter to accept both subscription IDs and subscription names, which are resolved internally by `ISubscriptionService.GetSubscription()`
   - Use `resourceGroup` instead of `resourceGroupName`
   - Use singular nouns for resource names (e.g., `server` not `serverName`)
   - Keep parameter names consistent with Azure SDK parameters when possible
@@ -192,7 +193,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     private readonly ILogger<{Resource}{Operation}Command> _logger = logger;
 
     // Define options from OptionDefinitions
-    private readonly Option<string> _newOption = OptionDefinitions.Service.NewOption;
+    private readonly Option<string> _newOption = {Area}OptionDefinitions.NewOption;
 
     public override string Name => "operation";
 
@@ -305,12 +306,17 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Commands.{Service};
 
-// Base command for all service commands
+// Base command for all service commands (if no members needed, use concise syntax)
+public abstract class Base{Service}Command<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
+    : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new();
+
+// Base command for all service commands (if members are needed, use full syntax)
 public abstract class Base{Service}Command<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new()
 {
-    protected readonly Option<string> _commonOption = OptionDefinitions.Service.CommonOption;
+    protected readonly Option<string> _commonOption = {Area}OptionDefinitions.CommonOption;
     protected readonly Option<string> _resourceGroupOption = OptionDefinitions.Common.ResourceGroup;
     protected virtual bool RequiresResourceGroup => true;
 
@@ -985,7 +991,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Follow existing response patterns
 
 4. Documentation:
-   - Clear command description
+   - Clear command description without repeating the service name (e.g., use "List and manage clusters" instead of "AKS operations - List and manage AKS clusters")
    - List all required options
    - Describe return format
    - Include examples in description
@@ -1001,6 +1007,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 ## Common Pitfalls to Avoid
 
 1. Do not:
+   - **CRITICAL**: Use `subscriptionId` as parameter name - Always use `subscription` to support both IDs and names
    - Redefine base class properties in Options classes
    - Skip base.RegisterOptions() call
    - Skip base.Dispose() call
@@ -1015,6 +1022,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Use dashes in command group names
 
 2. Always:
+   - Create a static {Area}OptionDefinitions class for the area
    - Use OptionDefinitions for options
    - Follow exact file structure
    - Implement all base members
