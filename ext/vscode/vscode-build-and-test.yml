@@ -1,0 +1,145 @@
+
+parameters:
+  - name: BuildMatrix
+    type: object
+    default:
+      Windows:
+        Pool: $(WINDOWSPOOL)
+        ImageKey: image
+        OSVmImage: $(WINDOWSVMIMAGE)
+        OS: windows
+        Variables: {}
+
+      Linux:
+        Pool: $(LINUXPOOL)
+        ImageKey: image
+        OSVmImage: $(LINUXVMIMAGE)
+        OS: linux
+        Variables:
+          UploadArtifact: 'true'
+          Codeql.Enabled: true
+          Codeql.SkipTaskAutoInjection: false
+          Codeql.BuildIdentifier: vscode_linux
+
+      Mac:
+        Pool: Azure Pipelines
+        ImageKey: vmImage
+        OSVmImage: $(MACVMIMAGE)
+        OS: macOS
+        Variables: {}
+  - name: ArtifactPath
+    type: string
+    default: ''
+  - name: ArtifactName
+    type: string
+    default: ''
+  - name: SbomEnabled
+    type: boolean
+    default: false
+
+jobs:
+  - ${{ each build in parameters.BuildMatrix }}:
+      - job: BuildVsix_${{ build.key }}
+        displayName: "Build VSIX Extension (${{ build.key }})"
+        pool:
+          name: ${{ build.value.Pool }}
+          ${{ if eq(build.value.ImageKey, 'vmImage') }}:
+            vmImage: ${{ build.value.OSVmImage }}
+          ${{ else }}:
+            image: ${{ build.value.OSVmImage }}
+          os: ${{ build.value.OS }}
+
+        variables: ${{ build.value.Variables }}
+
+        steps:
+          - checkout: self
+
+          - download: current
+            artifact: mcp-server-signed
+            displayName: Download signed MCP server binaries
+
+          - ${{ if eq(build.value.OS, 'windows') }}:
+              - powershell: |
+                  New-Item -ItemType Directory -Force -Path ext\vscode\server\win32
+                  Copy-Item -Path "$(Pipeline.Workspace)\mcp-server-signed\*" -Destination "ext\vscode\server\win32\" -Recurse -Force
+                displayName: "Copy signed MCP server binaries into VSIX extension (Windows)"
+          - ${{ if eq(build.value.OS, 'macOS') }}:
+              - bash: |
+                  mkdir -p ext/vscode/server/darwin
+                  cp -r $(Pipeline.Workspace)/mcp-server-signed/* ext/vscode/server/darwin/
+                displayName: "Copy signed MCP server binaries into VSIX extension (Mac)"
+          - ${{ if eq(build.value.OS, 'linux') }}:
+              - bash: |
+                  mkdir -p ext/vscode/server/linux
+                  cp -r $(Pipeline.Workspace)/mcp-server-signed/* ext/vscode/server/linux/
+                displayName: "Copy signed MCP server binaries into VSIX extension (Linux)"
+          - task: NodeTool@0
+            displayName: "Use Node.js 20.x"
+            inputs:
+              versionSpec: 20.x
+
+          - bash: |
+              npm install -g npm vsce
+              npm ci --no-optional
+            displayName: "Install npm dependencies and vsce"
+            workingDirectory: ext/vscode
+          - pwsh: ./ci-package.ps1
+            workingDirectory: ext/vscode
+            displayName: "Package VS Code Extension"
+
+          - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+            parameters:
+              ArtifactPath: $(Build.ArtifactStagingDirectory)
+              ArtifactName: $(PipelineArtifactName)_BuildVsix_${{ build.key }}
+              SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+
+  - job: GenerateReleaseArtifacts
+    pool:
+      name: $(LINUXPOOL)
+      image: $(LINUXVMIMAGE)
+      os: linux
+
+    steps:
+      - checkout: self
+
+      - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}:
+        - pwsh: |
+            $packageJson = Get-Content -Raw ext/vscode/package.json
+            $package = ConvertFrom-Json $packageJson
+            $package.version = "$($package.version)-beta.$(Build.BuildId)"
+            $outputContent = ConvertTo-Json $package -Depth 100
+            Set-Content -Path ext/vscode/package.json -Value $outputContent
+          displayName: Set Dev Version in package.json
+      - task: PowerShell@2
+        inputs:
+          pwsh: true
+          targetType: filePath
+          filePath: eng/scripts/Set-VsixVersionVariable.ps1
+        displayName: Set VSIX_VERSION
+
+      # Changelog
+      - pwsh: New-Item -ItemType Directory -Path changelog/
+        displayName: Create changelog directory
+
+      - task: PowerShell@2
+        inputs:
+          targetType: filePath
+          filePath: eng/scripts/New-ReleaseNotesFile.ps1
+          arguments: >-
+            -ChangeLogPath ext/vscode/CHANGELOG.md
+            -Version $(VSIX_VERSION)
+            -OutputPath changelog/CHANGELOG.md
+        displayName: Set release changelog content
+
+      # Release metadata
+      - pwsh: |
+          $packageJson = Get-Content -Raw ext/vscode/package.json
+          $package = ConvertFrom-Json $packageJson
+          $releaseMetadata = @{
+            vsixVersion = "$(VSIX_VERSION)";
+            packageVersion = $package.version;
+            ghReleaseTag = 'azure-dev-vscode_$(VSIX_VERSION)';
+          }
+          New-Item -ItemType Directory -Path release-metadata
+          $releaseMetadata | ConvertTo-Json -Depth 100 | Set-Content -Path release-metadata/metadata.json
+        displayName: Set Release Metadata

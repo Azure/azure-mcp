@@ -13,7 +13,7 @@ Azure MCP enables advanced AI and model context workflows for Azure resources an
 - File issues and feature requests on [GitHub](https://github.com/Azure/azure-mcp/issues)
 
 ## Contributing
-See [the contribution guidelines](CONTRIBUTING.md) for ideas and guidance on how to improve the extension. Thank you!
+See [the contribution guidelines] for ideas and guidance on how to improve the extension. Thank you!
 
 ## License
 [MIT](https://github.com/Azure/azure-mcp/blob/main/LICENSE)
