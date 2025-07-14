@@ -5,6 +5,8 @@ parameters:
 - name: SkipSigning
   type: boolean
   default: false
+- name: ArtifactName
+  type: string
 
 jobs:
 - job: SignAndPackVSIX
@@ -14,20 +16,20 @@ jobs:
     displayName: "Sign and Pack VSIX"
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
-  strategy:
-    matrix:
-      linux_x64:
-        ArtifactName: vsix-unsigned_linux_x64
-      linux_arm64:
-        ArtifactName: vsix-unsigned_linux_arm64
-      osx_x64:
-        ArtifactName: vsix-unsigned_osx_x64
-      osx_arm64:
-        ArtifactName: vsix-unsigned_osx_arm64
-      win_x64:
-        ArtifactName: vsix-unsigned_win_x64
-      win_arm64:
-        ArtifactName: vsix-unsigned_win_arm64
+  # strategy:
+  #   matrix:
+  #     linux_x64:
+  #       ArtifactName: vsix-unsigned_linux_x64
+  #     linux_arm64:
+  #       ArtifactName: vsix-unsigned_linux_arm64
+  #     osx_x64:
+  #       ArtifactName: vsix-unsigned_osx_x64
+  #     osx_arm64:
+  #       ArtifactName: vsix-unsigned_osx_arm64
+  #     win_x64:
+  #       ArtifactName: vsix-unsigned_win_x64
+  #     win_arm64:
+  #       ArtifactName: vsix-unsigned_win_arm64
   pool:
     name: $(MACPOOL)
     vmImage: $(MACVMIMAGE)
