@@ -16,20 +16,6 @@ jobs:
     displayName: "Sign and Pack VSIX"
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
-  # strategy:
-  #   matrix:
-  #     linux_x64:
-  #       ArtifactName: vsix-unsigned_linux_x64
-  #     linux_arm64:
-  #       ArtifactName: vsix-unsigned_linux_arm64
-  #     osx_x64:
-  #       ArtifactName: vsix-unsigned_osx_x64
-  #     osx_arm64:
-  #       ArtifactName: vsix-unsigned_osx_arm64
-  #     win_x64:
-  #       ArtifactName: vsix-unsigned_win_x64
-  #     win_arm64:
-  #       ArtifactName: vsix-unsigned_win_arm64
   pool:
     name: $(MACPOOL)
     vmImage: $(MACVMIMAGE)
@@ -44,14 +30,14 @@ jobs:
       inputs:
         targetType: filePath
         filePath: eng/scripts/New-VsixSigningManifest.ps1
-        arguments: -Path $(Pipeline.Workspace)\${{ matrix.ArtifactName }}
+        arguments: -Path $(Pipeline.Workspace)\${{ parameters.ArtifactName }}
         pwsh: true
       displayName: Create signing manifest
 
     - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual') }}:
       - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
         parameters:
-          Path: $(Pipeline.Workspace)\${{ matrix.ArtifactName }}
+          Path: $(Pipeline.Workspace)\${{ parameters.ArtifactName }}
           Pattern: '*.vsix'
 
     - ${{ else }}:
@@ -67,5 +53,5 @@ jobs:
     - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
       parameters:
         ArtifactPath: signed
-        ArtifactName: vsix-signed_${{ matrix.ArtifactName }}
+        ArtifactName: vsix-signed_${{ parameters.ArtifactName }}
         SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
