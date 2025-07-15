@@ -234,15 +234,9 @@ public class CommandFactory
         return aggregated;
     }
 
-    private static string GetPrefix(string currentPrefix, string additional)
-    {
-        // Normalize hyphens to underscores for tool names to ensure consistency
-        var normalizedAdditional = additional.Replace('-', '_');
-        
-        return string.IsNullOrEmpty(currentPrefix)
-            ? normalizedAdditional
-            : currentPrefix + Separator + normalizedAdditional;
-    }
+    private static string GetPrefix(string currentPrefix, string additional) => string.IsNullOrEmpty(currentPrefix)
+        ? additional
+        : currentPrefix + Separator + additional;
 
     public static IEnumerable<KeyValuePair<string, IBaseCommand>> GetVisibleCommands(IEnumerable<KeyValuePair<string, IBaseCommand>> commands)
     {
