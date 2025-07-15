@@ -8,6 +8,8 @@ using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.Storage.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Files.DataLake;
+using AzureMcp.Areas.Storage.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Subscription;
@@ -320,5 +322,21 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
         }
         return new BlobServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
+    private async Task<DataLakeServiceClient> CreateDataLakeServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.dfs.core.windows.net";
+        var options = AddDefaultPolicies(new DataLakeClientOptions());
+
+        if (retryPolicy != null)
+        {
+            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            options.Retry.MaxRetries = retryPolicy.MaxRetries;
+            options.Retry.Mode = retryPolicy.Mode;
+            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
+        return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 }
