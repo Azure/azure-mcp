@@ -36,7 +36,7 @@ public class SqlSetup : IAreaSetup
 
         entraAdmin.AddCommand("list", new EntraAdminListCommand(loggerFactory.CreateLogger<EntraAdminListCommand>()));
 
-        var firewallRule = new CommandGroup("firewallrule", "SQL server firewall rule operations");
+        var firewallRule = new CommandGroup("firewall-rule", "SQL server firewall rule operations");
         server.AddSubGroup(firewallRule);
 
         firewallRule.AddCommand("list", new FirewallRuleListCommand(loggerFactory.CreateLogger<FirewallRuleListCommand>()));

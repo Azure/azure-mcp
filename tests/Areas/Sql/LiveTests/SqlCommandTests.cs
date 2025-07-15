@@ -141,7 +141,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         var serverName = Settings.ResourceBaseName;
 
         var result = await CallToolAsync(
-            "azmcp_sql_server_firewallrule_list",
+            "azmcp_sql_server_firewall-rule_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -187,7 +187,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
     {
         try
         {
-            var result = await CallToolAsync("azmcp_sql_server_firewallrule_list",
+            var result = await CallToolAsync("azmcp_sql_server_firewall-rule_list",
                 new Dictionary<string, object?> { { "args", args } });
 
             // If we get here, the command didn't fail as expected
