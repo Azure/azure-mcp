@@ -22,6 +22,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Bugs Fixed
 
 - Added a post-install script to ensure platform-specific versions like `@azure/mcp-${platform}-${arch}` can be resolved. Otherwise, fail install to prevent npx caching of `@azure/mcp`. [[#597](https://github.com/Azure/azure-mcp/pull/597)]
+- Improved install reliability and error handling when missing platform packages on Ubuntu. [[#394](https://github.com/Azure/azure-mcp/pull/394)]
 
 ### Other Changes
 
