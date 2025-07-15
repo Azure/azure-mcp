@@ -4,6 +4,7 @@
 using System.CommandLine.Builder;
 using AzureMcp.Areas;
 using AzureMcp.Commands;
+using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
@@ -119,6 +120,7 @@ internal class Program
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IExternalProcessService, ExternalProcessService>();
+        services.AddSingleton<AzureClientService>();
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();

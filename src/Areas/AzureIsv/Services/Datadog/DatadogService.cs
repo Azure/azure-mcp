@@ -10,7 +10,8 @@ namespace AzureMcp.Areas.AzureIsv.Services.Datadog;
 
 public partial class DatadogService : BaseAzureService, IDatadogService
 {
-    public DatadogService(ITenantService? tenantService = null) : base(tenantService)
+    public DatadogService(AzureClientService azureClientService, ITenantService? tenantService = null) 
+        : base(azureClientService, tenantService)
     {
     }
 

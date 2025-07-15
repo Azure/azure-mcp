@@ -4,6 +4,7 @@
 using System.Reflection;
 using System.Runtime.Versioning;
 using Azure.Core;
+using Azure.Monitor.Query;
 using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Authentication;
@@ -11,7 +12,7 @@ using AzureMcp.Services.Azure.Tenant;
 
 namespace AzureMcp.Services.Azure;
 
-public abstract class BaseAzureService(ITenantService? tenantService = null)
+public abstract class BaseAzureService(AzureClientService azureClientService, ITenantService? tenantService = null)
 {
     private static readonly UserAgentPolicy s_sharedUserAgentPolicy;
     internal static readonly string s_defaultUserAgent;
@@ -22,6 +23,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
     private string? _lastArmClientTenantId;
     private RetryPolicyOptions? _lastRetryPolicy;
     private readonly ITenantService? _tenantService = tenantService;
+    private readonly AzureClientService _azureClientService = azureClientService ?? throw new ArgumentNullException(nameof(azureClientService));
 
     static BaseAzureService()
     {
@@ -105,7 +107,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
                 options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
             }
 
-            _armClient = new ArmClient(credential, default, options);
+            _armClient = _azureClientService.GetArmClient(credential, options);
             _lastArmClientTenantId = tenantId;
             _lastRetryPolicy = retryPolicy;
 
@@ -115,6 +117,28 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
         {
             throw new Exception($"Failed to create ARM client: {ex.Message}", ex);
         }
+    }
+
+    /// <summary>
+    /// Creates a LogsQueryClient with optional retry policy
+    /// </summary>
+    /// <param name="tenant">Optional Azure tenant ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration</param>
+    protected async Task<LogsQueryClient> CreateLogsQueryClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var credential = await GetCredential(tenant);
+        var options = AddDefaultPolicies(new LogsQueryClientOptions());
+
+        if (retryPolicy != null)
+        {
+            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            options.Retry.MaxRetries = retryPolicy.MaxRetries;
+            options.Retry.Mode = retryPolicy.Mode;
+            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
+
+        return _azureClientService.GetLogsQueryClient(credential, options);
     }
 
     /// <summary>

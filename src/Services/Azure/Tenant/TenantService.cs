@@ -7,10 +7,11 @@ using AzureMcp.Services.Caching;
 
 namespace AzureMcp.Services.Azure.Tenant;
 
-public class TenantService(ICacheService cacheService)
-    : BaseAzureService, ITenantService
+public class TenantService(AzureClientService azureClientService, ICacheService cacheService)
+    : BaseAzureService(azureClientService), ITenantService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private readonly AzureClientService _azureClientService = azureClientService ?? throw new ArgumentNullException(nameof(azureClientService));
     private const string CacheGroup = "tenant";
     private const string CacheKey = "tenants";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(12);
@@ -28,7 +29,7 @@ public class TenantService(ICacheService cacheService)
         var results = new List<TenantResource>();
 
         var options = AddDefaultPolicies(new ArmClientOptions());
-        var client = new ArmClient(await GetCredential(), default, options);
+        var client = _azureClientService.GetArmClient(await GetCredential(), options);
 
         await foreach (var tenant in client.GetTenants())
         {
