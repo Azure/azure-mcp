@@ -112,7 +112,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             },
             output: Output,
             cancellationToken: TestContext.Current.CancellationToken,
-            maxWaitTimeSeconds: 240, // 3 minutes - metrics are faster than logs
+            maxWaitTimeSeconds: 180, // 3 minutes - metrics are faster than logs
             failMessage: "No storage metrics found after waiting 180 seconds");
     }
 
