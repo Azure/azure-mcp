@@ -13,7 +13,7 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
 {
     private const string _commandTitle = "Test Run Get";
     private readonly ILogger<TestRunGetCommand> _logger = logger;
-    private readonly Option<string> _loadTestRunIdOption = OptionDefinitions.LoadTesting.TestRun;
+    private readonly Option<string> _testRunIdOption = OptionDefinitions.LoadTesting.TestRun;
     public override string Name => "get";
     public override string Description =>
         $"""
@@ -25,13 +25,13 @@ public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_loadTestRunIdOption);
+        command.AddOption(_testRunIdOption);
     }
 
     protected override TestRunGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.TestRunId = parseResult.GetValueForOption(_loadTestRunIdOption);
+        options.TestRunId = parseResult.GetValueForOption(_testRunIdOption);
         return options;
     }
 

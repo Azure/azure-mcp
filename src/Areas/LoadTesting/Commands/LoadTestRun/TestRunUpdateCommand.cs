@@ -13,7 +13,7 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
 {
     private const string _commandTitle = "Test Run Update";
     private readonly ILogger<TestRunUpdateCommand> _logger = logger;
-    private readonly Option<string> _loadTestRunIdOption = OptionDefinitions.LoadTesting.TestRun;
+    private readonly Option<string> _testRunIdOption = OptionDefinitions.LoadTesting.TestRun;
     private readonly Option<string> _testIdOption = OptionDefinitions.LoadTesting.Test;
     private readonly Option<string> _displayNameOption = OptionDefinitions.LoadTesting.DisplayName;
     private readonly Option<string> _descriptionOption = OptionDefinitions.LoadTesting.Description;
@@ -28,7 +28,7 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_loadTestRunIdOption);
+        command.AddOption(_testRunIdOption);
         command.AddOption(_testIdOption);
         command.AddOption(_displayNameOption);
         command.AddOption(_descriptionOption);
@@ -37,7 +37,7 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
     protected override TestRunUpdateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.TestRunId = parseResult.GetValueForOption(_loadTestRunIdOption);
+        options.TestRunId = parseResult.GetValueForOption(_testRunIdOption);
         options.TestId = parseResult.GetValueForOption(_testIdOption);
         options.DisplayName = parseResult.GetValueForOption(_displayNameOption);
         options.Description = parseResult.GetValueForOption(_descriptionOption);
@@ -65,13 +65,13 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
                 options.Subscription!,
                 options.TestResourceName!,
                 options.TestId!,
-                options.TestRunId!,
-                oldTestRunId: null, // Old test run ID is not used in update
+                options.TestRunId,
+                oldTestRunId: null, 
                 options.ResourceGroup,
                 options.Tenant,
                 options.DisplayName,
                 options.Description,
-                debugMode: null, // Debug mode is not applicable for update
+                false, // DebugMode false will default to a normal test run - in future we may add a DebugMode option
                 options.RetryPolicy);
             // Set results if any were returned
             context.Response.Results = results != null ?

@@ -198,7 +198,7 @@ public static partial class OptionDefinitions
             "The ID of the load test run for which you want to fetch the details."
         )
         {
-            IsRequired = true
+            IsRequired = false
         };
         public static readonly Option<string> Test = new(
             $"--{TestId}",
