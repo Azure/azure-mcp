@@ -21,6 +21,8 @@
 
 ### Bugs Fixed
 
+- Add post-install script to ensure platform-specific versions like @azure/mcp-${platform}-${arch} can be resolved otherwise fail install to prevent npx caching of @azure/mcp
+
 ### Other Changes
 
 ## 0.3.2 (2025-07-10)
