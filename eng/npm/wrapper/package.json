@@ -18,14 +18,19 @@
     "url": "git+https://github.com/Azure/azure-mcp.git"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "bin": {
     "azmcp": "./index.js"
   },
-  "os": [],
-  "cpu": [],
+  "os": [
+  ],
+  "cpu": [
+  ], 
   "optionalDependencies": {
     "@azure/mcp-linux-x64": "^0.2.3"
+  },
+  "scripts": {
+    "postinstall": "node ./scripts/post-install-script.js"
   }
 }
