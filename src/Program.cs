@@ -61,6 +61,7 @@ internal class Program
             // Register Azure service areas
             new AzureMcp.Areas.Aks.AksSetup(),
             new AzureMcp.Areas.AppConfig.AppConfigSetup(),
+            new AzureMcp.Areas.AppService.AppServiceSetup(),
             new AzureMcp.Areas.Authorization.AuthorizationSetup(),
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Areas.Cosmos.CosmosSetup(),

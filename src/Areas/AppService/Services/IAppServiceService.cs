@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Options;
+using AzureMcp.Areas.AppService.Models;
+namespace AzureMcp.Areas.AppService.Services;
+
+public interface IAppServiceService
+{
+    Task<DatabaseConnectionInfo> AddDatabaseAsync(
+        string appName,
+        string resourceGroup,
+        string databaseType,
+        string databaseServer,
+        string databaseName,
+        string connectionString,
+        string subscription,
+        RetryPolicyOptions? retryPolicy);
+}
