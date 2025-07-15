@@ -89,6 +89,9 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
             };
         }
 
+        // Ensure tool loader map is populated before attempting tool lookup
+        await EnsureToolLoaderMapInitializedAsync(request, cancellationToken);
+
         if (!_toolLoaderMap.TryGetValue(request.Params.Name, out var toolCaller))
         {
             var content = new TextContentBlock
@@ -106,5 +109,26 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
         }
 
         return await toolCaller.CallToolHandler(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Ensures that the tool loader map is initialized by populating it if it's empty.
+    /// This provides lazy initialization to handle cases where tool calls occur before ListToolsHandler is called.
+    /// </summary>
+    /// <param name="request">The request context containing metadata and parameters.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    private async ValueTask EnsureToolLoaderMapInitializedAsync(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    {
+        if (_toolLoaderMap.Count == 0)
+        {
+            // Create a dummy request for listing tools to populate the tool loader map
+            var listToolsRequest = new RequestContext<ListToolsRequestParams>(request.Server)
+            {
+                Params = new ListToolsRequestParams()
+            };
+
+            // Populate the tool loader map by calling ListToolsHandler internally
+            await ListToolsHandler(listToolsRequest, cancellationToken);
+        }
     }
 }
