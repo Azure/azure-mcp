@@ -257,10 +257,10 @@
         "vsts",
         "westus",
         "westus2",
-        "winget",
         "WINDOWSOS",
         "WINDOWSPOOL",
         "WINDOWSVMIMAGE",
+        "winget",
         "Xunit"
     ]
 }
