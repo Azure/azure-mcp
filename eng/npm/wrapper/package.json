@@ -25,7 +25,7 @@
   },
   "os": [],
   "cpu": [],
-  "dependencies": {
+  "optionalDependencies": {
     "@azure/mcp-linux-x64": "^0.2.3"
   }
 }
