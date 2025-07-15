@@ -38,7 +38,7 @@ jobs:
       - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
         parameters:
           Path: $(Pipeline.Workspace)/${{ parameters.ArtifactName }}
-          Pattern: '*.vsix'
+          Pattern: '*.signature.p7s'
 
     - ${{ else }}:
       - pwsh: Write-Host "Skipping signing. Build reason - $(Build.Reason)"
