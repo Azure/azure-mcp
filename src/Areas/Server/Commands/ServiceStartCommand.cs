@@ -99,7 +99,9 @@ public sealed class ServiceStartCommand : BaseCommand
         return Host.CreateDefaultBuilder()
             .ConfigureLogging(logging =>
             {
+                logging.ClearProviders();
                 logging.ConfigureOpenTelemetryLogger();
+                logging.AddEventSourceLogger();
             })
             .ConfigureServices(services =>
             {
