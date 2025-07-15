@@ -362,7 +362,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
                     pathItem.IsDirectory == true ? "directory" : "file",
                     pathItem.ContentLength,
                     pathItem.LastModified,
-                    pathItem.ETag?.ToString());
+                    pathItem.ETag.ToString());
 
                 paths.Add(pathInfo);
             }

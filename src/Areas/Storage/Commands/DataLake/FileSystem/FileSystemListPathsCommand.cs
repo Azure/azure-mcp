@@ -55,7 +55,7 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing Data Lake file system paths. Account: {Account}, FileSystem: {FileSystem}.", options.Account, options.FileSystem);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
