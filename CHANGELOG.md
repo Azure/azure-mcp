@@ -4,11 +4,18 @@
 
 ### Features Added
 
-- Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+- [AOT] Switching to trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
 
 - Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
 
+- [AOT] Switching to trimmer-friendly `npgsql` API, saving 2.69 MB in native executable [#592](https://github.com/Azure/azure-mcp/pull/592)
+
+- [AOT] Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in native executable [#598](https://github.com/Azure/azure-mcp/pull/598)
+
 ### Breaking Changes
+- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
+
+- Removed SSE (Server-Sent Events) transport support. Only stdio transport is now supported as SSE is no longer part of the MCP specification. [#593](https://github.com/Azure/azure-mcp/issues/593)
 
 ### Bugs Fixed
 

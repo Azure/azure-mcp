@@ -58,35 +58,36 @@ This keeps all code, options, models, and tests for a service together. See `src
    - `operation`: Action to perform (verb, lowercase)
 
    Each command is:
-   - In code, to avoid ambiguity between service classes and Azure services, we
-     refer to Azure services as Areas
+   - In code, to avoid ambiguity between service classes and Azure services, we refer to Azure services as Areas
    - Registered in the RegisterCommands method of its service's Areas/{Area}/{Area}Setup.cs file
    - Organized in a hierarchy of command groups
    - Documented with a title, description and examples
    - Validated before execution
    - Returns a standardized response format
 
-   **IMPORTANT**: Command group names cannot contain dashes. Use camelCase or concatenated names instead:
+   **IMPORTANT**: Command group names cannot contain underscores. Use camelCase or concatenated names or dash separator instead:
    - ✅ Good: `new CommandGroup("entraadmin", "Entra admin operations")`
-   - ❌ Bad: `new CommandGroup("ad-admin", "AD admin operations")`
-
+   - ✅ Good: `new CommandGroup("resourcegroup", "Resource group operations")`
+   - ✅ Good:`new CommandGroup("entra-admin", "Entra admin operations")`
+   - ❌ Bad: `new CommandGroup("entra_admin", "Entra admin operations")`
 
 ### Required Files
 
 A complete command requires:
 
-1. Options class: `src/Areas/{Area}/Options/{Resource}/{Operation}Options.cs`
-2. Command class: `src/Areas/{Area}/Commands/{Resource}/{Resource}{Operation}Command.cs`
-3. Service interface: `src/Areas/{Area}/Services/I{Service}Service.cs`
-4. Service implementation: `src/Areas/{Area}/Services/{Service}Service.cs`
+1. OptionDefinitions static class: `src/Areas/{Area}/Options/{Area}OptionDefinitions.cs`
+2. Options class: `src/Areas/{Area}/Options/{Resource}/{Operation}Options.cs`
+3. Command class: `src/Areas/{Area}/Commands/{Resource}/{Resource}{Operation}Command.cs`
+4. Service interface: `src/Areas/{Area}/Services/I{Service}Service.cs`
+5. Service implementation: `src/Areas/{Area}/Services/{Service}Service.cs`
    - {Area} and {Service} should not be considered synonymous
    - It's common for an area to have a single service class named after the
      area but some areas will have multiple service classes
-5. Unit test: `tests/Areas/{Area}/UnitTests/{Resource}/{Resource}{Operation}CommandTests.cs`
-6. Integration test: `tests/Areas/{Area}/LiveTests/{Area}CommandTests.cs`
-7. Command registration in RegisterCommands(): `src/Areas/{Area}/{Area}Setup.cs`
-8. Area registration in RegisterAreas(): `src/Program.cs`
-9. **Live test infrastructure** (if needed):
+6. Unit test: `tests/Areas/{Area}/UnitTests/{Resource}/{Resource}{Operation}CommandTests.cs`
+7. Integration test: `tests/Areas/{Area}/LiveTests/{Area}CommandTests.cs`
+8. Command registration in RegisterCommands(): `src/Areas/{Area}/{Area}Setup.cs`
+9. Area registration in RegisterAreas(): `src/Program.cs`
+10. **Live test infrastructure** (if needed):
    - Bicep template: `/infra/services/{area}.bicep`
    - Module registration in: `/infra/test-resources.bicep`
    - Optional post-deployment script: `/infra/services/{area}-post.ps1`
@@ -194,7 +195,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     private readonly ILogger<{Resource}{Operation}Command> _logger = logger;
 
     // Define options from OptionDefinitions
-    private readonly Option<string> _newOption = OptionDefinitions.Service.NewOption;
+    private readonly Option<string> _newOption = {Area}OptionDefinitions.NewOption;
 
     public override string Name => "operation";
 
@@ -317,7 +318,7 @@ public abstract class Base{Service}Command<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : Base{Service}Options, new()
 {
-    protected readonly Option<string> _commonOption = OptionDefinitions.Service.CommonOption;
+    protected readonly Option<string> _commonOption = {Area}OptionDefinitions.CommonOption;
     protected readonly Option<string> _resourceGroupOption = OptionDefinitions.Common.ResourceGroup;
     protected virtual bool RequiresResourceGroup => true;
 
@@ -1023,6 +1024,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Use dashes in command group names
 
 2. Always:
+   - Create a static {Area}OptionDefinitions class for the area
    - Use OptionDefinitions for options
    - Follow exact file structure
    - Implement all base members

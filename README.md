@@ -21,7 +21,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | Name         | Description                                                                                   | Read/Write Tools | Read Only Tools |
 |--------------|-----------------------------------------------------------------------------------------------|-----------|-----------|
 | All | All Azure MCP tools in a single server. | [![Install](https://img.shields.io/badge/VS_Code-Install_all-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_all-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Server%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--read-only%22%5D%7D) |
-| AKS (Azure Kubernetes Service) | List and manage clusters. | [![Install](https://img.shields.io/badge/VS_Code-Install_aks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20AKS&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22aks%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_aks-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20AKS%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22aks%22%2C%22--read-only%22%5D%7D) |
+| Azure Kubernetes Service (AKS) | List and manage clusters. | [![Install](https://img.shields.io/badge/VS_Code-Install_aks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20AKS&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22aks%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_aks-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=Azure%20AKS%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22aks%22%2C%22--read-only%22%5D%7D) |
 | App Configuration | Manage configuration stores and key-value pairs. | [![Install](https://img.shields.io/badge/VS_Code-Install_appconfig-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20App%20Config&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22appconfig%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_appconfig-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20App%20Config%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22appconfig%22%2C%22--read-only%22%5D%7D) |
 | Azure Data Explorer        | Query and manage clusters and databases. | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Kusto&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22kusto%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_kusto-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Kusto%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22kusto%22%2C%22--read-only%22%5D%7D) |
 | Best Practices | Secure, production-grade Azure SDK guidance. | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22bestpractices%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_bestpractices-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Best%20Practices%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22bestpractices%22%2C%22--read-only%22%5D%7D) |
@@ -246,7 +246,7 @@ AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
 Optionally, customers can use `--env` or `--volume` to pass authentication values.
 
 #### 🤖 Custom MCP Client Install Steps (Optional)
-You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO or SSE.
+You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO.
 
 #### 🔧 Manual Install Steps (Optional)
 For a step-by-step installation, follow these instructions:
@@ -292,22 +292,6 @@ You can optionally set the `--namespace <namespace>` flag to install tools for t
 ### Using standard IO
 
 Configure the MCP client to execute: `npx -y @azure/mcp@latest server start`. For instructions on using , follow instructions in [Quick install with VS Code](#-quick-install-with-vs-code) or [Manual Install](#-manual-install).
-
-### Using SSE
-
-1. Open a terminal window and execute: `npx -y @azure/mcp@latest server start --transport sse`
-2. The server starts up and is hosted at: http://localhost:5008.  To use another port, append `--port {YOUR-PORT-NUMBER}`.
-3. Open your MCP client and add the SSE configuration value.  This may differ between MCP clients.  In VS Code, it will look like:
-   ```json
-   {
-      "servers": {
-        "Azure MCP Server": {
-          "type": "sse",
-          "url": "http://localhost:5008/sse"
-        }
-      }
-    }
-   ```
 
 More end-to-end MCP client/agent guides are coming soon!
 </details>
