@@ -15,7 +15,7 @@
 ### Breaking Changes
 - Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 
-- **SQL Server Entra Admin Command Renamed**: Changed command from `entraadmin` to `entra-admin` for improved readability. The tool name changes from `azmcp_sql_server_entraadmin_list` to `azmcp_sql_server_entra_admin_list` [[#602](https://github.com/Azure/azure-mcp/pull/602)]
+- **SQL Server Entra Admin Command Renamed**: Changed command from `entraadmin` to `entra-admin` for improved readability. The tool name changes from `azmcp_sql_server_entraadmin_list` to `azmcp_sql_server_entra-admin_list` [[#602](https://github.com/Azure/azure-mcp/pull/602)]
 
 - Removed SSE (Server-Sent Events) transport support. Only stdio transport is now supported as SSE is no longer part of the MCP specification. [#593](https://github.com/Azure/azure-mcp/issues/593)
 
