@@ -70,15 +70,4 @@ public static class ExtensionOptionDefinitions
             IsRequired = false
         };
     }
-
-    public static class Azqr
-    {
-        public static readonly Option<string> ResourceGroup = new(
-            $"--{OptionDefinitions.Common.ResourceGroupName}",
-            "The name of the Azure resource group. This is a logical container for Azure resources."
-        )
-        {
-            IsRequired = false
-        };
-    }
 }

@@ -96,7 +96,7 @@ public sealed class AzqrCommandTests
             if (File.Exists(jsonReportFilePath))
             {
                 File.Delete(jsonReportFilePath);
-            }   
+            }
             if (File.Exists(tempAzqrPath))
             {
                 File.Delete(tempAzqrPath);

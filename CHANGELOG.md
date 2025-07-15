@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for scanning Azure resources for compliance recommendations using the Azure Quick Review CLI via the command: `azmcp extension azqr`. [#510](https://github.com/Azure/azure-mcp/pull/510)
+
 - [AOT] Switching to trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
 
 - Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
