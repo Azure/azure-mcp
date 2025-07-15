@@ -219,7 +219,7 @@ public class FirewallRuleListCommandTests
         const string serverName = "testserver";
         const string resourceGroup = "testrg";
         const string subscription = "testsub";
-        
+
         _service.ListFirewallRulesAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -270,11 +270,11 @@ public class FirewallRuleListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         // Verify the service was called with retry policy
         await _service.Received(1).ListFirewallRulesAsync(
             "testserver",
-            "testrg", 
+            "testrg",
             "testsub",
             Arg.Is<AzureMcp.Options.RetryPolicyOptions?>(r => r != null && r.MaxRetries == 3),
             Arg.Any<CancellationToken>());
