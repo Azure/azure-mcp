@@ -49,7 +49,7 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new FileSystemListPathsCommandResult(paths ?? []), 
+                new FileSystemListPathsCommandResult(paths ?? []),
                 StorageJsonContext.Default.FileSystemListPathsCommandResult);
         }
         catch (Exception ex)

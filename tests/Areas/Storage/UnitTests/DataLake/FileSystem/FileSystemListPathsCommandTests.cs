@@ -97,10 +97,10 @@ public class FileSystemListPathsCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
-        
+
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
-        
+
         Assert.NotNull(result);
         Assert.Empty(result.Paths);
     }
