@@ -32,8 +32,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        _resourceGroupOption.IsRequired = false;
-        command.AddOption(_resourceGroupOption);
+        command.AddOption(ExtensionOptionDefinitions.Azqr.OptionalResourceGroup);
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
