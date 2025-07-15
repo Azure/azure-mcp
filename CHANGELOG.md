@@ -12,7 +12,7 @@
 
 - [AOT] Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in native executable [#598](https://github.com/Azure/azure-mcp/pull/598)
 
-- Added new commands for azure function codegen and deployment best practices (https://github.com/Azure/azure-mcp/pull/614)
+- Added new commands for azure function code generation and deployment best practices (https://github.com/Azure/azure-mcp/pull/614)
 
 ### Breaking Changes
 - Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
