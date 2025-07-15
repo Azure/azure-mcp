@@ -46,7 +46,7 @@ jobs:
 
     - pwsh: |
         New-Item -ItemType Directory -Path signed -Force
-        Copy-Item $(Pipeline.Workspace)/${{ parameters.ArtifactName }}\*.vsix signed\ -Force
+        Copy-Item $(Pipeline.Workspace)/${{ parameters.ArtifactName }}/*.vsix signed/ -Force
       displayName: Copy signed VSIX for publishing
       condition: always()
 
