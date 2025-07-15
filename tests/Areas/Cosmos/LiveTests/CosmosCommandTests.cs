@@ -20,7 +20,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_storage_accounts_by_subscription_id()
     {
         var result = await CallToolAsync(
-            "azmcp-cosmos-database-list",
+            "azmcp_cosmos_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -37,7 +37,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_cosmos_database_containers()
     {
         var result = await CallToolAsync(
-            "azmcp-cosmos-database-container-list",
+            "azmcp_cosmos_database_container_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -55,7 +55,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_cosmos_database_containers_by_database_name()
     {
         var result = await CallToolAsync(
-            "azmcp-cosmos-database-container-list",
+            "azmcp_cosmos_database_container_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -73,7 +73,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_query_cosmos_database_container_items()
     {
         var result = await CallToolAsync(
-            "azmcp-cosmos-database-container-item-query",
+            "azmcp_cosmos_database_container_item_query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -92,7 +92,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_cosmos_accounts()
     {
         var result = await CallToolAsync(
-            "azmcp-cosmos-account-list",
+            "azmcp_cosmos_account_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -108,7 +108,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_show_single_item_from_cosmos_account()
     {
         var dbResult = await CallToolAsync(
-            "azmcp-cosmos-database-list",
+            "azmcp_cosmos_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -130,7 +130,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
         Assert.False(string.IsNullOrEmpty(dbName));
 
         var containerResult = await CallToolAsync(
-            "azmcp-cosmos-database-container-list",
+            "azmcp_cosmos_database_container_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -152,7 +152,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
         Assert.False(string.IsNullOrEmpty(containerName));
 
         var itemResult = await CallToolAsync(
-            "azmcp-cosmos-database-container-item-query",
+            "azmcp_cosmos_database_container_item_query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -170,7 +170,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
     public async Task Should_list_and_query_multiple_databases_and_containers()
     {
         var dbResult = await CallToolAsync(
-            "azmcp-cosmos-database-list",
+            "azmcp_cosmos_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -191,7 +191,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             Assert.False(string.IsNullOrEmpty(dbName));
 
             var containerResult = await CallToolAsync(
-                "azmcp-cosmos-database-container-list",
+                "azmcp_cosmos_database_container_list",
                 new() { { "subscription", Settings.SubscriptionId }, { "account-name", Settings.ResourceBaseName! }, { "database-name", dbName! } });
             var containers = containerResult.AssertProperty("containers");
             Assert.Equal(JsonValueKind.Array, containers.ValueKind);
@@ -206,7 +206,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
                 Assert.False(string.IsNullOrEmpty(containerName));
 
                 var itemResult = await CallToolAsync(
-                    "azmcp-cosmos-database-container-item-query",
+                    "azmcp_cosmos_database_container_item_query",
                     new() { { "subscription", Settings.SubscriptionId }, { "account-name", Settings.ResourceBaseName! }, { "database-name", dbName! }, { "container-name", containerName! } });
                 var items = itemResult.AssertProperty("items");
                 Assert.Equal(JsonValueKind.Array, items.ValueKind);

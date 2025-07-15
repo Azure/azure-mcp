@@ -27,7 +27,7 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
     [Trait("Category", "Live")]
     public async Task Client_Should_Invoke_Tool_Successfully()
     {
-        var result = await _client.CallToolAsync("azmcp-subscription-list", new Dictionary<string, object?> { },
+        var result = await _client.CallToolAsync("azmcp_subscription_list", new Dictionary<string, object?> { },
             cancellationToken: TestContext.Current.CancellationToken);
 
         string? content = McpTestUtilities.GetFirstText(result.Content);

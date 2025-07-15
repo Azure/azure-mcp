@@ -30,7 +30,7 @@ public class SqlSetup : IAreaSetup
         var server = new CommandGroup("server", "SQL server operations");
         sql.AddSubGroup(server);
 
-        var entraAdmin = new CommandGroup("entraadmin", "SQL server Microsoft Entra ID administrator operations");
+        var entraAdmin = new CommandGroup("entra-admin", "SQL server Microsoft Entra ID administrator operations");
         server.AddSubGroup(entraAdmin);
 
         entraAdmin.AddCommand("list", new EntraAdminListCommand(loggerFactory.CreateLogger<EntraAdminListCommand>()));

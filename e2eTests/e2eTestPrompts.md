@@ -220,9 +220,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-sql-server-entraadmin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
-| azmcp-sql-server-entraadmin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
-| azmcp-sql-server-entraadmin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 
 ## Azure Storage
 

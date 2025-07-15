@@ -52,7 +52,17 @@ public sealed class RegistryToolLoader(
         foreach (var server in serverList)
         {
             var serverMetadata = server.CreateMetadata();
-            var mcpClient = await _serverDiscoveryStrategy.GetOrCreateClientAsync(serverMetadata.Name, ClientOptions);
+            IMcpClient? mcpClient;
+            try
+            {
+                mcpClient = await _serverDiscoveryStrategy.GetOrCreateClientAsync(serverMetadata.Name, ClientOptions);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Failed to create client for provider {ProviderName}: {Error}", serverMetadata.Name, ex.Message);
+                continue;
+            }
+
             if (mcpClient == null)
             {
                 _logger.LogWarning("Failed to get MCP client for provider {ProviderName}.", serverMetadata.Name);

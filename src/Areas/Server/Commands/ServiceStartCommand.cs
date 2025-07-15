@@ -4,9 +4,6 @@
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Models.Option;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,7 +22,6 @@ public sealed class ServiceStartCommand : BaseCommand
 {
     private const string CommandTitle = "Start MCP Server";
     private readonly Option<string> _transportOption = ServiceOptionDefinitions.Transport;
-    private readonly Option<int> _portOption = ServiceOptionDefinitions.Port;
     private readonly Option<string[]?> _namespaceOption = ServiceOptionDefinitions.Namespace;
     private readonly Option<string?> _modeOption = ServiceOptionDefinitions.Mode;
     private readonly Option<bool?> _readOnlyOption = ServiceOptionDefinitions.ReadOnly;
@@ -53,7 +49,6 @@ public sealed class ServiceStartCommand : BaseCommand
     {
         base.RegisterOptions(command);
         command.AddOption(_transportOption);
-        command.AddOption(_portOption);
         command.AddOption(_namespaceOption);
         command.AddOption(_modeOption);
         command.AddOption(_readOnlyOption);
@@ -67,10 +62,6 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <returns>A command response indicating the result of the operation.</returns>
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var port = parseResult.GetValueForOption(_portOption) == default
-            ? ServiceOptionDefinitions.Port.GetDefaultValue()
-            : parseResult.GetValueForOption(_portOption);
-
         var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
             ? ServiceOptionDefinitions.Namespace.GetDefaultValue()
             : parseResult.GetValueForOption(_namespaceOption);
@@ -86,7 +77,6 @@ public sealed class ServiceStartCommand : BaseCommand
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
-            Port = port,
             Namespace = namespaces,
             Mode = mode,
             ReadOnly = readOnly,
@@ -106,46 +96,19 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <returns>An IHost instance configured for the MCP server.</returns>
     private IHost CreateHost(ServiceStartOptions serverOptions)
     {
-        if (serverOptions.Transport == TransportTypes.Sse)
-        {
-            var builder = WebApplication.CreateSlimBuilder([]);
-
-            builder.Services.AddLogging(); // For ILoggerFactory.
-            builder.Services.AddOptions(); // For IOptions<T> support.
-
-            Program.ConfigureServices(builder.Services);
-            ConfigureMcpServer(builder.Services, serverOptions);
-
-            builder.WebHost
-                .ConfigureKestrel(server => server.ListenAnyIP(serverOptions.Port))
-                .ConfigureLogging(logging =>
-                {
-                    logging.ConfigureOpenTelemetryLogger();
-                    logging.AddEventSourceLogger();
-                });
-
-            var application = builder.Build();
-
-            application.MapMcp();
-
-            return application;
-        }
-        else
-        {
-            return Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.ConfigureOpenTelemetryLogger();
-                    logging.AddEventSourceLogger();
-                })
-                .ConfigureServices(services =>
-                {
-                    Program.ConfigureServices(services);
-                    ConfigureMcpServer(services, serverOptions);
-                })
-                .Build();
-        }
+        return Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.ConfigureOpenTelemetryLogger();
+                logging.AddEventSourceLogger();
+            })
+            .ConfigureServices(services =>
+            {
+                Program.ConfigureServices(services);
+                ConfigureMcpServer(services, serverOptions);
+            })
+            .Build();
     }
 
     /// <summary>
