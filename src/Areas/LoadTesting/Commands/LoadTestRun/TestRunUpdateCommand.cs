@@ -66,7 +66,7 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
                 options.TestResourceName!,
                 options.TestId!,
                 options.TestRunId,
-                oldTestRunId: null, 
+                oldTestRunId: null,
                 options.ResourceGroup,
                 options.Tenant,
                 options.DisplayName,
