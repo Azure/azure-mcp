@@ -3,11 +3,12 @@
 
 using AzureMcp.Areas.Monitor.Options;
 using AzureMcp.Areas.Monitor.Services;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.Log;
 
-public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> logger) : BaseMonitorCommand<ResourceLogQueryOptions>()
+public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> logger) : SubscriptionCommand<ResourceLogQueryOptions>()
 {
     private const string CommandTitle = "Query Logs for Azure Resource";
     private readonly ILogger<ResourceLogQueryCommand> _logger = logger;

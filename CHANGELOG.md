@@ -1,22 +1,69 @@
 # Release History
 
-## 0.2.7 (Unreleased)
+## 0.3.3 (Unreleased)
 
 ### Features Added
 
-- Add support for telemetry. Enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`. [#386](https://github.com/Azure/azure-mcp/pull/386/)
+- [AOT] Switching to trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+
+- Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
+
+- [AOT] Switching to trimmer-friendly `npgsql` API, saving 2.69 MB in native executable [#592](https://github.com/Azure/azure-mcp/pull/592)
+
+- [AOT] Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in native executable [#598](https://github.com/Azure/azure-mcp/pull/598)
 
 ### Breaking Changes
+- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
+
+- Removed SSE (Server-Sent Events) transport support. Only stdio transport is now supported as SSE is no longer part of the MCP specification. [#593](https://github.com/Azure/azure-mcp/issues/593)
 
 ### Bugs Fixed
 
-- Fix bug where CallToolResult is always successful. [#511](https://github.com/Azure/azure-mcp/pull/511)
-
 ### Other Changes
+
+## 0.3.2 (2025-07-10)
+
+### Features Added
+
+- Added support for listing Azure Managed Grafana details via the command: `azmcp-grafana-list`. [[#532](https://github.com/Azure/azure-mcp/pull/532)]
+- Added agent best practices for Azure Terraform commands. [[#420](https://github.com/Azure/azure-mcp/pull/420)]
+
+### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [[#540](https://github.com/Azure/azure-mcp/pull/540/)]
+- Fixed an issue that prevented the Azure MCP from finding the Azure CLI if it was installed on a path other than the default global one. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
+
+## 0.3.1 (2025-07-08)
+
+### Features Added
+
+- Added support for the following SQL operations:
+  - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
+  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+- Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+
+### Breaking Changes
+
+- Deprecated the `--service` flag. Use `--namespace` and `--mode` options to specify the service and mode the server will run in. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+
+## 0.3.0 (2025-07-03)
+
+### Features Added
+
+- Added support for Azure AI Foundry [[#274](https://github.com/Azure/azure-mcp/pull/274)]. The following tools are now available:
+  - `azmcp-foundry-models-list`
+  - `azmcp-foundry-models-deploy`
+  - `azmcp-foundry-models-deployments-list`
+- Added support for telemetry [[#386](https://github.com/Azure/azure-mcp/pull/386)]. Telemetry is enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`.
+
+### Bugs Fixed
+
+- Fixed a bug where `CallToolResult` was always successful. [[#511](https://github.com/Azure/azure-mcp/pull/511)]
 
 ## 0.2.6 (2025-07-01)
 
 ### Other Changes
+
 - Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
@@ -28,6 +75,7 @@
 ## 0.2.5 (2025-06-26)
 
 ### Bugs Fixed
+
 - Fixed issue where tool listing incorrectly returned resources instead of text. [#465](https://github.com/Azure/azure-mcp/issues/465)
 - Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
 
@@ -39,7 +87,6 @@
 - Added support for starting the server with a subset of services using the `--service` flag - https://github.com/Azure/azure-mcp/pull/424
 - Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.) - https://github.com/Azure/azure-mcp/pull/440
 - Added new commands for querying metrics with Azure Monitor with command paths `azmcp-monitor-metrics-query` and `azmcp-monitor-metrics-definitions`. - https://github.com/Azure/azure-mcp/pull/428
-- Model support for Azure AI Foundry https://github.com/Azure/azure-mcp/pull/274
 
 ### Breaking Changes
 

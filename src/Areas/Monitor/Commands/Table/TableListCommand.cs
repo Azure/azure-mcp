@@ -20,7 +20,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
 
     public override string Description =>
         $"""
-        List all tables in a Log Analytics workspace. Requires {WorkspaceLogQueryOptionDefinitions.WorkspaceIdOrName}.
+        List all tables in a Log Analytics workspace. Requires {WorkspaceOptionDefinitions.WorkspaceIdOrName}.
         Returns table names and schemas that can be used for constructing KQL queries.
         """;
 

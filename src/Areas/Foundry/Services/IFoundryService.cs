@@ -3,7 +3,6 @@
 
 using Azure.AI.Agents.Persistent;
 using Azure.AI.Projects;
-using Azure.ResourceManager.CognitiveServices;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Options;
 
