@@ -124,7 +124,7 @@ extends:
           SkipSigning: ${{ parameters.SkipSigning }}
     
     - stage: BuildVSIX
-      displayName: 'Build and Test VSIX Extension'
+      displayName: 'Build VSIX Extension'
       dependsOn:
         - SignAndPack
       pool:
@@ -137,7 +137,6 @@ extends:
         - name: Version
           value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
       jobs:
-        - template: /eng/pipelines/templates/jobs/analyze.yml
         - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
           parameters:
             SparseCheckout: false
@@ -163,10 +162,6 @@ extends:
       - template: /eng/pipelines/templates/variables/globals.yml
       - name: Version
         value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
-      # jobs:
-      # - template: /eng/pipelines/templates/jobs/vscode-sign-and-pack.yml
-      #   parameters:
-      #     SkipSigning: ${{ parameters.SkipSigning }}
 
       jobs:
       - ${{ each artifact in parameters.VsixUnsignedArtifacts }}:
