@@ -48,9 +48,9 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = paths?.Count > 0
-                ? ResponseResult.Create(new FileSystemListPathsCommandResult(paths), StorageJsonContext.Default.FileSystemListPathsCommandResult)
-                : null;
+            context.Response.Results = ResponseResult.Create(
+                new FileSystemListPathsCommandResult(paths ?? []), 
+                StorageJsonContext.Default.FileSystemListPathsCommandResult);
         }
         catch (Exception ex)
         {

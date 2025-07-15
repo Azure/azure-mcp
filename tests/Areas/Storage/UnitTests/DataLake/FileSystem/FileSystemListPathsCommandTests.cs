@@ -79,7 +79,7 @@ public class FileSystemListPathsCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoPaths()
+    public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoPaths()
     {
         // Arrange
         _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), Arg.Is(_knownSubscriptionId),
@@ -96,7 +96,13 @@ public class FileSystemListPathsCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+        
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+        
+        Assert.NotNull(result);
+        Assert.Empty(result.Paths);
     }
 
     [Fact]
