@@ -17,6 +17,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
   - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
   - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
+  - [Platform Package Installation Issues](#platform-package-installation-issues)
 - [Logging and Diagnostics](#logging-and-diagnostics)
   - [Logging](#logging)
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
@@ -421,8 +422,6 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 1. Choose the option that best fits your scenario
 2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
-
-## Common issues
 
 ### Platform Package Installation Issues
 
