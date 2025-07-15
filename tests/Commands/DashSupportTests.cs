@@ -30,30 +30,31 @@ public class DashSupportTests
     }
 
     [Theory]
-    [InlineData("list-roles")]
-    [InlineData("get-resource-group")]
-    [InlineData("create-storage-account")]
-    public void Commands_With_Dashes_Should_Work_With_Underscore_Separator(string commandWithDash)
+    [InlineData("list-roles", "list_roles")]
+    [InlineData("get-resource-group", "get_resource_group")]
+    [InlineData("create-storage-account", "create_storage_account")]
+    public void Commands_With_Dashes_Should_Work_With_Underscore_Separator(string commandWithDash, string expectedNormalizedCommand)
     {
-        // This test demonstrates that commands can now use dashes naturally
-        // because we use underscores as separators
+        // This test demonstrates that commands with dashes are normalized to underscores
+        // for consistency in tool names
 
         // Arrange
         var prefix = "azmcp_role";
 
-        // Act - Simulate how the CommandFactory builds command names
-        var toolName = $"{prefix}_{commandWithDash}";
+        // Act - Simulate how the CommandFactory builds command names with normalization
+        var normalizedCommand = commandWithDash.Replace('-', '_');
+        var toolName = $"{prefix}_{normalizedCommand}";
 
         // Assert
         Assert.Contains('_', toolName); // Uses underscore as separator
-        Assert.Contains('-', toolName); // Preserves dashes in command names
+        Assert.DoesNotContain('-', toolName); // Normalizes dashes to underscores for consistency
 
         // Verify no ambiguity in parsing
         var parts = toolName.Split('_');
         Assert.True(parts.Length >= 3, $"Tool name '{toolName}' should have at least 3 parts when split by underscore");
         Assert.Equal("azmcp", parts[0]);
         Assert.Equal("role", parts[1]);
-        Assert.Equal(commandWithDash, parts[2]);
+        Assert.Equal(expectedNormalizedCommand, parts[2]);
     }
 
     [Fact]
@@ -64,20 +65,22 @@ public class DashSupportTests
         var commandName = "list-roles";
         var prefix = "azmcp_role";
 
-        // New approach (after fix): Use underscore separator
-        var newToolName = $"{prefix}_{commandName}";
-        Assert.Equal("azmcp_role_list-roles", newToolName);
+        // New approach (after fix): Use underscore separator and normalize hyphens
+        var normalizedCommandName = commandName.Replace('-', '_');
+        var newToolName = $"{prefix}_{normalizedCommandName}";
+        Assert.Equal("azmcp_role_list_roles", newToolName);
 
         // Old approach would have been: "azmcp-role-list-roles"
         // This would be ambiguous - is it "azmcp-role" + "list-roles" 
         // or "azmcp" + "role-list" + "roles"?
 
-        // With underscores, it's clear: "azmcp" + "role" + "list-roles"
+        // With underscores throughout, it's clear: "azmcp" + "role" + "list_roles"
         var parts = newToolName.Split('_');
-        Assert.Equal(3, parts.Length);
+        Assert.Equal(4, parts.Length);
         Assert.Equal("azmcp", parts[0]);
         Assert.Equal("role", parts[1]);
-        Assert.Equal("list-roles", parts[2]);
+        Assert.Equal("list", parts[2]);
+        Assert.Equal("roles", parts[3]);
     }
 
     [Theory]
