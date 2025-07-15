@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AzureMcp.Areas.VirtualDesktop.Models;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;
 
@@ -10,6 +11,6 @@ using AzureMcp.Options;
 
 public interface IVirtualDesktopService
 {
-    Task<IReadOnlyList<string>> ListHostpoolsAsync(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
-    Task<IReadOnlyList<string>> ListSessionHostsAsync(string subscription, string hostPoolName, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+    Task<IReadOnlyList<HostPool>> ListHostpoolsAsync(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+    Task<IReadOnlyList<SessionHost>> ListSessionHostsAsync(string subscription, string hostPoolName, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
 }

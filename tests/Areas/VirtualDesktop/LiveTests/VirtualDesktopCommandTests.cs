@@ -30,8 +30,12 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         // Check results format if any hostpools exist
         foreach (var hostpool in hostpools.EnumerateArray())
         {
-            Assert.True(hostpool.ValueKind == JsonValueKind.String);
-            Assert.False(string.IsNullOrEmpty(hostpool.GetString()));
+            Assert.True(hostpool.ValueKind == JsonValueKind.Object);
+            var name = hostpool.GetProperty("name").GetString();
+            Assert.False(string.IsNullOrEmpty(name));
+            Assert.True(hostpool.TryGetProperty("resourceGroupName", out _));
+            Assert.True(hostpool.TryGetProperty("location", out _));
+            Assert.True(hostpool.TryGetProperty("hostPoolType", out _));
         }
     }
 
@@ -52,8 +56,12 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         // Check results format if any hostpools exist  
         foreach (var hostpool in hostpools.EnumerateArray())
         {
-            Assert.True(hostpool.ValueKind == JsonValueKind.String);
-            Assert.False(string.IsNullOrEmpty(hostpool.GetString()));
+            Assert.True(hostpool.ValueKind == JsonValueKind.Object);
+            var name = hostpool.GetProperty("name").GetString();
+            Assert.False(string.IsNullOrEmpty(name));
+            Assert.True(hostpool.TryGetProperty("resourceGroupName", out _));
+            Assert.True(hostpool.TryGetProperty("location", out _));
+            Assert.True(hostpool.TryGetProperty("hostPoolType", out _));
         }
     }
 
@@ -72,7 +80,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         var hostpools = hostpoolsResult.AssertProperty("hostpools");
         if (hostpools.GetArrayLength() > 0)
         {
-            var firstHostpool = hostpools[0].GetString()!;
+            var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
             
             var result = await CallToolAsync(
                 "azmcp-virtualdesktop-hostpool-sessionhost-list",
@@ -88,8 +96,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
             // Check results format if any session hosts exist
             foreach (var sessionHost in sessionHosts.EnumerateArray())
             {
-                Assert.True(sessionHost.ValueKind == JsonValueKind.String);
-                Assert.False(string.IsNullOrEmpty(sessionHost.GetString()));
+                Assert.True(sessionHost.ValueKind == JsonValueKind.Object);
             }
         }
         else
@@ -114,7 +121,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         var hostpools = hostpoolsResult.AssertProperty("hostpools");
         if (hostpools.GetArrayLength() > 0)
         {
-            var firstHostpool = hostpools[0].GetString()!;
+            var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
             
             var result = await CallToolAsync(
                 "azmcp-virtualdesktop-hostpool-sessionhost-list",
@@ -130,8 +137,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
             // Check results format if any session hosts exist
             foreach (var sessionHost in sessionHosts.EnumerateArray())
             {
-                Assert.True(sessionHost.ValueKind == JsonValueKind.String);
-                Assert.False(string.IsNullOrEmpty(sessionHost.GetString()));
+                Assert.True(sessionHost.ValueKind == JsonValueKind.Object);
             }
         }
         else

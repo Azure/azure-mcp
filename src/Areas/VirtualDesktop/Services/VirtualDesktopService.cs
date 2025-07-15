@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Azure.ResourceManager.DesktopVirtualization;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Options;
+using AzureMcp.Areas.VirtualDesktop.Models;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;
 
@@ -13,21 +14,21 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService;
 
-    public async Task<IReadOnlyList<string>> ListHostpoolsAsync(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<IReadOnlyList<HostPool>> ListHostpoolsAsync(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-        var hostpoolNames = new List<string>();
+        var hostpools = new List<HostPool>();
         await foreach (HostPoolResource resource in sub.GetHostPoolsAsync())
         {
-            hostpoolNames.Add(resource.Data.Name);
+            hostpools.Add(new HostPool(resource));
         }
-        return hostpoolNames;
+        return hostpools;
     }
 
-    public async Task<IReadOnlyList<string>> ListSessionHostsAsync(string subscription, string hostPoolName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<IReadOnlyList<SessionHost>> ListSessionHostsAsync(string subscription, string hostPoolName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-        var sessionHostNames = new List<string>();
+        var sessionHosts = new List<SessionHost>();
         
         await foreach (HostPoolResource resource in sub.GetHostPoolsAsync())
         {
@@ -37,12 +38,12 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
                 var hostPool = armClient.GetHostPoolResource(resource.Id);
                 await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
                 {
-                    sessionHostNames.Add(sessionHost.Data.Name);
+                    sessionHosts.Add(new SessionHost(sessionHost));
                 }
                 break; // Found the host pool, no need to continue
             }
         }
         
-        return sessionHostNames;
+        return sessionHosts;
     }
 }

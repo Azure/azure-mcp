@@ -4,6 +4,7 @@
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Services;
+using AzureMcp.Areas.VirtualDesktop.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,8 +60,13 @@ public class HostpoolListCommandTests
         // Arrange
         if (shouldSucceed)
         {
+            var hostpools = new List<HostPool> 
+            { 
+                new() { Name = "hostpool1" }, 
+                new() { Name = "hostpool2" } 
+            }.AsReadOnly();
             _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .Returns(new List<string> { "hostpool1", "hostpool2" }.AsReadOnly());
+                .Returns(hostpools);
         }
 
         var parseResult = _parser.Parse(args);
@@ -86,7 +92,7 @@ public class HostpoolListCommandTests
     {
         // Arrange
         _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(new List<string>().AsReadOnly());
+            .Returns(new List<HostPool>().AsReadOnly());
 
         var parseResult = _parser.Parse("--subscription test-sub");
 
@@ -103,7 +109,7 @@ public class HostpoolListCommandTests
     {
         // Arrange
         _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(Task.FromException<IReadOnlyList<string>>(new Exception("Test error")));
+            .Returns(Task.FromException<IReadOnlyList<HostPool>>(new Exception("Test error")));
 
         var parseResult = _parser.Parse("--subscription test-sub");
 
@@ -120,7 +126,11 @@ public class HostpoolListCommandTests
     public async Task ExecuteAsync_ReturnsHostpools_WhenSuccessful()
     {
         // Arrange
-        var expectedHostpools = new List<string> { "hostpool1", "hostpool2" }.AsReadOnly();
+        var expectedHostpools = new List<HostPool> 
+        { 
+            new() { Name = "hostpool1" }, 
+            new() { Name = "hostpool2" } 
+        }.AsReadOnly();
         _virtualDesktopService.ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>())
             .Returns(expectedHostpools);
 

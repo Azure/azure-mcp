@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using SessionHostModel = AzureMcp.Areas.VirtualDesktop.Models.SessionHost;
 
 namespace AzureMcp.Tests.Areas.VirtualDesktop.UnitTests.SessionHost;
 
@@ -59,12 +60,18 @@ public class SessionHostListCommandTests
         // Arrange
         if (shouldSucceed)
         {
+            var mockSessionHosts = new List<SessionHostModel>
+            {
+                CreateMockSessionHost("sessionhost1"),
+                CreateMockSessionHost("sessionhost2")
+            };
+            
             _virtualDesktopService.ListSessionHostsAsync(
                 Arg.Any<string>(), 
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
-                .Returns(new List<string> { "sessionhost1", "sessionhost2" });
+                .Returns(Task.FromResult<IReadOnlyList<SessionHostModel>>(mockSessionHosts));
         }
 
         var context = new CommandContext(_serviceProvider);
@@ -90,7 +97,11 @@ public class SessionHostListCommandTests
     public async Task ExecuteAsync_WithValidInput_CallsServiceCorrectly()
     {
         // Arrange
-        var expectedSessionHosts = new List<string> { "sessionhost1", "sessionhost2" };
+        var expectedSessionHosts = new List<SessionHostModel>
+        {
+            new() { Name = "sessionhost1" },
+            new() { Name = "sessionhost2" }
+        };
         _virtualDesktopService.ListSessionHostsAsync(
             "sub123", 
             "pool1",
@@ -125,7 +136,7 @@ public class SessionHostListCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(new List<string>());
+            .Returns(new List<SessionHostModel>());
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1");
@@ -148,7 +159,7 @@ public class SessionHostListCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
-            .Returns(Task.FromException<IReadOnlyList<string>>(new Exception("Test error")));
+            .Returns(Task.FromException<IReadOnlyList<SessionHostModel>>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1");
@@ -186,5 +197,25 @@ public class SessionHostListCommandTests
             // The parser throws InvalidOperationException for incomplete options
             Assert.True(true, "Expected InvalidOperationException for malformed arguments");
         }
+    }
+
+    private static SessionHostModel CreateMockSessionHost(string name)
+    {
+        return new SessionHostModel
+        {
+            Name = name,
+            ResourceGroupName = "test-rg",
+            SubscriptionId = "test-sub",
+            HostPoolName = "test-pool",
+            Status = "Available",
+            Sessions = 2,
+            AgentVersion = "1.0.0",
+            AllowNewSession = true,
+            AssignedUser = "test@example.com",
+            FriendlyName = $"Friendly {name}",
+            OsVersion = "Windows 11",
+            UpdateState = "NotStarted",
+            UpdateErrorMessage = null
+        };
     }
 }

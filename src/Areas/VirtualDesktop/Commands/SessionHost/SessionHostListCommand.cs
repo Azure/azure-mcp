@@ -4,6 +4,7 @@
 using Azure;
 using Azure.ResourceManager.DesktopVirtualization;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
+using AzureMcp.Areas.VirtualDesktop.Models;
 using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
@@ -25,7 +26,7 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
     public override string Description =>
         $"""
         List all SessionHosts in a hostpool. This command retrieves all Azure Virtual Desktop SessionHost objects available
-        in the specified {OptionDefinitions.Common.Subscription} and {VirtualDesktopOptionDefinitions.HostPoolName}. Results include SessionHost names and are
+        in the specified {OptionDefinitions.Common.Subscription} and {VirtualDesktopOptionDefinitions.HostPoolName}. Results include SessionHost details and are
         returned as a JSON array.
           Required options:
         - subscription: Azure subscription ID or name
@@ -47,14 +48,14 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
             }
 
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
-            var sessionHostNames = await virtualDesktopService.ListSessionHostsAsync(
+            var sessionHosts = await virtualDesktopService.ListSessionHostsAsync(
                 options.Subscription!,
                 options.HostPoolName!,
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = sessionHostNames.Count > 0
-                ? ResponseResult.Create(new SessionHostListCommandResult(sessionHostNames.ToList()), VirtualDesktopJsonContext.Default.SessionHostListCommandResult)
+            context.Response.Results = sessionHosts.Count > 0
+                ? ResponseResult.Create(new SessionHostListCommandResult(sessionHosts.ToList()), VirtualDesktopJsonContext.Default.SessionHostListCommandResult)
                 : null;
         }
         catch (Exception ex)
@@ -82,7 +83,7 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         _ => base.GetStatusCode(ex)
     };
 
-    internal record SessionHostListCommandResult(List<string> SessionHosts);
+    internal record SessionHostListCommandResult(List<Models.SessionHost> SessionHosts);
 }
 
 

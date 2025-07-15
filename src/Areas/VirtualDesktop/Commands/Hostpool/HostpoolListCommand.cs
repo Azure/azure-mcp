@@ -42,13 +42,13 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
 
-            var hostpoolNames = await virtualDesktopService.ListHostpoolsAsync(
+            var hostpools = await virtualDesktopService.ListHostpoolsAsync(
                 options.Subscription!, 
                 options.Tenant, 
                 options.RetryPolicy);
                 
-            context.Response.Results = hostpoolNames.Count > 0
-                ? ResponseResult.Create(new HostPoolListCommandResult(hostpoolNames.ToList()), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)
+            context.Response.Results = hostpools.Count > 0
+                ? ResponseResult.Create(new HostPoolListCommandResult(hostpools.ToList()), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)
                 : null;
         }
         catch (Exception ex)
@@ -78,6 +78,6 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
         _ => base.GetStatusCode(ex)
     };
 
-    internal record HostPoolListCommandResult(List<string> hostpools);
+    internal record HostPoolListCommandResult(List<Models.HostPool> hostpools);
 }
 
