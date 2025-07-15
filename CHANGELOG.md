@@ -7,6 +7,8 @@
 
 - Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
 
+- Added new commands for azure function codegen and deployment best practices (https://github.com/Azure/azure-mcp/pull/614)
+
 ### Breaking Changes
 
 ### Bugs Fixed
