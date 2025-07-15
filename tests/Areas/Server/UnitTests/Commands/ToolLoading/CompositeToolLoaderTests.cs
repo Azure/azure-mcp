@@ -360,7 +360,7 @@ public class CompositeToolLoaderTests
 
         // Verify that ListToolsHandler was called internally to populate the map
         await mockLoader.Received(1).ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
-        
+
         // Verify that CallToolHandler was called on the loader
         await mockLoader.Received(1).CallToolHandler(callRequest, Arg.Any<CancellationToken>());
     }
@@ -394,7 +394,7 @@ public class CompositeToolLoaderTests
 
         // Verify that ListToolsHandler was called internally to populate the map
         await mockLoader.Received(1).ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
-        
+
         // Verify that CallToolHandler was NOT called since the tool was not found
         await mockLoader.DidNotReceive().CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>());
     }
