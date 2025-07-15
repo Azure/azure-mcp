@@ -1,28 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Reflection;
-using AzureMcp.Commands;
-using AzureMcp.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AzureBestPractices.Commands;
 
-public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCommand> logger) : BaseCommand()
+public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCommand> logger) : BaseBestPracticesCommand<AzureBestPracticesGetCommand>(logger)
 {
     private const string CommandTitle = "Get Azure Best Practices";
-    private readonly ILogger<AzureBestPracticesGetCommand> _logger = logger;
 
-    private static readonly string s_bestPracticesText = LoadBestPracticesText();
-
-    private static string GetBestPracticesText() => s_bestPracticesText;
-
-    private static string LoadBestPracticesText()
-    {
-        Assembly assembly = typeof(AzureBestPracticesGetCommand).Assembly;
-        string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, "azure-best-practices.txt");
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
-    }
+    protected override string ResourceFileName => "azure-best-practices.txt";
 
     public override string Name => "get";
 
@@ -33,14 +20,9 @@ public sealed class AzureBestPracticesGetCommand(ILogger<AzureBestPracticesGetCo
 
     public override string Title => CommandTitle;
 
-
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var bestPractices = GetBestPracticesText();
-        context.Response.Status = 200;
-        context.Response.Results = ResponseResult.Create(new List<string> { bestPractices }, JsonSourceGenerationContext.Default.ListString);
-        context.Response.Message = string.Empty;
-        return Task.FromResult(context.Response);
+        return base.ExecuteAsync(context, parseResult);
     }
 }
