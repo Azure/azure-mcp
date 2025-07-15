@@ -10,6 +10,19 @@ Azure Functions code generation best practices:
     - Prefer extension bundles over SDKs for bindings to simplify dependency management. Use the latest extension bundles available
     - For .NET Functions, use the latest SDKs and prefer the isolated process model over in-process
     - For Durable Functions, use the Durable Task Framework (DTS) for best performance and throughput
-    - Let the user choose Function auth level
+    - Set appropriate authentication levels (default: `function`)
     - Use the latest language runtime version
+    - Follow language-specific project layouts and conventions
+    - For python, do not use grpcio dependent packages such as azure-functions-worker, unless necessary
+    - JavaScript v4 Structure:
+        ```
+        root/
+        ├── host.json              # Function host configuration
+        ├── local.settings.json    # Development settings
+        ├── package.json           # Dependencies
+        ├── src/
+        │   ├── app.js            # Main application entry
+        │   └── [modules].js      # Business logic
+        └── tests/                # Test suite
+        ```
     - Provide steps for testing Functions locally after code generation to ensure functionality and correctness. 
