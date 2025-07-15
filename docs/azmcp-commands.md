@@ -363,8 +363,14 @@ azmcp grafana list --subscription <subscription>
 ### Azure MCP Best Practices
 
 ```bash
+# Get best practices for secure, high-quality Azure Functions app code generation.
+azmcp bestpractices azurefunctions get_code_generation
+
+# Get best practices for secure, production-grade Azure Functions app deployment.
+azmcp bestpractices azurefunctions get_deployment
+
 # Get secure, production-grade Azure SDK best practices for effective code generation.
-azmcp bestpractices get
+azmcp bestpractices general get
 ```
 
 ### Azure MCP Tools
