@@ -15,7 +15,13 @@
 ### Breaking Changes
 - Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 
+- **SQL Server Entra Admin Command Renamed**: Changed command from `entraadmin` to `entra-admin` for improved readability. The tool name changes from `azmcp_sql_server_entraadmin_list` to `azmcp_sql_server_entra-admin_list` [[#602](https://github.com/Azure/azure-mcp/pull/602)]
+
+- Removed SSE (Server-Sent Events) transport support. Only stdio transport is now supported as SSE is no longer part of the MCP specification. [#593](https://github.com/Azure/azure-mcp/issues/593)
+
 ### Bugs Fixed
+
+- Add post-install script to ensure platform-specific versions like @azure/mcp-${platform}-${arch} can be resolved otherwise fail install to prevent npx caching of @azure/mcp
 
 ### Other Changes
 
@@ -37,7 +43,7 @@
 
 - Added support for the following SQL operations:
   - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
-  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+  - `azmcp-sql-server-entra-admin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
 - Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
 
 ### Breaking Changes
