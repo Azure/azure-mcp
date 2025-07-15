@@ -9,6 +9,7 @@ using Xunit;
 namespace AzureMcp.Tests.Areas.Authorization.LiveTests;
 
 
+[Trait("Area", "Authorization")]
 public class AuthorizationCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
@@ -19,7 +20,7 @@ public class AuthorizationCommandTests(LiveTestFixture liveTestFixture, ITestOut
     {
         var scope = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}";
         var result = await CallToolAsync(
-            "azmcp-role-assignment-list",
+            "azmcp_role_assignment_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },

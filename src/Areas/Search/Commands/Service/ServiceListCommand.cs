@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Search.Options.Service;
 using AzureMcp.Areas.Search.Services;
 using AzureMcp.Commands.Subscription;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Search.Commands.Service;
@@ -37,6 +38,8 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var searchService = context.GetService<ISearchService>();
 
             var services = await searchService.ListServices(
@@ -52,7 +55,7 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing search services");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

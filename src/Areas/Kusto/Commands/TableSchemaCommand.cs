@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Kusto.Options;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Commands.Kusto;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Kusto.Commands;
@@ -16,7 +17,10 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
     public override string Name => "schema";
 
     public override string Description =>
-        "Get the schema of a specific table in an Kusto database.";
+        """
+        Get the schema of a specific table in an Kusto database.
+        Requires `cluster-uri` ( or `subscription` and `cluster-name`), `database-name` and `table`.
+        """;
 
     public override string Title => CommandTitle;
 
@@ -31,6 +35,8 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
             {
                 return context.Response;
             }
+
+            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
             string tableSchema;
@@ -62,7 +68,7 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred getting table schema. Cluster: {Cluster}, Table: {Table}.", options.ClusterUri ?? options.ClusterName, options.Table);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

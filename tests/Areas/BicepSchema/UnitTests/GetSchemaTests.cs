@@ -13,6 +13,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.BicepSchema.UnitTests;
 
+[Trait("Area", "BicepSchema")]
 public class GetSchemaTests
 {
     private readonly ITestOutputHelper _output;

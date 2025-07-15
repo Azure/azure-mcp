@@ -12,6 +12,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
 {
+    [Trait("Area", "ServiceBus")]
     public class ServiceBusCommandTests : CommandTestsBase, IClassFixture<LiveTestFixture>
     {
         private const string QueueName = "queue1";
@@ -34,7 +35,7 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
             await SendTestMessages(QueueName, numberOfMessages);
 
             var result = await CallToolAsync(
-                "azmcp-servicebus-queue-peek",
+                "azmcp_servicebus_queue_peek",
                 new()
                 {
                     { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
@@ -57,7 +58,7 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
             await SendTestMessages(TopicName, numberOfMessages);
 
             var result = await CallToolAsync(
-                "azmcp-servicebus-topic-subscription-peek",
+                "azmcp_servicebus_topic_subscription_peek",
                 new()
                 {
                     { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
@@ -77,7 +78,7 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
         public async Task Queue_details()
         {
             var result = await CallToolAsync(
-                "azmcp-servicebus-queue-details",
+                "azmcp_servicebus_queue_details",
                 new()
                 {
                     { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
@@ -94,7 +95,7 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
         public async Task Topic_details()
         {
             var result = await CallToolAsync(
-                "azmcp-servicebus-topic-details",
+                "azmcp_servicebus_topic_details",
                 new()
                 {
                     { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
@@ -111,7 +112,7 @@ namespace AzureMcp.Tests.Areas.ServiceBus.LiveTests
         public async Task Subscription_details()
         {
             var result = await CallToolAsync(
-                "azmcp-servicebus-topic-subscription-details",
+                "azmcp_servicebus_topic_subscription_details",
                 new()
                 {
                     { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },

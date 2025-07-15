@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Cosmos.Commands;
@@ -36,6 +37,8 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var cosmosService = context.GetService<ICosmosService>();
             var containers = await cosmosService.ListContainers(
                 options.Account!,
@@ -54,7 +57,7 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing containers for Cosmos DB database.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

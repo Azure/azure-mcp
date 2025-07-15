@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Redis.LiveTests;
 
+[Trait("Area", "Redis")]
 public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
 {
@@ -16,7 +17,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_caches_by_subscription_id()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-list",
+            "azmcp_redis_cache_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -31,7 +32,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_caches_by_subscription_name()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-list",
+            "azmcp_redis_cache_list",
             new()
             {
                 { "subscription", Settings.SubscriptionName }
@@ -46,7 +47,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_caches_by_subscription_id_with_tenant_id()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-list",
+            "azmcp_redis_cache_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -64,7 +65,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
         Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
 
         var result = await CallToolAsync(
-            "azmcp-redis-cache-list",
+            "azmcp_redis_cache_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -80,7 +81,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_caches_with_retry_policy()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-list",
+            "azmcp_redis_cache_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -97,7 +98,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_clusters_by_subscription_id()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cluster-list",
+            "azmcp_redis_cluster_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -112,7 +113,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_clusters_by_subscription_name()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cluster-list",
+            "azmcp_redis_cluster_list",
             new()
             {
                 { "subscription", Settings.SubscriptionName }
@@ -127,7 +128,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_clusters_by_subscription_id_with_tenant_id()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cluster-list",
+            "azmcp_redis_cluster_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -143,7 +144,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_access_policies()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-accesspolicy-list",
+            "azmcp_redis_cache_accesspolicy_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -160,7 +161,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_access_policies_with_tenant_id()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cache-accesspolicy-list",
+            "azmcp_redis_cache_accesspolicy_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -178,7 +179,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_databases()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cluster-database-list",
+            "azmcp_redis_cluster_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -195,7 +196,7 @@ public class RedisCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_redis_databases_with_retry_policy()
     {
         var result = await CallToolAsync(
-            "azmcp-redis-cluster-database-list",
+            "azmcp_redis_cluster_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },

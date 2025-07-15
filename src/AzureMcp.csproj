@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.2.5</Version>
+    <Version>0.3.3</Version>
     <OutputType>Exe</OutputType>
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
@@ -17,6 +17,14 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
+    <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
+  </PropertyGroup>
+
+  <!-- AOT compilation flags -->
+  <PropertyGroup>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
   </PropertyGroup>
 
   <!-- Debug configuration -->
@@ -41,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.Projects" />
     <PackageReference Include="Azure.Bicep.Types" />
     <PackageReference Include="Azure.Bicep.Types.Az" />
     <PackageReference Include="Azure.Core" />
@@ -52,19 +61,22 @@
     <PackageReference Include="Azure.Monitor.Query" />
     <PackageReference Include="Azure.ResourceManager.AppConfiguration" />
     <PackageReference Include="Azure.ResourceManager.Authorization" />
+    <PackageReference Include="Azure.ResourceManager.ContainerService" />
+    <PackageReference Include="Azure.ResourceManager.CognitiveServices" />
     <PackageReference Include="Azure.ResourceManager.Kusto" />
     <PackageReference Include="Azure.ResourceManager.PostgreSql" />
     <PackageReference Include="Azure.ResourceManager.Redis" />
     <PackageReference Include="Azure.ResourceManager.RedisEnterprise" />
+    <PackageReference Include="Azure.ResourceManager.Sql" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
+    <PackageReference Include="Azure.ResourceManager.Grafana" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
     <PackageReference Include="Azure.ResourceManager.Search" />
     <PackageReference Include="Azure.ResourceManager.Storage" />
     <PackageReference Include="Azure.ResourceManager.Datadog" />
-    <PackageReference Include="JsonSchema.Net" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
@@ -85,7 +97,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+	<EmbeddedResource Include="Areas\AzureTerraformBestPractices\Resources\terraform-best-practices-for-azure.txt" />
+	<EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
     <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
   </ItemGroup>

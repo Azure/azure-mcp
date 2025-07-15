@@ -8,6 +8,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.AzureIsv.LiveTests;
 
+[Trait("Area", "AzureIsv")]
 public class AzureIsvCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
@@ -22,7 +23,7 @@ public class AzureIsvCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
             Assert.Skip("Test skipped because Tenant is not 'Customer LED Tenant'.");
         }
         var result = await CallToolAsync(
-            "azmcp-datadog-monitoredresources-list",
+            "azmcp_datadog_monitoredresources_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },

@@ -20,7 +20,7 @@ public static class TypeToJsonTypeMapper
         { typeof(DateTimeOffset), "string" },
         { typeof(TimeSpan), "string" },
         { typeof(Uri), "string" },
-        
+
         // Number types
         { typeof(int), "integer" },
         { typeof(uint), "integer" },
@@ -34,13 +34,13 @@ public static class TypeToJsonTypeMapper
         { typeof(float), "number" },
         { typeof(double), "number" },
         { typeof(decimal), "number" },
-        
+
         // Boolean
         { typeof(bool), "boolean" },
-        
+
         // Arrays and collections
         { typeof(Array), "array" },
-        
+
         // Object
         { typeof(object), "object" }
     };

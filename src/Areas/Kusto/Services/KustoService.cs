@@ -19,7 +19,6 @@ public sealed class KustoService(
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
-    private static readonly HttpClient _httpClient = new();
 
     private const string CacheGroup = "kusto";
     private const string KustoClustersCacheKey = "clusters";
@@ -286,7 +285,7 @@ public sealed class KustoService(
         if (kustoClient == null)
         {
             var tokenCredential = await GetCredential(tenant);
-            kustoClient = new KustoClient(clusterUri, _httpClient, tokenCredential, UserAgent);
+            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent);
             await _cacheService.SetAsync(CacheGroup, providerCacheKey, kustoClient, s_providerCacheDuration);
         }
 
@@ -300,7 +299,7 @@ public sealed class KustoService(
         if (kustoClient == null)
         {
             var tokenCredential = await GetCredential(tenant);
-            kustoClient = new KustoClient(clusterUri, _httpClient, tokenCredential, UserAgent);
+            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent);
             await _cacheService.SetAsync(CacheGroup, providerCacheKey, kustoClient, s_providerCacheDuration);
         }
 

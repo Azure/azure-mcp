@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using Azure.Core;
 using Azure.Identity;
 using AzureMcp.Areas.Kusto.Services;
 using AzureMcp.Tests.Client;
@@ -12,7 +11,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Kusto.LiveTests;
 
-
+[Trait("Area", "Kusto")]
 public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>, IAsyncLifetime
@@ -32,14 +31,14 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
             var credentials = new DefaultAzureCredential();
             await Client.PingAsync();
             var clusterInfo = await CallToolAsync(
-                "azmcp-kusto-cluster-get",
+                "azmcp_kusto_cluster_get",
                 new()
                 {
                 { "subscription", Settings.SubscriptionId },
                 { "cluster-name", Settings.ResourceBaseName }
                 });
             var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            var kustoClient = new KustoClient(clusterUri ?? string.Empty, new HttpClient(), credentials, "ua");
+            var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua");
             var resp = await kustoClient.ExecuteControlCommandAsync(
                 TestDatabaseName,
                 ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]",
@@ -56,7 +55,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_databases_in_cluster()
     {
         var result = await CallToolAsync(
-            "azmcp-kusto-database-list",
+            "azmcp_kusto_database_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -73,7 +72,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_list_kusto_tables()
     {
         var result = await CallToolAsync(
-            "azmcp-kusto-table-list",
+            "azmcp_kusto_table_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -91,7 +90,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
     public async Task Should_query_kusto()
     {
         var result = await CallToolAsync(
-            "azmcp-kusto-query",
+            "azmcp_kusto_query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
