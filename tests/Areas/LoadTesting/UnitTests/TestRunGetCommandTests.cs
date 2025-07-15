@@ -82,9 +82,6 @@ public class TestRunGetCommandTests
 
         var command = new TestRunGetCommand(_logger);
         var args = command.GetCommand().Parse([
-            "--subscription", "sub123",
-            "--resource-group", "resourceGroup123",
-            "--load-test-name", "loadTestName",
             "--tenant", "tenant123"
         ]);
         var context = new CommandContext(_serviceProvider);

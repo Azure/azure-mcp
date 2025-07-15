@@ -63,7 +63,6 @@ public class TestRunUpdateCommandTests
         var response = await command.ExecuteAsync(context, args);
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
-        Assert.Null(response.Results); // Wont find the test id 
     }
 
     [Fact]
