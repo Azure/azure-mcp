@@ -12,6 +12,8 @@
 
 - [AOT] Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in native executable [#598](https://github.com/Azure/azure-mcp/pull/598)
 
+- Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
+
 ### Breaking Changes
 - Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 

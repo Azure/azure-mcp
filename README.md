@@ -81,6 +81,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "List my Azure storage accounts"
 - "Show me the tables in my Storage account"
 - "Get details about my Storage container"
+- "List paths in my Data Lake file system"
 - "Show my key-value pairs in App Config"
 
 ### 🔧 Azure Resource Management
@@ -177,6 +178,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - List Storage accounts
 - Manage blob containers and blobs
 - List and query Storage tables
+- List paths in Data Lake file systems
 - Get container properties and metadata
 
 Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/src/Areas/Extension/Resources/azd-best-practices.txt).
