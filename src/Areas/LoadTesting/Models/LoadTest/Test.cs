@@ -8,7 +8,7 @@ public class Test
 {
     /// <summary>
     /// Gets or sets the environment variables that will be available during test execution.
-    /// These variables can be referenced in test scripts and are useful for parameterizing tests.
+    /// These variables can be referenced in test scripts and are useful for setting locust tests.
     /// </summary>
     [JsonPropertyName("environmentVariables")]
     public Dictionary<string, string> EnvironmentVariables { get; set; } = new();
