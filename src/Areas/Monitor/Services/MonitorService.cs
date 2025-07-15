@@ -13,7 +13,6 @@ using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.ResourceGroup;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
-using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Services;
 

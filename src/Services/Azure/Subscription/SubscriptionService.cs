@@ -6,12 +6,11 @@ using Azure.ResourceManager.Resources;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
-using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure.Subscription;
 
-public class SubscriptionService(ICacheService cacheService, ITenantService tenantService, ILoggerFactory? loggerFactory = null)
-    : BaseAzureService(tenantService, loggerFactory), ISubscriptionService
+public class SubscriptionService(ICacheService cacheService, ITenantService tenantService)
+    : BaseAzureService(tenantService), ISubscriptionService
 {
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     private const string CacheGroup = "subscription";

@@ -27,9 +27,8 @@ public class AppConfigCommandTests : CommandTestsBase,
     {
         var memoryCache = new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions()));
         var cacheService = new CacheService(memoryCache);
-        var loggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance;
-        var tenantService = new TenantService(cacheService, loggerFactory);
-        var subscriptionService = new SubscriptionService(cacheService, tenantService, loggerFactory);
+        var tenantService = new TenantService(cacheService);
+        var subscriptionService = new SubscriptionService(cacheService, tenantService);
         _appConfigService = new AppConfigService(subscriptionService, tenantService);
         _subscriptionId = Settings.SubscriptionId;
         _accountName = Settings.ResourceBaseName;
