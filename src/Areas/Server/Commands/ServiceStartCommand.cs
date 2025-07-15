@@ -6,6 +6,7 @@ using AzureMcp.Commands;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -98,9 +99,7 @@ public sealed class ServiceStartCommand : BaseCommand
         return Host.CreateDefaultBuilder()
             .ConfigureLogging(logging =>
             {
-                logging.ClearProviders();
                 logging.ConfigureOpenTelemetryLogger();
-                logging.AddEventSourceLogger();
             })
             .ConfigureServices(services =>
             {
