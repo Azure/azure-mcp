@@ -103,7 +103,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         var serverName = Settings.ResourceBaseName;
 
         var result = await CallToolAsync(
-            "azmcp_sql_server_entraadmin_list",
+            "azmcp_sql_server_entra-admin_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },

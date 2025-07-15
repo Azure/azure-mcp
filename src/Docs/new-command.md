@@ -537,9 +537,9 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 }
 ```
 
-**IMPORTANT**: Command group names cannot contain dashes or special characters. Use camelCase or concatenated names:
-- ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`
-- ❌ Bad: `"entra-admin"`, `"resource-group"`, `"storage-account"`
+**IMPORTANT**: Command group names cannot contain underscores. Use camelCase or concatenated names or dash separator instead:
+- ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`, `"entra-admin"`
+- ❌ Bad: `"entra_admin"`, `"resource_group"`, `"storage_account"`
 
 ### 7. Area registration
 ```csharp
