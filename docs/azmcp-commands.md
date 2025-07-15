@@ -592,7 +592,7 @@ azmcp sql db show --subscription <subscription> \
 
 ```bash
 # List Microsoft Entra ID administrators for a SQL server
-azmcp sql server entraadmin list --subscription <subscription> \
+azmcp sql server entra-admin list --subscription <subscription> \
                               --resource-group <resource-group> \
                               --server <server-name>
 ```

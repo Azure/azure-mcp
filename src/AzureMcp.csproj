@@ -22,6 +22,11 @@
     <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
   </PropertyGroup>
 
+  <!-- AOT compilation flags -->
+  <PropertyGroup>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+  </PropertyGroup>
+
   <!-- Debug configuration -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <PublishSingleFile>false</PublishSingleFile>

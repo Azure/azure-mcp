@@ -125,15 +125,7 @@ public static class AzureMcpServiceCollectionExtensions
             });
 
         var mcpServerBuilder = services.AddMcpServer();
-
-        if (serviceStartOptions.Transport != TransportTypes.Sse)
-        {
-            mcpServerBuilder.WithStdioServerTransport();
-        }
-        else
-        {
-            mcpServerBuilder.WithHttpTransport();
-        }
+        mcpServerBuilder.WithStdioServerTransport();
 
         return services;
     }

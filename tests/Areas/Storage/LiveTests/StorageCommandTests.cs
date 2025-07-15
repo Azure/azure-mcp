@@ -17,7 +17,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_storage_accounts_by_subscription_id()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-account-list",
+                "azmcp_storage_account_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionId }
@@ -33,7 +33,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_storage_accounts_by_subscription_name()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-account-list",
+                "azmcp_storage_account_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName }
@@ -49,7 +49,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_storage_accounts_by_subscription_name_with_tenant_id()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-account-list",
+                "azmcp_storage_account_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -68,7 +68,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
             Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
 
             var result = await CallToolAsync(
-                "azmcp-storage-account-list",
+                "azmcp_storage_account_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -85,7 +85,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_blobs_in_container()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-blob-list",
+                "azmcp_storage_blob_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -104,7 +104,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_containers()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-blob-container-list",
+                "azmcp_storage_blob_container_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -123,7 +123,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_storage_tables()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-table-list",
+                "azmcp_storage_table_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -141,7 +141,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_storage_tables_with_tenant_id()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-table-list",
+                "azmcp_storage_table_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -161,7 +161,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
             Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
 
             var result = await CallToolAsync(
-                "azmcp-storage-table-list",
+                "azmcp_storage_table_list",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -179,7 +179,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_get_container_details()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-blob-container-details",
+                "azmcp_storage_blob_container_details",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
@@ -196,7 +196,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_get_container_details_with_tenant_authkey()
         {
             var result = await CallToolAsync(
-                "azmcp-storage-blob-container-details",
+                "azmcp_storage_blob_container_details",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
