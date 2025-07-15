@@ -398,4 +398,57 @@ public class CompositeToolLoaderTests
         // Verify that CallToolHandler was NOT called since the tool was not found
         await mockLoader.DidNotReceive().CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task CallToolHandler_ConcurrentCallsWithoutListingFirst_InitializesOnlyOnce()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        // Setup a loader that has the tool we want to call
+        var mockLoader = Substitute.For<IToolLoader>();
+        var testTool = CreateTestTool("test-tool");
+        mockLoader.ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns(new ListToolsResult { Tools = new List<Tool> { testTool } });
+
+        var expectedResult = new CallToolResult
+        {
+            Content = new List<ContentBlock> { new TextContentBlock { Text = "Tool executed successfully" } },
+            IsError = false
+        };
+        mockLoader.CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns(expectedResult);
+
+        var toolLoaders = new List<IToolLoader> { mockLoader };
+        var toolLoader = new CompositeToolLoader(toolLoaders, logger);
+
+        // Make multiple concurrent calls to the same tool
+        var tasks = new List<Task<CallToolResult>>();
+        const int concurrentCalls = 5;
+
+        for (int i = 0; i < concurrentCalls; i++)
+        {
+            var callRequest = CreateCallToolRequest("test-tool");
+            tasks.Add(toolLoader.CallToolHandler(callRequest, CancellationToken.None).AsTask());
+        }
+
+        var results = await Task.WhenAll(tasks);
+
+        // Verify all calls succeeded
+        foreach (var result in results)
+        {
+            Assert.NotNull(result);
+            Assert.False(result.IsError);
+            Assert.NotNull(result.Content);
+            Assert.Single(result.Content);
+            var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
+            Assert.Equal("Tool executed successfully", textContent.Text);
+        }
+
+        // Verify that ListToolsHandler was called exactly once (not once per concurrent call)
+        await mockLoader.Received(1).ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
+
+        // Verify that CallToolHandler was called for each concurrent request
+        await mockLoader.Received(concurrentCalls).CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>());
+    }
 }
