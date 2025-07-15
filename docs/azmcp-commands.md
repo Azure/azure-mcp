@@ -421,6 +421,16 @@ azmcp role assignment list --subscription <subscription> \
 azmcp group list --subscription <subscription>
 ```
 
+### Azure Virtual Desktop Operations
+```bash
+# List Azure Virtual Desktop host pools in a subscription
+azmcp virtualdesktop hostpool list --subscription <subscription>
+
+# List session hosts in a host pool
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool-name <hostpool-name>
+```
+
 ### Azure AI Foundry Operations
 ```bash
 # List AI Foundry models

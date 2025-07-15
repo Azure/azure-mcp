@@ -126,3 +126,11 @@ module authorization 'services/authorization.bicep' = if (empty(areas) || contai
     testApplicationOid: testApplicationOid
   }
 }
+
+module virtualdesktop 'services/virtualdesktop.bicep' = if (empty(areas) || contains(areas, 'VirtualDesktop')) {
+  name: '${deploymentName}-virtualdesktop'
+  params: {
+    baseName: baseName
+    location: location
+  }
+}
