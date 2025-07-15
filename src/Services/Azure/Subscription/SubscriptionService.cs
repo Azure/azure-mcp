@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-
 using Azure.ResourceManager.Resources;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Tenant;
