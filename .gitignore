@@ -13,3 +13,6 @@ node_modules
 .env
 .env.local
 .env.*.local
+
+# Microsoft package repository configuration (downloaded during build)
+packages-microsoft-prod.deb
