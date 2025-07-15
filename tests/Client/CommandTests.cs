@@ -7,6 +7,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
+[Trait("Area", "Core")]
 public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
@@ -16,7 +17,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
     public async Task Should_list_groups_by_subscription()
     {
         var result = await CallToolAsync(
-            "azmcp-group-list",
+            "azmcp_group_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -32,7 +33,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
     public async Task Should_get_best_practices()
     {
         // Act
-        JsonElement? result = await CallToolAsync("azmcp-bestpractices-get", new Dictionary<string, object?>());
+        JsonElement? result = await CallToolAsync("azmcp_bestpractices_get", new Dictionary<string, object?>());
 
         Assert.True(result.HasValue, "Tool call did not return a value.");
 
@@ -60,7 +61,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
     public async Task Should_list_subscriptions()
     {
         var result = await CallToolAsync(
-            "azmcp-subscription-list",
+            "azmcp_subscription_list",
             new Dictionary<string, object?>());
 
         var subscriptionsArray = result.AssertProperty("subscriptions");

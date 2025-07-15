@@ -7,6 +7,16 @@ COPY . .
 
 # Publish the application
 FROM build AS publish
+
+# Install PowerShell
+RUN apt-get update && \
+    apt-get install -y wget apt-transport-https software-properties-common && \
+    wget -q "https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb" && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y powershell && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN pwsh "eng/scripts/Build-Module.ps1" -OutputPath /app/publish -OperatingSystem Linux -Architecture x64
 
 # Build the runtime image

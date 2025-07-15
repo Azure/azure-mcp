@@ -1,14 +1,118 @@
 # Release History
 
-## 0.2.3 (Unreleased)
+## 0.3.3 (Unreleased)
 
 ### Features Added
 
+- [AOT] Switching to trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
+
+- Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
+
+- [AOT] Switching to trimmer-friendly `npgsql` API, saving 2.69 MB in native executable [#592](https://github.com/Azure/azure-mcp/pull/592)
+
+- [AOT] Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in native executable [#598](https://github.com/Azure/azure-mcp/pull/598)
+
 ### Breaking Changes
+- Support "-" hyphen dash in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
+
+- **SQL Server Entra Admin Command Renamed**: Changed command from `entraadmin` to `entra-admin` for improved readability. The tool name changes from `azmcp_sql_server_entraadmin_list` to `azmcp_sql_server_entra-admin_list` [[#602](https://github.com/Azure/azure-mcp/pull/602)]
+
+- Removed SSE (Server-Sent Events) transport support. Only stdio transport is now supported as SSE is no longer part of the MCP specification. [#593](https://github.com/Azure/azure-mcp/issues/593)
 
 ### Bugs Fixed
 
 ### Other Changes
+
+## 0.3.2 (2025-07-10)
+
+### Features Added
+
+- Added support for listing Azure Managed Grafana details via the command: `azmcp-grafana-list`. [[#532](https://github.com/Azure/azure-mcp/pull/532)]
+- Added agent best practices for Azure Terraform commands. [[#420](https://github.com/Azure/azure-mcp/pull/420)]
+
+### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [[#540](https://github.com/Azure/azure-mcp/pull/540/)]
+- Fixed an issue that prevented the Azure MCP from finding the Azure CLI if it was installed on a path other than the default global one. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
+
+## 0.3.1 (2025-07-08)
+
+### Features Added
+
+- Added support for the following SQL operations:
+  - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
+  - `azmcp-sql-server-entra-admin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+- Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+
+### Breaking Changes
+
+- Deprecated the `--service` flag. Use `--namespace` and `--mode` options to specify the service and mode the server will run in. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
+
+## 0.3.0 (2025-07-03)
+
+### Features Added
+
+- Added support for Azure AI Foundry [[#274](https://github.com/Azure/azure-mcp/pull/274)]. The following tools are now available:
+  - `azmcp-foundry-models-list`
+  - `azmcp-foundry-models-deploy`
+  - `azmcp-foundry-models-deployments-list`
+- Added support for telemetry [[#386](https://github.com/Azure/azure-mcp/pull/386)]. Telemetry is enabled by default but can be disabled by setting `AZURE_MCP_COLLECT_TELEMETRY` to `false`.
+
+### Bugs Fixed
+
+- Fixed a bug where `CallToolResult` was always successful. [[#511](https://github.com/Azure/azure-mcp/pull/511)]
+
+## 0.2.6 (2025-07-01)
+
+### Other Changes
+
+- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
+  - `azmcp-datadog-monitoredresources-list`
+  - `azmcp-kusto-cluster-list`
+  - `azmcp-kusto-database-list`
+  - `azmcp-kusto-sample`
+  - `azmcp-kusto-table-list`
+  - `azmcp-kusto-table-schema`
+
+## 0.2.5 (2025-06-26)
+
+### Bugs Fixed
+
+- Fixed issue where tool listing incorrectly returned resources instead of text. [#465](https://github.com/Azure/azure-mcp/issues/465)
+- Fixed invalid modification to HttpClient in KustoClient. [#433](https://github.com/Azure/azure-mcp/issues/433)
+
+## 0.2.4 (2025-06-24)
+
+### Features Added
+
+- Added new command for resource-centric logs query in Azure Monitor with command path `azmcp-monitor-resource-logs-query` - https://github.com/Azure/azure-mcp/pull/413
+- Added support for starting the server with a subset of services using the `--service` flag - https://github.com/Azure/azure-mcp/pull/424
+- Improved index schema handling in Azure AI Search (index descriptions, facetable fields, etc.) - https://github.com/Azure/azure-mcp/pull/440
+- Added new commands for querying metrics with Azure Monitor with command paths `azmcp-monitor-metrics-query` and `azmcp-monitor-metrics-definitions`. - https://github.com/Azure/azure-mcp/pull/428
+
+### Breaking Changes
+
+- Changed the command for workspace-based logs query in Azure Monitor from `azmcp-monitor-log-query` to `azmcp-monitor-workspace-logs-query`
+
+### Bugs Fixed
+
+- Fixed handling of non-retrievable fields in Azure AI Search. [#416](https://github.com/Azure/azure-mcp/issues/416)
+
+### Other Changes
+
+- Repository structure changed to organize all of an Azure service's code into a single "area" folder. ([426](https://github.com/Azure/azure-mcp/pull/426))
+- Upgraded Azure.Messaging.ServiceBus to 7.20.1 and Azure.Core to 1.46.2. ([441](https://github.com/Azure/azure-mcp/pull/441/))
+- Updated to ModelContextProtocol 0.3.0-preview1, which brings support for the 06-18-2025 MCP specification. ([431](https://github.com/Azure/azure-mcp/pull/431))
+
+## 0.2.3 (2025-06-19)
+
+### Features Added
+
+- Adds support to launch MCP server in readonly mode - https://github.com/Azure/azure-mcp/pull/410
+
+### Bugs Fixed
+
+- MCP tools now expose annotations to clients https://github.com/Azure/azure-mcp/pull/388
 
 ## 0.2.2 (2025-06-17)
 
@@ -16,6 +120,8 @@
 
 - Support for Azure ISV Services https://github.com/Azure/azure-mcp/pull/199/
 - Support for Azure RBAC https://github.com/Azure/azure-mcp/pull/266
+- Support for Key Vault Secrets https://github.com/Azure/azure-mcp/pull/173
+
 
 ## 0.2.1 (2025-06-12)
 
@@ -29,7 +135,6 @@
 ### Features Added
 
 - Support for launching smaller service level MCP servers. https://github.com/Azure/azure-mcp/pull/324
-- Added support for Key Vault Secrets. https://github.com/Azure/azure-mcp/pull/173
 
 ### Bugs Fixed
 
@@ -129,7 +234,7 @@
 ### Features Added
 
 - Support for Azure Key Vault keys https://github.com/Azure/azure-mcp/pull/119
-- Support for Kusto (Azure Data Explorer).  https://github.com/Azure/azure-mcp/pull/21
+- Support for Azure Data Explorer  https://github.com/Azure/azure-mcp/pull/21
 
 ## 0.0.13 (2025-05-06)
 
