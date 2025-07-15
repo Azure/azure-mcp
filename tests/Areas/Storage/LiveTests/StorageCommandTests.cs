@@ -214,7 +214,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         public async Task Should_list_datalake_filesystem_paths()
         {
             var result = await CallToolAsync(
-                "azmcp_storage_datalake_file_system_list_paths",
+                "azmcp_storage_datalake_file-system_list-paths",
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
