@@ -9,11 +9,11 @@ parameters:
   type: string
 
 jobs:
-- job: SignAndPackVSIX_${{ replace(parameters.ArtifactName, '-', '_') }}
+- job: Sign_${{ replace(parameters.ArtifactName, '-', '_') }}
   ${{ if parameters.SkipSigning }}:
-    displayName: "Pack VSIX (${{ replace(parameters.ArtifactName, '-', '_') }})"
+    displayName: "Pack (${{ replace(parameters.ArtifactName, '-', '_') }})"
   ${{ else }}:
-    displayName: "Sign and Pack VSIX (${{ replace(parameters.ArtifactName, '-', '_') }})"
+    displayName: "Sign (${{ replace(parameters.ArtifactName, '-', '_') }})"
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   pool:
@@ -37,7 +37,7 @@ jobs:
     - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual') }}:
       - template: pipelines/steps/azd-vscode-signing.yml@azure-sdk-build-tools
         parameters:
-          Path: $(Pipeline.Workspace)\${{ parameters.ArtifactName }}
+          Path: $(Pipeline.Workspace)/${{ parameters.ArtifactName }}
           Pattern: '*.vsix'
 
     - ${{ else }}:
