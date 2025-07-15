@@ -66,7 +66,8 @@ namespace AzureMcp.Areas.BicepSchema.Commands
                     context.Response.Results = ResponseResult.Create(
                         new BicepSchemaGetCommandResult(response),
                         BicepSchemaJsonContext.Default.BicepSchemaGetCommandResult);
-                } else
+                }
+                else
                 {
                     context.Response.Results = null;
                 }
