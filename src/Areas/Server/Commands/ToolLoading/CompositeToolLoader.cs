@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
-using System.Threading;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
