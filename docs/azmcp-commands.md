@@ -349,6 +349,37 @@ azmcp keyvault secret get --subscription <subscription> \
                           --name <secret-name>
 ```
 
+### Azure Load Testing Operations
+```bash
+# Execute load test command to get all the commands details
+azmcp loadtesting 
+
+# Examples:
+# List load test resources 
+azmcp loadtesting testresource list --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name>
+
+# Create load test resources 
+azmcp loadtesting testresource create --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name>
+
+# Get load test
+azmcp loadtesting test get --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id>
+
+# Create load test
+azmcp loadtesting test create --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id> --display-name <display-name> --description <description> --endpoint <endpoint> --virtual-users <virtual-users> --duration <duration> --ramp-up-time <ramp-up-time>
+
+# Get load test run
+azmcp loadtesting testrun get --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --testrun-id <testrun-id>
+
+# List load test run
+azmcp loadtesting testrun list --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id>
+
+# Create load test run
+azmcp loadtesting testrun create --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id> --testrun-id <testrun-id> --display-name <display-name> --description <description> --old-testrun-id <old-testrun-id>
+
+# Update load test run
+azmcp loadtesting testrun update --subscription <subscription> --resource-group <resource-group> --test-resource-name <test-resource-name> --test-id <test-id> --testrun-id <testrun-id> --display-name <display-name> --description <description>
+```
+
 ### Azure Kubernetes Service (AKS) Operations
 
 ```bash

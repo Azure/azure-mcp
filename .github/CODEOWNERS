@@ -146,3 +146,9 @@
 
 # ServiceLabel: %area-Authorization
 # ServiceOwners:                       @vurhanau
+
+# PRLabel: %area-LoadTesting
+/src/Areas/LoadTesting/                  @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
+
+# ServiceLabel: %area-LoadTesting
+# ServiceOwners:                       @nishtha489 @knarayanana @krchanda @johnsta

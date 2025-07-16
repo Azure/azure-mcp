@@ -173,3 +173,13 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
     testApplicationOid: testApplicationOid
   }
 }
+
+module loadtesting 'services/loadtesting.bicep' = {
+  name: '${deploymentName}-loadtesting'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+}
