@@ -30,7 +30,7 @@ jobs:
       inputs:
         targetType: filePath
         filePath: eng/scripts/New-VsixSigningManifest.ps1
-        arguments: -Path $(Pipeline.Workspace)\${{ parameters.ArtifactName }}
+        arguments: -Path $(Pipeline.Workspace)/${{ parameters.ArtifactName }}
         pwsh: true
       displayName: Create signing manifest
 
@@ -46,12 +46,12 @@ jobs:
 
     - pwsh: |
         New-Item -ItemType Directory -Path signed -Force
-        Copy-Item $(Pipeline.Workspace)/${{ parameters.ArtifactName }}/*.vsix signed/ -Force
+        Copy-Item $(Pipeline.Workspace)/${{ parameters.ArtifactName }}/ signed/ -Force
       displayName: Copy signed VSIX for publishing
       condition: always()
 
     - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
       parameters:
         ArtifactPath: signed
-        ArtifactName: vsix-signed_${{ parameters.ArtifactName }}
+        ArtifactName: ${{ parameters.ArtifactName }}_signed
         SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}

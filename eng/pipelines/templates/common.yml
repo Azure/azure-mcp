@@ -11,15 +11,15 @@ parameters:
 - name: RunLiveTests
   type: boolean
   default: false
-- name: VsixUnsignedArtifacts
+- name: VsixArtifacts
   type: object
   default:
-    - vsix-unsigned_linux_x64
-    - vsix-unsigned_linux_arm64
-    - vsix-unsigned_osx_x64
-    - vsix-unsigned_osx_arm64
-    - vsix-unsigned_win_x64
-    - vsix-unsigned_win_arm64
+    - vsix_packages_linux_x64
+    - vsix_packages_linux_arm64
+    - vsix_packages_osx_x64
+    - vsix_packages_osx_arm64
+    - vsix_packages_win_x64
+    - vsix_packages_win_arm64
 
 resources:
   repositories:
@@ -164,7 +164,7 @@ extends:
         value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
 
       jobs:
-      - ${{ each artifact in parameters.VsixUnsignedArtifacts }}:
+      - ${{ each artifact in parameters.VsixArtifacts }}:
           - template: /eng/pipelines/templates/jobs/vscode-sign-and-pack.yml
             parameters:
               SkipSigning: ${{ parameters.SkipSigning }}

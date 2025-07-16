@@ -39,7 +39,7 @@ jobs:
   - ${{ if eq(parameters.OSName, 'windows') }}:
       - powershell: |
           $arch = "$(Architecture)"
-          $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/*"
+          $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/dist/*"
           $dest = "ext/vscode/server/windows"
           New-Item -ItemType Directory -Force -Path $dest
           Copy-Item -Path $src -Destination $dest -Recurse -Force
@@ -48,13 +48,13 @@ jobs:
       - bash: |
           arch="$(Architecture)"
           mkdir -p ext/vscode/server/linux
-          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/* ext/vscode/server/linux/
+          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/* ext/vscode/server/linux/
         displayName: "Copy signed MCP server binaries to VSIX (Linux)"
   - ${{ if eq(parameters.OSName, 'macOS') }}:
       - bash: |
           arch="$(Architecture)"
           mkdir -p ext/vscode/server/macos
-          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/* ext/vscode/server/macos/
+          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/* ext/vscode/server/macos/
         displayName: "Copy signed MCP server binaries to VSIX (macOS)"
 
   # --- VS Code Extension Packaging Steps ---
@@ -79,6 +79,6 @@ jobs:
   # Publish the VSIX extension artifact using 1ES-compliant template
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
-      ArtifactPath: ext/vscode
-      ArtifactName: vsix-unsigned_$(System.JobName)
+      ArtifactPath: ext/vscode/*.vsix
+      ArtifactName: vsix_package_$(System.JobName)
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
