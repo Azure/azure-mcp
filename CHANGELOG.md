@@ -15,10 +15,10 @@
 ### Features Added
 
 - Added support for listing Azure Kubernetes Service (AKS) clusters via the command `azmcp-aks-cluster-list`. [[#560](https://github.com/Azure/azure-mcp/pull/560)]
-- Made the following Ahead of Time (AOT) compilation improvements:
-  - Switched to the trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in size for the native executable. [[#564](https://github.com/Azure/azure-mcp/pull/564)]
-  - Switched to the trimmer-friendly `npgsql` API, saving 2.69 MB in size for the native executable. [[#592](https://github.com/Azure/azure-mcp/pull/592)]
-  - Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving 3.64 MB in size for the native executable. [[#598](https://github.com/Azure/azure-mcp/pull/598)]
+- Made the following Ahead of Time (AOT) compilation improvements saving `6.96 MB` in size total:
+  - Switched to the trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving `0.63 MB` in size for the native executable. [[#564](https://github.com/Azure/azure-mcp/pull/564)]
+  - Switched to the trimmer-friendly `npgsql` API, saving `2.69 MB` in size for the native executable. [[#592](https://github.com/Azure/azure-mcp/pull/592)]
+  - Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving `3.64 MB` in size for the native executable. [[#598](https://github.com/Azure/azure-mcp/pull/598)]
 - Added support for using the hyphen/dash ("-") character in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
 - Added support for authenticating with the Azure account used to log into VS Code. Authentication now prioritizes the VS Code broker credential when in the context of VS Code. [[#452](https://github.com/Azure/azure-mcp/pull/452)]
 
