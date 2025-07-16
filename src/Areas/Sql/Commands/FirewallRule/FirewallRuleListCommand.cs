@@ -21,10 +21,6 @@ public sealed class FirewallRuleListCommand(ILogger<FirewallRuleListCommand> log
         Gets a list of firewall rules for a SQL server. This command retrieves all 
         firewall rules configured for the specified SQL server, including their IP address ranges
         and rule names. Returns an array of firewall rule objects with their properties.
-          Required options:
-        - subscription: Azure subscription ID or name
-        - resource-group: Resource group name containing the SQL server  
-        - server: Azure SQL Server name
         """;
 
     public override string Title => CommandTitle;
