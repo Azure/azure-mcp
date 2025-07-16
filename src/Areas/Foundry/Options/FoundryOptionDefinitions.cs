@@ -22,6 +22,7 @@ public static class FoundryOptionDefinitions
     public const string ScaleCapacity = "scale-capacity";
     public const string AgentId = "agent-id";
     public const string Query = "query";
+    public const string Evaluators = "evaluators";
 
     public static readonly Option<string> EndpointOption = new(
         $"--{Endpoint}",
@@ -129,4 +130,9 @@ public static class FoundryOptionDefinitions
     {
         IsRequired = true
     };
+
+    public static readonly Option<string> EvaluatorsOption = new(
+        $"--{Evaluators}",
+        "The list of evaluators to use for evaluation, separated by commas."
+    );
 }

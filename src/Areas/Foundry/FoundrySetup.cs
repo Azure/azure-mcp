@@ -41,5 +41,6 @@ public class FoundrySetup : IAreaSetup
 
         agents.AddCommand("list", new AgentsListCommand());
         agents.AddCommand("connect", new AgentsConnectCommand());
+        agents.AddCommand("query-and-evaluate", new QueryAndEvaluateAgentCommand());
     }
 }

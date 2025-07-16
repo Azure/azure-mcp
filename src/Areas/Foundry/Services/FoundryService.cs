@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ClientModel;
 using System.Text;
 using Azure;
 using Azure.AI.Agents.Persistent;
+using Azure.AI.OpenAI;
 using Azure.AI.Projects;
 using Azure.ResourceManager;
 using Azure.ResourceManager.CognitiveServices;
@@ -22,33 +24,35 @@ namespace AzureMcp.Areas.Foundry.Services;
 
 public class FoundryService : BaseAzureService, IFoundryService
 {
-    private static readonly Dictionary<string, Func<IEvaluator>> TextEvaluatorDictionary = new ()
+    private static readonly Dictionary<string, Func<IEvaluator>> TextEvaluatorDictionary = new()
     {
-        {"coherence", () => new CoherenceEvaluator()},
-        {"completeness", () => new CompletenessEvaluator()},
-        {"equivalence", () => new EquivalenceEvaluator()},
-        {"fluency", () => new FluencyEvaluator()},
-        {"groundedness", () => new GroundednessEvaluator()},
-        {"relevance", () => new RelevanceEvaluator()},
+        { "coherence", () => new CoherenceEvaluator() },
+        { "completeness", () => new CompletenessEvaluator() },
+        { "equivalence", () => new EquivalenceEvaluator() },
+        { "fluency", () => new FluencyEvaluator() },
+        { "groundedness", () => new GroundednessEvaluator() },
+        { "relevance", () => new RelevanceEvaluator() },
         //{"relevance_truth_and_completeness", () => new RelevanceTruthAndCompletenessEvaluator()},
-        {"retrieval", () => new RetrievalEvaluator()},
+        { "retrieval", () => new RetrievalEvaluator() },
 
-        {"code_vulnerability", () => new CodeVulnerabilityEvaluator()},
-        {"content_harm", () => new ContentHarmEvaluator()},
-        {"groundedness_pro", () => new GroundednessProEvaluator()},
-        {"hate_and_unfairness", () => new HateAndUnfairnessEvaluator()},
-        {"indirect_attack", () => new IndirectAttackEvaluator()},
-        {"protected_material", () => new ProtectedMaterialEvaluator()},
-        {"self_harm", () => new SelfHarmEvaluator()},
-        {"sexual", () => new SexualEvaluator()},
-        {"ungrounded_attributes", () => new UngroundedAttributesEvaluator()},
-        {"violence", () => new ViolenceEvaluator()},
+        { "code_vulnerability", () => new CodeVulnerabilityEvaluator() },
+        { "content_harm", () => new ContentHarmEvaluator() },
+        { "groundedness_pro", () => new GroundednessProEvaluator() },
+        { "hate_and_unfairness", () => new HateAndUnfairnessEvaluator() },
+        { "indirect_attack", () => new IndirectAttackEvaluator() },
+        { "protected_material", () => new ProtectedMaterialEvaluator() },
+        { "self_harm", () => new SelfHarmEvaluator() },
+        { "sexual", () => new SexualEvaluator() },
+        { "ungrounded_attributes", () => new UngroundedAttributesEvaluator() },
+        { "violence", () => new ViolenceEvaluator() },
     };
-    private static readonly Dictionary<string, Func<IEvaluator>> AgentEvaluatorDictionary = new ()
+    private static readonly Dictionary<string, Func<IEvaluator>> AgentEvaluatorDictionary = new()
     {
-        // {"intent_resolution", () => new IntentResolutionEvaluator()},
-        // {"tool_call_accuracy", () => new ToolCallAccuracyEvaluator()},
-        // {"task_adherence", () => new TaskAdherenceEvaluator()},
+#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        { "intent_resolution", () => new IntentResolutionEvaluator()},
+        { "tool_call_accuracy", () => new ToolCallAccuracyEvaluator()},
+        { "task_adherence", () => new TaskAdherenceEvaluator()},
+#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     };
 
     public async Task<List<ModelInformation>> ListModels(
@@ -390,111 +394,105 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    // public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string? tenantId = null, List<string>? evaluatorNames = null, bool includeStudioUrl = true, RetryPolicyOptions? retryPolicy = null)
-    // {
-    //     try
-    //     {
-    //         ValidateRequiredParameters(agentId, query, endpoint);
-    //
-    //         var queryResponse = await ConnectAgent(agentId, query, endpoint, tenantId, retryPolicy);
-    //
-    //         if (!queryResponse.TryGetValue("success", out var successObject) || successObject is not bool success || !success)
-    //         {
-    //             return queryResponse;
-    //         }
-    //
-    //         var threadId = queryResponse["thread_id"] as string;
-    //         var runId = queryResponse["run_id"] as string;
-    //
-    //         var credential = await GetCredential(null);
-    //         var evaluationClient = new AIProjectClient(new Uri(endpoint), credential);
-    //
-    //         // Use a temporary file for the evaluation data
-    //         string tempFilename = Path.GetTempFileName();
-    //
-    //         try
-    //         {
-    //             // https://github.com/Azure/azure-sdk-for-python/blob/285582f1478e55c781107bc4bacb1244d309a876/sdk/evaluation/azure-ai-evaluation/azure/ai/evaluation/_converters/_ai_services.py#L50
-    //             // Convert the thread and run to evaluation data
-    //             var converter = new AIAgentConverter(evaluationClient);
-    //             var evaluationData = converter.Convert(threadId, runId);
-    //
-    //             // Write to temporary file
-    //             File.WriteAllText(tempFilename, JsonSerializer.Serialize(evaluationData));
-    //
-    //             //
-    //             if (evaluatorNames == null || evaluatorNames.Count == 0)
-    //             {
-    //                 evaluatorNames = AgentEvaluatorDictionary.Keys.ToList();
-    //             }
-    //
-    //             foreach (var evaluatorName in evaluatorNames)
-    //             {
-    //                 AgentEvaluatorDictionary[evaluatorName]().EvaluationMetricNames;
-    //             }
-    //
-    //
-    //             // Run evaluation
-    //             var evaluationResult = AIEvaluation.Evaluate(
-    //                 tempFilename,
-    //                 evaluators,
-    //                 includeStudioUrl ? endpoint : null
-    //             );
-    //
-    //             // Prepare the response
-    //             var response = new Dictionary<string, object>
-    //             {
-    //                 { "success", true },
-    //                 { "agent_id", agentId },
-    //                 { "thread_id", threadId },
-    //                 { "run_id", runId },
-    //                 { "query", query },
-    //                 { "response", queryResponse["result"] },
-    //                 { "citations", queryResponse.ContainsKey("citations") ? queryResponse["citations"] : new List<string>() },
-    //                 { "evaluation_metrics", evaluationResult.ContainsKey("metrics") ? evaluationResult["metrics"] : new Dictionary<string, object>() }
-    //             };
-    //
-    //             // Include studio URL if available
-    //             if (includeStudioUrl && evaluationResult.ContainsKey("studio_url"))
-    //             {
-    //                 response["studio_url"] = evaluationResult["studio_url"];
-    //             }
-    //
-    //             return response;
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             return new Dictionary<string, object>
-    //             {
-    //                 { "success", false },
-    //                 { "error", $"Evaluation error: {ex.Message}" }
-    //             };
-    //         }
-    //         finally
-    //         {
-    //             // Clean up temporary file
-    //             if (File.Exists(tempFilename))
-    //             {
-    //                 try
-    //                 {
-    //                     File.Delete(tempFilename);
-    //                 }
-    //                 catch
-    //                 {
-    //                     // Ignore errors in file cleanup
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         return new Dictionary<string, object>
-    //         {
-    //             { "success", false },
-    //             { "error", $"Error in query and evaluate: {ex.Message}" }
-    //         };
-    //     }
-    // }
+    public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string? tenant = null, List<string>? evaluatorNames = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        try
+        {
+            ValidateRequiredParameters(agentId, query, endpoint);
+
+            var credential = await GetCredential(tenant);
+
+            var agentClient = new PersistentAgentsClient(endpoint, credential);
+
+            var thread = await agentClient.Threads.CreateThreadAsync();
+
+            var agentsChatClient = agentClient.AsIChatClient(agentId, thread.Value.Id);
+
+            List<ChatMessage> chatRequest = [new(ChatRole.User, query)];
+            var chatResponse = await agentsChatClient.GetResponseAsync(chatRequest);
+            var messageList = await agentClient.Messages.GetMessagesAsync(thread.Value.Id).ToListAsync();
+
+
+            var evaluationClient = new AIProjectClient(new Uri(endpoint), credential);
+
+            List<IEvaluator> evaluators = [];
+            var evaluationConfig = new Dictionary<string, EvaluatorConfiguration>();
+
+            if (evaluatorNames == null || evaluatorNames.Count == 0)
+            {
+                evaluatorNames = AgentEvaluatorDictionary.Keys.ToList();
+            }
+
+            foreach (var name in evaluatorNames)
+            {
+                var evaluatorName = name.ToLowerInvariant();
+                if (AgentEvaluatorDictionary.TryGetValue(evaluatorName, out var createEvaluator))
+                {
+                    var evaluator = createEvaluator();
+                    evaluators.Add(evaluator);
+                }
+            }
+            var compositeEvaluator = new CompositeEvaluator(evaluators);
+
+            var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+            var azureOpenAIEndpointUri = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+            if (azureOpenAIEndpointUri == null)
+            {
+                throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT environment variable is not set.");
+            }
+
+
+            var azureOpenAIDeployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT");
+            if (azureOpenAIDeployment == null)
+            {
+                throw new InvalidOperationException("AZURE_OPENAI_DEPLOYMENT environment variable is not set.");
+            }
+
+            IChatClient azureOpenAIChatClient;
+
+            switch (azureOpenAIKey)
+            {
+                case null:
+                    azureOpenAIChatClient = new AzureOpenAIClient(
+                    new Uri(azureOpenAIEndpointUri),
+                    credential).GetChatClient(azureOpenAIDeployment).AsIChatClient();
+                    break;
+                default:
+                    azureOpenAIChatClient = new AzureOpenAIClient(
+                    new Uri(azureOpenAIEndpointUri),
+                    new ApiKeyCredential(azureOpenAIKey)).GetChatClient(azureOpenAIDeployment).AsIChatClient();
+                    break;
+            }
+
+            var evaluationResult = await compositeEvaluator.EvaluateAsync(
+                chatRequest,
+                chatResponse,
+                new ChatConfiguration(azureOpenAIChatClient));
+
+            // Prepare the response
+            var response = new Dictionary<string, object>
+            {
+                { "success", true },
+                { "agent_id", agentId },
+                { "thread_id", thread.Value.Id },
+                { "run_id", chatResponse.ResponseId ?? string.Empty },
+                { "query", query },
+                { "response", chatResponse },
+                // { "citations", messageList.Contains("citations") ? messageList["citations"] : new List<string>() },
+                { "evaluation_metrics", evaluationResult }
+            };
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return new Dictionary<string, object>
+                {
+                    { "success", false },
+                    { "error", $"Error in query and evaluate: {ex.Message}" }
+                };
+        }
+    }
 
     // public async Task<Dictionary<string, object>> EvaluateText(
     //     List<string>? evaluatorNames = null,
@@ -683,7 +681,7 @@ public class FoundryService : BaseAzureService, IFoundryService
     //     }
     // }
 
-    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string azureEndpoint, string deploymentName, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
     {
         try
         {
@@ -702,7 +700,16 @@ public class FoundryService : BaseAzureService, IFoundryService
                 new ChatMessage(ChatRole.User, query)
             ];
 
-            var result = await evaluator.EvaluateAsync(messages, new ChatResponse(new ChatMessage(ChatRole.System, agentResponse)));
+            var credential = await GetCredential(tenantId);
+
+            var azureOpenAIClient = new AzureOpenAIClient(new Uri(azureEndpoint), credential);
+            var chatClient = azureOpenAIClient.GetChatClient(deploymentName).AsIChatClient();
+            var chatConfiguration = new ChatConfiguration(chatClient);
+
+            var result = await evaluator.EvaluateAsync(
+                messages,
+                new ChatResponse(new ChatMessage(ChatRole.Assistant, agentResponse)),
+                chatConfiguration);
 
             return new Dictionary<string, object>
             {

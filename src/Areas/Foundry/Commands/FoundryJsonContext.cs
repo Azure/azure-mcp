@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Foundry.Commands.Evaluation;
 using Azure.ResourceManager.CognitiveServices.Models;
+using AzureMcp.Areas.Foundry.Commands.Evaluation;
 using AzureMcp.Areas.Foundry.Commands.Models;
 using AzureMcp.Areas.Foundry.Models;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI.Evaluation;
 
 namespace AzureMcp.Areas.Foundry.Commands;
 
@@ -22,5 +24,8 @@ namespace AzureMcp.Areas.Foundry.Commands;
 [JsonSerializable(typeof(ModelInformation))]
 [JsonSerializable(typeof(CognitiveServicesAccountSku))]
 [JsonSerializable(typeof(CognitiveServicesAccountDeploymentProperties))]
+[JsonSerializable(typeof(QueryAndEvaluateAgentCommand.QueryAndEvaluateAgentCommandResult))]
+[JsonSerializable(typeof(ChatResponse))]
+[JsonSerializable(typeof(EvaluationResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault)]
 internal sealed partial class FoundryJsonContext : JsonSerializerContext;

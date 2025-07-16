@@ -4,7 +4,6 @@
 using Azure.AI.Agents.Persistent;
 using AzureMcp.Areas.Foundry.Options;
 using AzureMcp.Areas.Foundry.Options.Evaluation;
-using AzureMcp.Areas.Foundry.Options.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Commands;
 
@@ -13,7 +12,7 @@ namespace AzureMcp.Areas.Foundry.Commands.Evaluation;
 public sealed class AgentsListCommand : GlobalCommand<AgentsListOptions>
 {
     private const string CommandTitle = "List Evaluation Agents";
-     private readonly Option<string> _endpointOption = FoundryOptionDefinitions.EndpointOption;
+    private readonly Option<string> _endpointOption = FoundryOptionDefinitions.EndpointOption;
 
     public override string Name => "list";
 

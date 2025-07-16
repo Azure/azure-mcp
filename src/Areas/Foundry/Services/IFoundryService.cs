@@ -50,14 +50,13 @@ public interface IFoundryService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    // Task<Dictionary<string, object>> QueryAndEvaluateAgent(
-    //     string agentId,
-    //     string query,
-    //     string endpoint,
-    //     string? tenantId = null,
-    //     List<string>? evaluatorNames = null,
-    //     bool includeStudioUrl = false,
-    //     RetryPolicyOptions? retryPolicy = null);
+    Task<Dictionary<string, object>> QueryAndEvaluateAgent(
+        string agentId,
+        string query,
+        string endpoint,
+        string? tenantId = null,
+        List<string>? evaluatorNames = null,
+        RetryPolicyOptions? retryPolicy = null);
     //
     // Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinition, RetryPolicyOptions? retryPolicy = null);
     //
