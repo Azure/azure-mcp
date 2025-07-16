@@ -119,4 +119,47 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
             throw;
         }
     }
+
+    public async Task<List<SqlFirewallRule>> GetFirewallRulesAsync(
+        string serverName,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var firewallRules = new List<SqlFirewallRule>();
+
+            await foreach (var firewallRuleResource in sqlServerResource.Value.GetSqlFirewallRules().GetAllAsync(cancellationToken))
+            {
+                var rule = firewallRuleResource.Data;
+                firewallRules.Add(new SqlFirewallRule(
+                    Name: rule.Name,
+                    Id: rule.Id.ToString(),
+                    Type: rule.ResourceType?.ToString() ?? "Microsoft.Sql/servers/firewallRules",
+                    StartIpAddress: rule.StartIPAddress ?? string.Empty,
+                    EndIpAddress: rule.EndIPAddress ?? string.Empty
+                ));
+            }
+
+            return firewallRules;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting SQL server firewall rules. Server: {Server}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, resourceGroup, subscription);
+            throw;
+        }
+    }
 }

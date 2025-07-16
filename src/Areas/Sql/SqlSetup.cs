@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.Sql.Commands.Database;
 using AzureMcp.Areas.Sql.Commands.EntraAdmin;
+using AzureMcp.Areas.Sql.Commands.FirewallRule;
 using AzureMcp.Areas.Sql.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,5 +35,10 @@ public class SqlSetup : IAreaSetup
         server.AddSubGroup(entraAdmin);
 
         entraAdmin.AddCommand("list", new EntraAdminListCommand(loggerFactory.CreateLogger<EntraAdminListCommand>()));
+
+        var firewallRule = new CommandGroup("firewall-rule", "SQL server firewall rule operations");
+        server.AddSubGroup(firewallRule);
+
+        firewallRule.AddCommand("list", new FirewallRuleListCommand(loggerFactory.CreateLogger<FirewallRuleListCommand>()));
     }
 }

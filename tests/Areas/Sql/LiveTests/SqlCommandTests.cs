@@ -133,4 +133,44 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         // If result is null, that's valid - it means no AD administrators are configured
         // The test passes as long as the command executed successfully (no exception thrown)
     }
+
+    [Fact]
+    public async Task Should_ListSqlServerFirewallRules_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_server_firewall-rule_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed, but results may be null if no firewall rules are configured
+        if (result.HasValue)
+        {
+            // If there are results, verify the structure
+            var firewallRules = result.Value.AssertProperty("firewallRules");
+            Assert.Equal(JsonValueKind.Array, firewallRules.ValueKind);
+
+            // If there are firewall rules, verify their structure
+            if (firewallRules.GetArrayLength() > 0)
+            {
+                var firstRule = firewallRules.EnumerateArray().First();
+                Assert.Equal(JsonValueKind.Object, firstRule.ValueKind);
+
+                // Verify required properties exist
+                Assert.True(firstRule.TryGetProperty("name", out _));
+                Assert.True(firstRule.TryGetProperty("startIpAddress", out _));
+                Assert.True(firstRule.TryGetProperty("endIpAddress", out _));
+                Assert.True(firstRule.TryGetProperty("id", out _));
+                Assert.True(firstRule.TryGetProperty("type", out _));
+            }
+        }
+        // If result is null, that's valid - it means no firewall rules are configured
+        // The test passes as long as the command executed successfully (no exception thrown)
+    }
 }
