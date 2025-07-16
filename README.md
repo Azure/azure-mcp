@@ -11,7 +11,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
    * [🔮 Insiders release](https://code.visualstudio.com/insiders)
 1. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions
 1. Install [Node.js](https://nodejs.org/en/download) 20 or later
-   * Ensure `npx` is your path
+   * Ensure `npx` is included in your environment path.
 1. Install any of the available Azure MCP Servers from the table below.
 1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
 1. Click `refresh` on the tools list.

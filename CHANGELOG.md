@@ -10,8 +10,10 @@
 - Added support for listing SQL elastic pools via the command: `azmcp sql elastic-pool list`. [[#581](https://github.com/Azure/azure-mcp/pull/581)]
 
 ### Bugs Fixed
-
 - Fixed Azure CLI executable path resolution on Windows to prioritize .cmd over bash script. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
+
+### Other Changes
+- Change `engines.node` in `package.json` to require Node.js version `>=20.0.0`.
 
 ## 0.4.0 (2025-07-15)
 
@@ -36,6 +38,7 @@
 - Improved install reliability and error handling when missing platform packages on Ubuntu. [[#394](https://github.com/Azure/azure-mcp/pull/394)]
 
 ### Other Changes
+- Updated `engines.node` in `package.json` to require Node.js version `>=22.0.0`.
 
 #### Dependency Updates
 
