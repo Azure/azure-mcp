@@ -19,7 +19,6 @@ public abstract class BaseWorkbooksCommand<
 
     protected override T BindOptions(ParseResult parseResult)
     {
-        var options = base.BindOptions(parseResult);
-        return options;
+        return base.BindOptions(parseResult);
     }
 }

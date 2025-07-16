@@ -4,7 +4,6 @@
 using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Areas.Workbooks.Options.Workbook;
 using AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Commands;
 using AzureMcp.Areas.Workbooks.Options;
 using Microsoft.Extensions.Logging;
 
@@ -20,8 +19,8 @@ public sealed class ShowWorkbooksCommand(ILogger<ShowWorkbooksCommand> logger) :
 
     public override string Description =>
         """
-        Get detailed information about a specific workbook by its Azure resource ID.
-        Returns comprehensive workbook details including display name, description, category,
+        Gets information about a specific workbook by its Azure resource ID.
+        Returns workbook details including JSON serialized content, display name, description, category,
         location, kind, tags, version, modification time, and other metadata.
         """;
 
@@ -52,25 +51,11 @@ public sealed class ShowWorkbooksCommand(ILogger<ShowWorkbooksCommand> logger) :
                 return context.Response;
             }
 
-            if (string.IsNullOrEmpty(options.WorkbookId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Workbook ID is required";
-                return context.Response;
-            }
-
             var workbooksService = context.GetService<IWorkbooksService>();
-            var workbook = await workbooksService.GetWorkbook(options.WorkbookId, options.RetryPolicy);
-
-            if (workbook == null)
-            {
-                context.Response.Status = 404;
-                context.Response.Message = $"Workbook with ID '{options.WorkbookId}' not found";
-                return context.Response;
-            }
+            var workbook = await workbooksService.GetWorkbook(options.WorkbookId!, options.RetryPolicy) ?? throw new InvalidOperationException("Failed to retrieve workbook");
 
             context.Response.Results = ResponseResult.Create(
-                new ShowWorkbooksCommandResult(workbook), 
+                new ShowWorkbooksCommandResult(workbook),
                 WorkbooksJsonContext.Default.ShowWorkbooksCommandResult);
         }
         catch (Exception ex)

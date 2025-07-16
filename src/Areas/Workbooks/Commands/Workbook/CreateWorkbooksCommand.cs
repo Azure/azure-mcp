@@ -16,26 +16,9 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     private const string CommandTitle = "Create Workbook";
     private readonly ILogger<CreateWorkbooksCommand> _logger = logger;
 
-    private static readonly Option<string> _titleOption = new(
-        $"--{WorkbooksOptionDefinitions.TitleText}",
-        "The display name/title of the workbook.")
-    {
-        IsRequired = true
-    };
-    
-    private static readonly Option<string> _serializedContentOption = new(
-        $"--{WorkbooksOptionDefinitions.SerializedContentText}",
-        "The serialized content/data of the workbook.")
-    {
-        IsRequired = true
-    };
-    
-    private static readonly Option<string> _sourceIdOption = new(
-        $"--{WorkbooksOptionDefinitions.SourceIdText}",
-        "The source ID for the workbook.")
-    {
-        IsRequired = false
-    };
+    private readonly Option<string> _titleOption = WorkbooksOptionDefinitions.TitleRequired;
+    private readonly Option<string> _serializedContentOption = WorkbooksOptionDefinitions.SerializedContentRequired;
+    private readonly Option<string> _sourceIdOption = WorkbooksOptionDefinitions.SourceId;
 
     public override string Name => "create";
 
@@ -81,54 +64,19 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
                 return context.Response;
             }
 
-            if (string.IsNullOrEmpty(options.Subscription))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Subscription is required";
-                return context.Response;
-            }
-
-            if (string.IsNullOrEmpty(options.ResourceGroup))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Resource group is required";
-                return context.Response;
-            }
-
-            if (string.IsNullOrEmpty(options.Title))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Title is required";
-                return context.Response;
-            }
-
-            if (string.IsNullOrEmpty(options.SerializedContent))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Serialized content is required";
-                return context.Response;
-            }
-
             var workbooksService = context.GetService<IWorkbooksService>();
             var createdWorkbook = await workbooksService.CreateWorkbook(
-                options.Subscription,
-                options.ResourceGroup,
-                options.Title,
-                options.SerializedContent,
+                options.Subscription!,
+                options.ResourceGroup!,
+                options.Title!,
+                options.SerializedContent!,
                 /**
                  * The source ID is optional, defaulting to "azure monitor" if not provided.
                  * "azure monitor" is the default for workbooks created in the Azure Monitor extension,
                  * otherwise the workbook will display an error when opening.
                  */
                 options.SourceId ?? "azure monitor",
-                options.RetryPolicy);
-
-            if (createdWorkbook == null)
-            {
-                context.Response.Status = 500;
-                context.Response.Message = "Failed to create workbook";
-                return context.Response;
-            }
+                options.RetryPolicy) ?? throw new InvalidOperationException("Failed to create workbook");
 
             context.Response.Results = ResponseResult.Create(
                 new CreateWorkbooksCommandResult(createdWorkbook), 

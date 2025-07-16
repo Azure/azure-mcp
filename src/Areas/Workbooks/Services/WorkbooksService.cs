@@ -7,10 +7,7 @@ using Microsoft.Extensions.Logging;
 using Azure.Core;
 
 namespace AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Models.Identity;
 
-using Azure.ResourceManager;
-using Azure.ResourceManager.Resources;
 using AzureMcp.Services.Azure;
 using Azure.ResourceManager.ApplicationInsights;
 using Azure.ResourceManager.ApplicationInsights.Models;
@@ -20,35 +17,35 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
 {
     private readonly ILogger<WorkbooksService> _logger = logger;
 
+    /// <summary>
+    /// Converts a dictionary of tags to a comma-separated string representation.
+    /// This helps keep the output flat for the model.
+    /// </summary>
     private static string? ConvertTagsToString(IDictionary<string, string>? tags)
     {
         return tags?.Count > 0 ? string.Join(", ", tags.Select(kvp => $"{kvp.Key}={kvp.Value}")) : null;
     }
 
-    public async Task<List<WorkbookInfo>> ListWorkbooks(string? subscriptionId = null, string? resourceGroupName = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, RetryPolicyOptions? retryPolicy = null)
     {
-        if (string.IsNullOrEmpty(resourceGroupName))
+        ValidateRequiredParameters(subscriptionId, resourceGroupName);
+
+        try
         {
-            throw new ArgumentException("Resource group name is required", nameof(resourceGroupName));
-        }
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, null, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
 
-        var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId ?? "", null, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            if (resourceGroupResource?.Value == null)
+            {
+                throw new Exception($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'");
+            }
 
-        var workbookInfos = new List<WorkbookInfo>();
-
-        // Only search in the specified resource group
-        var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
-        if (resourceGroupResource?.Value != null)
-        {
+            var workbooksInRg = new List<WorkbookInfo>();
             var workbookCollection = resourceGroupResource.Value.GetApplicationInsightsWorkbooks();
-            
+
             await foreach (ApplicationInsightsWorkbookResource workbook in workbookCollection.GetAllAsync("workbook"))
             {
-                _logger.LogInformation("Full workbook object: {@Workbook}", workbook.Data);
-                _logger.LogInformation("Workbook Name: {Name}, ID: {Id}, Location: {Location}, Category: {Category}", 
-                    workbook.Data.Name, workbook.Id, workbook.Data.Location, workbook.Data.Category);
-
-                workbookInfos.Add(new WorkbookInfo(
+                workbooksInRg.Add(new WorkbookInfo(
                     WorkbookId: workbook.Id?.ToString() ?? "",
                     WorkbookDisplayName: workbook.Data.DisplayName ?? "Unknown",
                     Description: workbook.Data.Description,
@@ -63,25 +60,22 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
                     SourceId: workbook.Data.SourceId
                 ));
             }
+
+            return workbooksInRg;
         }
-        else
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'", nameof(resourceGroupName));
+            _logger.LogError(ex, "Failed to list workbooks in resource group '{ResourceGroup}' for subscription '{Subscription}'", resourceGroupName, subscriptionId);
+            throw new Exception($"Failed to list workbooks: {ex.Message}", ex);
         }
-        
-        return workbookInfos;
     }
 
     public async Task<WorkbookInfo?> GetWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null)
     {
-        if (string.IsNullOrEmpty(workbookId))
-        {
-            throw new ArgumentException("Workbook ID is required", nameof(workbookId));
-        }
+        ValidateRequiredParameters(workbookId);
 
         try
         {
-            // Parse the workbook resource ID to get subscription info
             var workbookResourceId = new ResourceIdentifier(workbookId);
             var armClient = await CreateArmClientAsync(null, retryPolicy);
 
@@ -91,7 +85,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbookResource == null)
             {
                 _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                return null;
+                throw new Exception($"Workbook with ID '{workbookId}' not found");
             }
 
             // Get the workbook data
@@ -101,14 +95,14 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbook?.Data == null)
             {
                 _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
-                return null;
+                throw new Exception($"Workbook data is null for ID '{workbookId}'");
             }
 
             _logger.LogInformation("Retrieved workbook details for ID: {WorkbookId}", workbookId);
 
             return new WorkbookInfo(
                 WorkbookId: workbook.Id?.ToString() ?? workbookId,
-                WorkbookDisplayName: workbook.Data.DisplayName ?? "Unknown",
+                WorkbookDisplayName: workbook.Data.DisplayName,
                 Description: workbook.Data.Description,
                 Category: workbook.Data.Category,
                 Location: workbook.Data.Location.ToString(),
@@ -124,21 +118,13 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving workbook with ID: {WorkbookId}", workbookId);
-            throw;
+            throw new Exception($"Failed to get workbook: {ex.Message}", ex);
         }
     }
 
     public async Task<WorkbookInfo?> UpdateWorkbook(string workbookId, string? title = null, string? serializedContent = null, RetryPolicyOptions? retryPolicy = null)
     {
-        if (string.IsNullOrEmpty(workbookId))
-        {
-            throw new ArgumentException("Workbook ID is required", nameof(workbookId));
-        }
-
-        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(serializedContent))
-        {
-            throw new ArgumentException("At least one property (title or serializedContent) must be provided for update");
-        }
+        ValidateRequiredParameters(workbookId);
 
         try
         {
@@ -152,7 +138,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbookResource == null)
             {
                 _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                return null;
+                throw new Exception($"Workbook with ID '{workbookId}' not found");
             }
 
             // Get the current workbook data
@@ -162,7 +148,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbook?.Data == null)
             {
                 _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
-                return null;
+                throw new Exception($"Workbook data is null for ID '{workbookId}'");
             }
 
             // Create a patch document with the updated properties
@@ -178,6 +164,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
                 patchData.SerializedData = serializedContent;
             }
 
+            // If not set, won't be able to save?
             patchData.Kind = "shared";
 
             // Update the workbook
@@ -204,36 +191,13 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating workbook with ID: {WorkbookId}", workbookId);
-            throw;
+            throw new Exception($"Failed to update workbook: {ex.Message}", ex);
         }
     }
 
     public async Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string title, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null)
     {
-        if (string.IsNullOrEmpty(subscriptionId))
-        {
-            throw new ArgumentException("Subscription ID is required", nameof(subscriptionId));
-        }
-
-        if (string.IsNullOrEmpty(resourceGroupName))
-        {
-            throw new ArgumentException("Resource group name is required", nameof(resourceGroupName));
-        }
-
-        if (string.IsNullOrEmpty(title))
-        {
-            throw new ArgumentException("Title is required", nameof(title));
-        }
-
-        if (string.IsNullOrEmpty(serializedData))
-        {
-            throw new ArgumentException("Serialized data is required", nameof(serializedData));
-        }
-
-        if (string.IsNullOrEmpty(sourceId))
-        {
-            throw new ArgumentException("Source ID is required", nameof(sourceId));
-        }
+        ValidateRequiredParameters(subscriptionId, resourceGroupName, title, serializedData, sourceId);
 
         try
         {
@@ -244,7 +208,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
             if (resourceGroupResource?.Value == null)
             {
-                throw new ArgumentException($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'", nameof(resourceGroupName));
+                throw new Exception($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'");
             }
 
             // Create the workbook data
@@ -285,16 +249,13 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating workbook '{Title}' in resource group '{ResourceGroup}'", title, resourceGroupName);
-            throw;
+            throw new Exception($"Failed to create workbook: {ex.Message}", ex);
         }
     }
 
     public async Task<bool> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null)
     {
-        if (string.IsNullOrEmpty(workbookId))
-        {
-            throw new ArgumentException("Workbook ID is required", nameof(workbookId));
-        }
+        ValidateRequiredParameters(workbookId);
 
         try
         {
@@ -305,6 +266,12 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             var workbookResourceId = new ResourceIdentifier(workbookId);
             var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId);
 
+            if (workbookResource == null)
+            {
+                _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
+                throw new Exception($"Workbook with ID '{workbookId}' not found");
+            }
+
             // Delete the workbook
             var response = await workbookResource.DeleteAsync(Azure.WaitUntil.Completed);
 
@@ -314,7 +281,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting workbook with ID: {WorkbookId}", workbookId);
-            throw;
+            throw new Exception($"Failed to delete workbook: {ex.Message}", ex);
         }
     }
 }

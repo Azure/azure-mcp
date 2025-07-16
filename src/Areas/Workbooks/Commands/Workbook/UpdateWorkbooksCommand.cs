@@ -4,7 +4,6 @@
 using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Areas.Workbooks.Options.Workbook;
 using AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Commands;
 using AzureMcp.Areas.Workbooks.Options;
 using Microsoft.Extensions.Logging;
 
@@ -22,9 +21,9 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
 
     public override string Description =>
         """
-        Update limited aspects of a workbook including its title (display name) and serialized content.
+        Updates properties of a workbook, including its title (display name) and serialized content.
         At least one property must be provided for the update operation.
-        Returns the updated workbook information upon successful completion.
+        Returns the updated workbook object upon successful completion.
         """;
 
     public override string Title => CommandTitle;
@@ -58,36 +57,15 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
                 return context.Response;
             }
 
-            if (string.IsNullOrEmpty(options.WorkbookId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Workbook ID is required";
-                return context.Response;
-            }
-
-            if (string.IsNullOrEmpty(options.Title) && string.IsNullOrEmpty(options.SerializedContent))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "At least one property (title or serialized-content) must be provided for update";
-                return context.Response;
-            }
-
             var workbooksService = context.GetService<IWorkbooksService>();
             var updatedWorkbook = await workbooksService.UpdateWorkbook(
-                options.WorkbookId,
+                options.WorkbookId!,
                 options.Title,
                 options.SerializedContent,
-                options.RetryPolicy);
-
-            if (updatedWorkbook == null)
-            {
-                context.Response.Status = 404;
-                context.Response.Message = $"Workbook with ID '{options.WorkbookId}' not found";
-                return context.Response;
-            }
+                options.RetryPolicy) ?? throw new InvalidOperationException("Failed to update workbook");
 
             context.Response.Results = ResponseResult.Create(
-                new UpdateWorkbooksCommandResult(updatedWorkbook), 
+                new UpdateWorkbooksCommandResult(updatedWorkbook),
                 WorkbooksJsonContext.Default.UpdateWorkbooksCommandResult);
         }
         catch (Exception ex)

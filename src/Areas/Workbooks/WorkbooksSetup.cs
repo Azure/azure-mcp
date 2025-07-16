@@ -18,11 +18,9 @@ public class WorkbooksSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        // Create Workbooks command group
-        var workbooks = new CommandGroup("workbooks", "Workbooks operations - Commands for working with Azure Workbooks and related resources.");
+        var workbooks = new CommandGroup("workbooks", "Workbooks operations - Commands for managing Azure Workbooks resources.");
         rootGroup.AddSubGroup(workbooks);
 
-        // Register Workbooks commands
         workbooks.AddCommand("list", new ListWorkbooksCommand(
             loggerFactory.CreateLogger<ListWorkbooksCommand>()));
 
