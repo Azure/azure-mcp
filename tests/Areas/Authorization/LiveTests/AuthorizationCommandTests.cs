@@ -20,7 +20,7 @@ public class AuthorizationCommandTests(LiveTestFixture liveTestFixture, ITestOut
     {
         var scope = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}";
         var result = await CallToolAsync(
-            "azmcp-role-assignment-list",
+            "azmcp_role_assignment_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },

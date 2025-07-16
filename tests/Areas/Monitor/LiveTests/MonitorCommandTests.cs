@@ -50,7 +50,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_list_monitor_tables()
     {
         var result = await CallToolAsync(
-            "azmcp-monitor-table-list",
+            "azmcp_monitor_table_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -70,7 +70,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_list_monitor_workspaces()
     {
         var result = await CallToolAsync(
-            "azmcp-monitor-workspace-list",
+            "azmcp_monitor_workspace_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -88,7 +88,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     {
         // Query AzureMetrics table - fastest to propagate and most reliable
         await QueryForLogsAsync(
-            async args => await CallToolAsync("azmcp-monitor-workspace-log-query", args),
+            async args => await CallToolAsync("azmcp_monitor_workspace_log_query", args),
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -104,7 +104,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             sendLogAction: async () =>
             {
                 // Generate minimal storage activity to ensure metrics are created
-                await CallToolAsync("azmcp-storage-account-list", new()
+                await CallToolAsync("azmcp_storage_account_list", new()
                 {
                     { "subscription", Settings.SubscriptionId }
                 });
@@ -121,7 +121,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_query_monitor_logs()
     {
         await QueryForLogsAsync(
-            async args => await CallToolAsync("azmcp-monitor-workspace-log-query", args),
+            async args => await CallToolAsync("azmcp_monitor_workspace_log_query", args),
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -151,7 +151,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_list_monitor_table_types()
     {
         var result = await CallToolAsync(
-            "azmcp-monitor-table-type-list",
+            "azmcp_monitor_table_type_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -171,7 +171,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     {
         var storageResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
         await QueryForLogsAsync(
-            async args => await CallToolAsync("azmcp-monitor-resource-log-query", args),
+            async args => await CallToolAsync("azmcp_monitor_resource_log_query", args),
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -278,7 +278,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
 
         var result = await CallToolAsync(
-            "azmcp-monitor-metrics-definitions",
+            "azmcp_monitor_metrics_definitions",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -350,7 +350,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
 
         var result = await CallToolAsync(
-            "azmcp-monitor-metrics-query",
+            "azmcp_monitor_metrics_query",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -410,7 +410,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         try
         {
             // First, generate basic activity (creates metrics)
-            var listResult = await CallToolAsync("azmcp-storage-blob-container-list", new()
+            var listResult = await CallToolAsync("azmcp_storage_blob_container_list", new()
             {
                 { "subscription", Settings.SubscriptionId },
                 { "account-name", Settings.ResourceBaseName }
@@ -425,7 +425,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
                 var firstContainer = containersArray.Value.EnumerateArray().First();
                 if (firstContainer.TryGetProperty("name", out var containerName))
                 {
-                    var blobListResult = await CallToolAsync("azmcp-storage-blob-list", new()
+                    var blobListResult = await CallToolAsync("azmcp_storage_blob_list", new()
                     {
                         { "subscription", Settings.SubscriptionId },
                         { "account-name", Settings.ResourceBaseName },

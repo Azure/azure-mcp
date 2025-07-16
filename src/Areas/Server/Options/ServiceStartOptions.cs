@@ -18,12 +18,6 @@ public class ServiceStartOptions
     public string Transport { get; set; } = TransportTypes.StdIo;
 
     /// <summary>
-    /// Gets or sets the port number for the server when using HTTP transport.
-    /// </summary>
-    [JsonPropertyName("port")]
-    public int Port { get; set; }
-
-    /// <summary>
     /// Gets or sets the service namespaces to expose through the server.
     /// When null, all available namespaces are exposed.
     /// </summary>
