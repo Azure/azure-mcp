@@ -11,7 +11,7 @@ public sealed class AzureFunctionsCodeGenBestPracticesGetCommand(ILogger<AzureFu
 
     protected override string ResourceFileName => "azure-functions-codegen-best-practices.txt";
 
-    public override string Name => "get_code_generation";
+    public override string Name => "get-code-generation";
 
     public override string Description =>
         "Returns best practices for secure, high-quality Azure Functions code generation. " +

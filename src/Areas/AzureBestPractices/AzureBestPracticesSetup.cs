@@ -36,12 +36,12 @@ public class AzureBestPracticesSetup : IAreaSetup
         );
 
         azureFunctions.AddCommand(
-            "get_code_generation",
+            "get-code-generation",
             new AzureFunctionsCodeGenBestPracticesGetCommand(loggerFactory.CreateLogger<AzureFunctionsCodeGenBestPracticesGetCommand>())
         );
 
         azureFunctions.AddCommand(
-            "get_deployment",
+            "get-deployment",
             new AzureFunctionsDeploymentBestPracticesGetCommand(loggerFactory.CreateLogger<AzureFunctionsDeploymentBestPracticesGetCommand>())
         );
     }

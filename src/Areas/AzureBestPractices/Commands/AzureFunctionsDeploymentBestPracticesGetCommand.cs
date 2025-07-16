@@ -11,7 +11,7 @@ public sealed class AzureFunctionsDeploymentBestPracticesGetCommand(ILogger<Azur
 
     protected override string ResourceFileName => "azure-functions-deployment-best-practices.txt";
 
-    public override string Name => "get_deployment";
+    public override string Name => "get-deployment";
 
     public override string Description =>
         "Returns best practices for secure, production-grade Azure Functions deployment. " +

@@ -398,10 +398,10 @@ azmcp grafana list --subscription <subscription>
 
 ```bash
 # Get best practices for secure, high-quality Azure Functions app code generation.
-azmcp bestpractices azurefunctions get_code_generation
+azmcp bestpractices azurefunctions get-code-generation
 
 # Get best practices for secure, production-grade Azure Functions app deployment.
-azmcp bestpractices azurefunctions get_deployment
+azmcp bestpractices azurefunctions get-deployment
 
 # Get secure, production-grade Azure SDK best practices for effective code generation.
 azmcp bestpractices general get

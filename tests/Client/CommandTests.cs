@@ -59,7 +59,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
     public async Task Should_get_azure_functions_code_generation_best_practices()
     {
         // Act
-        JsonElement? result = await CallToolAsync("azmcp_bestpractices_azurefunctions_get_code_generation", new Dictionary<string, object?>());
+        JsonElement? result = await CallToolAsync("azmcp_bestpractices_azurefunctions_get-code-generation", new Dictionary<string, object?>());
 
         Assert.True(result.HasValue, "Tool call did not return a value.");
 
@@ -85,7 +85,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
     public async Task Should_get_azure_functions_deployment_best_practices()
     {
         // Act
-        JsonElement? result = await CallToolAsync("azmcp_bestpractices_azurefunctions_get_deployment", new Dictionary<string, object?>());
+        JsonElement? result = await CallToolAsync("azmcp_bestpractices_azurefunctions_get-deployment", new Dictionary<string, object?>());
 
         Assert.True(result.HasValue, "Tool call did not return a value.");
 

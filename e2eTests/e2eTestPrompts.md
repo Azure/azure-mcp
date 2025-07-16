@@ -128,8 +128,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-azurefunctions-get_code_generation | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-azurefunctions-get_deployment | Fetch the latest Azure Functions deployment best practices |
+| azmcp-bestpractices-azurefunctions-get-code-generation | Fetch the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-azurefunctions-get-deployment | Fetch the latest Azure Functions deployment best practices |
 | azmcp-bestpractices-general-get | Fetch the latest Azure best practices |
 | azmcp-bestpractices-general-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
 
