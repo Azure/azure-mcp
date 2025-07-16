@@ -1,0 +1,91 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Areas.Workbooks.Options;
+using AzureMcp.Areas.Workbooks.Options.Workbook;
+using AzureMcp.Areas.Workbooks.Services;
+using AzureMcp.Commands;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
+
+public sealed class DeleteWorkbookCommand(ILogger<DeleteWorkbookCommand> logger) : GlobalCommand<DeleteWorkbookOptions>
+{
+    private const string CommandTitle = "Delete Workbook";
+    private readonly ILogger<DeleteWorkbookCommand> _logger = logger;
+
+    private static readonly Option<string> _workbookIdOption = new(
+        $"--{WorkbooksOptionDefinitions.WorkbookIdText}",
+        "The Azure resource ID of the workbook to delete.")
+    {
+        IsRequired = true
+    };
+
+    public override string Name => "delete";
+
+    public override string Description =>
+        """
+        Delete a workbook by its Azure resource ID. This command permanently removes the workbook
+        from Azure. This operation cannot be undone.
+        """;
+
+    public override string Title => CommandTitle;
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_workbookIdOption);
+    }
+
+    protected override DeleteWorkbookOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.WorkbookId = parseResult.GetValueForOption(_workbookIdOption);
+        return options;
+    }
+
+    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
+    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
+    {
+        var options = BindOptions(parseResult);
+
+        try
+        {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            if (string.IsNullOrEmpty(options.WorkbookId))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "Workbook ID is required";
+                return context.Response;
+            }
+
+            var workbooksService = context.GetService<IWorkbooksService>();
+            var deleted = await workbooksService.DeleteWorkbook(options.WorkbookId, options.RetryPolicy);
+
+            if (deleted)
+            {
+                context.Response.Results = ResponseResult.Create(
+                    new DeleteWorkbookCommandResult(options.WorkbookId, "Successfully deleted"),
+                    WorkbooksJsonContext.Default.DeleteWorkbookCommandResult);
+            }
+            else
+            {
+                context.Response.Status = 500;
+                context.Response.Message = "Failed to delete workbook";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting workbook with ID: {WorkbookId}", options.WorkbookId);
+            HandleException(context, ex);
+        }
+
+        return context.Response;
+    }
+
+    public sealed record DeleteWorkbookCommandResult(string WorkbookId, string Message);
+}
