@@ -30,6 +30,7 @@ public class AuthenticationIntegrationTests : IAsyncLifetime
 
         // Set up real service dependencies for integration test
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddSingleton(Substitute.For<ICacheService>());
         services.AddSingleton(Substitute.For<ITenantService>());
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
