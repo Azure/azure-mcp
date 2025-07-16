@@ -1,7 +1,7 @@
 targetScope = 'resourceGroup'
 
 @minLength(4)
-@maxLength(24)
+@maxLength(21)
 @description('The base resource name.')
 param baseName string = resourceGroup().name
 
@@ -31,21 +31,31 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
-// Reference the existing storage account created by the storage module
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-  name: baseName
-}
+// Create a storage account to monitor
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: '${baseName}mon'
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowSharedKeyAccess: false
+  }
 
-// Reference the blob service within the storage account
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' existing = {
-  name: 'default'
-  parent: storageAccount
-}
+  resource blobServices 'blobServices' = {
+    name: 'default'
+    resource fooContainer 'containers' = { name: 'foo' }
+    resource barContainer 'containers' = { name: 'bar' }
+    resource bazContainer 'containers' = { name: 'baz' }
+  }
 
-// Reference the table service within the storage account
-resource tableService 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' existing = {
-  name: 'default'
-  parent: storageAccount
+  resource tableServices 'tableServices' = {
+    name: 'default'
+    resource fooTable 'tables' = { name: 'foo' }
+    resource barTable 'tables' = { name: 'bar' }
+    resource bazTable 'tables' = { name: 'baz' }
+  }
 }
 
 // Diagnostic settings for Storage Account (main account level)
@@ -78,7 +88,7 @@ resource storageAccountDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
 // Diagnostic settings for Blob Service
 resource blobServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: 'blob-service-diagnostics'
-  scope: blobService
+  scope: storageAccount::blobServices
   properties: {
     workspaceId: workspace.id
     logs: [
@@ -131,7 +141,7 @@ resource blobServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-0
 // Diagnostic settings for Table Service
 resource tableServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: 'table-service-diagnostics'
-  scope: tableService
+  scope: storageAccount::tableServices
   properties: {
     workspaceId: workspace.id
     logs: [
@@ -180,6 +190,3 @@ resource tableServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-
     ]
   }
 }
-
-output workspaceId string = workspace.id
-output workspaceCustomerId string = workspace.properties.customerId
