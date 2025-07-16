@@ -169,12 +169,6 @@ azmcp appconfig kv delete --subscription <subscription> \
                           [--label <label>]
 ```
 
-### Azure Kubernetes Service (AKS) Operations
-```bash
-# List AKS clusters in a subscription
-azmcp aks cluster list --subscription <subscription>
-```
-
 ### Azure CLI Operations
 
 ```bash
@@ -328,8 +322,10 @@ azmcp extension azd --command "<command>"
 # Examples:
 # Create a sample todo list app with NodeJS and MongoDB
 azmcp extension azd --command "init --template todo-nodejs-mongo"
+```
 
 ### Azure Key Vault Operations
+
 ```bash
 # Lists keys in vault
 azmcp keyvault key list --subscription <subscription> \
@@ -351,6 +347,13 @@ azmcp keyvault key create --subscription <subscription> \
 azmcp keyvault secret get --subscription <subscription> \
                           --vault <vault-name> \
                           --name <secret-name>
+```
+
+### Azure Kubernetes Service (AKS) Operations
+
+```bash
+# List AKS clusters in a subscription
+azmcp aks cluster list --subscription <subscription>
 ```
 
 ### Azure Managed Grafana Operations
