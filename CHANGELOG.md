@@ -4,6 +4,8 @@
 
 ### Features Added
 
+ - Add `azmcp sql firewall-rule list` command to list SQL server firewall rules. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
