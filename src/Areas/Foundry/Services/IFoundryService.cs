@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Azure.AI.Projects;
-using Azure.ResourceManager.CognitiveServices;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Options;
 

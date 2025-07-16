@@ -9,7 +9,6 @@ using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.Azure.Tenant;
 using AzureMcp.Services.Caching;
 using AzureMcp.Services.ProcessExecution;
-using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -26,6 +25,7 @@ internal class Program
 
             services.AddLogging(builder =>
             {
+                builder.ConfigureOpenTelemetryLogger();
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
             });
@@ -59,11 +59,13 @@ internal class Program
             new AzureMcp.Areas.Tools.ToolsSetup(),
 
             // Register Azure service areas
+            new AzureMcp.Areas.Aks.AksSetup(),
             new AzureMcp.Areas.AppConfig.AppConfigSetup(),
             new AzureMcp.Areas.Authorization.AuthorizationSetup(),
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Areas.Cosmos.CosmosSetup(),
             new AzureMcp.Areas.Foundry.FoundrySetup(),
+            new AzureMcp.Areas.Grafana.GrafanaSetup(),
             new AzureMcp.Areas.KeyVault.KeyVaultSetup(),
             new AzureMcp.Areas.Kusto.KustoSetup(),
             new AzureMcp.Areas.Monitor.MonitorSetup(),
@@ -71,8 +73,11 @@ internal class Program
             new AzureMcp.Areas.Redis.RedisSetup(),
             new AzureMcp.Areas.Search.SearchSetup(),
             new AzureMcp.Areas.ServiceBus.ServiceBusSetup(),
+            new AzureMcp.Areas.Sql.SqlSetup(),
             new AzureMcp.Areas.Storage.StorageSetup(),
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
+            new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
         ];
     }
 

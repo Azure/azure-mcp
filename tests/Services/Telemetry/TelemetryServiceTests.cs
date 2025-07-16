@@ -1,10 +1,12 @@
-﻿using AzureMcp.Configuration;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Configuration;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
-using static AzureMcp.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Tests.Services.Telemetry;
 

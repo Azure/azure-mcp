@@ -28,6 +28,15 @@
 ##################
 # Services
 ##################
+# PRLabel: %area-AKS
+/src/Areas/Aks/                        @jongio @Azure/azure-mcp
+/tests/Areas/Aks/                      @jongio @Azure/azure-mcp
+/infra/services/aks.bicep              @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-AKS
+# ServiceOwners:                       @jongio
+
+
 # PRLabel: %area-AppConfig
 /src/Areas/AppConfig/                  @JonathanCrd @conniey @Azure/azure-mcp
 
@@ -67,6 +76,12 @@
 
 # ServiceLabel: %area-Foundry
 # ServiceOwners:                      @jayzzh @xiangyan99
+
+# PRLabel: %area-Grafana
+/src/Areas/Grafana/                   @weng5e @xiangyan99 @Azure/azure-mcp
+
+# ServiceLabel: %area-Grafana
+# ServiceOwners:                      @weng5e @xiangyan99
 
 # PRLabel: %area-KeyVault
 /src/Areas/KeyVault/                   @vcolin7 @JonathanCrd @Azure/azure-mcp
@@ -131,3 +146,9 @@
 
 # ServiceLabel: %area-Authorization
 # ServiceOwners:                       @vurhanau
+
+# PRLabel: %area-LoadTesting
+/src/Areas/LoadTesting/                  @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
+
+# ServiceLabel: %area-LoadTesting
+# ServiceOwners:                       @nishtha489 @knarayanana @krchanda @johnsta

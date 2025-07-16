@@ -1,4 +1,3 @@
-[CmdletBinding()]
 param(
     [string]$SubscriptionId,
     [string]$ResourceGroupName,

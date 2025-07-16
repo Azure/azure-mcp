@@ -17,7 +17,7 @@ public static partial class OptionDefinitions
 
         public static readonly Option<string> Tenant = new(
             $"--{TenantName}",
-            "The Azure Active Directory tenant ID or name. This can be either the GUID identifier or the display name of your Azure AD tenant."
+            "The Microsoft Entra ID tenant ID or name. This can be either the GUID identifier or the display name of your Entra ID tenant."
         )
         {
             IsRequired = false,
@@ -109,48 +109,6 @@ public static partial class OptionDefinitions
         };
     }
 
-    public static class Service
-    {
-        public const string TransportName = "transport";
-        public const string PortName = "port";
-        public const string ServiceName = "service";
-        public const string ReadOnlyName = "read-only";
-
-        public static readonly Option<string> Transport = new(
-            $"--{TransportName}",
-            () => TransportTypes.StdIo,
-            "Transport mechanism to use for Azure MCP Server."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<int> Port = new(
-            $"--{PortName}",
-            () => 5008,
-            "Port to use for Azure MCP Server."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<string[]?> ServiceType = new(
-            $"--{ServiceName}",
-            () => null,
-            "The service to expose on the MCP server."
-        )
-        {
-            IsRequired = false,
-            Arity = ArgumentArity.OneOrMore,
-            AllowMultipleArgumentsPerToken = true
-        };
-
-        public static readonly Option<bool?> ReadOnly = new(
-            $"--{ReadOnlyName}",
-            () => null,
-            "Whether the MCP server should be read-only. If true, no write operations will be allowed.");
-    }
-
     public static class Authorization
     {
         public const string ScopeName = "scope";
@@ -161,6 +119,93 @@ public static partial class OptionDefinitions
         )
         {
             IsRequired = true,
+        };
+    }
+
+    public static class LoadTesting
+    {
+        public const string TestResourceName = "test-resource-name";
+        public const string TestRunId = "testrun-id";
+        public const string TestId = "test-id";
+        public const string DisplayNameOption = "display-name";
+        public const string DescriptionOption = "description";
+        public const string OldTestRunIdOption = "old-testrun-id";
+        public const string VirtualUsersOption = "virtual-users";
+        public const string DurationOption = "duration";
+        public const string RampUpTimeOption = "ramp-up-time";
+        public const string EndpointOption = "endpoint";
+        public static readonly Option<string> TestResource = new(
+            $"--{TestResourceName}",
+            "The name of the load test resource for which you want to fetch the details."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> TestRun = new(
+            $"--{TestRunId}",
+            "The ID of the load test run for which you want to fetch the details."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> Test = new(
+            $"--{TestId}",
+            "The ID of the load test for which you want to fetch the details."
+        )
+        {
+            IsRequired = true
+        };
+        public static readonly Option<string> DisplayName = new(
+            $"--{DisplayNameOption}",
+            "The display name for the load test run. This is a user-friendly name to identify the test run."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> Description = new(
+            $"--{DescriptionOption}",
+            "The description for the load test run. This provides additional context about the test run."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> OldTestRunId = new(
+            $"--{OldTestRunIdOption}",
+            "The ID of an existing test run to update. If provided, the command will trigger a rerun of the given test run id."
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> VirtualUsers = new(
+            $"--{VirtualUsersOption}",
+            () => 50,
+            "Virtual users is a measure of load that is simulated to test the HTTP endpoint. (Default - 50)"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> Duration = new(
+            $"--{DurationOption}",
+            () => 20,
+            "This is the duration for which the load is simulated against the endpoint. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 20 mins"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<int> RampUpTime = new(
+            $"--{RampUpTimeOption}",
+            () => 1,
+            "The ramp-up time is the time it takes for the system to ramp-up to the total load specified. Enter decimals for fractional minutes (e.g., 1.5 for 1 minute and 30 seconds). Default is 1 min"
+        )
+        {
+            IsRequired = false
+        };
+        public static readonly Option<string> Endpoint = new(
+            $"--{EndpointOption}",
+            "The endpoint URL to be tested. This is the URL of the HTTP endpoint that will be subjected to load testing."
+        )
+        {
+            IsRequired = false
         };
     }
 }

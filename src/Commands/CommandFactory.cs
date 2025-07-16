@@ -22,7 +22,7 @@ public class CommandFactory
     private readonly CommandGroup _rootGroup;
     private readonly ModelsJsonContext _srcGenWithOptions;
 
-    internal const char Separator = '-';
+    internal const char Separator = '_';
 
     /// <summary>
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
@@ -90,11 +90,6 @@ public class CommandFactory
                     break;
                 }
             }
-        }
-
-        if (commandsFromGroups.Count == 0)
-        {
-            throw new KeyNotFoundException($"No valid group in '[{string.Join(",", groupNames)}]' found in command groups.");
         }
 
         return commandsFromGroups;
