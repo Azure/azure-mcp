@@ -1,1 +1,0 @@
-<!-- Empty Markdown document to facilitate walk-through steps without media -->

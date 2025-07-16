@@ -18,7 +18,6 @@
                 "isDefault": true
             }
         },
-
         {
             "label": "npm dev-build",
             "type": "npm",

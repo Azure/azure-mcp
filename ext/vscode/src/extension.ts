@@ -9,23 +9,27 @@ export function activate(context: vscode.ExtensionContext) {
     const didChangeEmitter = new vscode.EventEmitter<void>();
 
     // Determine platform and binary path once at activation
+
     let binary = '';
-    let platformFolder = '';
+    const arch = process.arch;
     if (process.platform === 'win32') {
-        binary = 'azmcp.exe';
-        platformFolder = 'win32';
-    } else if (process.platform === 'darwin') {
-        binary = 'azmcp';
-        platformFolder = 'darwin';
-    } else if (process.platform === 'linux') {
-        binary = 'azmcp';
-        platformFolder = 'linux';
+        if (arch === 'x64' || arch === 'arm64') {
+            binary = 'azmcp.exe';
+        } else {
+            throw new Error('Unsupported Windows architecture: ' + arch);
+        }
+    } else if (process.platform === 'darwin' || process.platform === 'linux') {
+        if (arch === 'x64' || arch === 'arm64') {
+            binary = 'azmcp';
+        } else {
+            throw new Error(`Unsupported ${process.platform} architecture: ${arch}`);
+        }
     } else {
         throw new Error('Unsupported platform: ' + process.platform);
     }
 
     // Use the binary from the extension's server/os folder
-    const binPath = path.join(context.extensionPath, 'server', platformFolder, binary);
+    const binPath = path.join(context.extensionPath, 'server', binary);
     if (!fs.existsSync(binPath)) {
         throw new Error(`azmcp binary not found at ${binPath}. Please ensure the server binary is present.`);
     }
@@ -47,7 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const config = vscode.workspace.getConfiguration('azureMcp');
                 // Example: ["storage", "keyvault", ...]
                 const enabledServices: string[] | undefined = config.get('enabledServices');
-                let args = ['server', 'start'];
+                const args = ['server', 'start'];
                 if (enabledServices && Array.isArray(enabledServices) && enabledServices.length > 0) {
                     for (const svc of enabledServices) {
                         args.push('--namespace', svc);

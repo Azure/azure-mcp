@@ -14,5 +14,5 @@
     "git.branchProtection": ["main"],
     // Keep files nice
     "files.trimTrailingWhitespace": true,
-    "files.insertFinalNewline": true,
+    "files.insertFinalNewline": true
 }

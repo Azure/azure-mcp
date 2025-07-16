@@ -1,12 +1,24 @@
-# New-VsixSigningManifest.ps1
-# This is a placeholder for a VSIX signing manifest script.
-# You can adapt this to your signing process or integrate with your CI/CD pipeline.
-
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$VsixPath
+    [string]$Path = "$PSScriptRoot../../vsix"
 )
 
-Write-Host "Generating signing manifest for $VsixPath..."
-# Add your signing logic here
-Write-Host "(Signing logic not implemented in this placeholder script.)"
+$originalLocation = Get-Location
+try {
+    Set-Location $Path
+    $extensions = Get-ChildItem -Filter *.vsix -Recurse -File
+    foreach ($extension in $extensions) {
+        Write-Host "Generating signing manifest for $extension"
+        $manifestName = "$($extension.BaseName).manifest"
+        $signatureName = "$($extension.BaseName).signature.p7s"
+
+        npm exec --yes @vscode/vsce@latest -- generate-manifest --packagePath "$($extension.FullName)" -o $manifestName | Write-Host
+        if ($LASTEXITCODE) {
+            Write-Host "Failed to generate signing manifest for $extension"
+            exit $LASTEXITCODE
+        }
+
+        Copy-Item $manifestName $signatureName
+    }
+} finally {
+    Set-Location $originalLocation
+}
