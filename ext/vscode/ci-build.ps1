@@ -22,13 +22,10 @@ if (-not $osMap.ContainsKey($os)) {
 $projectPath = Resolve-Path "../../src"
 $dstBase = Join-Path $PSScriptRoot "server"
 
-
-# Build and package for the specified OS only
-$dstDir = Join-Path $dstBase $os
-if (!(Test-Path $dstDir)) {
-    New-Item -ItemType Directory -Path $dstDir | Out-Null
+if (!(Test-Path $dstBase)) {
+    New-Item -ItemType Directory -Path $dstBase | Out-Null
 }
-dotnet publish $projectPath -c Release -r $($osMap[$os]) --self-contained true -o $dstDir
+dotnet publish $projectPath -c Release -r $($osMap[$os]) --self-contained true -o $dstBase
 
 # Run the npm packaging step
 Invoke-Expression "npm run ci-package -- $PackageArguments"

@@ -14,12 +14,12 @@ parameters:
 - name: VsixArtifacts
   type: object
   default:
-    - vsix_packages_linux_x64
-    - vsix_packages_linux_arm64
-    - vsix_packages_osx_x64
-    - vsix_packages_osx_arm64
-    - vsix_packages_win_x64
-    - vsix_packages_win_arm64
+    - vsix_package_linux_x64
+    - vsix_package_linux_arm64
+    - vsix_package_osx_x64
+    - vsix_package_osx_arm64
+    - vsix_package_win_x64
+    - vsix_package_win_arm64
 
 resources:
   repositories:
