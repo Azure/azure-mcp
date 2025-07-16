@@ -58,6 +58,11 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                 }
 
+                // Show info message when MCP server is registered
+                void vscode.window.showInformationMessage(
+                    'Azure MCP server registered. To start it: open Command Palette → MCP: List Servers → azure-mcp-server-ext → Start.'
+                );
+
                 return [
                     new vscode.McpStdioServerDefinition(
                         'azure-mcp-server-ext',
@@ -69,6 +74,18 @@ export function activate(context: vscode.ExtensionContext) {
             resolveMcpServerDefinition: async (server: vscode.McpServerDefinition) => {
                 // Optionally prompt for secrets or do other setup here
                 return server;
+            }
+        })
+    );
+
+    // Listen for changes to azureMcp.enabledServices and re-register MCP server
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration((event) => {
+            if (event.affectsConfiguration('azureMcp.enabledServices')) {
+                void vscode.window.showInformationMessage(
+                    'Re-registering the MCP server with the updated services.'
+                );
+                didChangeEmitter.fire();
             }
         })
     );
