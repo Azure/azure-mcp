@@ -57,7 +57,7 @@ namespace AzureMcp.Areas.BicepSchema.Commands
                 TypesDefinitionResult result = SchemaGenerator.GetResourceTypeDefinitions(s_serviceProvider.Value, options.ResourceType!);
                 List<ComplexType> response = SchemaGenerator.GetResponse(result);
 
-                if (result is not null)
+                if (response is not null)
                 {
                     // Only log the resource type if we are able to get the schema from it.
                     // There is a slight chance that the LLM hallucinates the resource type
