@@ -30,7 +30,6 @@ public class AzureBestPracticesSetup : IAreaSetup
         var azureFunctions = new CommandGroup("azurefunctions", "Azure Functions code generation and deployment best practices - Commands for retrieving best practices for secure and production-grade Azure Functions code generation and deployment.");
         bestPractices.AddSubGroup(azureFunctions);
 
-
         general.AddCommand(
             "get",
             new AzureBestPracticesGetCommand(loggerFactory.CreateLogger<AzureBestPracticesGetCommand>())
