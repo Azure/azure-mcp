@@ -1,7 +1,7 @@
 Azure Functions code generation best practices:
     - Use the latest programming models (v4 for JavaScript, v2 for Python) 
     - If the project runtime is Python or Node.js, do not create a function.json file
-    - Only If the project runtime is .NET, PowerShell or Java create a function.json file with the required bindings and triggers.
+    - Only if the project runtime is .NET, PowerShell or Java create a function.json file with the required bindings and triggers.
     - Use this extension bundles version `[4.*, 5.0.0)` in the host.json file.
     - Use Azure Functions Core Tools for creating Function Apps
     - Blob triggers should use eventgrid source
