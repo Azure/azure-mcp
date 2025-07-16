@@ -18,7 +18,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_list_aks_clusters_by_subscription()
     {
         var result = await CallToolAsync(
-            "azmcp-aks-cluster-list",
+            "azmcp_aks_cluster_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId }
@@ -61,7 +61,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_handle_empty_subscription_gracefully()
     {
         var result = await CallToolAsync(
-            "azmcp-aks-cluster-list",
+            "azmcp_aks_cluster_list",
             new()
             {
                 { "subscription", "" }
@@ -75,7 +75,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_handle_invalid_subscription_gracefully()
     {
         var result = await CallToolAsync(
-            "azmcp-aks-cluster-list",
+            "azmcp_aks_cluster_list",
             new()
             {
                 { "subscription", "invalid-subscription" }
@@ -93,7 +93,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_validate_required_subscription_parameter()
     {
         var result = await CallToolAsync(
-            "azmcp-aks-cluster-list",
+            "azmcp_aks_cluster_list",
             new Dictionary<string, object?>());
 
         // Should return error response for missing subscription (no results)

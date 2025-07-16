@@ -1,4 +1,7 @@
-﻿using AzureMcp.Areas.BicepSchema.Commands;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Areas.BicepSchema.Commands;
 using AzureMcp.Areas.BicepSchema.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
