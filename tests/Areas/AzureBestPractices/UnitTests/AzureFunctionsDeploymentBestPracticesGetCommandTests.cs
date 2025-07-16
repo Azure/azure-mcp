@@ -46,7 +46,7 @@ public class AzureFunctionsDeploymentBestPracticesGetCommandTests
         var result = JsonSerializer.Deserialize<string[]>(json);
 
         Assert.NotNull(result);
-        Assert.Contains("Flex Consumption (FC1) SKU for new Function Apps", result[0]);
+        Assert.Contains("Default hosting plan is flex consumption plan.", result[0]);
         Assert.Contains("Always use Linux OS for Python-based Functions", result[0]);
         Assert.Contains("Configure Function authentication", result[0]);
         Assert.Contains("private networking options such as Virtual Network", result[0]);

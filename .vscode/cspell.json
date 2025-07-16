@@ -196,6 +196,7 @@
         "exfiltration",
         "filefilters",
         "gethealth",
+        "grpcio",
         "healthmodels",
         "kcsb",
         "keyspace",
