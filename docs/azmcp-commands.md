@@ -555,6 +555,11 @@ azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \
                   --server <server-name> \
                   --database <database-name>
+
+# Gets a list of firewall rules for a SQL server
+azmcp sql firewall-rule list --subscription <subscription> \
+                                  --resource-group <resource-group> \
+                                  --server <server-name>
 ```
 
 ### Azure SQL Server Operations

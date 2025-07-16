@@ -223,6 +223,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 
 ## Azure Storage
 
