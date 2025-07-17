@@ -192,20 +192,20 @@ public sealed class AzCommandTests
     {
         // This test verifies that on Windows, .cmd files are prioritized over bash scripts
         // which addresses the issue where az bash script cannot be executed by .NET Process.Start()
-        
+
         // We can only test this meaningfully if we can create a temporary test environment
         // Since we can't easily mock the file system and PATH in a unit test,
         // this test documents the expected behavior and validates the logic flow
-        
+
         // The key insight is that the new logic checks for .cmd/.bat FIRST on Windows
         // before falling back to the base executable name
-        
+
         // Clear any cached path to ensure fresh execution
         AzCommand.ClearCachedAzPath();
-        
+
         // The method should find az.cmd before az on Windows
         var result = AzCommand.FindAzCliPath();
-        
+
         // We can't make strong assertions about the result since it depends on the actual
         // system PATH, but we can verify the method doesn't throw and returns a string or null
         Assert.True(result == null || result.Length > 0);
@@ -226,25 +226,25 @@ public sealed class AzCommandTests
             // Create test files that simulate the Azure CLI installation on Windows
             var azPath = Path.Combine(tempDir, "az");
             var azCmdPath = Path.Combine(tempDir, "az.cmd");
-            
+
             // Create both files
             File.WriteAllText(azPath, "#!/bin/bash\necho 'This is a bash script'");
             File.WriteAllText(azCmdPath, "@echo off\necho This is a Windows batch file");
 
             // Save the original PATH
             var originalPath = Environment.GetEnvironmentVariable("PATH");
-            
+
             try
             {
                 // Temporarily modify PATH to include our test directory
                 Environment.SetEnvironmentVariable("PATH", tempDir + Path.PathSeparator + originalPath);
-                
+
                 // Clear cached path again after PATH change
                 AzCommand.ClearCachedAzPath();
-                
+
                 // Call the method
                 var result = AzCommand.FindAzCliPath();
-                
+
                 // On Windows, it should find the .cmd file; on other platforms, the base file
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {

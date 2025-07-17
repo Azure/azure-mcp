@@ -75,11 +75,11 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 
         string[] paths = pathEnv.Split(Path.PathSeparator);
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        
+
         foreach (string path in paths)
         {
             string fullPath = Path.Combine(path.Trim(), executableName);
-            
+
             // On Windows, prioritize .cmd and .bat extensions over the base executable
             // This ensures we use az.cmd instead of the az bash script which isn't executable by .NET
             if (isWindows)
@@ -97,7 +97,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
                     return _cachedAzPath;
                 }
             }
-            
+
             // Fall back to the base executable name
             if (File.Exists(fullPath))
             {
