@@ -23,16 +23,22 @@ public class ServiceListCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly ISearchService _searchService;
     private readonly ILogger<ServiceListCommand> _logger;
+    private readonly ServiceListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+    private readonly string _knownSubscriptionId = "00000000-0000-0000-0000-000000000001";
 
     public ServiceListCommandTests()
     {
         _searchService = Substitute.For<ISearchService>();
         _logger = Substitute.For<ILogger<ServiceListCommand>>();
 
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_searchService);
+        var collection = new ServiceCollection().AddSingleton(_searchService);
 
         _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
     }
 
     [Fact]
@@ -40,16 +46,15 @@ public class ServiceListCommandTests
     {
         // Arrange
         var expectedServices = new List<string> { "service1", "service2" };
-        _searchService.ListServices(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _searchService.ListServices(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedServices);
 
-        var command = new ServiceListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--subscription sub123");
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -63,23 +68,29 @@ public class ServiceListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoServices()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoServices()
     {
         // Arrange
-        _searchService.ListServices(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _searchService.ListServices(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(new List<string>());
 
-        var command = new ServiceListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--subscription sub123");
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<ServiceListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Services);
+        Assert.Empty(result.Services);
     }
 
     [Fact]
@@ -87,18 +98,16 @@ public class ServiceListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
 
-        _searchService.ListServices(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _searchService.ListServices(Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
-        var command = new ServiceListCommand(_logger);
-        var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--subscription {subscriptionId}");
-        var context = new CommandContext(_serviceProvider);
+        var args = _parser.Parse([
+            "--subscription", _knownSubscriptionId
+        ]);
 
         // Act
-        var response = await command.ExecuteAsync(context, args);
+        var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);

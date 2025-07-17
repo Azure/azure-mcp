@@ -5,6 +5,7 @@ obj
 tests/test-cmds.txt
 .vs
 tests/TestResults
+.vscode/mcp.json
 
 node_modules
 .npmrc

@@ -47,9 +47,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = groups?.Count > 0 ?
-                ResponseResult.Create(new Result(groups), JsonSourceGenerationContext.Default.Result) :
-                null;
+            context.Response.Results = ResponseResult.Create(new Result(groups), JsonSourceGenerationContext.Default.Result);
         }
         catch (Exception ex)
         {

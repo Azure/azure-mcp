@@ -70,7 +70,7 @@ public class ContainerListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenNoContainers()
+    public async Task ExecuteAsync_ReturnsEmptyList_WhenNoContainers()
     {
         // Arrange
         _storageService.ListContainers(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
@@ -86,7 +86,14 @@ public class ContainerListCommandTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Null(response.Results);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<ContainerListResult>(json);
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Containers);
+        Assert.Empty(result.Containers);
     }
 
     [Fact]
