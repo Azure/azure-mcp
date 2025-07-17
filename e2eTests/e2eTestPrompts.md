@@ -60,12 +60,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-cosmos-database-list | List all the databases in the cosmosdb account <account_name> |
 | azmcp-cosmos-database-list | Show me the databases in the cosmosdb account <account_name> |
 
-## Marketplace
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-marketplace-product-get | Get details about marketplace product <product_name> |
-
 ## Azure Data Explorer
 
 | Tool Name | Test Prompt |
@@ -124,11 +118,30 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
 | azmcp-aks-cluster-list | What AKS clusters do I have? |
 
+## Azure Load Testing
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL \<test-url> that runs for 30 minutes with 45 virtual users. The test name is \<sample-name> with the test id \<test-id> and the load testing resource is \<load-test-resource> in the resource group \<resource-group> in my subscription |
+| azmcp-loadtesting-test-get | Get the load test with id \<test-id> in the load test resource \<test-resource> in resource group \<resource-group> |
+| azmcp-loadtesting-testresource-create | Create a load test resource \<load-test-resource-name> in the resource group \<resource-group> in my subscription |
+| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group \<resource-group> in my subscription |
+| azmcp-loadtesting-testrun-create | Create a test run using the id \<testrun-id> for test \<test-id> in the load testing resource \<load-testing-resource> in resource group \<resource-group>. Use the name of test run \<display-name> and description as \<description> |
+| azmcp-loadtesting-testrun-get | Get the load test run with id \<testrun-id> in the load test resource \<test-resource> in resource group \<resource-group> |
+| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id \<test-id> in the load test resource \<test-resource> in resource group \<resource-group> |
+| azmcp-loadtesting-testrun-update | Update a test run display name as \<display-name> for the id \<testrun-id> for test \<test-id> in the load testing resource \<load-testing-resource> in resource group \<resource-group>.|
+
 ## Azure Managed Grafana
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
+
+## Azure Marketplace
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-marketplace-product-get | Get details about marketplace product <product_name> |
 
 ## Azure MCP Best Practices
 
@@ -139,25 +152,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-bestpractices-general-get | Fetch the latest Azure best practices |
 | azmcp-bestpractices-general-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
 
-
 ## Azure MCP Tools
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-tool-list | List all available tools in the Azure MCP server |
 | azmcp-tool-list | Show me the available tools in the Azure MCP server |
-
-## Azure Load Testing
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
-| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
-| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
-| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <resource-group> in my subscription |
-| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> | 
-| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
-| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>. Use the name of test run <display-name> and description as <description> |
-| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>.|
 
 ## Azure Monitor
 
@@ -189,6 +189,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-datadog-monitoredresources-list | List all monitored resources in the Datadog resource <resource_name> |
 | azmcp-datadog-monitoredresources-list | Show me the monitored resources in the Datadog resource <resource_name> |
+
+## Azure Quick Review CLI
+
+| Tool Name | Test Prompt |
+| --------- | ----------- |
+| azmcp-extension-azqr | Scan my Azure subscription for compliance recommendations |
+| azmcp-extension-azqr | Check my Azure subscription for any compliance issues or recommendations |
+| azmcp-extension-azqr | Provide compliance recommendations for my current Azure subscription |
 
 ## Azure RBAC
 
@@ -249,12 +257,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
-| azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
-| azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 | azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
 | azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
 | azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
+| azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
 
 ## Azure Storage
 
@@ -268,10 +276,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
-| azmcp-storage-table-list | List all tables in the storage account <account_name> |
-| azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-table-list | List all tables in the storage account <account_name> |
+| azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 
 ## Azure Subscription Management
 
@@ -294,11 +302,3 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
-
-## Azure Quick Review CLI
-
-| Tool Name | Test Prompt |
-| --------- | ----------- |
-| azmcp-extension-azqr | Scan my Azure subscription for compliance recommendations |
-| azmcp-extension-azqr | Check my Azure subscription for any compliance issues or recommendations |
-| azmcp-extension-azqr | Provide compliance recommendations for my current Azure subscription |
