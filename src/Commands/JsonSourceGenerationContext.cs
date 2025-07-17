@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Areas.Group.Commands;
 using AzureMcp.Commands;
+using AzureMcp.Areas.Extension.Models;
 
 namespace AzureMcp;
 
@@ -15,6 +16,7 @@ namespace AzureMcp;
 [JsonSerializable(typeof(List<string>))]
 [JsonSerializable(typeof(List<JsonNode>))]
 [JsonSerializable(typeof(AzureCredentials))]
+[JsonSerializable(typeof(GenerateAzCommandPayload))]
 [JsonSerializable(typeof(AzqrReportResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal partial class JsonSourceGenerationContext : JsonSerializerContext
