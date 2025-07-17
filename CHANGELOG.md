@@ -3,19 +3,38 @@
 ## 0.4.1 (2025-07-17)
 
 ### Features Added
-- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
-- Added support for scanning Azure resources for compliance recommendations using the Azure Quick Review CLI via the command: `azmcp extension azqr`. [#510](https://github.com/Azure/azure-mcp/pull/510)
-- Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
-- Added new commands for Azure Function code generation and deployment best practices (https://github.com/Azure/azure-mcp/pull/630)
-- Add `azmcp sql firewall-rule list` command to list SQL server firewall rules. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
+
+- Added support for the following Azure Load Testing operations: [[#315](https://github.com/Azure/azure-mcp/pull/315)]
+  - `azmcp-loadtesting-testresource-list` - List Azure Load testing resources.
+  - `azmcp-loadtesting-testresource-create` - Create a new Azure Load testing resource.
+  - `azmcp-loadtesting-test-get` - Get details of a specific load test configuration.
+  - `azmcp-loadtesting-test-create` - Create a new load test configuration.
+  - `azmcp-loadtesting-testrun-get` - Get details of a specific load test run.
+  - `azmcp-loadtesting-testrun-list` - List all load test runs for a specific test.
+  - `azmcp-loadtesting-testrun-create` - Create a new load test run.
+  - `azmcp-loadtesting-testrun-delete` - Delete a specific load test run.
+- Added support for scanning Azure resources for compliance recommendations using the Azure Quick Review CLI via the command: `azmcp-extension-azqr`. [[#510](https://github.com/Azure/azure-mcp/pull/510)]
+- Added support for listing paths in Data Lake file systems via the command: `azmcp-storage-datalake-file-system-list-paths`. [[#608](https://github.com/Azure/azure-mcp/pull/608)]
+- Added support for listing SQL elastic pools via the command: `azmcp-sql-elastic-pool-list`. [[#606](https://github.com/Azure/azure-mcp/pull/606)]
+- Added support for listing SQL server firewall rules via the command: `azmcp-sql-firewall-rule-list`. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
+- Added new commands for obtaining Azure Functions best practices via the following commands: [[#630](https://github.com/Azure/azure-mcp/pull/630)]
+  - `azmcp-bestpractices-azurefunctions-get-code-generation` - Get code generation best practices for Azure Functions.
+  - `azmcp-bestpractices-azurefunctions-get-deployment` - Get deployment best practices for Azure Functions.
+- Added support for get details about a product in the Azure Marketplace via the command: `azmcp-marketplace-product-get`. [[#442](https://github.com/Azure/azure-mcp/pull/442)]
 
 ### Breaking Changes
 
+- Renamed the command `azmcp-bestpractices-get` to `azmcp-bestpractices-general-get`. [[#630](https://github.com/Azure/azure-mcp/pull/630)]
+
 ### Bugs Fixed
-- Fixed Azure CLI executable path resolution on Windows to prioritize .cmd over bash script. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
+
+- Fixed an issue with Azure CLI executable path resolution on Windows. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
+- Fixed a tool discovery timing issue when calling tools on fresh server instances. [[#604](https://github.com/Azure/azure-mcp/issues/604)]
+- Fixed issue where unrecognizable json would be sent to MCP clients in STDIO mode at startup. [[#644](https://github.com/Azure/azure-mcp/issues/644)]
 
 ### Other Changes
-- Change `engines.node` in `package.json` to require Node.js version `>=20.0.0`.
+
+- Changed `engines.node` in `package.json` to require Node.js version `>=20.0.0`. [[#628](https://github.com/Azure/azure-mcp/pull/628)]
 
 ## 0.4.0 (2025-07-15)
 
