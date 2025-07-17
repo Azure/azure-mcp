@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure.Storage.Blobs.Models;
+using AzureMcp.Areas.Storage.Models;
 using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Storage.Services;
@@ -21,6 +22,12 @@ public interface IStorageService
     Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+    Task<List<DataLakePathInfo>> ListDataLakePaths(
+        string accountName,
+        string fileSystemName,
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);

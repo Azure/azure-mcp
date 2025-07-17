@@ -17,6 +17,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
   - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
   - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
+  - [Platform Package Installation Issues](#platform-package-installation-issues)
 - [Logging and Diagnostics](#logging-and-diagnostics)
   - [Logging](#logging)
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
@@ -421,6 +422,62 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 1. Choose the option that best fits your scenario
 2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
+
+### Platform Package Installation Issues
+
+The Azure MCP wrapper automatically installs the correct platform-specific package when needed. However, if you encounter persistent errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this may indicate network connectivity issues or permission problems.
+
+#### Error Examples:
+- `Failed to load platform specific package '@azure/mcp-linux-x64'`
+- `Cannot find module '@azure/mcp-linux-x64'`
+- `'@azure/mcp-linux-x64' module is missing`
+
+#### Resolution Steps:
+
+**First, ensure you have the latest VS Code version** (v1.101 or later), as older versions may cause compatibility issues with the Azure MCP Server on Ubuntu systems.
+
+**The wrapper will attempt automatic installation first.** If auto-installation fails, try these manual steps:
+
+1. **Clear npm cache and reinstall:**
+   ```bash
+   npm cache clean --force
+   npm uninstall -g @azure/mcp
+   npm install -g @azure/mcp@latest
+   ```
+
+2. **If using npx, clear the cache:**
+   ```bash
+   npx clear-npx-cache
+   npx -y @azure/mcp@latest server start
+   ```
+
+3. **Manually install the platform package:**
+   ```bash
+   npm install @azure/mcp-linux-x64@latest  # Linux x64
+   npm install @azure/mcp-darwin-x64@latest # macOS x64
+   npm install @azure/mcp-win32-x64@latest  # Windows x64
+   ```
+
+4. **Check your internet connection and try again**
+
+5. **Verify Node.js and npm versions:**
+   ```bash
+   node --version  # Should be 18.0.0 or later
+   npm --version
+   ```
+
+#### Common Causes of Auto-Installation Failure:
+- **Network connectivity issues** during package installation
+- **Permission problems** preventing npm from installing packages
+- **Corporate firewall/proxy** blocking npm registry access  
+- **Disk space issues** preventing package extraction
+- **npm cache corruption** preventing proper package resolution
+
+#### For Enterprise Users:
+If you're behind a corporate firewall, you may need to:
+- Configure npm proxy settings
+- Whitelist npm registry domains (`*.npmjs.org`, `registry.npmjs.org`)
+- Work with IT to ensure npm can download packages
 
 ## Logging and Diagnostics
 

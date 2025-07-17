@@ -132,7 +132,7 @@ public class SingleProxyToolLoaderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.False(result.IsError);
+        Assert.Null(result.IsError);
         Assert.NotNull(result.Content);
         Assert.NotEmpty(result.Content);
 
@@ -178,7 +178,7 @@ public class SingleProxyToolLoaderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.False(result.IsError);
+        Assert.Null(result.IsError);
         Assert.NotNull(result.Content);
         Assert.NotEmpty(result.Content);
 
@@ -206,7 +206,7 @@ public class SingleProxyToolLoaderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.False(result.IsError); // This is guidance, not an error
+        Assert.Null(result.IsError); // This is guidance, not an error
         Assert.NotNull(result.Content);
         Assert.Single(result.Content);
 
@@ -231,7 +231,7 @@ public class SingleProxyToolLoaderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.False(result.IsError);
+        Assert.Null(result.IsError);
         Assert.NotNull(result.Content);
         Assert.Single(result.Content);
 
@@ -257,8 +257,8 @@ public class SingleProxyToolLoaderTests
         // Assert - Both calls should succeed and return consistent results
         Assert.NotNull(result1);
         Assert.NotNull(result2);
-        Assert.False(result1.IsError);
-        Assert.False(result2.IsError);
+        Assert.Null(result1.IsError);
+        Assert.Null(result2.IsError);
 
         // Content should be consistent (testing that caching works)
         var content1 = result1.Content.OfType<TextContentBlock>().FirstOrDefault()?.Text;

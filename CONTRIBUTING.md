@@ -38,6 +38,8 @@ If you are contributing significant changes, or if the issue is already assigned
 
 ## Getting Started
 
+> ⚠️ If you are a Microsoft employee then please also review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake) for getting setup
+
 ### Prerequisites
 
 1. **VS Code**: Install either [stable](https://code.visualstudio.com/download) or [Insiders](https://code.visualstudio.com/insiders) release
@@ -330,6 +332,16 @@ Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id
 ### Code Style
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds. Run `dotnet format` before submitting to catch format errors early.
+
+**Spelling Check**
+
+To ensure consistent spelling across the codebase, run the spelling check before submitting:
+
+```pwsh
+.\eng\common\spelling\Invoke-Cspell.ps1
+```
+
+This will check all files for spelling errors using the project's dictionary. Add any new technical terms or proper nouns to `.vscode/cspell.json` if needed.
 
 **Requirements:**
 - Follow C# coding conventions

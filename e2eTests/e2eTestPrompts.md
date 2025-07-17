@@ -2,42 +2,15 @@
 
 This file contains prompts used for end-to-end testing to ensure each tool is invoked properly by MCP clients. The tables are organized by Azure MCP Server areas in alphabetical order.
 
-## Best Practices
+## Azure AI Foundry
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
-
-## Bicep
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
-
-## Resource Group
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-group-list | List all resource groups in my subscription |
-| azmcp-group-list | Show me the resource groups in my subscription |
-| azmcp-group-list | Show me my resource groups |
-
-## Subscription Management
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-subscription-list | List all subscriptions for my account |
-| azmcp-subscription-list | What subscriptions do I have? |
-| azmcp-subscription-list | Show me my subscriptions |
-| azmcp-subscription-list | What is my current subscription? |
-
-## Tools
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-tool-list | List all available tools in the Azure MCP server |
-| azmcp-tool-list | Show me the available tools in the Azure MCP server |
+| azmcp-foundry-models-list | List all AI Foundry models |
+| azmcp-foundry-models-list | Show me the available AI Foundry models |
+| azmcp-foundry-models-deploy | Deploy a GPT4o instance on my resource \<resource-name> |
+| azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
+| azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
 
 ## Azure AI Search
 
@@ -50,23 +23,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-search-list | List all Cognitive Search services in my subscription |
 | azmcp-search-list | Show me the Cognitive Search services in my subscription |
 | azmcp-search-list | Show me my Cognitive Search services |
-
-## Azure AI Foundry
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-foundry-models-list | List all AI Foundry models |
-| azmcp-foundry-models-list | Show me the available AI Foundry models |
-| azmcp-foundry-models-deploy | Deploy a GPT4o instance on my resource \<resource-name> |
-| azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
-| azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
-
-## Azure Managed Grafana
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
-
 
 ## Azure App Configuration
 
@@ -120,6 +76,23 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-kusto-table-list | Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-table-schema | Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name> |
 
+## Azure Database for PostgreSQL
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server \<server> |
+| azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
+| azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
+| azmcp-postgres-server-list | Show me my PostgreSQL servers |
+| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
+| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server \<server> |
+| azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
+
 ## Azure Developer CLI
 
 | Tool Name | Test Prompt |
@@ -136,6 +109,49 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-key-list | List all keys in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-list | Show me the keys in the key vault <key_vault_account_name> |
 | azmcp-keyvault-secret-get | Show me the details about the secret <secret_name> in the key vault <key_vault_account_name> |
+
+## Azure Kubernetes Service (AKS)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-aks-cluster-list | List all AKS clusters in my subscription |
+| azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
+| azmcp-aks-cluster-list | What AKS clusters do I have? |
+
+## Azure Managed Grafana
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-grafana-list | List all Azure Managed Grafana in one subscription |
+
+## Azure MCP Best Practices
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-bestpractices-azurefunctions-get-code-generation | Fetch the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-azurefunctions-get-deployment | Fetch the latest Azure Functions deployment best practices |
+| azmcp-bestpractices-general-get | Fetch the latest Azure best practices |
+| azmcp-bestpractices-general-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
+
+
+## Azure MCP Tools
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-tool-list | List all available tools in the Azure MCP server |
+| azmcp-tool-list | Show me the available tools in the Azure MCP server |
+
+## Azure Load Testing
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> | 
+| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>. Use the name of test run <display-name> and description as <description> |
+| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>.|
 
 ## Azure Monitor
 
@@ -168,22 +184,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-datadog-monitoredresources-list | List all monitored resources in the Datadog resource <resource_name> |
 | azmcp-datadog-monitoredresources-list | Show me the monitored resources in the Datadog resource <resource_name> |
 
-## Azure DB for PostgreSQL
+## Azure RBAC
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
-| azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
-| azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server \<server> |
-| azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
-| azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
-| azmcp-postgres-server-list | Show me my PostgreSQL servers |
-| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
-| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server \<server> |
-| azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
+| azmcp-role-assignment-list | List all available role assignments in my subscription |
+| azmcp-role-assignment-list | Show me the available role assignments in my subscription |
 
 ## Azure Redis
 
@@ -200,12 +206,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-redis-cluster-list | Show me the Redis Clusters in my subscription |
 | azmcp-redis-cluster-list | Show me my Redis Clusters |
 
-## Azure RBAC
+## Azure Resource Group
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-role-assignment-list | List all available role assignments in my subscription |
-| azmcp-role-assignment-list | Show me the available role assignments in my subscription |
+| azmcp-group-list | List all resource groups in my subscription |
+| azmcp-group-list | Show me the resource groups in my subscription |
+| azmcp-group-list | Show me my resource groups |
 
 ## Azure Service Bus
 
@@ -223,9 +230,17 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
 | azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
-| azmcp-sql-server-entraadmin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
-| azmcp-sql-server-entraadmin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
-| azmcp-sql-server-entraadmin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+
+## Azure SQL Server Operations
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
+| azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 
 ## Azure Storage
 
@@ -241,3 +256,27 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+
+## Azure Subscription Management
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-subscription-list | List all subscriptions for my account |
+| azmcp-subscription-list | What subscriptions do I have? |
+| azmcp-subscription-list | Show me my subscriptions |
+| azmcp-subscription-list | What is my current subscription? |
+
+## Azure Terraform Best Practices
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
+| azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
+
+## Bicep
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |

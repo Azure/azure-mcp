@@ -137,6 +137,7 @@ public sealed class CommandFactoryToolLoader(
                         Text = jsonResponse
                     }
                 ],
+                IsError = isError
             };
         }
         catch (Exception ex)
