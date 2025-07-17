@@ -154,7 +154,6 @@
                 "vectorizable",
                 "vectorizer",
                 "vsix",
-                "VSIX",
                 "VSTEST",
                 "Xunit"
             ]
@@ -244,7 +243,6 @@
         "norequired",
         "npmjs",
         "nuxt",
-        "Nuxt",
         "odata",
         "oidc",
         "onboarded",
