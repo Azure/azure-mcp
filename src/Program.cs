@@ -79,6 +79,7 @@ internal class Program
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
+            new AzureMcp.Areas.Startups.StartupsSetup(),
         ];
     }
 
