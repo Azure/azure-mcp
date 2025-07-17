@@ -18,8 +18,6 @@ pids
 
 # MCP server binaries (do not commit)
 server/
-server/
-server/
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -76,7 +74,6 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -101,7 +98,6 @@ dist
 
 dist
 out
-node_modules
 .vscode-test/
 package.nls.*.json
 *.vsix
