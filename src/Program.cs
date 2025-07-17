@@ -68,6 +68,7 @@ internal class Program
             new AzureMcp.Areas.Grafana.GrafanaSetup(),
             new AzureMcp.Areas.KeyVault.KeyVaultSetup(),
             new AzureMcp.Areas.Kusto.KustoSetup(),
+            new AzureMcp.Areas.Marketplace.MarketplaceSetup(),
             new AzureMcp.Areas.Monitor.MonitorSetup(),
             new AzureMcp.Areas.Postgres.PostgresSetup(),
             new AzureMcp.Areas.Redis.RedisSetup(),

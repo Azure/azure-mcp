@@ -200,4 +200,38 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
             Assert.NotEmpty(ex.Message);
         }
     }
+
+    [Fact]
+    public async Task Should_ListElasticPools_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_elastic-pool_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed and return elastic pools (should have at least the test pool)
+        var elasticPools = result.AssertProperty("elasticPools");
+        Assert.Equal(JsonValueKind.Array, elasticPools.ValueKind);
+        Assert.True(elasticPools.GetArrayLength() > 0, "Expected at least one elastic pool to be returned from the test infrastructure");
+
+        // Verify the structure of the first elastic pool
+        var firstPool = elasticPools.EnumerateArray().First();
+        Assert.Equal(JsonValueKind.Object, firstPool.ValueKind);
+
+        // Verify required properties exist
+        Assert.True(firstPool.TryGetProperty("name", out _));
+        Assert.True(firstPool.TryGetProperty("id", out _));
+        Assert.True(firstPool.TryGetProperty("type", out _));
+        Assert.True(firstPool.TryGetProperty("location", out _));
+
+        var poolType = firstPool.GetProperty("type").GetString();
+        Assert.Equal("Microsoft.Sql/servers/elasticPools", poolType);
+    }
 }

@@ -15,6 +15,12 @@
 
 ### Other Changes
 
+## 0.4.1 (2025-07-17)
+
+### Features Added
+
+- Added support for listing SQL elastic pools via the command: `azmcp sql elastic-pool list`. [[#581](https://github.com/Azure/azure-mcp/pull/581)]
+
 ## 0.4.0 (2025-07-15)
 
 ### Features Added
