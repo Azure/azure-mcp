@@ -208,5 +208,22 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
             var actual = result.AssertProperty("details");
             Assert.Equal(JsonValueKind.Object, actual.ValueKind);
         }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Should_list_datalake_filesystem_paths()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_file-system_list-paths",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account-name", Settings.ResourceBaseName },
+                { "file-system-name", "testfilesystem" }
+                });
+
+            var actual = result.AssertProperty("paths");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+        }
     }
 }

@@ -76,6 +76,27 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
     }
 
     /// <summary>
+    /// Configures retry policy options on the provided client options
+    /// </summary>
+    /// <typeparam name="T">Type of client options that inherits from ClientOptions</typeparam>
+    /// <param name="clientOptions">The client options to configure</param>
+    /// <param name="retryPolicy">Optional retry policy configuration</param>
+    /// <returns>The configured client options</returns>
+    protected static T ConfigureRetryPolicy<T>(T clientOptions, RetryPolicyOptions? retryPolicy) where T : ClientOptions
+    {
+        if (retryPolicy != null)
+        {
+            clientOptions.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            clientOptions.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            clientOptions.Retry.MaxRetries = retryPolicy.MaxRetries;
+            clientOptions.Retry.Mode = retryPolicy.Mode;
+            clientOptions.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
+
+        return clientOptions;
+    }
+
+    /// <summary>
     /// Creates an Azure Resource Manager client with optional retry policy
     /// </summary>
     /// <param name="tenant">Optional Azure tenant ID or name</param>
@@ -95,17 +116,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
         try
         {
             var credential = await GetCredential(tenantId);
-            var options = AddDefaultPolicies(new ArmClientOptions());
-
-            // Configure retry policy if provided
-            if (retryPolicy != null)
-            {
-                options.Retry.MaxRetries = retryPolicy.MaxRetries;
-                options.Retry.Mode = retryPolicy.Mode;
-                options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-                options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-                options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-            }
+            var options = ConfigureRetryPolicy(AddDefaultPolicies(new ArmClientOptions()), retryPolicy);
 
             _armClient = new ArmClient(credential, default, options);
             _lastArmClientTenantId = tenantId;

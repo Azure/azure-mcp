@@ -128,8 +128,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
+| azmcp-bestpractices-azurefunctions-get-code-generation | Fetch the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-azurefunctions-get-deployment | Fetch the latest Azure Functions deployment best practices |
+| azmcp-bestpractices-general-get | Fetch the latest Azure best practices |
+| azmcp-bestpractices-general-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
+
 
 ## Azure MCP Tools
 
@@ -235,6 +238,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
+| azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 
 ## Azure Storage
 
@@ -250,6 +256,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 
 ## Azure Subscription Management
 

@@ -4,8 +4,14 @@
 
 ### Features Added
 - Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
-
 - Added support for scanning Azure resources for compliance recommendations using the Azure Quick Review CLI via the command: `azmcp extension azqr`. [#510](https://github.com/Azure/azure-mcp/pull/510)
+- Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
+- Added new commands for Azure Function code generation and deployment best practices (https://github.com/Azure/azure-mcp/pull/630)
+- Add `azmcp sql firewall-rule list` command to list SQL server firewall rules. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
+
+### Breaking Changes
+
+### Bugs Fixed
 
 ### Other Changes
 

@@ -73,6 +73,7 @@
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" />
     <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />
     <PackageReference Include="Azure.ResourceManager.Grafana" />
     <PackageReference Include="Azure.ResourceManager.OperationalInsights" />
@@ -99,8 +100,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	<EmbeddedResource Include="Areas\AzureTerraformBestPractices\Resources\terraform-best-practices-for-azure.txt" />
-	<EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureTerraformBestPractices\Resources\terraform-best-practices-for-azure.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-functions-deployment-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-functions-codegen-best-practices.txt" />
     <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
   </ItemGroup>

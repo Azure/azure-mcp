@@ -397,8 +397,14 @@ azmcp grafana list --subscription <subscription>
 ### Azure MCP Best Practices
 
 ```bash
+# Get best practices for secure, high-quality Azure Functions app code generation.
+azmcp bestpractices azurefunctions get-code-generation
+
+# Get best practices for secure, production-grade Azure Functions app deployment.
+azmcp bestpractices azurefunctions get-deployment
+
 # Get secure, production-grade Azure SDK best practices for effective code generation.
-azmcp bestpractices get
+azmcp bestpractices general get
 ```
 
 ### Azure MCP Tools
@@ -589,6 +595,11 @@ azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \
                   --server <server-name> \
                   --database <database-name>
+
+# Gets a list of firewall rules for a SQL server
+azmcp sql firewall-rule list --subscription <subscription> \
+                                  --resource-group <resource-group> \
+                                  --server <server-name>
 ```
 
 ### Azure SQL Server Operations
@@ -623,6 +634,11 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob container details --subscription <subscription> \
                                      --account-name <account-name> \
                                      --container-name <container-name>
+
+# List paths in a Data Lake file system
+azmcp storage datalake file-system list-paths --subscription <subscription> \
+                                              --account-name <account-name> \
+                                              --file-system-name <file-system-name>
 ```
 
 ### Azure Subscription Management

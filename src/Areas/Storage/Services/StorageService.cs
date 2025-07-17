@@ -8,6 +8,8 @@ using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.Storage.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Files.DataLake;
+using AzureMcp.Areas.Storage.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
 using AzureMcp.Services.Azure.Subscription;
@@ -277,16 +279,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        var options = AddDefaultPolicies(new TableClientOptions());
-
-        if (retryPolicy != null)
-        {
-            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-            options.Retry.MaxRetries = retryPolicy.MaxRetries;
-            options.Retry.Mode = retryPolicy.Mode;
-            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-        }
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new TableClientOptions()), retryPolicy);
 
         switch (authMethod)
         {
@@ -309,16 +302,49 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private async Task<BlobServiceClient> CreateBlobServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         var uri = $"https://{accountName}.blob.core.windows.net";
-        var options = AddDefaultPolicies(new BlobClientOptions());
-
-        if (retryPolicy != null)
-        {
-            options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-            options.Retry.MaxRetries = retryPolicy.MaxRetries;
-            options.Retry.Mode = retryPolicy.Mode;
-            options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-        }
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new BlobClientOptions()), retryPolicy);
         return new BlobServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
+    private async Task<DataLakeServiceClient> CreateDataLakeServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.dfs.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new DataLakeClientOptions()), retryPolicy);
+        return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
+    public async Task<List<DataLakePathInfo>> ListDataLakePaths(
+        string accountName,
+        string fileSystemName,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, fileSystemName, subscriptionId);
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+        var paths = new List<DataLakePathInfo>();
+
+        try
+        {
+            await foreach (var pathItem in fileSystemClient.GetPathsAsync())
+            {
+                var pathInfo = new DataLakePathInfo(
+                    pathItem.Name,
+                    pathItem.IsDirectory == true ? "directory" : "file",
+                    pathItem.ContentLength,
+                    pathItem.LastModified,
+                    pathItem.ETag.ToString());
+
+                paths.Add(pathInfo);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error listing Data Lake paths: {ex.Message}", ex);
+        }
+
+        return paths;
     }
 }
