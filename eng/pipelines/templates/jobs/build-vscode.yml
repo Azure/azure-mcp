@@ -30,32 +30,33 @@ jobs:
   steps:
   - checkout: self
 
-  # Download the signed MCP server binaries for this OS
-  - download: current
-    artifact: $(PipelineArtifactName)_signed
-    displayName: "Download signed MCP server binaries"
+  - ${{ if not(parameters.SkipSigning) }}:
+    # Download the signed MCP server binaries for this OS
+    - download: current
+      artifact: $(PipelineArtifactName)_signed
+      displayName: "Download signed MCP server binaries"
 
-  # Copy binaries to ext/vscode/server/<os>
-  - ${{ if eq(parameters.OSName, 'windows') }}:
-      - powershell: |
-          $arch = "$(Architecture)"
-          $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/dist/*"
-          $dest = "ext/vscode/server"
-          New-Item -ItemType Directory -Force -Path $dest
-          Copy-Item -Path $src -Destination $dest -Recurse -Force
-        displayName: "Copy signed MCP server binaries to VSIX (Windows)"
-  - ${{ if eq(parameters.OSName, 'linux') }}:
-      - bash: |
-          arch="$(Architecture)"
-          mkdir -p ext/vscode/server/linux
-          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/* ext/vscode/server/
-        displayName: "Copy signed MCP server binaries to VSIX (Linux)"
-  - ${{ if eq(parameters.OSName, 'macOS') }}:
-      - bash: |
-          arch="$(Architecture)"
-          mkdir -p ext/vscode/server/macos
-          cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/* ext/vscode/server/
-        displayName: "Copy signed MCP server binaries to VSIX (macOS)"
+    # Copy binaries to ext/vscode/server/<os>
+    - ${{ if eq(parameters.OSName, 'windows') }}:
+        - powershell: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/dist/*"
+            $dest = "ext/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
+          displayName: "Copy signed MCP server binaries to VSIX (Windows)"
+    - ${{ if eq(parameters.OSName, 'linux') }}:
+        - bash: |
+            arch="$(Architecture)"
+            mkdir -p ext/vscode/server/linux
+            cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/* ext/vscode/server/
+          displayName: "Copy signed MCP server binaries to VSIX (Linux)"
+    - ${{ if eq(parameters.OSName, 'macOS') }}:
+        - bash: |
+            arch="$(Architecture)"
+            mkdir -p ext/vscode/server/macos
+            cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/* ext/vscode/server/
+          displayName: "Copy signed MCP server binaries to VSIX (macOS)"
 
   # --- VS Code Extension Packaging Steps ---
   - task: NodeTool@0
