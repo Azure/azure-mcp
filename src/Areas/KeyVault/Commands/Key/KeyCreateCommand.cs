@@ -27,17 +27,6 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
         """
         Create a new key in an Azure Key Vault. This command creates a key with the specified name and type
         in the given vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - key
-        - key-type
-
-        Key types:
-        - RSA: RSA key pair
-        - EC: Elliptic Curve key pair
-        - OCT: ES cryptographic pair
         """;
 
     protected override void RegisterOptions(Command command)

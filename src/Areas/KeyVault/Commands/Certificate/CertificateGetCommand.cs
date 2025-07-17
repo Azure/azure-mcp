@@ -26,11 +26,6 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
         """
         Gets a certificate from an Azure Key Vault. This command retrieves and displays details
         about a specific certificate in the specified vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - certificate
         """;
 
     protected override void RegisterOptions(Command command)

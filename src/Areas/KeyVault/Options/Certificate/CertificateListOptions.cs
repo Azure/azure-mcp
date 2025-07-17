@@ -3,6 +3,4 @@
 
 namespace AzureMcp.Areas.KeyVault.Options.Certificate;
 
-public class CertificateListOptions : BaseKeyVaultOptions
-{
-}
+public class CertificateListOptions : BaseKeyVaultOptions;  

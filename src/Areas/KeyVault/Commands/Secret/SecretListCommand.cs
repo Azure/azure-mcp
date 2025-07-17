@@ -25,10 +25,6 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
         """
         List all secrets in an Azure Key Vault. This command retrieves and displays the names of all secrets
         stored in the specified vault.
-
-        Required arguments:
-        - subscription
-        - vault
         """;
 
     protected override void RegisterOptions(Command command)

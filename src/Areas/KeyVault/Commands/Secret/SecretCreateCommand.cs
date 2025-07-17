@@ -27,12 +27,6 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
         """
         Creates a new secret in an Azure Key Vault. This command creates a secret with the specified name and value
         in the given vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - secret
-        - value
         """;
 
     protected override void RegisterOptions(Command command)

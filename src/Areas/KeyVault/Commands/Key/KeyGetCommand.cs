@@ -26,11 +26,6 @@ public sealed class KeyGetCommand(ILogger<KeyGetCommand> logger) : SubscriptionC
         """
         Get a key from an Azure Key Vault. This command retrieves and displays details
         about a specific key in the specified vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - key
         """;
 
     protected override void RegisterOptions(Command command)

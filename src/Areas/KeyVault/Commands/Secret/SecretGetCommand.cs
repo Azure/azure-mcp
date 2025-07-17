@@ -26,11 +26,6 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         """
         Gets a secret from an Azure Key Vault. This command retrieves and displays the value
         of a specific secret from the specified vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - secret
         """;
 
     protected override void RegisterOptions(Command command)

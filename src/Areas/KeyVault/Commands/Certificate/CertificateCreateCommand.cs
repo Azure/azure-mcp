@@ -26,11 +26,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         """
         Creates a new certificate in an Azure Key Vault. This command creates a certificate with the specified name and
         the default policy in the given vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - certificate
         """;
 
     protected override void RegisterOptions(Command command)

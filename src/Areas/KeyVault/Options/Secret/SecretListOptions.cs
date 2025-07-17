@@ -3,6 +3,4 @@
 
 namespace AzureMcp.Areas.KeyVault.Options.Secret;
 
-public class SecretListOptions : BaseKeyVaultOptions
-{
-}
+public class SecretListOptions : BaseKeyVaultOptions;
