@@ -49,7 +49,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
 
             ArgumentNullException.ThrowIfNull(options.Subscription);
 
-            var azqrPath = FindAzqrCliPath() ?? throw new FileNotFoundException("Azure Quick Review CLI (azqr) executable not found in PATH. Please ensure azqr is installed.");
+            var azqrPath = FindAzqrCliPath() ?? throw new FileNotFoundException("Azure Quick Review CLI (azqr) executable not found in PATH. Please ensure azqr is installed. Go to https://aka.ms/azqr to learn more about how to install Azure Quick Review CLI.");
 
             var subscriptionService = context.GetService<ISubscriptionService>();
             var subscription = await subscriptionService.GetSubscription(options.Subscription, options.Tenant);
