@@ -24,8 +24,8 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
 
     public override string Description =>
         """
-        Creates a new certificate in an Azure Key Vault. This command creates a certificate with the specified name and
-        the default policy in the given vault.
+        Creates a new certificate in an Azure Key Vault. This command creates a certificate with the specified name in
+        the given vault using the default certificate policy.
         """;
 
     protected override void RegisterOptions(Command command)
@@ -65,11 +65,25 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
                 options.Tenant,
                 options.RetryPolicy);
 
+            // Wait for the certificate operation to complete
+            var completedOperation = await operation.WaitForCompletionAsync();
+            var certificate = completedOperation.Value;
+
             context.Response.Results = ResponseResult.Create(
                 new CertificateCreateCommandResult(
-                    operation.Value.Name,
-                    operation.Properties.Status,
-                    operation.Properties.RequestId),
+                    certificate.Name,
+                    certificate.Id,
+                    certificate.KeyId,
+                    certificate.SecretId,
+                    Convert.ToBase64String(certificate.Cer),
+                    certificate.Properties.X509ThumbprintString,
+                    certificate.Properties.Enabled,
+                    certificate.Properties.NotBefore,
+                    certificate.Properties.ExpiresOn,
+                    certificate.Properties.CreatedOn,
+                    certificate.Properties.UpdatedOn,
+                    certificate.Policy.Subject,
+                    certificate.Policy.IssuerName),
                 KeyVaultJsonContext.Default.CertificateCreateCommandResult);
         }
         catch (Exception ex)
@@ -81,5 +95,5 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
         return context.Response;
     }
 
-    internal record CertificateCreateCommandResult(string Name, string Status, string RequestId);
+    internal record CertificateCreateCommandResult(string Name, Uri Id, Uri KeyId, Uri SecretId, string Cer, string Thumbprint, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn, string Subject, string IssuerName);
 }

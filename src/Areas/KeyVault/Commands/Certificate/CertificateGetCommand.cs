@@ -71,6 +71,8 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
                     certificate.Id,
                     certificate.KeyId,
                     certificate.SecretId,
+                    Convert.ToBase64String(certificate.Cer),
+                    certificate.Properties.X509ThumbprintString,
                     certificate.Properties.Enabled,
                     certificate.Properties.NotBefore,
                     certificate.Properties.ExpiresOn,
@@ -89,5 +91,5 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
         return context.Response;
     }
 
-    internal record CertificateGetCommandResult(string Name, Uri Id, Uri KeyId, Uri SecretId, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn, string Subject, string IssuerName);
+    internal record CertificateGetCommandResult(string Name, Uri Id, Uri KeyId, Uri SecretId, string Cer, string Thumbprint, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn, string Subject, string IssuerName);
 }

@@ -84,7 +84,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_list_secrets()
     {
         var result = await CallToolAsync(
-            "azmcp-keyvault-secret-list",
+            "azmcp_keyvault_secret_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -127,7 +127,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         var secretName = Settings.ResourceBaseName + Random.Shared.NextInt64();
         var secretValue = "test-value-" + Random.Shared.NextInt64();
         var result = await CallToolAsync(
-            "azmcp-keyvault-secret-create",
+            "azmcp_keyvault_secret_create",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -150,7 +150,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_list_certificates()
     {
         var result = await CallToolAsync(
-            "azmcp-keyvault-certificate-list",
+            "azmcp_keyvault_certificate_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -169,7 +169,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         // Created in keyvault.bicep.
         var certificateName = "foo-bar-certificate";
         var result = await CallToolAsync(
-            "azmcp-keyvault-certificate-get",
+            "azmcp_keyvault_certificate_get",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -182,9 +182,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.Equal(certificateName, name.GetString());
 
         // Verify that the certificate has some expected properties
-        var thumbprint = result.AssertProperty("thumbprint");
-        Assert.Equal(JsonValueKind.String, thumbprint.ValueKind);
-        Assert.NotNull(thumbprint.GetString());
+        ValidateCertificate(result);
     }
 
     [Fact]
@@ -193,7 +191,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     {
         var certificateName = Settings.ResourceBaseName + Random.Shared.NextInt64();
         var result = await CallToolAsync(
-            "azmcp-keyvault-certificate-create",
+            "azmcp_keyvault_certificate_create",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -205,9 +203,21 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
         Assert.Equal(certificateName, createdCertificateName.GetString());
 
-        // Certificate creation is often asynchronous, so we just verify the response structure
-        var status = result.AssertProperty("status");
-        Assert.Equal(JsonValueKind.String, status.ValueKind);
-        Assert.NotNull(status.GetString());
+        // Verify that the certificate has some expected properties
+        ValidateCertificate(result);
+    }
+
+    private void ValidateCertificate(JsonElement? result)
+    {
+        Assert.NotNull(result);
+
+        var requiredProperties = new[] { "name", "thumbprint", "cer" };
+        
+        foreach (var propertyName in requiredProperties)
+        {
+            var property = result.AssertProperty(propertyName);
+            Assert.Equal(JsonValueKind.String, property.ValueKind);
+            Assert.NotNull(property.GetString());
+        }
     }
 }
