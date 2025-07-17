@@ -1,6 +1,6 @@
 # Release History
 
-## 0.4.1 (Unreleased)
+## 0.4.1 (2025-07-17)
 
 ### Features Added
 - Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
@@ -13,13 +13,7 @@
 
 ### Bugs Fixed
 
-### Other Changes
-
-## 0.4.1 (2025-07-17)
-
-### Features Added
-
-- Added support for listing SQL elastic pools via the command: `azmcp sql elastic-pool list`. [[#581](https://github.com/Azure/azure-mcp/pull/581)]
+- Fixed Azure CLI executable path resolution on Windows to prioritize .cmd over bash script. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
 
 ## 0.4.0 (2025-07-15)
 
