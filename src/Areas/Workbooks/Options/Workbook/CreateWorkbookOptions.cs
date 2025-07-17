@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Canvases.Options;
+using AzureMcp.Areas.Workbooks.Options;
 using AzureMcp.Options;
 using System.Text.Json.Serialization;
 
-namespace AzureMcp.Areas.Canvases.Options.Workbook;
+namespace AzureMcp.Areas.Workbooks.Options.Workbook;
 
 public class CreateWorkbookOptions : SubscriptionOptions
 {

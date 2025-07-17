@@ -1,17 +1,21 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Canvases.Models;
+using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Options;
 using Microsoft.Extensions.Logging;
 using Azure.Core;
+using System.Text.Json;
 
-namespace AzureMcp.Areas.Canvases.Services;
+namespace AzureMcp.Areas.Workbooks.Services;
 
 using AzureMcp.Services.Azure;
 using Azure.ResourceManager.ApplicationInsights;
 using Azure.ResourceManager.ApplicationInsights.Models;
 using AzureMcp.Services.Azure.Subscription;
+
+using Azure.ResourceManager.ResourceGraph;
+using Azure.ResourceManager.ResourceGraph.Models;
 
 public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger<WorkbooksService> logger) : BaseAzureService, IWorkbooksService
 {
@@ -32,32 +36,47 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
 
         try
         {
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, null, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
-            var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
-
-            if (resourceGroupResource?.Value == null)
-            {
-                throw new Exception($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'");
-            }
+            var armClient = await CreateArmClientAsync(null, retryPolicy);
+            var currentTenant = armClient.GetTenants().First();
+            var queryText = $@"
+                resources
+                | where type == 'microsoft.insights/workbooks'
+                | where resourceGroup == '{resourceGroupName}'
+                | where subscriptionId == '{subscriptionId}'
+                | project id, name, location, tags, properties
+            ";
+            var query = new ResourceQueryContent(queryText);
+            var resources = await currentTenant.GetResourcesAsync(query);
 
             var workbooksInRg = new List<WorkbookInfo>();
-            var workbookCollection = resourceGroupResource.Value.GetApplicationInsightsWorkbooks();
 
-            await foreach (ApplicationInsightsWorkbookResource workbook in workbookCollection.GetAllAsync("workbook"))
+            // The Resource Graph API returns data directly as a JSON array
+            var resourceGraphData = resources.Value.Data;
+            using JsonDocument document = JsonDocument.Parse(resourceGraphData.ToStream());
+            JsonElement resourcesArray = document.RootElement;
+
+            foreach (JsonElement resource in resourcesArray.EnumerateArray())
             {
+                // Each resource is a complete JSON object with id, name, location, tags, properties
+                var resourceId = resource.GetProperty("id").GetString() ?? "";
+                var resourceName = resource.GetProperty("name").GetString() ?? "";
+                var location = resource.GetProperty("location").GetString() ?? "";
+                var tags = resource.TryGetProperty("tags", out var tagsElement) ? tagsElement : default;
+                var properties = resource.GetProperty("properties");
+
                 workbooksInRg.Add(new WorkbookInfo(
-                    WorkbookId: workbook.Id?.ToString() ?? "",
-                    WorkbookDisplayName: workbook.Data.DisplayName ?? "Unknown",
-                    Description: workbook.Data.Description,
-                    Category: workbook.Data.Category,
-                    Location: workbook.Data.Location.ToString(),
-                    Kind: workbook.Data.Kind?.ToString(),
-                    Tags: ConvertTagsToString(workbook.Data.Tags),
-                    SerializedData: workbook.Data.SerializedData,
-                    Version: workbook.Data.Version,
-                    TimeModified: workbook.Data.ModifiedOn,
-                    UserId: workbook.Data.UserId,
-                    SourceId: workbook.Data.SourceId
+                    WorkbookId: resourceId,
+                    WorkbookDisplayName: properties.TryGetProperty("displayName", out var displayName) ? displayName.GetString() ?? "Unknown" : "Unknown",
+                    Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
+                    Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
+                    Location: location,
+                    Kind: properties.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
+                    Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
+                    SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
+                    Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
+                    TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
+                    UserId: properties.TryGetProperty("userId", out var user) ? user.GetString() : null,
+                    SourceId: properties.TryGetProperty("sourceId", out var source) ? source.GetString() : null
                 ));
             }
 
@@ -282,6 +301,78 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         {
             _logger.LogError(ex, "Error deleting workbook with ID: {WorkbookId}", workbookId);
             throw new Exception($"Failed to delete workbook: {ex.Message}", ex);
+        }
+    }
+
+    private static WorkbookInfo ParseWorkbookFromArmResponse(string jsonResponse)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(jsonResponse);
+            var root = document.RootElement;
+
+            var id = root.GetProperty("id").GetString() ?? "";
+            var properties = root.GetProperty("properties");
+
+            return new WorkbookInfo(
+                WorkbookId: id,
+                WorkbookDisplayName: properties.GetProperty("displayName").GetString() ?? "Unknown",
+                Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
+                Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
+                Location: root.GetProperty("location").GetString() ?? "",
+                Kind: root.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
+                Tags: root.TryGetProperty("tags", out var tags) ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
+                SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
+                Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
+                TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
+                UserId: properties.TryGetProperty("userId", out var user) ? user.GetString() : null,
+                SourceId: properties.TryGetProperty("sourceId", out var source) ? source.GetString() : null
+            );
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to parse workbook response: {ex.Message}", ex);
+        }
+    }
+
+    private static Dictionary<string, string>? ParseTagsDictionary(JsonElement tagsElement)
+    {
+        if (tagsElement.ValueKind != JsonValueKind.Object)
+            return null;
+
+        var tagsDictionary = new Dictionary<string, string>();
+        foreach (var tag in tagsElement.EnumerateObject())
+        {
+            tagsDictionary[tag.Name] = tag.Value.GetString() ?? "";
+        }
+        return tagsDictionary.Count > 0 ? tagsDictionary : null;
+    }
+
+    private static WorkbookInfo ParseWorkbookFromArgResult(JsonElement workbookElement)
+    {
+        try
+        {
+            var id = workbookElement.GetProperty("id").GetString() ?? "";
+            var properties = workbookElement.GetProperty("properties");
+
+            return new WorkbookInfo(
+                WorkbookId: id,
+                WorkbookDisplayName: properties.TryGetProperty("displayName", out var displayName) ? displayName.GetString() ?? "Unknown" : "Unknown",
+                Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
+                Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
+                Location: workbookElement.GetProperty("location").GetString() ?? "",
+                Kind: workbookElement.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
+                Tags: workbookElement.TryGetProperty("tags", out var tags) ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
+                SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
+                Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
+                TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
+                UserId: properties.TryGetProperty("userId", out var user) ? user.GetString() : null,
+                SourceId: properties.TryGetProperty("sourceId", out var source) ? source.GetString() : null
+            );
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to parse workbook from ARG result: {ex.Message}", ex);
         }
     }
 }

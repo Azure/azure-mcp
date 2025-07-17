@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Areas.Canvases.Options;
+using AzureMcp.Areas.Workbooks.Options;
 using AzureMcp.Commands;
 
-namespace AzureMcp.Areas.Canvases.Commands;
+namespace AzureMcp.Areas.Workbooks.Commands;
 
 public abstract class BaseWorkbooksCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
