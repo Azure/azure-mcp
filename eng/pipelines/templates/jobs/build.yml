@@ -87,7 +87,7 @@ jobs:
     displayName: "Install npm dependencies and vsce"
     workingDirectory: eng/vscode
 
-  - pwsh: ./ci-package.ps1
+  - pwsh: ./ci-build.ps1
     workingDirectory: eng/vscode
     displayName: "Build VS Code Extension"
 
