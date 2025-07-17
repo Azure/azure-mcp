@@ -150,9 +150,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 ## Azure for Startups 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-guidance-get | What is Microsoft for Startups? |
-| azmcp-guidance-get | How can Microsoft for Startups help my business? |
-| azmcp-guidance-get | I'm a startup user. How can I get started? |
+| azmcp-startups-get | What is Microsoft for Startups? |
+| azmcp-startups-get | How can Microsoft for Startups help my business? |
+| azmcp-startups-get | I'm a startup user. How can I get started? |
 
 ## Azure Load Testing
 | Tool Name | Test Prompt |
