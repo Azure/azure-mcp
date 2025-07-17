@@ -39,26 +39,30 @@ jobs:
       artifact: $(PipelineArtifactName)_signed
       displayName: "Download signed MCP server binaries"
 
-    # Copy binaries to ext/vscode/server/<os>
+    # Copy binaries to eng/vscode/server/<os>
     - ${{ if eq(parameters.OSName, 'windows') }}:
         - powershell: |
             $arch = "$(Architecture)"
             $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/dist/*"
-            $dest = "ext/vscode/server"
+            $dest = "eng/vscode/server"
             New-Item -ItemType Directory -Force -Path $dest
             Copy-Item -Path $src -Destination $dest -Recurse -Force
           displayName: "Copy signed MCP server binaries to VSIX (Windows)"
     - ${{ if eq(parameters.OSName, 'linux') }}:
-        - bash: |
-            arch="$(Architecture)"
-            mkdir -p ext/vscode/server/linux
-            cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/* ext/vscode/server/
+        - pwsh: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/*"
+            $dest = "eng/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
           displayName: "Copy signed MCP server binaries to VSIX (Linux)"
     - ${{ if eq(parameters.OSName, 'macOS') }}:
-        - bash: |
-            arch="$(Architecture)"
-            mkdir -p ext/vscode/server/macos
-            cp -r $(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/* ext/vscode/server/
+        - pwsh: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/*"
+            $dest = "eng/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
           displayName: "Copy signed MCP server binaries to VSIX (macOS)"
 
   # --- VS Code Extension Packaging Steps ---
@@ -66,20 +70,24 @@ jobs:
     displayName: "Use Node.js 20.x"
     inputs:
       versionSpec: 20.x
-
-  - bash: |
+  - pwsh: |
       npm install -g npm vsce
       npm ci --no-optional
     displayName: "Install npm dependencies and vsce"
-    workingDirectory: ext/vscode
+    workingDirectory: eng/vscode
 
-  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)'
-    workingDirectory: ext/vscode
+  - pwsh: |
+      $packageJson = Get-Content eng/vscode/package.json -Raw | ConvertFrom-Json
+      Write-Host "##vso[task.setvariable variable=VsixVersion]$($packageJson.version)"
+    displayName: "Extract VSIX version from package.json"
+
+  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '$(VsixVersion)'
+    workingDirectory: eng/vscode
     displayName: "Package VS Code Extension"
 
   - pwsh: |
       New-Item -ItemType Directory -Path packaged -Force
-      Copy-Item ext/vscode/*.vsix -Destination packaged -Force
+      Copy-Item eng/vscode/*.vsix -Destination packaged -Force
     displayName: Copy VSIX for publishing
     condition: always()
 

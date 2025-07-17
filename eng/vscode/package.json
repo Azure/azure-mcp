@@ -30,7 +30,7 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.js",
+    "main": "main.js",
     "contributes": {
         "mcpServerDefinitionProviders": [
             {

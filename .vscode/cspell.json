@@ -23,7 +23,7 @@
         "**/bin/**",
         "**/.work/**",
         "**/.dist/**",
-        "**/ext/vscode/NOTICE.txt"
+        "**/eng/vscode/NOTICE.txt"
     ],
     "dictionaryDefinitions": [
         {

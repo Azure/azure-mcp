@@ -48,7 +48,9 @@ jobs:
     - ${{ if not(parameters.SkipSigning) }}:
       - pwsh: |
           New-Item -ItemType Directory -Path signed -Force
-          Copy-Item "$(Pipeline.Workspace)/${{ parameters.ArtifactName }}/*" -Destination signed -Recurse -Force
+          Copy-Item "$(Pipeline.Workspace)/${{ parameters.ArtifactName }}\*.vsix" -Destination signed -Force
+          Copy-Item "$(Pipeline.Workspace)/${{ parameters.ArtifactName }}\*.manifest" -Destination signed -Force
+          Copy-Item "$(Pipeline.Workspace)/${{ parameters.ArtifactName }}\*.signature.p7s" -Destination signed -Force
         displayName: Copy signed VSIX for publishing
         condition: always()
 

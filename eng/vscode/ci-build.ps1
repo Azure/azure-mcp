@@ -1,4 +1,3 @@
-
 param(
     [string]$os,
     $PackageArguments

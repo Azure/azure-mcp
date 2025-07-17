@@ -85,10 +85,10 @@ jobs:
       npm install -g npm vsce
       npm ci --no-optional
     displayName: "Install npm dependencies and vsce"
-    workingDirectory: ext/vscode
+    workingDirectory: eng/vscode
 
-  - pwsh: ./ci-build.ps1 -os '${{ parameters.OSName }}_$(Architecture)'
-    workingDirectory: ext/vscode
+  - pwsh: ./ci-package.ps1
+    workingDirectory: eng/vscode
     displayName: "Build VS Code Extension"
 
   - task: ComponentGovernanceComponentDetection@0
