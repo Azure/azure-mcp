@@ -77,7 +77,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         {
             _logger.LogError(ex, "Error creating directory. Account: {Account}, FileSystem: {FileSystem}, DirectoryPath: {DirectoryPath}.", 
                 options.Account, options.FileSystem, options.DirectoryPath);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
