@@ -22,5 +22,6 @@ internal sealed class ExtensionSetup : IAreaSetup
 
         extension.AddCommand("az", new AzCommand(loggerFactory.CreateLogger<AzCommand>()));
         extension.AddCommand("azd", new AzdCommand(loggerFactory.CreateLogger<AzdCommand>()));
+        extension.AddCommand("azqr", new AzqrCommand(loggerFactory.CreateLogger<AzqrCommand>()));
     }
 }

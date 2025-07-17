@@ -167,6 +167,7 @@
         "Apim",
         "appconfig",
         "azmcp",
+        "azqr",
         "azuremcp",
         "azsdk",
         "azureblob",
