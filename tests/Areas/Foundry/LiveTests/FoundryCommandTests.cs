@@ -18,7 +18,7 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
     public async Task Should_list_foundry_models()
     {
         var result = await CallToolAsync(
-            "azmcp-foundry-models-list",
+            "azmcp_foundry_models_list",
             new()
             {
                 { "search-for-free-playground", "true" }
@@ -36,7 +36,7 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
         var projectName = $"{Settings.ResourceBaseName}-ai-projects";
         var accounts = Settings.ResourceBaseName;
         var result = await CallToolAsync(
-            "azmcp-foundry-models-deployments-list",
+            "azmcp_foundry_models_deployments_list",
             new()
             {
                 { "endpoint", $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}" },
@@ -54,7 +54,7 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
     {
         var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
         var result = await CallToolAsync(
-            "azmcp-foundry-models-deploy",
+            "azmcp_foundry_models_deploy",
             new()
             {
                 { "deployment-name", deploymentName },

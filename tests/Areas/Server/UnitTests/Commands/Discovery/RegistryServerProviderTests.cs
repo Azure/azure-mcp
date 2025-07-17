@@ -3,6 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Models;
@@ -75,26 +79,24 @@ public class RegistryServerProviderTests
     }
 
     [Fact]
-    public async Task CreateClientAsync_WithUrl_CreatesSseClient()
+    public async Task CreateClientAsync_WithUrl_ThrowsInvalidOperationException()
     {
         // Arrange
         string testId = "sseProvider";
+        using var server = new MockHttpTestServer();
         var serverInfo = new RegistryServerInfo
         {
             Description = "Test SSE Provider",
-            Url = "https://example.com/mcp"
+            Url = $"{server.Endpoint}/mcp"
         };
         var provider = new RegistryServerProvider(testId, serverInfo);
 
-        // Act & Assert - Should not throw, but we can't easily mock the actual client creation
-        // due to SseClientTransport using sealed classes
-        var exception = await Record.ExceptionAsync(() => provider.CreateClientAsync(new McpClientOptions()));
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => provider.CreateClientAsync(new McpClientOptions()));
 
-        // The specific exception may vary based on the implementation (HttpRequestException for 404, etc.)
-        // but we should get an exception of some kind
-        Assert.NotNull(exception);
-        // Not an InvalidOperationException about missing URL or invalid transport
-        Assert.IsNotType<InvalidOperationException>(exception);
+        Assert.Contains($"Registry server '{testId}' does not have a valid transport type. Only 'stdio' is supported.",
+            exception.Message);
     }
 
     [Fact]
@@ -165,7 +167,7 @@ public class RegistryServerProviderTests
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => provider.CreateClientAsync(new McpClientOptions()));
 
-        Assert.Contains($"Registry server '{testId}' does not have a valid url or type for transport.",
+        Assert.Contains($"Registry server '{testId}' does not have a valid transport type. Only 'stdio' is supported.",
             exception.Message);
     }
 
@@ -188,5 +190,75 @@ public class RegistryServerProviderTests
 
         Assert.Contains($"Registry server '{testId}' does not have a valid command for stdio transport.",
             exception.Message);
+    }
+}
+
+internal sealed class MockHttpTestServer : IDisposable
+{
+    private readonly HttpListener _listener;
+    private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly TaskCompletionSource _ready;
+    public string Endpoint { get; }
+
+    public MockHttpTestServer()
+    {
+        var port = GetAvailablePort();
+        Endpoint = $"http://127.0.0.1:{port}";
+
+        _listener = new HttpListener();
+        _listener.Prefixes.Add($"{Endpoint}/");
+        _listener.Start();
+
+        _cancellationTokenSource = new CancellationTokenSource();
+        _ready = new TaskCompletionSource();
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                _ready.SetResult();
+
+                while (_listener.IsListening && !_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    var context = await _listener.GetContextAsync();
+                    if (context.Request.Url?.AbsolutePath == "/mcp")
+                    {
+                        context.Response.StatusCode = 404;
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400;
+                    }
+                    context.Response.Close();
+                }
+            }
+            catch (Exception ex) when (ex is ObjectDisposedException or HttpListenerException)
+            {
+                // expected when listener is disposed or stopped.
+                if (!_ready.Task.IsCompleted)
+                {
+                    _ready.SetException(ex);
+                }
+            }
+        }, _cancellationTokenSource.Token);
+
+        _ready.Task.Wait(TimeSpan.FromSeconds(10));
+    }
+
+    private static int GetAvailablePort()
+    {
+        using var tempListener = new TcpListener(IPAddress.Loopback, 0);
+        tempListener.Start();
+        var port = ((IPEndPoint)tempListener.LocalEndpoint).Port;
+        tempListener.Stop();
+        return port;
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+        _listener.Stop();
+        _listener.Close();
+        _cancellationTokenSource.Dispose();
     }
 }

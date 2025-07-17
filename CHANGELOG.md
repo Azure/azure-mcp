@@ -1,21 +1,61 @@
 # Release History
 
-## 0.3.2 (Unreleased)
+## 0.4.1 (Unreleased)
 
 ### Features Added
+- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
 
-- Support for Azure Managed Grafana operations - List Azure Managed Grafana details. [#532](https://github.com/Azure/azure-mcp/pull/532)
+- Support for Azure Data Lake Storage Gen2 operations - List paths in Data Lake file systems via the command: `azmcp storage datalake file-system list-paths`. [#608](https://github.com/Azure/azure-mcp/pull/608)
+
+- Added new commands for Azure Function code generation and deployment best practices (https://github.com/Azure/azure-mcp/pull/630)
+
+ - Add `azmcp sql firewall-rule list` command to list SQL server firewall rules. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
 
 ### Breaking Changes
 
 ### Bugs Fixed
-- Updated README table with --namespace and update descriptions. [#551](https://github.com/Azure/azure-mcp/pull/551)
-
-- Fixed issue where trace logs could be collected as telemetry. [#540](https://github.com/Azure/azure-mcp/pull/540/)
-
-- Fixed the issue that was unable to find az from user environment PATH. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ### Other Changes
+
+## 0.4.0 (2025-07-15)
+
+### Features Added
+
+- Added support for listing Azure Kubernetes Service (AKS) clusters via the command `azmcp-aks-cluster-list`. [[#560](https://github.com/Azure/azure-mcp/pull/560)]
+- Made the following Ahead of Time (AOT) compilation improvements saving `6.96 MB` in size total:
+  - Switched to the trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving `0.63 MB` in size for the native executable. [[#564](https://github.com/Azure/azure-mcp/pull/564)]
+  - Switched to the trimmer-friendly `npgsql` API, saving `2.69 MB` in size for the native executable. [[#592](https://github.com/Azure/azure-mcp/pull/592)]
+  - Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving `3.64 MB` in size for the native executable. [[#598](https://github.com/Azure/azure-mcp/pull/598)]
+- Added support for using the hyphen/dash ("-") character in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
+- Added support for authenticating with the Azure account used to log into VS Code. Authentication now prioritizes the VS Code broker credential when in the context of VS Code. [[#452](https://github.com/Azure/azure-mcp/pull/452)]
+
+### Breaking Changes
+
+- Removed SSE (Server-Sent Events) transport support. Now, only stdio transport is supported as SSE is no longer part of the MCP specification. [[#593](https://github.com/Azure/azure-mcp/issues/593)]
+- Renamed `azmcp-sql-server-entraadmin-list` to `azmcp-sql-server-entra-admin-list` for better readability. [[#602](https://github.com/Azure/azure-mcp/pull/602)]
+
+### Bugs Fixed
+
+- Added a post-install script to ensure platform-specific versions like `@azure/mcp-${platform}-${arch}` can be resolved. Otherwise, fail install to prevent npx caching of `@azure/mcp`. [[#597](https://github.com/Azure/azure-mcp/pull/597)]
+- Improved install reliability and error handling when missing platform packages on Ubuntu. [[#394](https://github.com/Azure/azure-mcp/pull/394)]
+
+### Other Changes
+
+#### Dependency Updates
+
+- Updated the `ModelContextProtocol.AspNetCore` version from `0.3.0-preview.1` to `0.3.0-preview.2`. [[#519](https://github.com/Azure/azure-mcp/pull/519)]
+
+## 0.3.2 (2025-07-10)
+
+### Features Added
+
+- Added support for listing Azure Managed Grafana details via the command: `azmcp-grafana-list`. [[#532](https://github.com/Azure/azure-mcp/pull/532)]
+- Added agent best practices for Azure Terraform commands. [[#420](https://github.com/Azure/azure-mcp/pull/420)]
+
+### Bugs Fixed
+
+- Fixed issue where trace logs could be collected as telemetry. [[#540](https://github.com/Azure/azure-mcp/pull/540/)]
+- Fixed an issue that prevented the Azure MCP from finding the Azure CLI if it was installed on a path other than the default global one. [[#351](https://github.com/Azure/azure-mcp/issues/351)]
 
 ## 0.3.1 (2025-07-08)
 
@@ -23,7 +63,7 @@
 
 - Added support for the following SQL operations:
   - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
-  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+  - `azmcp-sql-server-entra-admin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
 - Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
 
 ### Breaking Changes
