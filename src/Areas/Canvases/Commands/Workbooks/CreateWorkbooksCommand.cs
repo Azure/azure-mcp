@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Workbooks.Models;
-using AzureMcp.Areas.Workbooks.Options;
-using AzureMcp.Areas.Workbooks.Options.Workbook;
-using AzureMcp.Areas.Workbooks.Services;
+using AzureMcp.Areas.Canvases.Models;
+using AzureMcp.Areas.Canvases.Options;
+using AzureMcp.Areas.Canvases.Options.Workbook;
+using AzureMcp.Areas.Canvases.Services;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Commands;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
+namespace AzureMcp.Areas.Canvases.Commands.Workbook;
 
 public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logger) : SubscriptionCommand<CreateWorkbookOptions>
 {

@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Areas.Canvases.Models;
 using AzureMcp.Options;
 using Microsoft.Extensions.Logging;
 using Azure.Core;
 
-namespace AzureMcp.Areas.Workbooks.Services;
+namespace AzureMcp.Areas.Canvases.Services;
 
 using AzureMcp.Services.Azure;
 using Azure.ResourceManager.ApplicationInsights;

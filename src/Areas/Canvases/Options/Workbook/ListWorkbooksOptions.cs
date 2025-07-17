@@ -3,7 +3,7 @@
 
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.Workbooks.Options.Workbook;
+namespace AzureMcp.Areas.Canvases.Options.Workbook;
 
 public class ListWorkbooksOptions : SubscriptionOptions
 {

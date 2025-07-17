@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Areas.Workbooks.Options;
+namespace AzureMcp.Areas.Canvases.Options;
 
 public static class WorkbooksOptionDefinitions
 {

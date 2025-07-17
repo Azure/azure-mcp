@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.Workbooks.Options;
+namespace AzureMcp.Areas.Canvases.Options;
 
 public class BaseWorkbooksOptions : GlobalOptions
 {

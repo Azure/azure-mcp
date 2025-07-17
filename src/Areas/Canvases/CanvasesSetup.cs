@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Workbooks.Commands.Workbook;
-using AzureMcp.Areas.Workbooks.Services;
+using AzureMcp.Areas.Canvases.Commands.Workbook;
+using AzureMcp.Areas.Canvases.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.Workbooks;
+namespace AzureMcp.Areas.Canvases;
 
-public class WorkbooksSetup : IAreaSetup
+public class CanvasesSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {

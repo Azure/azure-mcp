@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Workbooks.Commands.Workbook;
-using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Areas.Canvases.Commands.Workbook;
+using AzureMcp.Areas.Canvases.Models;
 
-namespace AzureMcp.Areas.Workbooks.Commands;
+namespace AzureMcp.Areas.Canvases.Commands;
 
 [JsonSerializable(typeof(object))]
 [JsonSerializable(typeof(string))]

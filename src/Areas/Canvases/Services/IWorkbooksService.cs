@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Areas.Canvases.Models;
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.Workbooks.Services;
+namespace AzureMcp.Areas.Canvases.Services;
 
 public interface IWorkbooksService
 {

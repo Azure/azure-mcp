@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Areas.Workbooks.Models;
+namespace AzureMcp.Areas.Canvases.Models;
 
 public sealed record WorkbookInfo(
     string WorkbookId,
