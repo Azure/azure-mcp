@@ -114,30 +114,6 @@ extends:
         parameters:
           SkipSigning: ${{ parameters.SkipSigning }}
 
-    - stage: Docker
-      ${{ if eq(parameters.ReleaseRun, 'true') }}:
-        displayName: 'Docker Build and Publish'
-      ${{ else }}:
-        displayName: 'Docker Build'
-      dependsOn:
-      - Initialize
-      - Build
-      pool:
-        name: $(LINUXPOOL)
-        image: $(LINUXVMIMAGE)
-        os: linux
-      variables:
-      - template: /eng/pipelines/templates/variables/image.yml
-      - template: /eng/pipelines/templates/variables/globals.yml
-      - name: Version
-        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
-      jobs:
-      - template: /eng/pipelines/templates/jobs/docker.yml
-        parameters:
-          ContainerRegistry: azuresdkimages
-          DeploymentEnvironment: public
-          ReleaseRun: ${{ parameters.ReleaseRun }}
-
     - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release
@@ -172,3 +148,23 @@ extends:
             value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/integration.yml
+
+    - stage: Docker
+      displayName: 'Docker Build and Publish'
+      dependsOn:
+      - Initialize
+      - SignAndPack
+      pool:
+        name: $(LINUXPOOL)
+        image: $(LINUXVMIMAGE)
+        os: linux
+      variables:
+      - template: /eng/pipelines/templates/variables/image.yml
+      - template: /eng/pipelines/templates/variables/globals.yml
+      - name: Version
+        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
+      jobs:
+      - template: /eng/pipelines/templates/jobs/docker.yml
+        parameters:
+          ContainerRegistry: 'azuresdkimages'
+          DeploymentEnvironment: 'public'
