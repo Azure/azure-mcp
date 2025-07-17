@@ -3,33 +3,36 @@
 
 [CmdletBinding(DefaultParameterSetName='none')]
 param(
+    [string] $Version,
     [switch] $Trimmed,
-    [switch] $AllPlatforms,
+    [switch] $IsLocalBuild,
     [switch] $DebugBuild
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $root = $RepoRoot.Path.Replace('\', '/')
-$distPath = "$root/.dist"
+$distPath = "$root/.work"
+$dockerFile = "$root/Dockerfile"
 
-& "$root/eng/scripts/Build-Local.ps1" -Trimmed:$Trimmed -AllPlatforms:$AllPlatforms -DebugBuild:$DebugBuild
-
-$runtime = $([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)
-$parts = $runtime.Split('-')
-$os = $parts[0]
-$arch = $parts[1]
-
-if($os -eq 'win') {
-    $os = 'windows'
-} elseif($os -eq 'osx') {
-    $os = 'macos'
+if(!$Version) {
+    $Version = & "$PSScriptRoot/Get-Version.ps1"
 }
 
-$publishDirectory = [System.IO.Path]::Combine($distPath, "platform", "$os-$arch")
+# Will fix this when we update Dockerfile to multi-platform
+$os = "linux"
+$arch = "x64"
+$tag = "azure/azure-mcp:$Version";
+
+& "$root/eng/scripts/Build-Module.ps1" -SelfContained -Trimmed:$Trimmed -DebugBuild:$DebugBuild -OperatingSystem $os -Architecture $arch
+
+[string]$publishDirectory = $([System.IO.Path]::Combine($distPath, "$os-$arch", "dist"))
+$relativeDirectory = $(Resolve-Path $publishDirectory -Relative).Replace('\', '/')
+
+Write-Host "Building Docker image ($tag). PATH: [$relativeDirectory]. Absolute: [$publishDirectory]."
 
 if (!(Test-Path $publishDirectory)) {
     Write-Error "Build output directory does not exist: $publishDirectory"
     return
 }
 
-& docker build --build-arg PUBLISH_DIR=""
+& docker build --build-arg PUBLISH_DIR="$relativeDirectory" --file $dockerFile --tag $tag .
