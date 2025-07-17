@@ -28,7 +28,7 @@
         "url": "https://github.com/azure/azure-mcp"
     },
     "activationEvents": [
-        "*"
+        "onStartupFinished"
     ],
     "main": "./dist/extension.js",
     "contributes": {

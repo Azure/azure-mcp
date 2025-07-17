@@ -32,6 +32,14 @@
             "group": {
                 "kind": "build"
             }
+        },
+        {
+            "type": "npm",
+            "script": "ci-build",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "npm: ci-build",
+            "detail": "npm run lint && npm run build"
         }
     ]
 }
