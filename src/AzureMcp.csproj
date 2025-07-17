@@ -68,6 +68,15 @@
     <PackageReference Include="Azure.ResourceManager.PostgreSql" />
     <PackageReference Include="Azure.ResourceManager.Redis" />
     <PackageReference Include="Azure.ResourceManager.RedisEnterprise" />
+	  <PackageReference Include="Azure.ResourceManager.AppService" />
+    <PackageReference Include="Azure.ResourceManager.AppContainers" />
+    <PackageReference Include="Azure.ResourceManager.Resources" />
+    <PackageReference Include="Azure.ResourceManager" />
+    <PackageReference Include="Azure.ResourceManager.Compute"/>
+    <PackageReference Include="Azure.ResourceManager.MachineLearning" />
+    <PackageReference Include="Azure.ResourceManager.Network" />
+    <PackageReference Include="Azure.ResourceManager.ContainerInstance" />
+    <PackageReference Include="Azure.ResourceManager.HDInsight" />
     <PackageReference Include="Azure.ResourceManager.LoadTesting" />
     <PackageReference Include="Azure.ResourceManager.Sql" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
@@ -96,6 +105,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
+    <PackageReference Include="YamlDotNet" />
 	<PackageReference Include="Azure.Search.Documents" />
   </ItemGroup>
 
