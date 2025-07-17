@@ -16,6 +16,7 @@ namespace AzureMcp.Commands.Storage;
 [JsonSerializable(typeof(ContainerListCommand.ContainerListCommandResult))]
 [JsonSerializable(typeof(ContainerDetailsCommand.ContainerDetailsCommandResult))]
 [JsonSerializable(typeof(FileSystemListPathsCommand.FileSystemListPathsCommandResult))]
+[JsonSerializable(typeof(DirectoryCreateCommand.DirectoryCreateCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class StorageJsonContext : JsonSerializerContext
 {

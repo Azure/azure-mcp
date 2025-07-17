@@ -63,5 +63,7 @@ public class StorageSetup : IAreaSetup
 
         fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(
             loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
+        fileSystem.AddCommand("directory-create", new DirectoryCreateCommand(
+            loggerFactory.CreateLogger<DirectoryCreateCommand>()));
     }
 }
