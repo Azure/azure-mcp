@@ -30,8 +30,7 @@ To add new words, edit `.vscode/cspell.json` and add them to the `"words"` array
 
 ### Guidelines
 
-- Use lowercase for words unless the capitalization is significant
-- Add the most common form of the word (cspell will often recognize variations)
+- Use lowercase for words
 - Consider whether the word is truly legitimate or if it might be a typo
 
 ## Available Scripts
