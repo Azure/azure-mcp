@@ -12,6 +12,9 @@ parameters:
   type: object
 - name: TestTimeoutInMinutes
   type: number
+- name: SkipSigning
+  type: boolean
+  default: false
 
 jobs:
 - job: Build_${{ parameters.OSName }}

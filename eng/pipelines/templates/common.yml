@@ -143,6 +143,8 @@ extends:
             JobTemplatePath: /eng/pipelines/templates/jobs/build-vscode.yml
             AdditionalParameters:
               TestTimeoutInMinutes: 10
+              SkipSigning: ${{ parameters.SkipSigning }}
+
             MatrixConfigs:
               - Name: build_matrix
                 Path: eng/pipelines/build-matrix.json
