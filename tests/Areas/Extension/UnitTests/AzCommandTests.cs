@@ -218,7 +218,8 @@ public sealed class AzCommandTests
         AzCommand.ClearCachedAzPath();
 
         // Create a temporary directory to simulate the Azure CLI installation
-        var tempDir = Path.Combine(Path.GetTempPath(), "AzCliTest_" + Guid.NewGuid().ToString("N")[..8]);
+        const int TempDirSuffixLength = 8;
+        var tempDir = Path.Combine(Path.GetTempPath(), "AzCliTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
         Directory.CreateDirectory(tempDir);
 
         try
