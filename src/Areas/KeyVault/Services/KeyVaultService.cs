@@ -46,12 +46,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(keyName))
-        {
-            throw new ArgumentException("Key name cannot be null or empty", nameof(keyName));
-        }
+        ValidateRequiredParameters(vaultName, keyName, subscriptionId);
 
         var credential = await GetCredential(tenantId);
         var client = new KeyClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
@@ -74,17 +69,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(keyName))
-        {
-            throw new ArgumentException("Key name cannot be null or empty", nameof(keyName));
-        }
-
-        if (string.IsNullOrWhiteSpace(keyType))
-        {
-            throw new ArgumentException("Key type cannot be null or empty", nameof(keyType));
-        }
+        ValidateRequiredParameters(vaultName, keyName, keyType, subscriptionId);
 
         var type = new KeyType(keyType);
         var credential = await GetCredential(tenantId);
@@ -135,17 +120,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(secretName))
-        {
-            throw new ArgumentException("Secret name cannot be null or empty", nameof(secretName));
-        }
-
-        if (string.IsNullOrWhiteSpace(secretValue))
-        {
-            throw new ArgumentException("Secret value cannot be null or empty", nameof(secretValue));
-        }
+        ValidateRequiredParameters(vaultName, secretName, secretValue, subscriptionId);
 
         var credential = await GetCredential(tenantId);
         var client = new SecretClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
@@ -167,12 +142,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(secretName))
-        {
-            throw new ArgumentException("Secret name cannot be null or empty", nameof(secretName));
-        }
+        ValidateRequiredParameters(vaultName, secretName, subscriptionId);
 
         var credential = await GetCredential(tenantId);
         var client = new SecretClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
@@ -222,12 +192,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(certificateName))
-        {
-            throw new ArgumentException("Certificate name cannot be null or empty", nameof(certificateName));
-        }
+        ValidateRequiredParameters(vaultName, certificateName, subscriptionId);
 
         var credential = await GetCredential(tenantId);
         var client = new CertificateClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
@@ -249,12 +214,7 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(vaultName, subscriptionId);
-
-        if (string.IsNullOrWhiteSpace(certificateName))
-        {
-            throw new ArgumentException("Certificate name cannot be null or empty", nameof(certificateName));
-        }
+        ValidateRequiredParameters(vaultName, certificateName, subscriptionId);
 
         var credential = await GetCredential(tenantId);
         var client = new CertificateClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
