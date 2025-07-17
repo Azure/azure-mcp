@@ -15,6 +15,8 @@
 
 ### Bugs Fixed
 
+- Fixed Azure CLI executable path resolution on Windows to prioritize .cmd over bash script. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
+
 ### Other Changes
 
 ## 0.4.1 (2025-07-17)
