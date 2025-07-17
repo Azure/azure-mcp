@@ -212,7 +212,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.NotNull(result);
 
         var requiredProperties = new[] { "name", "thumbprint", "cer" };
-        
+
         foreach (var propertyName in requiredProperties)
         {
             var property = result.AssertProperty(propertyName);
