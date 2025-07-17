@@ -33,7 +33,7 @@ public class WorkbooksSetup : IAreaSetup
         workbooks.AddCommand("create", new CreateWorkbooksCommand(
             loggerFactory.CreateLogger<CreateWorkbooksCommand>()));
 
-        workbooks.AddCommand("delete", new DeleteWorkbookCommand(
-            loggerFactory.CreateLogger<DeleteWorkbookCommand>()));
+        workbooks.AddCommand("delete", new DeleteWorkbooksCommand(
+            loggerFactory.CreateLogger<DeleteWorkbooksCommand>()));
     }
 }

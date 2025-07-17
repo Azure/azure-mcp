@@ -38,7 +38,6 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
         command.AddOption(_titleOption);
         command.AddOption(_serializedContentOption);
         command.AddOption(_sourceIdOption);
-        command.AddOption(_tenantOption);
     }
 
     protected override CreateWorkbookOptions BindOptions(ParseResult parseResult)
@@ -48,7 +47,6 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
         options.Title = parseResult.GetValueForOption(_titleOption);
         options.SerializedContent = parseResult.GetValueForOption(_serializedContentOption);
         options.SourceId = parseResult.GetValueForOption(_sourceIdOption);
-        options.Tenant = parseResult.GetValueForOption(_tenantOption);
         return options;
     }
 

@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
 
-public sealed class DeleteWorkbookCommand(ILogger<DeleteWorkbookCommand> logger) : GlobalCommand<DeleteWorkbookOptions>
+public sealed class DeleteWorkbooksCommand(ILogger<DeleteWorkbooksCommand> logger) : GlobalCommand<DeleteWorkbookOptions>
 {
   private const string CommandTitle = "Delete Workbook";
-  private readonly ILogger<DeleteWorkbookCommand> _logger = logger;
+  private readonly ILogger<DeleteWorkbooksCommand> _logger = logger;
 
   private static readonly Option<string> _workbookIdOption = WorkbooksOptionDefinitions.WorkbookId;
 
@@ -57,8 +57,8 @@ public sealed class DeleteWorkbookCommand(ILogger<DeleteWorkbookCommand> logger)
       if (deleted)
       {
         context.Response.Results = ResponseResult.Create(
-                    new DeleteWorkbookCommandResult(options.WorkbookId!, "Successfully deleted"),
-                    WorkbooksJsonContext.Default.DeleteWorkbookCommandResult);
+                    new DeleteWorkbooksCommandResult(options.WorkbookId!, "Successfully deleted"),
+                    WorkbooksJsonContext.Default.DeleteWorkbooksCommandResult);
       }
       else
       {
@@ -74,5 +74,5 @@ public sealed class DeleteWorkbookCommand(ILogger<DeleteWorkbookCommand> logger)
     return context.Response;
   }
 
-  public sealed record DeleteWorkbookCommandResult(string WorkbookId, string Message);
+  public sealed record DeleteWorkbooksCommandResult(string WorkbookId, string Message);
 }
