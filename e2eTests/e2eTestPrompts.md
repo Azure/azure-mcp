@@ -147,6 +147,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-tool-list | List all available tools in the Azure MCP server |
 | azmcp-tool-list | Show me the available tools in the Azure MCP server |
 
+## Azure for Startups 
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-guidance-get | What is Microsoft for Startups? |
+| azmcp-guidance-get | How can Microsoft for Startups help my business? |
+| azmcp-guidance-get | I'm a startup user. How can I get started? |
+
 ## Azure Load Testing
 | Tool Name | Test Prompt |
 |:----------|:----------|
