@@ -15,4 +15,8 @@ COPY ${PUBLISH_DIR} .
 # List the contents of the current directory
 RUN ls -la
 
+RUN if [ ! -f "azmcp.dll" ]; then \
+    echo "ERROR: azmcp 'azmcp.dll' does not exist" && exit 1; \
+    fi
+
 ENTRYPOINT ["dotnet", "azmcp.dll", "server", "start"]
