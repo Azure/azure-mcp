@@ -350,12 +350,111 @@ resource simpleTestWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
   }
 }
 
+// User workbook for testing different kind
+resource userWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
+  name: guid('${baseName}-user-workbook')
+  location: location
+  kind: 'user'
+  properties: {
+    displayName: '${baseName} User Workbook'
+    description: 'User workbook for testing different kind filter'
+    category: 'workbook'
+    sourceId: workspace.id
+    serializedData: string({
+      version: 'Notebook/1.0'
+      items: [
+        {
+          type: 1
+          content: {
+            json: '# User Workbook\n\nThis is a user workbook for testing kind filters.'
+          }
+        }
+      ]
+      styleSettings: {}
+      '$schema': 'https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json'
+    })
+  }
+  tags: {
+    purpose: 'testing'
+    environment: 'development'
+    project: 'azure-mcp'
+    category: 'filter-test'
+  }
+}
+
+// Sentinel workbook for testing different category
+resource sentinelWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
+  name: guid('${baseName}-sentinel-workbook')
+  location: location
+  kind: 'shared'
+  properties: {
+    displayName: '${baseName} Sentinel Workbook'
+    description: 'Sentinel workbook for testing different category filter'
+    category: 'sentinel'
+    sourceId: workspace.id
+    serializedData: string({
+      version: 'Notebook/1.0'
+      items: [
+        {
+          type: 1
+          content: {
+            json: '# Sentinel Workbook\n\nThis is a Sentinel workbook for testing category filters.'
+          }
+        }
+      ]
+      styleSettings: {}
+      '$schema': 'https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json'
+    })
+  }
+  tags: {
+    purpose: 'testing'
+    environment: 'development'
+    project: 'azure-mcp'
+    category: 'filter-test'
+  }
+}
+
+// TSG workbook for testing different category
+resource tsgWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
+  name: guid('${baseName}-tsg-workbook')
+  location: location
+  kind: 'shared'
+  properties: {
+    displayName: '${baseName} TSG Workbook'
+    description: 'TSG workbook for testing different category filter'
+    category: 'TSG'
+    sourceId: 'azure monitor'
+    serializedData: string({
+      version: 'Notebook/1.0'
+      items: [
+        {
+          type: 1
+          content: {
+            json: '# TSG Workbook\n\nThis is a TSG workbook for testing category and source ID filters.'
+          }
+        }
+      ]
+      styleSettings: {}
+      '$schema': 'https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json'
+    })
+  }
+  tags: {
+    purpose: 'testing'
+    environment: 'development'
+    project: 'azure-mcp'
+    category: 'filter-test'
+  }
+}
+
 // Output the workbook IDs for testing purposes
 output basicMonitoringWorkbookId string = basicMonitoringWorkbook.id
 output performanceWorkbookId string = performanceWorkbook.id
 output securityWorkbookId string = securityWorkbook.id
 output applicationInsightsWorkbookId string = applicationInsightsWorkbook.id
 output simpleTestWorkbookId string = simpleTestWorkbook.id
+output userWorkbookId string = userWorkbook.id
+output sentinelWorkbookId string = sentinelWorkbook.id
+output tsgWorkbookId string = tsgWorkbook.id
 
 output workbookNames array = [
   basicMonitoringWorkbook.properties.displayName
@@ -363,6 +462,9 @@ output workbookNames array = [
   securityWorkbook.properties.displayName
   applicationInsightsWorkbook.properties.displayName
   simpleTestWorkbook.properties.displayName
+  userWorkbook.properties.displayName
+  sentinelWorkbook.properties.displayName
+  tsgWorkbook.properties.displayName
 ]
 
 output workspaceId string = workspace.id

@@ -8,7 +8,7 @@ namespace AzureMcp.Areas.Workbooks.Services;
 
 public interface IWorkbooksService
 {
-    Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
+    Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, WorkbookFilters? filters = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
     Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string displayName, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
     Task<WorkbookInfo?> GetWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
     Task<WorkbookInfo?> UpdateWorkbook(string workbookId, string? displayName = null, string? serializedContent = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null);

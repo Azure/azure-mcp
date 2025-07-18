@@ -21,7 +21,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
     private readonly ILogger<WorkbooksService> _logger = logger;
     private readonly ITenantService _tenantService = tenantService;
 
-    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
+    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, WorkbookFilters? filters = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
         ValidateRequiredParameters(subscriptionId, resourceGroupName);
 
@@ -32,13 +32,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
             var tenants = await _tenantService.GetTenants();
             var currentTenant = tenants.FirstOrDefault() ?? throw new InvalidOperationException("No accessible tenants found");
 
-            var queryText = $@"
-                resources
-                | where type == 'microsoft.insights/workbooks'
-                | where resourceGroup =~ '{resourceGroupName}'
-                | where subscriptionId =~ '{subscriptionId}'
-                | project id, name, location, tags, properties
-            ";
+            var queryText = BuildWorkbooksQuery(subscriptionId, resourceGroupName, filters);
             var query = new ResourceQueryContent(queryText);
 
             var resources = await currentTenant.GetResourcesAsync(query);
@@ -65,7 +59,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                     Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
                     Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
                     Location: location,
-                    Kind: properties.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
+                    Kind: properties.TryGetProperty("kind", out var kindProperty) ? kindProperty.GetString() : null,
                     Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(tags) : null,
                     SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
                     Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
@@ -314,5 +308,44 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
     private static string? ConvertTagsToString(IDictionary<string, string>? tags)
     {
         return tags?.Count > 0 ? string.Join(", ", tags.Select(kvp => $"{kvp.Key}={kvp.Value}")) : null;
+    }
+
+    /// <summary>
+    /// Builds a KQL query for retrieving workbooks with optional filters.
+    /// </summary>
+    private static string BuildWorkbooksQuery(string subscriptionId, string resourceGroupName, WorkbookFilters? filters)
+    {
+        var queryText = $@"
+            resources
+            | where type == 'microsoft.insights/workbooks'
+            | where resourceGroup =~ '{resourceGroupName}'
+            | where subscriptionId =~ '{subscriptionId}'";
+
+        // Add optional filters if provided
+        if (filters?.HasFilters == true)
+        {
+            if (!string.IsNullOrEmpty(filters.Kind))
+            {
+                queryText += $@"
+            | where properties.kind =~ '{filters.Kind}'";
+            }
+
+            if (!string.IsNullOrEmpty(filters.Category))
+            {
+                queryText += $@"
+            | where properties.category =~ '{filters.Category}'";
+            }
+
+            if (!string.IsNullOrEmpty(filters.SourceId))
+            {
+                queryText += $@"
+            | where properties.sourceId =~ '{filters.SourceId}'";
+            }
+        }
+
+        queryText += @"
+            | project id, name, location, tags, properties";
+
+        return queryText;
     }
 }
