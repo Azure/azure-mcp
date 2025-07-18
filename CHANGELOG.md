@@ -7,6 +7,7 @@
 - Added support for Azure Virtual Desktop with new commands:
   - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
   - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
+  - `azmcp-virtualdesktop-sessionhost-usersession-list` - List all user sessions on a specific session host
 
 ### Breaking Changes
 

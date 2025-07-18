@@ -46,4 +46,33 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
         
         return sessionHosts;
     }
+
+    public async Task<IReadOnlyList<UserSession>> ListUserSessionsAsync(string subscription, string hostPoolName, string sessionHostName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        var userSessions = new List<UserSession>();
+        
+        await foreach (HostPoolResource resource in sub.GetHostPoolsAsync())
+        {
+            if (resource.Data.Name == hostPoolName)
+            {
+                var armClient = sub.GetCachedClient(client => client);
+                var hostPool = armClient.GetHostPoolResource(resource.Id);
+                await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
+                {
+                    if (sessionHost.Data.Name == sessionHostName || sessionHost.Data.Name == $"{hostPoolName}/{sessionHostName}")
+                    {
+                        await foreach (UserSessionResource userSession in sessionHost.GetUserSessions().GetAllAsync())
+                        {
+                            userSessions.Add(new UserSession(userSession));
+                        }
+                        break; // Found the session host, no need to continue
+                    }
+                }
+                break; // Found the host pool, no need to continue
+            }
+        }
+        
+        return userSessions;
+    }
 }

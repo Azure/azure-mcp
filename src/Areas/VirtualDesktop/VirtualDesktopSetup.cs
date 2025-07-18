@@ -36,5 +36,7 @@ public class VirtualDesktopSetup : IAreaSetup
             loggerFactory.CreateLogger<HostpoolListCommand>()));
         sessionhost.AddCommand("list", new SessionHostListCommand(
             loggerFactory.CreateLogger<SessionHostListCommand>()));
+        sessionhost.AddCommand("usersession-list", new SessionHostUserSessionListCommand(
+            loggerFactory.CreateLogger<SessionHostUserSessionListCommand>()));
     }
 }

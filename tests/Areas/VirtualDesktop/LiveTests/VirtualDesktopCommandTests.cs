@@ -146,4 +146,132 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
             Assert.True(true, "No hostpools available for testing session hosts");
         }
     }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_ListUserSessions_WithSubscriptionId()
+    {
+        // First get available hostpools
+        var hostpoolsResult = await CallToolAsync(
+            "azmcp-virtualdesktop-hostpool-list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId }
+            });
+
+        var hostpools = hostpoolsResult.AssertProperty("hostpools");
+        if (hostpools.GetArrayLength() > 0)
+        {
+            var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
+            
+            // Get session hosts for the first hostpool
+            var sessionHostsResult = await CallToolAsync(
+                "azmcp-virtualdesktop-hostpool-sessionhost-list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "hostpool-name", firstHostpool }
+                });
+
+            var sessionHosts = sessionHostsResult.AssertProperty("sessionHosts");
+            if (sessionHosts.GetArrayLength() > 0)
+            {
+                var firstSessionHost = sessionHosts[0].GetProperty("name").GetString()!;
+                
+                var result = await CallToolAsync(
+                    "azmcp-virtualdesktop-hostpool-sessionhost-usersession-list",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionId },
+                        { "hostpool-name", firstHostpool },
+                        { "sessionhost-name", firstSessionHost }
+                    });
+
+                var userSessions = result.AssertProperty("userSessions");
+                Assert.Equal(JsonValueKind.Array, userSessions.ValueKind);
+
+                // Check results format if any user sessions exist
+                foreach (var userSession in userSessions.EnumerateArray())
+                {
+                    Assert.True(userSession.ValueKind == JsonValueKind.Object);
+                    // Verify common properties exist
+                    Assert.True(userSession.TryGetProperty("name", out _));
+                    Assert.True(userSession.TryGetProperty("hostPoolName", out _));
+                    Assert.True(userSession.TryGetProperty("sessionHostName", out _));
+                }
+            }
+            else
+            {
+                Assert.True(true, "No session hosts available for testing user sessions");
+            }
+        }
+        else
+        {
+            Assert.True(true, "No hostpools available for testing user sessions");
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_ListUserSessions_WithSubscriptionName()
+    {
+        // First get available hostpools
+        var hostpoolsResult = await CallToolAsync(
+            "azmcp-virtualdesktop-hostpool-list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionName }
+            });
+
+        var hostpools = hostpoolsResult.AssertProperty("hostpools");
+        if (hostpools.GetArrayLength() > 0)
+        {
+            var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
+            
+            // Get session hosts for the first hostpool
+            var sessionHostsResult = await CallToolAsync(
+                "azmcp-virtualdesktop-hostpool-sessionhost-list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "hostpool-name", firstHostpool }
+                });
+
+            var sessionHosts = sessionHostsResult.AssertProperty("sessionHosts");
+            if (sessionHosts.GetArrayLength() > 0)
+            {
+                var firstSessionHost = sessionHosts[0].GetProperty("name").GetString()!;
+                
+                var result = await CallToolAsync(
+                    "azmcp-virtualdesktop-hostpool-sessionhost-usersession-list",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "hostpool-name", firstHostpool },
+                        { "sessionhost-name", firstSessionHost }
+                    });
+
+                var userSessions = result.AssertProperty("userSessions");
+                Assert.Equal(JsonValueKind.Array, userSessions.ValueKind);
+
+                // Check results format if any user sessions exist
+                foreach (var userSession in userSessions.EnumerateArray())
+                {
+                    Assert.True(userSession.ValueKind == JsonValueKind.Object);
+                    // Verify common properties exist
+                    Assert.True(userSession.TryGetProperty("name", out _));
+                    Assert.True(userSession.TryGetProperty("hostPoolName", out _));
+                    Assert.True(userSession.TryGetProperty("sessionHostName", out _));
+                }
+            }
+            else
+            {
+                Assert.True(true, "No session hosts available for testing user sessions");
+            }
+        }
+        else
+        {
+            Assert.True(true, "No hostpools available for testing user sessions");
+        }
+    }
 }
