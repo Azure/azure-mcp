@@ -727,6 +727,21 @@ azmcp subscription list [--tenant-id <tenant-id>]
 azmcp azureterraformbestpractices get
 ```
 
+### Azure Virtual Desktop Operations
+```bash
+# List Azure Virtual Desktop host pools in a subscription
+azmcp virtualdesktop hostpool list --subscription <subscription>
+
+# List session hosts in a host pool
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>]
+
+# List user sessions on a session host
+azmcp virtualdesktop hostpool sessionhost usersession-list --subscription subscription> \
+                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                --sessionhost-name <sessionhost-name>
+```
+
 ### Azure Quick Review CLI Extension Operations
 
 ```bash

@@ -174,6 +174,14 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
   }
 }
 
+module virtualdesktop 'services/virtualdesktop.bicep' = if (empty(areas) || contains(areas, 'VirtualDesktop')) {
+  name: '${deploymentName}-virtualdesktop'
+  params: {
+    baseName: baseName
+    location: location
+  }
+}
+
 module loadtesting 'services/loadtesting.bicep' = {
   name: '${deploymentName}-loadtesting'
   params: {
@@ -183,3 +191,4 @@ module loadtesting 'services/loadtesting.bicep' = {
     testApplicationOid: testApplicationOid
   }
 }
+
