@@ -367,10 +367,10 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             {
                 throw new ArgumentException("DirectoryPath must include file system name (e.g., 'myfilesystem/path/to/directory')");
             }
-            
+
             var fileSystemName = pathParts[0];
             var directoryPathWithinFileSystem = pathParts[1];
-            
+
             var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
             var directoryClient = fileSystemClient.GetDirectoryClient(directoryPathWithinFileSystem);
             var response = await directoryClient.CreateIfNotExistsAsync();
