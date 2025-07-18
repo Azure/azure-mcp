@@ -94,7 +94,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Create a new workbook for monitoring"
 - "Update my existing workbook configuration"
 
-### �🔧 Azure Resource Management
+### 🔧 Azure Resource Management
 - "List my resource groups"
 - "List my Azure CDN endpoints"
 - "Help me build an Azure application using Node.js"
@@ -205,8 +205,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - Update workbook content and properties
 - Delete workbooks by Azure resource ID
 - Filter workbooks by kind, category, or source
-
-### �📦 Azure Load Testing
+### 📦 Azure Load Testing
 - List, create load test resources
 - List, create load tests
 - Get, list, (create) run and rerun, update load test runs
