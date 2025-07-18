@@ -50,6 +50,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                 var resourceId = resource.GetProperty("id").GetString() ?? "";
                 var resourceName = resource.GetProperty("name").GetString() ?? "";
                 var location = resource.GetProperty("location").GetString() ?? "";
+                var kind = resource.GetProperty("kind").GetString() ?? "";
                 var tags = resource.TryGetProperty("tags", out var tagsElement) ? tagsElement : default;
                 var properties = resource.GetProperty("properties");
 
@@ -59,7 +60,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                     Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
                     Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
                     Location: location,
-                    Kind: properties.TryGetProperty("kind", out var kindProperty) ? kindProperty.GetString() : null,
+                    Kind: kind,
                     Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(tags) : null,
                     SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
                     Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
@@ -95,7 +96,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
             var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId) ?? throw new Exception($"Workbook with ID '{workbookId}' not found");
 
             // Get the workbook
-            var workbookResponse = await workbookResource.GetAsync();
+            var workbookResponse = await workbookResource.GetAsync(true);
             var workbook = workbookResponse.Value;
 
             if (workbook?.Data == null)
@@ -146,7 +147,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
             var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId) ?? throw new Exception($"Workbook with ID '{workbookId}' not found");
 
             // Get the current workbook data
-            var workbookResponse = await workbookResource.GetAsync();
+            var workbookResponse = await workbookResource.GetAsync(true);
             var workbook = workbookResponse.Value;
 
             if (workbook?.Data == null)
@@ -327,7 +328,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
             if (!string.IsNullOrEmpty(filters.Kind))
             {
                 queryText += $@"
-            | where properties.kind =~ '{filters.Kind}'";
+            | where kind =~ '{filters.Kind}'";
             }
 
             if (!string.IsNullOrEmpty(filters.Category))
@@ -344,7 +345,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
         }
 
         queryText += @"
-            | project id, name, location, tags, properties";
+            | project id, kind, name, location, tags, properties";
 
         return queryText;
     }

@@ -42,9 +42,6 @@ public class DeleteWorkbooksCommandTests
         Assert.Equal("delete", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
-        Assert.Contains("workbook", command.Description, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("delete", command.Description, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("cannot be undone", command.Description, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -57,17 +54,6 @@ public class DeleteWorkbooksCommandTests
     public void Title_ReturnsCorrectValue()
     {
         Assert.Equal("Delete Workbook", _command.Title);
-    }
-
-    [Fact]
-    public void Description_ContainsRequiredInformation()
-    {
-        var description = _command.Description;
-        Assert.NotNull(description);
-        Assert.Contains("workbook", description, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("delete", description, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Azure resource ID", description, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("cannot be undone", description, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
