@@ -131,3 +131,9 @@
 
 # ServiceLabel: %area-Authorization
 # ServiceOwners:                       @vurhanau
+
+# PRLabel: %area-VirtualDesktop
+/src/Areas/VirtualDesktop/             @vladimisms
+
+# ServiceLabel: %area-VirtualDesktop
+# ServiceOwners:                       @vladimisms

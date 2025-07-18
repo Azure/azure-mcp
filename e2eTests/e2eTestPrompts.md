@@ -212,3 +212,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+
+## Azure Virtual Desktop
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-virtualdesktop-hostpool-list | List all host pools in my subscription |
+| azmcp-virtualdesktop-hostpool-sessionhost-list | List all session hosts in host pool <hostpool_name> |
+| azmcp-virtualdesktop-hostpool-sessionhost-usersession-list | List all user sessions on session host <sessionhost_name> in host pool <hostpool_name> |

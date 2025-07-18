@@ -21,7 +21,7 @@ public class VirtualDesktopSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create AVD command group
-        var desktop = new CommandGroup("virtualdesktop", "Azure Virtual Desktop operations - Commands for managing and accessing Azure Virtual Desktop resources. Includes operations for hostpools, appgrops, and workspaces.");
+        var desktop = new CommandGroup("virtualdesktop", "Azure Virtual Desktop operations - Commands for managing and accessing Azure Virtual Desktop resources. Includes operations for hostpools, session hosts, and user sessions.");
         rootGroup.AddSubGroup(desktop);
 
         // Create AVD subgroups
