@@ -18,7 +18,7 @@
     "url": "git+https://github.com/Azure/azure-mcp.git"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=20.0.0"
   },
   "bin": {
     "azmcp": "./index.js"

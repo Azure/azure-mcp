@@ -20,6 +20,14 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     private volatile bool _isAuthenticated = false;
     private static readonly SemaphoreSlim s_authSemaphore = new(1, 1);
 
+    /// <summary>
+    /// Clears the cached Azure CLI path. Used for testing purposes.
+    /// </summary>
+    internal static void ClearCachedAzPath()
+    {
+        _cachedAzPath = null;
+    }
+
     public override string Name => "az";
 
     public override string Description =>
@@ -51,7 +59,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         return options;
     }
 
-    private static string? FindAzCliPath()
+    internal static string? FindAzCliPath()
     {
         string executableName = "az";
 
@@ -66,32 +74,35 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             return null;
 
         string[] paths = pathEnv.Split(Path.PathSeparator);
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
         foreach (string path in paths)
         {
             string fullPath = Path.Combine(path.Trim(), executableName);
+
+            // On Windows, prioritize .cmd and .bat extensions over the base executable
+            // This ensures we use az.cmd instead of the az bash script which isn't executable by .NET
+            if (isWindows)
+            {
+                string cmdPath = Path.ChangeExtension(fullPath, ".cmd");
+                if (File.Exists(cmdPath))
+                {
+                    _cachedAzPath = cmdPath;
+                    return _cachedAzPath;
+                }
+                string batPath = Path.ChangeExtension(fullPath, ".bat");
+                if (File.Exists(batPath))
+                {
+                    _cachedAzPath = batPath;
+                    return _cachedAzPath;
+                }
+            }
+
+            // Fall back to the base executable name
             if (File.Exists(fullPath))
             {
                 _cachedAzPath = fullPath;
                 return _cachedAzPath;
-            }
-            else
-            {
-                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                if (isWindows)
-                {
-                    string exePath = Path.ChangeExtension(fullPath, ".cmd");
-                    if (File.Exists(exePath))
-                    {
-                        _cachedAzPath = exePath;
-                        return _cachedAzPath;
-                    }
-                    string batPath = Path.ChangeExtension(fullPath, ".bat");
-                    if (File.Exists(batPath))
-                    {
-                        _cachedAzPath = batPath;
-                        return _cachedAzPath;
-                    }
-                }
             }
         }
         return null;

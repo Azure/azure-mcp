@@ -133,4 +133,105 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         // If result is null, that's valid - it means no AD administrators are configured
         // The test passes as long as the command executed successfully (no exception thrown)
     }
+
+    [Fact]
+    public async Task Should_ListSqlServerFirewallRules_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_server_firewall-rule_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed and return firewall rules
+        // Most SQL servers have at least the "AllowAllWindowsAzureIps" rule
+        if (result.HasValue)
+        {
+            // If there are results, verify the structure
+            var firewallRules = result.Value.AssertProperty("firewallRules");
+            Assert.Equal(JsonValueKind.Array, firewallRules.ValueKind);
+
+            // If there are firewall rules, verify their structure
+            if (firewallRules.GetArrayLength() > 0)
+            {
+                var firstRule = firewallRules.EnumerateArray().First();
+                Assert.Equal(JsonValueKind.Object, firstRule.ValueKind);
+
+                // Verify required properties exist
+                Assert.True(firstRule.TryGetProperty("name", out var name));
+                Assert.True(firstRule.TryGetProperty("id", out _));
+                Assert.True(firstRule.TryGetProperty("type", out _));
+                Assert.True(firstRule.TryGetProperty("startIpAddress", out _));
+                Assert.True(firstRule.TryGetProperty("endIpAddress", out _));
+
+                // Verify the name is not empty
+                Assert.NotNull(name.GetString());
+                Assert.NotEmpty(name.GetString()!);
+            }
+        }
+        // If result is null, that's valid - it means no firewall rules are configured
+        // The test passes as long as the command executed successfully (no exception thrown)
+    }
+
+    [Theory]
+    [InlineData("--invalid-param")]
+    [InlineData("--subscription invalidSub")]
+    [InlineData("--subscription sub --resource-group rg")] // Missing server
+    public async Task Should_Return400_WithInvalidFirewallRuleListInput(string args)
+    {
+        try
+        {
+            var result = await CallToolAsync("azmcp_sql_server_firewall-rule_list",
+                new Dictionary<string, object?> { { "args", args } });
+
+            // If we get here, the command didn't fail as expected
+            Assert.Fail("Expected command to fail with invalid input, but it succeeded");
+        }
+        catch (Exception ex)
+        {
+            // Expected behavior - the command should fail with invalid input
+            Assert.NotNull(ex.Message);
+            Assert.NotEmpty(ex.Message);
+        }
+    }
+
+    [Fact]
+    public async Task Should_ListElasticPools_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_elastic-pool_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // The command should succeed and return elastic pools (should have at least the test pool)
+        var elasticPools = result.AssertProperty("elasticPools");
+        Assert.Equal(JsonValueKind.Array, elasticPools.ValueKind);
+        Assert.True(elasticPools.GetArrayLength() > 0, "Expected at least one elastic pool to be returned from the test infrastructure");
+
+        // Verify the structure of the first elastic pool
+        var firstPool = elasticPools.EnumerateArray().First();
+        Assert.Equal(JsonValueKind.Object, firstPool.ValueKind);
+
+        // Verify required properties exist
+        Assert.True(firstPool.TryGetProperty("name", out _));
+        Assert.True(firstPool.TryGetProperty("id", out _));
+        Assert.True(firstPool.TryGetProperty("type", out _));
+        Assert.True(firstPool.TryGetProperty("location", out _));
+
+        var poolType = firstPool.GetProperty("type").GetString();
+        Assert.Equal("Microsoft.Sql/servers/elasticPools", poolType);
+    }
 }

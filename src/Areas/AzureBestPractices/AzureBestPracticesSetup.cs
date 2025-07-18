@@ -22,9 +22,27 @@ public class AzureBestPracticesSetup : IAreaSetup
             "Returns secure, production-grade Azure SDK best practices. Call this before generating Azure SDK code."
         );
         rootGroup.AddSubGroup(bestPractices);
-        bestPractices.AddCommand(
+
+        // Create Best Practices subgroups
+        var general = new CommandGroup("general", "General Azure SDK best practices - Commands for retrieving general best practices for secure and production-grade Azure SDK usage.");
+        bestPractices.AddSubGroup(general);
+
+        var azureFunctions = new CommandGroup("azurefunctions", "Azure Functions code generation and deployment best practices - Commands for retrieving best practices for secure and production-grade Azure Functions code generation and deployment.");
+        bestPractices.AddSubGroup(azureFunctions);
+
+        general.AddCommand(
             "get",
             new AzureBestPracticesGetCommand(loggerFactory.CreateLogger<AzureBestPracticesGetCommand>())
+        );
+
+        azureFunctions.AddCommand(
+            "get-code-generation",
+            new AzureFunctionsCodeGenBestPracticesGetCommand(loggerFactory.CreateLogger<AzureFunctionsCodeGenBestPracticesGetCommand>())
+        );
+
+        azureFunctions.AddCommand(
+            "get-deployment",
+            new AzureFunctionsDeploymentBestPracticesGetCommand(loggerFactory.CreateLogger<AzureFunctionsDeploymentBestPracticesGetCommand>())
         );
     }
 }

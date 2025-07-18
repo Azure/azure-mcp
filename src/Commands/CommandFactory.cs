@@ -167,7 +167,11 @@ public class CommandFactory
                     response.Results = ResponseResult.Create(new List<string>(), JsonSourceGenerationContext.Default.ListString);
                 }
 
-                Console.WriteLine(JsonSerializer.Serialize(response, _srcGenWithOptions.CommandResponse));
+                var isServiceStartCommand = implementation is AzureMcp.Areas.Server.Commands.ServiceStartCommand;
+                if (!isServiceStartCommand)
+                {
+                    Console.WriteLine(JsonSerializer.Serialize(response, _srcGenWithOptions.CommandResponse));
+                }
             }
             catch (Exception ex)
             {

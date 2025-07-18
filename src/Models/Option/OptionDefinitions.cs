@@ -208,4 +208,104 @@ public static partial class OptionDefinitions
             IsRequired = false
         };
     }
+
+    public static class Marketplace
+    {
+        public const string ProductIdName = "product-id";
+        public const string IncludeStopSoldPlansName = "include-stop-sold-plans";
+        public const string LanguageName = "language";
+        public const string MarketName = "market";
+        public const string LookupOfferInTenantLevelName = "lookup-offer-in-tenant-level";
+        public const string PlanIdName = "plan-id";
+        public const string SkuIdName = "sku-id";
+        public const string IncludeServiceInstructionTemplatesName = "include-service-instruction-templates";
+        public const string PartnerTenantIdName = "partner-tenant-id";
+        public const string PricingAudienceName = "pricing-audience";
+
+        public static readonly Option<string> ProductId = new(
+            $"--{ProductIdName}",
+            "The ID of the marketplace product to retrieve. This is the unique identifier for the product in the Azure Marketplace."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<bool> IncludeStopSoldPlans = new(
+            $"--{IncludeStopSoldPlansName}",
+            () => false,
+            "Include stop-sold or hidden plans in the response."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> Language = new(
+            $"--{LanguageName}",
+            () => "en",
+            "Product language code (e.g., 'en' for English, 'fr' for French)."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> Market = new(
+            $"--{MarketName}",
+            () => "US",
+            "Product market code (e.g., 'US' for United States, 'UK' for United Kingdom)."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<bool> LookupOfferInTenantLevel = new(
+            $"--{LookupOfferInTenantLevelName}",
+            () => false,
+            "Check against tenant private audience when retrieving the product."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> PlanId = new(
+            $"--{PlanIdName}",
+            "Filter results by a specific plan ID."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> SkuId = new(
+            $"--{SkuIdName}",
+            "Filter results by a specific SKU ID."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<bool> IncludeServiceInstructionTemplates = new(
+            $"--{IncludeServiceInstructionTemplatesName}",
+            () => false,
+            "Include service instruction templates in the response."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> PartnerTenantId = new(
+            $"--{PartnerTenantIdName}",
+            "Partner tenant ID for the request header."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> PricingAudience = new(
+            $"--{PricingAudienceName}",
+            "Pricing audience for the request header."
+        )
+        {
+            IsRequired = false
+        };
+
+    }
 }

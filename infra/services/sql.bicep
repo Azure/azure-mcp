@@ -30,6 +30,24 @@ resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
     publicNetworkAccess: 'Enabled'
   }
 
+  // Test elastic pool
+  resource testElasticPool 'elasticPools@2023-05-01-preview' = {
+    name: 'testpool'
+    location: location
+    sku: {
+      name: 'BasicPool'
+      tier: 'Basic'
+      capacity: 50
+    }
+    properties: {
+      perDatabaseSettings: {
+        minCapacity: 0
+        maxCapacity: 5
+      }
+      zoneRedundant: false
+    }
+  }
+
   // Test database
   resource testDatabase 'databases@2023-05-01-preview' = {
     name: 'testdb'
@@ -74,3 +92,4 @@ resource appSqlRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-0
 output sqlServerName string = sqlServer.name
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output testDatabaseName string = sqlServer::testDatabase.name
+output testElasticPoolName string = sqlServer::testElasticPool.name

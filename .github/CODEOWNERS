@@ -102,6 +102,13 @@
 # ServiceOwners:                       @danield137
 
 
+# PRLabel: %area-Marketplace
+/src/Areas/Marketplace/                @meirloichter @Azure/azure-mcp
+
+# ServiceLabel: %area-Marketplace
+# ServiceOwners:                       @meirloichter
+
+
 # PRLabel: %area-Monitor
 /src/Areas/Monitor/                    @smritiy @srnagar @jongio @Azure/azure-mcp
 
