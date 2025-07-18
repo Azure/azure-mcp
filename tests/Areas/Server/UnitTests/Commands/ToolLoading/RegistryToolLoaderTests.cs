@@ -7,6 +7,7 @@ using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
@@ -131,17 +132,26 @@ public class RegistryToolLoaderTests
     }
 
     [Fact]
-    public async Task CallToolHandler_WithUnknownTool_ThrowsKeyNotFoundException()
+    public async Task CallToolHandler_WithUnknownTool_ReturnsErrorResult()
     {
         // Arrange
         var (toolLoader, _) = CreateToolLoader();
         var request = CreateCallToolRequest("unknown-tool");
 
-        // Act & Assert
-        // The current implementation throws KeyNotFoundException for unknown tools
-        // This is actually a bug in the implementation, but we test the current behavior
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-            await toolLoader.CallToolHandler(request, CancellationToken.None));
+        // Act
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.NotEmpty(result.Content);
+
+        // Verify the error message
+        var textContent = result.Content.OfType<TextContentBlock>().FirstOrDefault();
+        Assert.NotNull(textContent);
+        Assert.Contains("unknown-tool", textContent.Text);
+        Assert.Contains("was not found", textContent.Text);
     }
 
     [Fact]
@@ -174,5 +184,33 @@ public class RegistryToolLoaderTests
         Assert.NotNull(readOnlyResult);
         Assert.NotNull(readOnlyResult.Tools);
         Assert.Empty(readOnlyResult.Tools);
+    }
+
+    [Fact]
+    public async Task CallToolHandler_WithoutListToolsFirst_ShouldSucceed()
+    {
+        // Arrange - use real RegistryDiscoveryStrategy
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var discoveryStrategy = new RegistryDiscoveryStrategy(options);
+        var logger = loggerFactory.CreateLogger<RegistryToolLoader>();
+
+        var toolLoader = new RegistryToolLoader(discoveryStrategy, options, logger);
+        var request = CreateCallToolRequest("microsoft_docs_search",
+            new Dictionary<string, JsonElement>
+            {
+                { "question", JsonDocument.Parse("\"how to implement mcp server in azure\"").RootElement }
+            });
+
+        // Act - Call CallToolHandler WITHOUT calling ListToolsHandler first
+        // This should work but currently fails due to the bug
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        // Assert - The tool call should succeed
+        Assert.NotNull(result);
+        Assert.False(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.NotEmpty(result.Content);
     }
 }

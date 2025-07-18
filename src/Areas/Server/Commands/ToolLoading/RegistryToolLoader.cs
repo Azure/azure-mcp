@@ -24,6 +24,8 @@ public sealed class RegistryToolLoader(
     private readonly IOptions<ServiceStartOptions> _options = options;
     private readonly ILogger<RegistryToolLoader> _logger = logger;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
+    private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
+    private bool _isInitialized = false;
 
     /// <summary>
     /// Gets or sets the client options used when creating MCP clients.
@@ -43,11 +45,14 @@ public sealed class RegistryToolLoader(
     /// <returns>A result containing the list of available tools.</returns>
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
+        await InitializeAsync(cancellationToken);
+
         var allToolsResponse = new ListToolsResult
         {
             Tools = new List<Tool>()
         };
+
+        var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
 
         foreach (var server in serverList)
         {
@@ -77,7 +82,6 @@ public sealed class RegistryToolLoader(
             foreach (var tool in filteredTools)
             {
                 allToolsResponse.Tools.Add(tool);
-                _toolClientMap[tool.Name] = mcpClient;
             }
         }
 
@@ -108,8 +112,10 @@ public sealed class RegistryToolLoader(
             };
         }
 
-        var mcpClient = _toolClientMap[request.Params.Name];
-        if (mcpClient == null)
+        // Initialize the tool client map if not already done
+        await InitializeAsync(cancellationToken);
+
+        if (!_toolClientMap.TryGetValue(request.Params.Name, out var mcpClient) || mcpClient == null)
         {
             var content = new TextContentBlock
             {
@@ -160,5 +166,67 @@ public sealed class RegistryToolLoader(
         }
 
         return parameters;
+    }
+
+    /// <summary>
+    /// Initializes the tool client map by discovering servers and populating tools.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task InitializeAsync(CancellationToken cancellationToken)
+    {
+        if (_isInitialized)
+        {
+            return;
+        }
+
+        await _initializationSemaphore.WaitAsync(cancellationToken);
+        try
+        {
+            // Double-check pattern: verify we're still not initialized after acquiring the lock
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
+
+            foreach (var server in serverList)
+            {
+                var serverMetadata = server.CreateMetadata();
+                IMcpClient? mcpClient;
+                try
+                {
+                    mcpClient = await _serverDiscoveryStrategy.GetOrCreateClientAsync(serverMetadata.Name, ClientOptions);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogWarning("Failed to create client for provider {ProviderName}: {Error}", serverMetadata.Name, ex.Message);
+                    continue;
+                }
+
+                if (mcpClient == null)
+                {
+                    _logger.LogWarning("Failed to get MCP client for provider {ProviderName}.", serverMetadata.Name);
+                    continue;
+                }
+
+                var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
+                var filteredTools = toolsResponse
+                    .Select(t => t.ProtocolTool)
+                    .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true));
+
+                foreach (var tool in filteredTools)
+                {
+                    _toolClientMap[tool.Name] = mcpClient;
+                }
+            }
+
+            _isInitialized = true;
+        }
+        finally
+        {
+            _initializationSemaphore.Release();
+        }
     }
 }
