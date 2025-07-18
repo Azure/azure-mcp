@@ -99,13 +99,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
 
             // Parse the workbook resource ID to get the workbook directly
             var workbookResourceId = new ResourceIdentifier(workbookId);
-            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId);
-
-            if (workbookResource == null)
-            {
-                _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                return null;
-            }
+            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId) ?? throw new Exception($"Workbook with ID '{workbookId}' not found");
 
             // Get the workbook
             var workbookResponse = await workbookResource.GetAsync();
@@ -156,13 +150,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
 
             // Parse the workbook resource ID to get the workbook directly
             var workbookResourceId = new ResourceIdentifier(workbookId);
-            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId);
-
-            if (workbookResource == null)
-            {
-                _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                return null;
-            }
+            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId) ?? throw new Exception($"Workbook with ID '{workbookId}' not found");
 
             // Get the current workbook data
             var workbookResponse = await workbookResource.GetAsync();
@@ -243,6 +231,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                 SourceId = new ResourceIdentifier(sourceId)
             };
 
+
             // Generate a unique name for the workbook
             var workbookName = Guid.NewGuid().ToString();
 
@@ -275,13 +264,9 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
         }
     }
 
-    public async Task<WorkbookInfo?> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
+    public async Task<bool> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        if (string.IsNullOrEmpty(workbookId))
-        {
-            _logger.LogWarning("Null or empty workbook ID provided");
-            return null;
-        }
+        ValidateRequiredParameters(workbookId);
 
         try
         {
@@ -289,44 +274,13 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
 
             // Parse the workbook resource ID to get the workbook directly
             var workbookResourceId = new ResourceIdentifier(workbookId);
-            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId);
-
-            if (workbookResource == null)
-            {
-                _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                return null;
-            }
-
-            // Get the workbook details before deletion for the return value
-            var workbookResponse = await workbookResource.GetAsync();
-            var workbook = workbookResponse.Value;
-
-            if (workbook?.Data == null)
-            {
-                _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
-                return null;
-            }
-
-            var workbookInfo = new WorkbookInfo(
-                WorkbookId: workbook.Id?.ToString() ?? workbookId,
-                DisplayName: workbook.Data.DisplayName,
-                Description: workbook.Data.Description,
-                Category: workbook.Data.Category,
-                Location: workbook.Data.Location.ToString(),
-                Kind: workbook.Data.Kind?.ToString(),
-                Tags: ConvertTagsToString(workbook.Data.Tags),
-                SerializedData: workbook.Data.SerializedData,
-                Version: workbook.Data.Version,
-                TimeModified: workbook.Data.ModifiedOn,
-                UserId: workbook.Data.UserId,
-                SourceId: workbook.Data.SourceId
-            );
+            var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId) ?? throw new Exception($"Workbook with ID '{workbookId}' not found");
 
             // Delete the workbook
             var response = await workbookResource.DeleteAsync(Azure.WaitUntil.Completed);
 
             _logger.LogInformation("Successfully deleted workbook with ID: {WorkbookId}", workbookId);
-            return workbookInfo;
+            return true;
         }
         catch (Exception ex)
         {

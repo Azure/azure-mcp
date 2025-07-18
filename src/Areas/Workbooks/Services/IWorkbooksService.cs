@@ -12,5 +12,5 @@ public interface IWorkbooksService
     Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string displayName, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
     Task<WorkbookInfo?> GetWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
     Task<WorkbookInfo?> UpdateWorkbook(string workbookId, string? displayName = null, string? serializedContent = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
-    Task<WorkbookInfo?> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
+    Task<bool> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null);
 }

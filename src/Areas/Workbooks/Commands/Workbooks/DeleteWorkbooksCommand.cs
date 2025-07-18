@@ -54,7 +54,7 @@ public sealed class DeleteWorkbooksCommand(ILogger<DeleteWorkbooksCommand> logge
       var workbooksService = context.GetService<IWorkbooksService>();
       var deleted = await workbooksService.DeleteWorkbook(options.WorkbookId!, options.RetryPolicy);
 
-      if (deleted != null)
+      if (deleted)
       {
         context.Response.Results = ResponseResult.Create(
                     new DeleteWorkbooksCommandResult(options.WorkbookId!, "Successfully deleted"),
