@@ -18,15 +18,7 @@ namespace AzureMcp.Tests.Areas.Workbooks.UnitTests;
 [Trait("Area", "Workbooks")]
 public class ListWorkbooksCommandTests
 {
-    private readonly IServ            "--source-id", "test-source"
-        ]);
-
-        // Act
-        var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
-
-    // Assert
-    Assert.NotNull(response);der _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IWorkbooksService _service;
     private readonly ILogger<ListWorkbooksCommand> _logger;
     private readonly ListWorkbooksCommand _command;
@@ -113,18 +105,18 @@ public class ListWorkbooksCommandTests
         };
 
         _service.ListWorkbooks(
-    Arg.Is("sub123"),
-                Arg.Is("rg123"),
-                Arg.Any<WorkbookFilters?>(),
-                Arg.Any<RetryPolicyOptions?>(),
-                Arg.Any<string?>())
-                .Returns(Task.FromException<List<WorkbookInfo>>(new Exception("Service error")));
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
         var args = _command.GetCommand().Parse([
-                "--subscription", "sub123",
+                    "--subscription", "sub123",
             "--resource-group", "rg123",
             "--tenant", "tenant123"
-            ]);
+                ]);
 
         var context = new CommandContext(_serviceProvider);
 
@@ -249,8 +241,9 @@ public class ListWorkbooksCommandTests
         _service.ListWorkbooks(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>(),
-            Arg.Any<string>())
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
             .Returns(expectedWorkbooks);
 
         var args = _command.GetCommand().Parse([
@@ -268,7 +261,8 @@ public class ListWorkbooksCommandTests
         await _service.Received(1).ListWorkbooks(
             Arg.Is("test-subscription"),
             Arg.Is("test-resource-group"),
-            Arg.Any<RetryPolicyOptions>(),
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
             Arg.Any<string?>());
     }
 
@@ -280,7 +274,8 @@ public class ListWorkbooksCommandTests
         _service.ListWorkbooks(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>(),
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
             Arg.Any<string?>())
             .Returns(expectedWorkbooks);
 
@@ -298,7 +293,8 @@ public class ListWorkbooksCommandTests
         await _service.Received(1).ListWorkbooks(
             Arg.Is("test-subscription"),
             Arg.Is("test-resource-group"),
-            Arg.Any<RetryPolicyOptions>(),
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
             Arg.Any<string?>());
     }
 
@@ -310,8 +306,9 @@ public class ListWorkbooksCommandTests
         _service.ListWorkbooks(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>(),
-            Arg.Any<string>())
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
             .Returns(expectedWorkbooks);
 
         var args = _command.GetCommand().Parse([
@@ -329,7 +326,8 @@ public class ListWorkbooksCommandTests
         await _service.Received(1).ListWorkbooks(
             Arg.Is("test-subscription"),
             Arg.Is("test-resource-group"),
-            Arg.Any<RetryPolicyOptions>(),
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
             Arg.Any<string?>());
     }
 
@@ -412,8 +410,9 @@ public class ListWorkbooksCommandTests
         _service.ListWorkbooks(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>(),
-            Arg.Any<string>())
+            Arg.Any<WorkbookFilters?>(),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
             .Returns(expectedWorkbooks);
 
         var args = _command.GetCommand().Parse([
@@ -587,7 +586,8 @@ public class ListWorkbooksCommandTests
         ]);
 
         // Act
-        var response = await _command.ExecuteAsync(CreateContext(args), args);
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
         // Assert
         Assert.NotNull(response);
@@ -642,7 +642,8 @@ public class ListWorkbooksCommandTests
         ]);
 
         // Act
-        var response = await _command.ExecuteAsync(CreateContext(args), args);
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
         // Assert
         Assert.NotNull(response);
