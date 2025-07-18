@@ -45,7 +45,7 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<string> DirectoryPath = new(
         $"--{DirectoryPathName}",
-        "The path of the directory to create in the Data Lake file system. Use forward slashes (/) for subdirectories (e.g., 'data/logs' or 'archives/2024')."
+        "The full path of the directory to create in the Data Lake, including the file system name (e.g., 'myfilesystem/data/logs' or 'myfilesystem/archives/2024'). Use forward slashes (/) to separate the file system name from the directory path and for subdirectories."
     )
     {
         IsRequired = true

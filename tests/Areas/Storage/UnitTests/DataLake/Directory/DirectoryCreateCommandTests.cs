@@ -27,8 +27,7 @@ public class DirectoryCreateCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownAccountName = "account123";
-    private readonly string _knownFileSystemName = "filesystem123";
-    private readonly string _knownDirectoryPath = "data/logs";
+    private readonly string _knownDirectoryPath = "filesystem123/data/logs";
     private readonly string _knownSubscriptionId = "sub123";
 
     public DirectoryCreateCommandTests()
@@ -58,14 +57,13 @@ public class DirectoryCreateCommandTests
 
         _storageService.CreateDirectory(
             Arg.Is(_knownAccountName), 
-            Arg.Is($"{_knownFileSystemName}/{_knownDirectoryPath}"), 
+            Arg.Is(_knownDirectoryPath), 
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
 
         var args = _parser.Parse([
             "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
             "--directory-path", _knownDirectoryPath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -95,14 +93,13 @@ public class DirectoryCreateCommandTests
 
         _storageService.CreateDirectory(
             Arg.Is(_knownAccountName), 
-            Arg.Is($"{_knownFileSystemName}/{_knownDirectoryPath}"),
+            Arg.Is(_knownDirectoryPath),
             Arg.Is(_knownSubscriptionId),
             null, 
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
             "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
             "--directory-path", _knownDirectoryPath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -117,17 +114,16 @@ public class DirectoryCreateCommandTests
     }
 
     [Theory]
-    [InlineData("--file-system-name filesystem123 --directory-path data/logs --subscription sub123", false)] // Missing account
-    [InlineData("--account-name account123 --directory-path data/logs --subscription sub123", false)] // Missing file-system
-    [InlineData("--account-name account123 --file-system-name filesystem123 --subscription sub123", false)] // Missing directory-path
-    [InlineData("--account-name account123 --file-system-name filesystem123 --directory-path data/logs", false)] // Missing subscription
-    [InlineData("--account-name account123 --file-system-name filesystem123 --directory-path data/logs --subscription sub123", true)] // Valid
+    [InlineData("--directory-path filesystem123/data/logs --subscription sub123", false)] // Missing account
+    [InlineData("--account-name account123 --subscription sub123", false)] // Missing directory-path
+    [InlineData("--account-name account123 --directory-path filesystem123/data/logs", false)] // Missing subscription
+    [InlineData("--account-name account123 --directory-path filesystem123/data/logs --subscription sub123", true)] // Valid
     public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
     {
         // Arrange
         if (shouldSucceed)
         {
-            var expectedDirectory = new DataLakePathInfo("data/logs", "directory", null, DateTimeOffset.Now, "\"etag1\"");
+            var expectedDirectory = new DataLakePathInfo("filesystem123/data/logs", "directory", null, DateTimeOffset.Now, "\"etag1\"");
             _storageService.CreateDirectory(
                 Arg.Any<string>(), 
                 Arg.Any<string>(), 

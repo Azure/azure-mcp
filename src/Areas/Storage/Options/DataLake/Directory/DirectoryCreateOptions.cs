@@ -8,9 +8,6 @@ namespace AzureMcp.Areas.Storage.Options.DataLake.Directory;
 
 public class DirectoryCreateOptions : BaseStorageOptions
 {
-    [JsonPropertyName(StorageOptionDefinitions.FileSystemName)]
-    public string? FileSystemName { get; set; }
-
     [JsonPropertyName(StorageOptionDefinitions.DirectoryPathName)]
     public string? DirectoryPath { get; set; }
 }

@@ -23,13 +23,13 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     public override string Description =>
         """
         Create a directory in a Data Lake file system. This command creates a new directory at the specified path
-        within the Data Lake file system. The directory path supports nested structures using forward slashes (/).
-        If the directory already exists, the operation will succeed and return the existing directory information.
-        Returns directory metadata including name, type, and creation timestamp as JSON.
+        within the Data Lake file system. The directory path must include the file system name as the first component
+        (e.g., 'myfilesystem/data/logs' or 'myfilesystem/archives/2024'). The path supports nested structures using 
+        forward slashes (/). If the directory already exists, the operation will succeed and return the existing 
+        directory information. Returns directory metadata including name, type, and creation timestamp as JSON.
           Required options:
         - account-name: The storage account name
-        - file-system-name: The Data Lake file system name  
-        - directory-path: The path where the directory should be created
+        - directory-path: The full path including file system name and directory path
         """;
 
     public override string Title => CommandTitle;
@@ -37,14 +37,12 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(StorageOptionDefinitions.FileSystem);
         command.AddOption(_directoryPathOption);
     }
 
     protected override DirectoryCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.FileSystemName = parseResult.GetValueForOption(StorageOptionDefinitions.FileSystem);
         options.DirectoryPath = parseResult.GetValueForOption(_directoryPathOption);
         return options;
     }
@@ -53,11 +51,6 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
-        
-        // Combine file system name and directory path
-        var fullDirectoryPath = string.IsNullOrEmpty(options.DirectoryPath) 
-            ? options.FileSystemName! 
-            : $"{options.FileSystemName}/{options.DirectoryPath}";
 
         try
         {
@@ -72,7 +65,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
             
             var directory = await storageService.CreateDirectory(
                 options.Account!,
-                fullDirectoryPath,
+                options.DirectoryPath!,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
@@ -83,8 +76,8 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating directory. Account: {Account}, FullDirectoryPath: {FullDirectoryPath}.", 
-                options.Account, fullDirectoryPath);
+            _logger.LogError(ex, "Error creating directory. Account: {Account}, DirectoryPath: {DirectoryPath}.", 
+                options.Account, options.DirectoryPath);
             HandleException(context, ex);
         }
 
