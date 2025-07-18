@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
+
 ### Other Changes
 
 ## 0.4.1 (2025-07-17)
