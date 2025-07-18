@@ -31,4 +31,10 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<DataLakePathInfo> CreateDirectory(
+        string accountName,
+        string directoryPath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

@@ -347,4 +347,59 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         return paths;
     }
+
+    public async Task<DataLakePathInfo> CreateDirectory(
+        string accountName,
+        string directoryPath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, directoryPath, subscriptionId);
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+
+        try
+        {
+            // Parse the directory path to extract file system name and directory path
+            var pathParts = directoryPath.Split('/', 2);
+            if (pathParts.Length < 2)
+            {
+                throw new ArgumentException("DirectoryPath must include file system name (e.g., 'myfilesystem/path/to/directory')");
+            }
+
+            var fileSystemName = pathParts[0];
+            var directoryPathWithinFileSystem = pathParts[1];
+
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+            var directoryClient = fileSystemClient.GetDirectoryClient(directoryPathWithinFileSystem);
+            var response = await directoryClient.CreateIfNotExistsAsync();
+
+            if (response?.Value == null)
+            {
+                // Directory already exists, get its properties
+                var properties = await directoryClient.GetPropertiesAsync();
+                return new DataLakePathInfo(
+                    directoryPath,
+                    "directory",
+                    null, // Directories don't have content length
+                    properties.Value.LastModified,
+                    properties.Value.ETag.ToString());
+            }
+            else
+            {
+                // Directory was created, return new directory info
+                return new DataLakePathInfo(
+                    directoryPath,
+                    "directory",
+                    null, // Directories don't have content length
+                    response.Value.LastModified,
+                    response.Value.ETag.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating directory: {ex.Message}", ex);
+        }
+    }
 }
