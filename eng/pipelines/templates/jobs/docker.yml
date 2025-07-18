@@ -28,10 +28,10 @@ jobs:
       Contents: 'Dockerfile'
       TargetFolder: $(Build.ArtifactStagingDirectory)
 
-  - task: PublishBuildArtifacts@1
+  - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: docker_drops
+      path: $(Build.ArtifactStagingDirectory)
+      artifact: docker_drops
 
 - deployment: Publish
   displayName: "Publish to ACR"
