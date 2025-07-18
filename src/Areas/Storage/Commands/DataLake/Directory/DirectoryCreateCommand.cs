@@ -62,7 +62,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
             AddSubscriptionInformation(context.Activity, options);
 
             var storageService = context.GetService<IStorageService>();
-            
+
             var directory = await storageService.CreateDirectory(
                 options.Account!,
                 options.DirectoryPath!,
@@ -76,7 +76,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating directory. Account: {Account}, DirectoryPath: {DirectoryPath}.", 
+            _logger.LogError(ex, "Error creating directory. Account: {Account}, DirectoryPath: {DirectoryPath}.",
                 options.Account, options.DirectoryPath);
             HandleException(context, ex);
         }

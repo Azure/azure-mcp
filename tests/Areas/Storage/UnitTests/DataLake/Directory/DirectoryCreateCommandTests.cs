@@ -48,18 +48,18 @@ public class DirectoryCreateCommandTests
     {
         // Arrange
         var expectedDirectory = new DataLakePathInfo(
-            _knownDirectoryPath, 
-            "directory", 
-            null, 
-            DateTimeOffset.Now, 
+            _knownDirectoryPath,
+            "directory",
+            null,
+            DateTimeOffset.Now,
             "\"etag1\""
         );
 
         _storageService.CreateDirectory(
-            Arg.Is(_knownAccountName), 
-            Arg.Is(_knownDirectoryPath), 
+            Arg.Is(_knownAccountName),
+            Arg.Is(_knownDirectoryPath),
             Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
 
         var args = _parser.Parse([
@@ -92,10 +92,10 @@ public class DirectoryCreateCommandTests
         var expectedError = "Test error";
 
         _storageService.CreateDirectory(
-            Arg.Is(_knownAccountName), 
+            Arg.Is(_knownAccountName),
             Arg.Is(_knownDirectoryPath),
             Arg.Is(_knownSubscriptionId),
-            null, 
+            null,
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
@@ -125,10 +125,10 @@ public class DirectoryCreateCommandTests
         {
             var expectedDirectory = new DataLakePathInfo("filesystem123/data/logs", "directory", null, DateTimeOffset.Now, "\"etag1\"");
             _storageService.CreateDirectory(
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
                 Arg.Any<string>(),
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
         }
 
