@@ -5,8 +5,7 @@ namespace AzureMcp.Areas.Workbooks.Models;
 
 public sealed record WorkbookInfo(
     string WorkbookId,
-    // Display name can be null if not set.
-    string? WorkbookDisplayName,
+    string? DisplayName,
     string? Description,
     string? Category,
     string? Location,

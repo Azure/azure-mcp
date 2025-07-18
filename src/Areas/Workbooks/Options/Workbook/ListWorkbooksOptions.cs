@@ -5,6 +5,4 @@ using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Workbooks.Options.Workbook;
 
-public class ListWorkbooksOptions : SubscriptionOptions
-{
-}
+public class ListWorkbooksOptions : SubscriptionOptions;

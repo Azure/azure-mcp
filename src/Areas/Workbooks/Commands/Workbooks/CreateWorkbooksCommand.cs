@@ -16,7 +16,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     private const string CommandTitle = "Create Workbook";
     private readonly ILogger<CreateWorkbooksCommand> _logger = logger;
 
-    private readonly Option<string> _titleOption = WorkbooksOptionDefinitions.TitleRequired;
+    private readonly Option<string> _displayNameOption = WorkbooksOptionDefinitions.DisplayNameRequired;
     private readonly Option<string> _serializedContentOption = WorkbooksOptionDefinitions.SerializedContentRequired;
     private readonly Option<string> _sourceIdOption = WorkbooksOptionDefinitions.SourceId;
 
@@ -25,7 +25,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     public override string Description =>
         """
         Create a new workbook in the specified resource group and subscription. 
-        You can set the title and serialized data JSON content for the workbook.
+        You can set the display name and serialized data JSON content for the workbook.
         Returns the created workbook information upon successful completion.
         """;
 
@@ -35,7 +35,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     {
         base.RegisterOptions(command);
         command.AddOption(_resourceGroupOption);
-        command.AddOption(_titleOption);
+        command.AddOption(_displayNameOption);
         command.AddOption(_serializedContentOption);
         command.AddOption(_sourceIdOption);
     }
@@ -44,7 +44,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     {
         var options = base.BindOptions(parseResult);
         options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        options.Title = parseResult.GetValueForOption(_titleOption);
+        options.DisplayName = parseResult.GetValueForOption(_displayNameOption);
         options.SerializedContent = parseResult.GetValueForOption(_serializedContentOption);
         options.SourceId = parseResult.GetValueForOption(_sourceIdOption);
         return options;
@@ -66,7 +66,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
             var createdWorkbook = await workbooksService.CreateWorkbook(
                 options.Subscription!,
                 options.ResourceGroup!,
-                options.Title!,
+                options.DisplayName!,
                 options.SerializedContent!,
                 /**
                  * The source ID is optional, defaulting to "azure monitor" if not provided.
@@ -82,7 +82,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating workbook '{Title}' in resource group '{ResourceGroup}'", options.Title, options.ResourceGroup);
+            _logger.LogError(ex, "Error creating workbook '{DisplayName}' in resource group '{ResourceGroup}'", options.DisplayName, options.ResourceGroup);
             HandleException(context, ex);
         }
 

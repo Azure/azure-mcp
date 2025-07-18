@@ -10,15 +10,4 @@ namespace AzureMcp.Areas.Workbooks.Commands;
 public abstract class BaseWorkbooksCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : GlobalCommand<T>
-    where T : BaseWorkbooksOptions, new()
-{
-    protected override void RegisterOptions(Command command)
-    {
-        base.RegisterOptions(command);
-    }
-
-    protected override T BindOptions(ParseResult parseResult)
-    {
-        return base.BindOptions(parseResult);
-    }
-}
+    where T : BaseWorkbooksOptions, new();

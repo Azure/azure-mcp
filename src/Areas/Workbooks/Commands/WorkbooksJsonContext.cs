@@ -15,6 +15,4 @@ namespace AzureMcp.Areas.Workbooks.Commands;
 [JsonSerializable(typeof(UpdateWorkbooksCommand.UpdateWorkbooksCommandResult))]
 [JsonSerializable(typeof(CreateWorkbooksCommand.CreateWorkbooksCommandResult))]
 [JsonSerializable(typeof(DeleteWorkbooksCommand.DeleteWorkbooksCommandResult))]
-internal partial class WorkbooksJsonContext : JsonSerializerContext
-{
-}
+internal partial class WorkbooksJsonContext : JsonSerializerContext;

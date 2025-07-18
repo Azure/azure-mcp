@@ -6,8 +6,4 @@ using AzureMcp.Options;
 
 namespace AzureMcp.Areas.Workbooks.Options;
 
-public class BaseWorkbooksOptions : GlobalOptions
-{
-    [JsonPropertyName(WorkbooksOptionDefinitions.MessageText)]
-    public string? Message { get; set; }
-}
+public class BaseWorkbooksOptions : GlobalOptions;

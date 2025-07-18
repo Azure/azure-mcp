@@ -5,7 +5,6 @@ using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Options;
 using Microsoft.Extensions.Logging;
 using Azure.Core;
-using System.Text.Json;
 
 namespace AzureMcp.Areas.Workbooks.Services;
 
@@ -13,39 +12,36 @@ using AzureMcp.Services.Azure;
 using Azure.ResourceManager.ApplicationInsights;
 using Azure.ResourceManager.ApplicationInsights.Models;
 using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
 
 using Azure.ResourceManager.ResourceGraph;
 using Azure.ResourceManager.ResourceGraph.Models;
 
-public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger<WorkbooksService> logger) : BaseAzureService, IWorkbooksService
+public class WorkbooksService(ISubscriptionService _subscriptionService, ITenantService tenantService, ILogger<WorkbooksService> logger) : BaseAzureService(tenantService), IWorkbooksService
 {
     private readonly ILogger<WorkbooksService> _logger = logger;
+    private readonly ITenantService _tenantService = tenantService;
 
-    /// <summary>
-    /// Converts a dictionary of tags to a comma-separated string representation.
-    /// This helps keep the output flat for the model.
-    /// </summary>
-    private static string? ConvertTagsToString(IDictionary<string, string>? tags)
-    {
-        return tags?.Count > 0 ? string.Join(", ", tags.Select(kvp => $"{kvp.Key}={kvp.Value}")) : null;
-    }
-
-    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
         ValidateRequiredParameters(subscriptionId, resourceGroupName);
 
         try
         {
-            var armClient = await CreateArmClientAsync(null, retryPolicy);
-            var currentTenant = armClient.GetTenants().First();
+            var armClient = await CreateArmClientAsync(tenant, retryPolicy);
+
+            var tenants = await _tenantService.GetTenants();
+            var currentTenant = tenants.FirstOrDefault() ?? throw new InvalidOperationException("No accessible tenants found");
+
             var queryText = $@"
                 resources
                 | where type == 'microsoft.insights/workbooks'
-                | where resourceGroup == '{resourceGroupName}'
-                | where subscriptionId == '{subscriptionId}'
+                | where resourceGroup =~ '{resourceGroupName}'
+                | where subscriptionId =~ '{subscriptionId}'
                 | project id, name, location, tags, properties
             ";
             var query = new ResourceQueryContent(queryText);
+
             var resources = await currentTenant.GetResourcesAsync(query);
 
             var workbooksInRg = new List<WorkbookInfo>();
@@ -66,12 +62,12 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
 
                 workbooksInRg.Add(new WorkbookInfo(
                     WorkbookId: resourceId,
-                    WorkbookDisplayName: properties.TryGetProperty("displayName", out var displayName) ? displayName.GetString() ?? "Unknown" : "Unknown",
+                    DisplayName: properties.TryGetProperty("displayName", out var displayName) ? displayName.GetString() : null,
                     Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
                     Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
                     Location: location,
                     Kind: properties.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
-                    Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
+                    Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(tags) : null,
                     SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
                     Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
                     TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
@@ -89,39 +85,41 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         }
     }
 
-    public async Task<WorkbookInfo?> GetWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null)
+    public async Task<WorkbookInfo?> GetWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(workbookId);
+        if (string.IsNullOrEmpty(workbookId))
+        {
+            _logger.LogWarning("Null or empty workbook ID provided");
+            return null;
+        }
 
         try
         {
-            var workbookResourceId = new ResourceIdentifier(workbookId);
-            var armClient = await CreateArmClientAsync(null, retryPolicy);
+            var armClient = await CreateArmClientAsync(tenant, retryPolicy);
 
-            // Get the workbook resource
+            // Parse the workbook resource ID to get the workbook directly
+            var workbookResourceId = new ResourceIdentifier(workbookId);
             var workbookResource = armClient.GetApplicationInsightsWorkbookResource(workbookResourceId);
 
             if (workbookResource == null)
             {
                 _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                throw new Exception($"Workbook with ID '{workbookId}' not found");
+                return null;
             }
 
-            // Get the workbook data
-            var workbookResponse = await workbookResource.GetAsync(true);
+            // Get the workbook
+            var workbookResponse = await workbookResource.GetAsync();
             var workbook = workbookResponse.Value;
 
             if (workbook?.Data == null)
             {
                 _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
-                throw new Exception($"Workbook data is null for ID '{workbookId}'");
+                return null;
             }
 
-            _logger.LogInformation("Retrieved workbook details for ID: {WorkbookId}", workbookId);
-
-            return new WorkbookInfo(
+            var workbookInfo = new WorkbookInfo(
                 WorkbookId: workbook.Id?.ToString() ?? workbookId,
-                WorkbookDisplayName: workbook.Data.DisplayName,
+                DisplayName: workbook.Data.DisplayName,
                 Description: workbook.Data.Description,
                 Category: workbook.Data.Category,
                 Location: workbook.Data.Location.ToString(),
@@ -133,6 +131,9 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
                 UserId: workbook.Data.UserId,
                 SourceId: workbook.Data.SourceId
             );
+
+            _logger.LogInformation("Successfully retrieved workbook with ID: {WorkbookId}", workbookId);
+            return workbookInfo;
         }
         catch (Exception ex)
         {
@@ -141,14 +142,17 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         }
     }
 
-    public async Task<WorkbookInfo?> UpdateWorkbook(string workbookId, string? title = null, string? serializedContent = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<WorkbookInfo?> UpdateWorkbook(string workbookId, string? displayName = null, string? serializedContent = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(workbookId);
+        if (string.IsNullOrEmpty(workbookId))
+        {
+            _logger.LogWarning("Null or empty workbook ID provided");
+            return null;
+        }
 
         try
         {
-            // Get ARM client
-            var armClient = await CreateArmClientAsync(null, retryPolicy);
+            var armClient = await CreateArmClientAsync(tenant, retryPolicy);
 
             // Parse the workbook resource ID to get the workbook directly
             var workbookResourceId = new ResourceIdentifier(workbookId);
@@ -157,7 +161,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbookResource == null)
             {
                 _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                throw new Exception($"Workbook with ID '{workbookId}' not found");
+                return null;
             }
 
             // Get the current workbook data
@@ -167,15 +171,15 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbook?.Data == null)
             {
                 _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
-                throw new Exception($"Workbook data is null for ID '{workbookId}'");
+                return null;
             }
 
             // Create a patch document with the updated properties
             var patchData = new ApplicationInsightsWorkbookPatch();
 
-            if (!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(displayName))
             {
-                patchData.DisplayName = title;
+                patchData.DisplayName = displayName;
             }
 
             if (!string.IsNullOrEmpty(serializedContent))
@@ -194,7 +198,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
 
             return new WorkbookInfo(
                 WorkbookId: updatedWorkbook.Id?.ToString() ?? workbookId,
-                WorkbookDisplayName: updatedWorkbook.Data.DisplayName ?? "Unknown",
+                DisplayName: updatedWorkbook.Data.DisplayName,
                 Description: updatedWorkbook.Data.Description,
                 Category: updatedWorkbook.Data.Category,
                 Location: updatedWorkbook.Data.Location.ToString(),
@@ -214,15 +218,14 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         }
     }
 
-    public async Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string title, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null)
+    public async Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string displayName, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, title, serializedData, sourceId);
+        ValidateRequiredParameters(subscriptionId, resourceGroupName, displayName, serializedData, sourceId);
 
         try
         {
             // Get the subscription resource
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, null, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
-
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
             // Get the resource group
             var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
             if (resourceGroupResource?.Value == null)
@@ -233,7 +236,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             // Create the workbook data
             var workbookData = new ApplicationInsightsWorkbookData(resourceGroupResource.Value.Data.Location)
             {
-                DisplayName = title,
+                DisplayName = displayName,
                 SerializedData = serializedData,
                 Category = "workbook",
                 Kind = "shared",
@@ -252,7 +255,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
 
             return new WorkbookInfo(
                 WorkbookId: createdWorkbook.Id?.ToString() ?? "",
-                WorkbookDisplayName: createdWorkbook.Data.DisplayName ?? title,
+                DisplayName: createdWorkbook.Data.DisplayName ?? displayName,
                 Description: createdWorkbook.Data.Description,
                 Category: createdWorkbook.Data.Category,
                 Location: createdWorkbook.Data.Location.ToString(),
@@ -267,19 +270,22 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating workbook '{Title}' in resource group '{ResourceGroup}'", title, resourceGroupName);
+            _logger.LogError(ex, "Error creating workbook '{DisplayName}' in resource group '{ResourceGroup}'", displayName, resourceGroupName);
             throw new Exception($"Failed to create workbook: {ex.Message}", ex);
         }
     }
 
-    public async Task<bool> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null)
+    public async Task<WorkbookInfo?> DeleteWorkbook(string workbookId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(workbookId);
+        if (string.IsNullOrEmpty(workbookId))
+        {
+            _logger.LogWarning("Null or empty workbook ID provided");
+            return null;
+        }
 
         try
         {
-            // Get ARM client
-            var armClient = await CreateArmClientAsync(null, retryPolicy);
+            var armClient = await CreateArmClientAsync(tenant, retryPolicy);
 
             // Parse the workbook resource ID to get the workbook directly
             var workbookResourceId = new ResourceIdentifier(workbookId);
@@ -288,14 +294,39 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
             if (workbookResource == null)
             {
                 _logger.LogWarning("Workbook with ID {WorkbookId} not found", workbookId);
-                throw new Exception($"Workbook with ID '{workbookId}' not found");
+                return null;
             }
+
+            // Get the workbook details before deletion for the return value
+            var workbookResponse = await workbookResource.GetAsync();
+            var workbook = workbookResponse.Value;
+
+            if (workbook?.Data == null)
+            {
+                _logger.LogWarning("Workbook data is null for ID {WorkbookId}", workbookId);
+                return null;
+            }
+
+            var workbookInfo = new WorkbookInfo(
+                WorkbookId: workbook.Id?.ToString() ?? workbookId,
+                DisplayName: workbook.Data.DisplayName,
+                Description: workbook.Data.Description,
+                Category: workbook.Data.Category,
+                Location: workbook.Data.Location.ToString(),
+                Kind: workbook.Data.Kind?.ToString(),
+                Tags: ConvertTagsToString(workbook.Data.Tags),
+                SerializedData: workbook.Data.SerializedData,
+                Version: workbook.Data.Version,
+                TimeModified: workbook.Data.ModifiedOn,
+                UserId: workbook.Data.UserId,
+                SourceId: workbook.Data.SourceId
+            );
 
             // Delete the workbook
             var response = await workbookResource.DeleteAsync(Azure.WaitUntil.Completed);
 
             _logger.LogInformation("Successfully deleted workbook with ID: {WorkbookId}", workbookId);
-            return true;
+            return workbookInfo;
         }
         catch (Exception ex)
         {
@@ -304,75 +335,31 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ILogger
         }
     }
 
-    private static WorkbookInfo ParseWorkbookFromArmResponse(string jsonResponse)
-    {
-        try
-        {
-            using var document = JsonDocument.Parse(jsonResponse);
-            var root = document.RootElement;
-
-            var id = root.GetProperty("id").GetString() ?? "";
-            var properties = root.GetProperty("properties");
-
-            return new WorkbookInfo(
-                WorkbookId: id,
-                WorkbookDisplayName: properties.GetProperty("displayName").GetString() ?? "Unknown",
-                Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
-                Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
-                Location: root.GetProperty("location").GetString() ?? "",
-                Kind: root.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
-                Tags: root.TryGetProperty("tags", out var tags) ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
-                SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
-                Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
-                TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
-                UserId: properties.TryGetProperty("userId", out var user) ? user.GetString() : null,
-                SourceId: properties.TryGetProperty("sourceId", out var source) ? source.GetString() : null
-            );
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to parse workbook response: {ex.Message}", ex);
-        }
-    }
-
-    private static Dictionary<string, string>? ParseTagsDictionary(JsonElement tagsElement)
+    /// <summary>
+    /// Converts a JsonElement containing tags to a comma-separated string representation.
+    /// This helps keep the output flat for the model.
+    /// </summary>
+    private static string? ConvertTagsToString(JsonElement tagsElement)
     {
         if (tagsElement.ValueKind != JsonValueKind.Object)
             return null;
 
-        var tagsDictionary = new Dictionary<string, string>();
+        var tags = new List<string>();
         foreach (var tag in tagsElement.EnumerateObject())
         {
-            tagsDictionary[tag.Name] = tag.Value.GetString() ?? "";
+            var value = tag.Value.GetString() ?? "";
+            tags.Add($"{tag.Name}={value}");
         }
-        return tagsDictionary.Count > 0 ? tagsDictionary : null;
+
+        return tags.Count > 0 ? string.Join(", ", tags) : null;
     }
 
-    private static WorkbookInfo ParseWorkbookFromArgResult(JsonElement workbookElement)
+    /// <summary>
+    /// Converts a dictionary of tags to a comma-separated string representation.
+    /// This helps keep the output flat for the model.
+    /// </summary>
+    private static string? ConvertTagsToString(IDictionary<string, string>? tags)
     {
-        try
-        {
-            var id = workbookElement.GetProperty("id").GetString() ?? "";
-            var properties = workbookElement.GetProperty("properties");
-
-            return new WorkbookInfo(
-                WorkbookId: id,
-                WorkbookDisplayName: properties.TryGetProperty("displayName", out var displayName) ? displayName.GetString() ?? "Unknown" : "Unknown",
-                Description: properties.TryGetProperty("description", out var desc) ? desc.GetString() : null,
-                Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
-                Location: workbookElement.GetProperty("location").GetString() ?? "",
-                Kind: workbookElement.TryGetProperty("kind", out var kind) ? kind.GetString() : null,
-                Tags: workbookElement.TryGetProperty("tags", out var tags) ? ConvertTagsToString(ParseTagsDictionary(tags)) : null,
-                SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
-                Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
-                TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
-                UserId: properties.TryGetProperty("userId", out var user) ? user.GetString() : null,
-                SourceId: properties.TryGetProperty("sourceId", out var source) ? source.GetString() : null
-            );
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to parse workbook from ARG result: {ex.Message}", ex);
-        }
+        return tags?.Count > 0 ? string.Join(", ", tags.Select(kvp => $"{kvp.Key}={kvp.Value}")) : null;
     }
 }

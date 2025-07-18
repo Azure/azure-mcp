@@ -14,14 +14,14 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
     private const string CommandTitle = "Update Workbook";
     private readonly ILogger<UpdateWorkbooksCommand> _logger = logger;
     private readonly Option<string> _workbookIdOption = WorkbooksOptionDefinitions.WorkbookId;
-    private readonly Option<string> _titleOption = WorkbooksOptionDefinitions.Title;
+    private readonly Option<string> _displayNameOption = WorkbooksOptionDefinitions.DisplayName;
     private readonly Option<string> _serializedContentOption = WorkbooksOptionDefinitions.SerializedContent;
 
     public override string Name => "update";
 
     public override string Description =>
         """
-        Updates properties of a workbook, including its title (display name) and serialized content.
+        Updates properties of a workbook, including its display name and serialized content.
         At least one property must be provided for the update operation.
         Returns the updated workbook object upon successful completion.
         """;
@@ -32,7 +32,7 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
     {
         base.RegisterOptions(command);
         command.AddOption(_workbookIdOption);
-        command.AddOption(_titleOption);
+        command.AddOption(_displayNameOption);
         command.AddOption(_serializedContentOption);
     }
 
@@ -40,7 +40,7 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
     {
         var options = base.BindOptions(parseResult);
         options.WorkbookId = parseResult.GetValueForOption(_workbookIdOption);
-        options.Title = parseResult.GetValueForOption(_titleOption);
+        options.DisplayName = parseResult.GetValueForOption(_displayNameOption);
         options.SerializedContent = parseResult.GetValueForOption(_serializedContentOption);
         return options;
     }
@@ -60,7 +60,7 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
             var workbooksService = context.GetService<IWorkbooksService>();
             var updatedWorkbook = await workbooksService.UpdateWorkbook(
                 options.WorkbookId!,
-                options.Title,
+                options.DisplayName,
                 options.SerializedContent,
                 options.RetryPolicy) ?? throw new InvalidOperationException("Failed to update workbook");
 

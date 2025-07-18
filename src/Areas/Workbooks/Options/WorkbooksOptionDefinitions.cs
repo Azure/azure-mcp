@@ -5,9 +5,8 @@ namespace AzureMcp.Areas.Workbooks.Options;
 
 public static class WorkbooksOptionDefinitions
 {
-    public const string MessageText = "message";
     public const string WorkbookIdText = "workbook-id";
-    public const string TitleText = "title";
+    public const string DisplayNameText = "display-name";
     public const string SerializedContentText = "serialized-content";
     public const string SourceIdText = "source-id";
 
@@ -19,9 +18,9 @@ public static class WorkbooksOptionDefinitions
         IsRequired = true
     };
 
-    public static readonly Option<string> Title = new(
-        $"--{TitleText}",
-        "The display name/title of the workbook."
+    public static readonly Option<string> DisplayName = new(
+        $"--{DisplayNameText}",
+        "The display name of the workbook."
     )
     {
         IsRequired = false
@@ -44,9 +43,9 @@ public static class WorkbooksOptionDefinitions
     };
 
     // Command-specific variations for required fields
-    public static readonly Option<string> TitleRequired = new(
-        $"--{TitleText}",
-        "The display name/title of the workbook.")
+    public static readonly Option<string> DisplayNameRequired = new(
+        $"--{DisplayNameText}",
+        "The display name of the workbook.")
     {
         IsRequired = true
     };
