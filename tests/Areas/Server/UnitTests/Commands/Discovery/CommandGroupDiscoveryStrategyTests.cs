@@ -1,16 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;

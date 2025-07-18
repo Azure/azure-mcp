@@ -1,13 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Services.Telemetry;
-using AzureMcp.Tests.Areas.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
@@ -307,13 +304,6 @@ public class CommandFactoryToolLoaderTests
 
         // Find the subscription list command
         var subscriptionListCommand = availableCommands.FirstOrDefault(cmd => cmd.Key.Contains("subscription") && cmd.Key.Contains("list"));
-
-        // Use the subscription list command - skip test if not available
-        if (subscriptionListCommand.Key == null)
-        {
-            // Skip this test if subscription list command is not available
-            return;
-        }
 
         var targetCommand = subscriptionListCommand;
 

@@ -1,11 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
@@ -518,5 +514,50 @@ public class McpRuntimeTests
         Assert.NotNull(runtime);
         // The constructor should log the tool loader type name
         // This verifies that the logging statement executes without error
+    }
+
+    [Fact]
+    public async Task CallToolHandler_CanSucceedBeforeListingTools()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        var mockTelemetry = CreateMockTelemetryService();
+        var options = CreateOptions();
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetry, logger);
+
+        var expectedResult = new CallToolResult
+        {
+            Content = new List<ContentBlock>
+            {
+                new TextContentBlock { Text = "Tool executed successfully without prior listing" }
+            }
+        };
+
+        var request = CreateCallToolRequest("existing-tool", new Dictionary<string, JsonElement>
+        {
+            { "action", JsonDocument.Parse("\"execute\"").RootElement }
+        });
+        mockToolLoader.CallToolHandler(request, Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<CallToolResult>(expectedResult));
+
+        // Act - Call tool directly without listing tools first
+        var result = await runtime.CallToolHandler(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = result.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.Equal("Tool executed successfully without prior listing", textContent.Text);
+
+        // Verify that the tool loader was called for the tool execution
+        await mockToolLoader.Received(1).CallToolHandler(request, Arg.Any<CancellationToken>());
+
+        // Verify that ListToolsHandler was NOT called (tools weren't listed first)
+        await mockToolLoader.DidNotReceive().ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
     }
 }
