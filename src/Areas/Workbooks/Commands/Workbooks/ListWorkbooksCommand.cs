@@ -50,7 +50,7 @@ public sealed class ListWorkbooksCommand(ILogger<ListWorkbooksCommand> logger) :
             }
 
             var workbooksService = context.GetService<IWorkbooksService>();
-            var workbooks = await workbooksService.ListWorkbooks(options.Subscription!, options.ResourceGroup!, options.RetryPolicy);
+            var workbooks = await workbooksService.ListWorkbooks(options.Subscription!, options.ResourceGroup!, options.RetryPolicy, options.Tenant);
 
             context.Response.Results = workbooks?.Count > 0
                 ? ResponseResult.Create(new ListWorkbooksCommandResult(workbooks), WorkbooksJsonContext.Default.ListWorkbooksCommandResult)

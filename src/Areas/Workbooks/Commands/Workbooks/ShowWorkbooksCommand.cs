@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Areas.Workbooks.Options;
 using AzureMcp.Areas.Workbooks.Options.Workbook;
 using AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Areas.Workbooks.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
@@ -52,7 +52,7 @@ public sealed class ShowWorkbooksCommand(ILogger<ShowWorkbooksCommand> logger) :
             }
 
             var workbooksService = context.GetService<IWorkbooksService>();
-            var workbook = await workbooksService.GetWorkbook(options.WorkbookId!, options.RetryPolicy) ?? throw new InvalidOperationException("Failed to retrieve workbook");
+            var workbook = await workbooksService.GetWorkbook(options.WorkbookId!, options.RetryPolicy, options.Tenant) ?? throw new InvalidOperationException("Failed to retrieve workbook");
 
             context.Response.Results = ResponseResult.Create(
                 new ShowWorkbooksCommandResult(workbook),

@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Areas.Workbooks.Options;
 using AzureMcp.Areas.Workbooks.Options.Workbook;
 using AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Areas.Workbooks.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
@@ -62,7 +62,8 @@ public sealed class UpdateWorkbooksCommand(ILogger<UpdateWorkbooksCommand> logge
                 options.WorkbookId!,
                 options.DisplayName,
                 options.SerializedContent,
-                options.RetryPolicy) ?? throw new InvalidOperationException("Failed to update workbook");
+                options.RetryPolicy,
+                options.Tenant) ?? throw new InvalidOperationException("Failed to update workbook");
 
             context.Response.Results = ResponseResult.Create(
                 new UpdateWorkbooksCommandResult(updatedWorkbook),

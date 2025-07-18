@@ -5,8 +5,8 @@ using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Areas.Workbooks.Options;
 using AzureMcp.Areas.Workbooks.Options.Workbook;
 using AzureMcp.Areas.Workbooks.Services;
-using AzureMcp.Commands.Subscription;
 using AzureMcp.Commands;
+using AzureMcp.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Workbooks.Commands.Workbook;
@@ -74,10 +74,11 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
                  * otherwise the workbook will display an error when opening.
                  */
                 options.SourceId ?? "azure monitor",
-                options.RetryPolicy) ?? throw new InvalidOperationException("Failed to create workbook");
+                options.RetryPolicy,
+                options.Tenant) ?? throw new InvalidOperationException("Failed to create workbook");
 
             context.Response.Results = ResponseResult.Create(
-                new CreateWorkbooksCommandResult(createdWorkbook), 
+                new CreateWorkbooksCommandResult(createdWorkbook),
                 WorkbooksJsonContext.Default.CreateWorkbooksCommandResult);
         }
         catch (Exception ex)

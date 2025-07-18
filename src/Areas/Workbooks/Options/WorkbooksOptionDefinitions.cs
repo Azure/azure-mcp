@@ -49,7 +49,7 @@ public static class WorkbooksOptionDefinitions
     {
         IsRequired = true
     };
-    
+
     public static readonly Option<string> SerializedContentRequired = new(
         $"--{SerializedContentText}",
         "The serialized JSON content of the workbook.")

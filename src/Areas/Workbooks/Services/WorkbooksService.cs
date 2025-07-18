@@ -1,21 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.Core;
 using AzureMcp.Areas.Workbooks.Models;
 using AzureMcp.Options;
 using Microsoft.Extensions.Logging;
-using Azure.Core;
 
 namespace AzureMcp.Areas.Workbooks.Services;
 
-using AzureMcp.Services.Azure;
 using Azure.ResourceManager.ApplicationInsights;
 using Azure.ResourceManager.ApplicationInsights.Models;
-using AzureMcp.Services.Azure.Subscription;
-using AzureMcp.Services.Azure.Tenant;
-
 using Azure.ResourceManager.ResourceGraph;
 using Azure.ResourceManager.ResourceGraph.Models;
+using AzureMcp.Services.Azure;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
 
 public class WorkbooksService(ISubscriptionService _subscriptionService, ITenantService tenantService, ILogger<WorkbooksService> logger) : BaseAzureService(tenantService), IWorkbooksService
 {
