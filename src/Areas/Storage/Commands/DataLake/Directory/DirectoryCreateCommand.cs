@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Storage.Models;
-using AzureMcp.Areas.Storage.Options.DataLake.FileSystem;
+using AzureMcp.Areas.Storage.Options.DataLake.Directory;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.Storage.Commands.DataLake.FileSystem;
+namespace AzureMcp.Areas.Storage.Commands.DataLake.Directory;
 
 public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logger) : BaseFileSystemCommand<DirectoryCreateOptions>
 {
@@ -17,7 +17,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
 
     private readonly Option<string> _directoryPathOption = StorageOptionDefinitions.DirectoryPath;
 
-    public override string Name => "directory-create";
+    public override string Name => "create";
 
     public override string Description =>
         """

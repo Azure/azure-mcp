@@ -4,7 +4,7 @@
 using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Areas.Storage.Commands.DataLake.Directory;
 using AzureMcp.Areas.Storage.Models;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Models.Command;
@@ -15,7 +15,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Storage.UnitTests.DataLake.FileSystem;
+namespace AzureMcp.Tests.Areas.Storage.UnitTests.DataLake.Directory;
 
 [Trait("Area", "Storage")]
 public class DirectoryCreateCommandTests
@@ -156,7 +156,7 @@ public class DirectoryCreateCommandTests
     public void Constructor_InitializesCommandCorrectly()
     {
         var command = _command.GetCommand();
-        Assert.Equal("directory-create", command.Name);
+        Assert.Equal("create", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
         Assert.Contains("Create a directory", command.Description);

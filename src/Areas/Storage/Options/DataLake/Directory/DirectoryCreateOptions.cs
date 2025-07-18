@@ -3,7 +3,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace AzureMcp.Areas.Storage.Options.DataLake.FileSystem;
+namespace AzureMcp.Areas.Storage.Options.DataLake.Directory;
 
 public class DirectoryCreateOptions : BaseFileSystemOptions
 {
