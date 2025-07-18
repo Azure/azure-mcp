@@ -7,14 +7,14 @@ parameters:
   default: 'public'
 
 jobs:
-- job: Stage Docker contents
+- job: CreateDockerArtifact
+  displayName: 'Creating Docker artifact'
   pool:
     name: $(LINUXPOOL)
     image: $(LINUXVMIMAGE)
     os: linux
 
   steps:
-
   - task: DownloadPipelineArtifact@2
     displayName: 'Download signed packages'
     inputs:
@@ -36,8 +36,14 @@ jobs:
 - deployment: Publish
   displayName: "Publish to ACR"
   condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
+  dependsOn: CreateDockerArtifact
 
   templateContext:
+    inputs:
+    - input: pipelineArtifact
+      artifactName: docker_drops
+      targetPath: $(Pipeline.Workspace)/docker_drops
+
     outputs:
     - output: containerImage
       image: image:tag
@@ -46,16 +52,14 @@ jobs:
 
   timeoutInMinutes: 120
   pool:
-    name: $(LINUXPOOL)
-    image: $(LINUXVMIMAGE)
+    name: azsdk-pool
+    image: ubuntu-24.04
     os: linux
+  environment: package-publish
   strategy:
     runOnce:
       deploy:
         steps:
-        - download: current
-          displayName: Download 'docker_drops' artifact
-          artifact: docker_drops
 
         - task: AzureCLI@2
           condition: succeeded()
@@ -66,9 +70,6 @@ jobs:
             scriptLocation: inlineScript
             inlineScript: |
               az acr login --name ${{ parameters.ContainerRegistry }}
-        
-        - pwsh: |
-            ls -Recurse $(Pipeline.Workspace)/docker_drops
 
         - task: 1ES.BuildContainerImage@1
           displayName: Build Docker Image
