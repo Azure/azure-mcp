@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
@@ -13,7 +14,8 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// </summary>
 /// <param name="commandFactory">The command factory used to access available command groups.</param>
 /// <param name="options">Options for configuring the service behavior.</param>
-public sealed class CommandGroupDiscoveryStrategy(CommandFactory commandFactory, IOptions<ServiceStartOptions> options) : BaseDiscoveryStrategy()
+/// <param name="logger">Logger instance for this discovery strategy.</param>
+public sealed class CommandGroupDiscoveryStrategy(CommandFactory commandFactory, IOptions<ServiceStartOptions> options, ILogger<CommandGroupDiscoveryStrategy> logger) : BaseDiscoveryStrategy(logger)
 {
     private readonly CommandFactory _commandFactory = commandFactory;
     private readonly IOptions<ServiceStartOptions> _options = options;

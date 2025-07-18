@@ -24,6 +24,7 @@ public sealed class RegistryToolLoader(
     private readonly IOptions<ServiceStartOptions> _options = options;
     private readonly ILogger<RegistryToolLoader> _logger = logger;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
+    private List<IMcpClient> _discoveredClients = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
     private bool _isInitialized = false;
 
@@ -52,28 +53,9 @@ public sealed class RegistryToolLoader(
             Tools = new List<Tool>()
         };
 
-        var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
-
-        foreach (var server in serverList)
+        // Use cached discovered clients instead of re-discovering servers
+        foreach (var mcpClient in _discoveredClients)
         {
-            var serverMetadata = server.CreateMetadata();
-            IMcpClient? mcpClient;
-            try
-            {
-                mcpClient = await _serverDiscoveryStrategy.GetOrCreateClientAsync(serverMetadata.Name, ClientOptions);
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LogWarning("Failed to create client for provider {ProviderName}: {Error}", serverMetadata.Name, ex.Message);
-                continue;
-            }
-
-            if (mcpClient == null)
-            {
-                _logger.LogWarning("Failed to get MCP client for provider {ProviderName}.", serverMetadata.Name);
-                continue;
-            }
-
             var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
             var filteredTools = toolsResponse
                 .Select(t => t.ProtocolTool)
@@ -211,6 +193,9 @@ public sealed class RegistryToolLoader(
                     continue;
                 }
 
+                // Add to discovered clients list for caching
+                _discoveredClients.Add(mcpClient);
+
                 var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
                 var filteredTools = toolsResponse
                     .Select(t => t.ProtocolTool)
@@ -228,5 +213,21 @@ public sealed class RegistryToolLoader(
         {
             _initializationSemaphore.Release();
         }
+    }
+
+    /// <summary>
+    /// Disposes resources owned by this tool loader.
+    /// Note: This does NOT dispose the MCP clients as they are owned by the discovery strategy.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        // Only dispose resources we own, not the MCP clients
+        _initializationSemaphore?.Dispose();
+
+        // Clear references to clients (but don't dispose them - discovery strategy owns them)
+        _discoveredClients.Clear();
+        _toolClientMap.Clear();
+
+        await ValueTask.CompletedTask;
     }
 }

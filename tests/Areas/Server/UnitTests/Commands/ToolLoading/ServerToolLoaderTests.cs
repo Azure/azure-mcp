@@ -57,7 +57,8 @@ public class ServerToolLoaderTests
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
-        var discoveryStrategy = new RegistryDiscoveryStrategy(options);
+        var discoveryLogger = loggerFactory.CreateLogger<RegistryDiscoveryStrategy>();
+        var discoveryStrategy = new RegistryDiscoveryStrategy(options, discoveryLogger);
         var logger = loggerFactory.CreateLogger<ServerToolLoader>();
 
         var toolLoader = new ServerToolLoader(discoveryStrategy, options, logger);
@@ -109,7 +110,8 @@ public class ServerToolLoaderTests
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
-        var discoveryStrategy = new RegistryDiscoveryStrategy(options);
+        var discoveryLogger = loggerFactory.CreateLogger<RegistryDiscoveryStrategy>();
+        var discoveryStrategy = new RegistryDiscoveryStrategy(options, discoveryLogger);
         var logger = loggerFactory.CreateLogger<ServerToolLoader>();
 
         var toolLoader = new ServerToolLoader(discoveryStrategy, options, logger);

@@ -486,4 +486,15 @@ public sealed class SingleProxyToolLoader : IToolLoader
 
         return clientOptions;
     }
+
+    /// <summary>
+    /// Disposes resources owned by this tool loader.
+    /// SingleProxyToolLoader doesn't own clients directly - they're owned by the discovery strategy.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        // SingleProxyToolLoader doesn't create or cache clients directly,
+        // it relies on the discovery strategy which handles disposal
+        await ValueTask.CompletedTask;
+    }
 }

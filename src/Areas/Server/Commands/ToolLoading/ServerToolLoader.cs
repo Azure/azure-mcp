@@ -517,4 +517,15 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
         return clientOptions;
     }
+
+    /// <summary>
+    /// Disposes resources owned by this tool loader.
+    /// ServerToolLoader doesn't own clients directly - they're owned by the discovery strategy.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        // ServerToolLoader doesn't create or cache clients directly,
+        // it relies on the discovery strategy which handles disposal
+        await ValueTask.CompletedTask;
+    }
 }

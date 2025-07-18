@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
@@ -9,12 +10,18 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// Base class for MCP server discovery strategies that provides common functionality.
 /// Implements client caching and server provider lookup by name.
 /// </summary>
-public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
+public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrategy
 {
+    /// <summary>
+    /// Logger instance for this discovery strategy.
+    /// </summary>
+    protected readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     /// <summary>
     /// Cache of MCP clients created by this discovery strategy, keyed by server name (case-insensitive).
     /// </summary>
     protected readonly Dictionary<string, IMcpClient> _clientCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private bool _disposed = false;
 
     /// <summary>
     /// Discovers available MCP servers via the implementing strategy.
@@ -59,6 +66,8 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
     /// <exception cref="KeyNotFoundException">Thrown when no server with the specified name is found.</exception>
     public async Task<IMcpClient> GetOrCreateClientAsync(string name, McpClientOptions? clientOptions = null)
     {
+        ThrowIfDisposed();
+
         ArgumentNullException.ThrowIfNull(name, nameof(name));
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -75,5 +84,42 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
         _clientCache[name] = client;
 
         return client;
+    }
+
+    /// <summary>
+    /// Disposes all cached MCP clients that this discovery strategy owns.
+    /// </summary>
+    public virtual async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        try
+        {
+            // Dispose all cached clients in parallel for better performance
+            var disposalTasks = _clientCache.Values.Select(client => client.DisposeAsync().AsTask());
+            await Task.WhenAll(disposalTasks);
+        }
+        catch (Exception ex)
+        {
+            // Log disposal failures but don't throw - we want to ensure cleanup continues
+            // Individual client disposal errors shouldn't stop the overall disposal process
+            _logger.LogError(ex, "Error occurred while disposing MCP clients during discovery strategy cleanup. Some clients may not have been properly disposed.");
+        }
+        finally
+        {
+            _clientCache.Clear();
+            _disposed = true;
+        }
+    }
+
+    /// <summary>
+    /// Throws if the discovery strategy has been disposed.
+    /// </summary>
+    protected void ThrowIfDisposed()
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
     }
 }

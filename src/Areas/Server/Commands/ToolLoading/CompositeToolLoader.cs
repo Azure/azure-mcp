@@ -14,7 +14,7 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// </summary>
 /// <param name="toolLoaders">The collection of tool loaders to combine.</param>
 /// <param name="logger">Logger for tool loading operations.</param>
-public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : IToolLoader, IDisposable
+public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : IToolLoader
 {
     private readonly ILogger<CompositeToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IEnumerable<IToolLoader> _toolLoaders = InitializeToolLoaders(toolLoaders);
@@ -195,19 +195,14 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
     }
 
     /// <summary>
-    /// Disposes the semaphore used for thread-safe initialization and disposes child tool loaders if they implement IDisposable.
+    /// Disposes the semaphore used for thread-safe initialization and disposes child tool loaders.
     /// </summary>
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         _initializationSemaphore?.Dispose();
 
-        // Dispose child loaders if they implement IDisposable
-        foreach (var loader in _toolLoaders)
-        {
-            if (loader is IDisposable disposableLoader)
-            {
-                disposableLoader.Dispose();
-            }
-        }
+        // Dispose all child loaders (they all implement IAsyncDisposable now)
+        var disposalTasks = _toolLoaders.Select(loader => loader.DisposeAsync().AsTask());
+        await Task.WhenAll(disposalTasks);
     }
 }

@@ -69,7 +69,8 @@ public static class AzureMcpServiceCollectionExtensions
                     sp.GetRequiredService<CommandGroupDiscoveryStrategy>(),
                 };
 
-                return new CompositeDiscoveryStrategy(discoveryStrategies);
+                var logger = sp.GetRequiredService<ILogger<CompositeDiscoveryStrategy>>();
+                return new CompositeDiscoveryStrategy(discoveryStrategies, logger);
             });
         }
 

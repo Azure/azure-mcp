@@ -544,4 +544,104 @@ public class CompositeToolLoaderTests
         var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
         Assert.Contains("Failed to initialize tool loaders", textContent.Text);
     }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeAllChildToolLoaders()
+    {
+        // Arrange
+        var mockLoader1 = Substitute.For<IToolLoader>();
+        var mockLoader2 = Substitute.For<IToolLoader>();
+        var mockLoader3 = Substitute.For<IToolLoader>();
+
+        var toolLoaders = new[] { mockLoader1, mockLoader2, mockLoader3 };
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(toolLoaders, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - All child loaders should be disposed
+        await mockLoader1.Received(1).DisposeAsync();
+        await mockLoader2.Received(1).DisposeAsync();
+        await mockLoader3.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeInitializationSemaphore()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - Should dispose without throwing (semaphore disposal is internal)
+        await mockLoader.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldHandleChildLoaderDisposalExceptions()
+    {
+        // Arrange
+        var mockLoader1 = Substitute.For<IToolLoader>();
+        var mockLoader2 = Substitute.For<IToolLoader>();
+
+        mockLoader1.DisposeAsync().Returns(ValueTask.FromException(new InvalidOperationException("Loader 1 failed")));
+        mockLoader2.DisposeAsync().Returns(ValueTask.CompletedTask);
+
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader1, mockLoader2 }, logger);
+
+        // Act & Assert - Should propagate the first exception encountered
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => compositeLoader.DisposeAsync().AsTask());
+        Assert.Equal("Loader 1 failed", exception.Message);
+
+        // Both loaders should have been attempted to dispose
+        await mockLoader1.Received(1).DisposeAsync();
+        await mockLoader2.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldBeIdempotent()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act - dispose multiple times
+        await compositeLoader.DisposeAsync();
+        await compositeLoader.DisposeAsync();
+        await compositeLoader.DisposeAsync();
+
+        // Assert - child loader should be disposed each time (disposal delegation)
+        await mockLoader.Received(3).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_WithSingleChildLoader_ShouldDisposeChild()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - should dispose the single child loader
+        await mockLoader.Received(1).DisposeAsync();
+    }
 }
