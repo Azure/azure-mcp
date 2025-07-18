@@ -34,6 +34,5 @@ public class LiveTestFixture : LiveTestSettingsFixture
         var clientTransport = new StdioClientTransport(transportOptions);
 
         Client = await McpClientFactory.CreateAsync(clientTransport);
-        await Client.ListToolsAsync();
     }
 }

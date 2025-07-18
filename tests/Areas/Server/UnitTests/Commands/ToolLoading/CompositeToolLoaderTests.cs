@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -132,7 +131,7 @@ public class CompositeToolLoaderTests
     }
 
     [Fact]
-    public async Task ListToolsHandler_WithToolLoaderReturningNull_ThrowsInvalidOperationException()
+    public async Task ListToolsHandler_WithToolLoaderReturningNull_ReturnsEmptyResult()
     {
         var serviceProvider = CreateServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
@@ -145,10 +144,10 @@ public class CompositeToolLoaderTests
         var toolLoader = new CompositeToolLoader(toolLoaders, logger);
         var request = CreateListToolsRequest();
 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await toolLoader.ListToolsHandler(request, CancellationToken.None));
+        var result = await toolLoader.ListToolsHandler(request, CancellationToken.None);
 
-        Assert.Equal("Tool loader returned null response.", exception.Message);
+        Assert.NotNull(result);
+        Assert.Empty(result.Tools);
     }
 
     [Fact]
@@ -304,6 +303,30 @@ public class CompositeToolLoaderTests
     }
 
     [Fact]
+    public async Task CallToolHandler_WithToolLoaderReturningNull_ReturnsErrorResult()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var mockLoader = Substitute.For<IToolLoader>();
+        mockLoader.ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns((ListToolsResult)null!);
+
+        var toolLoaders = new List<IToolLoader> { mockLoader };
+        var toolLoader = new CompositeToolLoader(toolLoaders, logger);
+        var request = CreateCallToolRequest("test-tool");
+
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+        var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
+        Assert.Contains("Failed to initialize tool loaders", textContent.Text);
+    }
+
+    [Fact]
     public async Task ListToolsHandler_WithSingleEmptyToolLoader_ReturnsEmptyResult()
     {
         var serviceProvider = CreateServiceProvider();
@@ -450,5 +473,175 @@ public class CompositeToolLoaderTests
 
         // Verify that CallToolHandler was called for each concurrent request
         await mockLoader.Received(concurrentCalls).CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CallToolHandler_ValidToolWithoutPriorListingCall_ExecutesSuccessfully()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var mockLoader = Substitute.For<IToolLoader>();
+        var expectedTool = CreateTestTool("valid-tool", "A valid test tool");
+        var expectedResult = new CallToolResult
+        {
+            Content = new List<ContentBlock> { new TextContentBlock { Text = "Successfully executed valid-tool" } },
+            IsError = false
+        };
+
+        // Setup the mock loader to return the tool when ListToolsHandler is called
+        mockLoader.ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns(new ListToolsResult { Tools = new List<Tool> { expectedTool } });
+
+        // Setup the mock loader to return a successful result when CallToolHandler is called
+        mockLoader.CallToolHandler(Arg.Any<RequestContext<CallToolRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns(expectedResult);
+
+        var toolLoaders = new List<IToolLoader> { mockLoader };
+        var compositeToolLoader = new CompositeToolLoader(toolLoaders, logger);
+
+        // Act - Call the tool directly without first calling ListToolsHandler
+        var callRequest = CreateCallToolRequest("valid-tool");
+        var result = await compositeToolLoader.CallToolHandler(callRequest, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.False(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
+        Assert.Equal("Successfully executed valid-tool", textContent.Text);
+
+        // Verify that the composite loader internally called ListToolsHandler to initialize the tool map
+        await mockLoader.Received(1).ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
+
+        // Verify that the composite loader called CallToolHandler on the correct loader
+        await mockLoader.Received(1).CallToolHandler(callRequest, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CallToolHandler_WithToolLoaderThrowingException_ReturnsErrorResult()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var mockLoader = Substitute.For<IToolLoader>();
+        mockLoader.ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>())
+            .Returns<ListToolsResult>(callInfo => throw new InvalidOperationException("Loader initialization failed"));
+
+        var toolLoaders = new List<IToolLoader> { mockLoader };
+        var toolLoader = new CompositeToolLoader(toolLoaders, logger);
+        var request = CreateCallToolRequest("test-tool");
+
+        var result = await toolLoader.CallToolHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.True(result.IsError);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+        var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
+        Assert.Contains("Failed to initialize tool loaders", textContent.Text);
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeAllChildToolLoaders()
+    {
+        // Arrange
+        var mockLoader1 = Substitute.For<IToolLoader>();
+        var mockLoader2 = Substitute.For<IToolLoader>();
+        var mockLoader3 = Substitute.For<IToolLoader>();
+
+        var toolLoaders = new[] { mockLoader1, mockLoader2, mockLoader3 };
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(toolLoaders, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - All child loaders should be disposed
+        await mockLoader1.Received(1).DisposeAsync();
+        await mockLoader2.Received(1).DisposeAsync();
+        await mockLoader3.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeInitializationSemaphore()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - Should dispose without throwing (semaphore disposal is internal)
+        await mockLoader.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldHandleChildLoaderDisposalExceptions()
+    {
+        // Arrange
+        var mockLoader1 = Substitute.For<IToolLoader>();
+        var mockLoader2 = Substitute.For<IToolLoader>();
+
+        mockLoader1.DisposeAsync().Returns(ValueTask.FromException(new InvalidOperationException("Loader 1 failed")));
+        mockLoader2.DisposeAsync().Returns(ValueTask.CompletedTask);
+
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader1, mockLoader2 }, logger);
+
+        // Act & Assert - Should propagate the first exception encountered
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => compositeLoader.DisposeAsync().AsTask());
+        Assert.Equal("Loader 1 failed", exception.Message);
+
+        // Both loaders should have been attempted to dispose
+        await mockLoader1.Received(1).DisposeAsync();
+        await mockLoader2.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldBeIdempotent()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act - dispose multiple times
+        await compositeLoader.DisposeAsync();
+        await compositeLoader.DisposeAsync();
+        await compositeLoader.DisposeAsync();
+
+        // Assert - child loader should be disposed each time (disposal delegation)
+        await mockLoader.Received(3).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_WithSingleChildLoader_ShouldDisposeChild()
+    {
+        // Arrange
+        var mockLoader = Substitute.For<IToolLoader>();
+        var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<CompositeToolLoader>>();
+
+        var compositeLoader = new CompositeToolLoader(new[] { mockLoader }, logger);
+
+        // Act
+        await compositeLoader.DisposeAsync();
+
+        // Assert - should dispose the single child loader
+        await mockLoader.Received(1).DisposeAsync();
     }
 }

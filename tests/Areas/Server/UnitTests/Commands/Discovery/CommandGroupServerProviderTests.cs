@@ -3,7 +3,6 @@
 
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Commands;
-using AzureMcp.Services.Telemetry;
 using ModelContextProtocol.Client;
 using Xunit;
 

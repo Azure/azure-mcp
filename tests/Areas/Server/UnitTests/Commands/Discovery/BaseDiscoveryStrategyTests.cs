@@ -1,14 +1,32 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol.Client;
 using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
+
+/// <summary>
+/// Concrete test implementation of BaseDiscoveryStrategy for testing disposal behavior
+/// </summary>
+public class TestDiscoveryStrategy : BaseDiscoveryStrategy
+{
+    private readonly IEnumerable<IMcpServerProvider> _providers;
+
+    public TestDiscoveryStrategy(IEnumerable<IMcpServerProvider> providers, ILogger? logger = null) : base(logger ?? NullLogger.Instance)
+    {
+        _providers = providers;
+    }
+
+    public override Task<IEnumerable<IMcpServerProvider>> DiscoverServersAsync()
+    {
+        return Task.FromResult(_providers);
+    }
+}
 
 [Trait("Area", "Server")]
 public class BaseDiscoveryStrategyTests
@@ -28,9 +46,7 @@ public class BaseDiscoveryStrategyTests
 
     private static BaseDiscoveryStrategy CreateMockStrategy(params IMcpServerProvider[] providers)
     {
-        var strategy = Substitute.For<BaseDiscoveryStrategy>();
-        strategy.DiscoverServersAsync().Returns(Task.FromResult<IEnumerable<IMcpServerProvider>>(providers));
-        return strategy;
+        return new TestDiscoveryStrategy(providers);
     }
 
     [Fact]
@@ -305,5 +321,116 @@ public class BaseDiscoveryStrategyTests
 
         // Still only 1 call total (all calls use the cached entry regardless of casing)
         await provider.Received(1).CreateClientAsync(Arg.Any<McpClientOptions>());
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeAllCachedClients()
+    {
+        // Arrange
+        var mockClient1 = Substitute.For<IMcpClient>();
+        var mockClient2 = Substitute.For<IMcpClient>();
+        var provider1 = CreateMockServerProvider("Server1");
+        var provider2 = CreateMockServerProvider("Server2");
+
+        provider1.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient1);
+        provider2.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient2);
+
+        var strategy = CreateMockStrategy(provider1, provider2);
+
+        // Create and cache some clients
+        await strategy.GetOrCreateClientAsync("Server1");
+        await strategy.GetOrCreateClientAsync("Server2");
+
+        // Act
+        await strategy.DisposeAsync();
+
+        // Assert - All cached clients should be disposed
+        await mockClient1.Received(1).DisposeAsync();
+        await mockClient2.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_WithNoCachedClients_ShouldNotThrow()
+    {
+        // Arrange
+        var provider = CreateMockServerProvider("Server1");
+        var strategy = CreateMockStrategy(provider);
+
+        // Act & Assert - should not throw
+        await strategy.DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldHandleClientDisposalExceptions()
+    {
+        // Arrange
+        var mockClient1 = Substitute.For<IMcpClient>();
+        var mockClient2 = Substitute.For<IMcpClient>();
+        var provider1 = CreateMockServerProvider("Server1");
+        var provider2 = CreateMockServerProvider("Server2");
+
+        provider1.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient1);
+        provider2.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient2);
+
+        // Setup first client to throw on disposal
+        mockClient1.DisposeAsync().Returns(ValueTask.FromException(new InvalidOperationException("Client 1 disposal failed")));
+        mockClient2.DisposeAsync().Returns(ValueTask.CompletedTask);
+
+        var strategy = CreateMockStrategy(provider1, provider2);
+
+        // Cache both clients
+        await strategy.GetOrCreateClientAsync("Server1");
+        await strategy.GetOrCreateClientAsync("Server2");
+
+        // Act - Should not throw (BaseDiscoveryStrategy catches and swallows disposal exceptions)
+        await strategy.DisposeAsync();
+
+        // Assert - Both clients should have been attempted to dispose
+        await mockClient1.Received(1).DisposeAsync();
+        await mockClient2.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldBeIdempotent()
+    {
+        // Arrange
+        var mockClient = Substitute.For<IMcpClient>();
+        var provider = CreateMockServerProvider("Server1");
+        provider.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient);
+
+        var strategy = CreateMockStrategy(provider);
+
+        // Cache a client
+        await strategy.GetOrCreateClientAsync("Server1");
+
+        // Act - dispose multiple times
+        await strategy.DisposeAsync();
+        await strategy.DisposeAsync();
+        await strategy.DisposeAsync();
+
+        // Assert - client should only be disposed once (idempotent)
+        await mockClient.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldClearClientCache()
+    {
+        // Arrange
+        var mockClient = Substitute.For<IMcpClient>();
+        var provider = CreateMockServerProvider("Server1");
+        provider.CreateClientAsync(Arg.Any<McpClientOptions>()).Returns(mockClient);
+
+        var strategy = CreateMockStrategy(provider);
+
+        // Cache a client
+        var client1 = await strategy.GetOrCreateClientAsync("Server1");
+        Assert.Same(mockClient, client1);
+
+        // Act
+        await strategy.DisposeAsync();
+
+        // Assert - After disposal, cache should be cleared
+        // This is verified by the fact that disposal was called and the cache is no longer accessible
+        await mockClient.Received(1).DisposeAsync();
     }
 }

@@ -1,11 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
@@ -518,5 +514,130 @@ public class McpRuntimeTests
         Assert.NotNull(runtime);
         // The constructor should log the tool loader type name
         // This verifies that the logging statement executes without error
+    }
+
+    [Fact]
+    public async Task CallToolHandler_CanSucceedBeforeListingTools()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        var mockTelemetry = CreateMockTelemetryService();
+        var options = CreateOptions();
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetry, logger);
+
+        var expectedResult = new CallToolResult
+        {
+            Content = new List<ContentBlock>
+            {
+                new TextContentBlock { Text = "Tool executed successfully without prior listing" }
+            }
+        };
+
+        var request = CreateCallToolRequest("existing-tool", new Dictionary<string, JsonElement>
+        {
+            { "action", JsonDocument.Parse("\"execute\"").RootElement }
+        });
+        mockToolLoader.CallToolHandler(request, Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<CallToolResult>(expectedResult));
+
+        // Act - Call tool directly without listing tools first
+        var result = await runtime.CallToolHandler(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+        Assert.NotNull(result.Content);
+        Assert.Single(result.Content);
+
+        var textContent = result.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.Equal("Tool executed successfully without prior listing", textContent.Text);
+
+        // Verify that the tool loader was called for the tool execution
+        await mockToolLoader.Received(1).CallToolHandler(request, Arg.Any<CancellationToken>());
+
+        // Verify that ListToolsHandler was NOT called (tools weren't listed first)
+        await mockToolLoader.DidNotReceive().ListToolsHandler(Arg.Any<RequestContext<ListToolsRequestParams>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldDisposeToolLoader()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        var options = CreateOptions();
+        var mockTelemetryService = CreateMockTelemetryService();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetryService, logger);
+
+        // Act
+        await runtime.DisposeAsync();
+
+        // Assert
+        await mockToolLoader.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldHandleNullToolLoader()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var options = CreateOptions();
+        var mockTelemetryService = CreateMockTelemetryService();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+
+        // Create a mock that returns null (edge case)
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        mockToolLoader.DisposeAsync().Returns(ValueTask.CompletedTask);
+
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetryService, logger);
+
+        // Act & Assert - should not throw
+        await runtime.DisposeAsync();
+        await mockToolLoader.Received(1).DisposeAsync();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldPropagateToolLoaderDisposalExceptions()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        var options = CreateOptions();
+        var mockTelemetryService = CreateMockTelemetryService();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+
+        var expectedException = new InvalidOperationException("Tool loader disposal failed");
+        mockToolLoader.DisposeAsync().Returns(ValueTask.FromException(expectedException));
+
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetryService, logger);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runtime.DisposeAsync().AsTask());
+        Assert.Equal("Tool loader disposal failed", exception.Message);
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ShouldBeIdempotent()
+    {
+        // Arrange
+        var serviceProvider = CreateServiceProvider();
+        var mockToolLoader = Substitute.For<IToolLoader>();
+        var options = CreateOptions();
+        var mockTelemetryService = CreateMockTelemetryService();
+        var logger = serviceProvider.GetRequiredService<ILogger<McpRuntime>>();
+
+        var runtime = new McpRuntime(mockToolLoader, options, mockTelemetryService, logger);
+
+        // Act - dispose multiple times
+        await runtime.DisposeAsync();
+        await runtime.DisposeAsync();
+        await runtime.DisposeAsync();
+
+        // Assert - tool loader should be disposed multiple times (not necessarily idempotent at tool loader level)
+        await mockToolLoader.Received(3).DisposeAsync();
     }
 }

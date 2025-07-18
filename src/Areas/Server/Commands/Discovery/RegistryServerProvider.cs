@@ -39,14 +39,35 @@ public sealed class RegistryServerProvider(string id, RegistryServerInfo serverI
     /// <exception cref="InvalidOperationException">Thrown when the server configuration doesn't specify a valid transport mechanism.</exception>
     public async Task<IMcpClient> CreateClientAsync(McpClientOptions clientOptions)
     {
-        if (!string.IsNullOrWhiteSpace(_serverInfo.Type) && _serverInfo.Type.Equals("stdio", StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(_serverInfo.Url))
+        {
+            return await CreateSseClientAsync(clientOptions);
+        }
+        else if (!string.IsNullOrWhiteSpace(_serverInfo.Type) && _serverInfo.Type.Equals("stdio", StringComparison.OrdinalIgnoreCase))
         {
             return await CreateStdioClientAsync(clientOptions);
         }
         else
         {
-            throw new InvalidOperationException($"Registry server '{_id}' does not have a valid transport type. Only 'stdio' is supported.");
+            throw new InvalidOperationException($"Registry server '{_id}' does not have a valid url or type for transport.");
         }
+    }
+
+    /// <summary>
+    /// Creates an MCP client that communicates with the server using Server-Sent Events (SSE).
+    /// </summary>
+    /// <param name="clientOptions">Options to configure the client behavior.</param>
+    /// <returns>A configured MCP client using SSE transport.</returns>
+    private async Task<IMcpClient> CreateSseClientAsync(McpClientOptions clientOptions)
+    {
+        var transportOptions = new SseClientTransportOptions
+        {
+            Name = _id,
+            Endpoint = new Uri(_serverInfo.Url!),
+            TransportMode = HttpTransportMode.AutoDetect,
+        };
+        var clientTransport = new SseClientTransport(transportOptions);
+        return await McpClientFactory.CreateAsync(clientTransport, clientOptions);
     }
 
     /// <summary>

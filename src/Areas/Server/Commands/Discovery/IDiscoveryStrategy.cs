@@ -5,7 +5,7 @@ using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
-public interface IMcpDiscoveryStrategy
+public interface IMcpDiscoveryStrategy : IAsyncDisposable
 {
     /// <summary>
     /// Discovers available MCP servers via this strategy.
