@@ -50,6 +50,11 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
+        
+        // Combine file system name and directory path
+        var fullDirectoryPath = string.IsNullOrEmpty(options.DirectoryPath) 
+            ? options.FileSystem! 
+            : $"{options.FileSystem}/{options.DirectoryPath}";
 
         try
         {
@@ -61,10 +66,10 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
             AddSubscriptionInformation(context.Activity, options);
 
             var storageService = context.GetService<IStorageService>();
+            
             var directory = await storageService.CreateDirectory(
                 options.Account!,
-                options.FileSystem!,
-                options.DirectoryPath!,
+                fullDirectoryPath,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
@@ -75,8 +80,8 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating directory. Account: {Account}, FileSystem: {FileSystem}, DirectoryPath: {DirectoryPath}.", 
-                options.Account, options.FileSystem, options.DirectoryPath);
+            _logger.LogError(ex, "Error creating directory. Account: {Account}, FullDirectoryPath: {FullDirectoryPath}.", 
+                options.Account, fullDirectoryPath);
             HandleException(context, ex);
         }
 

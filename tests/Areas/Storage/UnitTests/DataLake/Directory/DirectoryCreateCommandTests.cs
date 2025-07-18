@@ -58,8 +58,7 @@ public class DirectoryCreateCommandTests
 
         _storageService.CreateDirectory(
             Arg.Is(_knownAccountName), 
-            Arg.Is(_knownFileSystemName), 
-            Arg.Is(_knownDirectoryPath),
+            Arg.Is($"{_knownFileSystemName}/{_knownDirectoryPath}"), 
             Arg.Is(_knownSubscriptionId),
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
@@ -96,8 +95,7 @@ public class DirectoryCreateCommandTests
 
         _storageService.CreateDirectory(
             Arg.Is(_knownAccountName), 
-            Arg.Is(_knownFileSystemName), 
-            Arg.Is(_knownDirectoryPath),
+            Arg.Is($"{_knownFileSystemName}/{_knownDirectoryPath}"),
             Arg.Is(_knownSubscriptionId),
             null, 
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
@@ -133,7 +131,6 @@ public class DirectoryCreateCommandTests
             _storageService.CreateDirectory(
                 Arg.Any<string>(), 
                 Arg.Any<string>(), 
-                Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(), 
                 Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);

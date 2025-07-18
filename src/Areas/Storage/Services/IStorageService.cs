@@ -33,7 +33,6 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
     Task<DataLakePathInfo> CreateDirectory(
         string accountName,
-        string fileSystemName,
         string directoryPath,
         string subscriptionId,
         string? tenant = null,
