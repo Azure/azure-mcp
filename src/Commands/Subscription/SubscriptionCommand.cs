@@ -11,6 +11,7 @@ public abstract class SubscriptionCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> : GlobalCommand<TOptions>
     where TOptions : SubscriptionOptions, new()
 {
+
     protected readonly Option<string> _subscriptionOption = OptionDefinitions.Common.Subscription;
 
     protected override void RegisterOptions(Command command)

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using AzureMcp.Areas.Authorization.Commands;
 using AzureMcp.Areas.Authorization.Services;
 using AzureMcp.Commands;

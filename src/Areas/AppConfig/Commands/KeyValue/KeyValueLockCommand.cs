@@ -4,6 +4,7 @@
 using AzureMcp.Areas.AppConfig.Options.KeyValue;
 using AzureMcp.Areas.AppConfig.Services;
 using AzureMcp.Commands.AppConfig;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.AppConfig.Commands.KeyValue;
@@ -36,6 +37,8 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.LockKeyValue(
                 options.Account!,
@@ -53,7 +56,7 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred locking value. Key: {Key}, Label: {Label}", options.Key, options.Label);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

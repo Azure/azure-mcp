@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Postgres.Options.Table;
 using AzureMcp.Areas.Postgres.Services;
 using AzureMcp.Commands.Postgres;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 
@@ -28,6 +29,8 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> tables = await pgService.ListTablesAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!);
             context.Response.Results = tables?.Count > 0 ?
@@ -39,7 +42,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred listing tables.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
         return context.Response;
     }

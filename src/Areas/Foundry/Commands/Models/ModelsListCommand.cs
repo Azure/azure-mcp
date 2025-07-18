@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Extension.Options;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Areas.Foundry.Options;
 using AzureMcp.Areas.Foundry.Options.Models;
@@ -84,7 +83,7 @@ public sealed class ModelsListCommand : GlobalCommand<ModelsListOptions>
         }
         catch (Exception ex)
         {
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

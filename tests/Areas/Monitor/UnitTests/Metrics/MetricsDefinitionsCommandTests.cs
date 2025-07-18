@@ -6,7 +6,6 @@ using System.CommandLine.Parsing;
 using AzureMcp.Areas.Monitor.Commands.Metrics;
 using AzureMcp.Areas.Monitor.Models;
 using AzureMcp.Areas.Monitor.Services;
-using AzureMcp.Models;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;
