@@ -16,7 +16,6 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     private const string CommandTitle = "Create Data Lake Directory";
     private readonly ILogger<DirectoryCreateCommand> _logger = logger;
 
-    private readonly Option<string> _fileSystemNameOption = StorageOptionDefinitions.FileSystem;
     private readonly Option<string> _directoryPathOption = StorageOptionDefinitions.DirectoryPath;
 
     public override string Name => "create";
@@ -38,14 +37,14 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_fileSystemNameOption);
+        command.AddOption(StorageOptionDefinitions.FileSystem);
         command.AddOption(_directoryPathOption);
     }
 
     protected override DirectoryCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.FileSystemName = parseResult.GetValueForOption(_fileSystemNameOption);
+        options.FileSystemName = parseResult.GetValueForOption(StorageOptionDefinitions.FileSystem);
         options.DirectoryPath = parseResult.GetValueForOption(_directoryPathOption);
         return options;
     }
