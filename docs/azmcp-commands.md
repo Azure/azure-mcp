@@ -734,11 +734,11 @@ azmcp virtualdesktop hostpool list --subscription <subscription>
 
 # List session hosts in a host pool
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                --hostpool-name <hostpool-name>
+                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>]
 
 # List user sessions on a session host
 azmcp virtualdesktop hostpool sessionhost usersession-list --subscription subscription> \
-                                                --hostpool-name <hostpool-name> \
+                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
                                                 --sessionhost-name <sessionhost-name>
 ```
 
