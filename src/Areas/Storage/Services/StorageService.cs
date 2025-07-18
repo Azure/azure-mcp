@@ -359,11 +359,10 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         ValidateRequiredParameters(accountName, fileSystemName, directoryPath, subscriptionId);
 
         var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
-        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
 
         try
         {
-            var directoryClient = fileSystemClient.GetDirectoryClient(directoryPath);
+            var directoryClient = dataLakeServiceClient.GetDirectoryClient(fileSystemName, directoryPath);
             var response = await directoryClient.CreateIfNotExistsAsync();
 
             if (response?.Value == null)
