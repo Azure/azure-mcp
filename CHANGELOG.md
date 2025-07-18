@@ -1,12 +1,12 @@
 # Release History
 
+## 0.4.2 (Unreleased)
+
+- Added support for Azure Monitor Workbooks operations via commands `azmcp-workbooks-list`, `azmcp-workbooks-show`, `azmcp-workbooks-create`, `azmcp-workbooks-update`, and `azmcp-workbooks-delete`.
+
 ## 0.4.1 (2025-07-17)
 
 ### Features Added
-<<<<<<< HEAD
-- Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
-- Added support for Azure Monitor Workbooks operations via commands `azmcp-workbooks-list`, `azmcp-workbooks-show`, `azmcp-workbooks-create`, `azmcp-workbooks-update`, and `azmcp-workbooks-delete`.
-=======
 
 - Added support for the following Azure Load Testing operations: [[#315](https://github.com/Azure/azure-mcp/pull/315)]
   - `azmcp-loadtesting-testresource-list` - List Azure Load testing resources.
@@ -25,7 +25,6 @@
   - `azmcp-bestpractices-azurefunctions-get-code-generation` - Get code generation best practices for Azure Functions.
   - `azmcp-bestpractices-azurefunctions-get-deployment` - Get deployment best practices for Azure Functions.
 - Added support for get details about a product in the Azure Marketplace via the command: `azmcp-marketplace-product-get`. [[#442](https://github.com/Azure/azure-mcp/pull/442)]
->>>>>>> main
 
 ### Breaking Changes
 
