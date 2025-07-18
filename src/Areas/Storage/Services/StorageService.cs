@@ -357,23 +357,11 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     {
         ValidateRequiredParameters(accountName, directoryPath, subscriptionId);
 
-        // Parse file system name from directory path
-        // Expected format: "filesystem/directory/path"
-        var pathParts = directoryPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (pathParts.Length == 0)
-        {
-            throw new ArgumentException("Directory path must include file system name", nameof(directoryPath));
-        }
-        
-        var fileSystemName = pathParts[0];
-        var actualDirectoryPath = pathParts.Length > 1 ? string.Join("/", pathParts.Skip(1)) : "";
-
         var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
-        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
 
         try
         {
-            var directoryClient = fileSystemClient.GetDirectoryClient(actualDirectoryPath);
+            var directoryClient = dataLakeServiceClient.GetDirectoryClient(directoryPath);
             var response = await directoryClient.CreateIfNotExistsAsync();
 
             if (response?.Value == null)
@@ -381,7 +369,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
                 // Directory already exists, get its properties
                 var properties = await directoryClient.GetPropertiesAsync();
                 return new DataLakePathInfo(
-                    actualDirectoryPath,
+                    directoryPath,
                     "directory",
                     null, // Directories don't have content length
                     properties.Value.LastModified,
@@ -391,7 +379,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             {
                 // Directory was created, return new directory info
                 return new DataLakePathInfo(
-                    actualDirectoryPath,
+                    directoryPath,
                     "directory",
                     null, // Directories don't have content length
                     response.Value.LastModified,
