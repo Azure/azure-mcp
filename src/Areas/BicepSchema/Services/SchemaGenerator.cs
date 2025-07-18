@@ -9,6 +9,7 @@ using AzureMcp.Services.Azure.BicepSchema.Support;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureMcp.Areas.BicepSchema.Services;
+
 public static class SchemaGenerator
 {
     public static List<ComplexType> GetResponse(TypesDefinitionResult typesDefinitionResult)

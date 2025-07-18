@@ -7,6 +7,7 @@ using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.LoadTesting.Commands.LoadTest;
+
 public sealed class TestGetCommand(ILogger<TestGetCommand> logger)
     : BaseLoadTestingCommand<TestGetOptions>
 {

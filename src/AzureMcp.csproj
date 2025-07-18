@@ -11,15 +11,40 @@
     <!-- Publishing settings -->
     <IsAotCompatible>true</IsAotCompatible>
     <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>false</SelfContained>
+    <PublishSelfContained>true</PublishSelfContained>
     <PublishReadyToRun>false</PublishReadyToRun>
     <PublishTrimmed>false</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+
+    <!-- Multi-platform support - keep these aligned with the NPM publishing scripts -->
+    <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
+
+    <!-- .NET Tool Package settings -->
+    <!-- Bug in 10p6: if this is set to true it prevents 'normal' publishes
+         from generating apphosts. Workaround: set -p PackAsTool=true when
+         calling 'dotnet pack'.
+         See https://github.com/dotnet/sdk/issues/49799 for details. -->
+    <!-- <PackAsTool>true</PackAsTool> -->
+    <!-- Work around p6 bug by only setting the McpServer package type on the top-level wrapper package.
+         Already fixed in p7. -->
+    <PackageType Condition="'$(RuntimeIdentifier)' == ''">McpServer</PackageType>
+    <PackageId>Azure.Mcp</PackageId>
+    <PackageReadmeFile Condition="'$(RuntimeIdentifier)' == ''">README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <McpServerJsonTemplateFile>server.json</McpServerJsonTemplateFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>azure;mcp;</PackageTags>
+    <PackageReleaseNotes Condition="'$(RuntimeIdentifier)' == ''">$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)/../CHANGELOG.md').TrimEnd())</PackageReleaseNotes>
+    <ToolCommandName>$(CliName)</ToolCommandName>
+    <PackageDescription Condition="'$(RuntimeIdentifier)' == ''">Azure MCP Server - Model Context Protocol implementation for Azure</PackageDescription>
+    <PackageDescription Condition="'$(RuntimeIdentifier)' != ''">Azure MCP Server - Model Context Protocol implementation for Azure. Internal implementation package for $(RuntimeIdentifier).</PackageDescription>
 
     <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
-    <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
+    <!-- Suppress NU5104 to allow a stable package version with prerelease dependencies -->
+    <NoWarn>$(NoWarn);SYSLIB0020;NU5104</NoWarn>
   </PropertyGroup>
 
   <!-- AOT compilation flags -->
@@ -35,17 +60,17 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <!-- Multi-platform support -->
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-  </PropertyGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="Azure.Experimental.EnableActivitySource" Value="true" />
+  </ItemGroup>
+
+  <!-- These items only need to be in the top-level wrapper tool package -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == ''">
+    <None Include="../README.dotnet.md" Pack="true" PackagePath="/README.md" />
   </ItemGroup>
 
   <ItemGroup>
@@ -115,6 +140,54 @@
     <ItemGroup>
       <ContentWithTargetPath Remove="@(FilesToRemove)" />
     </ItemGroup>
+  </Target>
+
+  <PropertyGroup>
+    <_PaddedPackageTypes>;$(PackageType)</_PaddedPackageTypes>
+    <_HasMcpServerPackageType Condition="$(_PaddedPackageTypes.ToLowerInvariant().Contains(';mcpserver'))">true</_HasMcpServerPackageType>
+    <_HasMcpServerJsonTemplate Condition="'$(McpServerJsonTemplateFile)' != '' and Exists('$(McpServerJsonTemplateFile)')">true</_HasMcpServerJsonTemplate>
+    <_ShouldUpdateServerJsonForPackaging Condition="'$(_HasMcpServerPackageType)' == 'true' and '$(_HasMcpServerJsonTemplate)' == 'true'">true</_ShouldUpdateServerJsonForPackaging>
+  </PropertyGroup>
+
+  <Target
+    Name="UpdateServerJsonForPackaging"
+    DependsOnTargets="_InitializeNuspecRepositoryInformationProperties"
+    BeforeTargets="GenerateNuspec;_GetPackageFiles"
+    Outputs="@(_UpdatedServerJsonPath)"
+    Condition="'$(_ShouldUpdateServerJsonForPackaging)' == 'true'">
+    
+    <PropertyGroup>
+      <_UpdatedServerJsonPath>$(IntermediateOutputPath).mcp\server.json</_UpdatedServerJsonPath>
+      <_McpServerJsonFileContent>$([System.IO.File]::ReadAllText($(McpServerJsonTemplateFile)))</_McpServerJsonFileContent>
+    </PropertyGroup>
+
+    <!-- Maybe this can be done in a more generic way. -->
+    <PropertyGroup>
+      <_McpServerJsonFileContent>$(_McpServerJsonFileContent
+        .Replace('%24(PackageId)', '$(PackageId)')
+        .Replace('%24(PackageVersion)', '$(PackageVersion)')
+        .Replace('%24(PackageDescription)', '$(PackageDescription)')
+        .Replace('%24(RepositoryUrl)', '$(RepositoryUrl)'))</_McpServerJsonFileContent>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_McpServerJsonFileContentLine Include="$(_McpServerJsonFileContent)" />
+    </ItemGroup>
+
+    <WriteLinesToFile
+      File="$(_UpdatedServerJsonPath)"
+      Lines="@(_McpServerJsonFileContentLine)"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+      
+    <ItemGroup>
+      <ItemWrites Include="$(_UpdatedServerJsonPath)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="$(_UpdatedServerJsonPath)" Pack="true" PackagePath="/.mcp/server.json" />
+    </ItemGroup>
+    
   </Target>
 
   <PropertyGroup>

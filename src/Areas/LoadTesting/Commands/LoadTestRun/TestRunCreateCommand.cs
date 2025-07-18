@@ -8,6 +8,7 @@ using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.LoadTesting.Commands.LoadTestRun;
+
 public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
     : BaseLoadTestingCommand<TestRunCreateOptions>
 {

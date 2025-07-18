@@ -8,6 +8,7 @@ using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
 
 namespace AzureMcp.Areas.LoadTesting.Commands;
+
 public abstract class BaseLoadTestingCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseLoadTestingOptions, new()

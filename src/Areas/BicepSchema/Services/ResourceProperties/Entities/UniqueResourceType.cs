@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Areas.BicepSchema.Services.ResourceProperties.Helpers;
 
 namespace AzureMcp.Areas.BicepSchema.Services.ResourceProperties.Entities;
+
 public record UniqueResourceType
 {
     public UniqueResourceType(string resourceType)
