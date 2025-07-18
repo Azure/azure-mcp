@@ -146,6 +146,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🖥️ Azure Virtual Desktop
 - List Azure Virtual Desktop host pools
 - List session hosts in host pools
+- List user sessions on a session host
 
 ### ⚙️ Azure Native ISV Services
 - List Monitored Resources in a Datadog Monitor

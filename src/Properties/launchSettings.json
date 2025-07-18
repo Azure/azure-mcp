@@ -2,7 +2,7 @@
   "profiles": {
     "azmcp": {
       "commandName": "Project",
-      "commandLineArgs": "virtualdesktop hostpool sessionhost usersession-list --subscription RDS_AZURE_REFARCH_003 --hostpool-name SanderoPPEWUS2_02 --sessionhost-name vladimis@ntdev.microsoft.com:vladimis-rtx"
+      "commandLineArgs": "server start --transport sse"
     }
   }
 }

@@ -429,6 +429,11 @@ azmcp virtualdesktop hostpool list --subscription <subscription>
 # List session hosts in a host pool
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
                                                 --hostpool-name <hostpool-name>
+
+# List user sessions on a session host
+azmcp virtualdesktop hostpool sessionhost usersession-list --subscription subscription> \
+                                                --hostpool-name <hostpool-name> \
+                                                --sessionhost-name <sessionhost-name>
 ```
 
 ### Azure AI Foundry Operations
