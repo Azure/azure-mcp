@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,5 +22,6 @@ internal sealed class ExtensionSetup : IAreaSetup
 
         extension.AddCommand("az", new AzCommand(loggerFactory.CreateLogger<AzCommand>()));
         extension.AddCommand("azd", new AzdCommand(loggerFactory.CreateLogger<AzdCommand>()));
+        extension.AddCommand("azqr", new AzqrCommand(loggerFactory.CreateLogger<AzqrCommand>()));
     }
 }

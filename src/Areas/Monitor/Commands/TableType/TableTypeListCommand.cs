@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Monitor.Options.TableType;
 using AzureMcp.Areas.Monitor.Services;
 using AzureMcp.Commands.Monitor;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Monitor.Commands.TableType;
@@ -45,6 +46,8 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var monitorService = context.GetService<IMonitorService>();
             var tableTypes = await monitorService.ListTableTypes(
                 options.Subscription!,
@@ -63,7 +66,7 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error listing table types.");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

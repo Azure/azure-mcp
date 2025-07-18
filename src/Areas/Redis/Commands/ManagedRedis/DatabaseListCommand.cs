@@ -5,6 +5,7 @@ using AzureMcp.Areas.Redis.Models.ManagedRedis;
 using AzureMcp.Areas.Redis.Options.ManagedRedis;
 using AzureMcp.Areas.Redis.Services;
 using AzureMcp.Commands.Redis;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Redis.Commands.ManagedRedis;
@@ -38,6 +39,8 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 return context.Response;
             }
 
+            context.Activity?.WithSubscriptionTag(options);
+
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var databases = await redisService.ListDatabasesAsync(
                 options.Cluster!,
@@ -56,7 +59,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to list Redis Databases");
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

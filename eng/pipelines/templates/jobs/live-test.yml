@@ -38,6 +38,11 @@ jobs:
     retryCountOnTaskFailure: 3
     inputs:
       useGlobalJson: true
+  
+  - task: NodeTool@0
+    displayName: "Install Node.js 22"
+    inputs:
+      versionSpec: '22.x'
 
   - ${{ if eq(parameters.OSName, 'linux') }}:
     - template: /eng/common/TestResources/build-test-resource-config.yml

@@ -19,7 +19,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_list_keys()
     {
         var result = await CallToolAsync(
-            "azmcp-keyvault-key-list",
+            "azmcp_keyvault_key_list",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -38,7 +38,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         // Created in keyvault.bicep.
         var knownKeyName = "foo-bar";
         var result = await CallToolAsync(
-            "azmcp-keyvault-key-get",
+            "azmcp_keyvault_key_get",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -61,7 +61,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     {
         var keyName = Settings.ResourceBaseName + Random.Shared.NextInt64();
         var result = await CallToolAsync(
-            "azmcp-keyvault-key-create",
+            "azmcp_keyvault_key_create",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -86,7 +86,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         // Created in keyvault.bicep.
         var secretName = "foo-bar-secret";
         var result = await CallToolAsync(
-            "azmcp-keyvault-secret-get",
+            "azmcp_keyvault_secret_get",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
