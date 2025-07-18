@@ -7,11 +7,35 @@ parameters:
   default: 'public'
 
 jobs:
-- job: DockerBuildAndPublish
+- job: Stage Docker contents
   pool:
     name: $(LINUXPOOL)
     image: $(LINUXVMIMAGE)
     os: linux
+
+  steps:
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download signed packages'
+    inputs:
+      buildType: 'current'
+      artifactName: $(PipelineArtifactName)_signed
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: 'Copy Dockerfile'
+    inputs:
+      Contents: 'Dockerfile'
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: docker_drops
+
+- deployment: Publish
+  displayName: "Publish to ACR"
+  condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
 
   templateContext:
     outputs:
@@ -20,30 +44,38 @@ jobs:
       remoteImage:
       - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}.azurecr.io/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:$(variables.Version)
 
-  steps:
+  timeoutInMinutes: 120
+  pool:
+    name: $(LINUXPOOL)
+    image: $(LINUXVMIMAGE)
+    os: linux
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - download: current
+          displayName: Download 'docker_drops' artifact
+          artifact: docker_drops
 
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      buildType: 'current'
-      artifactName: $(PipelineArtifactName)_signed
-      targetPath: $(Build.SourcesDirectory)
+        - task: AzureCLI@2
+          condition: succeeded()
+          displayName: Login to ${{ parameters.ContainerRegistry }}
+          inputs:
+            azureSubscription: "Azure SDK Engineering System"
+            scriptType: pscore
+            scriptLocation: inlineScript
+            inlineScript: |
+              az acr login --name ${{ parameters.ContainerRegistry }}
+        
+        - pwsh: |
+            ls -Recurse $(Pipeline.Workspace)/docker_drops
 
-  - task: AzureCLI@2
-    condition: succeeded()
-    displayName: Login to ${{ parameters.ContainerRegistry }}
-    inputs:
-      azureSubscription: "Azure SDK Engineering System"
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az acr login --name ${{ parameters.ContainerRegistry }}
-
-  - task: 1ES.BuildContainerImage@1
-    displayName: Build Docker Image
-    inputs:
-      path: $(Build.SourcesDirectory)
-      image: image:tag
-      buildArguments: |
-        --build-arg PUBLISH_DIR="$(PipelineArtifactName)_signed/linux-x64/dist"
-      enableNetwork: true
-      useBuildKit: true
+        - task: 1ES.BuildContainerImage@1
+          displayName: Build Docker Image
+          inputs:
+            path: '$(Pipeline.Workspace)/docker_drops'
+            image: image:tag
+            buildArguments: |
+              --build-arg PUBLISH_DIR="$(PipelineArtifactName)_signed/linux-x64/dist"
+            enableNetwork: true
+            useBuildKit: true
