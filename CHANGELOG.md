@@ -9,6 +9,8 @@
 - Added new commands for Azure Function code generation and deployment best practices (https://github.com/Azure/azure-mcp/pull/630)
 - Add `azmcp sql firewall-rule list` command to list SQL server firewall rules. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
 
+- Added centralized HttpClient service with proxy support for enterprise environments. Supports `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, and `NO_PROXY` environment variables for consistent proxy configuration across all Azure MCP commands. [[#407](https://github.com/Azure/azure-mcp/issues/407)]
+
 ### Breaking Changes
 
 ### Bugs Fixed

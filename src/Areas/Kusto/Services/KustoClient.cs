@@ -3,18 +3,20 @@
 
 using System.Text.Json.Nodes;
 using Azure.Core;
+using AzureMcp.Services.Http;
 
 namespace AzureMcp.Areas.Kusto.Services;
 
 public class KustoClient(
     string clusterUri,
     TokenCredential tokenCredential,
-    string userAgent)
+    string userAgent,
+    IHttpClientService httpClientService)
 {
     private readonly string _clusterUri = clusterUri;
     private readonly TokenCredential _tokenCredential = tokenCredential;
     private readonly string _userAgent = userAgent;
-    private readonly HttpClient _httpClient = new() { BaseAddress = new Uri(clusterUri) };
+    private readonly IHttpClientService _httpClientService = httpClientService;
     private static readonly string s_application = "AzureMCP";
     private static readonly string s_clientRequestIdPrefix = "AzMcp";
     private static readonly string s_default_scope = "https://kusto.kusto.windows.net/.default";
@@ -29,7 +31,8 @@ public class KustoClient(
     {
         var uri = _clusterUri + endpoint;
         var httpRequest = await GenerateRequestAsync(uri, database, text, cancellationToken).ConfigureAwait(false);
-        return await SendRequestAsync(_httpClient, httpRequest, cancellationToken).ConfigureAwait(false);
+        using var httpClient = _httpClientService.GetHttpClient(new Uri(_clusterUri));
+        return await SendRequestAsync(httpClient, httpRequest, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<HttpRequestMessage> GenerateRequestAsync(string uri, string database, string text, CancellationToken cancellationToken = default)

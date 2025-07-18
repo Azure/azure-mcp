@@ -12,11 +12,18 @@ using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
+using AzureMcp.Services.Http;
 
 namespace AzureMcp.Areas.Foundry.Services;
 
 public class FoundryService : BaseAzureService, IFoundryService
 {
+    private readonly IHttpClientService _httpClientService;
+
+    public FoundryService(IHttpClientService httpClientService)
+    {
+        _httpClientService = httpClientService;
+    }
     public async Task<List<ModelInformation>> ListModels(
         bool searchForFreePlayground = false,
         string publisherName = "",
@@ -63,7 +70,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                         Encoding.UTF8,
                         "application/json");
 
-                    var httpResponse = await new HttpClient().PostAsync(url, content);
+                    var httpResponse = await _httpClientService.GetHttpClient().PostAsync(url, content);
                     httpResponse.EnsureSuccessStatusCode();
 
                     var responseText = await httpResponse.Content.ReadAsStringAsync();
