@@ -1,4 +1,7 @@
-﻿namespace AzureMcp.Areas.Kusto.Services;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Areas.Kusto.Services;
 
 public class KustoResult
 {

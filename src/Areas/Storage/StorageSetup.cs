@@ -4,6 +4,7 @@
 using AzureMcp.Areas.Storage.Commands.Account;
 using AzureMcp.Areas.Storage.Commands.Blob;
 using AzureMcp.Areas.Storage.Commands.Blob.Container;
+using AzureMcp.Areas.Storage.Commands.DataLake.FileSystem;
 using AzureMcp.Areas.Storage.Commands.Table;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands;
@@ -39,6 +40,14 @@ public class StorageSetup : IAreaSetup
         var blobContainer = new CommandGroup("container", "Storage blob container operations - Commands for managing blob container in your Azure Storage accounts.");
         blobs.AddSubGroup(blobContainer);
 
+        // Create Data Lake subgroup under storage
+        var dataLake = new CommandGroup("datalake", "Data Lake Storage operations - Commands for managing Azure Data Lake Storage Gen2 file systems and paths.");
+        storage.AddSubGroup(dataLake);
+
+        // Create file-system subgroup under datalake
+        var fileSystem = new CommandGroup("file-system", "Data Lake file system operations - Commands for managing file systems and paths in Azure Data Lake Storage Gen2.");
+        dataLake.AddSubGroup(fileSystem);
+
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(
             loggerFactory.CreateLogger<AccountListCommand>()));
@@ -51,5 +60,8 @@ public class StorageSetup : IAreaSetup
             loggerFactory.CreateLogger<ContainerListCommand>()));
         blobContainer.AddCommand("details", new ContainerDetailsCommand(
             loggerFactory.CreateLogger<ContainerDetailsCommand>()));
+
+        fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(
+            loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
     }
 }

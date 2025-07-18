@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
@@ -46,7 +46,7 @@ public sealed class CommandGroupServerProvider(CommandGroup commandGroup) : IMcp
 
         if (ReadOnly)
         {
-            arguments.Add($"--${OptionDefinitions.Service.ReadOnlyName}");
+            arguments.Add($"--${ServiceOptionDefinitions.ReadOnlyName}");
         }
 
         var transportOptions = new StdioClientTransportOptions

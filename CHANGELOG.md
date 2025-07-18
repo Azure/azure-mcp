@@ -1,18 +1,79 @@
 # Release History
 
-## 0.3.3 (Unreleased)
+## 0.4.2 (Unreleased)
 
 ### Features Added
-
-- Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
-
-- Support for Azure Kubernetes Service (AKS) operations - List AKS clusters in a subscription. [#560](https://github.com/Azure/azure-mcp/pull/560)
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+
+## 0.4.1 (2025-07-17)
+
+### Features Added
+
+- Added support for the following Azure Load Testing operations: [[#315](https://github.com/Azure/azure-mcp/pull/315)]
+  - `azmcp-loadtesting-testresource-list` - List Azure Load testing resources.
+  - `azmcp-loadtesting-testresource-create` - Create a new Azure Load testing resource.
+  - `azmcp-loadtesting-test-get` - Get details of a specific load test configuration.
+  - `azmcp-loadtesting-test-create` - Create a new load test configuration.
+  - `azmcp-loadtesting-testrun-get` - Get details of a specific load test run.
+  - `azmcp-loadtesting-testrun-list` - List all load test runs for a specific test.
+  - `azmcp-loadtesting-testrun-create` - Create a new load test run.
+  - `azmcp-loadtesting-testrun-delete` - Delete a specific load test run.
+- Added support for scanning Azure resources for compliance recommendations using the Azure Quick Review CLI via the command: `azmcp-extension-azqr`. [[#510](https://github.com/Azure/azure-mcp/pull/510)]
+- Added support for listing paths in Data Lake file systems via the command: `azmcp-storage-datalake-file-system-list-paths`. [[#608](https://github.com/Azure/azure-mcp/pull/608)]
+- Added support for listing SQL elastic pools via the command: `azmcp-sql-elastic-pool-list`. [[#606](https://github.com/Azure/azure-mcp/pull/606)]
+- Added support for listing SQL server firewall rules via the command: `azmcp-sql-firewall-rule-list`. [[#610](https://github.com/Azure/azure-mcp/pull/610)]
+- Added new commands for obtaining Azure Functions best practices via the following commands: [[#630](https://github.com/Azure/azure-mcp/pull/630)]
+  - `azmcp-bestpractices-azurefunctions-get-code-generation` - Get code generation best practices for Azure Functions.
+  - `azmcp-bestpractices-azurefunctions-get-deployment` - Get deployment best practices for Azure Functions.
+- Added support for get details about a product in the Azure Marketplace via the command: `azmcp-marketplace-product-get`. [[#442](https://github.com/Azure/azure-mcp/pull/442)]
+
+### Breaking Changes
+
+- Renamed the command `azmcp-bestpractices-get` to `azmcp-bestpractices-general-get`. [[#630](https://github.com/Azure/azure-mcp/pull/630)]
+
+### Bugs Fixed
+
+- Fixed an issue with Azure CLI executable path resolution on Windows. [[#611](https://github.com/Azure/azure-mcp/issues/611)]
+- Fixed a tool discovery timing issue when calling tools on fresh server instances. [[#604](https://github.com/Azure/azure-mcp/issues/604)]
+- Fixed issue where unrecognizable json would be sent to MCP clients in STDIO mode at startup. [[#644](https://github.com/Azure/azure-mcp/issues/644)]
+
+### Other Changes
+
+- Changed `engines.node` in `package.json` to require Node.js version `>=20.0.0`. [[#628](https://github.com/Azure/azure-mcp/pull/628)]
+
+## 0.4.0 (2025-07-15)
+
+### Features Added
+
+- Added support for listing Azure Kubernetes Service (AKS) clusters via the command `azmcp-aks-cluster-list`. [[#560](https://github.com/Azure/azure-mcp/pull/560)]
+- Made the following Ahead of Time (AOT) compilation improvements saving `6.96 MB` in size total:
+  - Switched to the trimmer-friendly `CreateSlimBuilder` API from `CreateBuilder`, saving `0.63 MB` in size for the native executable. [[#564](https://github.com/Azure/azure-mcp/pull/564)]
+  - Switched to the trimmer-friendly `npgsql` API, saving `2.69 MB` in size for the native executable. [[#592](https://github.com/Azure/azure-mcp/pull/592)]
+  - Enabled `IlcFoldIdenticalMethodBodies` to fold identical method bodies, saving `3.64 MB` in size for the native executable. [[#598](https://github.com/Azure/azure-mcp/pull/598)]
+- Added support for using the hyphen/dash ("-") character in command names. [[#531](https://github.com/Azure/azure-mcp/pull/531)]
+- Added support for authenticating with the Azure account used to log into VS Code. Authentication now prioritizes the VS Code broker credential when in the context of VS Code. [[#452](https://github.com/Azure/azure-mcp/pull/452)]
+
+### Breaking Changes
+
+- Removed SSE (Server-Sent Events) transport support. Now, only stdio transport is supported as SSE is no longer part of the MCP specification. [[#593](https://github.com/Azure/azure-mcp/issues/593)]
+- Renamed `azmcp-sql-server-entraadmin-list` to `azmcp-sql-server-entra-admin-list` for better readability. [[#602](https://github.com/Azure/azure-mcp/pull/602)]
+
+### Bugs Fixed
+
+- Added a post-install script to ensure platform-specific versions like `@azure/mcp-${platform}-${arch}` can be resolved. Otherwise, fail install to prevent npx caching of `@azure/mcp`. [[#597](https://github.com/Azure/azure-mcp/pull/597)]
+- Improved install reliability and error handling when missing platform packages on Ubuntu. [[#394](https://github.com/Azure/azure-mcp/pull/394)]
+
+### Other Changes
+- Updated `engines.node` in `package.json` to require Node.js version `>=22.0.0`.
+
+#### Dependency Updates
+
+- Updated the `ModelContextProtocol.AspNetCore` version from `0.3.0-preview.1` to `0.3.0-preview.2`. [[#519](https://github.com/Azure/azure-mcp/pull/519)]
 
 ## 0.3.2 (2025-07-10)
 
@@ -32,7 +93,7 @@
 
 - Added support for the following SQL operations:
   - `azmcp-sql-db-show` - Show details of a SQL Database [[#516](https://github.com/Azure/azure-mcp/pull/516)]
-  - `azmcp-sql-server-entraadmin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
+  - `azmcp-sql-server-entra-admin-list` - List Microsoft Entra ID administrators for a SQL server [[#529](https://github.com/Azure/azure-mcp/pull/529)]
 - Updates Azure MCP tool loading configurations at launch time. [[#513](https://github.com/Azure/azure-mcp/pull/513)]
 
 ### Breaking Changes

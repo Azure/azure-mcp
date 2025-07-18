@@ -68,6 +68,7 @@ internal class Program
             new AzureMcp.Areas.Grafana.GrafanaSetup(),
             new AzureMcp.Areas.KeyVault.KeyVaultSetup(),
             new AzureMcp.Areas.Kusto.KustoSetup(),
+            new AzureMcp.Areas.Marketplace.MarketplaceSetup(),
             new AzureMcp.Areas.Monitor.MonitorSetup(),
             new AzureMcp.Areas.Postgres.PostgresSetup(),
             new AzureMcp.Areas.Redis.RedisSetup(),
@@ -77,6 +78,7 @@ internal class Program
             new AzureMcp.Areas.Storage.StorageSetup(),
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
+            new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
         ];
     }
 

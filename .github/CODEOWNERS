@@ -102,6 +102,13 @@
 # ServiceOwners:                       @danield137
 
 
+# PRLabel: %area-Marketplace
+/src/Areas/Marketplace/                @meirloichter @Azure/azure-mcp
+
+# ServiceLabel: %area-Marketplace
+# ServiceOwners:                       @meirloichter
+
+
 # PRLabel: %area-Monitor
 /src/Areas/Monitor/                    @smritiy @srnagar @jongio @Azure/azure-mcp
 
@@ -146,3 +153,9 @@
 
 # ServiceLabel: %area-Authorization
 # ServiceOwners:                       @vurhanau
+
+# PRLabel: %area-LoadTesting
+/src/Areas/LoadTesting/                  @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
+
+# ServiceLabel: %area-LoadTesting
+# ServiceOwners:                       @nishtha489 @knarayanana @krchanda @johnsta

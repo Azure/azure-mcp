@@ -1,0 +1,102 @@
+parameters:
+# required matrix parameters
+- name: UsePlatformContainer
+  type: boolean
+- name: OSName
+  type: string
+- name: Matrix
+  type: object
+- name: DependsOn
+  type: string
+- name: CloudConfig
+  type: object
+- name: TestTimeoutInMinutes
+  type: number
+- name: SkipSigning
+  type: boolean
+  default: false
+
+jobs:
+- job: Build_${{ parameters.OSName }}
+  displayName: "Build"
+  dependsOn:
+  - ${{ parameters.DependsOn }}
+  strategy:
+    matrix: $[ ${{ parameters.Matrix }} ]
+  pool:
+    name: $(Pool)
+    ${{ if eq(parameters.OSName, 'macOS') }}:
+      vmImage: $(OSVmImage)
+    ${{ else }}:
+      image: $(OSVmImage)
+    os: ${{ parameters.OSName }}
+  steps:
+  - checkout: self
+
+  - ${{ if not(parameters.SkipSigning) }}:
+    # Download the signed MCP server binaries for this OS
+    - download: current
+      artifact: $(PipelineArtifactName)_signed
+      displayName: "Download signed MCP server binaries"
+
+    # Copy binaries to eng/vscode/server/<os>
+    - ${{ if eq(parameters.OSName, 'windows') }}:
+        - powershell: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/win-$arch/dist/*"
+            $dest = "eng/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
+          displayName: "Copy signed MCP server binaries to VSIX (Windows)"
+    - ${{ if eq(parameters.OSName, 'linux') }}:
+        - pwsh: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-$arch/dist/*"
+            $dest = "eng/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
+          displayName: "Copy signed MCP server binaries to VSIX (Linux)"
+    - ${{ if eq(parameters.OSName, 'macOS') }}:
+        - pwsh: |
+            $arch = "$(Architecture)"
+            $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/osx-$arch/dist/*"
+            $dest = "eng/vscode/server"
+            New-Item -ItemType Directory -Force -Path $dest
+            Copy-Item -Path $src -Destination $dest -Recurse -Force
+          displayName: "Copy signed MCP server binaries to VSIX (macOS)"
+
+  # --- VS Code Extension Packaging Steps ---
+  - task: NodeTool@0
+    displayName: "Use Node.js 20.x"
+    inputs:
+      versionSpec: 20.x
+  - pwsh: |
+      npm install -g npm vsce
+      npm ci --no-optional
+    displayName: "Install npm dependencies and vsce"
+    workingDirectory: eng/vscode
+
+  - pwsh: |
+      $packageJson = Get-Content eng/vscode/package.json -Raw | ConvertFrom-Json
+      Write-Host "##vso[task.setvariable variable=VsixVersion]$($packageJson.version)"
+    displayName: "Extract VSIX version from package.json"
+
+  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '$(VsixVersion)'
+    workingDirectory: eng/vscode
+    displayName: "Package VS Code Extension"
+
+  - pwsh: |
+      New-Item -ItemType Directory -Path packaged -Force
+      Copy-Item eng/vscode/*.vsix -Destination packaged -Force
+    displayName: Copy VSIX for publishing
+    condition: always()
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: "Component Governance Detection"
+
+  # Publish the VSIX extension artifact using 1ES-compliant template
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: packaged
+      ArtifactName: vsix_package_$(System.JobName)
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
