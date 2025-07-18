@@ -18,17 +18,17 @@ namespace AzureMcp.Tests.Areas.Workbooks.UnitTests;
 [Trait("Area", "Workbooks")]
 public class ListWorkbooksCommandTests
 {
-  private readonly IServ            "--source-id", "test-source"
+    private readonly IServ            "--source-id", "test-source"
         ]);
 
         // Act
         var context = new CommandContext(_serviceProvider);
-  var response = await _command.ExecuteAsync(context, args);
+    var response = await _command.ExecuteAsync(context, args);
 
-  // Assert
-  Assert.NotNull(response);der _serviceProvider;
-  private readonly IWorkbooksService _service;
-  private readonly ILogger<ListWorkbooksCommand> _logger;
+    // Assert
+    Assert.NotNull(response);der _serviceProvider;
+    private readonly IWorkbooksService _service;
+    private readonly ILogger<ListWorkbooksCommand> _logger;
     private readonly ListWorkbooksCommand _command;
 
     public ListWorkbooksCommandTests()
@@ -112,19 +112,19 @@ public class ListWorkbooksCommandTests
             )
         };
 
-    _service.ListWorkbooks(
-Arg.Is("sub123"),
-            Arg.Is("rg123"),
-            Arg.Any<WorkbookFilters?>(),
-            Arg.Any<RetryPolicyOptions?>(),
-            Arg.Any<string?>())
-            .Returns(Task.FromException<List<WorkbookInfo>>(new Exception("Service error")));
+        _service.ListWorkbooks(
+    Arg.Is("sub123"),
+                Arg.Is("rg123"),
+                Arg.Any<WorkbookFilters?>(),
+                Arg.Any<RetryPolicyOptions?>(),
+                Arg.Any<string?>())
+                .Returns(Task.FromException<List<WorkbookInfo>>(new Exception("Service error")));
 
-    var args = _command.GetCommand().Parse([
-            "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+                "--subscription", "sub123",
             "--resource-group", "rg123",
             "--tenant", "tenant123"
-        ]);
+            ]);
 
         var context = new CommandContext(_serviceProvider);
 
@@ -443,11 +443,11 @@ Arg.Is("sub123"),
         Assert.Contains("Notebook/1.0", workbook.SerializedData);
     }
 
-  [Fact]
-  public async Task ExecuteAsync_WithKindFilter_PassesCorrectFilter()
-  {
-    // Arrange
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithKindFilter_PassesCorrectFilter()
+    {
+        // Arrange
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -465,42 +465,42 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared"),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared"),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--kind", "shared"
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared"),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared"),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Fact]
-  public async Task ExecuteAsync_WithCategoryFilter_PassesCorrectFilter()
-  {
-    // Arrange
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithCategoryFilter_PassesCorrectFilter()
+    {
+        // Arrange
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -518,43 +518,43 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Category == "sentinel"),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Category == "sentinel"),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--category", "sentinel"
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Category == "sentinel"),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Category == "sentinel"),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Fact]
-  public async Task ExecuteAsync_WithSourceIdFilter_PassesCorrectFilter()
-  {
-    // Arrange
-    var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithSourceIdFilter_PassesCorrectFilter()
+    {
+        // Arrange
+        var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -572,42 +572,42 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--source-id", sourceId
-    ]);
+        ]);
 
-    // Act
-    var response = await _command.ExecuteAsync(CreateContext(args), args);
+        // Act
+        var response = await _command.ExecuteAsync(CreateContext(args), args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Fact]
-  public async Task ExecuteAsync_WithMultipleFilters_PassesCorrectFilters()
-  {
-    // Arrange
-    var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithMultipleFilters_PassesCorrectFilters()
+    {
+        // Arrange
+        var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -625,44 +625,44 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--kind", "shared",
             "--category", "sentinel",
             "--source-id", sourceId
-    ]);
+        ]);
 
-    // Act
-    var response = await _command.ExecuteAsync(CreateContext(args), args);
+        // Act
+        var response = await _command.ExecuteAsync(CreateContext(args), args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Fact]
-  public async Task ExecuteAsync_WithAllFiltersApplied_PassesCorrectFilters()
-  {
-    // Arrange
-    var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithAllFiltersApplied_PassesCorrectFilters()
+    {
+        // Arrange
+        var sourceId = "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/components/myapp";
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -680,44 +680,44 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--kind", "shared",
             "--category", "sentinel",
             "--source-id", sourceId
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == "shared" && f.Category == "sentinel" && f.SourceId == sourceId),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Fact]
-  public async Task ExecuteAsync_WithoutFilters_PassesEmptyFilters()
-  {
-    // Arrange
-    var expectedWorkbooks = new List<WorkbookInfo>
+    [Fact]
+    public async Task ExecuteAsync_WithoutFilters_PassesEmptyFilters()
+    {
+        // Arrange
+        var expectedWorkbooks = new List<WorkbookInfo>
         {
             new WorkbookInfo(
                 WorkbookId: "/subscriptions/sub1/resourceGroups/rg1/providers/microsoft.insights/workbooks/workbook1",
@@ -735,114 +735,114 @@ Arg.Is("sub123"),
             )
         };
 
-    _service.ListWorkbooks(
-        Arg.Is("sub123"),
-        Arg.Is("rg123"),
-        Arg.Is<WorkbookFilters?>(f => f != null && !f.HasFilters),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+        _service.ListWorkbooks(
+            Arg.Is("sub123"),
+            Arg.Is("rg123"),
+            Arg.Is<WorkbookFilters?>(f => f != null && !f.HasFilters),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123"
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.NotNull(response.Results);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && !f.HasFilters),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && !f.HasFilters),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Theory]
-  [InlineData("shared")]
-  [InlineData("user")]
-  public async Task ExecuteAsync_WithValidKind_AcceptsKindValue(string kind)
-  {
-    // Arrange
-    var expectedWorkbooks = new List<WorkbookInfo>();
-    _service.ListWorkbooks(
-        Arg.Any<string>(),
-        Arg.Any<string>(),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == kind),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+    [Theory]
+    [InlineData("shared")]
+    [InlineData("user")]
+    public async Task ExecuteAsync_WithValidKind_AcceptsKindValue(string kind)
+    {
+        // Arrange
+        var expectedWorkbooks = new List<WorkbookInfo>();
+        _service.ListWorkbooks(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == kind),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--kind", kind
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == kind),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Kind == kind),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  [Theory]
-  [InlineData("workbook")]
-  [InlineData("sentinel")]
-  [InlineData("TSG")]
-  [InlineData("application")]
-  public async Task ExecuteAsync_WithValidCategory_AcceptsCategoryValue(string category)
-  {
-    // Arrange
-    var expectedWorkbooks = new List<WorkbookInfo>();
-    _service.ListWorkbooks(
-        Arg.Any<string>(),
-        Arg.Any<string>(),
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Category == category),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>())
-        .Returns(expectedWorkbooks);
+    [Theory]
+    [InlineData("workbook")]
+    [InlineData("sentinel")]
+    [InlineData("TSG")]
+    [InlineData("application")]
+    public async Task ExecuteAsync_WithValidCategory_AcceptsCategoryValue(string category)
+    {
+        // Arrange
+        var expectedWorkbooks = new List<WorkbookInfo>();
+        _service.ListWorkbooks(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Category == category),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>())
+            .Returns(expectedWorkbooks);
 
-    var args = _command.GetCommand().Parse([
-        "--subscription", "sub123",
+        var args = _command.GetCommand().Parse([
+            "--subscription", "sub123",
             "--resource-group", "rg123",
             "--category", category
-    ]);
+        ]);
 
-    // Act
-    var context = new CommandContext(_serviceProvider);
-    var response = await _command.ExecuteAsync(context, args);
+        // Act
+        var context = new CommandContext(_serviceProvider);
+        var response = await _command.ExecuteAsync(context, args);
 
-    // Assert
-    Assert.NotNull(response);
-    Assert.Equal(200, response.Status);
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
 
-    await _service.Received(1).ListWorkbooks(
-        "sub123",
-        "rg123",
-        Arg.Is<WorkbookFilters?>(f => f != null && f.Category == category),
-        Arg.Any<RetryPolicyOptions?>(),
-        Arg.Any<string?>());
-  }
+        await _service.Received(1).ListWorkbooks(
+            "sub123",
+            "rg123",
+            Arg.Is<WorkbookFilters?>(f => f != null && f.Category == category),
+            Arg.Any<RetryPolicyOptions?>(),
+            Arg.Any<string?>());
+    }
 
-  private class ListWorkbooksCommandResult
-  {
+    private class ListWorkbooksCommandResult
+    {
         public List<WorkbookInfo> Workbooks { get; set; } = [];
     }
 }

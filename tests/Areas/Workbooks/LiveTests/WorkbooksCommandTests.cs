@@ -166,285 +166,285 @@ public class WorkbooksCommandTests(LiveTestFixture fixture, ITestOutputHelper ou
         }
     }
 
-  [Theory]
-  [InlineData(0)] // Credential auth
-  [InlineData(1)] // Key auth
-  [Trait("Category", "Live")]
-  public async Task Should_list_workbooks_with_auth_method(int authMethod)
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Theory]
+    [InlineData(0)] // Credential auth
+    [InlineData(1)] // Key auth
+    [Trait("Category", "Live")]
+    public async Task Should_list_workbooks_with_auth_method(int authMethod)
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "auth-method", authMethod }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
-  }
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+    }
 
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_kind_shared()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_kind_shared()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "kind", "shared" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks are shared
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Kind", out var kind));
-      Assert.Equal("shared", kind.GetString());
-    }
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_kind_user()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
+        // Verify all returned workbooks are shared
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
         {
+            Assert.True(workbook.TryGetProperty("Kind", out var kind));
+            Assert.Equal("shared", kind.GetString());
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_kind_user()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "kind", "user" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks are user workbooks
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Kind", out var kind));
-      Assert.Equal("user", kind.GetString());
+        // Verify all returned workbooks are user workbooks
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Kind", out var kind));
+            Assert.Equal("user", kind.GetString());
+        }
+
+        // Should find at least the user workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the user workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_category_workbook()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_category_workbook()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "category", "workbook" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks have category "workbook"
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Category", out var category));
-      Assert.Equal("workbook", category.GetString());
+        // Verify all returned workbooks have category "workbook"
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Category", out var category));
+            Assert.Equal("workbook", category.GetString());
+        }
+
+        // Should find multiple workbooks with this category
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find multiple workbooks with this category
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_category_sentinel()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_category_sentinel()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "category", "sentinel" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks have category "sentinel"
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Category", out var category));
-      Assert.Equal("sentinel", category.GetString());
+        // Verify all returned workbooks have category "sentinel"
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Category", out var category));
+            Assert.Equal("sentinel", category.GetString());
+        }
+
+        // Should find at least the sentinel workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the sentinel workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_category_TSG()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_category_TSG()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "category", "TSG" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks have category "TSG"
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Category", out var category));
-      Assert.Equal("TSG", category.GetString());
+        // Verify all returned workbooks have category "TSG"
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Category", out var category));
+            Assert.Equal("TSG", category.GetString());
+        }
+
+        // Should find at least the TSG workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the TSG workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_source_id_azure_monitor()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_source_id_azure_monitor()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "source-id", "azure monitor" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks have sourceId "azure monitor"
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("SourceId", out var sourceId));
-      Assert.Equal("azure monitor", sourceId.GetString());
+        // Verify all returned workbooks have sourceId "azure monitor"
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("SourceId", out var sourceId));
+            Assert.Equal("azure monitor", sourceId.GetString());
+        }
+
+        // Should find at least the TSG workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the TSG workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_multiple_filters()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_multiple_filters()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "kind", "shared" },
                 { "category", "sentinel" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks match both filters
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Kind", out var kind));
-      Assert.Equal("shared", kind.GetString());
+        // Verify all returned workbooks match both filters
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Kind", out var kind));
+            Assert.Equal("shared", kind.GetString());
 
-      Assert.True(workbook.TryGetProperty("Category", out var category));
-      Assert.Equal("sentinel", category.GetString());
+            Assert.True(workbook.TryGetProperty("Category", out var category));
+            Assert.Equal("sentinel", category.GetString());
+        }
+
+        // Should find at least the sentinel workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the sentinel workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_filter_workbooks_by_all_filters_combined()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_filter_workbooks_by_all_filters_combined()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "kind", "shared" },
                 { "category", "TSG" },
                 { "source-id", "azure monitor" }
-        });
+            });
 
-    var workbooks = result.AssertProperty("Workbooks");
-    Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+        var workbooks = result.AssertProperty("Workbooks");
+        Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
 
-    // Verify all returned workbooks match all three filters
-    var workbooksArray = workbooks.EnumerateArray();
-    foreach (var workbook in workbooksArray)
-    {
-      Assert.True(workbook.TryGetProperty("Kind", out var kind));
-      Assert.Equal("shared", kind.GetString());
+        // Verify all returned workbooks match all three filters
+        var workbooksArray = workbooks.EnumerateArray();
+        foreach (var workbook in workbooksArray)
+        {
+            Assert.True(workbook.TryGetProperty("Kind", out var kind));
+            Assert.Equal("shared", kind.GetString());
 
-      Assert.True(workbook.TryGetProperty("Category", out var category));
-      Assert.Equal("TSG", category.GetString());
+            Assert.True(workbook.TryGetProperty("Category", out var category));
+            Assert.Equal("TSG", category.GetString());
 
-      Assert.True(workbook.TryGetProperty("SourceId", out var sourceId));
-      Assert.Equal("azure monitor", sourceId.GetString());
+            Assert.True(workbook.TryGetProperty("SourceId", out var sourceId));
+            Assert.Equal("azure monitor", sourceId.GetString());
+        }
+
+        // Should find at least the TSG workbook from our bicep template
+        Assert.NotEmpty(workbooksArray);
     }
 
-    // Should find at least the TSG workbook from our bicep template
-    Assert.NotEmpty(workbooksArray);
-  }
-
-  [Fact]
-  [Trait("Category", "Live")]
-  public async Task Should_return_empty_results_for_non_matching_filter()
-  {
-    var result = await CallToolAsync(
-        "azmcp_workbooks_list",
-        new()
-        {
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_return_empty_results_for_non_matching_filter()
+    {
+        var result = await CallToolAsync(
+            "azmcp_workbooks_list",
+            new()
+            {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", Settings.ResourceGroupName },
                 { "category", "non-existent-category" }
-        });
+            });
 
-    // Should return empty results
-    if (result.Value.TryGetProperty("Workbooks", out var workbooks))
-    {
-      Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
-      Assert.Empty(workbooks.EnumerateArray());
+        // Should return empty results
+        if (result.Value.TryGetProperty("Workbooks", out var workbooks))
+        {
+            Assert.Equal(JsonValueKind.Array, workbooks.ValueKind);
+            Assert.Empty(workbooks.EnumerateArray());
+        }
+        else
+        {
+            // No results property means no workbooks found, which is expected
+            Assert.True(true);
+        }
     }
-    else
-    {
-      // No results property means no workbooks found, which is expected
-      Assert.True(true);
-    }
-  }
 
-  [Theory]
+    [Theory]
     [InlineData(0)] // Credential auth
     [InlineData(1)] // Key auth
     [Trait("Category", "Live")]

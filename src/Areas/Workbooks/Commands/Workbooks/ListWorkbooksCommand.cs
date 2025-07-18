@@ -64,10 +64,10 @@ public sealed class ListWorkbooksCommand(ILogger<ListWorkbooksCommand> logger) :
             var workbooksService = context.GetService<IWorkbooksService>();
             var filters = options.ToFilters();
             var workbooks = await workbooksService.ListWorkbooks(
-                options.Subscription!, 
-                options.ResourceGroup!, 
+                options.Subscription!,
+                options.ResourceGroup!,
                 filters,
-                options.RetryPolicy, 
+                options.RetryPolicy,
                 options.Tenant);
 
             context.Response.Results = workbooks?.Count > 0

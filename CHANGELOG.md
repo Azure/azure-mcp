@@ -4,6 +4,7 @@
 
 ### Features Added
 - Support for Azure Load testing operations - Modify load testing resource, test and test runs. [#315](https://github.com/Azure/azure-mcp/pull/315)
+- Added support for Azure Monitor Workbooks operations via commands `azmcp-workbooks-list`, `azmcp-workbooks-show`, `azmcp-workbooks-create`, `azmcp-workbooks-update`, and `azmcp-workbooks-delete`.
 
 ### Breaking Changes
 
