@@ -40,6 +40,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | SQL | Manage SQL databases and servers.                | [![Install](https://img.shields.io/badge/VS_Code-Install_sql-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20SQL%20Database&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22sql%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_sql-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20SQL%20Database%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22sql%22%2C%22--read-only%22%5D%7D) |
 | Storage      | Manage storage accounts and blob data.           | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Storage&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22storage%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Storage%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22storage%22%2C%22--read-only%22%5D%7D) |
 | Subscription | Manage Azure subscription details.               | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Subscription&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22subscription%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Subscription%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22subscription%22%2C%22--read-only%22%5D%7D) |
+| Workbooks    | Manage monitoring workbooks and dashboards.      | [![Install](https://img.shields.io/badge/VS_Code-Install_workbooks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Workbooks&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22workbooks%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_workbooks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Workbooks%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22workbooks%22%2C%22--read-only%22%5D%7D) |
 
 ###  ▶️ Getting Started
 1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
@@ -86,6 +87,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Get details about my Storage container"
 - "List paths in my Data Lake file system"
 - "Show my key-value pairs in App Config"
+
+### 📈 Azure Workbooks
+- "List my Azure workbooks in resource group 'mygroup'"
+- "Show me details about workbook 'myworkbook'"
+- "Create a new workbook for monitoring"
+- "Update my existing workbook configuration"
 
 ### 🔧 Azure Resource Management
 - "List my resource groups"
@@ -192,6 +199,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - List paths in Data Lake file systems
 - Get container properties and metadata
 
+### 📈 Azure Workbooks
+- List workbooks in resource groups
+- Create and configure monitoring workbooks
+- Update workbook content and properties
+- Delete workbooks by Azure resource ID
+- Filter workbooks by kind, category, or source
 ### 📦 Azure Load Testing
 - List, create load test resources
 - List, create load tests

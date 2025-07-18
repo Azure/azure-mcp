@@ -1,5 +1,9 @@
 # Release History
 
+## 0.4.2 (Unreleased)
+
+- Added support for Azure Monitor Workbooks operations via commands `azmcp-workbooks-list`, `azmcp-workbooks-show`, `azmcp-workbooks-create`, `azmcp-workbooks-update`, and `azmcp-workbooks-delete`.
+
 ## 0.4.1 (2025-07-17)
 
 ### Features Added
