@@ -299,6 +299,8 @@
         "operationalinsights",
         "piechart",
         "timechart",
-        "myapp"
+        "myapp",
+        "mygroup",
+        "myworkbook"
     ]
 }
