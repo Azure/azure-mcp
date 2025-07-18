@@ -7,14 +7,14 @@ parameters:
   default: 'public'
 
 jobs:
-- job: Stage Docker contents
+- job: CreateDockerArtifact
+  displayName: 'Creating Docker artifact'
   pool:
     name: $(LINUXPOOL)
     image: $(LINUXVMIMAGE)
     os: linux
 
   steps:
-
   - task: DownloadPipelineArtifact@2
     displayName: 'Download signed packages'
     inputs:
@@ -49,6 +49,7 @@ jobs:
     name: $(LINUXPOOL)
     image: $(LINUXVMIMAGE)
     os: linux
+  environment: package-publish
   strategy:
     runOnce:
       deploy:
