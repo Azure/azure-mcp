@@ -34,7 +34,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az acr login --name $(containerRegistry)
+        az acr login --name ${{ parameters.ContainerRegistry }}
 
   - task: 1ES.BuildContainerImage@1
     displayName: Build Docker Image
@@ -42,6 +42,6 @@ jobs:
       path: $(Build.SourcesDirectory)
       image: image:tag
       buildArguments: |
-        --build-arg PUBLISH_DIR="$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-x64"
+        --build-arg PUBLISH_DIR="$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-x64/dist"
       enableNetwork: true
       useBuildKit: true
