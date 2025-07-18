@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using AzureMcp.Sql.Commands.Database;
 using AzureMcp.Sql.Commands.ElasticPool;
 using AzureMcp.Sql.Commands.EntraAdmin;
 using AzureMcp.Sql.Commands.FirewallRule;
 using AzureMcp.Sql.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Sql;
 

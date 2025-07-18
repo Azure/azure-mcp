@@ -4,9 +4,9 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using AzureMcp.Server.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Server.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol;

@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Commands.Blob;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Storage;
 

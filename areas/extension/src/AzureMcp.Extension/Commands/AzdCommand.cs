@@ -3,11 +3,11 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using AzureMcp.Extension.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Helpers;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.ProcessExecution;
+using AzureMcp.Extension.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Extension.Commands;
@@ -279,7 +279,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
                 break;
         }
 
-        response.Results = ResponseResult.Create(contentResults, JsonSourceGenerationContext.Default.ListString);
+        response.Results = ResponseResult.Create(contentResults, ExtensionJsonContext.Default.ListString);
 
         return response;
     }
@@ -351,7 +351,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
             );
         }
 
-        response.Results = ResponseResult.Create(contentResults, JsonSourceGenerationContext.Default.ListString);
+        response.Results = ResponseResult.Create(contentResults, ExtensionJsonContext.Default.ListString);
 
         return response;
     }

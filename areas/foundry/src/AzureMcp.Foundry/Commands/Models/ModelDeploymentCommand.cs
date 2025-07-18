@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Foundry.Options;
 using AzureMcp.Foundry.Options.Models;
 using AzureMcp.Foundry.Services;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Services.Telemetry;
 
 namespace AzureMcp.Foundry.Commands.Models;
 

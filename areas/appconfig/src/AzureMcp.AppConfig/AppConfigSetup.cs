@@ -4,10 +4,10 @@
 using AzureMcp.AppConfig.Commands.Account;
 using AzureMcp.AppConfig.Commands.KeyValue;
 using AzureMcp.AppConfig.Services;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.AppConfig;
 

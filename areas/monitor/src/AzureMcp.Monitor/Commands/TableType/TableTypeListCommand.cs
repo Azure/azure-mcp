@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Options.TableType;
 using AzureMcp.Monitor.Services;
-using AzureMcp.Monitor.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Monitor.Commands.TableType;

@@ -7,10 +7,10 @@ using System.Text.Json;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Monitor.Services;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Monitor.Services;
 using NSubstitute;
 using Xunit;
 

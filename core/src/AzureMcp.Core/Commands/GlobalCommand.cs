@@ -12,7 +12,7 @@ using AzureMcp.Core.Options;
 
 namespace AzureMcp.Core.Commands;
 
-internal static class TrimAnnotations
+public static class TrimAnnotations
 {
     public const DynamicallyAccessedMemberTypes CommandAnnotations =
         DynamicallyAccessedMemberTypes.PublicProperties

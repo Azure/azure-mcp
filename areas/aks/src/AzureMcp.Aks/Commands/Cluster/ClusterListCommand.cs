@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Aks.Commands;
 using AzureMcp.Aks.Models;
 using AzureMcp.Aks.Options.Cluster;
 using AzureMcp.Aks.Services;
-using AzureMcp.Aks.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -78,5 +78,5 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
         _ => base.GetStatusCode(ex)
     };
 
-    internal record ClusterListCommandResult(List<Models.Cluster> Clusters);
+    public record ClusterListCommandResult(List<Models.Cluster> Clusters);
 }

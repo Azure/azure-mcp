@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.Sql;
-using AzureMcp.Sql.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Sql.Models;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Sql.Services;

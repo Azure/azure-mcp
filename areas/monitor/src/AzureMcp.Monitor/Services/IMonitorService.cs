@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
-using AzureMcp.Monitor.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Monitor.Models;
 
 namespace AzureMcp.Monitor.Services;
 

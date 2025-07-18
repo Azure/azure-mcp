@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Monitor.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Monitor.Models;
 
 namespace AzureMcp.Monitor.Services;
 

@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Options.EntraAdmin;
 using AzureMcp.Sql.Services;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Sql.Commands.EntraAdmin;

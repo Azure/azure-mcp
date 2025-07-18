@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Options.Table;
 using AzureMcp.Storage.Services;
-using AzureMcp.Storage.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Storage.Commands.Table;

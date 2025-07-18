@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Options;
 using AzureMcp.Redis.Models.CacheForRedis;
 using AzureMcp.Redis.Models.ManagedRedis;
-using AzureMcp.Core.Options;
 
 namespace AzureMcp.Redis.Services;
 

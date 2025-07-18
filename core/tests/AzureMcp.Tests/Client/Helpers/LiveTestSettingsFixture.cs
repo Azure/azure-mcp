@@ -14,8 +14,8 @@ namespace AzureMcp.Core.UnitTests.Client.Helpers
 
         public virtual async ValueTask InitializeAsync()
         {
-            var testSettingsFileName = ".testsettings.json";
-            var directory = Path.GetDirectoryName(typeof(CommandTests).Assembly.Location);
+            var testSettingsFileName = "test-resources.env";
+            var directory = Path.GetDirectoryName(typeof(LiveTestSettingsFixture).Assembly.Location);
             while (!string.IsNullOrEmpty(directory))
             {
                 var testSettingsFilePath = Path.Combine(directory, testSettingsFileName);

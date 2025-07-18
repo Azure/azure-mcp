@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.KeyVault.Commands;
 using AzureMcp.KeyVault.Options;
 using AzureMcp.KeyVault.Options.Secret;
 using AzureMcp.KeyVault.Services;
-using AzureMcp.KeyVault.Commands;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.KeyVault.Commands.Secret;

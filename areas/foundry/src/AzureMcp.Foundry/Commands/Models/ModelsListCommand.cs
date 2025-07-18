@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Foundry.Models;
 using AzureMcp.Foundry.Options;
 using AzureMcp.Foundry.Options.Models;
 using AzureMcp.Foundry.Services;
-using AzureMcp.Core.Commands;
 
 namespace AzureMcp.Foundry.Commands.Models;
 

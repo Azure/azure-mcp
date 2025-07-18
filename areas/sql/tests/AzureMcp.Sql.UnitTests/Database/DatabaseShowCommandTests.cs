@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
 using AzureMcp.Sql.Commands.Database;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Services;
-using AzureMcp.Core.Models.Command;
-using AzureMcp.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

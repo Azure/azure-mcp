@@ -4,11 +4,11 @@
 using System.CommandLine;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
 using AzureMcp.Foundry.Commands.Models;
 using AzureMcp.Foundry.Models;
 using AzureMcp.Foundry.Services;
-using AzureMcp.Core.Models.Command;
-using AzureMcp.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

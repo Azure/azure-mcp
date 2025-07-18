@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Options.KeyValue;
 using AzureMcp.AppConfig.Services;
-using AzureMcp.AppConfig.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 

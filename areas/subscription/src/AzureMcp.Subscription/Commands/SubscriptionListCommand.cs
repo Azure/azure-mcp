@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.Resources;
-using AzureMcp.Subscription.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Azure.Subscription;
+using AzureMcp.Subscription.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Subscription.Commands;

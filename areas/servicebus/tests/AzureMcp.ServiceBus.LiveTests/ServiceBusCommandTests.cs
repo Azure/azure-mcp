@@ -3,11 +3,12 @@
 
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using AzureMcp.ServiceBus.Options;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Azure.Authentication;
 using AzureMcp.Core.UnitTests.Client;
 using AzureMcp.Core.UnitTests.Client.Helpers;
+using AzureMcp.ServiceBus.Options;
+using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.ServiceBus.LiveTests

@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Models;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Options.Metrics;
 using AzureMcp.Monitor.Services;
-using AzureMcp.Monitor.Commands;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Monitor.Commands.Metrics;

@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Queue;
 using AzureMcp.ServiceBus.Services;
-using AzureMcp.ServiceBus.Commands;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Services.Telemetry;
 
 namespace AzureMcp.ServiceBus.Commands.Queue;
 

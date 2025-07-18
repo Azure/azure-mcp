@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 using AzureMcp.AzureTerraformBestPractices.Commands;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.AzureTerraformBestPractices;
 
-internal class AzureTerraformBestPracticesSetup : IAreaSetup
+public class AzureTerraformBestPracticesSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {

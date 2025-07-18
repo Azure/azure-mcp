@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using AzureMcp.Extension.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Azure.Authentication;
 using AzureMcp.Core.Services.ProcessExecution;
+using AzureMcp.Extension.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Extension.Commands;
@@ -23,7 +23,7 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
     /// <summary>
     /// Clears the cached Azure CLI path. Used for testing purposes.
     /// </summary>
-    internal static void ClearCachedAzPath()
+    public static void ClearCachedAzPath()
     {
         _cachedAzPath = null;
     }
@@ -59,7 +59,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         return options;
     }
 
-    internal static string? FindAzCliPath()
+    public static string? FindAzCliPath()
     {
         string executableName = "az";
 
@@ -186,7 +186,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
             }
 
             var jElem = processService.ParseJsonOutput(result);
-            context.Response.Results = ResponseResult.Create(jElem, JsonSourceGenerationContext.Default.JsonElement);
+            context.Response.Results = ResponseResult.Create(jElem, ExtensionJsonContext.Default.JsonElement);
         }
         catch (Exception ex)
         {

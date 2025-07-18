@@ -3,7 +3,7 @@
 
 using ModelContextProtocol.Protocol;
 
-internal static class McpTestUtilities
+public static class McpTestUtilities
 {
     /// <summary>Gets the first text contents in the list.</summary>
     public static string? GetFirstText(IList<ContentBlock> contents)

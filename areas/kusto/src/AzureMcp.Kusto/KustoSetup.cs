@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Kusto;
 

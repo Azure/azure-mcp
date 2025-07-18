@@ -1,13 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Text.Json;
+using AzureMcp.Core.Commands;
 using AzureMcp.Server.Commands.ToolLoading;
 using AzureMcp.Server.Options;
-using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Tests.Areas.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;

@@ -5,6 +5,7 @@ using System.Text.Json;
 using Azure.Security.KeyVault.Keys;
 using AzureMcp.Core.UnitTests.Client;
 using AzureMcp.Core.UnitTests.Client.Helpers;
+using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.KeyVault.LiveTests;

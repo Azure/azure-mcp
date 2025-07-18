@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Monitor.Services;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
 using AzureMcp.Core.UnitTests.Client;
 using AzureMcp.Core.UnitTests.Client.Helpers;
+using AzureMcp.Monitor.Services;
+using AzureMcp.Tests;
 using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;

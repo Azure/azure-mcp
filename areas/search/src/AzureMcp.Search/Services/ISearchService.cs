@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Search.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Search.Models;
 using static AzureMcp.Search.Commands.Index.IndexDescribeCommand;
 
 namespace AzureMcp.Search.Services;

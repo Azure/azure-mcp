@@ -4,14 +4,14 @@
 using Azure.ResourceManager.Redis;
 using Azure.ResourceManager.Redis.Models;
 using Azure.ResourceManager.RedisEnterprise;
-using AzureMcp.Redis.Models.CacheForRedis;
-using AzureMcp.Redis.Models.ManagedRedis;
 using AzureMcp.Core.Models.Identity;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Redis.Models.CacheForRedis;
+using AzureMcp.Redis.Models.ManagedRedis;
 
 namespace AzureMcp.Redis.Services;
 

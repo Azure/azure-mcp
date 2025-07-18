@@ -3,8 +3,8 @@
 
 using AzureMcp.BicepSchema.Services.ResourceProperties;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
-using AzureMcp.Core.Services.Azure;
 using AzureMcp.BicepSchema.Services.Support;
+using AzureMcp.Core.Services.Azure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureMcp.BicepSchema.Services

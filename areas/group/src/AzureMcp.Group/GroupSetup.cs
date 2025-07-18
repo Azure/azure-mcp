@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Group.Commands;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Group.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Group;
 
-internal sealed class GroupSetup : IAreaSetup
+public sealed class GroupSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {

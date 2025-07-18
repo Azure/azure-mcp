@@ -3,11 +3,11 @@
 
 using Azure.Core;
 using Azure.Core.Pipeline;
-using AzureMcp.Marketplace.Commands;
-using AzureMcp.Marketplace.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Marketplace.Commands;
+using AzureMcp.Marketplace.Models;
 
 namespace AzureMcp.Marketplace.Services;
 

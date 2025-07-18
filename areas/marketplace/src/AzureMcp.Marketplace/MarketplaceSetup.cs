@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using AzureMcp.Marketplace.Commands.Product;
 using AzureMcp.Marketplace.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Marketplace;
 

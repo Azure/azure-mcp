@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Net;
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Models.Option;
 using AzureMcp.Marketplace.Models;
 using AzureMcp.Marketplace.Options.Product;
 using AzureMcp.Marketplace.Services;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Marketplace.Commands.Product;

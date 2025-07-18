@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using Azure.Storage.Blobs.Models;
-using AzureMcp.Storage.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Storage.Models;
 
 namespace AzureMcp.Storage.Services;
 

@@ -15,7 +15,7 @@ namespace AzureMcp.Core.Services.Azure;
 public abstract class BaseAzureService(ITenantService? tenantService = null, ILoggerFactory? loggerFactory = null)
 {
     private static readonly UserAgentPolicy s_sharedUserAgentPolicy;
-    internal static readonly string s_defaultUserAgent;
+    public static readonly string s_defaultUserAgent;
 
     private CustomChainedCredential? _credential;
     private string? _lastTenantId;

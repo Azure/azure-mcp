@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using Azure.AI.Projects;
-using AzureMcp.Foundry.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Foundry.Models;
 
 namespace AzureMcp.Foundry.Services;
 

@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Server.Commands;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Server.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Server;
 
 /// <summary>
 /// Initializes and configures the Server area for the Azure MCP application.
 /// </summary>
-internal sealed class ServerSetup : IAreaSetup
+public sealed class ServerSetup : IAreaSetup
 {
     /// <summary>
     /// Configures services required for the Server area.

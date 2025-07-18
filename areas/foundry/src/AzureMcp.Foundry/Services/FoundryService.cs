@@ -8,10 +8,10 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.CognitiveServices;
 using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.Resources;
-using AzureMcp.Foundry.Commands;
-using AzureMcp.Foundry.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Foundry.Commands;
+using AzureMcp.Foundry.Models;
 
 namespace AzureMcp.Foundry.Services;
 

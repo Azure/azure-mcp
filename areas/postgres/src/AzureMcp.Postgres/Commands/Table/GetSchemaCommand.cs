@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options;
 using AzureMcp.Postgres.Options.Table;
 using AzureMcp.Postgres.Services;
-using AzureMcp.Postgres.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Table;

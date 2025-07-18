@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Services;
-using AzureMcp.Core.Commands.Subscription;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Monitor.Commands.Log;

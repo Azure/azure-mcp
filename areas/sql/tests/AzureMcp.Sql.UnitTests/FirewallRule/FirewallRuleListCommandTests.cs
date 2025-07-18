@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using AzureMcp.Core.Models.Command;
 using AzureMcp.Sql.Commands.FirewallRule;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Services;
-using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

@@ -10,7 +10,7 @@ namespace AzureMcp.Core.Services.Telemetry;
 /// Prevents emitting telemetry events by OpenTelemetryExporter.  Accomplishes this by clearing the log contents
 /// sent when calling any log methods on <see cref="Microsoft.Extensions.Logging.ILogger"/>.
 /// </summary>
-internal class TelemetryLogRecordEraser : BaseProcessor<LogRecord>
+public class TelemetryLogRecordEraser : BaseProcessor<LogRecord>
 {
     private static readonly IReadOnlyList<KeyValuePair<string, object?>> EmptyAttributes = new List<KeyValuePair<string, object?>>().AsReadOnly();
 

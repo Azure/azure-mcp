@@ -4,10 +4,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
+using AzureMcp.Core.Models.Command;
 using AzureMcp.Redis.Commands.ManagedRedis;
 using AzureMcp.Redis.Models.ManagedRedis;
 using AzureMcp.Redis.Services;
-using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -64,8 +64,8 @@ public class DatabaseListCommandTests
             "rg1",
             "sub123",
             Arg.Any<string>(),
-            Arg.Any<Models.AuthMethod>(),
-            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
+            Arg.Any<Core.Models.AuthMethod>(),
+            Arg.Any<Core.Options.RetryPolicyOptions>())
             .Returns(expectedDatabases);
 
         var command = new DatabaseListCommand(_logger);
@@ -100,7 +100,7 @@ public class DatabaseListCommandTests
             "rg1",
             "sub123",
             Arg.Any<string>(),
-            Arg.Any<Models.AuthMethod>(),
+            Arg.Any<Core.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns([]);
 
@@ -123,7 +123,7 @@ public class DatabaseListCommandTests
             "rg1",
             "sub123",
             Arg.Any<string>(),
-            Arg.Any<Models.AuthMethod>(),
+            Arg.Any<Core.Models.AuthMethod>(),
             Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 

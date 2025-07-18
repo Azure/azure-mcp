@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Search.Options.Service;
-using AzureMcp.Search.Services;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Search.Options.Service;
+using AzureMcp.Search.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Search.Commands.Service;

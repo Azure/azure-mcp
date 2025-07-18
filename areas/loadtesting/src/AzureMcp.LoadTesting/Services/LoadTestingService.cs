@@ -7,13 +7,13 @@ using Azure.Developer.LoadTesting;
 using Azure.ResourceManager;
 using Azure.ResourceManager.LoadTesting;
 using Azure.ResourceManager.Resources;
+using AzureMcp.Core.Options;
+using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.LoadTesting.Commands;
 using AzureMcp.LoadTesting.Models.LoadTest;
 using AzureMcp.LoadTesting.Models.LoadTestResource;
 using AzureMcp.LoadTesting.Models.LoadTestRun;
-using AzureMcp.Core.Options;
-using AzureMcp.Core.Services.Azure;
-using AzureMcp.Core.Services.Azure.Subscription;
 
 namespace AzureMcp.LoadTesting.Services;
 

@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Cosmos.Commands;
 using AzureMcp.Cosmos.Options;
 using AzureMcp.Cosmos.Services;
-using AzureMcp.Cosmos.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Cosmos.Commands;

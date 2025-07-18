@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Kusto.Options;
 using AzureMcp.Core.Commands;
+using AzureMcp.Kusto.Options;
 
 namespace AzureMcp.Kusto.Commands;
 

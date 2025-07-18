@@ -7,12 +7,12 @@ using Azure.Core;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Azure.ResourceManager.OperationalInsights;
-using AzureMcp.Monitor.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Monitor.Models;
 
 namespace AzureMcp.Monitor.Services;
 

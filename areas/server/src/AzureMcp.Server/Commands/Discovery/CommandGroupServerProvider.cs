@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Server.Options;
 using AzureMcp.Core.Commands;
+using AzureMcp.Server.Options;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Server.Commands.Discovery;

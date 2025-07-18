@@ -3,10 +3,10 @@
 
 using AzureMcp.Aks.Commands.Cluster;
 using AzureMcp.Aks.Services;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Aks;
 

@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Server.Commands.ToolLoading;
 using AzureMcp.Server.Options;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;

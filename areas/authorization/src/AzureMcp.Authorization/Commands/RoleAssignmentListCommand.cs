@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Authorization.Commands;
 using AzureMcp.Authorization.Models;
 using AzureMcp.Authorization.Options;
 using AzureMcp.Authorization.Services;
-using AzureMcp.Authorization.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Telemetry;

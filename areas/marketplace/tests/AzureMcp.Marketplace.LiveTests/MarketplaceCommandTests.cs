@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Marketplace.Services;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
 using AzureMcp.Core.UnitTests.Client;
 using AzureMcp.Core.UnitTests.Client.Helpers;
+using AzureMcp.Marketplace.Services;
+using AzureMcp.Tests;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 

@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using AzureMcp.AzureBestPractices.Commands;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.AzureBestPractices;
 

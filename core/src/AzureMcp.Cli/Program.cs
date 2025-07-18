@@ -48,6 +48,7 @@ internal class Program
     }
     private static IAreaSetup[] RegisterAreas()
     {
+        AzureMcp.Server.Commands.ServiceStartCommand.ConfigureServices = ConfigureServices;
 
         return [
             // Register core areas

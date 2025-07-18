@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Redis.Commands;
 using AzureMcp.Redis.Models.CacheForRedis;
 using AzureMcp.Redis.Options.CacheForRedis;
 using AzureMcp.Redis.Services;
-using AzureMcp.Redis.Commands;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Redis.Commands.CacheForRedis;

@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Tests;
 using AzureMcp.Core.UnitTests.Client;
 using AzureMcp.Core.UnitTests.Client.Helpers;
+using AzureMcp.Tests;
 using Xunit;
 public class LoadTestingCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>

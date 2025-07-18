@@ -3,14 +3,14 @@
 
 using AzureMcp.Authorization.Commands;
 using AzureMcp.Authorization.Services;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Authorization;
 
-internal sealed class AuthorizationSetup : IAreaSetup
+public sealed class AuthorizationSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {

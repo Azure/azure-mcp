@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Sql.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Sql.Models;
 
 namespace AzureMcp.Sql.Services;
 

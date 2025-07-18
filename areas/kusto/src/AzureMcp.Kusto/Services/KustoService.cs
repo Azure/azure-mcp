@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.Kusto;
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
+using AzureMcp.Kusto.Commands;
 
 namespace AzureMcp.Kusto.Services;
 

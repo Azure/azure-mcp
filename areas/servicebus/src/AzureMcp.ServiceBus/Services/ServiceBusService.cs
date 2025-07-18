@@ -3,9 +3,9 @@
 
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using AzureMcp.ServiceBus.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.ServiceBus.Models;
 
 namespace AzureMcp.ServiceBus.Services;
 

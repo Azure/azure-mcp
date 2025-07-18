@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Server.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
+using AzureMcp.Server.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string[]?> _namespaceOption = ServiceOptionDefinitions.Namespace;
     private readonly Option<string?> _modeOption = ServiceOptionDefinitions.Mode;
     private readonly Option<bool?> _readOnlyOption = ServiceOptionDefinitions.ReadOnly;
-
+    public static Action<IServiceCollection> ConfigureServices { get; set; } = services => { };
     /// <summary>
     /// Gets the name of the command.
     /// </summary>
@@ -105,7 +105,7 @@ public sealed class ServiceStartCommand : BaseCommand
             })
             .ConfigureServices(services =>
             {
-                Program.ConfigureServices(services);
+                ConfigureServices(services);
                 ConfigureMcpServer(services, serverOptions);
             })
             .Build();

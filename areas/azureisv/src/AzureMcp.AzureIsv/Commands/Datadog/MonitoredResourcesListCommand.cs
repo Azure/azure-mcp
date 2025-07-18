@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.AzureIsv.Options;
 using AzureMcp.AzureIsv.Options.Datadog;
 using AzureMcp.AzureIsv.Services;
-using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;

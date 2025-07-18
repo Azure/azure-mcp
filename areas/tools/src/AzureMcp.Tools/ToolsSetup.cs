@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Tools.Commands;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Tools.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.Tools;
 
-internal sealed class ToolsSetup : IAreaSetup
+public sealed class ToolsSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {

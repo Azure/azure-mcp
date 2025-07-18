@@ -4,10 +4,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Redis.Commands.ManagedRedis;
-using AzureMcp.Redis.Services;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
+using AzureMcp.Redis.Commands.ManagedRedis;
+using AzureMcp.Redis.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -39,7 +39,7 @@ public class ClusterListCommandTests
     public async Task ExecuteAsync_ReturnsClusters_WhenClustersExist()
     {
         var expectedClusters = new ClusterModel[] { new() { Name = "cluster1" }, new() { Name = "cluster2" } };
-        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<Core.Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedClusters);
 
         var command = new ClusterListCommand(_logger);
@@ -84,7 +84,7 @@ public class ClusterListCommandTests
     public async Task ExecuteAsync_HandlesException()
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
-        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
+        _redisService.ListClustersAsync("sub123", Arg.Any<string>(), Arg.Any<Core.Models.AuthMethod>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
         var command = new ClusterListCommand(_logger);

@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Postgres.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Postgres.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands;

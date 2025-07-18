@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using AzureMcp.LoadTesting.Commands.LoadTest;
 using AzureMcp.LoadTesting.Commands.LoadTestResource;
 using AzureMcp.LoadTesting.Commands.LoadTestRun;
 using AzureMcp.LoadTesting.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.LoadTesting;
 

@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Group.Options;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Models.ResourceGroup;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Group.Options;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Group.Commands;
@@ -48,7 +48,7 @@ public sealed class GroupListCommand(ILogger<GroupListCommand> logger) : Subscri
                 options.RetryPolicy);
 
             context.Response.Results = groups?.Count > 0 ?
-                ResponseResult.Create(new Result(groups), JsonSourceGenerationContext.Default.Result) :
+                ResponseResult.Create(new Result(groups), GroupJsonContext.Default.Result) :
                 null;
         }
         catch (Exception ex)

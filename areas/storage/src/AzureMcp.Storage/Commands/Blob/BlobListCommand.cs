@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;
 using AzureMcp.Storage.Services;
-using AzureMcp.Storage.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Storage.Commands.Blob;

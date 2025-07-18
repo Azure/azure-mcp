@@ -3,10 +3,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Azure.Search.Documents.Indexes.Models;
+using AzureMcp.Core.Commands;
 using AzureMcp.Search.Options;
 using AzureMcp.Search.Options.Index;
 using AzureMcp.Search.Services;
-using AzureMcp.Core.Commands;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Search.Commands.Index;

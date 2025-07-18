@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Monitor.Options;
-using AzureMcp.Monitor.Options.Metrics;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Options;
+using AzureMcp.Monitor.Options;
+using AzureMcp.Monitor.Options.Metrics;
 
 namespace AzureMcp.Monitor.Commands.Metrics;
 

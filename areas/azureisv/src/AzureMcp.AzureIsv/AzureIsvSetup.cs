@@ -4,10 +4,10 @@
 using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.AzureIsv.Services;
 using AzureMcp.AzureIsv.Services.Datadog;
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Areas;
 
 namespace AzureMcp.AzureIsv;
 

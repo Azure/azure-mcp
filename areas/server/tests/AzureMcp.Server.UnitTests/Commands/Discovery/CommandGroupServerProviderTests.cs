@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Server.Commands.Discovery;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Server.Commands.Discovery;
 using ModelContextProtocol.Client;
 using Xunit;
 

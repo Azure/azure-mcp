@@ -1,19 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using AzureMcp.Core.Commands;
+using AzureMcp.Extension.Commands;
+using Microsoft.AspNetCore.Http;
 
 namespace AzureMcp;
 
-[JsonSerializable(typeof(BaseCommand.ExceptionResult))]
+[JsonSerializable(typeof(AzqrReportResult))]
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(List<string>))]
-[JsonSerializable(typeof(List<JsonNode>))]
-[JsonSerializable(typeof(AzureCredentials))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
-public partial class JsonSourceGenerationContext : JsonSerializerContext
+public partial class ExtensionJsonContext : JsonSerializerContext
 {
 
 }

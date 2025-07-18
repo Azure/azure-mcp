@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Core.Options;
+using AzureMcp.Kusto.Commands;
 
 namespace AzureMcp.Kusto.Services;
 
