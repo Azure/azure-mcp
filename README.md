@@ -75,7 +75,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 📊 Azure Monitor
 - "Query my Log Analytics workspace"
 
-### ️ Azure SQL Database
+### �️ Azure SQL Database
 - "Show me details about my Azure SQL database 'mydb'"
 - "List Active Directory administrators for my SQL server 'myserver'"
 - "List all firewall rules for my SQL server 'myserver'"
@@ -88,7 +88,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "List paths in my Data Lake file system"
 - "Show my key-value pairs in App Config"
 
-### � Azure Workbooks
+### 📈 Azure Workbooks
 - "List my Azure workbooks in resource group 'mygroup'"
 - "Show me details about workbook 'myworkbook'"
 - "Create a new workbook for monitoring"
@@ -121,7 +121,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - JSON output formatting
 - Cross-platform compatibility
 
-### 📊 Azure Cosmos DB (NoSQL Databases)
+### �📊 Azure Cosmos DB (NoSQL Databases)
 - List Cosmos DB accounts
 - List and query databases
 - Manage containers and items
@@ -140,7 +140,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - List and get schema for tables.
 - List, get configuration and get parameters for servers.
 
-###  Azure Developer CLI (azd) Extension
+### � Azure Developer CLI (azd) Extension
 - Execute Azure Developer CLI commands directly
 - Support for template discovery, template initialization, provisioning and deployment
 - Cross-platform compatibility
@@ -153,7 +153,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🚀 Azure Managed Grafana
 - List Azure Managed Grafana
 
-###  Azure Key Vault
+### � Azure Key Vault
 - List, create, and get keys
 
 ### 📈 Azure Monitor
@@ -175,7 +175,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### Azure Quick Review CLI Extension
 - Scan Azure resources for compliance related recommendations
 
-###  Azure Resource Groups
+### � Azure Resource Groups
 - List resource groups
 
 ### 🏪 Azure Marketplace
@@ -192,14 +192,14 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - List SQL server firewall rules
 - List elastic pools and their configurations
 
-###  Azure Storage
+### � Azure Storage
 - List Storage accounts
 - Manage blob containers and blobs
 - List and query Storage tables
 - List paths in Data Lake file systems
 - Get container properties and metadata
 
-### � Azure Workbooks
+### 📈 Azure Workbooks
 - List workbooks in resource groups
 - Create and configure monitoring workbooks
 - Update workbook content and properties
