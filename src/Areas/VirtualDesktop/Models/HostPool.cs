@@ -50,6 +50,9 @@ public class HostPool
     /// <summary> Custom RDP properties for the host pool. </summary>
     public string? CustomRdpProperty { get; set; }
 
+    /// <summary> Azure Resource Manager resource identifier for the host pool. </summary>
+    public string? ResourceIdentifier { get; set; }
+
     /// <summary> Constructor that takes a HostPoolResource and extracts relevant data. </summary>
     [SetsRequiredMembers]
     public HostPool(HostPoolResource resource) : this()
@@ -68,6 +71,7 @@ public class HostPool
         StartVMOnConnect = resource.Data.StartVmOnConnect;
         RegistrationEnabled = resource.Data.RegistrationInfo?.RegistrationTokenOperation != null;
         CustomRdpProperty = resource.Data.CustomRdpProperty;
+        ResourceIdentifier = resource.Id.ToString();
     }
 
     /// <summary> Default constructor for serialization. </summary>

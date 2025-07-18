@@ -57,8 +57,11 @@ public class SessionHostUserSessionListCommandTests
     [Theory]
     [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost", true)]
     [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost", true)]
+    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant", true)]
     [InlineData("--subscription test-sub --hostpool-name test-hostpool", false)] // Missing sessionhost-name
-    [InlineData("--subscription test-sub --sessionhost-name test-sessionhost", false)] // Missing hostpool-name
+    [InlineData("--subscription test-sub --sessionhost-name test-sessionhost", false)] // Missing both hostpool parameters
+    [InlineData("--subscription test-sub --hostpool-name test-hostpool --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost", false)] // Both hostpool parameters
     [InlineData("--hostpool-name test-hostpool --sessionhost-name test-sessionhost", false)] // Missing subscription
     [InlineData("", false)] // Missing all required parameters
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
@@ -85,6 +88,14 @@ public class SessionHostUserSessionListCommandTests
                 Arg.Any<string?>(),
                 Arg.Any<RetryPolicyOptions?>())
                 .Returns(userSessions.AsReadOnly());
+                
+            _virtualDesktopService.ListUserSessionsByResourceIdAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions?>())
+                .Returns(userSessions.AsReadOnly());
         }
 
         var parseResult = _parser.Parse(args);
@@ -101,7 +112,9 @@ public class SessionHostUserSessionListCommandTests
         else
         {
             Assert.Equal(400, response.Status);
-            Assert.Contains("required", response.Message?.ToLower() ?? "");
+            Assert.True(response.Message?.ToLower().Contains("required") == true || 
+                       response.Message?.Contains("hostpool-name") == true || 
+                       response.Message?.Contains("hostpool-resource-id") == true);
         }
     }
 
@@ -158,12 +171,71 @@ public class SessionHostUserSessionListCommandTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithResourceId_CallsServiceCorrectly()
+    {
+        // Arrange
+        var userSessions = new List<UserSession>
+        {
+            new() {
+                Name = "session1",
+                UserPrincipalName = "user1@contoso.com",
+                HostPoolName = "test-hostpool",
+                SessionHostName = "test-sessionhost",
+                SessionState = "Active",
+                ApplicationType = "RemoteApp",
+                CreateTime = DateTime.UtcNow
+            }
+        };
+        var resourceId = "/subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool";
+
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
+            "test-sub",
+            resourceId, 
+            "test-sessionhost",
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        var parseResult = _parser.Parse($"--subscription test-sub --hostpool-resource-id {resourceId} --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Equal("Success", response.Message);
+        Assert.NotNull(response.Results);
+
+        await _virtualDesktopService.Received(1).ListUserSessionsByResourceIdAsync(
+            "test-sub",
+            resourceId,
+            "test-sessionhost",
+            null,
+            Arg.Any<RetryPolicyOptions?>());
+            
+        await _virtualDesktopService.DidNotReceive().ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_ReturnsEmptyResultsWhenNoUserSessions()
     {
         // Arrange
         var userSessions = new List<UserSession>();
 
         _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -187,6 +259,14 @@ public class SessionHostUserSessionListCommandTests
     {
         // Arrange
         _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(new Exception("Test error"));
+
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -218,6 +298,14 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(exception);
+
         var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
 
         // Act
@@ -235,6 +323,14 @@ public class SessionHostUserSessionListCommandTests
         // Arrange
         var exception = new Azure.RequestFailedException(403, "Access denied");
         _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(exception);
+
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -275,6 +371,14 @@ public class SessionHostUserSessionListCommandTests
             "test-hostpool",
             "test-sessionhost",
             "test-tenant",
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        _virtualDesktopService.ListUserSessionsByResourceIdAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 

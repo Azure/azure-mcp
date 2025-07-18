@@ -52,7 +52,10 @@ public class SessionHostListCommandTests
     [Theory]
     [InlineData("--subscription sub123 --hostpool-name pool1", true)]
     [InlineData("--subscription sub123 --hostpool-name pool1 --tenant tenant1", true)]
-    [InlineData("--subscription sub123", false)] // Missing hostpool-name
+    [InlineData("--subscription sub123 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1", true)]
+    [InlineData("--subscription sub123 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1 --tenant tenant1", true)]
+    [InlineData("--subscription sub123", false)] // Missing both hostpool-name and hostpool-resource-id
+    [InlineData("--subscription sub123 --hostpool-name pool1 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1", false)] // Both provided
     [InlineData("--hostpool-name pool1", false)] // Missing subscription
     [InlineData("", false)] // Missing both
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
@@ -67,6 +70,13 @@ public class SessionHostListCommandTests
             };
             
             _virtualDesktopService.ListSessionHostsAsync(
+                Arg.Any<string>(), 
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<RetryPolicyOptions>())
+                .Returns(Task.FromResult<IReadOnlyList<SessionHostModel>>(mockSessionHosts));
+                
+            _virtualDesktopService.ListSessionHostsByResourceIdAsync(
                 Arg.Any<string>(), 
                 Arg.Any<string>(),
                 Arg.Any<string>(),
@@ -89,7 +99,9 @@ public class SessionHostListCommandTests
         }
         else
         {
-            Assert.Contains("required", response.Message.ToLower());
+            Assert.True(response.Message.ToLower().Contains("required") || 
+                       response.Message.Contains("hostpool-name") || 
+                       response.Message.Contains("hostpool-resource-id"));
         }
     }
 
@@ -128,10 +140,59 @@ public class SessionHostListCommandTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithResourceId_CallsServiceCorrectly()
+    {
+        // Arrange
+        var expectedSessionHosts = new List<SessionHostModel>
+        {
+            new() { Name = "sessionhost1" },
+            new() { Name = "sessionhost2" }
+        };
+        var resourceId = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1";
+        
+        _virtualDesktopService.ListSessionHostsByResourceIdAsync(
+            "sub123", 
+            resourceId,
+            null,
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedSessionHosts);
+
+        var context = new CommandContext(_serviceProvider);
+        var parseResult = _parser.Parse($"--subscription sub123 --hostpool-resource-id {resourceId}");
+
+        // Act
+        var response = await _command.ExecuteAsync(context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Equal("Success", response.Message);
+        Assert.NotNull(response.Results);
+        
+        await _virtualDesktopService.Received(1).ListSessionHostsByResourceIdAsync(
+            "sub123", 
+            resourceId, 
+            null,
+            Arg.Any<RetryPolicyOptions>());
+            
+        await _virtualDesktopService.DidNotReceive().ListSessionHostsAsync(
+            Arg.Any<string>(), 
+            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WithEmptyResults_ReturnsNullResults()
     {
         // Arrange
         _virtualDesktopService.ListSessionHostsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(new List<SessionHostModel>());
+
+        _virtualDesktopService.ListSessionHostsByResourceIdAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
@@ -155,6 +216,13 @@ public class SessionHostListCommandTests
     {
         // Arrange
         _virtualDesktopService.ListSessionHostsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<IReadOnlyList<SessionHostModel>>(new Exception("Test error")));
+
+        _virtualDesktopService.ListSessionHostsByResourceIdAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),

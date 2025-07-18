@@ -24,8 +24,10 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         user principal name, session state, application type, and creation time.
           Required options:
         - subscription: Azure subscription ID or name
-        - hostpool-name: Name of the host pool containing the session host
+        - hostpool-name: Name of the host pool containing the session host (OR)
+        - hostpool-resource-id: Resource ID of the host pool (alternative to hostpool-name)
         - sessionhost-name: Name of the session host to list user sessions from
+          Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
     public override string Title => CommandTitle;
@@ -42,13 +44,42 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
                 return context.Response;
             }
 
+            // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
+            if (string.IsNullOrEmpty(options.HostPoolName) && string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "Either --hostpool-name or --hostpool-resource-id must be provided.";
+                return context.Response;
+            }
+
+            if (!string.IsNullOrEmpty(options.HostPoolName) && !string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
+                return context.Response;
+            }
+
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
-            var userSessions = await virtualDesktopService.ListUserSessionsAsync(
-                options.Subscription!,
-                options.HostPoolName!,
-                options.SessionHostName!,
-                options.Tenant,
-                options.RetryPolicy);
+            IReadOnlyList<UserSession> userSessions;
+            
+            if (!string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                userSessions = await virtualDesktopService.ListUserSessionsByResourceIdAsync(
+                    options.Subscription!,
+                    options.HostPoolResourceId,
+                    options.SessionHostName!,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
+            else
+            {
+                userSessions = await virtualDesktopService.ListUserSessionsAsync(
+                    options.Subscription!,
+                    options.HostPoolName!,
+                    options.SessionHostName!,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
 
             context.Response.Results = userSessions.Count > 0
                 ? ResponseResult.Create(new SessionHostUserSessionListCommandResult(userSessions.ToList()), VirtualDesktopJsonContext.Default.SessionHostUserSessionListCommandResult)
@@ -56,8 +87,8 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing user sessions for session host {SessionHostName} in hostpool {HostPoolName}", 
-                options.SessionHostName, options.HostPoolName);
+            _logger.LogError(ex, "Error listing user sessions for session host {SessionHostName} in hostpool {HostPoolName} / {HostPoolResourceId}", 
+                options.SessionHostName, options.HostPoolName, options.HostPoolResourceId);
             HandleException(context.Response, ex);
         }
 

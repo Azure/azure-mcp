@@ -10,4 +10,7 @@ public class BaseHostPoolOptions : SubscriptionOptions
 {
     [JsonPropertyName(VirtualDesktopOptionDefinitions.HostPoolName)]
     public string? HostPoolName { get; set; }
+
+    [JsonPropertyName(VirtualDesktopOptionDefinitions.HostPoolResourceId)]
+    public string? HostPoolResourceId { get; set; }
 }

@@ -73,4 +73,41 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
         
         return userSessions;
     }
+
+    public async Task<IReadOnlyList<SessionHost>> ListSessionHostsByResourceIdAsync(string subscription, string hostPoolResourceId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        var sessionHosts = new List<SessionHost>();
+        
+        var armClient = sub.GetCachedClient(client => client);
+        var hostPool = armClient.GetHostPoolResource(Azure.Core.ResourceIdentifier.Parse(hostPoolResourceId));
+        await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
+        {
+            sessionHosts.Add(new SessionHost(sessionHost));
+        }
+        
+        return sessionHosts;
+    }
+
+    public async Task<IReadOnlyList<UserSession>> ListUserSessionsByResourceIdAsync(string subscription, string hostPoolResourceId, string sessionHostName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        var userSessions = new List<UserSession>();
+        
+        var armClient = sub.GetCachedClient(client => client);
+        var hostPool = armClient.GetHostPoolResource(Azure.Core.ResourceIdentifier.Parse(hostPoolResourceId));
+        await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
+        {
+            if (sessionHost.Data.Name == sessionHostName || sessionHost.Data.Name.EndsWith($"/{sessionHostName}"))
+            {
+                await foreach (UserSessionResource userSession in sessionHost.GetUserSessions().GetAllAsync())
+                {
+                    userSessions.Add(new UserSession(userSession));
+                }
+                break; // Found the session host, no need to continue
+            }
+        }
+        
+        return userSessions;
+    }
 }

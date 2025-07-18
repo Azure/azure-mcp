@@ -14,17 +14,20 @@ public abstract class BaseHostPoolCommand<
     where T : BaseHostPoolOptions, new()
 {
     protected readonly Option<string> _hostPoolOption = VirtualDesktopOptionDefinitions.HostPool;
+    protected readonly Option<string> _hostPoolResourceIdOption = VirtualDesktopOptionDefinitions.HostPoolResourceIdOption;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_hostPoolOption);
+        command.AddOption(_hostPoolResourceIdOption);
     }
 
     protected override T BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.HostPoolName = parseResult.GetValueForOption(_hostPoolOption);
+        options.HostPoolResourceId = parseResult.GetValueForOption(_hostPoolResourceIdOption);
         return options;
     }
 }

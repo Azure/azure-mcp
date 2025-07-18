@@ -6,15 +6,18 @@ namespace AzureMcp.Areas.VirtualDesktop.Options;
 public static class VirtualDesktopOptionDefinitions
 {
     public const string HostPoolName = "hostpool-name";
+    public const string HostPoolResourceId = "hostpool-resource-id";
     public const string SessionHostName = "sessionhost-name";
 
     public static readonly Option<string> HostPool = new(
         $"--{HostPoolName}",
         "The name of the Azure Virtual Desktop host pool. This is the unique name you chose for your hostpool."
-    )
-    {
-        IsRequired = true
-    };
+    );
+
+    public static readonly Option<string> HostPoolResourceIdOption = new(
+        $"--{HostPoolResourceId}",
+        "The Azure resource ID of the host pool. When provided, this will be used instead of searching by name."
+    );
 
     public static readonly Option<string> SessionHost = new(
         $"--{SessionHostName}",

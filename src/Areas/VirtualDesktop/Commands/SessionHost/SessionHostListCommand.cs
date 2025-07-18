@@ -21,11 +21,13 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
     public override string Description =>
         $"""
         List all SessionHosts in a hostpool. This command retrieves all Azure Virtual Desktop SessionHost objects available
-        in the specified {OptionDefinitions.Common.Subscription} and {VirtualDesktopOptionDefinitions.HostPoolName}. Results include SessionHost details and are
+        in the specified {OptionDefinitions.Common.Subscription} and hostpool. Results include SessionHost details and are
         returned as a JSON array.
           Required options:
         - subscription: Azure subscription ID or name
-        - hostpool-name: Name of the hostpool to list session hosts from
+        - hostpool-name: Name of the hostpool to list session hosts from (OR)
+        - hostpool-resource-id: Resource ID of the hostpool (alternative to hostpool-name)
+          Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
     public override string Title => CommandTitle;
@@ -42,12 +44,40 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
                 return context.Response;
             }
 
+            // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
+            if (string.IsNullOrEmpty(options.HostPoolName) && string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "Either --hostpool-name or --hostpool-resource-id must be provided.";
+                return context.Response;
+            }
+
+            if (!string.IsNullOrEmpty(options.HostPoolName) && !string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
+                return context.Response;
+            }
+
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
-            var sessionHosts = await virtualDesktopService.ListSessionHostsAsync(
-                options.Subscription!,
-                options.HostPoolName!,
-                options.Tenant,
-                options.RetryPolicy);
+            IReadOnlyList<Models.SessionHost> sessionHosts;
+            
+            if (!string.IsNullOrEmpty(options.HostPoolResourceId))
+            {
+                sessionHosts = await virtualDesktopService.ListSessionHostsByResourceIdAsync(
+                    options.Subscription!,
+                    options.HostPoolResourceId,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
+            else
+            {
+                sessionHosts = await virtualDesktopService.ListSessionHostsAsync(
+                    options.Subscription!,
+                    options.HostPoolName!,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
 
             context.Response.Results = sessionHosts.Count > 0
                 ? ResponseResult.Create(new SessionHostListCommandResult(sessionHosts.ToList()), VirtualDesktopJsonContext.Default.SessionHostListCommandResult)
@@ -55,7 +85,8 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing session hosts for hostpool {HostPoolName}", options.HostPoolName);
+            _logger.LogError(ex, "Error listing session hosts for hostpool {HostPoolName} / {HostPoolResourceId}", 
+                options.HostPoolName, options.HostPoolResourceId);
             HandleException(context.Response, ex);
         }
 
