@@ -82,7 +82,6 @@
     <PackageReference Include="Azure.ResourceManager.Datadog" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
-    <PackageReference Include="ModelContextProtocol.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" ExcludeAssets="native" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
