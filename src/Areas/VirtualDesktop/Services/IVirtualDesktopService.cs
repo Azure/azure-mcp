@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AzureMcp.Areas.VirtualDesktop.Models;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Monitor.Commands.Workspace;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 using AzureMcp.Commands;
