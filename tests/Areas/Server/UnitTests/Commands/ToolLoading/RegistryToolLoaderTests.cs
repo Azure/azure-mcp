@@ -5,12 +5,12 @@ using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
+using AzureMcp.Tests.Areas.Server.UnitTests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
-using AzureMcp.Tests.Areas.Server.UnitTests.Helpers;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.ToolLoading;
 
