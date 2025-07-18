@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Storage.Commands;
 using AzureMcp.Areas.Storage.Models;
 using AzureMcp.Areas.Storage.Options.DataLake.Directory;
 using AzureMcp.Areas.Storage.Services;
@@ -10,11 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Storage.Commands.DataLake.Directory;
 
-public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logger) : BaseFileSystemCommand<DirectoryCreateOptions>
+public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logger) : BaseStorageCommand<DirectoryCreateOptions>
 {
     private const string CommandTitle = "Create Data Lake Directory";
     private readonly ILogger<DirectoryCreateCommand> _logger = logger;
 
+    private readonly Option<string> _fileSystemNameOption = StorageOptionDefinitions.FileSystem;
     private readonly Option<string> _directoryPathOption = StorageOptionDefinitions.DirectoryPath;
 
     public override string Name => "create";
@@ -36,12 +38,14 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
+        command.AddOption(_fileSystemNameOption);
         command.AddOption(_directoryPathOption);
     }
 
     protected override DirectoryCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
+        options.FileSystemName = parseResult.GetValueForOption(_fileSystemNameOption);
         options.DirectoryPath = parseResult.GetValueForOption(_directoryPathOption);
         return options;
     }
@@ -53,8 +57,8 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         
         // Combine file system name and directory path
         var fullDirectoryPath = string.IsNullOrEmpty(options.DirectoryPath) 
-            ? options.FileSystem! 
-            : $"{options.FileSystem}/{options.DirectoryPath}";
+            ? options.FileSystemName! 
+            : $"{options.FileSystemName}/{options.DirectoryPath}";
 
         try
         {
