@@ -133,7 +133,7 @@
 # ServiceOwners:                       @vurhanau
 
 # PRLabel: %area-VirtualDesktop
-/src/Areas/VirtualDesktop/             @vladimisms
+/src/Areas/VirtualDesktop/             @vladimisms @Azure/azure-mcp
 
 # ServiceLabel: %area-VirtualDesktop
 # ServiceOwners:                       @vladimisms
