@@ -27,6 +27,7 @@ public class SqlSetup : IAreaSetup
         var database = new CommandGroup("db", "SQL database operations");
         sql.AddSubGroup(database);
 
+        database.AddCommand("list", new DatabaseListCommand(loggerFactory.CreateLogger<DatabaseListCommand>()));
         database.AddCommand("show", new DatabaseShowCommand(loggerFactory.CreateLogger<DatabaseShowCommand>()));
 
         var server = new CommandGroup("server", "SQL server operations");

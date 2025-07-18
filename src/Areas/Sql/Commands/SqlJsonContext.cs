@@ -11,6 +11,7 @@ using AzureMcp.Areas.Sql.Models;
 namespace AzureMcp.Areas.Sql.Commands;
 
 [JsonSerializable(typeof(DatabaseShowCommand.DatabaseShowResult))]
+[JsonSerializable(typeof(DatabaseListCommand.DatabaseListResult))]
 [JsonSerializable(typeof(EntraAdminListCommand.EntraAdminListResult))]
 [JsonSerializable(typeof(FirewallRuleListCommand.FirewallRuleListResult))]
 [JsonSerializable(typeof(ElasticPoolListCommand.ElasticPoolListResult))]

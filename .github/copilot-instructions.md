@@ -21,4 +21,5 @@
 - Include appropriate documentation
 - Include tests that cover your changes
 - Update CHANGELOG.md with your changes
-- Run `.\eng\common\spelling\Invoke-Cspell.ps1`
+- Run `.\eng\common\spelling\Invoke-Cspell.ps1` and add any new words to .vscode\cspell.json
+- Run `dotnet format` before submitting the PR to ensure code style consistency

@@ -242,6 +242,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-sql-db-list | List all databases on SQL server <server_name> |
+| azmcp-sql-db-list | Show me all the databases on my SQL server <server_name> |
+| azmcp-sql-db-list | What databases are available on SQL server <server_name>? |
 | azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
 | azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
 

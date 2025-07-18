@@ -653,6 +653,11 @@ azmcp servicebus topic subscription details --subscription <subscription> \
 ### Azure SQL Database Operations
 
 ```bash
+# List all databases on a SQL server
+azmcp sql db list --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name>
+
 # Show details of a specific SQL database
 azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \

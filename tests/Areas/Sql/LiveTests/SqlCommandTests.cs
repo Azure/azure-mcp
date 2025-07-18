@@ -15,6 +15,41 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
 {
 
     [Fact]
+    public async Task Should_ListDatabases_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_db_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // Should successfully retrieve the databases
+        var databases = result.AssertProperty("databases");
+        Assert.Equal(JsonValueKind.Array, databases.ValueKind);
+
+        // There should be at least one database (testdb)
+        Assert.True(databases.GetArrayLength() > 0);
+
+        // Verify database properties
+        var firstDatabase = databases.EnumerateArray().First();
+        Assert.Equal(JsonValueKind.Object, firstDatabase.ValueKind);
+
+        // Verify required properties exist
+        Assert.True(firstDatabase.TryGetProperty("name", out _));
+        Assert.True(firstDatabase.TryGetProperty("type", out _));
+        Assert.True(firstDatabase.TryGetProperty("id", out _));
+
+        var dbType = firstDatabase.GetProperty("type").GetString();
+        Assert.Equal("Microsoft.Sql/servers/databases", dbType);
+    }
+
+    [Fact]
     public async Task Should_ShowDatabase_Successfully()
     {
         // Use the deployed test SQL server and database

@@ -75,6 +75,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 - "Query my Log Analytics workspace"
 
 ### �️ Azure SQL Database
+- "List all databases on my SQL server 'myserver'"
 - "Show me details about my Azure SQL database 'mydb'"
 - "List Active Directory administrators for my SQL server 'myserver'"
 - "List all firewall rules for my SQL server 'myserver'"

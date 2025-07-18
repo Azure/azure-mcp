@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for listing SQL databases on an Azure SQL Server via the command `azmcp-sql-db-list`. [[#622](https://github.com/Azure/azure-mcp/issues/622)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
