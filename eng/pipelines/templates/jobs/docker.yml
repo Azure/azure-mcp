@@ -1,0 +1,47 @@
+parameters:
+- name: ContainerRegistry
+  type: string
+  default: 'azuresdkimages'
+- name: DeploymentEnvironment
+  type: string
+  default: 'public'
+
+jobs:
+- job: DockerBuildAndPublish
+  pool:
+    name: $(LINUXPOOL)
+    image: $(LINUXVMIMAGE)
+    os: linux
+
+  templateContext:
+    outputs:
+    - output: containerImage
+      image: image:tag
+      remoteImage:
+      - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}.azurecr.io/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:$(variables.Version)
+
+  steps:
+
+  - download: current
+    displayName: Download $(PipelineArtifactName)_signed
+    artifact: $(PipelineArtifactName)_signed
+
+  - task: AzureCLI@2
+    condition: succeeded()
+    displayName: Login to ${{ parameters.ContainerRegistry }}
+    inputs:
+      azureSubscription: "Azure SDK Engineering System"
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr login --name ${{ parameters.ContainerRegistry }}
+
+  - task: 1ES.BuildContainerImage@1
+    displayName: Build Docker Image
+    inputs:
+      path: $(Build.SourcesDirectory)
+      image: image:tag
+      buildArguments: |
+        --build-arg PUBLISH_DIR="$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/linux-x64/dist"
+      enableNetwork: true
+      useBuildKit: true
