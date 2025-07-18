@@ -42,6 +42,7 @@
                 "petermarcu",
                 "rohit",
                 "vinay",
+                "wbreza",
                 "xiangyan"
             ]
         },
@@ -66,6 +67,7 @@
                 "batchfile",
                 "bestpractices",
                 "buildtransitive",
+                "cctor",
                 "centralus",
                 "classdef",
                 "classfilters",
@@ -220,6 +222,7 @@
         "ESRPRELPACMANTEST",
         "facetable",
         "hnsw",
+        "idempotency",
         "idtyp",
         "keyvault",
         "Kusto",
