@@ -2,17 +2,12 @@
 // Licensed under the MIT License.
 
 using Azure;
-using Azure.ResourceManager.DesktopVirtualization;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
-using AzureMcp.Areas.VirtualDesktop.Models;
 using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
-using AzureMcp.Commands;
-using AzureMcp.Models.Command;
 using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
-using System.CommandLine.Parsing;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 

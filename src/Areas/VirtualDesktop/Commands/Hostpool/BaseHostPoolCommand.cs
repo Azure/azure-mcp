@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
-using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
 

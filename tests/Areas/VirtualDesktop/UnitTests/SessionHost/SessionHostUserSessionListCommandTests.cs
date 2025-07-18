@@ -1,0 +1,298 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.CommandLine.Parsing;
+using AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
+using AzureMcp.Areas.VirtualDesktop.Models;
+using AzureMcp.Areas.VirtualDesktop.Services;
+using AzureMcp.Models.Command;
+using AzureMcp.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using Xunit;
+
+namespace AzureMcp.Tests.Areas.VirtualDesktop.UnitTests.SessionHost;
+
+[Trait("Area", "VirtualDesktop")]
+public class SessionHostUserSessionListCommandTests
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IVirtualDesktopService _virtualDesktopService;
+    private readonly ILogger<SessionHostUserSessionListCommand> _logger;
+    private readonly SessionHostUserSessionListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+
+    public SessionHostUserSessionListCommandTests()
+    {
+        _virtualDesktopService = Substitute.For<IVirtualDesktopService>();
+        _logger = Substitute.For<ILogger<SessionHostUserSessionListCommand>>();
+
+        var collection = new ServiceCollection().AddSingleton(_virtualDesktopService);
+
+        _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
+        _parser = new(_command.GetCommand());
+    }
+
+    [Fact]
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        // Act
+        var command = _command.GetCommand();
+
+        // Assert
+        Assert.Equal("usersession-list", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+        Assert.Contains("List all user sessions on a specific session host", command.Description);
+        Assert.Contains("subscription", command.Description);
+        Assert.Contains("hostpool-name", command.Description);
+        Assert.Contains("sessionhost-name", command.Description);
+    }
+
+    [Theory]
+    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost", true)]
+    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --hostpool-name test-hostpool", false)] // Missing sessionhost-name
+    [InlineData("--subscription test-sub --sessionhost-name test-sessionhost", false)] // Missing hostpool-name
+    [InlineData("--hostpool-name test-hostpool --sessionhost-name test-sessionhost", false)] // Missing subscription
+    [InlineData("", false)] // Missing all required parameters
+    public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
+    {
+        // Arrange
+        if (shouldSucceed)
+        {
+            var userSessions = new List<UserSession>
+            {
+                new() {
+                    Name = "session1",
+                    UserPrincipalName = "user1@contoso.com",
+                    HostPoolName = "test-hostpool",
+                    SessionHostName = "test-sessionhost",
+                    SessionState = "Active",
+                    ApplicationType = "RemoteApp",
+                    CreateTime = DateTime.UtcNow
+                }
+            };
+            _virtualDesktopService.ListUserSessionsAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions?>())
+                .Returns(userSessions.AsReadOnly());
+        }
+
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        if (shouldSucceed)
+        {
+            Assert.Equal(200, response.Status);
+            Assert.NotNull(response.Results);
+        }
+        else
+        {
+            Assert.Equal(400, response.Status);
+            Assert.Contains("required", response.Message?.ToLower() ?? "");
+        }
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsUserSessionsSuccessfully()
+    {
+        // Arrange
+        var userSessions = new List<UserSession>
+        {
+            new() {
+                Name = "session1",
+                UserPrincipalName = "user1@contoso.com",
+                HostPoolName = "test-hostpool",
+                SessionHostName = "test-sessionhost",
+                SessionState = "Active",
+                ApplicationType = "RemoteApp",
+                CreateTime = DateTime.UtcNow
+            },
+            new() {
+                Name = "session2",
+                UserPrincipalName = "user2@contoso.com",
+                HostPoolName = "test-hostpool",
+                SessionHostName = "test-sessionhost",
+                SessionState = "Disconnected",
+                ApplicationType = "Published",
+                CreateTime = DateTime.UtcNow.AddMinutes(-30)
+            }
+        };
+
+        _virtualDesktopService.ListUserSessionsAsync(
+            "test-sub",
+            "test-hostpool", 
+            "test-sessionhost",
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Equal("Success", response.Message);
+        Assert.NotNull(response.Results);
+
+        await _virtualDesktopService.Received(1).ListUserSessionsAsync(
+            "test-sub",
+            "test-hostpool",
+            "test-sessionhost",
+            null,
+            Arg.Any<RetryPolicyOptions?>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsEmptyResultsWhenNoUserSessions()
+    {
+        // Arrange
+        var userSessions = new List<UserSession>();
+
+        _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Equal("Success", response.Message);
+        Assert.Null(response.Results);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesServiceErrors()
+    {
+        // Arrange
+        _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(new Exception("Test error"));
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Test error", response.Message);
+        Assert.Contains("troubleshooting", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesRequestFailedException_NotFound()
+    {
+        // Arrange
+        var exception = new Azure.RequestFailedException(404, "Session host not found");
+        _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(exception);
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(404, response.Status);
+        Assert.Contains("Session host or hostpool not found", response.Message);
+        Assert.Contains("troubleshooting", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesRequestFailedException_Forbidden()
+    {
+        // Arrange
+        var exception = new Azure.RequestFailedException(403, "Access denied");
+        _virtualDesktopService.ListUserSessionsAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .ThrowsAsync(exception);
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(403, response.Status);
+        Assert.Contains("Access denied", response.Message);
+        Assert.Contains("troubleshooting", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithTenantParameter()
+    {
+        // Arrange
+        var userSessions = new List<UserSession>
+        {
+            new() {
+                Name = "session1",
+                UserPrincipalName = "user1@contoso.com",
+                HostPoolName = "test-hostpool",
+                SessionHostName = "test-sessionhost",
+                SessionState = "Active",
+                ApplicationType = "RemoteApp",
+                CreateTime = DateTime.UtcNow
+            }
+        };
+
+        _virtualDesktopService.ListUserSessionsAsync(
+            "test-sub",
+            "test-hostpool",
+            "test-sessionhost",
+            "test-tenant",
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(userSessions.AsReadOnly());
+
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Equal("Success", response.Message);
+        Assert.NotNull(response.Results);
+
+        await _virtualDesktopService.Received(1).ListUserSessionsAsync(
+            "test-sub",
+            "test-hostpool",
+            "test-sessionhost",
+            "test-tenant",
+            Arg.Any<RetryPolicyOptions?>());
+    }
+}

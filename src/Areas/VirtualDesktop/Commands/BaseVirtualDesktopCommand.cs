@@ -34,19 +34,11 @@ public abstract class BaseVirtualDesktopCommand<
     {
         var options = base.BindOptions(parseResult);
 
-        if (RequiresResourceGroup && options is IResourceGroupOptions rgOptions)
+        if (RequiresResourceGroup)
         {
-            rgOptions.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
+            options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         }
 
         return options;
     }
-}
-
-/// <summary>
-/// Interface for options that include resource group
-/// </summary>
-public interface IResourceGroupOptions
-{
-    string? ResourceGroup { get; set; }
 }

@@ -3,11 +3,9 @@
 
 using Azure;
 using Azure.Identity;
-using AzureMcp.Areas.VirtualDesktop.Commands;
 using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
-using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using AzureMcp.Areas.VirtualDesktop.Services;
+using AzureMcp.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
