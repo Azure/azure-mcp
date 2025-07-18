@@ -97,6 +97,17 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 <details>
 <summary>The Azure MCP Server provides tools for interacting with the following Azure services</summary>
 
+### Azure Arc Tools
+
+Azure MCP now supports the following Azure Arc tools:
+
+- Pre-requisites for onboarding cluster to Arc.
+- Validating and installing system requirements.
+- Validating and installing software dependencies.
+- Quick Deploy AKS Edge Essentials and connect to Arc.
+- Onboard existing cluster to Arc.
+- Disconnect cluster from Arc.
+
 ### 🔎 Azure AI Search (search engine/vector database)
 - List Azure AI Search services
 - List indexes and look at their schema and configuration

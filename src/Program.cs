@@ -62,6 +62,7 @@ internal class Program
             new AzureMcp.Areas.Aks.AksSetup(),
             new AzureMcp.Areas.AppConfig.AppConfigSetup(),
             new AzureMcp.Areas.Authorization.AuthorizationSetup(),
+            new AzureMcp.Areas.AzureArc.AzureArcSetup(),
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Areas.Cosmos.CosmosSetup(),
             new AzureMcp.Areas.Foundry.FoundrySetup(),

@@ -106,6 +106,14 @@
     <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-functions-codegen-best-practices.txt" />
     <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\AksEdgeQuickDeploy.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\ConfirmAksEdgeDeletion.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\DisconnectFromAzureArc.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\OnboardClusterToArc.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\PrerequisitesAksEdgeInstallation.txt" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\RemoveAksEdgeCompletely.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\ValidateAndSetupSoftwarerequirements.ps1" />
+    <EmbeddedResource Include="Areas\AzureArc\Resources\ValidateAndSetupSystemRequirements.ps1" />
   </ItemGroup>
 
   <!-- Remove Cosmos native files from the build output directory -->

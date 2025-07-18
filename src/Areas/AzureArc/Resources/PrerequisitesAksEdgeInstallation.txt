@@ -1,0 +1,37 @@
+The prerequisites for installing an AKS Edge Essentials cluster are as follows:
+
+--
+
+### **System Requirements**
+1. **Operating System**: Windows 10/11 or Windows Server 2019/2022.
+2. **Processor**: Minimum 4 CPU cores.
+3. **Memory**: At least 8 GB of RAM.
+4. **Disk Space**: Minimum 50 GB of free disk space.
+5. **Virtualization**: Hyper-V must be enabled.
+
+---
+
+### **Network Requirements**
+1. **Internet Access**: Required for downloading dependencies and connecting to Azure Arc.
+2. **Virtual Switch**: A virtual switch must be created in Hyper-V for the cluster's network connectivity.
+3. **IPv4 Configuration**: Ensure the virtual switch has a valid IPv4 configuration.
+
+---
+
+### **Software Requirements**
+1. **Azure CLI**: Installed and configured.
+2. **Connectedk8s Extension**: Installed in Azure CLI for Azure Arc integration.
+3. **PowerShell**: Version 5.1 or higher.
+4. **AKS Edge Essentials MSI**: Downloaded and installed.
+
+---
+
+### **Follow below steps to start installing Aks Edge Essential Cluster**. 
+1. **Validate System Requirements and set up Hyper-v** if needed.
+2. **Validate Software Requirements and download and install AKS Edge Essentials MSI** if needed.
+3. **Quick Deploy Aks Edge Essentials (switch and IPv4 will be created if not there already).
+4. **Quick Remove all Edge Essential related installations.
+5. **Connect to arc, if you already deployed Edge Essentials.
+6. **Disconnect to arc, if Aks Cluster is already arc connected.
+ 
+Let me know if you need to run any of the commands above!

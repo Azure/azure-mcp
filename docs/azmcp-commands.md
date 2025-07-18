@@ -512,7 +512,42 @@ azmcp monitor workspace log query --subscription <subscription> \
                                   --table-name "AppEvents_CL" \
                                   --query "| order by TimeGenerated desc"
 ```
+### Azure Arc Operations
+```bash
+# Validate system requirements and setup Hyper-V for AKS Edge Essentials
+azmcp arc validate-system-requirements-hyperv --path <path>
 
+# Validate prerequisites for AKS Edge Essentials cluster
+azmcp arc validate-prerequisites-aksee-cluster
+
+# Validate and install software requirements for AKS Edge Essentials
+azmcp arc validate-install-software-requirements --path <path>
+
+# Completely remove AKS Edge Essentials from the machine
+azmcp arc remove-Aks-Edge-installation --path <path>
+
+# Quick deploy AKS Edge Essentials and connect to Azure Arc
+azmcp arc quick-deploy-aks-edge-essentials --subscription-id <subscription-id> \
+                                           --resource-group-name <resource-group-name> \
+                                           --location <location> \
+                                           --cluster-name <cluster-name> \
+                                           --user-provided-path <user-provided-path> \
+                                           --tenant-id <tenant-id>
+
+# Onboard existing cluster to Azure Arc
+azmcp arc onboard-cluster-to-arc --resource-group-name <resource-group-name> \
+                                 --location <location> \
+                                 --cluster-name <cluster-name> \
+                                 --kube-config-path <kube-config-path> \
+                                 --user-provided-path <user-provided-path> \
+                                 --subscription-id <subscription-id> \
+                                 --tenant-id <tenant-id>
+
+# Disconnect cluster from Azure Arc
+azmcp arc disconnect-from-azure-arc --resource-group-name <resource-group-name> \
+                                    --cluster-name <cluster-name> \
+                                    --user-provided-path <user-provided-path>
+```
 #### Health Models
 
 ```bash
