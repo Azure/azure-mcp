@@ -226,6 +226,7 @@
         "monitoredresources",
         "msal",
         "myaccount",
+        "myfilesystem",
         "mysvc",
         "mycluster",
         "MACOS",
