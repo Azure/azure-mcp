@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.Storage.Commands;
 using AzureMcp.Areas.Storage.Models;
+using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.DataLake.Directory;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands.Storage;
@@ -59,7 +60,7 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
                 return context.Response;
             }
 
-            AddSubscriptionInformation(context.Activity, options);
+            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
 
