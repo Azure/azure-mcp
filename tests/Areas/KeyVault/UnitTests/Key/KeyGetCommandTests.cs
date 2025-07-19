@@ -28,9 +28,10 @@ public class KeyGetCommandTests
     private readonly KeyGetCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _subscriptionId = "knownSubscription";
-    private readonly string _vaultName = "knownVaultName";
-    private readonly string _knownKeyName = "knownKeyName";
+
+    private const string _knownSubscriptionId = "knownSubscription";
+    private const string _knownVaultName = "knownVaultName";
+    private const string _knownKeyName = "knownKeyName";
     private readonly KeyType _knownKeyType = KeyType.Rsa;
     private readonly KeyVaultKey _knownKeyVaultKey;
 
@@ -64,13 +65,18 @@ public class KeyGetCommandTests
     public async Task ExecuteAsync_ReturnsKey()
     {
         // Arrange
-        _keyVaultService.GetKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).Returns(_knownKeyVaultKey);
+        _keyVaultService.GetKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownKeyName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .Returns(_knownKeyVaultKey);
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", _knownKeyName,
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -78,6 +84,7 @@ public class KeyGetCommandTests
 
         // Assert
         Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
@@ -93,9 +100,9 @@ public class KeyGetCommandTests
     {
         // Arrange - No need to mock service since validation should fail before service is called
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", "",
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act
@@ -113,13 +120,18 @@ public class KeyGetCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _keyVaultService.GetKey(Arg.Is(_vaultName), Arg.Is(_knownKeyName), Arg.Is(_subscriptionId), Arg.Any<string>(),
-            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _keyVaultService.GetKey(
+            Arg.Is(_knownVaultName),
+            Arg.Is(_knownKeyName),
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions>())
+            .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--vault", _vaultName,
+            "--vault", _knownVaultName,
             "--key", _knownKeyName,
-            "--subscription", _subscriptionId
+            "--subscription", _knownSubscriptionId
         ]);
 
         // Act

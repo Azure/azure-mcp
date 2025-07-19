@@ -11,35 +11,32 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.KeyVault.Commands.Secret;
 
-public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : SubscriptionCommand<SecretGetOptions>
+public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : SubscriptionCommand<SecretListOptions>
 {
-    private const string _commandTitle = "Get Key Vault Secret";
-    private readonly ILogger<SecretGetCommand> _logger = logger;
+    private const string _commandTitle = "List Key Vault Secrets";
+    private readonly ILogger<SecretListCommand> _logger = logger;
     private readonly Option<string> _vaultOption = KeyVaultOptionDefinitions.VaultName;
-    private readonly Option<string> _secretOption = KeyVaultOptionDefinitions.SecretName;
 
-    public override string Name => "get";
+    public override string Name => "list";
 
     public override string Title => _commandTitle;
 
     public override string Description =>
         """
-        Gets a secret from an Azure Key Vault. This command retrieves and displays the value
-        of a specific secret from the specified vault.
+        List all secrets in an Azure Key Vault. This command retrieves and displays the names of all secrets
+        stored in the specified vault.
         """;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_vaultOption);
-        command.AddOption(_secretOption);
     }
 
-    protected override SecretGetOptions BindOptions(ParseResult parseResult)
+    protected override SecretListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.VaultName = parseResult.GetValueForOption(_vaultOption);
-        options.SecretName = parseResult.GetValueForOption(_secretOption);
         return options;
     }
 
@@ -58,32 +55,26 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
             context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
-            var secret = await keyVaultService.GetSecret(
+            var secrets = await keyVaultService.ListSecrets(
                 options.VaultName!,
-                options.SecretName!,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(
-                new SecretGetCommandResult(
-                    secret.Name,
-                    secret.Value,
-                    secret.Properties.Enabled,
-                    secret.Properties.NotBefore,
-                    secret.Properties.ExpiresOn,
-                    secret.Properties.CreatedOn,
-                    secret.Properties.UpdatedOn),
-                KeyVaultJsonContext.Default.SecretGetCommandResult);
+            context.Response.Results = secrets?.Count > 0 ?
+                ResponseResult.Create(
+                    new SecretListCommandResult(secrets),
+                    KeyVaultJsonContext.Default.SecretListCommandResult) :
+                null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting secret {SecretName} from vault {VaultName}", options.SecretName, options.VaultName);
+            _logger.LogError(ex, "An exception occurred listing secrets from vault {VaultName}.", options.VaultName);
             HandleException(context, ex);
         }
 
         return context.Response;
     }
 
-    internal record SecretGetCommandResult(string Name, string Value, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
+    internal record SecretListCommandResult(List<string> Secrets);
 }

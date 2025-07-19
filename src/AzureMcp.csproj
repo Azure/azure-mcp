@@ -72,6 +72,7 @@
     <PackageReference Include="Azure.ResourceManager.Sql" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" />
+    <PackageReference Include="Azure.Security.KeyVault.Certificates" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Files.DataLake" />
     <PackageReference Include="Azure.ResourceManager.CosmosDB" />

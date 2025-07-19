@@ -341,26 +341,50 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Key Vault Operations
 
 ```bash
-# Lists keys in vault
-azmcp keyvault key list --subscription <subscription> \
-                        --vault <vault-name> \
-                        --include-managed <true/false>
+# Gets a certificate in a key vault
+azmcp keyvault certificate get --subscription <subscription> \
+                               --vault <vault-name> \
+                               --name <certificate-name>
 
-# Gets a key in vault
+# Lists certificates in a key vault
+azmcp keyvault certificate list --subscription <subscription> \
+                                --vault <vault-name>
+
+# Creates a certificate in a key vault with the default policy
+azmcp keyvault certificate create --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --name <certificate-name>
+
+# Gets a key in a key vault
 azmcp keyvault key get --subscription <subscription> \
                        --vault <vault-name> \
                        --key <key-name>
 
-# Create a key in vault
+# Lists keys in a key vault
+azmcp keyvault key list --subscription <subscription> \
+                        --vault <vault-name> \
+                        --include-managed <true/false>
+
+# Creates a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
                           --vault <vault-name> \
                           --key <key-name> \
                           --key-type <key-type>
 
-# Gets a secret in vault
+# Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
                           --vault <vault-name> \
                           --name <secret-name>
+
+# Lists secrets in a key vault
+azmcp keyvault secret list --subscription <subscription> \
+                           --vault <vault-name>
+
+# Creates a secret in a key vault
+azmcp keyvault secret create --subscription <subscription> \
+                             --vault <vault-name> \
+                             --name <secret-name> \
+                             --value <secret-value
 ```
 
 ### Azure Kubernetes Service (AKS) Operations
