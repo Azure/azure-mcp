@@ -5,6 +5,7 @@ using AzureMcp.Areas.Storage.Commands.Account;
 using AzureMcp.Areas.Storage.Commands.Blob;
 using AzureMcp.Areas.Storage.Commands.Blob.Container;
 using AzureMcp.Areas.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Areas.Storage.Commands.DataLake.Path;
 using AzureMcp.Areas.Storage.Commands.Table;
 using AzureMcp.Areas.Storage.Services;
 using AzureMcp.Commands;
@@ -48,6 +49,10 @@ public class StorageSetup : IAreaSetup
         var fileSystem = new CommandGroup("file-system", "Data Lake file system operations - Commands for managing file systems and paths in Azure Data Lake Storage Gen2.");
         dataLake.AddSubGroup(fileSystem);
 
+        // Create path subgroup under datalake
+        var path = new CommandGroup("path", "Data Lake path operations - Commands for listing and managing paths in Azure Data Lake Storage Gen2.");
+        dataLake.AddSubGroup(path);
+
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(
             loggerFactory.CreateLogger<AccountListCommand>()));
@@ -63,5 +68,8 @@ public class StorageSetup : IAreaSetup
 
         fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(
             loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
+
+        path.AddCommand("list", new PathListCommand(
+            loggerFactory.CreateLogger<PathListCommand>()));
     }
 }

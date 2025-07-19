@@ -31,4 +31,11 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<List<DataLakePathInfo>> ListDataLakePathsWithPrefix(
+        string accountName,
+        string fileSystemName,
+        string? pathPrefix,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

@@ -6,6 +6,7 @@ using AzureMcp.Areas.Storage.Commands.Account;
 using AzureMcp.Areas.Storage.Commands.Blob;
 using AzureMcp.Areas.Storage.Commands.Blob.Container;
 using AzureMcp.Areas.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Areas.Storage.Commands.DataLake.Path;
 using AzureMcp.Areas.Storage.Commands.Table;
 
 namespace AzureMcp.Commands.Storage;
@@ -16,6 +17,7 @@ namespace AzureMcp.Commands.Storage;
 [JsonSerializable(typeof(ContainerListCommand.ContainerListCommandResult))]
 [JsonSerializable(typeof(ContainerDetailsCommand.ContainerDetailsCommandResult))]
 [JsonSerializable(typeof(FileSystemListPathsCommand.FileSystemListPathsCommandResult))]
+[JsonSerializable(typeof(PathListCommand.PathListCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class StorageJsonContext : JsonSerializerContext
 {
