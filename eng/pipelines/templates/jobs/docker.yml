@@ -38,6 +38,11 @@ jobs:
   condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
 
   templateContext:
+    inputs:
+    - input: pipelineArtifact
+      artifactName: docker_drops
+      targetPath: $(Pipeline.Workspace)/docker_drops
+
     outputs:
     - output: containerImage
       image: image:tag
@@ -54,9 +59,6 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - download: current
-          displayName: Download 'docker_drops' artifact
-          artifact: docker_drops
 
         - task: AzureCLI@2
           condition: succeeded()
