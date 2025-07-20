@@ -73,7 +73,6 @@ public class ProductGetCommandTests
             Arg.Any<bool?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedProduct);
 
@@ -121,7 +120,6 @@ public class ProductGetCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<bool?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions?>())

@@ -15,6 +15,5 @@ public class ProductGetOptions : SubscriptionOptions
     public string? PlanId { get; set; }
     public string? SkuId { get; set; }
     public bool? IncludeServiceInstructionTemplates { get; set; }
-    public string? PartnerTenantId { get; set; }
     public string? PricingAudience { get; set; }
 }
