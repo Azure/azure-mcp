@@ -63,8 +63,8 @@ class Program
 
             var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
 
-            // Load tools from JSON file
-            var listToolsResult = await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+            // Load tools dynamically or from JSON file as fallback
+            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
             if (listToolsResult == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping tool selection analysis in CI - tools data not available");
@@ -109,8 +109,9 @@ class Program
                 await writer.WriteLineAsync();
             }
 
-            // Load prompts from JSON file
-            var toolNameAndPrompts = await LoadPromptsFromJsonAsync("prompts.json", isCiMode);
+            // Load prompts from markdown file or JSON file as fallback
+            var toolNameAndPrompts = await LoadPromptsFromMarkdownAsync("../../../e2eTests/e2eTestPrompts.md", isCiMode) ?? 
+                                    await LoadPromptsFromJsonAsync("prompts.json", isCiMode);
             if (toolNameAndPrompts == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping prompt testing in CI - prompts data not available");
@@ -160,7 +161,7 @@ class Program
             {
                 Console.WriteLine("💡 Tip: This test requires Azure OpenAI configuration to run fully");
                 Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-                Console.WriteLine("   or add test data files (list-tools.json, prompts.json) to skip API calls");
+                Console.WriteLine("   or ensure the azmcp server can be run from ../../../src");
             }
 
             Environment.Exit(1);
@@ -218,6 +219,58 @@ class Program
         }
     }
 
+    private static async Task<ListToolsResult?> LoadToolsDynamicallyAsync(bool isCiMode = false)
+    {
+        try
+        {
+            // Try to find the azmcp executable in the src folder
+            var azMcpPath = Path.GetFullPath("../../../src");
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = "run --no-build -- tools list",
+                    WorkingDirectory = azMcpPath,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0)
+            {
+                if (isCiMode)
+                {
+                    return null; // Graceful fallback in CI
+                }
+                throw new InvalidOperationException($"Failed to get tools from azmcp: {error}");
+            }
+
+            // Parse the JSON output
+            var result = JsonSerializer.Deserialize<ListToolsResult>(output, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return result;
+        }
+        catch (Exception)
+        {
+            if (isCiMode)
+            {
+                return null; // Graceful fallback in CI
+            }
+            throw;
+        }
+    }
+
     private static async Task<ListToolsResult?> LoadToolsFromJsonAsync(string filePath, bool isCiMode = false)
     {
         if (!File.Exists(filePath))
@@ -245,6 +298,78 @@ class Program
         });
 
         return result ?? throw new InvalidOperationException("Failed to deserialize tools JSON");
+    }
+
+    private static async Task<Dictionary<string, List<string>>?> LoadPromptsFromMarkdownAsync(string filePath, bool isCiMode = false)
+    {
+        try
+        {
+            if (!File.Exists(filePath))
+            {
+                if (isCiMode)
+                {
+                    return null; // Let caller handle this gracefully
+                }
+                throw new FileNotFoundException($"Markdown file not found: {filePath}");
+            }
+
+            var content = await File.ReadAllTextAsync(filePath);
+            var prompts = new Dictionary<string, List<string>>();
+
+            // Parse markdown tables to extract tool names and prompts
+            var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+                
+                // Skip table headers and separators
+                if (trimmedLine.StartsWith("| Tool Name") || 
+                    trimmedLine.StartsWith("|:-------") || 
+                    trimmedLine.StartsWith("##") ||
+                    trimmedLine.StartsWith("#") ||
+                    string.IsNullOrWhiteSpace(trimmedLine))
+                {
+                    continue;
+                }
+
+                // Parse table rows: | azmcp-tool-name | Test prompt |
+                if (trimmedLine.StartsWith("|") && trimmedLine.Contains("|"))
+                {
+                    var parts = trimmedLine.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2)
+                    {
+                        var toolName = parts[0].Trim();
+                        var prompt = parts[1].Trim();
+
+                        // Skip empty entries
+                        if (string.IsNullOrWhiteSpace(toolName) || string.IsNullOrWhiteSpace(prompt))
+                            continue;
+
+                        // Ensure we have a valid tool name (starts with azmcp-)
+                        if (!toolName.StartsWith("azmcp-"))
+                            continue;
+
+                        if (!prompts.ContainsKey(toolName))
+                        {
+                            prompts[toolName] = new List<string>();
+                        }
+
+                        prompts[toolName].Add(prompt);
+                    }
+                }
+            }
+
+            return prompts.Count > 0 ? prompts : null;
+        }
+        catch (Exception)
+        {
+            if (isCiMode)
+            {
+                return null; // Graceful fallback in CI
+            }
+            throw;
+        }
     }
 
     private static async Task<Dictionary<string, List<string>>?> LoadPromptsFromJsonAsync(string filePath, bool isCiMode = false)

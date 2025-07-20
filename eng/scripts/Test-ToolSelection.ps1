@@ -29,14 +29,18 @@ try {
     
     Push-Location $toolSelectionPath
     try {
-        # Check if we have the required test data files
+        # Check if we have the required sources for dynamic loading
+        $hasSourceCode = Test-Path "../../../src"
+        $hasMarkdownPrompts = Test-Path "../../../e2eTests/e2eTestPrompts.md"
+        
+        # Check if we have fallback test data files
         $hasToolsData = Test-Path "list-tools.json"
         $hasPromptsData = Test-Path "prompts.json"
         $hasApiKey = -not [string]::IsNullOrEmpty($env:TEXT_EMBEDDING_API_KEY) -or (Test-Path "api-key.txt")
         $hasEndpoint = -not [string]::IsNullOrEmpty($env:AOAI_ENDPOINT)
         
-        # In CI mode, skip gracefully if no data or credentials are available
-        if (-not $hasToolsData -and -not $hasPromptsData -and -not ($hasApiKey -and $hasEndpoint)) {
+        # In CI mode, skip gracefully if no sources or credentials are available
+        if (-not ($hasSourceCode -or $hasToolsData) -and -not ($hasMarkdownPrompts -or $hasPromptsData) -and -not ($hasApiKey -and $hasEndpoint)) {
             if ($SkipIfMissingCredentials -or $env:BUILD_BUILDID -or $env:GITHUB_ACTIONS) {
                 exit 0
             }
