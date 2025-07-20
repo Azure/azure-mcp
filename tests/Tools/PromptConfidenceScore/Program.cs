@@ -253,8 +253,31 @@ class Program
                 throw new InvalidOperationException($"Failed to get tools from azmcp: {error}");
             }
 
+            // Filter out non-JSON lines (like launch settings messages)
+            var lines = output.Split('\n');
+            var jsonStartIndex = -1;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Trim().StartsWith("{"))
+                {
+                    jsonStartIndex = i;
+                    break;
+                }
+            }
+            
+            if (jsonStartIndex == -1)
+            {
+                if (isCiMode)
+                {
+                    return null; // Graceful fallback in CI
+                }
+                throw new InvalidOperationException("No JSON output found from azmcp command");
+            }
+            
+            var jsonOutput = string.Join('\n', lines.Skip(jsonStartIndex));
+
             // Parse the JSON output
-            var result = JsonSerializer.Deserialize<ListToolsResult>(output, new JsonSerializerOptions
+            var result = JsonSerializer.Deserialize<ListToolsResult>(jsonOutput, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
@@ -404,8 +427,16 @@ class Program
         foreach (var tool in tools)
         {
             var input = tool.Description ?? "";
+            
+            // Convert command to tool name format (spaces to dashes)
+            var toolName = tool.Command?.Replace("azmcp ", "")?.Replace(" ", "-") ?? tool.Name;
+            if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith("azmcp-"))
+            {
+                toolName = $"azmcp-{toolName}";
+            }
+            
             var vector = await embeddingService.CreateEmbeddingsAsync(input);
-            db.Upsert(new Entry(tool.Name, tool, vector));
+            db.Upsert(new Entry(toolName, tool, vector));
         }
     }
 

@@ -78,34 +78,50 @@ public class ToolAnnotations
     public bool? OpenWorldHint { get; set; }
 }
 
-// Tool definition
-public class Tool : BaseMetadata
+// Tool definition for azmcp tools list response
+public class Tool
 {
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }
+
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("inputSchema")]
-    public required JsonElement InputSchema { get; set; }
+    [JsonPropertyName("command")]
+    public string? Command { get; set; }
 
-    [JsonPropertyName("outputSchema")]
-    public JsonElement? OutputSchema { get; set; }
+    [JsonPropertyName("option")]
+    public List<ToolOption>? Options { get; set; }
+}
 
-    [JsonPropertyName("annotations")]
-    public ToolAnnotations? Annotations { get; set; }
+// Tool option definition
+public class ToolOption
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
 
-    [JsonPropertyName("_meta")]
-    public Dictionary<string, object>? Meta { get; set; }
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
+
+    [JsonPropertyName("required")]
+    public bool? Required { get; set; }
 }
 
 // List tools result
 public class ListToolsResult
 {
-    [JsonPropertyName("tools")]
+    [JsonPropertyName("status")]
+    public int Status { get; set; }
+
+    [JsonPropertyName("message")]
+    public string? Message { get; set; }
+
+    [JsonPropertyName("results")]
     public required List<Tool> Tools { get; set; }
 
-    [JsonPropertyName("nextCursor")]
-    public string? NextCursor { get; set; }
-
-    [JsonPropertyName("_meta")]
-    public Dictionary<string, object>? Meta { get; set; }
+    [JsonPropertyName("duration")]
+    public int? Duration { get; set; }
 }
