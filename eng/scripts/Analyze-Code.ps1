@@ -34,6 +34,19 @@ try {
     if($hasErrors) {
         exit 1
     }
+    
+    # Run tool selection analysis
+    try {
+        & "$PSScriptRoot/Test-ToolSelection.ps1"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Tool selection analysis failed"
+            exit 1
+        }
+    } catch {
+        Write-Host "⚠️  Tool selection analysis encountered an issue: $($_.Exception.Message)"
+        # Don't fail the entire analyze step for tool selection issues
+        Write-Host "Continuing with other analysis steps..."
+    }
 }
 finally {
     Pop-Location

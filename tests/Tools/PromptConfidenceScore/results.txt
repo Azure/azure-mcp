@@ -1,0 +1,1462 @@
+Tool count=62, Execution time=1.7121075s
+
+
+Prompt: Fetch the latest Azure best practices
+Expected tool: azmcp-bestpractices-get
+   0.588830   azmcp-bestpractices-get                                *** EXPECTED ***
+   0.459092   azmcp-extension-az                                     
+   0.371340   azmcp-bicepschema-get                                  
+   0.346596   azmcp-extension-azd                                    
+   0.307328   azmcp-datadog-monitoredresources-list                  
+   0.304850   azmcp-subscription-list                                
+   0.301471   azmcp-search-service-list                              
+   0.299633   azmcp-monitor-metrics-definitions                      
+   0.293408   azmcp-monitor-resource-log-query                       
+   0.289973   azmcp-monitor-metrics-query                            
+
+Prompt: Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault
+Expected tool: azmcp-bestpractices-get
+   0.582025   azmcp-bestpractices-get                                *** EXPECTED ***
+   0.518261   azmcp-keyvault-secret-get                              
+   0.478847   azmcp-keyvault-key-get                                 
+   0.406376   azmcp-extension-az                                     
+   0.390412   azmcp-keyvault-key-list                                
+   0.382032   azmcp-keyvault-key-create                              
+   0.344622   azmcp-bicepschema-get                                  
+   0.316510   azmcp-extension-azd                                    
+   0.306211   azmcp-subscription-list                                
+   0.299449   azmcp-appconfig-kv-show                                
+
+Prompt: List all subscriptions for my account
+Expected tool: azmcp-subscription-list
+   0.573506   azmcp-subscription-list                                *** EXPECTED ***
+   0.525927   azmcp-cosmos-account-list                              
+   0.497823   azmcp-storage-account-list                             
+   0.481553   azmcp-search-service-list                              
+   0.473880   azmcp-redis-cache-list                                 
+   0.471653   azmcp-postgres-server-list                             
+   0.441708   azmcp-redis-cluster-list                               
+   0.433375   azmcp-group-list                                       
+   0.429689   azmcp-storage-table-list                               
+   0.428383   azmcp-keyvault-key-list                                
+
+Prompt: What subscriptions do I have?
+Expected tool: azmcp-subscription-list
+   0.411453   azmcp-subscription-list                                *** EXPECTED ***
+   0.353623   azmcp-search-service-list                              
+   0.345369   azmcp-redis-cache-list                                 
+   0.336798   azmcp-postgres-server-list                             
+   0.327328   azmcp-redis-cluster-list                               
+   0.306763   azmcp-cosmos-account-list                              
+   0.305070   azmcp-monitor-workspace-list                           
+   0.304806   azmcp-servicebus-topic-subscription-details            
+   0.299342   azmcp-appconfig-account-list                           
+   0.289336   azmcp-kusto-cluster-list                               
+
+Prompt: Show me my subscriptions
+Expected tool: azmcp-subscription-list
+   0.408281   azmcp-subscription-list                                *** EXPECTED ***
+   0.381238   azmcp-postgres-server-list                             
+   0.373677   azmcp-search-service-list                              
+   0.352172   azmcp-redis-cache-list                                 
+   0.336622   azmcp-redis-cluster-list                               
+   0.330697   azmcp-appconfig-account-list                           
+   0.319505   azmcp-cosmos-account-list                              
+   0.313829   azmcp-monitor-workspace-list                           
+   0.309227   azmcp-keyvault-key-list                                
+   0.305247   azmcp-group-list                                       
+
+Prompt: What is my current subscription?
+Expected tool: azmcp-subscription-list
+   0.325374   azmcp-subscription-list                                *** EXPECTED ***
+   0.307103   azmcp-search-service-list                              
+   0.281030   azmcp-redis-cache-list                                 
+   0.278798   azmcp-postgres-server-list                             
+   0.269573   azmcp-redis-cluster-list                               
+   0.263229   azmcp-servicebus-topic-subscription-details            
+   0.245240   azmcp-cosmos-account-list                              
+   0.243499   azmcp-monitor-workspace-list                           
+   0.239778   azmcp-appconfig-account-list                           
+   0.238731   azmcp-kusto-cluster-list                               
+
+Prompt: List all resource groups in my subscription
+Expected tool: azmcp-group-list
+   0.769846   azmcp-group-list                                       *** EXPECTED ***
+   0.560225   azmcp-datadog-monitoredresources-list                  
+   0.542830   azmcp-redis-cluster-list                               
+   0.532737   azmcp-redis-cache-list                                 
+   0.529826   azmcp-search-service-list                              
+   0.512626   azmcp-kusto-cluster-list                               
+   0.510520   azmcp-monitor-workspace-list                           
+   0.498851   azmcp-cosmos-account-list                              
+   0.492360   azmcp-storage-account-list                             
+   0.487041   azmcp-subscription-list                                
+
+Prompt: Show me the resource groups in my subscription
+Expected tool: azmcp-group-list
+   0.682038   azmcp-group-list                                       *** EXPECTED ***
+   0.546419   azmcp-datadog-monitoredresources-list                  
+   0.519239   azmcp-redis-cluster-list                               
+   0.492551   azmcp-redis-cache-list                                 
+   0.484152   azmcp-search-service-list                              
+   0.473093   azmcp-monitor-workspace-list                           
+   0.455070   azmcp-kusto-cluster-list                               
+   0.445066   azmcp-subscription-list                                
+   0.443315   azmcp-cosmos-account-list                              
+   0.423233   azmcp-postgres-server-list                             
+
+Prompt: Show me my resource groups
+Expected tool: azmcp-group-list
+   0.541017   azmcp-group-list                                       *** EXPECTED ***
+   0.475326   azmcp-datadog-monitoredresources-list                  
+   0.421934   azmcp-redis-cluster-list                               
+   0.389941   azmcp-redis-cache-list                                 
+   0.349268   azmcp-monitor-metrics-definitions                      
+   0.340684   azmcp-redis-cluster-database-list                      
+   0.329602   azmcp-cosmos-account-list                              
+   0.329407   azmcp-monitor-workspace-list                           
+   0.326947   azmcp-cosmos-database-list                             
+   0.324896   azmcp-subscription-list                                
+
+Prompt: List all App Configuration stores in my subscription
+Expected tool: azmcp-appconfig-account-list
+   0.805147   azmcp-appconfig-account-list                           *** EXPECTED ***
+   0.641827   azmcp-appconfig-kv-list                                
+   0.491380   azmcp-postgres-server-list                             
+   0.490002   azmcp-redis-cache-list                                 
+   0.468383   azmcp-storage-account-list                             
+   0.465166   azmcp-redis-cluster-list                               
+   0.455380   azmcp-cosmos-account-list                              
+   0.448627   azmcp-search-service-list                              
+   0.447236   azmcp-appconfig-kv-show                                
+   0.436294   azmcp-keyvault-key-list                                
+
+Prompt: Show me the App Configuration stores in my subscription
+Expected tool: azmcp-appconfig-account-list
+   0.649207   azmcp-appconfig-account-list                           *** EXPECTED ***
+   0.539052   azmcp-appconfig-kv-list                                
+   0.450676   azmcp-appconfig-kv-show                                
+   0.394900   azmcp-appconfig-kv-set                                 
+   0.375151   azmcp-appconfig-kv-delete                              
+   0.372455   azmcp-postgres-server-list                             
+   0.363521   azmcp-redis-cache-list                                 
+   0.359567   azmcp-postgres-server-config                           
+   0.346899   azmcp-redis-cluster-list                               
+   0.340550   azmcp-search-service-list                              
+
+Prompt: Show me my App Configuration stores
+Expected tool: azmcp-appconfig-account-list
+   0.577917   azmcp-appconfig-account-list                           *** EXPECTED ***
+   0.577257   azmcp-appconfig-kv-list                                
+   0.447681   azmcp-appconfig-kv-show                                
+   0.373391   azmcp-appconfig-kv-delete                              
+   0.372877   azmcp-appconfig-kv-set                                 
+   0.355916   azmcp-postgres-server-config                           
+   0.311710   azmcp-appconfig-kv-lock                                
+   0.302319   azmcp-appconfig-kv-unlock                              
+   0.233357   azmcp-postgres-server-list                             
+   0.228250   azmcp-redis-cache-list                                 
+
+Prompt: Delete the key <key_name> in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-delete
+   0.639789   azmcp-appconfig-kv-delete                              *** EXPECTED ***
+   0.497607   azmcp-appconfig-kv-list                                
+   0.488287   azmcp-appconfig-kv-set                                 
+   0.455713   azmcp-appconfig-kv-lock                                
+   0.443180   azmcp-appconfig-kv-unlock                              
+   0.418923   azmcp-appconfig-kv-show                                
+   0.392470   azmcp-appconfig-account-list                           
+   0.253179   azmcp-keyvault-key-create                              
+   0.240093   azmcp-keyvault-key-get                                 
+   0.239450   azmcp-keyvault-key-list                                
+
+Prompt: List all key-value settings in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-list
+   0.743414   azmcp-appconfig-kv-list                                *** EXPECTED ***
+   0.625293   azmcp-appconfig-kv-show                                
+   0.577326   azmcp-appconfig-kv-set                                 
+   0.572392   azmcp-appconfig-account-list                           
+   0.474630   azmcp-appconfig-kv-delete                              
+   0.468007   azmcp-appconfig-kv-unlock                              
+   0.448443   azmcp-appconfig-kv-lock                                
+   0.377534   azmcp-postgres-server-config                           
+   0.365023   azmcp-keyvault-key-list                                
+   0.296084   azmcp-postgres-table-list                              
+
+Prompt: Show me the key-value settings in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-list
+   0.697053   azmcp-appconfig-kv-list                                *** EXPECTED ***
+   0.643332   azmcp-appconfig-kv-show                                
+   0.570313   azmcp-appconfig-kv-set                                 
+   0.537542   azmcp-appconfig-account-list                           
+   0.487250   azmcp-appconfig-kv-delete                              
+   0.477719   azmcp-appconfig-kv-unlock                              
+   0.472822   azmcp-appconfig-kv-lock                                
+   0.370520   azmcp-postgres-server-config                           
+   0.293940   azmcp-keyvault-key-list                                
+   0.266507   azmcp-storage-blob-container-details                   
+
+Prompt: Lock the key <key_name> in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-lock
+   0.655974   azmcp-appconfig-kv-lock                                *** EXPECTED ***
+   0.529611   azmcp-appconfig-kv-list                                
+   0.514373   azmcp-appconfig-kv-unlock                              
+   0.511807   azmcp-appconfig-kv-set                                 
+   0.451084   azmcp-appconfig-kv-show                                
+   0.450009   azmcp-appconfig-kv-delete                              
+   0.377089   azmcp-appconfig-account-list                           
+   0.238242   azmcp-postgres-server-setparam                         
+   0.236146   azmcp-keyvault-key-create                              
+   0.221572   azmcp-keyvault-key-get                                 
+
+Prompt: Set the key <key_name> in App Configuration store <app_config_store_name> to <value>
+Expected tool: azmcp-appconfig-kv-set
+   0.673879   azmcp-appconfig-kv-set                                 *** EXPECTED ***
+   0.550232   azmcp-appconfig-kv-lock                                
+   0.527304   azmcp-appconfig-kv-list                                
+   0.526705   azmcp-appconfig-kv-show                                
+   0.519316   azmcp-appconfig-kv-delete                              
+   0.503123   azmcp-appconfig-kv-unlock                              
+   0.373865   azmcp-appconfig-account-list                           
+   0.346976   azmcp-postgres-server-setparam                         
+   0.277976   azmcp-keyvault-key-create                              
+   0.234439   azmcp-keyvault-key-get                                 
+
+Prompt: Show the content for the key <key_name> in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-show
+   0.612340   azmcp-appconfig-kv-list                                
+   0.573253   azmcp-appconfig-kv-show                                *** EXPECTED ***
+   0.465480   azmcp-appconfig-kv-set                                 
+   0.464140   azmcp-appconfig-kv-delete                              
+   0.447026   azmcp-appconfig-account-list                           
+   0.444079   azmcp-appconfig-kv-lock                                
+   0.417915   azmcp-appconfig-kv-unlock                              
+   0.315268   azmcp-keyvault-key-get                                 
+   0.293992   azmcp-keyvault-key-list                                
+   0.291483   azmcp-postgres-server-config                           
+
+Prompt: Unlock the key <key_name> in App Configuration store <app_config_store_name>
+Expected tool: azmcp-appconfig-kv-unlock
+   0.600189   azmcp-appconfig-kv-unlock                              *** EXPECTED ***
+   0.564026   azmcp-appconfig-kv-lock                                
+   0.561676   azmcp-appconfig-kv-list                                
+   0.493681   azmcp-appconfig-kv-delete                              
+   0.492257   azmcp-appconfig-kv-set                                 
+   0.460762   azmcp-appconfig-kv-show                                
+   0.414015   azmcp-appconfig-account-list                           
+   0.271123   azmcp-keyvault-key-get                                 
+   0.251345   azmcp-keyvault-key-create                              
+   0.246833   azmcp-keyvault-key-list                                
+
+Prompt: Create a Storage account with name <storage_account_name>
+Expected tool: azmcp-extension-az
+   0.489089   azmcp-storage-blob-container-list                      
+   0.460127   azmcp-storage-account-list                             
+   0.447491   azmcp-storage-table-list                               
+   0.433989   azmcp-storage-blob-list                                
+   0.429488   azmcp-storage-blob-container-details                   
+   0.360356   azmcp-keyvault-key-create                              
+   0.352258   azmcp-appconfig-kv-set                                 
+   0.332546   azmcp-cosmos-database-container-list                   
+   0.305345   azmcp-cosmos-account-list                              
+   0.299857   azmcp-appconfig-kv-lock                                
+
+Prompt: Show me the details of the storage account <account_name>
+Expected tool: azmcp-extension-az
+   0.593663   azmcp-storage-blob-container-details                   
+   0.570422   azmcp-storage-blob-container-list                      
+   0.523493   azmcp-storage-table-list                               
+   0.523072   azmcp-storage-blob-list                                
+   0.521348   azmcp-storage-account-list                             
+   0.438143   azmcp-cosmos-database-container-list                   
+   0.432611   azmcp-appconfig-kv-show                                
+   0.430797   azmcp-cosmos-account-list                              
+   0.375168   azmcp-servicebus-queue-details                         
+   0.360298   azmcp-cosmos-database-list                             
+
+Prompt: List all virtual machines in my subscription
+Expected tool: azmcp-extension-az
+   0.584794   azmcp-search-service-list                              
+   0.530948   azmcp-postgres-server-list                             
+   0.526357   azmcp-subscription-list                                
+   0.516047   azmcp-keyvault-key-list                                
+   0.500148   azmcp-redis-cache-list                                 
+   0.492776   azmcp-monitor-workspace-list                           
+   0.489624   azmcp-cosmos-account-list                              
+   0.488806   azmcp-redis-cluster-list                               
+   0.483296   azmcp-kusto-cluster-list                               
+   0.471901   azmcp-storage-account-list                             
+
+Prompt: List all cosmosdb accounts in my subscription
+Expected tool: azmcp-cosmos-account-list
+   0.834452   azmcp-cosmos-account-list                              *** EXPECTED ***
+   0.663516   azmcp-cosmos-database-list                             
+   0.635945   azmcp-storage-account-list                             
+   0.635690   azmcp-cosmos-database-container-list                   
+   0.590270   azmcp-subscription-list                                
+   0.590096   azmcp-storage-table-list                               
+   0.569409   azmcp-search-service-list                              
+   0.538231   azmcp-monitor-workspace-list                           
+   0.525090   azmcp-keyvault-key-list                                
+   0.514752   azmcp-storage-blob-container-list                      
+
+Prompt: Show me the cosmosdb accounts in my subscription
+Expected tool: azmcp-cosmos-account-list
+   0.765031   azmcp-cosmos-account-list                              *** EXPECTED ***
+   0.603938   azmcp-cosmos-database-list                             
+   0.594023   azmcp-cosmos-database-container-list                   
+   0.568836   azmcp-storage-account-list                             
+   0.549315   azmcp-subscription-list                                
+   0.544260   azmcp-storage-table-list                               
+   0.528466   azmcp-search-service-list                              
+   0.500182   azmcp-monitor-workspace-list                           
+   0.473200   azmcp-storage-blob-container-list                      
+   0.461334   azmcp-redis-cluster-list                               
+
+Prompt: Show me my cosmosdb accounts
+Expected tool: azmcp-cosmos-account-list
+   0.670366   azmcp-cosmos-account-list                              *** EXPECTED ***
+   0.602980   azmcp-cosmos-database-container-list                   
+   0.600311   azmcp-cosmos-database-list                             
+   0.474694   azmcp-storage-table-list                               
+   0.461776   azmcp-storage-blob-container-list                      
+   0.456117   azmcp-storage-account-list                             
+   0.445297   azmcp-cosmos-database-container-item-query             
+   0.437360   azmcp-subscription-list                                
+   0.405947   azmcp-storage-blob-list                                
+   0.389424   azmcp-monitor-workspace-list                           
+
+Prompt: Show me the items that contain the word <search_term> in the container <container_name> in the database <database_name> for the cosmosdb account <account_name>
+Expected tool: azmcp-cosmos-database-container-item-query
+   0.640063   azmcp-cosmos-database-container-list                   
+   0.580999   azmcp-cosmos-database-container-item-query             *** EXPECTED ***
+   0.479547   azmcp-cosmos-database-list                             
+   0.476874   azmcp-storage-blob-container-list                      
+   0.453624   azmcp-cosmos-account-list                              
+   0.434181   azmcp-storage-blob-list                                
+   0.417192   azmcp-storage-blob-container-details                   
+   0.401326   azmcp-search-service-list                              
+   0.396730   azmcp-search-index-list                                
+   0.395181   azmcp-storage-table-list                               
+
+Prompt: List all the containers in the database <database_name> for the cosmosdb account <account_name>
+Expected tool: azmcp-cosmos-database-container-list
+   0.872674   azmcp-cosmos-database-container-list                   *** EXPECTED ***
+   0.701807   azmcp-storage-blob-container-list                      
+   0.679023   azmcp-cosmos-database-list                             
+   0.637717   azmcp-cosmos-account-list                              
+   0.583476   azmcp-storage-blob-list                                
+   0.565167   azmcp-cosmos-database-container-item-query             
+   0.542453   azmcp-storage-table-list                               
+   0.497904   azmcp-storage-blob-container-details                   
+   0.464271   azmcp-storage-account-list                             
+   0.451339   azmcp-kusto-database-list                              
+
+Prompt: Show me the containers in the database <database_name> for the cosmosdb account <account_name>
+Expected tool: azmcp-cosmos-database-container-list
+   0.815748   azmcp-cosmos-database-container-list                   *** EXPECTED ***
+   0.627933   azmcp-storage-blob-container-list                      
+   0.615677   azmcp-cosmos-database-list                             
+   0.565405   azmcp-cosmos-account-list                              
+   0.559485   azmcp-cosmos-database-container-item-query             
+   0.502827   azmcp-storage-blob-list                                
+   0.483021   azmcp-storage-table-list                               
+   0.480817   azmcp-storage-blob-container-details                   
+   0.412092   azmcp-kusto-table-list                                 
+   0.398571   azmcp-kusto-database-list                              
+
+Prompt: List all the databases in the cosmosdb account <account_name>
+Expected tool: azmcp-cosmos-database-list
+   0.820592   azmcp-cosmos-database-list                             *** EXPECTED ***
+   0.691694   azmcp-cosmos-database-container-list                   
+   0.678139   azmcp-cosmos-account-list                              
+   0.576288   azmcp-kusto-database-list                              
+   0.562081   azmcp-storage-table-list                               
+   0.520267   azmcp-redis-cluster-database-list                      
+   0.519607   azmcp-cosmos-database-container-item-query             
+   0.515998   azmcp-storage-blob-container-list                      
+   0.501477   azmcp-postgres-database-list                           
+   0.493755   azmcp-kusto-table-list                                 
+
+Prompt: Show me the databases in the cosmosdb account <account_name>
+Expected tool: azmcp-cosmos-database-list
+   0.757665   azmcp-cosmos-database-list                             *** EXPECTED ***
+   0.655406   azmcp-cosmos-database-container-list                   
+   0.622194   azmcp-cosmos-account-list                              
+   0.527585   azmcp-kusto-database-list                              
+   0.514380   azmcp-storage-table-list                               
+   0.505494   azmcp-cosmos-database-container-item-query             
+   0.491814   azmcp-redis-cluster-database-list                      
+   0.473111   azmcp-storage-blob-container-list                      
+   0.455875   azmcp-kusto-table-list                                 
+   0.447875   azmcp-postgres-database-list                           
+
+Prompt: Show me the details of the Data Explorer cluster <cluster_name>
+Expected tool: azmcp-kusto-cluster-get
+   0.490874   azmcp-kusto-cluster-get                                *** EXPECTED ***
+   0.452841   azmcp-redis-cluster-list                               
+   0.401211   azmcp-redis-cluster-database-list                      
+   0.361821   azmcp-kusto-cluster-list                               
+   0.345234   azmcp-kusto-query                                      
+   0.333068   azmcp-kusto-database-list                              
+   0.322152   azmcp-redis-cache-list                                 
+   0.314456   azmcp-storage-blob-container-details                   
+   0.310493   azmcp-kusto-sample                                     
+   0.309023   azmcp-kusto-table-list                                 
+
+Prompt: List all Data Explorer clusters in my subscription
+Expected tool: azmcp-kusto-cluster-list
+   0.638599   azmcp-kusto-cluster-list                               *** EXPECTED ***
+   0.637420   azmcp-redis-cluster-list                               
+   0.545844   azmcp-kusto-database-list                              
+   0.505317   azmcp-redis-cache-list                                 
+   0.502412   azmcp-search-service-list                              
+   0.497417   azmcp-monitor-workspace-list                           
+   0.492107   azmcp-postgres-server-list                             
+   0.488149   azmcp-kusto-cluster-get                                
+   0.472541   azmcp-cosmos-account-list                              
+   0.449863   azmcp-kusto-table-list                                 
+
+Prompt: Show me the Data Explorer clusters in my subscription
+Expected tool: azmcp-kusto-cluster-list
+   0.578531   azmcp-redis-cluster-list                               
+   0.538912   azmcp-kusto-cluster-list                               *** EXPECTED ***
+   0.473611   azmcp-kusto-cluster-get                                
+   0.462508   azmcp-kusto-database-list                              
+   0.454778   azmcp-monitor-workspace-list                           
+   0.446200   azmcp-redis-cache-list                                 
+   0.444265   azmcp-search-service-list                              
+   0.432048   azmcp-postgres-server-list                             
+   0.398423   azmcp-cosmos-account-list                              
+   0.394838   azmcp-kusto-table-list                                 
+
+Prompt: Show me my Data Explorer clusters
+Expected tool: azmcp-kusto-cluster-list
+   0.432962   azmcp-redis-cluster-list                               
+   0.383594   azmcp-redis-cluster-database-list                      
+   0.383323   azmcp-kusto-cluster-list                               *** EXPECTED ***
+   0.355505   azmcp-kusto-database-list                              
+   0.338373   azmcp-kusto-cluster-get                                
+   0.304231   azmcp-kusto-query                                      
+   0.293633   azmcp-redis-cache-list                                 
+   0.289151   azmcp-kusto-sample                                     
+   0.277059   azmcp-kusto-table-list                                 
+   0.268549   azmcp-monitor-table-list                               
+
+Prompt: List all databases in the Data Explorer cluster <cluster_name>
+Expected tool: azmcp-kusto-database-list
+   0.617557   azmcp-redis-cluster-database-list                      
+   0.609148   azmcp-kusto-database-list                              *** EXPECTED ***
+   0.561008   azmcp-cosmos-database-list                             
+   0.553218   azmcp-postgres-database-list                           
+   0.480893   azmcp-kusto-table-list                                 
+   0.457472   azmcp-redis-cluster-list                               
+   0.457470   azmcp-kusto-cluster-list                               
+   0.434330   azmcp-postgres-table-list                              
+   0.422935   azmcp-cosmos-database-container-list                   
+   0.405670   azmcp-monitor-table-list                               
+
+Prompt: Show me the databases in the Data Explorer cluster <cluster_name>
+Expected tool: azmcp-kusto-database-list
+   0.589119   azmcp-redis-cluster-database-list                      
+   0.559365   azmcp-kusto-database-list                              *** EXPECTED ***
+   0.510385   azmcp-cosmos-database-list                             
+   0.486732   azmcp-postgres-database-list                           
+   0.446922   azmcp-kusto-table-list                                 
+   0.426745   azmcp-redis-cluster-list                               
+   0.405881   azmcp-kusto-cluster-list                               
+   0.394675   azmcp-cosmos-database-container-list                   
+   0.368013   azmcp-postgres-table-list                              
+   0.359925   azmcp-monitor-table-list                               
+
+Prompt: Show me all items that contain the word <search_term> in the Data Explorer table <table_name> in cluster <cluster_name>
+Expected tool: azmcp-kusto-query
+   0.399561   azmcp-kusto-query                                      *** EXPECTED ***
+   0.379060   azmcp-kusto-sample                                     
+   0.349047   azmcp-monitor-table-list                               
+   0.342093   azmcp-redis-cluster-list                               
+   0.337422   azmcp-kusto-table-list                                 
+   0.319202   azmcp-search-service-list                              
+   0.317717   azmcp-search-index-list                                
+   0.314961   azmcp-monitor-table-type-list                          
+   0.310360   azmcp-kusto-cluster-list                               
+   0.309992   azmcp-storage-table-list                               
+
+Prompt: Show me a data sample from the Data Explorer table <table_name> in cluster <cluster_name>
+Expected tool: azmcp-kusto-sample
+   0.554730   azmcp-kusto-sample                                     *** EXPECTED ***
+   0.420730   azmcp-kusto-table-schema                               
+   0.397606   azmcp-kusto-table-list                                 
+   0.367948   azmcp-redis-cluster-database-list                      
+   0.364561   azmcp-postgres-table-schema                            
+   0.361395   azmcp-redis-cluster-list                               
+   0.343718   azmcp-monitor-table-type-list                          
+   0.339540   azmcp-storage-table-list                               
+   0.338360   azmcp-kusto-query                                      
+   0.335089   azmcp-monitor-table-list                               
+
+Prompt: List all tables in the Data Explorer database <database_name> in cluster <cluster_name>
+Expected tool: azmcp-kusto-table-list
+   0.596477   azmcp-kusto-table-list                                 *** EXPECTED ***
+   0.585237   azmcp-postgres-table-list                              
+   0.548574   azmcp-monitor-table-list                               
+   0.520737   azmcp-storage-table-list                               
+   0.514407   azmcp-kusto-database-list                              
+   0.509399   azmcp-redis-cluster-database-list                      
+   0.475496   azmcp-postgres-database-list                           
+   0.464341   azmcp-monitor-table-type-list                          
+   0.446069   azmcp-cosmos-database-list                             
+   0.444938   azmcp-kusto-table-schema                               
+
+Prompt: Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name>
+Expected tool: azmcp-kusto-table-list
+   0.555940   azmcp-kusto-table-list                                 *** EXPECTED ***
+   0.523432   azmcp-postgres-table-list                              
+   0.489501   azmcp-monitor-table-list                               
+   0.484683   azmcp-redis-cluster-database-list                      
+   0.480219   azmcp-kusto-table-schema                               
+   0.473178   azmcp-storage-table-list                               
+   0.468932   azmcp-kusto-database-list                              
+   0.446875   azmcp-kusto-sample                                     
+   0.431964   azmcp-monitor-table-type-list                          
+   0.421413   azmcp-postgres-database-list                           
+
+Prompt: Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name>
+Expected tool: azmcp-kusto-table-schema
+   0.620421   azmcp-kusto-table-schema                               *** EXPECTED ***
+   0.564369   azmcp-postgres-table-schema                            
+   0.448775   azmcp-kusto-sample                                     
+   0.445163   azmcp-kusto-table-list                                 
+   0.403836   azmcp-monitor-table-list                               
+   0.387792   azmcp-redis-cluster-database-list                      
+   0.387663   azmcp-postgres-table-list                              
+   0.366403   azmcp-monitor-table-type-list                          
+   0.365393   azmcp-storage-table-list                               
+   0.356374   azmcp-kusto-database-list                              
+
+Prompt: Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name>
+Expected tool: azmcp-keyvault-key-create
+   0.672529   azmcp-keyvault-key-create                              *** EXPECTED ***
+   0.414425   azmcp-keyvault-key-get                                 
+   0.410410   azmcp-keyvault-key-list                                
+   0.375115   azmcp-appconfig-kv-set                                 
+   0.338879   azmcp-appconfig-kv-lock                                
+   0.336705   azmcp-keyvault-secret-get                              
+   0.317511   azmcp-appconfig-kv-unlock                              
+   0.280128   azmcp-appconfig-kv-show                                
+   0.271947   azmcp-storage-blob-container-list                      
+   0.262014   azmcp-storage-table-list                               
+
+Prompt: Show me the details of key <key_name> in the key vault <key_vault_account_name>
+Expected tool: azmcp-keyvault-key-get
+   0.581583   azmcp-keyvault-key-get                                 *** EXPECTED ***
+   0.487034   azmcp-keyvault-key-list                                
+   0.465272   azmcp-appconfig-kv-show                                
+   0.445248   azmcp-keyvault-secret-get                              
+   0.416604   azmcp-keyvault-key-create                              
+   0.410782   azmcp-storage-blob-container-details                   
+   0.379413   azmcp-servicebus-queue-details                         
+   0.366858   azmcp-appconfig-kv-unlock                              
+   0.362648   azmcp-cosmos-database-container-list                   
+   0.358539   azmcp-appconfig-kv-lock                                
+
+Prompt: List all keys in the key vault <key_vault_account_name>
+Expected tool: azmcp-keyvault-key-list
+   0.688983   azmcp-keyvault-key-list                                *** EXPECTED ***
+   0.500507   azmcp-cosmos-account-list                              
+   0.486553   azmcp-keyvault-key-get                                 
+   0.472512   azmcp-storage-table-list                               
+   0.472403   azmcp-storage-blob-container-list                      
+   0.470180   azmcp-storage-account-list                             
+   0.462983   azmcp-cosmos-database-list                             
+   0.461066   azmcp-storage-blob-list                                
+   0.449829   azmcp-cosmos-database-container-list                   
+   0.435585   azmcp-appconfig-kv-list                                
+
+Prompt: Show me the keys in the key vault <key_vault_account_name>
+Expected tool: azmcp-keyvault-key-list
+   0.569080   azmcp-keyvault-key-list                                *** EXPECTED ***
+   0.517173   azmcp-keyvault-key-get                                 
+   0.449932   azmcp-keyvault-secret-get                              
+   0.419436   azmcp-cosmos-account-list                              
+   0.416926   azmcp-keyvault-key-create                              
+   0.410366   azmcp-appconfig-kv-show                                
+   0.390546   azmcp-storage-blob-container-list                      
+   0.387478   azmcp-cosmos-database-container-list                   
+   0.379244   azmcp-storage-table-list                               
+   0.371284   azmcp-storage-account-list                             
+
+Prompt: Show me the details about the secret <secret_name> in the key vault <key_vault_account_name>
+Expected tool: azmcp-keyvault-secret-get
+   0.562837   azmcp-keyvault-secret-get                              *** EXPECTED ***
+   0.528469   azmcp-keyvault-key-get                                 
+   0.454042   azmcp-keyvault-key-list                                
+   0.452676   azmcp-appconfig-kv-show                                
+   0.413494   azmcp-storage-blob-container-details                   
+   0.385122   azmcp-servicebus-queue-details                         
+   0.372177   azmcp-keyvault-key-create                              
+   0.366600   azmcp-cosmos-database-container-list                   
+   0.359817   azmcp-storage-blob-container-list                      
+   0.357664   azmcp-kusto-cluster-get                                
+
+Prompt: Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-healthmodels-entity-gethealth
+   0.484359   azmcp-monitor-workspace-list                           
+   0.481224   azmcp-monitor-workspace-log-query                      
+   0.476548   azmcp-monitor-table-list                               
+   0.464725   azmcp-monitor-healthmodels-entity-gethealth            *** EXPECTED ***
+   0.433626   azmcp-monitor-resource-log-query                       
+   0.413357   azmcp-monitor-table-type-list                          
+   0.303116   azmcp-search-index-list                                
+   0.296142   azmcp-kusto-query                                      
+   0.295064   azmcp-search-service-list                              
+   0.292724   azmcp-monitor-metrics-query                            
+
+Prompt: Show me the logs for the past hour in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-log-query
+   0.579978   azmcp-monitor-workspace-log-query                      
+   0.513772   azmcp-monitor-resource-log-query                       
+   0.495118   azmcp-monitor-workspace-list                           
+   0.493896   azmcp-monitor-table-list                               
+   0.427241   azmcp-monitor-table-type-list                          
+   0.345501   azmcp-search-index-list                                
+   0.335467   azmcp-monitor-metrics-query                            
+   0.313151   azmcp-kusto-query                                      
+   0.310561   azmcp-search-service-list                              
+   0.291595   azmcp-search-index-query                               
+
+Prompt: What metric definitions are available for the Application Insights resource <resource_name>
+Expected tool: azmcp-monitor-metrics-definitions
+   0.548240   azmcp-monitor-metrics-definitions                      *** EXPECTED ***
+   0.424137   azmcp-monitor-metrics-query                            
+   0.370848   azmcp-monitor-table-type-list                          
+   0.359386   azmcp-monitor-resource-log-query                       
+   0.339944   azmcp-datadog-monitoredresources-list                  
+   0.322597   azmcp-bicepschema-get                                  
+   0.322550   azmcp-search-index-list                                
+   0.316244   azmcp-search-index-describe                            
+   0.305162   azmcp-monitor-table-list                               
+   0.292908   azmcp-monitor-workspace-log-query                      
+
+Prompt: Show me all available metrics and their definitions for storage account <account_name>
+Expected tool: azmcp-monitor-metrics-definitions
+   0.565561   azmcp-monitor-metrics-definitions                      *** EXPECTED ***
+   0.547320   azmcp-storage-blob-container-list                      
+   0.546359   azmcp-storage-table-list                               
+   0.541902   azmcp-storage-blob-container-details                   
+   0.533235   azmcp-storage-account-list                             
+   0.530420   azmcp-storage-blob-list                                
+   0.452830   azmcp-cosmos-account-list                              
+   0.424133   azmcp-cosmos-database-container-list                   
+   0.421198   azmcp-appconfig-kv-show                                
+   0.396040   azmcp-monitor-metrics-query                            
+
+Prompt: Get metric definitions for <resource_type> <resource_name> from the namespace
+Expected tool: azmcp-monitor-metrics-definitions
+   0.608616   azmcp-monitor-metrics-definitions                      *** EXPECTED ***
+   0.440275   azmcp-monitor-metrics-query                            
+   0.362616   azmcp-bicepschema-get                                  
+   0.340339   azmcp-servicebus-topic-subscription-details            
+   0.333294   azmcp-servicebus-topic-details                         
+   0.332314   azmcp-monitor-table-type-list                          
+   0.325157   azmcp-search-index-describe                            
+   0.322311   azmcp-servicebus-queue-details                         
+   0.305916   azmcp-datadog-monitoredresources-list                  
+   0.303034   azmcp-storage-blob-container-details                   
+
+Prompt: Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period>
+Expected tool: azmcp-monitor-metrics-query
+   0.478720   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.445008   azmcp-monitor-metrics-definitions                      
+   0.389206   azmcp-monitor-resource-log-query                       
+   0.355721   azmcp-monitor-workspace-log-query                      
+   0.312371   azmcp-search-index-query                               
+   0.292073   azmcp-monitor-healthmodels-entity-gethealth            
+   0.291636   azmcp-bicepschema-get                                  
+   0.276059   azmcp-servicebus-queue-details                         
+   0.274593   azmcp-datadog-monitoredresources-list                  
+   0.273229   azmcp-cosmos-database-container-item-query             
+
+Prompt: What's the request per second rate for my Application Insights resource <resource_name> over the last <time_period>
+Expected tool: azmcp-monitor-metrics-query
+   0.361691   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.360704   azmcp-monitor-resource-log-query                       
+   0.326246   azmcp-monitor-workspace-log-query                      
+   0.325522   azmcp-monitor-metrics-definitions                      
+   0.285817   azmcp-bicepschema-get                                  
+   0.284552   azmcp-datadog-monitoredresources-list                  
+   0.276552   azmcp-search-index-list                                
+   0.274476   azmcp-search-index-query                               
+   0.269047   azmcp-search-service-list                              
+   0.256940   azmcp-search-index-describe                            
+
+Prompt: Investigate error rates and failed requests for Application Insights resource <resource_name> for the last <time_period>
+Expected tool: azmcp-monitor-metrics-query
+   0.433443   azmcp-monitor-resource-log-query                       
+   0.401711   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.342570   azmcp-monitor-workspace-log-query                      
+   0.332829   azmcp-monitor-metrics-definitions                      
+   0.311622   azmcp-datadog-monitoredresources-list                  
+   0.300169   azmcp-bicepschema-get                                  
+   0.298528   azmcp-search-index-list                                
+   0.278832   azmcp-search-service-list                              
+   0.277618   azmcp-search-index-query                               
+   0.274677   azmcp-search-index-describe                            
+
+Prompt: Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period>
+Expected tool: azmcp-monitor-metrics-query
+   0.467167   azmcp-monitor-resource-log-query                       
+   0.449030   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.393400   azmcp-monitor-workspace-log-query                      
+   0.367771   azmcp-monitor-metrics-definitions                      
+   0.346036   azmcp-datadog-monitoredresources-list                  
+   0.330250   azmcp-search-index-describe                            
+   0.324844   azmcp-search-index-list                                
+   0.319415   azmcp-search-index-query                               
+   0.311575   azmcp-bicepschema-get                                  
+   0.299360   azmcp-kusto-cluster-get                                
+
+Prompt: Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period>
+Expected tool: azmcp-monitor-metrics-query
+   0.459828   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.423795   azmcp-monitor-metrics-definitions                      
+   0.402971   azmcp-monitor-resource-log-query                       
+   0.351465   azmcp-datadog-monitoredresources-list                  
+   0.339431   azmcp-monitor-workspace-log-query                      
+   0.336452   azmcp-search-index-list                                
+   0.313910   azmcp-bicepschema-get                                  
+   0.295396   azmcp-search-service-list                              
+   0.292803   azmcp-search-index-query                               
+   0.288444   azmcp-search-index-describe                            
+
+Prompt: Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with intervals
+Expected tool: azmcp-monitor-metrics-query
+   0.423737   azmcp-monitor-metrics-query                            *** EXPECTED ***
+   0.413045   azmcp-monitor-metrics-definitions                      
+   0.310309   azmcp-monitor-resource-log-query                       
+   0.308895   azmcp-bicepschema-get                                  
+   0.275803   azmcp-datadog-monitoredresources-list                  
+   0.275443   azmcp-monitor-table-type-list                          
+   0.273701   azmcp-monitor-workspace-log-query                      
+   0.271251   azmcp-monitor-healthmodels-entity-gethealth            
+   0.254739   azmcp-storage-blob-container-details                   
+   0.235753   azmcp-servicebus-topic-subscription-details            
+
+Prompt: List all tables in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-table-list
+   0.858844   azmcp-monitor-table-list                               *** EXPECTED ***
+   0.725738   azmcp-monitor-table-type-list                          
+   0.627484   azmcp-monitor-workspace-list                           
+   0.583390   azmcp-storage-table-list                               
+   0.527403   azmcp-kusto-table-list                                 
+   0.488557   azmcp-postgres-table-list                              
+   0.454757   azmcp-monitor-workspace-log-query                      
+   0.453327   azmcp-search-index-list                                
+   0.453268   azmcp-kusto-table-schema                               
+   0.436130   azmcp-monitor-resource-log-query                       
+
+Prompt: Show me the tables in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-table-list
+   0.802650   azmcp-monitor-table-list                               *** EXPECTED ***
+   0.701122   azmcp-monitor-table-type-list                          
+   0.610198   azmcp-monitor-workspace-list                           
+   0.531483   azmcp-storage-table-list                               
+   0.483630   azmcp-kusto-table-list                                 
+   0.475824   azmcp-kusto-table-schema                               
+   0.459669   azmcp-monitor-workspace-log-query                      
+   0.442499   azmcp-monitor-resource-log-query                       
+   0.427408   azmcp-postgres-table-list                              
+   0.419124   azmcp-search-index-list                                
+
+Prompt: List all available table types in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-table-type-list
+   0.881524   azmcp-monitor-table-type-list                          *** EXPECTED ***
+   0.768321   azmcp-monitor-table-list                               
+   0.572297   azmcp-monitor-workspace-list                           
+   0.523033   azmcp-storage-table-list                               
+   0.482199   azmcp-kusto-table-schema                               
+   0.458337   azmcp-kusto-table-list                                 
+   0.418517   azmcp-postgres-table-list                              
+   0.409754   azmcp-monitor-workspace-log-query                      
+   0.400659   azmcp-kusto-sample                                     
+   0.399092   azmcp-search-index-list                                
+
+Prompt: Show me the available table types in the Log Analytics workspace <workspace_name>
+Expected tool: azmcp-monitor-table-type-list
+   0.843138   azmcp-monitor-table-type-list                          *** EXPECTED ***
+   0.735866   azmcp-monitor-table-list                               
+   0.579182   azmcp-monitor-workspace-list                           
+   0.499780   azmcp-storage-table-list                               
+   0.497282   azmcp-kusto-table-schema                               
+   0.431936   azmcp-kusto-table-list                                 
+   0.429760   azmcp-monitor-workspace-log-query                      
+   0.408424   azmcp-kusto-sample                                     
+   0.407526   azmcp-monitor-resource-log-query                       
+   0.390416   azmcp-search-index-list                                
+
+Prompt: List all Log Analytics workspaces in my subscription
+Expected tool: azmcp-monitor-workspace-list
+   0.823079   azmcp-monitor-workspace-list                           *** EXPECTED ***
+   0.667307   azmcp-monitor-table-list                               
+   0.598313   azmcp-search-service-list                              
+   0.583213   azmcp-monitor-table-type-list                          
+   0.532425   azmcp-cosmos-account-list                              
+   0.513145   azmcp-kusto-cluster-list                               
+   0.510570   azmcp-storage-account-list                             
+   0.496857   azmcp-subscription-list                                
+   0.492900   azmcp-group-list                                       
+   0.478349   azmcp-monitor-workspace-log-query                      
+
+Prompt: Show me the Log Analytics workspaces in my subscription
+Expected tool: azmcp-monitor-workspace-list
+   0.747590   azmcp-monitor-workspace-list                           *** EXPECTED ***
+   0.587158   azmcp-monitor-table-list                               
+   0.521316   azmcp-monitor-table-type-list                          
+   0.518714   azmcp-search-service-list                              
+   0.465810   azmcp-monitor-workspace-log-query                      
+   0.440576   azmcp-cosmos-account-list                              
+   0.427897   azmcp-subscription-list                                
+   0.423457   azmcp-kusto-cluster-list                               
+   0.418011   azmcp-monitor-resource-log-query                       
+   0.415371   azmcp-storage-account-list                             
+
+Prompt: Show me my Log Analytics workspaces
+Expected tool: azmcp-monitor-workspace-list
+   0.661588   azmcp-monitor-workspace-list                           *** EXPECTED ***
+   0.590829   azmcp-monitor-table-list                               
+   0.531083   azmcp-monitor-table-type-list                          
+   0.478953   azmcp-monitor-workspace-log-query                      
+   0.421838   azmcp-search-service-list                              
+   0.409927   azmcp-monitor-resource-log-query                       
+   0.387604   azmcp-search-index-list                                
+   0.377697   azmcp-cosmos-account-list                              
+   0.376417   azmcp-storage-table-list                               
+   0.361706   azmcp-storage-blob-container-list                      
+
+Prompt: List all monitored resources in the Datadog resource <resource_name>
+Expected tool: azmcp-datadog-monitoredresources-list
+   0.664359   azmcp-datadog-monitoredresources-list                  *** EXPECTED ***
+   0.434015   azmcp-redis-cache-list                                 
+   0.413677   azmcp-monitor-metrics-definitions                      
+   0.404801   azmcp-redis-cluster-list                               
+   0.387836   azmcp-monitor-metrics-query                            
+   0.363166   azmcp-redis-cluster-database-list                      
+   0.357524   azmcp-group-list                                       
+   0.345409   azmcp-postgres-database-list                           
+   0.340307   azmcp-search-index-list                                
+   0.336036   azmcp-cosmos-database-list                             
+
+Prompt: Show me the monitored resources in the Datadog resource <resource_name>
+Expected tool: azmcp-datadog-monitoredresources-list
+   0.624403   azmcp-datadog-monitoredresources-list                  *** EXPECTED ***
+   0.392597   azmcp-redis-cache-list                                 
+   0.390147   azmcp-monitor-metrics-definitions                      
+   0.387350   azmcp-monitor-metrics-query                            
+   0.371191   azmcp-redis-cluster-list                               
+   0.336461   azmcp-redis-cluster-database-list                      
+   0.313706   azmcp-monitor-resource-log-query                       
+   0.300142   azmcp-group-list                                       
+   0.293782   azmcp-search-index-list                                
+   0.282364   azmcp-cosmos-database-container-list                   
+
+Prompt: List all PostgreSQL databases in server <server>
+Expected tool: azmcp-postgres-database-list
+   0.815617   azmcp-postgres-database-list                           *** EXPECTED ***
+   0.644015   azmcp-postgres-table-list                              
+   0.622790   azmcp-postgres-server-list                             
+   0.542685   azmcp-postgres-server-config                           
+   0.490904   azmcp-postgres-server-param                            
+   0.446960   azmcp-cosmos-database-list                             
+   0.442430   azmcp-redis-cluster-database-list                      
+   0.418348   azmcp-postgres-database-query                          
+   0.414679   azmcp-postgres-server-setparam                         
+   0.413602   azmcp-postgres-table-schema                            
+
+Prompt: Show me the PostgreSQL databases in server <server>
+Expected tool: azmcp-postgres-database-list
+   0.760033   azmcp-postgres-database-list                           *** EXPECTED ***
+   0.589783   azmcp-postgres-server-list                             
+   0.585891   azmcp-postgres-table-list                              
+   0.552660   azmcp-postgres-server-config                           
+   0.495629   azmcp-postgres-server-param                            
+   0.430589   azmcp-postgres-table-schema                            
+   0.429744   azmcp-redis-cluster-database-list                      
+   0.426839   azmcp-postgres-database-query                          
+   0.412972   azmcp-postgres-server-setparam                         
+   0.399823   azmcp-cosmos-database-list                             
+
+Prompt: Show me all items that contain the word <search_term> in the PostgreSQL database <database> in server <server>
+Expected tool: azmcp-postgres-database-query
+   0.546211   azmcp-postgres-database-list                           
+   0.503267   azmcp-postgres-table-list                              
+   0.466599   azmcp-postgres-server-list                             
+   0.415817   azmcp-postgres-database-query                          *** EXPECTED ***
+   0.403969   azmcp-postgres-server-param                            
+   0.403924   azmcp-postgres-server-config                           
+   0.380446   azmcp-postgres-table-schema                            
+   0.354323   azmcp-postgres-server-setparam                         
+   0.282214   azmcp-search-service-list                              
+   0.280229   azmcp-cosmos-database-container-list                   
+
+Prompt: Show me the configuration of PostgreSQL server <server>
+Expected tool: azmcp-postgres-server-config
+   0.756593   azmcp-postgres-server-config                           *** EXPECTED ***
+   0.599471   azmcp-postgres-server-param                            
+   0.535229   azmcp-postgres-server-setparam                         
+   0.535049   azmcp-postgres-database-list                           
+   0.518574   azmcp-postgres-server-list                             
+   0.463172   azmcp-postgres-table-list                              
+   0.431476   azmcp-postgres-table-schema                            
+   0.394675   azmcp-postgres-database-query                          
+   0.279101   azmcp-appconfig-kv-list                                
+   0.246117   azmcp-appconfig-kv-show                                
+
+Prompt: List all PostgreSQL servers in my subscription
+Expected tool: azmcp-postgres-server-list
+   0.900022   azmcp-postgres-server-list                             *** EXPECTED ***
+   0.640733   azmcp-postgres-database-list                           
+   0.565914   azmcp-postgres-table-list                              
+   0.538997   azmcp-postgres-server-config                           
+   0.507621   azmcp-postgres-server-param                            
+   0.475982   azmcp-redis-cluster-list                               
+   0.445868   azmcp-redis-cache-list                                 
+   0.441960   azmcp-search-service-list                              
+   0.426372   azmcp-kusto-cluster-list                               
+   0.426203   azmcp-cosmos-account-list                              
+
+Prompt: Show me the PostgreSQL servers in my subscription
+Expected tool: azmcp-postgres-server-list
+   0.832155   azmcp-postgres-server-list                             *** EXPECTED ***
+   0.579232   azmcp-postgres-database-list                           
+   0.531804   azmcp-postgres-server-config                           
+   0.514445   azmcp-postgres-table-list                              
+   0.505869   azmcp-postgres-server-param                            
+   0.445026   azmcp-redis-cluster-list                               
+   0.423141   azmcp-search-service-list                              
+   0.413160   azmcp-redis-cache-list                                 
+   0.410719   azmcp-postgres-database-query                          
+   0.399866   azmcp-postgres-table-schema                            
+
+Prompt: Show me my PostgreSQL servers
+Expected tool: azmcp-postgres-server-list
+   0.674326   azmcp-postgres-server-list                             *** EXPECTED ***
+   0.607062   azmcp-postgres-database-list                           
+   0.576348   azmcp-postgres-server-config                           
+   0.522996   azmcp-postgres-table-list                              
+   0.506171   azmcp-postgres-server-param                            
+   0.409406   azmcp-postgres-database-query                          
+   0.400088   azmcp-postgres-server-setparam                         
+   0.372955   azmcp-postgres-table-schema                            
+   0.312998   azmcp-redis-cluster-database-list                      
+   0.278162   azmcp-redis-cluster-list                               
+
+Prompt: Show me if the parameter my PostgreSQL server <server> has replication enabled
+Expected tool: azmcp-postgres-server-param
+   0.594753   azmcp-postgres-server-param                            *** EXPECTED ***
+   0.539671   azmcp-postgres-server-config                           
+   0.489693   azmcp-postgres-server-list                             
+   0.480826   azmcp-postgres-server-setparam                         
+   0.451871   azmcp-postgres-database-list                           
+   0.357606   azmcp-postgres-table-list                              
+   0.330875   azmcp-postgres-table-schema                            
+   0.305351   azmcp-postgres-database-query                          
+   0.224051   azmcp-redis-cluster-database-list                      
+   0.199242   azmcp-redis-cluster-list                               
+
+Prompt: Enable replication for my PostgreSQL server <server>
+Expected tool: azmcp-postgres-server-setparam
+   0.488474   azmcp-postgres-server-config                           
+   0.469794   azmcp-postgres-server-list                             
+   0.464562   azmcp-postgres-server-setparam                         *** EXPECTED ***
+   0.447011   azmcp-postgres-server-param                            
+   0.440760   azmcp-postgres-database-list                           
+   0.354049   azmcp-postgres-table-list                              
+   0.341624   azmcp-postgres-database-query                          
+   0.317484   azmcp-postgres-table-schema                            
+   0.180404   azmcp-redis-cluster-database-list                      
+   0.141993   azmcp-redis-cluster-list                               
+
+Prompt: List all tables in the PostgreSQL database <database> in server <server>
+Expected tool: azmcp-postgres-table-list
+   0.789883   azmcp-postgres-table-list                              *** EXPECTED ***
+   0.750580   azmcp-postgres-database-list                           
+   0.574930   azmcp-postgres-server-list                             
+   0.519820   azmcp-postgres-table-schema                            
+   0.501400   azmcp-postgres-server-config                           
+   0.449190   azmcp-postgres-database-query                          
+   0.432853   azmcp-kusto-table-list                                 
+   0.430171   azmcp-postgres-server-param                            
+   0.390121   azmcp-monitor-table-list                               
+   0.386234   azmcp-cosmos-database-list                             
+
+Prompt: Show me the tables in the PostgreSQL database <database> in server <server>
+Expected tool: azmcp-postgres-table-list
+   0.736083   azmcp-postgres-table-list                              *** EXPECTED ***
+   0.690112   azmcp-postgres-database-list                           
+   0.558357   azmcp-postgres-table-schema                            
+   0.543331   azmcp-postgres-server-list                             
+   0.521570   azmcp-postgres-server-config                           
+   0.464929   azmcp-postgres-database-query                          
+   0.447184   azmcp-postgres-server-param                            
+   0.390441   azmcp-kusto-table-list                                 
+   0.380674   azmcp-kusto-table-schema                               
+   0.371036   azmcp-postgres-server-setparam                         
+
+Prompt: Show me the schema of table <table> in the PostgreSQL database <database> in server <server>
+Expected tool: azmcp-postgres-table-schema
+   0.714877   azmcp-postgres-table-schema                            *** EXPECTED ***
+   0.597846   azmcp-postgres-table-list                              
+   0.574230   azmcp-postgres-database-list                           
+   0.542969   azmcp-kusto-table-schema                               
+   0.508082   azmcp-postgres-server-config                           
+   0.443816   azmcp-postgres-server-param                            
+   0.442553   azmcp-postgres-server-list                             
+   0.427530   azmcp-postgres-database-query                          
+   0.362687   azmcp-postgres-server-setparam                         
+   0.320294   azmcp-kusto-table-list                                 
+
+Prompt: List all databases in the Redis Cluster <cluster_name>
+Expected tool: azmcp-redis-cluster-database-list
+   0.742945   azmcp-redis-cluster-database-list                      *** EXPECTED ***
+   0.600872   azmcp-redis-cluster-list                               
+   0.590483   azmcp-kusto-database-list                              
+   0.550027   azmcp-cosmos-database-list                             
+   0.548268   azmcp-postgres-database-list                           
+   0.494233   azmcp-kusto-cluster-list                               
+   0.470331   azmcp-redis-cache-list                                 
+   0.465725   azmcp-kusto-table-list                                 
+   0.419621   azmcp-postgres-table-list                              
+   0.411740   azmcp-cosmos-database-container-list                   
+
+Prompt: Show me the databases in the Redis Cluster <cluster_name>
+Expected tool: azmcp-redis-cluster-database-list
+   0.713015   azmcp-redis-cluster-database-list                      *** EXPECTED ***
+   0.560237   azmcp-redis-cluster-list                               
+   0.535076   azmcp-kusto-database-list                              
+   0.494408   azmcp-cosmos-database-list                             
+   0.480274   azmcp-postgres-database-list                           
+   0.432816   azmcp-redis-cache-list                                 
+   0.429286   azmcp-kusto-cluster-list                               
+   0.423119   azmcp-kusto-table-list                                 
+   0.382875   azmcp-cosmos-database-container-list                   
+   0.349880   azmcp-postgres-table-list                              
+
+Prompt: List all Redis Clusters in my subscription
+Expected tool: azmcp-redis-cluster-list
+   0.805205   azmcp-redis-cluster-list                               *** EXPECTED ***
+   0.669619   azmcp-redis-cache-list                                 
+   0.663936   azmcp-kusto-cluster-list                               
+   0.579412   azmcp-redis-cluster-database-list                      
+   0.554298   azmcp-postgres-server-list                             
+   0.524021   azmcp-kusto-database-list                              
+   0.485829   azmcp-cosmos-account-list                              
+   0.483063   azmcp-search-service-list                              
+   0.468585   azmcp-monitor-workspace-list                           
+   0.462933   azmcp-appconfig-account-list                           
+
+Prompt: Show me the Redis Clusters in my subscription
+Expected tool: azmcp-redis-cluster-list
+   0.736278   azmcp-redis-cluster-list                               *** EXPECTED ***
+   0.603767   azmcp-redis-cache-list                                 
+   0.563123   azmcp-kusto-cluster-list                               
+   0.510106   azmcp-redis-cluster-database-list                      
+   0.494170   azmcp-postgres-server-list                             
+   0.445503   azmcp-kusto-cluster-get                                
+   0.437827   azmcp-kusto-database-list                              
+   0.415816   azmcp-search-service-list                              
+   0.409903   azmcp-cosmos-account-list                              
+   0.409853   azmcp-monitor-workspace-list                           
+
+Prompt: Show me my Redis Clusters
+Expected tool: azmcp-redis-cluster-list
+   0.586240   azmcp-redis-cluster-list                               *** EXPECTED ***
+   0.508351   azmcp-redis-cluster-database-list                      
+   0.464402   azmcp-redis-cache-list                                 
+   0.397717   azmcp-kusto-cluster-list                               
+   0.381707   azmcp-redis-cache-accesspolicy-list                    
+   0.329389   azmcp-postgres-server-list                             
+   0.317614   azmcp-kusto-database-list                              
+   0.302638   azmcp-kusto-cluster-get                                
+   0.291684   azmcp-postgres-database-list                           
+   0.277566   azmcp-cosmos-database-container-list                   
+
+Prompt: List all Redis Caches in my subscription
+Expected tool: azmcp-redis-cache-list
+   0.759972   azmcp-redis-cache-list                                 *** EXPECTED ***
+   0.645471   azmcp-redis-cluster-list                               
+   0.503878   azmcp-redis-cache-accesspolicy-list                    
+   0.495048   azmcp-postgres-server-list                             
+   0.461661   azmcp-redis-cluster-database-list                      
+   0.455696   azmcp-appconfig-account-list                           
+   0.452674   azmcp-search-service-list                              
+   0.450051   azmcp-kusto-cluster-list                               
+   0.449989   azmcp-cosmos-account-list                              
+   0.426467   azmcp-subscription-list                                
+
+Prompt: Show me the Redis Caches in my subscription
+Expected tool: azmcp-redis-cache-list
+   0.686742   azmcp-redis-cache-list                                 *** EXPECTED ***
+   0.586758   azmcp-redis-cluster-list                               
+   0.464175   azmcp-redis-cache-accesspolicy-list                    
+   0.434924   azmcp-postgres-server-list                             
+   0.406038   azmcp-appconfig-account-list                           
+   0.395701   azmcp-redis-cluster-database-list                      
+   0.389778   azmcp-search-service-list                              
+   0.376519   azmcp-cosmos-account-list                              
+   0.362417   azmcp-kusto-cluster-list                               
+   0.358059   azmcp-monitor-workspace-list                           
+
+Prompt: Show me my Redis Caches
+Expected tool: azmcp-redis-cache-list
+   0.535127   azmcp-redis-cache-list                                 *** EXPECTED ***
+   0.450253   azmcp-redis-cache-accesspolicy-list                    
+   0.436962   azmcp-redis-cluster-list                               
+   0.401612   azmcp-redis-cluster-database-list                      
+   0.283598   azmcp-postgres-database-list                           
+   0.276282   azmcp-appconfig-account-list                           
+   0.275241   azmcp-appconfig-kv-list                                
+   0.262105   azmcp-postgres-server-list                             
+   0.253645   azmcp-cosmos-database-container-list                   
+   0.251067   azmcp-cosmos-database-list                             
+
+Prompt: List all access policies in the Redis Cache <cache_name>
+Expected tool: azmcp-redis-cache-list-accesspolicy
+   0.758536   azmcp-redis-cache-accesspolicy-list                    
+   0.558216   azmcp-redis-cache-list                                 
+   0.438173   azmcp-redis-cluster-list                               
+   0.379069   azmcp-redis-cluster-database-list                      
+   0.320232   azmcp-cosmos-account-list                              
+   0.309237   azmcp-appconfig-kv-list                                
+   0.300198   azmcp-storage-table-list                               
+   0.300079   azmcp-cosmos-database-list                             
+   0.299519   azmcp-search-index-list                                
+   0.299036   azmcp-storage-account-list                             
+
+Prompt: Show me the access policies in the Redis Cache <cache_name>
+Expected tool: azmcp-redis-cache-list-accesspolicy
+   0.715900   azmcp-redis-cache-accesspolicy-list                    
+   0.514212   azmcp-redis-cache-list                                 
+   0.405009   azmcp-redis-cluster-list                               
+   0.338665   azmcp-redis-cluster-database-list                      
+   0.296866   azmcp-storage-blob-container-details                   
+   0.292718   azmcp-appconfig-kv-list                                
+   0.287895   azmcp-appconfig-kv-show                                
+   0.277662   azmcp-bestpractices-get                                
+   0.271182   azmcp-appconfig-account-list                           
+   0.263197   azmcp-cosmos-account-list                              
+
+Prompt: List all available role assignments in my subscription
+Expected tool: azmcp-role-assignment-list
+   0.649936   azmcp-role-assignment-list                             *** EXPECTED ***
+   0.498015   azmcp-search-service-list                              
+   0.492260   azmcp-subscription-list                                
+   0.482415   azmcp-group-list                                       
+   0.477456   azmcp-cosmos-account-list                              
+   0.476173   azmcp-redis-cache-list                                 
+   0.465056   azmcp-storage-account-list                             
+   0.458037   azmcp-monitor-workspace-list                           
+   0.457621   azmcp-redis-cluster-list                               
+   0.441662   azmcp-redis-cache-accesspolicy-list                    
+
+Prompt: Show me the available role assignments in my subscription
+Expected tool: azmcp-role-assignment-list
+   0.615129   azmcp-role-assignment-list                             *** EXPECTED ***
+   0.454384   azmcp-search-service-list                              
+   0.445281   azmcp-subscription-list                                
+   0.442953   azmcp-monitor-workspace-list                           
+   0.433936   azmcp-redis-cache-list                                 
+   0.426449   azmcp-group-list                                       
+   0.424692   azmcp-cosmos-account-list                              
+   0.423777   azmcp-redis-cluster-list                               
+   0.405869   azmcp-redis-cache-accesspolicy-list                    
+   0.398584   azmcp-storage-account-list                             
+
+Prompt: Show me the details of the index <index-name> in Cognitive Search service <service-name>
+Expected tool: azmcp-search-index-describe
+   0.655058   azmcp-search-index-list                                
+   0.617742   azmcp-search-index-describe                            *** EXPECTED ***
+   0.514230   azmcp-search-index-query                               
+   0.439905   azmcp-search-service-list                              
+   0.383093   azmcp-kusto-cluster-get                                
+   0.360987   azmcp-servicebus-queue-details                         
+   0.358982   azmcp-kusto-table-schema                               
+   0.356159   azmcp-storage-blob-container-details                   
+   0.346211   azmcp-servicebus-topic-subscription-details            
+   0.325083   azmcp-storage-table-list                               
+
+Prompt: List all indexes in the Cognitive Search service <service-name>
+Expected tool: azmcp-search-index-list
+   0.801690   azmcp-search-index-list                                *** EXPECTED ***
+   0.565428   azmcp-search-service-list                              
+   0.537255   azmcp-search-index-describe                            
+   0.484808   azmcp-search-index-query                               
+   0.438375   azmcp-monitor-table-list                               
+   0.422860   azmcp-cosmos-database-list                             
+   0.411793   azmcp-cosmos-account-list                              
+   0.406485   azmcp-monitor-table-type-list                          
+   0.390263   azmcp-storage-table-list                               
+   0.381531   azmcp-monitor-workspace-list                           
+
+Prompt: Show me the indexes in the Cognitive Search service <service-name>
+Expected tool: azmcp-search-index-list
+   0.762275   azmcp-search-index-list                                *** EXPECTED ***
+   0.540965   azmcp-search-index-describe                            
+   0.507493   azmcp-search-service-list                              
+   0.484452   azmcp-search-index-query                               
+   0.399139   azmcp-monitor-table-list                               
+   0.382692   azmcp-monitor-table-type-list                          
+   0.379474   azmcp-cosmos-database-list                             
+   0.374445   azmcp-cosmos-account-list                              
+   0.354915   azmcp-storage-table-list                               
+   0.354652   azmcp-monitor-workspace-list                           
+
+Prompt: Search for instances of <search_term> in the index <index-name> in Cognitive Search service <service-name>
+Expected tool: azmcp-search-index-query
+   0.573458   azmcp-search-index-list                                
+   0.558725   azmcp-search-index-query                               *** EXPECTED ***
+   0.519063   azmcp-search-index-describe                            
+   0.464117   azmcp-search-service-list                              
+   0.349352   azmcp-kusto-query                                      
+   0.347537   azmcp-cosmos-database-container-item-query             
+   0.327878   azmcp-monitor-workspace-log-query                      
+   0.321637   azmcp-monitor-resource-log-query                       
+   0.293636   azmcp-monitor-metrics-definitions                      
+   0.269462   azmcp-monitor-table-list                               
+
+Prompt: List all Cognitive Search services in my subscription
+Expected tool: azmcp-search-list
+   0.758247   azmcp-search-service-list                              
+   0.579794   azmcp-search-index-list                                
+   0.503009   azmcp-cosmos-account-list                              
+   0.502584   azmcp-monitor-workspace-list                           
+   0.499461   azmcp-redis-cache-list                                 
+   0.486066   azmcp-postgres-server-list                             
+   0.485992   azmcp-redis-cluster-list                               
+   0.480921   azmcp-subscription-list                                
+   0.462993   azmcp-kusto-cluster-list                               
+   0.442815   azmcp-storage-account-list                             
+
+Prompt: Show me the Cognitive Search services in my subscription
+Expected tool: azmcp-search-list
+   0.661906   azmcp-search-service-list                              
+   0.506054   azmcp-search-index-list                                
+   0.437715   azmcp-monitor-workspace-list                           
+   0.417763   azmcp-cosmos-account-list                              
+   0.401317   azmcp-subscription-list                                
+   0.400224   azmcp-redis-cluster-list                               
+   0.395507   azmcp-redis-cache-list                                 
+   0.389981   azmcp-search-index-query                               
+   0.384559   azmcp-postgres-server-list                             
+   0.381831   azmcp-search-index-describe                            
+
+Prompt: Show me my Cognitive Search services
+Expected tool: azmcp-search-list
+   0.507658   azmcp-search-service-list                              
+   0.477353   azmcp-search-index-list                                
+   0.351373   azmcp-search-index-query                               
+   0.350763   azmcp-search-index-describe                            
+   0.290210   azmcp-cosmos-account-list                              
+   0.286128   azmcp-monitor-workspace-list                           
+   0.277937   azmcp-redis-cluster-list                               
+   0.275928   azmcp-redis-cache-list                                 
+   0.275722   azmcp-cosmos-database-container-list                   
+   0.274081   azmcp-monitor-table-type-list                          
+
+Prompt: Show me the details of service bus <service_bus_name> queue <queue_name>
+Expected tool: azmcp-servicebus-queue-details
+   0.663035   azmcp-servicebus-queue-details                         *** EXPECTED ***
+   0.490343   azmcp-servicebus-topic-subscription-details            
+   0.435583   azmcp-servicebus-topic-details                         
+   0.338072   azmcp-search-index-list                                
+   0.336965   azmcp-storage-blob-container-details                   
+   0.332174   azmcp-kusto-cluster-get                                
+   0.319849   azmcp-keyvault-key-get                                 
+   0.307286   azmcp-redis-cache-list                                 
+   0.303988   azmcp-search-index-query                               
+   0.294921   azmcp-search-index-describe                            
+
+Prompt: Show me the latest message in service bus <service_bus_name> queue <queue_name>
+Expected tool: azmcp-servicebus-queue-peek
+   0.500148   azmcp-servicebus-queue-details                         
+   0.364892   azmcp-servicebus-topic-subscription-details            
+   0.354329   azmcp-servicebus-topic-details                         
+   0.296901   azmcp-search-index-query                               
+   0.281173   azmcp-search-index-list                                
+   0.264505   azmcp-keyvault-key-get                                 
+   0.263335   azmcp-search-service-list                              
+   0.261841   azmcp-keyvault-secret-get                              
+   0.257950   azmcp-appconfig-kv-show                                
+   0.253793   azmcp-monitor-resource-log-query                       
+
+Prompt: Show me the details of service bus <service_bus_name> topic <topic_name>
+Expected tool: azmcp-servicebus-topic-details
+   0.617949   azmcp-servicebus-topic-details                         *** EXPECTED ***
+   0.594447   azmcp-servicebus-topic-subscription-details            
+   0.499141   azmcp-servicebus-queue-details                         
+   0.344497   azmcp-kusto-cluster-get                                
+   0.331108   azmcp-search-index-list                                
+   0.319358   azmcp-redis-cache-list                                 
+   0.315871   azmcp-keyvault-key-get                                 
+   0.313407   azmcp-search-service-list                              
+   0.310335   azmcp-redis-cluster-list                               
+   0.298848   azmcp-monitor-workspace-list                           
+
+Prompt: Show me the details of service bus <service_bus_name> subscription <subscription_name>
+Expected tool: azmcp-servicebus-topic-subscription-details
+   0.657795   azmcp-servicebus-topic-subscription-details            *** EXPECTED ***
+   0.511218   azmcp-servicebus-queue-details                         
+   0.498031   azmcp-servicebus-topic-details                         
+   0.459953   azmcp-search-service-list                              
+   0.440382   azmcp-kusto-cluster-get                                
+   0.429167   azmcp-redis-cache-list                                 
+   0.422227   azmcp-keyvault-key-get                                 
+   0.402474   azmcp-redis-cluster-list                               
+   0.399689   azmcp-monitor-workspace-list                           
+   0.392911   azmcp-keyvault-key-list                                
+
+Prompt: Show me the latest message in service bus <service_bus_name> subscription <subscription_name> for the topic <topic_name>
+Expected tool: azmcp-servicebus-topic-subscription-peek
+   0.530315   azmcp-servicebus-topic-subscription-details            
+   0.483906   azmcp-servicebus-topic-details                         
+   0.379415   azmcp-search-service-list                              
+   0.377307   azmcp-servicebus-queue-details                         
+   0.344373   azmcp-monitor-workspace-list                           
+   0.324093   azmcp-keyvault-secret-get                              
+   0.315982   azmcp-keyvault-key-get                                 
+   0.309215   azmcp-postgres-server-list                             
+   0.308173   azmcp-subscription-list                                
+   0.306705   azmcp-keyvault-key-list                                
+
+Prompt: List all storage accounts in my subscription
+Expected tool: azmcp-storage-account-list
+   0.795931   azmcp-storage-account-list                             *** EXPECTED ***
+   0.654741   azmcp-storage-table-list                               
+   0.653010   azmcp-cosmos-account-list                              
+   0.617815   azmcp-storage-blob-container-list                      
+   0.566948   azmcp-storage-blob-list                                
+   0.554560   azmcp-subscription-list                                
+   0.540430   azmcp-search-service-list                              
+   0.536210   azmcp-keyvault-key-list                                
+   0.532281   azmcp-appconfig-account-list                           
+   0.505101   azmcp-monitor-workspace-list                           
+
+Prompt: Show me the storage accounts in my subscription
+Expected tool: azmcp-storage-account-list
+   0.711771   azmcp-storage-account-list                             *** EXPECTED ***
+   0.603771   azmcp-storage-table-list                               
+   0.584583   azmcp-cosmos-account-list                              
+   0.575696   azmcp-storage-blob-container-list                      
+   0.506644   azmcp-storage-blob-list                                
+   0.505061   azmcp-subscription-list                                
+   0.492621   azmcp-appconfig-account-list                           
+   0.489011   azmcp-search-service-list                              
+   0.481918   azmcp-monitor-workspace-list                           
+   0.463987   azmcp-keyvault-key-list                                
+
+Prompt: Show me my storage accounts
+Expected tool: azmcp-storage-account-list
+   0.579411   azmcp-storage-account-list                             *** EXPECTED ***
+   0.550458   azmcp-storage-blob-container-list                      
+   0.517025   azmcp-storage-table-list                               
+   0.484157   azmcp-storage-blob-list                                
+   0.461174   azmcp-cosmos-account-list                              
+   0.435820   azmcp-storage-blob-container-details                   
+   0.427206   azmcp-cosmos-database-container-list                   
+   0.394278   azmcp-cosmos-database-list                             
+   0.377426   azmcp-appconfig-account-list                           
+   0.374193   azmcp-subscription-list                                
+
+Prompt: List all blob containers in the storage account <account_name>
+Expected tool: azmcp-storage-blob-container-list
+   0.769995   azmcp-storage-blob-container-list                      *** EXPECTED ***
+   0.757942   azmcp-storage-blob-list                                
+   0.644421   azmcp-cosmos-database-container-list                   
+   0.561405   azmcp-storage-account-list                             
+   0.557411   azmcp-storage-blob-container-details                   
+   0.555073   azmcp-storage-table-list                               
+   0.474482   azmcp-cosmos-account-list                              
+   0.461062   azmcp-cosmos-database-list                             
+   0.377497   azmcp-cosmos-database-container-item-query             
+   0.367329   azmcp-search-index-list                                
+
+Prompt: Show me the blob containers in the storage account <account_name>
+Expected tool: azmcp-storage-blob-container-list
+   0.702084   azmcp-storage-blob-container-list                      *** EXPECTED ***
+   0.689060   azmcp-storage-blob-list                                
+   0.600224   azmcp-cosmos-database-container-list                   
+   0.543513   azmcp-storage-blob-container-details                   
+   0.522562   azmcp-storage-table-list                               
+   0.514925   azmcp-storage-account-list                             
+   0.451798   azmcp-cosmos-account-list                              
+   0.414783   azmcp-cosmos-database-list                             
+   0.372016   azmcp-cosmos-database-container-item-query             
+   0.342751   azmcp-appconfig-kv-show                                
+
+Prompt: Show me the properties of the storage container files in the storage account <account_name>
+Expected tool: azmcp-storage-blob-container-details
+   0.681211   azmcp-storage-blob-container-details                   *** EXPECTED ***
+   0.673280   azmcp-storage-blob-container-list                      
+   0.623779   azmcp-storage-blob-list                                
+   0.550089   azmcp-storage-table-list                               
+   0.537468   azmcp-cosmos-database-container-list                   
+   0.533296   azmcp-storage-account-list                             
+   0.433048   azmcp-cosmos-account-list                              
+   0.429604   azmcp-appconfig-kv-show                                
+   0.398738   azmcp-cosmos-database-container-item-query             
+   0.380648   azmcp-cosmos-database-list                             
+
+Prompt: List all blobs in the blob container <container_name> in the storage account <account_name>
+Expected tool: azmcp-storage-blob-list
+   0.814503   azmcp-storage-blob-list                                *** EXPECTED ***
+   0.719467   azmcp-storage-blob-container-list                      
+   0.611716   azmcp-cosmos-database-container-list                   
+   0.585232   azmcp-storage-blob-container-details                   
+   0.539746   azmcp-storage-account-list                             
+   0.535960   azmcp-storage-table-list                               
+   0.454748   azmcp-cosmos-account-list                              
+   0.420226   azmcp-cosmos-database-list                             
+   0.410251   azmcp-cosmos-database-container-item-query             
+   0.363449   azmcp-keyvault-key-list                                
+
+Prompt: Show me the blobs in the blob container <container_name> in the storage account <account_name>
+Expected tool: azmcp-storage-blob-list
+   0.719083   azmcp-storage-blob-list                                *** EXPECTED ***
+   0.650404   azmcp-storage-blob-container-list                      
+   0.580446   azmcp-cosmos-database-container-list                   
+   0.559692   azmcp-storage-blob-container-details                   
+   0.491277   azmcp-storage-table-list                               
+   0.453571   azmcp-storage-account-list                             
+   0.408641   azmcp-cosmos-database-container-item-query             
+   0.405177   azmcp-cosmos-account-list                              
+   0.365858   azmcp-cosmos-database-list                             
+   0.349198   azmcp-appconfig-kv-show                                
+
+Prompt: List all tables in the storage account <account_name>
+Expected tool: azmcp-storage-table-list
+   0.802490   azmcp-storage-table-list                               *** EXPECTED ***
+   0.616817   azmcp-storage-blob-container-list                      
+   0.590933   azmcp-monitor-table-list                               
+   0.568532   azmcp-storage-account-list                             
+   0.563845   azmcp-storage-blob-list                                
+   0.518910   azmcp-cosmos-database-list                             
+   0.517557   azmcp-cosmos-database-container-list                   
+   0.511143   azmcp-monitor-table-type-list                          
+   0.507319   azmcp-kusto-table-list                                 
+   0.492182   azmcp-postgres-table-list                              
+
+Prompt: Show me the tables in the storage account <account_name>
+Expected tool: azmcp-storage-table-list
+   0.761384   azmcp-storage-table-list                               *** EXPECTED ***
+   0.595883   azmcp-storage-blob-container-list                      
+   0.540017   azmcp-storage-account-list                             
+   0.534192   azmcp-monitor-table-list                               
+   0.532919   azmcp-storage-blob-list                                
+   0.511242   azmcp-cosmos-database-container-list                   
+   0.489228   azmcp-monitor-table-type-list                          
+   0.479730   azmcp-cosmos-database-list                             
+   0.469981   azmcp-cosmos-account-list                              
+   0.466721   azmcp-kusto-table-list                                 
+
+
+Prompt count=112, Execution time=29.0960746s
+Success rate=78.6% (88/112 tests passed)
