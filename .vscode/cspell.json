@@ -296,6 +296,12 @@
         "WINDOWSVMIMAGE",
         "winget",
         "xvfb",
-        "Xunit"
+        "Xunit",
+        "operationalinsights",
+        "piechart",
+        "timechart",
+        "myapp",
+        "mygroup",
+        "myworkbook"
     ]
 }
