@@ -49,6 +49,7 @@ jobs:
       image: image:tag
       remoteImage:
       - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:$(Version)
+      - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:latest
 
   timeoutInMinutes: 120
   pool:
