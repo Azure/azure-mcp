@@ -5,7 +5,6 @@
 param(
     [string] $Version,
     [switch] $Trimmed,
-    [switch] $IsLocalBuild,
     [switch] $DebugBuild
 )
 
