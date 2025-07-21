@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
