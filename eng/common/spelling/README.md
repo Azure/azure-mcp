@@ -2,6 +2,38 @@
 
 This directory contains scripts to run cspell (Code Spell Checker) on the repository using the dependencies defined in the adjacent `package*.json` files.
 
+## Adding Legitimate Words
+
+If the spell checker flags legitimate words as misspelled, you can add them to the dictionary configuration file located at `.vscode/cspell.json`.
+
+### Where to Add Words
+
+There are two main places to add legitimate words. Maintain alphabetical order when adding words to keep the dictionary organized:
+
+1. **Root-level words array**: Add words to the `"words"` array at the root level of the configuration file. This is the preferred location for project-specific terms, technical vocabulary, and commonly used words.
+
+2. **Baseline dictionary**: Add words to the `"baseline"` dictionary under `"dictionaryDefinitions"`. This is typically used for words that were already present in the codebase when the spell checker was first introduced.
+
+
+### Example
+
+To add new words, edit `.vscode/cspell.json` and add them to the `"words"` array:
+
+```json
+{
+    "words": [
+        "myprojectname",
+        "customterm",
+        "technicalword"
+    ]
+}
+```
+
+### Guidelines
+
+- Use lowercase for words
+- Consider whether the word is truly legitimate or if it might be a typo
+
 ## Available Scripts
 
 ### PowerShell Version (Windows)

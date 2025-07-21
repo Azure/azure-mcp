@@ -104,11 +104,21 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
-| azmcp-keyvault-key-get | Show me the details of key <key_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-key-get | Show me the details of the key <key_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-key-get | Show me the key <key_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-list | List all keys in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-list | Show me the keys in the key vault <key_vault_account_name> |
-| azmcp-keyvault-secret-get | Show me the details about the secret <secret_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-create | Create a new secret called <secret_name> with value <secret_value> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-get | Show me the details of the secret <secret_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-get | Show me the secret <secret_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-list | List all secrets in the key vault <key_vault_account_name> |
+| azmcp-keyvault-secret-list | Show me the secrets in the key vault <key_vault_account_name> |
 
 ## Azure Kubernetes Service (AKS)
 

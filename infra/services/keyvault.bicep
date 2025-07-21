@@ -29,38 +29,52 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
-resource secretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+resource certificateOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
-  // This is the Key Vault Reader role, which is the minimum role permission we can give.
-  // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#key-vault
-  name: '4633458b-17de-408a-b874-0445c86b69e6'
+  // This is the Key Vault Certificates Officer role. Allows user to read/write/delete certificates.
+  name: 'a4417e6f-fecd-4de8-b567-7b0420556985'
 }
 
-resource keyUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+resource keysOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
   // This is the Key Vault Crypto Officer role.  Allows user to read/write/delete keys.
   name: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
 }
 
-resource vaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
-  name: guid(secretsUserRoleDefinition.id, testApplicationOid, keyVault.id)
+resource secretsOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Key Vault Secrets Officer role. Allows user to read/write/delete secrets.
+  name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+}
+
+resource certificatesRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(certificateOfficerRoleDefinition.id, testApplicationOid, keyVault.id)
   scope: keyVault
-  properties:{
+  properties: {
     principalId: testApplicationOid
-    roleDefinitionId: secretsUserRoleDefinition.id
+    roleDefinitionId: certificateOfficerRoleDefinition.id
   }
 }
 
-resource vaultRoleAssignment2 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
-  name: guid(keyUserRoleDefinition.id, testApplicationOid, keyVault.id)
+resource keysRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keysOfficerRoleDefinition.id, testApplicationOid, keyVault.id)
   scope: keyVault
-  properties:{
+  properties: {
     principalId: testApplicationOid
-    roleDefinitionId: keyUserRoleDefinition.id
+    roleDefinitionId: keysOfficerRoleDefinition.id
   }
 }
 
-resource keyVaultKey 'Microsoft.KeyVault/vaults/keys@2021-11-01-preview' = {
+resource secretsRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(secretsOfficerRoleDefinition.id, testApplicationOid, keyVault.id)
+  scope: keyVault
+  properties: {
+    principalId: testApplicationOid
+    roleDefinitionId: secretsOfficerRoleDefinition.id
+  }
+}
+
+resource keyVaultKey 'Microsoft.KeyVault/vaults/keys@2023-07-01' = {
   parent: keyVault
   name: 'foo-bar'
   properties: {
