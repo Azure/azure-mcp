@@ -89,7 +89,7 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         {
             _logger.LogError(ex, "Error listing user sessions for session host {SessionHostName} in hostpool {HostPoolName} / {HostPoolResourceId}", 
                 options.SessionHostName, options.HostPoolName, options.HostPoolResourceId);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -54,7 +54,7 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
             _logger.LogError(ex,
                 "Error listing hostpools. Subscription: {Subscription}, Options: {@Options}",
                 options.Subscription, options);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;

@@ -87,7 +87,7 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         {
             _logger.LogError(ex, "Error listing session hosts for hostpool {HostPoolName} / {HostPoolResourceId}", 
                 options.HostPoolName, options.HostPoolResourceId);
-            HandleException(context.Response, ex);
+            HandleException(context, ex);
         }
 
         return context.Response;
