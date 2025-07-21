@@ -57,12 +57,35 @@ public class DotProduct : IDistanceMetric
     }
 }
 
-public class VectorDB
+public class VectorDB : IDisposable
 {
     private readonly ReaderWriterLockSlim _lock = new();
     private readonly List<Entry> _entries = new();
     private readonly IDistanceMetric _distanceMetric;
+    private bool _disposed = false;
 
+    ~VectorDB()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _lock?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
     public VectorDB(IDistanceMetric distanceMetric, IEnumerable<Entry>? entries = null)
     {
         _distanceMetric = distanceMetric;
