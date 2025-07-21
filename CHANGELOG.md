@@ -4,6 +4,13 @@
 
 ### Features Added
 
+- Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
+
 - Added support for Azure Virtual Desktop with new commands:
   - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
   - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
