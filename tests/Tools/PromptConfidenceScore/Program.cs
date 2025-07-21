@@ -128,7 +128,7 @@ class Program
                 }
                 else
                 {
-                    await writer.WriteLineAsync($"Tool count={toolCount}, Execution time={executionTime.TotalSeconds:F7}s");
+                    await writer.WriteLineAsync($"Loaded {toolCount} tools in {executionTime.TotalSeconds:F7}s");
                     await writer.WriteLineAsync("Note: Prompt testing skipped in CI environment");
                 }
                 return;
@@ -144,7 +144,7 @@ class Program
             }
             else
             {
-                Console.WriteLine($"Tool count={toolCount}, Execution time={executionTime.TotalSeconds:F7}s");
+                Console.WriteLine($"Loaded {toolCount} tools in {executionTime.TotalSeconds:F7}s");
                 Console.WriteLine($"Results written to: {Path.GetFullPath(outputFilePath)}");
             }
         }
@@ -170,7 +170,15 @@ class Program
 
     private static bool IsMarkdownOutput()
     {
-        return string.Equals(Environment.GetEnvironmentVariable("output"), "md", StringComparison.OrdinalIgnoreCase);
+        // Check environment variable first
+        if (string.Equals(Environment.GetEnvironmentVariable("output"), "md", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        // Check command line arguments
+        var args = Environment.GetCommandLineArgs();
+        return args.Contains("--markdown", StringComparer.OrdinalIgnoreCase);
     }
 
     private static async Task<string?> GetApiKeyAsync(bool isCiMode = false)
@@ -454,7 +462,7 @@ class Program
             await writer.WriteLineAsync("# Tool Selection Analysis Results");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync($"**Analysis Date:** {DateTime.Now:yyyy-MM-dd HH:mm:ss}  ");
-            await writer.WriteLineAsync($"**Total Tools:** {db.Count}  ");
+            await writer.WriteLineAsync($"**Tool count:** {db.Count}  ");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("## Table of Contents");
             await writer.WriteLineAsync();
@@ -475,7 +483,7 @@ class Program
         }
         else
         {
-            await writer.WriteLineAsync($"Tool count={db.Count}, Execution time={databaseSetupTime.TotalSeconds:F7}s");
+            await writer.WriteLineAsync($"Loaded {db.Count} tools in {databaseSetupTime.TotalSeconds:F7}s");
             await writer.WriteLineAsync();
         }
 
@@ -545,23 +553,27 @@ class Program
             await writer.WriteLineAsync($"**Execution Time:** {stopwatch.Elapsed.TotalSeconds:F7}s  ");
             await writer.WriteLineAsync();
 
-            // Calculate success rate
-            var successfulTests = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
-            var successRate = (double)successfulTests / promptCount * 100;
-            await writer.WriteLineAsync($"**Success Rate:** {successRate:F1}% ({successfulTests}/{promptCount} tests passed)  ");
+            // Calculate success rate metrics
+            var metrics = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
+            await writer.WriteLineAsync("### Success Rate Metrics");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync($"**Top Choice Success:** {metrics.TopChoicePercentage:F1}% ({metrics.TopChoiceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**High Confidence (≥0.5):** {metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**Top Choice + High Confidence:** {metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests)  ");
             await writer.WriteLineAsync();
 
             await writer.WriteLineAsync("### Success Rate Analysis");
             await writer.WriteLineAsync();
-            if (successRate >= 90)
+            var overallScore = metrics.TopChoiceHighConfidencePercentage; // Use the most stringent metric for analysis
+            if (overallScore >= 90)
             {
                 await writer.WriteLineAsync("🟢 **Excellent** - The tool selection system is performing very well.");
             }
-            else if (successRate >= 75)
+            else if (overallScore >= 75)
             {
                 await writer.WriteLineAsync("🟡 **Good** - The tool selection system is performing adequately but has room for improvement.");
             }
-            else if (successRate >= 50)
+            else if (overallScore >= 50)
             {
                 await writer.WriteLineAsync("🟠 **Fair** - The tool selection system needs significant improvement.");
             }
@@ -573,44 +585,80 @@ class Program
         }
         else
         {
-            // Calculate success rate for regular format too
-            var successfulTests = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
-            var successRate = (double)successfulTests / promptCount * 100;
+            // Calculate success rate metrics for regular format too
+            var metrics = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
 
             await writer.WriteLineAsync($"\n\nPrompt count={promptCount}, Execution time={stopwatch.Elapsed.TotalSeconds:F7}s");
-            await writer.WriteLineAsync($"Success rate={successRate:F1}% ({successfulTests}/{promptCount} tests passed)");
+            await writer.WriteLineAsync($"Top choice success rate={metrics.TopChoicePercentage:F1}% ({metrics.TopChoiceCount}/{promptCount} tests passed)");
+            await writer.WriteLineAsync($"High confidence rate={metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests with ≥0.5 score)");
+            await writer.WriteLineAsync($"Top choice + high confidence rate={metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests passed)");
         }
 
-        // Calculate success rate for console output
-        var successfulTestsForConsole = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
-        var successRateForConsole = (double)successfulTestsForConsole / promptCount * 100;
+        // Calculate success rate metrics for console output
+        var metricsForConsole = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
 
         // Print summary to console for feedback
         if (isCiMode)
         {
-            Console.WriteLine($"🧪 Tested {promptCount} prompts with {successRateForConsole:F1}% success rate");
+            Console.WriteLine($"🧪 Tested {promptCount} prompts:");
+            Console.WriteLine($"   📊 Top choice: {metricsForConsole.TopChoicePercentage:F1}%");
+            Console.WriteLine($"   🎯 High confidence: {metricsForConsole.HighConfidencePercentage:F1}%");
+            Console.WriteLine($"   ⭐ Top + high confidence: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
         }
         else
         {
             Console.WriteLine($"Prompt count={promptCount}, Execution time={stopwatch.Elapsed.TotalSeconds:F7}s");
+            Console.WriteLine($"Top choice: {metricsForConsole.TopChoicePercentage:F1}%, High confidence: {metricsForConsole.HighConfidencePercentage:F1}%, Combined: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
         }
     }
 
-    private static async Task<int> CalculateSuccessRateAsync(VectorDB db, Dictionary<string, List<string>> toolNameWithPrompts, EmbeddingService embeddingService)
+    public class SuccessRateMetrics
     {
-        int successfulTests = 0;
+        public int TopChoiceCount { get; set; }
+        public int HighConfidenceCount { get; set; }
+        public int TopChoiceHighConfidenceCount { get; set; }
+        public int TotalTests { get; set; }
+
+        public double TopChoicePercentage => (double)TopChoiceCount / TotalTests * 100;
+        public double HighConfidencePercentage => (double)HighConfidenceCount / TotalTests * 100;
+        public double TopChoiceHighConfidencePercentage => (double)TopChoiceHighConfidenceCount / TotalTests * 100;
+    }
+
+    private static async Task<SuccessRateMetrics> CalculateSuccessRateAsync(VectorDB db, Dictionary<string, List<string>> toolNameWithPrompts, EmbeddingService embeddingService)
+    {
+        var metrics = new SuccessRateMetrics();
+        
         foreach (var (toolName, prompts) in toolNameWithPrompts)
         {
             foreach (var prompt in prompts)
             {
+                metrics.TotalTests++;
                 var vector = await embeddingService.CreateEmbeddingsAsync(prompt);
-                var queryResults = db.Query(vector, new QueryOptions(TopK: 1));
-                if (queryResults.Count > 0 && queryResults[0].Entry.Id == toolName)
+                var queryResults = db.Query(vector, new QueryOptions(TopK: 10)); // Get more results to check confidence scores
+                
+                if (queryResults.Count > 0)
                 {
-                    successfulTests++;
+                    // Check if expected tool is top choice
+                    if (queryResults[0].Entry.Id == toolName)
+                    {
+                        metrics.TopChoiceCount++;
+                        
+                        // Check if it also has high confidence (0.5 or higher)
+                        if (queryResults[0].Score >= 0.5)
+                        {
+                            metrics.TopChoiceHighConfidenceCount++;
+                        }
+                    }
+                    
+                    // Check if expected tool appears anywhere with confidence 0.5 or higher
+                    if (queryResults.Any(r => r.Entry.Id == toolName && r.Score >= 0.5))
+                    {
+                        metrics.HighConfidenceCount++;
+                    }
                 }
             }
         }
-        return successfulTests;
+        
+        return metrics;
     }
 }
