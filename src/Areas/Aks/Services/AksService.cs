@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.ResourceManager.ContainerService;
+using Azure.ResourceManager.Resources;
 using AzureMcp.Areas.Aks.Models;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
@@ -47,11 +47,12 @@ public sealed class AksService(
 
         try
         {
-            await foreach (var cluster in subscriptionResource.GetContainerServiceManagedClustersAsync())
+            await foreach (var cluster in subscriptionResource.GetGenericResourcesAsync(filter: "resourceType eq 'Microsoft.ContainerService/managedClusters'"))
             {
                 if (cluster?.Data != null)
                 {
-                    clusters.Add(ConvertToClusterModel(cluster));
+                    var resource = await cluster.GetAsync();
+                    clusters.Add(ConvertToClusterModel(resource));
                 }
             }
 
@@ -66,10 +67,13 @@ public sealed class AksService(
         return clusters;
     }
 
-    private static Cluster ConvertToClusterModel(ContainerServiceManagedClusterResource clusterResource)
+    private static Cluster ConvertToClusterModel(GenericResource clusterResource)
     {
-        var data = clusterResource.Data;
-        var agentPool = data.AgentPoolProfiles?.FirstOrDefault();
+        // Retrieve all information about the resource
+        var data = clusterResource.Get().Value.Data;
+
+        var clusterProperties = AksClusterProperties.FromJson(data.Properties);
+        var agentPool = clusterProperties?.AgentPoolProfiles?.FirstOrDefault();
 
         return new Cluster
         {
@@ -77,21 +81,21 @@ public sealed class AksService(
             SubscriptionId = clusterResource.Id.SubscriptionId,
             ResourceGroupName = clusterResource.Id.ResourceGroupName,
             Location = data.Location.ToString(),
-            KubernetesVersion = data.KubernetesVersion,
-            ProvisioningState = data.ProvisioningState?.ToString(),
-            PowerState = data.PowerStateCode?.ToString(),
-            DnsPrefix = data.DnsPrefix,
-            Fqdn = data.Fqdn,
+            IdentityType = data.Identity?.ManagedServiceIdentityType.ToString(),
+            ProvisioningState = clusterProperties?.ProvisioningState,
+            SkuTier = data.Sku?.Tier?.ToString(),
+            Tags = data.Tags?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+            KubernetesVersion = clusterProperties?.KubernetesVersion,
+            PowerState = clusterProperties?.PowerState?.Code,
+            DnsPrefix = clusterProperties?.DnsPrefix,
+            Fqdn = clusterProperties?.Fqdn,
             NodeCount = agentPool?.Count,
             NodeVmSize = agentPool?.VmSize,
-            IdentityType = data.Identity?.ManagedServiceIdentityType.ToString(),
-            EnableRbac = data.EnableRbac,
-            NetworkPlugin = data.NetworkProfile?.NetworkPlugin?.ToString(),
-            NetworkPolicy = data.NetworkProfile?.NetworkPolicy?.ToString(),
-            ServiceCidr = data.NetworkProfile?.ServiceCidr,
-            DnsServiceIP = data.NetworkProfile?.DnsServiceIP?.ToString(),
-            SkuTier = data.Sku?.Tier?.ToString(),
-            Tags = data.Tags?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+            EnableRbac = clusterProperties?.EnableRbac,
+            NetworkPlugin = clusterProperties?.NetworkProfile?.NetworkPlugin?.ToString(),
+            NetworkPolicy = clusterProperties?.NetworkProfile?.NetworkPolicy?.ToString(),
+            ServiceCidr = clusterProperties?.NetworkProfile?.ServiceCidr,
+            DnsServiceIP = clusterProperties?.NetworkProfile?.DnsServiceIP?.ToString()
         };
     }
 }
