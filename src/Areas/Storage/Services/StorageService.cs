@@ -347,4 +347,45 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         return paths;
     }
+
+    public async Task<List<DataLakePathInfo>> ListDataLakePathsWithPrefix(
+        string accountName,
+        string fileSystemName,
+        string? pathPrefix,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, fileSystemName, subscriptionId);
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+        var paths = new List<DataLakePathInfo>();
+
+        try
+        {
+            // Use path prefix if provided
+            var pathsAsyncEnumerable = string.IsNullOrEmpty(pathPrefix) 
+                ? fileSystemClient.GetPathsAsync()
+                : fileSystemClient.GetPathsAsync(path: pathPrefix);
+
+            await foreach (var pathItem in pathsAsyncEnumerable)
+            {
+                var pathInfo = new DataLakePathInfo(
+                    pathItem.Name,
+                    pathItem.IsDirectory == true ? "directory" : "file",
+                    pathItem.ContentLength,
+                    pathItem.LastModified,
+                    pathItem.ETag.ToString());
+
+                paths.Add(pathInfo);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error listing Data Lake paths: {ex.Message}", ex);
+        }
+
+        return paths;
+    }
 }

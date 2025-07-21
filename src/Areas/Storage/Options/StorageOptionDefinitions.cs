@@ -9,6 +9,7 @@ public static class StorageOptionDefinitions
     public const string ContainerName = "container-name";
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
+    public const string PathPrefix = "path-prefix";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -41,4 +42,9 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true
     };
+
+    public static readonly Option<string> PathPrefix = new(
+        $"--path-prefix",
+        "Optional path prefix to filter the results. If specified, only paths that start with this prefix will be returned."
+    );
 }
