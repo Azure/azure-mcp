@@ -174,7 +174,7 @@ module storage 'services/storage.bicep' = if (empty(areas) || contains(areas, 'S
   }
 }
 
-module loadtesting 'services/loadtesting.bicep' = {
+module loadtesting 'services/loadtesting.bicep' = if (empty(areas) || contains(areas, 'Loadtesting')) {
   name: '${deploymentName}-loadtesting'
   params: {
     baseName: baseName

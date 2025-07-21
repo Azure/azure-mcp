@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Areas.Foundry.Options;
 using AzureMcp.Areas.Foundry.Options.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Telemetry;
 
-namespace AzureMcp.Areas.Foundry.Commands.Models;
+namespace AzureMcp.Areas.Foundry.Commands;
 
 public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeploymentOptions>
 {
@@ -111,5 +112,5 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         return context.Response;
     }
 
-    internal record ModelDeploymentCommandResult(Dictionary<string, object> DeploymentData);
+    internal record ModelDeploymentCommandResult(ModelDeploymentResult DeploymentData);
 }

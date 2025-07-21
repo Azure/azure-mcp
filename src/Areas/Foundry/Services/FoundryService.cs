@@ -153,7 +153,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    public async Task<Dictionary<string, object>> DeployModel(string deploymentName, string modelName, string modelFormat,
+    public async Task<ModelDeploymentResult> DeployModel(string deploymentName, string modelName, string modelFormat,
         string azureAiServicesName, string resourceGroup, string subscriptionId, string? modelVersion = null, string? modelSource = null,
         string? skuName = null, int? skuCapacity = null, string? scaleType = null, int? scaleCapacity = null, RetryPolicyOptions? retryPolicy = null)
     {
@@ -213,22 +213,21 @@ public class FoundryService : BaseAzureService, IFoundryService
 
             if (!deployment.HasData)
             {
-                return new Dictionary<string, object>
+                return new ModelDeploymentResult
                 {
-                    { "has_data", false },
+                    HasData = false
                 };
             }
 
-            // Manually converting system data to a dictionary due to lack of available JsonSerializer support
-            return new Dictionary<string, object>
+            return new ModelDeploymentResult
             {
-                { "has_data", true },
-                { "id", deployment.Data.Id.ToString() },
-                { "name", deployment.Data.Name },
-                { "type", deployment.Data.ResourceType.ToString() },
-                { "sku", deployment.Data.Sku },
-                { "tags", deployment.Data.Tags },
-                { "properties", deployment.Data.Properties },
+                HasData = true,
+                Id = deployment.Data.Id.ToString(),
+                Name = deployment.Data.Name,
+                Type = deployment.Data.ResourceType.ToString(),
+                Sku = deployment.Data.Sku,
+                Tags = deployment.Data.Tags,
+                Properties = deployment.Data.Properties
             };
         }
         catch (Exception ex)

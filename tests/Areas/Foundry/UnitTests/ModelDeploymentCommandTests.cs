@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using AzureMcp.Areas.Foundry.Commands.Models;
+using AzureMcp.Areas.Foundry.Commands;
+using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
@@ -39,9 +40,9 @@ public class ModelDeploymentCommandTests
         var resourceGroup = "test-resource-group";
         var subscriptionId = "test-subscription-id";
 
-        var expectedResponse = new Dictionary<string, object>
+        var expectedResponse = new ModelDeploymentResult
         {
-            { "has_data", true },
+            HasData = true
         };
 
         _foundryService.DeployModel(
@@ -85,9 +86,9 @@ public class ModelDeploymentCommandTests
         var scaleType = "Standard";
         var scaleCapacity = 2;
 
-        var expectedResponse = new Dictionary<string, object>
+        var expectedResponse = new ModelDeploymentResult
         {
-            { "has_data", true },
+            HasData = true
         };
 
         _foundryService.DeployModel(
