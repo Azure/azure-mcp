@@ -62,6 +62,15 @@ module azureIsv 'services/azureIsv.bicep' = if ((empty(areas) || contains(areas,
   }
 }
 
+module containerApp 'services/containerapp.bicep' = if (empty(areas) || contains(areas, 'ContainerApps')) {
+  name: '${deploymentName}-containerapp'
+  params: {
+    baseName: baseName
+    location: location
+    testApplicationOid: testApplicationOid
+  }
+}
+
 module cosmos 'services/cosmos.bicep' = if (empty(areas) || contains(areas, 'Cosmos')) {
   name: '${deploymentName}-cosmos'
   params: {
