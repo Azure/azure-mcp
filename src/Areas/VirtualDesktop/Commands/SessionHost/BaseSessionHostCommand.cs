@@ -26,12 +26,12 @@ public abstract class BaseSessionHostCommand<
     protected override T BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        
+
         if (options is SessionHostUserSessionListOptions sessionHostOptions)
         {
             sessionHostOptions.SessionHostName = parseResult.GetValueForOption(_sessionHostOption);
         }
-        
+
         return options;
     }
 }

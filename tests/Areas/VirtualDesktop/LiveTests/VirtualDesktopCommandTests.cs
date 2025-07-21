@@ -81,7 +81,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         {
             var firstHostpool = allHostpools[0];
             var resourceGroupName = firstHostpool.GetProperty("resourceGroupName").GetString()!;
-            
+
             // Now test with resource group filter
             var result = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_list",
@@ -129,7 +129,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         {
             var firstHostpool = allHostpools[0];
             var resourceGroupName = firstHostpool.GetProperty("resourceGroupName").GetString()!;
-            
+
             // Now test with resource group filter
             var result = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_list",
@@ -192,7 +192,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         if (hostpools.GetArrayLength() > 0)
         {
             var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
-            
+
             var result = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_sessionhost_list",
                 new()
@@ -240,7 +240,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         if (hostpools.GetArrayLength() > 0)
         {
             var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
-            
+
             var result = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_sessionhost_list",
                 new()
@@ -288,7 +288,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         if (hostpools.GetArrayLength() > 0)
         {
             var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
-            
+
             // Get session hosts for the first hostpool
             var sessionHostsResult = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_sessionhost_list",
@@ -302,7 +302,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
             if (sessionHosts != null && sessionHosts.Value.GetArrayLength() > 0)
             {
                 var firstSessionHost = sessionHosts.Value[0].GetProperty("name").GetString()!;
-                
+
                 var result = await CallToolAsync(
                     "azmcp_virtualdesktop_hostpool_sessionhost_usersession_list",
                     new()
@@ -359,7 +359,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
         if (hostpools.GetArrayLength() > 0)
         {
             var firstHostpool = hostpools[0].GetProperty("name").GetString()!;
-            
+
             // Get session hosts for the first hostpool
             var sessionHostsResult = await CallToolAsync(
                 "azmcp_virtualdesktop_hostpool_sessionhost_list",
@@ -373,7 +373,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
             if (sessionHosts != null && sessionHosts.Value.GetArrayLength() > 0)
             {
                 var firstSessionHost = sessionHosts.Value[0].GetProperty("name").GetString()!;
-                
+
                 var result = await CallToolAsync(
                     "azmcp_virtualdesktop_hostpool_sessionhost_usersession_list",
                     new()

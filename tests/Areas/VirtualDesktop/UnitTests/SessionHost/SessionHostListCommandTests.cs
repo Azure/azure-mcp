@@ -69,23 +69,23 @@ public class SessionHostListCommandTests
                 CreateMockSessionHost("sessionhost1"),
                 CreateMockSessionHost("sessionhost2")
             };
-            
+
             _virtualDesktopService.ListSessionHostsAsync(
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(Task.FromResult<IReadOnlyList<SessionHostModel>>(mockSessionHosts));
-                
+
             _virtualDesktopService.ListSessionHostsByResourceIdAsync(
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(Task.FromResult<IReadOnlyList<SessionHostModel>>(mockSessionHosts));
-                
+
             _virtualDesktopService.ListSessionHostsByResourceGroupAsync(
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
@@ -108,8 +108,8 @@ public class SessionHostListCommandTests
         }
         else
         {
-            Assert.True(response.Message.ToLower().Contains("required") || 
-                       response.Message.Contains("hostpool-name") || 
+            Assert.True(response.Message.ToLower().Contains("required") ||
+                       response.Message.Contains("hostpool-name") ||
                        response.Message.Contains("hostpool-resource-id"));
         }
     }
@@ -124,7 +124,7 @@ public class SessionHostListCommandTests
             new() { Name = "sessionhost2" }
         };
         _virtualDesktopService.ListSessionHostsAsync(
-            "sub123", 
+            "sub123",
             "pool1",
             null,
             Arg.Any<RetryPolicyOptions>())
@@ -140,10 +140,10 @@ public class SessionHostListCommandTests
         Assert.Equal(200, response.Status);
         Assert.Equal("Success", response.Message);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListSessionHostsAsync(
-            "sub123", 
-            "pool1", 
+            "sub123",
+            "pool1",
             null,
             Arg.Any<RetryPolicyOptions>());
     }
@@ -158,9 +158,9 @@ public class SessionHostListCommandTests
             new() { Name = "sessionhost2" }
         };
         var resourceId = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1";
-        
+
         _virtualDesktopService.ListSessionHostsByResourceIdAsync(
-            "sub123", 
+            "sub123",
             resourceId,
             null,
             Arg.Any<RetryPolicyOptions>())
@@ -176,16 +176,16 @@ public class SessionHostListCommandTests
         Assert.Equal(200, response.Status);
         Assert.Equal("Success", response.Message);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListSessionHostsByResourceIdAsync(
-            "sub123", 
-            resourceId, 
+            "sub123",
+            resourceId,
             null,
             Arg.Any<RetryPolicyOptions>());
-            
+
         await _virtualDesktopService.DidNotReceive().ListSessionHostsAsync(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
     }
@@ -195,7 +195,7 @@ public class SessionHostListCommandTests
     {
         // First test: Can we parse the command line correctly?
         var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1 --resource-group rg1");
-        
+
         // Check for parse errors
         if (parseResult.Errors.Any())
         {
@@ -205,16 +205,16 @@ public class SessionHostListCommandTests
                 Console.WriteLine($"  {error}");
             }
         }
-        
+
         // Arrange
         var expectedSessionHosts = new List<SessionHostModel>
         {
             CreateMockSessionHost("sessionhost1"),
             CreateMockSessionHost("sessionhost2")
         };
-        
+
         _virtualDesktopService.ListSessionHostsByResourceGroupAsync(
-            "sub123", 
+            "sub123",
             "rg1",
             "pool1",
             null,
@@ -233,15 +233,15 @@ public class SessionHostListCommandTests
             Console.WriteLine($"Actual Status: {response.Status}");
             Console.WriteLine($"Actual Message: {response.Message}");
         }
-        
+
         Assert.Equal(200, response.Status);
         Assert.Equal("Success", response.Message);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListSessionHostsByResourceGroupAsync(
-            "sub123", 
+            "sub123",
             "rg1",
-            "pool1", 
+            "pool1",
             null,
             Arg.Any<RetryPolicyOptions>());
     }
@@ -308,19 +308,19 @@ public class SessionHostListCommandTests
 
     [Theory]
     [InlineData("--subscription")]
-    [InlineData("--hostpool-name")]  
+    [InlineData("--hostpool-name")]
     [InlineData("--invalid-option")]
     public async Task ExecuteAsync_WithInvalidArgs_ReturnsBadRequest(string invalidArgs)
     {
         // Arrange
         var context = new CommandContext(_serviceProvider);
-        
+
         // Act & Assert
         try
         {
             var parseResult = _parser.Parse(invalidArgs);
             var response = await _command.ExecuteAsync(context, parseResult);
-            
+
             // If parsing succeeds but validation fails, expect 400
             Assert.Equal(400, response.Status);
         }

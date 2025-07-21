@@ -3,8 +3,8 @@
 
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
-using AzureMcp.Areas.VirtualDesktop.Services;
 using AzureMcp.Areas.VirtualDesktop.Models;
+using AzureMcp.Areas.VirtualDesktop.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,10 +62,10 @@ public class HostpoolListCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            var hostpools = new List<HostPool> 
-            { 
-                new() { Name = "hostpool1" }, 
-                new() { Name = "hostpool2" } 
+            var hostpools = new List<HostPool>
+            {
+                new() { Name = "hostpool1" },
+                new() { Name = "hostpool2" }
             }.AsReadOnly();
             _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(hostpools);
@@ -132,10 +132,10 @@ public class HostpoolListCommandTests
     public async Task ExecuteAsync_ReturnsHostpools_WhenSuccessful()
     {
         // Arrange
-        var expectedHostpools = new List<HostPool> 
-        { 
-            new() { Name = "hostpool1" }, 
-            new() { Name = "hostpool2" } 
+        var expectedHostpools = new List<HostPool>
+        {
+            new() { Name = "hostpool1" },
+            new() { Name = "hostpool2" }
         }.AsReadOnly();
         _virtualDesktopService.ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>())
             .Returns(expectedHostpools);
@@ -148,7 +148,7 @@ public class HostpoolListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>());
     }
 
@@ -156,10 +156,10 @@ public class HostpoolListCommandTests
     public async Task ExecuteAsync_CallsResourceGroupService_WhenResourceGroupProvided()
     {
         // Arrange
-        var expectedHostpools = new List<HostPool> 
-        { 
-            new() { Name = "hostpool1" }, 
-            new() { Name = "hostpool2" } 
+        var expectedHostpools = new List<HostPool>
+        {
+            new() { Name = "hostpool1" },
+            new() { Name = "hostpool2" }
         }.AsReadOnly();
         _virtualDesktopService.ListHostpoolsByResourceGroupAsync("test-sub", "test-rg", null, Arg.Any<RetryPolicyOptions>())
             .Returns(expectedHostpools);
@@ -172,7 +172,7 @@ public class HostpoolListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListHostpoolsByResourceGroupAsync("test-sub", "test-rg", null, Arg.Any<RetryPolicyOptions>());
         await _virtualDesktopService.DidNotReceive().ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
     }
@@ -181,10 +181,10 @@ public class HostpoolListCommandTests
     public async Task ExecuteAsync_CallsSubscriptionService_WhenNoResourceGroup()
     {
         // Arrange
-        var expectedHostpools = new List<HostPool> 
-        { 
-            new() { Name = "hostpool1" }, 
-            new() { Name = "hostpool2" } 
+        var expectedHostpools = new List<HostPool>
+        {
+            new() { Name = "hostpool1" },
+            new() { Name = "hostpool2" }
         }.AsReadOnly();
         _virtualDesktopService.ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>())
             .Returns(expectedHostpools);
@@ -197,7 +197,7 @@ public class HostpoolListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        
+
         await _virtualDesktopService.Received(1).ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>());
         await _virtualDesktopService.DidNotReceive().ListHostpoolsByResourceGroupAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
     }

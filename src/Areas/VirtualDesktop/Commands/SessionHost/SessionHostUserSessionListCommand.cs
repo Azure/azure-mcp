@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 
-public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSessionListCommand> logger) 
+public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSessionListCommand> logger)
     : BaseSessionHostCommand<SessionHostUserSessionListOptions>
 {
     private const string CommandTitle = "List User Sessions on Session Host";
@@ -40,7 +40,7 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
 
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
             IReadOnlyList<UserSession> userSessions;
-            
+
             if (!string.IsNullOrEmpty(options.HostPoolResourceId))
             {
                 userSessions = await virtualDesktopService.ListUserSessionsByResourceIdAsync(
@@ -76,7 +76,7 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing user sessions for session host {SessionHostName} in hostpool {HostPoolName} / {HostPoolResourceId}", 
+            _logger.LogError(ex, "Error listing user sessions for session host {SessionHostName} in hostpool {HostPoolName} / {HostPoolResourceId}",
                 options.SessionHostName, options.HostPoolName, options.HostPoolResourceId);
             HandleException(context, ex);
         }

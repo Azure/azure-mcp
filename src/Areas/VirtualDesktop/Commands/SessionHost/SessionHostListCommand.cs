@@ -40,7 +40,7 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
 
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
             IReadOnlyList<Models.SessionHost> sessionHosts;
-            
+
             if (!string.IsNullOrEmpty(options.HostPoolResourceId))
             {
                 sessionHosts = await virtualDesktopService.ListSessionHostsByResourceIdAsync(
@@ -73,7 +73,7 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing session hosts for hostpool {HostPoolName} / {HostPoolResourceId}", 
+            _logger.LogError(ex, "Error listing session hosts for hostpool {HostPoolName} / {HostPoolResourceId}",
                 options.HostPoolName, options.HostPoolResourceId);
             HandleException(context, ex);
         }

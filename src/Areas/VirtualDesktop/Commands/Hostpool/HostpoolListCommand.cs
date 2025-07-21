@@ -41,23 +41,23 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
 
             IReadOnlyList<Models.HostPool> hostpools;
-            
+
             if (!string.IsNullOrEmpty(options.ResourceGroup))
             {
                 hostpools = await virtualDesktopService.ListHostpoolsByResourceGroupAsync(
-                    options.Subscription!, 
+                    options.Subscription!,
                     options.ResourceGroup,
-                    options.Tenant, 
+                    options.Tenant,
                     options.RetryPolicy);
             }
             else
             {
                 hostpools = await virtualDesktopService.ListHostpoolsAsync(
-                    options.Subscription!, 
-                    options.Tenant, 
+                    options.Subscription!,
+                    options.Tenant,
                     options.RetryPolicy);
             }
-                
+
             context.Response.Results = hostpools.Count > 0
                 ? ResponseResult.Create(new HostPoolListCommandResult(hostpools.ToList()), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)
                 : null;
@@ -91,4 +91,3 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
     internal record HostPoolListCommandResult(List<Models.HostPool> hostpools);
 }
-

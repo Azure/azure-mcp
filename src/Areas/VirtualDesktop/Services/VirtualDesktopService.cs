@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.DesktopVirtualization;
-using AzureMcp.Services.Azure.Subscription;
-using AzureMcp.Options;
 using AzureMcp.Areas.VirtualDesktop.Models;
+using AzureMcp.Options;
+using AzureMcp.Services.Azure.Subscription;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;
 
@@ -27,7 +27,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var hostpools = new List<HostPool>();
-        
+
         var resourceGroupResource = await sub.GetResourceGroupAsync(resourceGroup);
         await foreach (HostPoolResource resource in resourceGroupResource.Value.GetHostPools().GetAllAsync())
         {
@@ -40,7 +40,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var sessionHosts = new List<SessionHost>();
-        
+
         await foreach (HostPoolResource resource in sub.GetHostPoolsAsync())
         {
             if (resource.Data.Name == hostPoolName)
@@ -54,7 +54,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
                 break; // Found the host pool, no need to continue
             }
         }
-        
+
         return sessionHosts;
     }
 
@@ -62,7 +62,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var userSessions = new List<UserSession>();
-        
+
         await foreach (HostPoolResource resource in sub.GetHostPoolsAsync())
         {
             if (resource.Data.Name == hostPoolName)
@@ -83,7 +83,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
                 break; // Found the host pool, no need to continue
             }
         }
-        
+
         return userSessions;
     }
 
@@ -91,14 +91,14 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var sessionHosts = new List<SessionHost>();
-        
+
         var armClient = sub.GetCachedClient(client => client);
         var hostPool = armClient.GetHostPoolResource(Azure.Core.ResourceIdentifier.Parse(hostPoolResourceId));
         await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
         {
             sessionHosts.Add(new SessionHost(sessionHost));
         }
-        
+
         return sessionHosts;
     }
 
@@ -106,7 +106,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var userSessions = new List<UserSession>();
-        
+
         var armClient = sub.GetCachedClient(client => client);
         var hostPool = armClient.GetHostPoolResource(Azure.Core.ResourceIdentifier.Parse(hostPoolResourceId));
         await foreach (SessionHostResource sessionHost in hostPool.GetSessionHosts().GetAllAsync())
@@ -120,7 +120,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
                 break; // Found the session host, no need to continue
             }
         }
-        
+
         return userSessions;
     }
 
@@ -128,15 +128,15 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var sessionHosts = new List<SessionHost>();
-        
+
         var resourceGroupResource = await sub.GetResourceGroupAsync(resourceGroup);
         var hostPool = await resourceGroupResource.Value.GetHostPoolAsync(hostPoolName);
-        
+
         await foreach (SessionHostResource sessionHost in hostPool.Value.GetSessionHosts().GetAllAsync())
         {
             sessionHosts.Add(new SessionHost(sessionHost));
         }
-        
+
         return sessionHosts;
     }
 
@@ -144,10 +144,10 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
     {
         var sub = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var userSessions = new List<UserSession>();
-        
+
         var resourceGroupResource = await sub.GetResourceGroupAsync(resourceGroup);
         var hostPool = await resourceGroupResource.Value.GetHostPoolAsync(hostPoolName);
-        
+
         await foreach (SessionHostResource sessionHost in hostPool.Value.GetSessionHosts().GetAllAsync())
         {
             if (sessionHost.Data.Name == sessionHostName || sessionHost.Data.Name.EndsWith($"/{sessionHostName}"))
@@ -159,7 +159,7 @@ public class VirtualDesktopService(ISubscriptionService subscriptionService) : I
                 break; // Found the session host, no need to continue
             }
         }
-        
+
         return userSessions;
     }
 }

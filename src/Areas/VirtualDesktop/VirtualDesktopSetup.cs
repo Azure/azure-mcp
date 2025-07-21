@@ -3,10 +3,10 @@
 
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
+using AzureMcp.Areas.VirtualDesktop.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Areas.VirtualDesktop.Services;
 
 namespace AzureMcp.Areas.VirtualDesktop;
 

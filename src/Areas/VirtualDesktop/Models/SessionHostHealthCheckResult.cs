@@ -23,8 +23,11 @@ public class SessionHostHealthCheckResult
 
     private static SessionHostHealthCheckFailureDetails? ConvertFailureDetails(Azure.ResourceManager.DesktopVirtualization.Models.SessionHostHealthCheckFailureDetails? details)
     {
-        if (details == null) return null;
-        
+        if (details == null)
+        {
+            return null;
+        }
+
         return new SessionHostHealthCheckFailureDetails(details);
     }
 }
