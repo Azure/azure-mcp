@@ -437,8 +437,8 @@ class Program
             var input = tool.Description ?? "";
             
             // Convert command to tool name format (spaces to dashes)
-            var toolName = tool.Command?.Replace("azmcp ", "")?.Replace(" ", "-") ?? tool.Name;
-            if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith("azmcp-"))
+            var toolName = tool.Command?.Replace(CommandPrefix, "")?.Replace(" ", SpaceReplacement) ?? tool.Name;
+            if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith($"{CommandPrefix.Trim()}-"))
             {
                 toolName = $"azmcp-{toolName}";
             }
