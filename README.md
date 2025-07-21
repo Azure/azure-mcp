@@ -301,9 +301,7 @@ Installation in VS Code should be in one of the previous forms and the update in
 
 For a step-by-step Docker installation, follow these instructions:
 
-1. Clone repository
-2. From repository root, build Docker image: `./eng/scripts/Build-Docker.ps1`
-3. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
+1. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
 
     ```bash
     AZURE_TENANT_ID={YOUR_AZURE_TENANT_ID}
@@ -311,7 +309,7 @@ For a step-by-step Docker installation, follow these instructions:
     AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
     ```
 
-4. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
+2. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
 
     ```json
     {
@@ -324,7 +322,7 @@ For a step-by-step Docker installation, follow these instructions:
             "--rm",
             "--env-file",
             "/full/path/to/.env"
-            "azure/azuremcp",
+            "mcr.microsoft.com/azure-sdk/azure-mcp:latest",
           ]
         }
       }
