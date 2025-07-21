@@ -28,9 +28,6 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
         (e.g., 'myfilesystem/data/logs' or 'myfilesystem/archives/2024'). The path supports nested structures using 
         forward slashes (/). If the directory already exists, the operation will succeed and return the existing 
         directory information. Returns directory metadata including name, type, and creation timestamp as JSON.
-          Required options:
-        - account-name: The storage account name
-        - directory-path: The full path including file system name and directory path
         """;
 
     public override string Title => CommandTitle;
