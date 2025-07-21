@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.KeyVault.Commands.Certificate;
 using AzureMcp.Areas.KeyVault.Commands.Key;
 using AzureMcp.Areas.KeyVault.Commands.Secret;
 using AzureMcp.Areas.KeyVault.Services;
@@ -28,10 +29,19 @@ public class KeyVaultSetup : IAreaSetup
         var secret = new CommandGroup("secret", "Key Vault secret operations - Commands for managing and accessing secrets in Azure Key Vault.");
         keyVault.AddSubGroup(secret);
 
+        var certificate = new CommandGroup("certificate", "Key Vault certificate operations - Commands for managing and accessing certificates in Azure Key Vault.");
+        keyVault.AddSubGroup(certificate);
+
         keys.AddCommand("list", new KeyListCommand(loggerFactory.CreateLogger<KeyListCommand>()));
         keys.AddCommand("get", new KeyGetCommand(loggerFactory.CreateLogger<KeyGetCommand>()));
         keys.AddCommand("create", new KeyCreateCommand(loggerFactory.CreateLogger<KeyCreateCommand>()));
 
+        secret.AddCommand("list", new SecretListCommand(loggerFactory.CreateLogger<SecretListCommand>()));
+        secret.AddCommand("create", new SecretCreateCommand(loggerFactory.CreateLogger<SecretCreateCommand>()));
         secret.AddCommand("get", new SecretGetCommand(loggerFactory.CreateLogger<SecretGetCommand>()));
+
+        certificate.AddCommand("list", new CertificateListCommand(loggerFactory.CreateLogger<CertificateListCommand>()));
+        certificate.AddCommand("get", new CertificateGetCommand(loggerFactory.CreateLogger<CertificateGetCommand>()));
+        certificate.AddCommand("create", new CertificateCreateCommand(loggerFactory.CreateLogger<CertificateCreateCommand>()));
     }
 }
