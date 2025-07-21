@@ -27,6 +27,8 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         - subscription: Azure subscription ID or name
         - hostpool-name: Name of the hostpool to list session hosts from (OR)
         - hostpool-resource-id: Resource ID of the hostpool (alternative to hostpool-name)
+          Optional options:
+        - resource-group: Resource group name (when specified with hostpool-name, avoids subscription-wide search)
           Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
@@ -67,6 +69,15 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
                 sessionHosts = await virtualDesktopService.ListSessionHostsByResourceIdAsync(
                     options.Subscription!,
                     options.HostPoolResourceId,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
+            else if (!string.IsNullOrEmpty(options.ResourceGroup))
+            {
+                sessionHosts = await virtualDesktopService.ListSessionHostsByResourceGroupAsync(
+                    options.Subscription!,
+                    options.ResourceGroup,
+                    options.HostPoolName!,
                     options.Tenant,
                     options.RetryPolicy);
             }

@@ -54,6 +54,8 @@ public class HostpoolListCommandTests
     [Theory]
     [InlineData("--subscription test-sub", true)]
     [InlineData("--subscription test-sub --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --resource-group test-rg", true)]
+    [InlineData("--subscription test-sub --resource-group test-rg --tenant test-tenant", true)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -66,6 +68,8 @@ public class HostpoolListCommandTests
                 new() { Name = "hostpool2" } 
             }.AsReadOnly();
             _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+                .Returns(hostpools);
+            _virtualDesktopService.ListHostpoolsByResourceGroupAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(hostpools);
         }
 
@@ -92,6 +96,8 @@ public class HostpoolListCommandTests
     {
         // Arrange
         _virtualDesktopService.ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(new List<HostPool>().AsReadOnly());
+        _virtualDesktopService.ListHostpoolsByResourceGroupAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(new List<HostPool>().AsReadOnly());
 
         var parseResult = _parser.Parse("--subscription test-sub");
@@ -144,5 +150,72 @@ public class HostpoolListCommandTests
         Assert.NotNull(response.Results);
         
         await _virtualDesktopService.Received(1).ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsResourceGroupService_WhenResourceGroupProvided()
+    {
+        // Arrange
+        var expectedHostpools = new List<HostPool> 
+        { 
+            new() { Name = "hostpool1" }, 
+            new() { Name = "hostpool2" } 
+        }.AsReadOnly();
+        _virtualDesktopService.ListHostpoolsByResourceGroupAsync("test-sub", "test-rg", null, Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedHostpools);
+
+        var parseResult = _parser.Parse("--subscription test-sub --resource-group test-rg");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        
+        await _virtualDesktopService.Received(1).ListHostpoolsByResourceGroupAsync("test-sub", "test-rg", null, Arg.Any<RetryPolicyOptions>());
+        await _virtualDesktopService.DidNotReceive().ListHostpoolsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsSubscriptionService_WhenNoResourceGroup()
+    {
+        // Arrange
+        var expectedHostpools = new List<HostPool> 
+        { 
+            new() { Name = "hostpool1" }, 
+            new() { Name = "hostpool2" } 
+        }.AsReadOnly();
+        _virtualDesktopService.ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedHostpools);
+
+        var parseResult = _parser.Parse("--subscription test-sub");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        
+        await _virtualDesktopService.Received(1).ListHostpoolsAsync("test-sub", null, Arg.Any<RetryPolicyOptions>());
+        await _virtualDesktopService.DidNotReceive().ListHostpoolsByResourceGroupAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsEmptyResult_WhenNoHostpoolsInResourceGroup()
+    {
+        // Arrange
+        _virtualDesktopService.ListHostpoolsByResourceGroupAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(new List<HostPool>().AsReadOnly());
+
+        var parseResult = _parser.Parse("--subscription test-sub --resource-group test-rg");
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Null(response.Results);
     }
 }

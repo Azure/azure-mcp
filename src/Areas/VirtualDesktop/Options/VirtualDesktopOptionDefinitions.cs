@@ -8,6 +8,7 @@ public static class VirtualDesktopOptionDefinitions
     public const string HostPoolName = "hostpool-name";
     public const string HostPoolResourceId = "hostpool-resource-id";
     public const string SessionHostName = "sessionhost-name";
+    public const string ResourceGroupName = "resource-group";
 
     public static readonly Option<string> HostPool = new(
         $"--{HostPoolName}",
@@ -26,5 +27,10 @@ public static class VirtualDesktopOptionDefinitions
     {
         IsRequired = true
     };
+
+    public static readonly Option<string> ResourceGroup = new(
+        $"--{ResourceGroupName}",
+        "The name of the Azure resource group. This is a logical container for Azure resources."
+    );
 }
 

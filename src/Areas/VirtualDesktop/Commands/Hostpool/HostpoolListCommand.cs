@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 
-public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : BaseVirtualDesktopCommand<HostpoolListOptions>()
+public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : BaseVirtualDesktopCommand<HostpoolListOptions>
 {
     private const string CommandTitle = "List hostpools";
     private readonly ILogger<HostpoolListCommand> _logger = logger;
@@ -19,9 +19,9 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
     public override string Description =>
         $"""
-        List all hostpools in a subscription. This command retrieves all Azure Virtual Desktop hostpool objects available
-        in the specified {OptionDefinitions.Common.Subscription}. Results include hostpool names and are
-        returned as a JSON array.
+        List all hostpools in a subscription or resource group. This command retrieves all Azure Virtual Desktop hostpool objects available
+        in the specified {OptionDefinitions.Common.Subscription}. If a resource group is specified, only hostpools in that resource group are returned.
+        Results include hostpool names and are returned as a JSON array.
         """;
 
     public override string Title => CommandTitle;
@@ -40,10 +40,23 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
             var virtualDesktopService = context.GetService<IVirtualDesktopService>();
 
-            var hostpools = await virtualDesktopService.ListHostpoolsAsync(
-                options.Subscription!, 
-                options.Tenant, 
-                options.RetryPolicy);
+            IReadOnlyList<Models.HostPool> hostpools;
+            
+            if (!string.IsNullOrEmpty(options.ResourceGroup))
+            {
+                hostpools = await virtualDesktopService.ListHostpoolsByResourceGroupAsync(
+                    options.Subscription!, 
+                    options.ResourceGroup,
+                    options.Tenant, 
+                    options.RetryPolicy);
+            }
+            else
+            {
+                hostpools = await virtualDesktopService.ListHostpoolsAsync(
+                    options.Subscription!, 
+                    options.Tenant, 
+                    options.RetryPolicy);
+            }
                 
             context.Response.Results = hostpools.Count > 0
                 ? ResponseResult.Create(new HostPoolListCommandResult(hostpools.ToList()), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)

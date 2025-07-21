@@ -18,8 +18,6 @@ public abstract class BaseSessionHostCommand<
     protected readonly Option<string> _hostPoolResourceIdOption = VirtualDesktopOptionDefinitions.HostPoolResourceIdOption;
     protected readonly Option<string> _sessionHostOption = VirtualDesktopOptionDefinitions.SessionHost;
 
-    protected override bool RequiresResourceGroup => false;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -31,10 +29,6 @@ public abstract class BaseSessionHostCommand<
     protected override T BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        if (RequiresResourceGroup)
-        {
-            options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        }
         options.HostPoolName = parseResult.GetValueForOption(_hostPoolOption);
         options.HostPoolResourceId = parseResult.GetValueForOption(_hostPoolResourceIdOption);
         

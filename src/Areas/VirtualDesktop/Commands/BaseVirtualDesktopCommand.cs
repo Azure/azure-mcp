@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Models.Option;
@@ -17,28 +18,18 @@ public abstract class BaseVirtualDesktopCommand<
     : SubscriptionCommand<TOptions>
     where TOptions : SubscriptionOptions, new()
 {
-    protected new readonly Option<string> _resourceGroupOption = OptionDefinitions.Common.ResourceGroup;
-    protected virtual bool RequiresResourceGroup => false;
+    protected new readonly Option<string> _resourceGroupOption = VirtualDesktopOptionDefinitions.ResourceGroup;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-
-        if (RequiresResourceGroup)
-        {
-            command.AddOption(_resourceGroupOption);
-        }
+        command.AddOption(_resourceGroupOption);
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-
-        if (RequiresResourceGroup)
-        {
-            options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        }
-
+        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 }

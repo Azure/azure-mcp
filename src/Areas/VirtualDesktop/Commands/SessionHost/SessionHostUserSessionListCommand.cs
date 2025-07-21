@@ -27,6 +27,8 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         - hostpool-name: Name of the host pool containing the session host (OR)
         - hostpool-resource-id: Resource ID of the host pool (alternative to hostpool-name)
         - sessionhost-name: Name of the session host to list user sessions from
+          Optional options:
+        - resource-group: Resource group name (when specified with hostpool-name, avoids subscription-wide search)
           Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
@@ -67,6 +69,16 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
                 userSessions = await virtualDesktopService.ListUserSessionsByResourceIdAsync(
                     options.Subscription!,
                     options.HostPoolResourceId,
+                    options.SessionHostName!,
+                    options.Tenant,
+                    options.RetryPolicy);
+            }
+            else if (!string.IsNullOrEmpty(options.ResourceGroup))
+            {
+                userSessions = await virtualDesktopService.ListUserSessionsByResourceGroupAsync(
+                    options.Subscription!,
+                    options.ResourceGroup,
+                    options.HostPoolName!,
                     options.SessionHostName!,
                     options.Tenant,
                     options.RetryPolicy);

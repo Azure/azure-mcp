@@ -730,16 +730,54 @@ azmcp azureterraformbestpractices get
 ### Azure Virtual Desktop Operations
 ```bash
 # List Azure Virtual Desktop host pools in a subscription
-azmcp virtualdesktop hostpool list --subscription <subscription>
+azmcp virtualdesktop hostpool list --subscription <subscription> \
+                                   [--resource-group <resource-group>]
 
 # List session hosts in a host pool
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>]
+                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                [--resource-group <resource-group>]
 
 # List user sessions on a session host
-azmcp virtualdesktop hostpool sessionhost usersession-list --subscription subscription> \
+azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subscription> \
                                                 [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
-                                                --sessionhost-name <sessionhost-name>
+                                                --sessionhost-name <sessionhost-name> \
+                                                [--resource-group <resource-group>]
+```
+
+#### Resource Group Optimization
+
+The Virtual Desktop commands support an optional `--resource-group` parameter that provides significant performance improvements when specified:
+
+- **Without `--resource-group`**: Commands enumerate through all resources in the subscription
+- **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
+
+**Host Pool List Usage:**
+
+```bash
+# Standard usage - enumerates all host pools in subscription
+azmcp virtualdesktop hostpool list --subscription <subscription>
+
+# Optimized usage - lists host pools in specific resource group only
+azmcp virtualdesktop hostpool list --subscription <subscription> \
+                                   --resource-group <resource-group>
+```
+
+**Session Host Usage patterns:**
+
+```bash
+# Standard usage - enumerates all host pools in subscription
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool-name <hostpool-name>
+
+# Optimized usage - direct resource group access
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool-name <hostpool-name> \
+                                                --resource-group <resource-group>
+
+# Alternative with resource ID (no resource group needed)
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool-resource-id /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.DesktopVirtualization/hostPools/<pool>
 ```
 
 ### Azure Quick Review CLI Extension Operations
