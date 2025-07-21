@@ -49,9 +49,6 @@ public class SessionHostUserSessionListCommandTests
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
         Assert.Contains("List all user sessions on a specific session host", command.Description);
-        Assert.Contains("subscription", command.Description);
-        Assert.Contains("hostpool-name", command.Description);
-        Assert.Contains("sessionhost-name", command.Description);
     }
 
     [Theory]

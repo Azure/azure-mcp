@@ -33,4 +33,43 @@ public abstract class BaseHostPoolCommand<
         options.ResourceGroup = parseResult.GetValueForOption(_hostPoolResourceGroupOption);
         return options;
     }
+
+    public override ValidationResult Validate(CommandResult commandResult, CommandResponse? commandResponse = null)
+    {
+        var result = base.Validate(commandResult, commandResponse);
+        if (!result.IsValid)
+        {
+            return result;
+        }
+
+        var hostPoolName = commandResult.GetValueForOption(_hostPoolOption);
+        var hostPoolResourceId = commandResult.GetValueForOption(_hostPoolResourceIdOption);
+
+        // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
+        if (string.IsNullOrEmpty(hostPoolName) && string.IsNullOrEmpty(hostPoolResourceId))
+        {
+            result.IsValid = false;
+            result.ErrorMessage = "Either --hostpool-name or --hostpool-resource-id must be provided.";
+            if (commandResponse != null)
+            {
+                commandResponse.Status = 400;
+                commandResponse.Message = result.ErrorMessage;
+            }
+            return result;
+        }
+
+        if (!string.IsNullOrEmpty(hostPoolName) && !string.IsNullOrEmpty(hostPoolResourceId))
+        {
+            result.IsValid = false;
+            result.ErrorMessage = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
+            if (commandResponse != null)
+            {
+                commandResponse.Status = 400;
+                commandResponse.Message = result.ErrorMessage;
+            }
+            return result;
+        }
+
+        return result;
+    }
 }

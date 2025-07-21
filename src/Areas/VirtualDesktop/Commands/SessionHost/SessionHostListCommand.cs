@@ -3,7 +3,6 @@
 
 using Azure;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
-using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
 using AzureMcp.Models.Option;
@@ -23,13 +22,6 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         List all SessionHosts in a hostpool. This command retrieves all Azure Virtual Desktop SessionHost objects available
         in the specified {OptionDefinitions.Common.Subscription} and hostpool. Results include SessionHost details and are
         returned as a JSON array.
-          Required options:
-        - subscription: Azure subscription ID or name
-        - hostpool-name: Name of the hostpool to list session hosts from (OR)
-        - hostpool-resource-id: Resource ID of the hostpool (alternative to hostpool-name)
-          Optional options:
-        - resource-group: Resource group name (when specified with hostpool-name, avoids subscription-wide search)
-          Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
     public override string Title => CommandTitle;
@@ -43,21 +35,6 @@ public sealed class SessionHostListCommand(ILogger<SessionHostListCommand> logge
         {
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
             {
-                return context.Response;
-            }
-
-            // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
-            if (string.IsNullOrEmpty(options.HostPoolName) && string.IsNullOrEmpty(options.HostPoolResourceId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Either --hostpool-name or --hostpool-resource-id must be provided.";
-                return context.Response;
-            }
-
-            if (!string.IsNullOrEmpty(options.HostPoolName) && !string.IsNullOrEmpty(options.HostPoolResourceId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
                 return context.Response;
             }
 

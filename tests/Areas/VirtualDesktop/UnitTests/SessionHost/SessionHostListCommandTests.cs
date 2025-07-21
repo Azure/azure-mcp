@@ -9,7 +9,6 @@ using AzureMcp.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 using SessionHostModel = AzureMcp.Areas.VirtualDesktop.Models.SessionHost;
 

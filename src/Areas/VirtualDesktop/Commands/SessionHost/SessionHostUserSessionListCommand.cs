@@ -22,14 +22,6 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop 
         user session objects available on the specified session host. Results include user session details such as 
         user principal name, session state, application type, and creation time.
-          Required options:
-        - subscription: Azure subscription ID or name
-        - hostpool-name: Name of the host pool containing the session host (OR)
-        - hostpool-resource-id: Resource ID of the host pool (alternative to hostpool-name)
-        - sessionhost-name: Name of the session host to list user sessions from
-          Optional options:
-        - resource-group: Resource group name (when specified with hostpool-name, avoids subscription-wide search)
-          Note: Either hostpool-name or hostpool-resource-id must be provided, but not both.
         """;
 
     public override string Title => CommandTitle;
@@ -43,21 +35,6 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
         {
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
             {
-                return context.Response;
-            }
-
-            // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
-            if (string.IsNullOrEmpty(options.HostPoolName) && string.IsNullOrEmpty(options.HostPoolResourceId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Either --hostpool-name or --hostpool-resource-id must be provided.";
-                return context.Response;
-            }
-
-            if (!string.IsNullOrEmpty(options.HostPoolName) && !string.IsNullOrEmpty(options.HostPoolResourceId))
-            {
-                context.Response.Status = 400;
-                context.Response.Message = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
                 return context.Response;
             }
 

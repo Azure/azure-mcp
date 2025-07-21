@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Commands;
 using AzureMcp.Commands.Subscription;
-using AzureMcp.Models.Option;
 using AzureMcp.Options;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands;
