@@ -70,10 +70,29 @@ jobs:
       mergeTestResults: true
 
   - task: PublishCodeCoverageResults@2
-    displayName: Publish Code Coverage Reports
+    displayName: "Publish Code Coverage Reports"
     condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
     inputs:
       summaryFileLocation: $(CoverageFile)
+
+  # --- VS Code Extension Packaging Steps ---
+  - task: NodeTool@0
+    displayName: "Use Node.js 20.x"
+    inputs:
+      versionSpec: 20.x
+
+  - bash: |
+      npm install -g npm vsce
+      npm ci --no-optional
+    displayName: "Install npm dependencies and vsce"
+    workingDirectory: eng/vscode
+
+  - pwsh: ./ci-build.ps1
+    workingDirectory: eng/vscode
+    displayName: "Build VS Code Extension"
+
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: "Component Governance Detection"
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:

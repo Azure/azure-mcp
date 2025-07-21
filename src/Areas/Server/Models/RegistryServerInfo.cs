@@ -7,7 +7,7 @@ namespace AzureMcp.Areas.Server.Models;
 
 /// <summary>
 /// Contains configuration information for an MCP server defined in the registry.
-/// Supports both URL-based (SSE) and command-based (stdio) transport mechanisms.
+/// Supports command-based (stdio) transport mechanism.
 /// </summary>
 public sealed class RegistryServerInfo
 {
@@ -19,8 +19,7 @@ public sealed class RegistryServerInfo
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets the URL endpoint for SSE-based transport.
-    /// If provided, the server will use SSE transport instead of stdio.
+    /// Gets the URL endpoint (deprecated - no longer used).
     /// </summary>
     [JsonPropertyName("url")]
     public string? Url { get; init; }

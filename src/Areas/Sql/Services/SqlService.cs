@@ -119,4 +119,109 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
             throw;
         }
     }
+
+    public async Task<List<SqlElasticPool>> GetElasticPoolsAsync(
+        string serverName,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var elasticPools = new List<SqlElasticPool>();
+
+            await foreach (var poolResource in sqlServerResource.Value.GetElasticPools().GetAllAsync())
+            {
+                var pool = poolResource.Data;
+                elasticPools.Add(new SqlElasticPool(
+                    Name: pool.Name,
+                    Id: pool.Id.ToString(),
+                    Type: pool.ResourceType.ToString(),
+                    Location: pool.Location.ToString(),
+                    Sku: pool.Sku != null ? new ElasticPoolSku(
+                        Name: pool.Sku.Name,
+                        Tier: pool.Sku.Tier,
+                        Capacity: pool.Sku.Capacity,
+                        Family: pool.Sku.Family,
+                        Size: pool.Sku.Size
+                    ) : null,
+                    State: pool.State?.ToString(),
+                    CreationDate: pool.CreatedOn,
+                    MaxSizeBytes: pool.MaxSizeBytes,
+                    PerDatabaseSettings: pool.PerDatabaseSettings != null ? new ElasticPoolPerDatabaseSettings(
+                        MinCapacity: pool.PerDatabaseSettings.MinCapacity,
+                        MaxCapacity: pool.PerDatabaseSettings.MaxCapacity
+                    ) : null,
+                    ZoneRedundant: pool.IsZoneRedundant,
+                    LicenseType: pool.LicenseType?.ToString(),
+                    DatabaseDtuMin: null, // DTU properties not available in current SDK
+                    DatabaseDtuMax: null,
+                    Dtu: null,
+                    StorageMB: null
+                ));
+            }
+
+            return elasticPools;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting SQL elastic pools. Server: {Server}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, resourceGroup, subscription);
+            throw;
+        }
+    }
+
+    public async Task<List<SqlServerFirewallRule>> ListFirewallRulesAsync(
+        string serverName,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var firewallRules = new List<SqlServerFirewallRule>();
+
+            await foreach (var firewallRuleResource in sqlServerResource.Value.GetSqlFirewallRules().GetAllAsync(cancellationToken))
+            {
+                var rule = firewallRuleResource.Data;
+                firewallRules.Add(new SqlServerFirewallRule(
+                    Name: rule.Name,
+                    Id: rule.Id.ToString(),
+                    Type: rule.ResourceType.ToString() ?? "Unknown",
+                    StartIpAddress: rule.StartIPAddress,
+                    EndIpAddress: rule.EndIPAddress
+                ));
+            }
+
+            return firewallRules;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error getting SQL server firewall rules. Server: {Server}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, resourceGroup, subscription);
+            throw;
+        }
+    }
 }

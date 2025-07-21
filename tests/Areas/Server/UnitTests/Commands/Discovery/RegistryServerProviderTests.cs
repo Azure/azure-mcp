@@ -79,7 +79,7 @@ public class RegistryServerProviderTests
     }
 
     [Fact]
-    public async Task CreateClientAsync_WithUrl_CreatesSseClient()
+    public async Task CreateClientAsync_WithUrl_ThrowsInvalidOperationException()
     {
         // Arrange
         string testId = "sseProvider";
@@ -92,14 +92,11 @@ public class RegistryServerProviderTests
         var provider = new RegistryServerProvider(testId, serverInfo);
 
         // Act & Assert
-        var exception = await Record.ExceptionAsync(() => provider.CreateClientAsync(new McpClientOptions()));
-        Assert.NotNull(exception);
-        // Not an InvalidOperationException about missing URL or invalid transport
-        Assert.IsNotType<InvalidOperationException>(exception);
-        // Should be an HttpRequestException with 404 status
-        Assert.IsType<HttpRequestException>(exception);
-        var httpException = (HttpRequestException)exception;
-        Assert.Equal(HttpStatusCode.NotFound, httpException.StatusCode);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => provider.CreateClientAsync(new McpClientOptions()));
+
+        Assert.Contains($"Registry server '{testId}' does not have a valid transport type. Only 'stdio' is supported.",
+            exception.Message);
     }
 
     [Fact]
@@ -170,7 +167,7 @@ public class RegistryServerProviderTests
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => provider.CreateClientAsync(new McpClientOptions()));
 
-        Assert.Contains($"Registry server '{testId}' does not have a valid url or type for transport.",
+        Assert.Contains($"Registry server '{testId}' does not have a valid transport type. Only 'stdio' is supported.",
             exception.Message);
     }
 

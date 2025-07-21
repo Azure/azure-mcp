@@ -21,7 +21,6 @@ public class ServiceCollectionExtensionsTests
 {
     // TransportTypes is internal, so we'll use strings directly
     private const string StdioTransport = "stdio";
-    private const string SseTransport = "sse";
 
     private IServiceCollection SetupBaseServices()
     {
@@ -163,33 +162,7 @@ public class ServiceCollectionExtensionsTests
         Assert.Contains(services, sd => sd.ServiceType == typeof(IMcpServer));
     }
 
-    [Fact]
-    public void AddAzureMcpServer_WithSseTransport_ConfiguresHttpTransport()
-    {
-        // Arrange
-        var services = SetupBaseServices();
-        var options = new ServiceStartOptions
-        {
-            Transport = SseTransport,
-            Port = 8080,
-            // Define proxy as "single" to prevent CompositeDiscoveryStrategy error
-            Mode = "single"
-        };
 
-        // Act
-        services.AddAzureMcpServer(options);
-
-        // Assert
-        // Build the provider to verify that service registration succeeded without exceptions
-        var provider = services.BuildServiceProvider();
-
-        // Check that appropriate registration was completed - we can't directly test
-        // IMcpServer as it requires actual HTTP setup, but we can verify related services
-        Assert.NotNull(provider.GetService<IMcpRuntime>());
-
-        // Verify that the service collection has MCP-related registrations
-        Assert.Contains(services, sd => sd.ServiceType == typeof(IMcpRuntime));
-    }
 
     [Fact]
     public void AddAzureMcpServer_ConfiguresMcpServerOptions()

@@ -52,12 +52,11 @@ public class PostgresService : BaseAzureService, IPostgresService
     {
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
-        var connectionString = $"Host={host};Database=postgres;Username={user};Password={entraIdAccessToken};";
+        var connectionString = $"Host={host};Database=postgres;Username={user};Password={entraIdAccessToken}";
 
-        await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+        await using var resource = await PostgresResource.CreateAsync(connectionString);
         var query = "SELECT datname FROM pg_database WHERE datistemplate = false;";
-        await using var command = new NpgsqlCommand(query, connection);
+        await using var command = new NpgsqlCommand(query, resource.Connection);
         await using var reader = await command.ExecuteReaderAsync();
         var dbs = new List<string>();
         while (await reader.ReadAsync())
@@ -71,11 +70,10 @@ public class PostgresService : BaseAzureService, IPostgresService
     {
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
-        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken};";
-        await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken}";
 
-        await using var command = new NpgsqlCommand(query, connection);
+        await using var resource = await PostgresResource.CreateAsync(connectionString);
+        await using var command = new NpgsqlCommand(query, resource.Connection);
         await using var reader = await command.ExecuteReaderAsync();
 
         var rows = new List<string>();
@@ -100,11 +98,11 @@ public class PostgresService : BaseAzureService, IPostgresService
     {
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
-        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken};";
-        await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken}";
+
+        await using var resource = await PostgresResource.CreateAsync(connectionString);
         var query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';";
-        await using var command = new NpgsqlCommand(query, connection);
+        await using var command = new NpgsqlCommand(query, resource.Connection);
         await using var reader = await command.ExecuteReaderAsync();
         var tables = new List<string>();
         while (await reader.ReadAsync())
@@ -118,12 +116,11 @@ public class PostgresService : BaseAzureService, IPostgresService
     {
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
-        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken};";
+        var connectionString = $"Host={host};Database={database};Username={user};Password={entraIdAccessToken}";
 
-        await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+        await using var resource = await PostgresResource.CreateAsync(connectionString);
         var query = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table}';";
-        await using var command = new NpgsqlCommand(query, connection);
+        await using var command = new NpgsqlCommand(query, resource.Connection);
         await using var reader = await command.ExecuteReaderAsync();
         var schema = new List<string>();
         while (await reader.ReadAsync())
@@ -213,6 +210,33 @@ public class PostgresService : BaseAzureService, IPostgresService
         else
         {
             throw new Exception($"Failed to update parameter '{param}' to value '{value}'.");
+        }
+    }
+
+    private sealed class PostgresResource : IAsyncDisposable
+    {
+        public NpgsqlConnection Connection { get; }
+        private readonly NpgsqlDataSource _dataSource;
+
+        public static async Task<PostgresResource> CreateAsync(string connectionString)
+        {
+            var dataSource = new NpgsqlSlimDataSourceBuilder(connectionString)
+                .EnableTransportSecurity()
+                .Build();
+            var connection = await dataSource.OpenConnectionAsync();
+            return new PostgresResource(dataSource, connection);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await Connection.DisposeAsync();
+            await _dataSource.DisposeAsync();
+        }
+
+        private PostgresResource(NpgsqlDataSource dataSource, NpgsqlConnection connection)
+        {
+            _dataSource = dataSource;
+            Connection = connection;
         }
     }
 }

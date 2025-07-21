@@ -8,10 +8,11 @@ using Azure.ResourceManager;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.Azure.Tenant;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Azure;
 
-public abstract class BaseAzureService(ITenantService? tenantService = null)
+public abstract class BaseAzureService(ITenantService? tenantService = null, ILoggerFactory? loggerFactory = null)
 {
     private static readonly UserAgentPolicy s_sharedUserAgentPolicy;
     internal static readonly string s_defaultUserAgent;
@@ -22,6 +23,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
     private string? _lastArmClientTenantId;
     private RetryPolicyOptions? _lastRetryPolicy;
     private readonly ITenantService? _tenantService = tenantService;
+    private readonly ILoggerFactory? _loggerFactory = loggerFactory;
 
     static BaseAzureService()
     {
@@ -55,9 +57,9 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
 
         try
         {
-            _credential = new CustomChainedCredential(tenantId);
+            ILogger<CustomChainedCredential>? logger = _loggerFactory?.CreateLogger<CustomChainedCredential>();
+            _credential = new CustomChainedCredential(tenantId, logger);
             _lastTenantId = tenantId;
-
             return _credential;
         }
         catch (Exception ex)
@@ -69,6 +71,27 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
     protected static T AddDefaultPolicies<T>(T clientOptions) where T : ClientOptions
     {
         clientOptions.AddPolicy(s_sharedUserAgentPolicy, HttpPipelinePosition.BeforeTransport);
+
+        return clientOptions;
+    }
+
+    /// <summary>
+    /// Configures retry policy options on the provided client options
+    /// </summary>
+    /// <typeparam name="T">Type of client options that inherits from ClientOptions</typeparam>
+    /// <param name="clientOptions">The client options to configure</param>
+    /// <param name="retryPolicy">Optional retry policy configuration</param>
+    /// <returns>The configured client options</returns>
+    protected static T ConfigureRetryPolicy<T>(T clientOptions, RetryPolicyOptions? retryPolicy) where T : ClientOptions
+    {
+        if (retryPolicy != null)
+        {
+            clientOptions.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+            clientOptions.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+            clientOptions.Retry.MaxRetries = retryPolicy.MaxRetries;
+            clientOptions.Retry.Mode = retryPolicy.Mode;
+            clientOptions.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
+        }
 
         return clientOptions;
     }
@@ -93,17 +116,7 @@ public abstract class BaseAzureService(ITenantService? tenantService = null)
         try
         {
             var credential = await GetCredential(tenantId);
-            var options = AddDefaultPolicies(new ArmClientOptions());
-
-            // Configure retry policy if provided
-            if (retryPolicy != null)
-            {
-                options.Retry.MaxRetries = retryPolicy.MaxRetries;
-                options.Retry.Mode = retryPolicy.Mode;
-                options.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
-                options.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
-                options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
-            }
+            var options = ConfigureRetryPolicy(AddDefaultPolicies(new ArmClientOptions()), retryPolicy);
 
             _armClient = new ArmClient(credential, default, options);
             _lastArmClientTenantId = tenantId;

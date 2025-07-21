@@ -73,7 +73,7 @@ public class MockClientTests
                 {
                     CallToolHandler = (request, ct) =>
                     {
-                        if (request.Params?.Name == "azmcp-subscription-list")
+                        if (request.Params?.Name == "azmcp_subscription_list")
                         {
                             return ValueTask.FromResult(new CallToolResult
                             {
@@ -101,7 +101,7 @@ public class MockClientTests
             },
             requestParams: JsonSerializer.SerializeToNode(new
             {
-                name = "azmcp-subscription-list",
+                name = "azmcp_subscription_list",
                 arguments = new { }
             }),
             configureOptions: null,

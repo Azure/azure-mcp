@@ -58,7 +58,7 @@ public abstract class BaseCommand : IBaseCommand
         var result = new ValidationResult { IsValid = true };
 
         var missingOptions = commandResult.Command.Options
-            .Where(o => o.IsRequired && commandResult.GetValueForOption(o) == null)
+            .Where(o => o.IsRequired && IsOptionValueMissing(commandResult.GetValueForOption(o)))
             .Select(o => $"--{o.Name}")
             .ToList();
 
@@ -77,5 +77,10 @@ public abstract class BaseCommand : IBaseCommand
         }
 
         return result;
+    }
+
+    private static bool IsOptionValueMissing(object? value)
+    {
+        return value == null || (value is string str && string.IsNullOrWhiteSpace(str));
     }
 }

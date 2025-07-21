@@ -23,6 +23,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   properties: {
     allowSharedKeyAccess: false
+    isHnsEnabled: true
   }
 
   resource blobServices 'blobServices' = {
@@ -30,6 +31,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource fooContainer 'containers' = { name: 'foo' }
     resource barContainer 'containers' = { name: 'bar' }
     resource bazContainer 'containers' = { name: 'baz' }
+    resource testFileSystem 'containers' = { 
+      name: 'testfilesystem'
+      properties: {
+        publicAccess: 'None'
+      }
+    }
   }
 
   resource tableServices 'tableServices' = {
