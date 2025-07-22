@@ -99,7 +99,7 @@ public static class AzureMcpServiceCollectionExtensions
         {
             services.AddSingleton<IToolLoader, SingleProxyToolLoader>();
         }
-        else if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
+        else if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy && (serviceStartOptions.Namespace == null || serviceStartOptions.Namespace.Length == 0))
         {
             services.AddSingleton<IToolLoader>(sp =>
             {
@@ -118,7 +118,7 @@ public static class AzureMcpServiceCollectionExtensions
                 return new CompositeToolLoader(toolLoaders, loggerFactory.CreateLogger<CompositeToolLoader>());
             });
         }
-        else // null, "all", or any other unrecognized mode - expose all tools individually
+        else // null, "all", specific namespaces provided, or any other unrecognized mode - expose all tools individually
         {
             services.AddSingleton<IMcpDiscoveryStrategy, RegistryDiscoveryStrategy>();
             services.AddSingleton<IToolLoader>(sp =>
