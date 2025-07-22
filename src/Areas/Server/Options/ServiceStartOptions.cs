@@ -37,4 +37,11 @@ public class ServiceStartOptions
     /// </summary>
     [JsonPropertyName("readOnly")]
     public bool? ReadOnly { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the file path to write logs to.
+    /// When null, no file logging will occur.
+    /// </summary>
+    [JsonPropertyName("logFile")]
+    public string? LogFile { get; set; } = null;
 }

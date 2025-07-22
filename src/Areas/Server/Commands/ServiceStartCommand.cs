@@ -3,7 +3,7 @@
 
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
+using AzureMcp.Services.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,6 +25,7 @@ public sealed class ServiceStartCommand : BaseCommand
     private readonly Option<string[]?> _namespaceOption = ServiceOptionDefinitions.Namespace;
     private readonly Option<string?> _modeOption = ServiceOptionDefinitions.Mode;
     private readonly Option<bool?> _readOnlyOption = ServiceOptionDefinitions.ReadOnly;
+    private readonly Option<string?> _logFileOption = ServiceOptionDefinitions.LogFile;
 
     /// <summary>
     /// Gets the name of the command.
@@ -52,6 +53,7 @@ public sealed class ServiceStartCommand : BaseCommand
         command.AddOption(_namespaceOption);
         command.AddOption(_modeOption);
         command.AddOption(_readOnlyOption);
+        command.AddOption(_logFileOption);
     }
 
     /// <summary>
@@ -74,12 +76,15 @@ public sealed class ServiceStartCommand : BaseCommand
             ? ServiceOptionDefinitions.ReadOnly.GetDefaultValue()
             : parseResult.GetValueForOption(_readOnlyOption);
 
+        var logFile = parseResult.GetValueForOption(_logFileOption);
+
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
             Namespace = namespaces,
             Mode = mode,
             ReadOnly = readOnly,
+            LogFile = logFile,
         };
 
         using var host = CreateHost(serverOptions);
@@ -102,6 +107,21 @@ public sealed class ServiceStartCommand : BaseCommand
                 logging.ClearProviders();
                 logging.ConfigureOpenTelemetryLogger();
                 logging.AddEventSourceLogger();
+                
+                // Only add file logging if explicitly requested
+                if (!string.IsNullOrWhiteSpace(serverOptions.LogFile))
+                {
+#if DEBUG
+                    logging.AddSimpleFile(serverOptions.LogFile, LogLevel.Debug);
+#else
+                    logging.AddSimpleFile(serverOptions.LogFile, LogLevel.Information);
+#endif
+                }
+
+                // Debug output for development
+#if DEBUG
+                logging.AddDebug();
+#endif
             })
             .ConfigureServices(services =>
             {
