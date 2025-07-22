@@ -183,3 +183,17 @@ module loadtesting 'services/loadtesting.bicep' = if (empty(areas) || contains(a
     testApplicationOid: testApplicationOid
   }
 }
+
+module workbooks 'services/workbooks.bicep' = if (empty(areas) || contains(areas, 'Workbooks')) {
+  name: '${deploymentName}-workbooks'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+  dependsOn: [
+    monitoring
+  ]
+}
+

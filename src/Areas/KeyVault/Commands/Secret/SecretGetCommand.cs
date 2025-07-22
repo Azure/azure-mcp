@@ -26,11 +26,6 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         """
         Gets a secret from an Azure Key Vault. This command retrieves and displays the value
         of a specific secret from the specified vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - secret
         """;
 
     protected override void RegisterOptions(Command command)
@@ -63,7 +58,7 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
             context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
-            var result = await keyVaultService.GetSecret(
+            var secret = await keyVaultService.GetSecret(
                 options.VaultName!,
                 options.SecretName!,
                 options.Subscription!,
@@ -71,7 +66,14 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new SecretGetCommandResult(options.SecretName!, result),
+                new SecretGetCommandResult(
+                    secret.Name,
+                    secret.Value,
+                    secret.Properties.Enabled,
+                    secret.Properties.NotBefore,
+                    secret.Properties.ExpiresOn,
+                    secret.Properties.CreatedOn,
+                    secret.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.SecretGetCommandResult);
         }
         catch (Exception ex)
@@ -83,5 +85,5 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
         return context.Response;
     }
 
-    internal record SecretGetCommandResult(string Name, string Value);
+    internal record SecretGetCommandResult(string Name, string Value, bool? Enabled, DateTimeOffset? NotBefore, DateTimeOffset? ExpiresOn, DateTimeOffset? CreatedOn, DateTimeOffset? UpdatedOn);
 }

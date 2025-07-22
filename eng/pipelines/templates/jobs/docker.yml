@@ -1,0 +1,80 @@
+parameters:
+- name: ContainerRegistry
+  type: string
+  default: 'azuresdkimages'
+- name: DeploymentEnvironment
+  type: string
+  default: 'public'
+
+jobs:
+- job: CreateDockerArtifact
+  displayName: 'Creating Docker artifact'
+  pool:
+    name: $(LINUXPOOL)
+    image: $(LINUXVMIMAGE)
+    os: linux
+
+  steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download signed packages'
+    inputs:
+      buildType: 'current'
+      artifactName: $(PipelineArtifactName)_signed
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: 'Copy Dockerfile'
+    inputs:
+      Contents: 'Dockerfile'
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: 1ES.PublishPipelineArtifact@1
+    inputs:
+      path: $(Build.ArtifactStagingDirectory)
+      artifact: docker_drops
+
+- job: Publish
+  displayName: "Publish to ACR"
+  condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
+  dependsOn: CreateDockerArtifact
+
+  templateContext:
+    inputs:
+    - input: pipelineArtifact
+      artifactName: docker_drops
+      targetPath: $(Pipeline.Workspace)/docker_drops
+
+    outputs:
+    - output: containerImage
+      image: image:tag
+      remoteImage:
+      - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:$(Version)
+      - ${{ format('{0}.azurecr.io', parameters.ContainerRegistry) }}/${{ format('{0}/{1}', parameters.DeploymentEnvironment, 'azure-sdk/azure-mcp')}}:latest
+
+  timeoutInMinutes: 120
+  pool:
+    name: azsdk-pool
+    image: ubuntu-24.04
+    os: linux
+
+  steps:
+
+  - task: AzureCLI@2
+    condition: succeeded()
+    displayName: Login to ${{ parameters.ContainerRegistry }}
+    inputs:
+      azureSubscription: "Azure SDK Engineering System"
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr login --name ${{ parameters.ContainerRegistry }}
+
+  - task: 1ES.BuildContainerImage@1
+    displayName: Build Docker Image
+    inputs:
+      path: '$(Pipeline.Workspace)/docker_drops'
+      image: image:tag
+      buildArguments: |
+        --build-arg PUBLISH_DIR="linux-x64/dist"
+      enableNetwork: true
+      useBuildKit: true

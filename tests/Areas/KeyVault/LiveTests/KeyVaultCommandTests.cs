@@ -81,6 +81,23 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
 
     [Fact]
     [Trait("Category", "Live")]
+    public async Task Should_list_secrets()
+    {
+        var result = await CallToolAsync(
+            "azmcp_keyvault_secret_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName }
+            });
+
+        var secrets = result.AssertProperty("secrets");
+        Assert.Equal(JsonValueKind.Array, secrets.ValueKind);
+        Assert.NotEmpty(secrets.EnumerateArray());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
     public async Task Should_get_secret()
     {
         // Created in keyvault.bicep.
@@ -101,5 +118,106 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         var value = result.AssertProperty("value");
         Assert.Equal(JsonValueKind.String, value.ValueKind);
         Assert.NotNull(value.GetString());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_create_secret()
+    {
+        var secretName = Settings.ResourceBaseName + Random.Shared.NextInt64();
+        var secretValue = "test-value-" + Random.Shared.NextInt64();
+        var result = await CallToolAsync(
+            "azmcp_keyvault_secret_create",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName },
+                { "secret", secretName},
+                { "value", secretValue }
+            });
+
+        var createdSecretName = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, createdSecretName.ValueKind);
+        Assert.Equal(secretName, createdSecretName.GetString());
+
+        var returnedValue = result.AssertProperty("value");
+        Assert.Equal(JsonValueKind.String, returnedValue.ValueKind);
+        Assert.Equal(secretValue, returnedValue.GetString());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_list_certificates()
+    {
+        var result = await CallToolAsync(
+            "azmcp_keyvault_certificate_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName }
+            });
+
+        var certificates = result.AssertProperty("certificates");
+        Assert.Equal(JsonValueKind.Array, certificates.ValueKind);
+        // Certificates might be empty if the test certificate creation has not yet completed, so we won't assert non-empty
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_get_certificate()
+    {
+        // Created in keyvault.bicep.
+        var certificateName = "foo-bar-certificate";
+        var result = await CallToolAsync(
+            "azmcp_keyvault_certificate_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName },
+                { "certificate", certificateName }
+            });
+
+        var name = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, name.ValueKind);
+        Assert.Equal(certificateName, name.GetString());
+
+        // Verify that the certificate has some expected properties
+        ValidateCertificate(result);
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_create_certificate()
+    {
+        var certificateName = Settings.ResourceBaseName + Random.Shared.NextInt64();
+        var result = await CallToolAsync(
+            "azmcp_keyvault_certificate_create",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "vault", Settings.ResourceBaseName },
+                { "certificate", certificateName}
+            });
+
+        var createdCertificateName = result.AssertProperty("name");
+        Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
+        Assert.Equal(certificateName, createdCertificateName.GetString());
+
+        // Verify that the certificate has some expected properties
+        ValidateCertificate(result);
+    }
+
+    private void ValidateCertificate(JsonElement? result)
+    {
+        Assert.NotNull(result);
+
+        var requiredProperties = new[] { "name", "thumbprint", "cer" };
+
+        foreach (var propertyName in requiredProperties)
+        {
+            var property = result.AssertProperty(propertyName);
+            Assert.Equal(JsonValueKind.String, property.ValueKind);
+            Assert.NotNull(property.GetString());
+        }
     }
 }
