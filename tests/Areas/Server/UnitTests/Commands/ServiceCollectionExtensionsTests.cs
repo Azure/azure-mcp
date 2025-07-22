@@ -343,4 +343,30 @@ public class ServiceCollectionExtensionsTests
         Assert.NotNull(provider.GetService<IToolLoader>());
         Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
     }
+
+    [Fact]
+    public void AddAzureMcpServer_WithAllMode_RegistersCompositeToolLoader()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport,
+            Mode = "all"
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+
+        // Verify the correct tool loader is registered (CompositeToolLoader for all tools mode)
+        Assert.NotNull(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+
+        // Verify discovery strategy is registered for individual tools
+        Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
+        Assert.IsType<RegistryDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
+    }
 }

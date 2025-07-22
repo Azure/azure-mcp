@@ -24,13 +24,46 @@ The following options are available for all commands:
 
 The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
 
-#### Default Mode
+#### Default Mode (Namespace)
+
+Exposes Azure tools grouped by service namespace. Each Azure service appears as a single namespace-level tool that routes to individual operations internally. This is the default mode to reduce tool count and prevent VS Code from hitting the 128 tool limit.
+
+```bash
+# Start MCP Server with namespace-level tools (default behavior)
+azmcp server start \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+
+# Explicitly specify namespace mode
+azmcp server start \
+    --mode namespace \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### All Tools Mode
 
 Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
 
 ```bash
 # Start MCP Server with all tools exposed individually
 azmcp server start \
+    --mode all \
+    [--transport <transport>] \
+    [--port <port>] \
+    [--read-only]
+```
+
+#### Single Tool Mode
+
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+
+```bash
+# Start MCP Server with single azure tool
+azmcp server start \
+    --mode single \
     [--transport <transport>] \
     [--port <port>] \
     [--read-only]
