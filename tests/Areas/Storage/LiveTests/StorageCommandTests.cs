@@ -230,7 +230,7 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
         [Trait("Category", "Live")]
         public async Task Should_create_datalake_directory()
         {
-            var directoryPath = $"testfilesystem/test-directory-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+            var directoryPath = "testfilesystem/test-directory";
 
             var result = await CallToolAsync(
                 "azmcp_storage_datalake_directory_create",
