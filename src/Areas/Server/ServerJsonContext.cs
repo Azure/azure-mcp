@@ -18,6 +18,8 @@ namespace AzureMcp.Areas.Server;
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(Tool))]
 [JsonSerializable(typeof(List<Tool>))]
+[JsonSerializable(typeof(ToolInputSchema))]
+[JsonSerializable(typeof(ToolPropertySchema))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,

@@ -3,7 +3,8 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.Json.Nodes;
+using AzureMcp.Areas.Server;
+using AzureMcp.Areas.Server.Models;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Services.Telemetry;
@@ -184,35 +185,23 @@ public sealed class CommandFactoryToolLoader(
 
         var options = command.GetCommand().Options;
 
-        var schema = new JsonObject
-        {
-            ["type"] = "object"
-        };
+        var schema = new ToolInputSchema();
 
         if (options != null && options.Count > 0)
         {
-            var arguments = new JsonObject();
             foreach (var option in options)
             {
-                arguments.Add(option.Name, new JsonObject()
+                schema.Properties.Add(option.Name, new ToolPropertySchema
                 {
-                    ["type"] = option.ValueType.ToJsonType(),
-                    ["description"] = option.Description,
+                    Type = option.ValueType.ToJsonType(),
+                    Description = option.Description,
                 });
             }
 
-            schema["properties"] = arguments;
-            schema["required"] = new JsonArray(options.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
-        }
-        else
-        {
-            var arguments = new JsonObject();
-            schema["properties"] = arguments;
+            schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
         }
 
-        var newOptions = new JsonSerializerOptions(McpJsonUtilities.DefaultOptions);
-
-        tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSourceGenerationContext(newOptions).JsonNode);
+        tool.InputSchema = JsonSerializer.SerializeToElement(schema, ServerJsonContext.Default.ToolInputSchema);
 
         return tool;
     }
