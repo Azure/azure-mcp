@@ -17,9 +17,9 @@ jobs:
   condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   pool:
-    name: $(MACPOOL)
-    vmImage: $(MACVMIMAGE)
-    os: macos
+    name: $(WINDOWSPOOL)
+    image: $(WINDOWSVMIMAGE)
+    os: windows
   steps:
     - checkout: self
 
