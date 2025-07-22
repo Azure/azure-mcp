@@ -91,6 +91,7 @@ public sealed class DatabaseAddCommand : BaseAppServiceCommand<DatabaseAddOption
                 options.DatabaseName!,
                 options.ConnectionString!,
                 options.Subscription!,
+                options.Tenant,
                 options.RetryPolicy!);
 
             // Set results

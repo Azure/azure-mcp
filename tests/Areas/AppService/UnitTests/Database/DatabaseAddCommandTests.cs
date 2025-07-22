@@ -67,6 +67,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Is(databaseName),
             Arg.Any<string>(),
             Arg.Is(subscription),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedConnection);
 
@@ -120,6 +121,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedConnection);
 
@@ -145,6 +147,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Is(databaseName),
             Arg.Is(connectionString),
             Arg.Is(subscription),
+            Arg.Is<string?>(x => x == null),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -179,6 +182,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedConnection);
 
@@ -204,6 +208,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Is(database),
             Arg.Any<string>(),
             Arg.Is(subscription),
+            Arg.Is<string?>(x => x == null),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -230,6 +235,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -249,6 +255,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new UnauthorizedAccessException("Access denied"));
 
@@ -286,6 +293,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new ArgumentException("Invalid database type"));
 
@@ -323,6 +331,7 @@ public sealed class DatabaseAddCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new InvalidOperationException("Service unavailable"));
 

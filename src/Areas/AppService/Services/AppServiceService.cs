@@ -26,15 +26,16 @@ public class AppServiceService(
         string databaseName,
         string connectionString,
         string subscription,
-        AzureMcp.Options.RetryPolicyOptions? retryPolicy)
+        string? tenant = null,
+        AzureMcp.Options.RetryPolicyOptions? retryPolicy = null)
     {
         _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", 
             appName, resourceGroup);
-        var tenantId = await ResolveTenantIdAsync(null);
-        var armClient = await CreateArmClientAsync(tenant: tenantId, retryPolicy: null);
+        var tenantId = await ResolveTenantIdAsync(tenant);
+        var armClient = await CreateArmClientAsync(tenant: tenantId, retryPolicy: retryPolicy);
         var subscriptionResource = await armClient.GetDefaultSubscriptionAsync();
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
-        
+
         // For now, we'll simulate the operation since Azure.ResourceManager.AppService is not available
         // In a real implementation, you would use the Azure.ResourceManager.AppService package
         // to get the web app resource and update its connection strings
@@ -72,10 +73,5 @@ public class AppServiceService(
             "cosmosdb" => $"AccountEndpoint=https://{databaseServer}.documents.azure.com:443/;AccountKey={{key}};Database={databaseName};",
             _ => throw new ArgumentException($"Unsupported database type: {databaseType}")
         };
-    }
-
-    public Task<DatabaseConnectionInfo> AddDatabaseAsync(string v1, string v2, string v3, string v4, string v5, string? connectionString, object v6, RetryPolicy retryPolicy)
-    {
-        throw new NotImplementedException();
     }
 }

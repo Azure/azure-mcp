@@ -15,5 +15,6 @@ public interface IAppServiceService
         string databaseName,
         string connectionString,
         string subscription,
-        RetryPolicyOptions? retryPolicy);
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
