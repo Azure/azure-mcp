@@ -20,7 +20,7 @@
 
 ### Breaking Changes
 
-- **BREAKING**: Changed default `--mode` from `null` (individual tools) to `"namespace"` (namespace-level tools) [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+- **BREAKING**: Changed default `--mode` from `all` (individual tools) to `"namespace"` (namespace-level tools) [[#689](https://github.com/Azure/azure-mcp/issues/689)]
   - **Before**: `npx @azure/mcp server start` exposed ~128 individual tools
   - **After**: `npx @azure/mcp server start` exposes ~25 namespace-level tools  
   - **Migration**: Use `--mode all` to restore the previous behavior of exposing all tools individually
