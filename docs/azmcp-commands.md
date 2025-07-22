@@ -484,14 +484,18 @@ azmcp marketplace product get --subscription <subscription> \
 ### Azure MCP Best Practices
 
 ```bash
-# Get best practices for secure, high-quality Azure Functions app code generation.
-azmcp bestpractices azurefunctions get-code-generation
+# Get best practices for secure, production-grade Azure usage
+azmcp bestpractices get --resource <resource> --action <action>
+ 
+# Resource options:
+#   general        - General Azure best practices
+#   azurefunctions - Azure Functions specific best practices
+#
+# Action options:
+#   all             - Best practices for both code generation and deployment
+#   code-generation - Best practices for code generation
+#   deployment      - Best practices for deployment (only for azurefunctions)
 
-# Get best practices for secure, production-grade Azure Functions app deployment.
-azmcp bestpractices azurefunctions get-deployment
-
-# Get secure, production-grade Azure SDK best practices for effective code generation.
-azmcp bestpractices general get
 ```
 
 ### Azure MCP Tools

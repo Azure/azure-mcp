@@ -13,6 +13,15 @@
 
 ### Breaking Changes
 
+- Consolidated Azure best practices commands into a single command `azmcp-bestpractices-get` with parameters:
+  - Removed: `azmcp-bestpractices-general-get`
+  - Removed: `azmcp-bestpractices-azurefunctions-get-code-generation`
+  - Removed: `azmcp-bestpractices-azurefunctions-get-deployment`
+  - Added: `azmcp-bestpractices-get` with `--resource` and `--action` parameters
+    - Use `--resource general --action all` instead of the old general command
+    - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
+    - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
+
 ### Bugs Fixed
 
 - Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
