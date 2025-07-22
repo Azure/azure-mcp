@@ -118,9 +118,10 @@ public sealed class RegistryToolLoader(
 
     /// <summary>
     /// Transforms tool call arguments to a parameters dictionary.
+    /// This transformation is used because McpClientExtensions.CallToolAsync expects parameters as Dictionary&lt;string, object?&gt;.
     /// </summary>
     /// <param name="args">The arguments to transform to parameters.</param>
-    /// <returns>A dictionary of parameter names and values.</returns>
+    /// <returns>A dictionary of parameter names and values compatible with McpClientExtensions.CallToolAsync.</returns>
     private static Dictionary<string, object?> TransformArgumentsToDictionary(IReadOnlyDictionary<string, JsonElement>? args)
     {
         if (args == null)
@@ -128,25 +129,7 @@ public sealed class RegistryToolLoader(
             return [];
         }
 
-        var parameters = new Dictionary<string, object?>();
-        foreach (var kvp in args)
-        {
-            // For simple types, extract the value directly
-            // For complex types, keep as JsonElement (which MCP client can handle)
-            parameters[kvp.Key] = kvp.Value.ValueKind switch
-            {
-                JsonValueKind.String => kvp.Value.GetString(),
-                JsonValueKind.Number when kvp.Value.TryGetInt32(out var intValue) => intValue,
-                JsonValueKind.Number when kvp.Value.TryGetInt64(out var longValue) => longValue,
-                JsonValueKind.Number when kvp.Value.TryGetDouble(out var doubleValue) => doubleValue,
-                JsonValueKind.True => true,
-                JsonValueKind.False => false,
-                JsonValueKind.Null => null,
-                _ => kvp.Value // Keep as JsonElement for objects/arrays
-            };
-        }
-
-        return parameters;
+        return args.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
     }
 
     /// <summary>
