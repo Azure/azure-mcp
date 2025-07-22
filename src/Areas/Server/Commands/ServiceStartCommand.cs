@@ -107,7 +107,7 @@ public sealed class ServiceStartCommand : BaseCommand
                 logging.ClearProviders();
                 logging.ConfigureOpenTelemetryLogger();
                 logging.AddEventSourceLogger();
-                
+
                 // Only add file logging if explicitly requested
                 if (!string.IsNullOrWhiteSpace(serverOptions.LogFile))
                 {

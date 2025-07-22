@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Services.Logging;
 
@@ -21,7 +21,7 @@ public class SimpleFileLoggerProvider : ILoggerProvider
     {
         _filePath = filePath;
         _minimumLevel = minimumLevel;
-        
+
         // Ensure directory exists
         var directory = Path.GetDirectoryName(filePath);
         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
@@ -62,11 +62,12 @@ public class SimpleFileLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        if (!IsEnabled(logLevel)) return;
+        if (!IsEnabled(logLevel))
+            return;
 
         var message = formatter(state, exception);
         var logEntry = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff} [{logLevel:G}] [{_categoryName}] {message}";
-        
+
         if (exception != null)
         {
             logEntry += Environment.NewLine + exception.ToString();
@@ -84,7 +85,7 @@ public class SimpleFileLogger : ILogger
                 {
                     Directory.CreateDirectory(directory);
                 }
-                
+
                 File.AppendAllText(_filePath, logEntry);
             }
             catch

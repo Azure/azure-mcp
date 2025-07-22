@@ -20,7 +20,7 @@ public class SimpleFileLoggerTests
 
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddSimpleFile(tempFile, LogLevel.Information));
-        
+
         var serviceProvider = services.BuildServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger<SimpleFileLoggerTests>>();
 
@@ -58,7 +58,7 @@ public class SimpleFileLoggerTests
         var tempFile = Path.GetTempFileName();
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddSimpleFile(tempFile, LogLevel.Warning));
-        
+
         var serviceProvider = services.BuildServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger<SimpleFileLoggerTests>>();
 
