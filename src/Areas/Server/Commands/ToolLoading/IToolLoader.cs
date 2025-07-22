@@ -9,7 +9,7 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// Defines the interface for tool loaders in the MCP server.
 /// Tool loaders are responsible for discovering, listing, and invoking tools.
 /// </summary>
-public interface IToolLoader
+public interface IToolLoader : IAsyncDisposable
 {
     /// <summary>
     /// Handles requests to list all tools available in the MCP server.

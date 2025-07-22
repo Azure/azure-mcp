@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
 using AzureMcp.Areas.Cosmos.Options;
 using AzureMcp.Areas.Cosmos.Services;
 using AzureMcp.Commands.Cosmos;
@@ -83,5 +82,5 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
         return context.Response;
     }
 
-    internal record ItemQueryCommandResult(List<JsonNode> Items);
+    internal record ItemQueryCommandResult(List<JsonElement> Items);
 }

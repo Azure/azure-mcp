@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Options;
 
@@ -28,7 +29,7 @@ public interface ICosmosService : IDisposable
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<List<JsonNode>> QueryItems(
+    Task<List<JsonElement>> QueryItems(
         string accountName,
         string databaseName,
         string containerName,

@@ -46,6 +46,7 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 | Storage                   | Manage storage accounts and blob data.                           | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Storage&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22storage%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_storage-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Storage%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22storage%22%2C%22--read-only%22%5D%7D) |
 | Subscription              | Manage Azure subscription details.                               | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Subscription&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22subscription%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_subscription-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Subscription%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22subscription%22%2C%22--read-only%22%5D%7D) |
 | Terraform Best Practices  | Secure, production-grade Azure Terraform guidance.               | [![Install](https://img.shields.io/badge/VS_Code-Install_terraform-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Terraform%20Best%20Practices&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22azureterraformbestpractices%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_terraform-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Terraform%20Best%20Practices%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22azureterraformbestpractices%22%2C%22--read-only%22%5D%7D) |
+| Workbooks                 | Manage Azure Workbooks for data visualization.                   | [![Install](https://img.shields.io/badge/VS_Code-Install_workbooks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Workbooks&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22workbooks%22%5D%7D) | [![Install](https://img.shields.io/badge/VS_Code-Install_workbooks-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Workbooks%20Read%20Only&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%2C%22--namespace%22%2C%22workbooks%22%2C%22--read-only%22%5D%7D) |
 
 ### ▶️ Getting Started
 
@@ -260,6 +261,14 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Get secure, production-grade Azure Terraform best practices for effective code generation and command execution
 
+### 📊 Azure Workbooks
+
+* List workbooks in resource groups
+* Create new workbooks with custom visualizations
+* Update existing workbook configurations
+* Get workbook details and metadata
+* Delete workbooks when no longer needed
+
 ### 🏗️ Bicep
 
 * Get the Bicep schema for specific Azure resource types
@@ -301,8 +310,6 @@ Installation in VS Code should be in one of the previous forms and the update in
 
 For a step-by-step Docker installation, follow these instructions:
 
-1. Clone repository
-1. From repository root, build Docker image: `docker build -t azure/azuremcp .`
 1. Create an `.env` file with environment variables that [match one of the `EnvironmentCredential`](https://learn.microsoft.com/dotnet/api/azure.identity.environmentcredential) sets.  For example, a `.env` file using a service principal could look like:
 
     ```bash
@@ -311,7 +318,7 @@ For a step-by-step Docker installation, follow these instructions:
     AZURE_CLIENT_SECRET={YOUR_AZURE_CLIENT_SECRET}
     ```
 
-1. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
+2. Add `.vscode/mcp.json` or update existing MCP configuration. Replace `/full/path/to/.env` with a path to your `.env` file.
 
     ```json
     {
@@ -324,7 +331,7 @@ For a step-by-step Docker installation, follow these instructions:
             "--rm",
             "--env-file",
             "/full/path/to/.env"
-            "azure/azuremcp",
+            "mcr.microsoft.com/azure-sdk/azure-mcp:latest",
           ]
         }
       }

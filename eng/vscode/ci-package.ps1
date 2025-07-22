@@ -23,6 +23,18 @@ $target = $targetMap[$os]
 $vsixName = "vscode-azure-mcp-extension-$target-$Version.vsix"
 $ignoreFile = ".vscodeignore"
 
+
+# Update VSIX version in eng/vscode/package.json
+$vsixPackageJsonPath = "./package.json"
+if (Test-Path $vsixPackageJsonPath) {
+    $packageJson = Get-Content $vsixPackageJsonPath -Raw | ConvertFrom-Json
+    $packageJson.version = $Version
+    $packageJson | ConvertTo-Json -Depth 100 | Set-Content $vsixPackageJsonPath -NoNewline
+    Write-Host "Updated VSIX version in $vsixPackageJsonPath to $Version"
+} else {
+    Write-Warning "VSIX package.json not found at $vsixPackageJsonPath"
+}
+
 # Build the vsce package command
 $vsceCmd = "vsce package --target $target --out $vsixName --ignoreFile $ignoreFile"
 if ($PackageArguments) {

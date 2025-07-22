@@ -25,15 +25,19 @@ public class SingleProxyToolLoaderTests
         if (useRealDiscovery)
         {
             var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+            var commandGroupLogger = serviceProvider.GetRequiredService<ILogger<CommandGroupDiscoveryStrategy>>();
             var commandGroupDiscoveryStrategy = new CommandGroupDiscoveryStrategy(
                 CommandFactoryHelpers.CreateCommandFactory(serviceProvider),
-                options
+                options,
+                commandGroupLogger
             );
-            var registryDiscoveryStrategy = new RegistryDiscoveryStrategy(options);
+            var registryLogger = serviceProvider.GetRequiredService<ILogger<RegistryDiscoveryStrategy>>();
+            var registryDiscoveryStrategy = new RegistryDiscoveryStrategy(options, registryLogger);
+            var compositeLogger = serviceProvider.GetRequiredService<ILogger<CompositeDiscoveryStrategy>>();
             var compositeDiscoveryStrategy = new CompositeDiscoveryStrategy([
                 commandGroupDiscoveryStrategy,
                 registryDiscoveryStrategy
-            ]);
+            ], compositeLogger);
             var toolLoader = new SingleProxyToolLoader(compositeDiscoveryStrategy, logger);
             return (toolLoader, compositeDiscoveryStrategy);
         }

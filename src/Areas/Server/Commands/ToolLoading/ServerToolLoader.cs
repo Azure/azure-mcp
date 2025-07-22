@@ -126,28 +126,50 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
             learn = true;
         }
 
-        if (learn && string.IsNullOrEmpty(command))
+        try
         {
-            return await InvokeToolLearn(request, intent ?? "", tool, cancellationToken);
+            if (learn && string.IsNullOrEmpty(command))
+            {
+                return await InvokeToolLearn(request, intent ?? "", tool, cancellationToken);
+            }
+            else if (!string.IsNullOrEmpty(tool) && !string.IsNullOrEmpty(command))
+            {
+                var toolParams = GetParametersDictionary(args);
+                return await InvokeChildToolAsync(request, intent ?? "", tool, command, toolParams, cancellationToken);
+            }
         }
-        else if (!string.IsNullOrEmpty(tool) && !string.IsNullOrEmpty(command))
+        catch (KeyNotFoundException ex)
         {
-            var toolParams = GetParametersDictionary(args);
-            return await InvokeChildToolAsync(request, intent ?? "", tool, command, toolParams, cancellationToken);
+            _logger.LogError(ex, "Key not found while calling tool: {Tool}", tool);
+
+            return new CallToolResult
+            {
+                Content =
+                [
+                    new TextContentBlock {
+                        Text = $"""
+                            The tool '{tool}.{command}' was not found or does not support the specified command.
+                            Please ensure the tool name and command are correct.
+                            If you want to learn about available tools, run again with the "learn=true" argument.
+                        """
+                    }
+                ],
+                IsError = true
+            };
         }
 
         return new CallToolResult
         {
             Content =
-            [
-                new TextContentBlock {
+                [
+                    new TextContentBlock {
                     Text = """
                         The "command" parameters are required when not learning
                         Run again with the "learn" argument to get a list of available tools and their parameters.
                         To learn about a specific tool, use the "tool" argument with the name of the tool.
                     """
                 }
-            ]
+                ]
         };
     }
 
@@ -494,5 +516,16 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         };
 
         return clientOptions;
+    }
+
+    /// <summary>
+    /// Disposes resources owned by this tool loader.
+    /// ServerToolLoader doesn't own clients directly - they're owned by the discovery strategy.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        // ServerToolLoader doesn't create or cache clients directly,
+        // it relies on the discovery strategy which handles disposal
+        await ValueTask.CompletedTask;
     }
 }

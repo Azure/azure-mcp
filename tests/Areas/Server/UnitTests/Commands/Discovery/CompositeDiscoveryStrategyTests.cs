@@ -1,10 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using NSubstitute;
 using Xunit;
@@ -33,6 +29,12 @@ public class CompositeDiscoveryStrategyTests
         return provider;
     }
 
+    private static CompositeDiscoveryStrategy CreateCompositeStrategy(IEnumerable<IMcpDiscoveryStrategy> strategies)
+    {
+        var logger = Substitute.For<Microsoft.Extensions.Logging.ILogger<CompositeDiscoveryStrategy>>();
+        return new CompositeDiscoveryStrategy(strategies, logger);
+    }
+
     [Fact]
     public void Constructor_WithValidStrategies_InitializesCorrectly()
     {
@@ -41,7 +43,7 @@ public class CompositeDiscoveryStrategyTests
         var strategy2 = Substitute.For<IMcpDiscoveryStrategy>();
 
         // Act
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy1, strategy2 });
+        var composite = CreateCompositeStrategy(new[] { strategy1, strategy2 });
 
         // Assert
         Assert.NotNull(composite);
@@ -53,8 +55,9 @@ public class CompositeDiscoveryStrategyTests
     public void Constructor_WithNullStrategies_ThrowsArgumentNullException()
     {
         // Act & Assert
+        var logger = Substitute.For<Microsoft.Extensions.Logging.ILogger<CompositeDiscoveryStrategy>>();
         var exception = Assert.Throws<ArgumentNullException>(() =>
-            new CompositeDiscoveryStrategy(null!));
+            new CompositeDiscoveryStrategy(null!, logger));
         Assert.Equal("strategies", exception.ParamName);
     }
 
@@ -62,8 +65,9 @@ public class CompositeDiscoveryStrategyTests
     public void Constructor_WithEmptyStrategies_ThrowsArgumentException()
     {
         // Act & Assert
+        var logger = Substitute.For<Microsoft.Extensions.Logging.ILogger<CompositeDiscoveryStrategy>>();
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CompositeDiscoveryStrategy(Array.Empty<IMcpDiscoveryStrategy>()));
+            new CompositeDiscoveryStrategy(Array.Empty<IMcpDiscoveryStrategy>(), logger));
         Assert.Equal("strategies", exception.ParamName);
         Assert.Contains("At least one discovery strategy must be provided", exception.Message);
     }
@@ -72,8 +76,9 @@ public class CompositeDiscoveryStrategyTests
     public void DiscoverServersAsync_WithEmptyStrategies_ThrowsArgumentException()
     {
         // Act & Assert
+        var logger = Substitute.For<Microsoft.Extensions.Logging.ILogger<CompositeDiscoveryStrategy>>();
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CompositeDiscoveryStrategy(Array.Empty<IMcpDiscoveryStrategy>()));
+            new CompositeDiscoveryStrategy(Array.Empty<IMcpDiscoveryStrategy>(), logger));
         Assert.Equal("strategies", exception.ParamName);
         Assert.Contains("At least one discovery strategy must be provided", exception.Message);
     }
@@ -85,7 +90,7 @@ public class CompositeDiscoveryStrategyTests
         var provider1 = CreateMockProvider("test1");
         var provider2 = CreateMockProvider("test2");
         var strategy = CreateMockStrategy(provider1, provider2);
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy });
+        var composite = CreateCompositeStrategy(new[] { strategy });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -107,7 +112,7 @@ public class CompositeDiscoveryStrategyTests
 
         var strategy1 = CreateMockStrategy(provider1, provider2);
         var strategy2 = CreateMockStrategy(provider3, provider4);
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy1, strategy2 });
+        var composite = CreateCompositeStrategy(new[] { strategy1, strategy2 });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -129,7 +134,7 @@ public class CompositeDiscoveryStrategyTests
         var emptyStrategy1 = CreateMockStrategy(); // No providers
         var emptyStrategy2 = CreateMockStrategy(); // No providers
 
-        var composite = new CompositeDiscoveryStrategy(new[] { activeStrategy, emptyStrategy1, emptyStrategy2 });
+        var composite = CreateCompositeStrategy(new[] { activeStrategy, emptyStrategy1, emptyStrategy2 });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -145,7 +150,7 @@ public class CompositeDiscoveryStrategyTests
         // Arrange
         var emptyStrategy1 = CreateMockStrategy();
         var emptyStrategy2 = CreateMockStrategy();
-        var composite = new CompositeDiscoveryStrategy(new[] { emptyStrategy1, emptyStrategy2 });
+        var composite = CreateCompositeStrategy(new[] { emptyStrategy1, emptyStrategy2 });
 
         // Act
         var result = await composite.DiscoverServersAsync();
@@ -167,7 +172,7 @@ public class CompositeDiscoveryStrategyTests
         var strategy2 = CreateMockStrategy(provider2);
         var strategy3 = CreateMockStrategy(provider3);
 
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy1, strategy2, strategy3 });
+        var composite = CreateCompositeStrategy(new[] { strategy1, strategy2, strategy3 });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -196,7 +201,7 @@ public class CompositeDiscoveryStrategyTests
         var strategy1 = CreateMockStrategy(provider1, provider2);
         var strategy2 = CreateMockStrategy(provider3, provider4);
 
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy1, strategy2 });
+        var composite = CreateCompositeStrategy(new[] { strategy1, strategy2 });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -217,7 +222,7 @@ public class CompositeDiscoveryStrategyTests
         var provider1 = CreateMockProvider("provider1");
         var provider2 = CreateMockProvider("provider2");
         var strategy = CreateMockStrategy(provider1, provider2);
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy });
+        var composite = CreateCompositeStrategy(new[] { strategy });
 
         // Act
         var result1 = (await composite.DiscoverServersAsync()).ToList();
@@ -242,7 +247,7 @@ public class CompositeDiscoveryStrategyTests
         var strategy1 = CreateMockStrategy(provider1);
         var strategy2 = CreateMockStrategy(provider2);
 
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy1, strategy2 });
+        var composite = CreateCompositeStrategy(new[] { strategy1, strategy2 });
 
         // Act
         var result = (await composite.DiscoverServersAsync()).ToList();
@@ -259,7 +264,7 @@ public class CompositeDiscoveryStrategyTests
     {
         // Arrange
         var strategy = CreateMockStrategy();
-        var composite = new CompositeDiscoveryStrategy(new[] { strategy });
+        var composite = CreateCompositeStrategy(new[] { strategy });
 
         // Act & Assert
         Assert.IsAssignableFrom<BaseDiscoveryStrategy>(composite);
@@ -279,7 +284,7 @@ public class CompositeDiscoveryStrategyTests
         var provider2 = Substitute.For<IMcpServerProvider>();
         mockStrategy1.DiscoverServersAsync().Returns(Task.FromResult<IEnumerable<IMcpServerProvider>>(new[] { provider1 }));
         mockStrategy2.DiscoverServersAsync().Returns(Task.FromResult<IEnumerable<IMcpServerProvider>>(new[] { provider2 }));
-        var composite = new CompositeDiscoveryStrategy(new[] { mockStrategy1, mockStrategy2 });
+        var composite = CreateCompositeStrategy(new[] { mockStrategy1, mockStrategy2 });
         var result = await composite.DiscoverServersAsync();
         Assert.Contains(provider1, result);
         Assert.Contains(provider2, result);
@@ -296,7 +301,7 @@ public class CompositeDiscoveryStrategyTests
         provider2.CreateMetadata().Returns(new McpServerMetadata { Id = "two", Name = "two", Description = "desc2" });
         mockStrategy1.DiscoverServersAsync().Returns(Task.FromResult<IEnumerable<IMcpServerProvider>>(new[] { provider1 }));
         mockStrategy2.DiscoverServersAsync().Returns(Task.FromResult<IEnumerable<IMcpServerProvider>>(new[] { provider2 }));
-        var composite = new CompositeDiscoveryStrategy(new[] { mockStrategy1, mockStrategy2 });
+        var composite = CreateCompositeStrategy(new[] { mockStrategy1, mockStrategy2 });
         var result = (await composite.DiscoverServersAsync()).ToList();
         Assert.Equal(2, result.Count);
         Assert.Contains(result, p => p.CreateMetadata().Id == "one");
@@ -308,7 +313,7 @@ public class CompositeDiscoveryStrategyTests
     {
         // Arrange
         var emptyStrategy = CreateMockStrategy(); // No providers
-        var composite = new CompositeDiscoveryStrategy(new[] { emptyStrategy });
+        var composite = CreateCompositeStrategy(new[] { emptyStrategy });
 
         // Act
         var result = await composite.DiscoverServersAsync();

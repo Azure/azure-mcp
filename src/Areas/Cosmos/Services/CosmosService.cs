@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
 using Azure.ResourceManager.CosmosDB;
 using AzureMcp.Options;
 using AzureMcp.Services.Azure;
@@ -234,7 +233,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         return containers;
     }
 
-    public async Task<List<JsonNode>> QueryItems(
+    public async Task<List<JsonElement>> QueryItems(
         string accountName,
         string databaseName,
         string containerName,
@@ -254,7 +253,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             var baseQuery = string.IsNullOrEmpty(query) ? "SELECT * FROM c" : query;
             var queryDef = new QueryDefinition(baseQuery);
 
-            var items = new List<JsonNode>();
+            var items = new List<JsonElement>();
             var queryIterator = container.GetItemQueryStreamIterator(
                 queryDef,
                 requestOptions: new QueryRequestOptions { MaxItemCount = -1 }
@@ -263,7 +262,8 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             while (queryIterator.HasMoreResults)
             {
                 var response = await queryIterator.ReadNextAsync();
-                items.Add(JsonNode.Parse(response.Content)!);
+                using var document = JsonDocument.Parse(response.Content);
+                items.Add(document.RootElement.Clone());
             }
 
             return items;

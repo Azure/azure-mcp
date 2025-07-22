@@ -104,7 +104,7 @@ extends:
               Cloud: Public
               ServiceConnection: azure-sdk-tests-public
 
-    # # All builds in the internal project get signing
+    # All builds in the internal project get signing
     - stage: SignAndPack
       ${{ if parameters.SkipSigning }}:
         displayName: 'Pack'
@@ -126,6 +126,7 @@ extends:
     - stage: BuildVSIX
       displayName: 'Build VSIX Extension'
       dependsOn:
+        - Initialize
         - SignAndPack
       pool:
         name: $(LINUXPOOL)
@@ -158,6 +159,7 @@ extends:
       ${{ else }}:
         displayName: 'VSIX Sign and Pack'
       dependsOn:
+      - Initialize
       - BuildVSIX
       variables:
       - template: /eng/pipelines/templates/variables/image.yml
@@ -178,6 +180,7 @@ extends:
           dependsOn:
           - Initialize
           - SignAndPack
+          - SignAndPackVSIX
           pool:
             name: $(LINUXPOOL)
             image: $(LINUXVMIMAGE)
@@ -189,6 +192,10 @@ extends:
             value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/release.yml
+          - template: /eng/pipelines/templates/jobs/docker.yml
+            parameters:
+              ContainerRegistry: 'azuresdkimages'
+              DeploymentEnvironment: 'public'
 
       - ${{ else }}:
         - stage: Integration

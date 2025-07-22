@@ -8,6 +8,7 @@ If you are contributing significant changes, or if the issue is already assigned
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Project Structure](#project-structure)
@@ -18,6 +19,7 @@ If you are contributing significant changes, or if the issue is already assigned
   - [Unit Tests](#unit-tests)
   - [End-to-end Tests](#end-to-end-tests)
   - [Testing Local Build with VS Code](#testing-local-build-with-vs-code)
+  - [Testing Local Build with Docker](#testing-local-build-with-docker)
   - [Live Tests](#live-tests)
   - [NPX Live Tests](#npx-live-tests)
   - [Debugging Live Tests](#debugging-live-tests)
@@ -240,6 +242,30 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 #### Start from IDE
 
 With the configuration in place, you can launch the MCP server directly from your IDE or any tooling that uses `mcp.json`.
+
+### Testing Local Build with Docker
+
+To build a local image for testing purposes:
+
+1. Execute: `./eng/scripts/Build-Docker.ps1`.
+2. Update `mcp.json` to point to locally built Docker image:
+    ```json
+    {
+      "servers": {
+        "Azure MCP Server": {
+          "command": "docker",
+          "args": [
+            "run",
+            "-i",
+            "--rm",
+            "--env-file",
+            "/full/path/to/.env"
+            "azure/azure-mcp:<insert-version-here>",
+          ]
+        }
+      }
+    }
+    ```
 
 ### Live Tests
 

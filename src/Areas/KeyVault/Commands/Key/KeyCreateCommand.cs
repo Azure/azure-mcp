@@ -21,24 +21,13 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 
     public override string Name => "create";
 
+    public override string Title => CommandTitle;
+
     public override string Description =>
         """
         Create a new key in an Azure Key Vault. This command creates a key with the specified name and type
         in the given vault.
-
-        Required arguments:
-        - subscription
-        - vault
-        - key
-        - key-type
-
-        Key types:
-        - RSA: RSA key pair
-        - EC: Elliptic Curve key pair
-        - OCT: ES cryptographic pair
         """;
-
-    public override string Title => CommandTitle;
 
     protected override void RegisterOptions(Command command)
     {
@@ -71,8 +60,8 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var service = context.GetService<IKeyVaultService>();
-            var key = await service.CreateKey(
+            var keyVaultService = context.GetService<IKeyVaultService>();
+            var key = await keyVaultService.CreateKey(
                 options.VaultName!,
                 options.KeyName!,
                 options.KeyType!,
@@ -81,7 +70,14 @@ public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger) : Subscri
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new KeyCreateCommandResult(key.Name, key.KeyType.ToString(), key.Properties.Enabled, key.Properties.NotBefore, key.Properties.ExpiresOn, key.Properties.CreatedOn, key.Properties.UpdatedOn),
+                new KeyCreateCommandResult(
+                    key.Name,
+                    key.KeyType.ToString(),
+                    key.Properties.Enabled,
+                    key.Properties.NotBefore,
+                    key.Properties.ExpiresOn,
+                    key.Properties.CreatedOn,
+                    key.Properties.UpdatedOn),
                 KeyVaultJsonContext.Default.KeyCreateCommandResult);
         }
         catch (Exception ex)
