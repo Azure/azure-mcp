@@ -33,8 +33,8 @@ public class AppConfigJsonSchemaTests
         // Act
         var result = await operations.ListToolsHandler(requestContext, CancellationToken.None);
 
-        // Find the azmcp-appconfig-kv-set tool
-        var appConfigSetTool = result.Tools.FirstOrDefault(t => t.Name == "azmcp-appconfig-kv-set");
+        // Find the azmcp_appconfig_kv_set tool
+        var appConfigSetTool = result.Tools.FirstOrDefault(t => t.Name == "azmcp_appconfig_kv_set");
 
         // Assert
         Assert.NotNull(appConfigSetTool);
