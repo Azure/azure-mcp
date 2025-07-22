@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Server.Commands.ToolLoading;
+using AzureMcp.Areas.Server.Options;
+using AzureMcp.Tests.Areas.Server.UnitTests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
@@ -20,15 +22,16 @@ public class AppConfigJsonSchemaTests
         // Arrange
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory(serviceProvider);
-        var logger = Substitute.For<ILogger<ToolOperations>>();
+        var logger = Substitute.For<ILogger<CommandFactoryToolLoader>>();
         var server = Substitute.For<IMcpServer>();
+        var serviceOptions = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var telemetryService = new CommandFactoryHelpers.NoOpTelemetryService();
 
-        var operations = new ToolOperations(serviceProvider, commandFactory, logger);
+        var operations = new CommandFactoryToolLoader(serviceProvider, commandFactory, serviceOptions, telemetryService, logger);
         var requestContext = new RequestContext<ListToolsRequestParams>(server);
 
         // Act
-        var handler = operations.ToolsCapability.ListToolsHandler!;
-        var result = await handler(requestContext, CancellationToken.None);
+        var result = await operations.ListToolsHandler(requestContext, CancellationToken.None);
 
         // Find the azmcp-appconfig-kv-set tool
         var appConfigSetTool = result.Tools.FirstOrDefault(t => t.Name == "azmcp-appconfig-kv-set");
