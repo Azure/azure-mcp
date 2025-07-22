@@ -35,7 +35,7 @@ public sealed class AzqrCommandTests
         var collection = new ServiceCollection();
         collection.AddSingleton(_processService);
         collection.AddSingleton(_subscriptionService);
-        collection.AddSingleton(_dateTimeProvider);
+        collection.AddSingleton<IDateTimeProvider>(_dateTimeProvider);
         _serviceProvider = collection.BuildServiceProvider();
     }
 
