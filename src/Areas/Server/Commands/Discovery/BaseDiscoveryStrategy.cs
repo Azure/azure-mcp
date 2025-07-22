@@ -96,8 +96,15 @@ public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrat
 
         try
         {
-            // First, let derived classes dispose their resources
-            await DisposeAsyncCore();
+            // First, let derived classes dispose their resources (isolated from base cleanup)
+            try
+            {
+                await DisposeAsyncCore();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while disposing derived resources in discovery strategy {StrategyType}", GetType().Name);
+            }
 
             // Then dispose our own critical resources using best-effort approach
             var clientDisposalTasks = _clientCache.Values.Select(async client =>
