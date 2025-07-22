@@ -748,7 +748,7 @@ azmcp workbooks list --subscription <subscription> \
                      [--source-id <source-id>]
 
 # Show details of a specific workbook by resource ID
-azmcp workbooks show --workbook-id <azure-resource-id>
+azmcp workbooks show --workbook-id <workbook-resource-id>
 
 # Create a new workbook
 azmcp workbooks create --subscription <subscription> \
@@ -758,12 +758,12 @@ azmcp workbooks create --subscription <subscription> \
                        [--source-id <source-id>]
 
 # Update an existing workbook  
-azmcp workbooks update --workbook-id <azure-resource-id> \
+azmcp workbooks update --workbook-id <workbook-resource-id> \
                        [--display-name <display-name>] \
                        [--serialized-content <json-content>]
 
 # Delete a workbook
-azmcp workbooks delete --workbook-id <azure-resource-id>
+azmcp workbooks delete --workbook-id <workbook-resource-id>
 ```
 
 ### Azure Subscription Management
