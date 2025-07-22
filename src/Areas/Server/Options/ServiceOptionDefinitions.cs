@@ -32,7 +32,7 @@ public static class ServiceOptionDefinitions
 
     public static readonly Option<string?> Mode = new Option<string?>(
         $"--{ModeName}",
-        () => null,
+        () => ModeTypes.NamespaceProxy,
         "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' exposes one tool per service namespace."
     )
     {

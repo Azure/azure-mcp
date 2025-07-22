@@ -116,14 +116,14 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithDefaultService_RegistersCompositeToolLoader()
+    public void AddAzureMcpServer_WithDefaultMode_RegistersServerToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            // No service specified
+            // No mode specified - should use default "namespace" mode
         };
 
         // Act
@@ -132,9 +132,9 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Verify the correct tool loader is registered
+        // Verify the correct tool loader is registered (ServerToolLoader for namespace mode)
         Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+        Assert.IsType<ServerToolLoader>(provider.GetService<IToolLoader>());
     }
 
     [Fact]

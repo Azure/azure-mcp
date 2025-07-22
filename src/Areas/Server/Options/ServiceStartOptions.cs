@@ -26,10 +26,10 @@ public class ServiceStartOptions
 
     /// <summary>
     /// Gets or sets the mode mode for the server.
-    /// When null, services are exposed individually.
+    /// Defaults to 'namespace' mode which exposes one tool per service namespace.
     /// </summary>
     [JsonPropertyName("mode")]
-    public string? Mode { get; set; } = null;
+    public string? Mode { get; set; } = ModeTypes.NamespaceProxy;
 
     /// <summary>
     /// Gets or sets whether the server should operate in read-only mode.
