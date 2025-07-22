@@ -2,7 +2,7 @@ using Azure.Core;
 using Azure.ResourceManager.CognitiveServices;
 using Azure.ResourceManager.CognitiveServices.Models;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
 public class CognitiveServicesQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
 {

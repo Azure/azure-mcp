@@ -1,9 +1,11 @@
 using Azure.Core;
-using Azure.ResourceManager.Network;
+using Azure.ResourceManager;
+using Azure.ResourceManager.Compute;
+using Azure.ResourceManager.Compute.Models;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
-public class NetworkQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
+public class ComputeQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
 {
     public override async Task<List<QuotaInfo>> GetQuotaForLocationAsync(string location)
     {
@@ -13,12 +15,12 @@ public class NetworkQuotaChecker(TokenCredential credential, string subscription
             var usages = subscription.GetUsagesAsync(location);
             var result = new List<QuotaInfo>();
 
-            await foreach (var item in usages)
+            await foreach (ComputeUsage item in usages)
             {
                 result.Add(new QuotaInfo(
-                    Name: item.Name?.Value ?? string.Empty,
-                    Limit: (int)(item.Limit),
-                    Used: (int)(item.CurrentValue),
+                    Name: item.Name?.LocalizedValue ?? item.Name?.Value ?? string.Empty,
+                    Limit: (int)item.Limit,
+                    Used: (int)item.CurrentValue,
                     Unit: item.Unit.ToString()
                 ));
             }
@@ -27,7 +29,7 @@ public class NetworkQuotaChecker(TokenCredential credential, string subscription
         }
         catch (Exception error)
         {
-            Console.WriteLine($"Error fetching network quotas: {error.Message}");
+            Console.WriteLine($"Error fetching compute quotas: {error.Message}");
             return [];
         }
     }

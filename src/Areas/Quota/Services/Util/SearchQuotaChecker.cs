@@ -1,21 +1,20 @@
 using Azure.Core;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Storage;
-using Azure.ResourceManager.Storage.Models;
+using Azure.ResourceManager.Search;
+using Azure.ResourceManager.Search.Models;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
-public class StorageQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
+public class SearchQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
 {
     public override async Task<List<QuotaInfo>> GetQuotaForLocationAsync(string location)
     {
         try
         {
             var subscription = ResourceClient.GetSubscriptionResource(new ResourceIdentifier($"/subscriptions/{SubscriptionId}"));
-            var usages = subscription.GetUsagesByLocationAsync(location);
+            var usages = subscription.GetUsagesBySubscriptionAsync(location);
             var result = new List<QuotaInfo>();
 
-            await foreach (var item in usages)
+            await foreach (QuotaUsageResult item in usages)
             {
                 result.Add(new QuotaInfo(
                     Name: item.Name?.Value ?? string.Empty,
@@ -29,7 +28,7 @@ public class StorageQuotaChecker(TokenCredential credential, string subscription
         }
         catch (Exception error)
         {
-            Console.WriteLine($"Error fetching storage quotas: {error.Message}");
+            Console.WriteLine($"Error fetching Search quotas: {error.Message}");
             return [];
         }
     }

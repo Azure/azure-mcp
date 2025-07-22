@@ -1,7 +1,7 @@
 using Areas.Server.Commands.Tools.DeployTools.Util;
 using Azure.Core;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
 public class PostgreSQLQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
 {

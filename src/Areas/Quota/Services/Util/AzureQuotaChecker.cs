@@ -4,7 +4,7 @@ using Azure.Core;
 using Azure.ResourceManager;
 using AzureMcp.Services.Azure.Authentication;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
 // For simplicity, we currently apply a single rule for all Azure resource providers:
 //   - Any resource provider not listed in the enum is treated as having no quota limitations.

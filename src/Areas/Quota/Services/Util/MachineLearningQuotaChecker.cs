@@ -1,25 +1,24 @@
 using Azure.Core;
-using Azure.ResourceManager.AppContainers;
-using Azure.ResourceManager.AppContainers.Models;
+using Azure.ResourceManager.MachineLearning;
 
-namespace Areas.Deploy.Services.Util;
+namespace AzureMcp.Areas.Quota.Services.Util;
 
-public class ContainerAppQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
+public class MachineLearningQuotaChecker(TokenCredential credential, string subscriptionId) : AzureQuotaChecker(credential, subscriptionId)
 {
     public override async Task<List<QuotaInfo>> GetQuotaForLocationAsync(string location)
     {
         try
         {
             var subscription = ResourceClient.GetSubscriptionResource(new ResourceIdentifier($"/subscriptions/{SubscriptionId}"));
-            var usages = subscription.GetUsagesAsync(location);
+            var usages = subscription.GetMachineLearningUsagesAsync(location);
             var result = new List<QuotaInfo>();
 
             await foreach (var item in usages)
             {
                 result.Add(new QuotaInfo(
                     Name: item.Name?.Value ?? string.Empty,
-                    Limit: (int)(item.Limit),
-                    Used: (int)(item.CurrentValue),
+                    Limit: (int)(item.Limit ?? 0),
+                    Used: (int)(item.CurrentValue ?? 0),
                     Unit: item.Unit.ToString()
                 ));
             }
@@ -28,7 +27,7 @@ public class ContainerAppQuotaChecker(TokenCredential credential, string subscri
         }
         catch (Exception error)
         {
-            Console.WriteLine($"Error fetching Container Apps quotas: {error.Message}");
+            Console.WriteLine($"Error fetching Machine Learning Services quotas: {error.Message}");
             return [];
         }
     }

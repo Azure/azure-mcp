@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using AzureMcp.Options;
 
-namespace AzureMcp.Areas.Deploy.Options;
+namespace AzureMcp.Areas.Quota.Options;
 
 public sealed class QuotaCheckOptions : SubscriptionOptions
 {

@@ -41,28 +41,6 @@ public class DeployCommandTests : CommandTestsBase,
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_check_azure_quota()
-    {
-        JsonElement? result = await CallToolAsync(
-            "azmcp-deploy-quota-check",
-            new() {
-                { "subscription", _subscriptionId },
-                { "region", "eastus" },
-                { "resource-types", "Microsoft.App, Microsoft.Storage/storageAccounts" }
-            });
-        // assert
-        var quotas = result.AssertProperty("quotaInfo");
-        Assert.Equal(JsonValueKind.Object, quotas.ValueKind);
-        var appQuotas = quotas.AssertProperty("Microsoft.App");
-        Assert.Equal(JsonValueKind.Array, appQuotas.ValueKind);
-        Assert.NotEmpty(appQuotas.EnumerateArray());
-        var storageQuotas = quotas.AssertProperty("Microsoft.Storage/storageAccounts");
-        Assert.Equal(JsonValueKind.Array, storageQuotas.ValueKind);
-        Assert.NotEmpty(storageQuotas.EnumerateArray());
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
     public async Task Should_get_infrastructure_code_rules()
     {
         // arrange

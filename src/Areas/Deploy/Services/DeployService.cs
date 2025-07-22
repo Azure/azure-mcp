@@ -30,21 +30,6 @@ public class DeployService() : BaseAzureService, IDeployService
         return result;
     }
 
-    public async Task<Dictionary<string, List<QuotaInfo>>> GetAzureQuotaAsync(
-        List<string> resourceTypes,
-        string subscriptionId,
-        string location)
-    {
-        TokenCredential credential = await GetCredential();
-        Dictionary<string, List<QuotaInfo>> quotaByResourceTypes = await AzureQuotaService.GetAzureQuotaAsync(
-            credential,
-            resourceTypes,
-            subscriptionId,
-            location
-            );
-        return quotaByResourceTypes;
-    }
-
     public async Task<List<string>> GetAvailableRegionsForResourceTypesAsync(
         string[] resourceTypes,
         string subscriptionId,
