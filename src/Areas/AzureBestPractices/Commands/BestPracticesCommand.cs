@@ -56,7 +56,7 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting best practices for Resource: {Resource}, Action: {Action}", 
+            _logger.LogError(ex, "Error getting best practices for Resource: {Resource}, Action: {Action}",
                 parseResult.GetValueForOption(_resourceOption), parseResult.GetValueForOption(_actionOption));
             HandleException(context, ex);
         }
@@ -67,7 +67,7 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
     public override ValidationResult Validate(CommandResult commandResult, CommandResponse? commandResponse = null)
     {
         var validationResult = new ValidationResult { IsValid = true };
-        
+
         var resource = commandResult.GetValueForOption(BestPracticesOptionDefinitions.Resource);
         var action = commandResult.GetValueForOption(BestPracticesOptionDefinitions.Action);
 
