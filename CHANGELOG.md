@@ -16,7 +16,7 @@
   - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
   - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
   - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
-- Added support for logging to a file by using the option `--log-file` during server startup. [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+- Added support for logging to a file by using the option `--log-file` during server startup. [[#683](https://github.com/Azure/azure-mcp/pull/683)]
 
 ### Breaking Changes
 
