@@ -15,6 +15,7 @@
     <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
     <PackageVersion Include="Azure.Monitor.Ingestion" Version="1.1.2" />
     <PackageVersion Include="Azure.Monitor.Query" Version="1.6.0" />
+    <PackageVersion Include="Azure.ResourceManager.ApplicationInsights" Version="1.0.1" />
     <PackageVersion Include="Azure.ResourceManager.AppConfiguration" Version="1.4.0" />
     <PackageVersion Include="Azure.ResourceManager.Authorization" Version="1.1.4" />
     <PackageVersion Include="Azure.ResourceManager.ContainerService" Version="1.2.3" />
@@ -36,6 +37,7 @@
     <PackageVersion Include="Azure.ResourceManager.Search" Version="1.2.3" />
     <PackageVersion Include="Azure.ResourceManager.Storage" Version="1.4.2" />
     <PackageVersion Include="Azure.ResourceManager.Grafana" Version="1.1.1" />
+    <PackageVersion Include="Azure.ResourceManager.ResourceGraph" Version="1.1.0-beta.3" />
     <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="13.0.2" />
     <PackageVersion Include="Microsoft.Identity.Client.Broker" Version="4.72.1" />
     <PackageVersion Include="ModelContextProtocol" Version="0.3.0-preview.3" />

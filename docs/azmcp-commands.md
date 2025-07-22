@@ -737,6 +737,35 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --file-system-name <file-system-name>
 ```
 
+### Azure Workbooks Operations
+
+```bash
+# List Azure Monitor workbooks in a resource group
+azmcp workbooks list --subscription <subscription> \
+                     --resource-group <resource-group> \
+                     [--category <category>] \
+                     [--kind <kind>] \
+                     [--source-id <source-id>]
+
+# Show details of a specific workbook by resource ID
+azmcp workbooks show --workbook-id <workbook-resource-id>
+
+# Create a new workbook
+azmcp workbooks create --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --display-name <display-name> \
+                       --serialized-content <json-content> \
+                       [--source-id <source-id>]
+
+# Update an existing workbook  
+azmcp workbooks update --workbook-id <workbook-resource-id> \
+                       [--display-name <display-name>] \
+                       [--serialized-content <json-content>]
+
+# Delete a workbook
+azmcp workbooks delete --workbook-id <workbook-resource-id>
+```
+
 ### Azure Subscription Management
 
 ```bash

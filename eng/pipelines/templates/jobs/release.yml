@@ -127,8 +127,8 @@ jobs:
                 Write-Host "Publishing VSIX for ${{ platform }}"
                 $baseName = Get-ChildItem *.vsix | Select-Object -First 1 | ForEach-Object { $_.BaseName }
                 Write-Host "VSIX baseName: $baseName"
-                # npm install -g @vscode/vsce
-                # vsce publish --azure-credential --packagePath "$($baseName).vsix" --manifestPath "$($baseName).manifest" --signaturePath "$($baseName).signature.p7s"
+                npm install -g @vscode/vsce
+                vsce publish --azure-credential --packagePath "$($baseName).vsix" --manifestPath "$($baseName).manifest" --signaturePath "$($baseName).signature.p7s"
 
 
 - job: UpdatePackageVersion

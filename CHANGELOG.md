@@ -10,6 +10,12 @@
   - `azmcp-keyvault-certificate-create`
   - `azmcp-keyvault-secret-list`
   - `azmcp-keyvault-secret-create`
+- Added support for Azure Workbooks management operations:
+  - `azmcp-workbooks-list` - List workbooks in a resource group with optional filtering
+  - `azmcp-workbooks-show` - Get detailed information about a specific workbook
+  - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
+  - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
+  - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
 
 ### Breaking Changes
 

@@ -169,6 +169,19 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-tool-list | List all available tools in the Azure MCP server |
 | azmcp-tool-list | Show me the available tools in the Azure MCP server |
 
+## Azure Load Testing
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>. Use the name of test run <display-name> and description as <description> |
+| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>.|
+
 ## Azure Monitor
 
 | Tool Name | Test Prompt |
@@ -290,6 +303,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+
+## Azure Workbooks
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-workbooks-list | List all workbooks in my resource group <resource_group_name> |
+| azmcp-workbooks-list | What workbooks do I have in resource group <resource_group_name>? |
+| azmcp-workbooks-show | Show me the workbook with display name <workbook_display_name> |
+| azmcp-workbooks-show | Get information about the workbook with resource ID <workbook_resource_id> |
+| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
+| azmcp-workbooks-update | Update the workbook <workbook_resource_id> with a new text step |
+| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
 
 ## Azure Subscription Management
 
