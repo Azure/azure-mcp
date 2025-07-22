@@ -33,7 +33,7 @@ jobs:
       path: $(Build.ArtifactStagingDirectory)
       artifact: docker_drops
 
-- job: Publish
+- job: PublishACR
   displayName: "Publish to ACR"
   condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
   dependsOn: CreateDockerArtifact
