@@ -171,11 +171,9 @@ public sealed class CommandFactoryToolLoader(
         {
             foreach (var option in options)
             {
-                schema.Properties.Add(option.Name, new ToolPropertySchema
-                {
-                    Type = option.ValueType.ToJsonType(),
-                    Description = option.Description,
-                });
+                // Use the CreateOptionSchema method to properly handle array types with items
+                var optionSchema = TypeToJsonTypeMapper.CreateOptionSchema(option.ValueType, option.Description);
+                arguments.Add(option.Name, optionSchema);
             }
 
             schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();

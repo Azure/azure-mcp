@@ -58,11 +58,11 @@ public static class TypeToJsonTypeMapper
             return "null";
         }
 
-        // Handle nullable types - get the underlying type
-        var underlyingType = Nullable.GetUnderlyingType(type);
-        if (underlyingType != null)
+        // Handle nullable types - for ToJsonType, we keep the original behavior returning "object"
+        // We only get the underlying type in CreateOptionSchema, not here
+        if (Nullable.GetUnderlyingType(type) != null)
         {
-            type = underlyingType;
+            return "object";
         }
 
         if (s_typeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
@@ -127,8 +127,12 @@ public static class TypeToJsonTypeMapper
     public static JsonObject CreateOptionSchema(Type optionType, string? description)
     {
         ArgumentNullException.ThrowIfNull(optionType);
-
-        var jsonType = optionType.ToJsonType();
+        
+        // Handle nullable types - get the underlying type for schema generation
+        var underlyingType = Nullable.GetUnderlyingType(optionType);
+        var effectiveType = underlyingType ?? optionType;
+        
+        var jsonType = effectiveType.ToJsonType();
         var optionSchema = new JsonObject()
         {
             ["type"] = jsonType,
@@ -138,7 +142,7 @@ public static class TypeToJsonTypeMapper
         // If the type is an array, we need to specify the items type
         if (jsonType == "array")
         {
-            var elementType = GetArrayElementType(optionType);
+            var elementType = GetArrayElementType(effectiveType);
             if (elementType != null)
             {
                 optionSchema["items"] = new JsonObject()
