@@ -66,8 +66,6 @@ public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrat
     /// <exception cref="KeyNotFoundException">Thrown when no server with the specified name is found.</exception>
     public async Task<IMcpClient> GetOrCreateClientAsync(string name, McpClientOptions? clientOptions = null)
     {
-        ThrowIfDisposed();
-
         ArgumentNullException.ThrowIfNull(name, nameof(name));
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -87,9 +85,9 @@ public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrat
     }
 
     /// <summary>
-    /// Disposes all cached MCP clients that this discovery strategy owns.
+    /// Disposes all cached MCP clients with double disposal protection.
     /// </summary>
-    public virtual async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_disposed)
         {
@@ -98,28 +96,45 @@ public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrat
 
         try
         {
-            // Dispose all cached clients in parallel for better performance
-            var disposalTasks = _clientCache.Values.Select(client => client.DisposeAsync().AsTask());
-            await Task.WhenAll(disposalTasks);
+            // First, let derived classes dispose their resources
+            await DisposeAsyncCore();
+
+            // Then dispose our own critical resources using best-effort approach
+            var clientDisposalTasks = _clientCache.Values.Select(async client =>
+            {
+                try
+                {
+                    await client.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to dispose MCP client in discovery strategy {StrategyType}", GetType().Name);
+                }
+            });
+
+            await Task.WhenAll(clientDisposalTasks);
+            _clientCache.Clear();
         }
         catch (Exception ex)
         {
             // Log disposal failures but don't throw - we want to ensure cleanup continues
-            // Individual client disposal errors shouldn't stop the overall disposal process
-            _logger.LogError(ex, "Error occurred while disposing MCP clients during discovery strategy cleanup. Some clients may not have been properly disposed.");
+            // Individual disposal errors shouldn't stop the overall disposal process
+            _logger.LogError(ex, "Error occurred while disposing discovery strategy {StrategyType}. Some resources may not have been properly disposed.", GetType().Name);
         }
         finally
         {
-            _clientCache.Clear();
             _disposed = true;
         }
     }
 
     /// <summary>
-    /// Throws if the discovery strategy has been disposed.
+    /// Override this method in derived classes to implement disposal logic.
+    /// This method is called exactly once during disposal.
     /// </summary>
-    protected void ThrowIfDisposed()
+    /// <returns>A task representing the asynchronous disposal operation.</returns>
+    protected virtual ValueTask DisposeAsyncCore()
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
+        // Default implementation does nothing - derived classes override to add their specific cleanup
+        return ValueTask.CompletedTask;
     }
 }

@@ -18,11 +18,10 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 public sealed class RegistryToolLoader(
     IMcpDiscoveryStrategy discoveryStrategy,
     IOptions<ServiceStartOptions> options,
-    ILogger<RegistryToolLoader> logger) : IToolLoader
+    ILogger<RegistryToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = discoveryStrategy;
     private readonly IOptions<ServiceStartOptions> _options = options;
-    private readonly ILogger<RegistryToolLoader> _logger = logger;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
     private List<IMcpClient> _discoveredClients = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
@@ -44,7 +43,7 @@ public sealed class RegistryToolLoader(
     /// <param name="request">The request context containing parameters and metadata.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A result containing the list of available tools.</returns>
-    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         await InitializeAsync(cancellationToken);
 
@@ -76,7 +75,7 @@ public sealed class RegistryToolLoader(
     /// <param name="request">The request context containing parameters and metadata.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The result of the tool call operation.</returns>
-    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
@@ -217,9 +216,10 @@ public sealed class RegistryToolLoader(
 
     /// <summary>
     /// Disposes resources owned by this tool loader.
-    /// Note: This does NOT dispose the MCP clients as they are owned by the discovery strategy.
+    /// Clears collections and disposes the initialization semaphore.
+    /// Note: MCP clients are owned by the discovery strategy, not disposed here.
     /// </summary>
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
         // Only dispose resources we own, not the MCP clients
         _initializationSemaphore?.Dispose();

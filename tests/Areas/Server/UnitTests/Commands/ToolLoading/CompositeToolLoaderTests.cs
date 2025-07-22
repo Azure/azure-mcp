@@ -600,9 +600,8 @@ public class CompositeToolLoaderTests
 
         var compositeLoader = new CompositeToolLoader(new[] { mockLoader1, mockLoader2 }, logger);
 
-        // Act & Assert - Should propagate the first exception encountered
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => compositeLoader.DisposeAsync().AsTask());
-        Assert.Equal("Loader 1 failed", exception.Message);
+        // Act - Should complete without throwing (best-effort disposal)
+        await compositeLoader.DisposeAsync();
 
         // Both loaders should have been attempted to dispose
         await mockLoader1.Received(1).DisposeAsync();
@@ -624,8 +623,8 @@ public class CompositeToolLoaderTests
         await compositeLoader.DisposeAsync();
         await compositeLoader.DisposeAsync();
 
-        // Assert - child loader should be disposed each time (disposal delegation)
-        await mockLoader.Received(3).DisposeAsync();
+        // Assert - child loader should be disposed only once due to idempotent disposal
+        await mockLoader.Received(1).DisposeAsync();
     }
 
     [Fact]

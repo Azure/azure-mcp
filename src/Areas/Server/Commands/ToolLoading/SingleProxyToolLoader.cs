@@ -9,10 +9,9 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class SingleProxyToolLoader : IToolLoader
+public sealed class SingleProxyToolLoader : BaseToolLoader
 {
     private readonly IMcpDiscoveryStrategy _discoveryStrategy;
-    private ILogger<SingleProxyToolLoader> _logger;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 
@@ -34,9 +33,9 @@ public sealed class SingleProxyToolLoader : IToolLoader
         """;
 
     public SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger)
+        : base(logger)
     {
         _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
@@ -70,7 +69,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
         }
         """, ServerJsonContext.Default.JsonElement);
 
-    public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public override ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         var toolsResult = new ListToolsResult
         {
@@ -104,7 +103,7 @@ public sealed class SingleProxyToolLoader : IToolLoader
     /// <param name="request">The request context containing parameters and metadata.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A <see cref="CallToolResult"/> representing the result of the operation.</returns>
-    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
+    public override async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken = default)
     {
         var args = request.Params?.Arguments;
         string? intent = null;
@@ -489,12 +488,15 @@ public sealed class SingleProxyToolLoader : IToolLoader
 
     /// <summary>
     /// Disposes resources owned by this tool loader.
-    /// SingleProxyToolLoader doesn't own clients directly - they're owned by the discovery strategy.
+    /// Clears the cached tool lists and root tools dictionaries.
+    /// Note: MCP clients are owned by the discovery strategy, not disposed here.
     /// </summary>
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        // SingleProxyToolLoader doesn't create or cache clients directly,
-        // it relies on the discovery strategy which handles disposal
+        // Clear caching collections
+        _cachedToolListsJson.Clear();
+        _cachedRootToolsJson = null;
+
         await ValueTask.CompletedTask;
     }
 }

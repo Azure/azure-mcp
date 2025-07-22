@@ -50,14 +50,23 @@ public sealed class CompositeDiscoveryStrategy(IEnumerable<IMcpDiscoveryStrategy
 
     /// <summary>
     /// Disposes all child discovery strategies and then calls the base dispose.
+    /// Uses best-effort disposal to ensure all strategies are disposed even if some fail.
     /// </summary>
-    public override async ValueTask DisposeAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        // Dispose all child strategies first
-        var childDisposalTasks = _strategies.Select(strategy => strategy.DisposeAsync().AsTask());
-        await Task.WhenAll(childDisposalTasks);
+        // Dispose all child strategies using best-effort approach
+        var childDisposalTasks = _strategies.Select(async strategy =>
+        {
+            try
+            {
+                await strategy.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to dispose discovery strategy {StrategyType}", strategy.GetType().Name);
+            }
+        });
 
-        // Then dispose our own cached clients
-        await base.DisposeAsync();
+        await Task.WhenAll(childDisposalTasks);
     }
 }

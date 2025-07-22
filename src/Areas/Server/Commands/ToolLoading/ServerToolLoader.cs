@@ -11,10 +11,9 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : IToolLoader
+public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
-    private readonly ILogger<ServerToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
     private const string ToolCallProxySchema = """
         {
@@ -63,7 +62,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         }
         """, ServerJsonContext.Default.JsonElement);
 
-    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         var serverList = await _serverDiscoveryStrategy.DiscoverServersAsync();
         var allToolsResponse = new ListToolsResult
@@ -92,7 +91,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         return allToolsResponse;
     }
 
-    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Params?.Name))
         {
@@ -520,12 +519,11 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
     /// <summary>
     /// Disposes resources owned by this tool loader.
-    /// ServerToolLoader doesn't own clients directly - they're owned by the discovery strategy.
+    /// Clears the cached tool lists dictionary.
     /// </summary>
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        // ServerToolLoader doesn't create or cache clients directly,
-        // it relies on the discovery strategy which handles disposal
+        _cachedToolLists.Clear();
         await ValueTask.CompletedTask;
     }
 }

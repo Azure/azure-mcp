@@ -14,9 +14,8 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// </summary>
 /// <param name="toolLoaders">The collection of tool loaders to combine.</param>
 /// <param name="logger">Logger for tool loading operations.</param>
-public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : IToolLoader
+public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, ILogger<CompositeToolLoader> logger) : BaseToolLoader(logger)
 {
-    private readonly ILogger<CompositeToolLoader> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IEnumerable<IToolLoader> _toolLoaders = InitializeToolLoaders(toolLoaders);
     private readonly Dictionary<string, IToolLoader> _toolLoaderMap = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
@@ -50,7 +49,7 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
     /// <param name="request">The request context containing metadata and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the combined list of all available tools, or an empty list if initialization fails.</returns>
-    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
         try
         {
@@ -80,7 +79,7 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
     /// <param name="request">The request context containing the tool name and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation, or an error result if the tool is not found or initialization fails.</returns>
-    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public override async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
         if (request.Params == null)
         {
@@ -195,14 +194,27 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
     }
 
     /// <summary>
-    /// Disposes the semaphore used for thread-safe initialization and disposes child tool loaders.
+    /// Disposes all child tool loaders and the initialization semaphore.
+    /// Uses best-effort disposal to ensure all loaders are disposed even if some fail.
     /// </summary>
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
+        // Dispose initialization semaphore first
         _initializationSemaphore?.Dispose();
 
-        // Dispose all child loaders (they all implement IAsyncDisposable now)
-        var disposalTasks = _toolLoaders.Select(loader => loader.DisposeAsync().AsTask());
-        await Task.WhenAll(disposalTasks);
+        // Dispose all child loaders using best-effort approach
+        var childDisposalTasks = _toolLoaders.Select(async loader =>
+        {
+            try
+            {
+                await loader.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to dispose tool loader {LoaderType}", loader.GetType().Name);
+            }
+        });
+
+        await Task.WhenAll(childDisposalTasks);
     }
 }
