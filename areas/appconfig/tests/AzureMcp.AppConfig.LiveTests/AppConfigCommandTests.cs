@@ -376,16 +376,6 @@ public class AppConfigCommandTests : CommandTestsBase,
         contentTypeRead = setting.AssertProperty("contentType");
         Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
         Assert.Equal(contentType, contentTypeRead.GetString());
-
-        // cleanup
-        await CallToolAsync(
-            "azmcp-appconfig-kv-delete",
-            new()
-            {
-                { "subscription", _subscriptionId },
-                { "account-name", _accountName },
-                { "key", key }
-            });
     }
 
     [Fact]
@@ -397,42 +387,25 @@ public class AppConfigCommandTests : CommandTestsBase,
         const string value = @"{""name"":""testValue"",""enabled"":true}";
         const string contentType = "application/json; charset=utf-8";
 
-        try
-        {
-            // act - set key-value with content type
-            await _appConfigService.SetKeyValue(
-                _accountName,
-                key,
-                value,
-                _subscriptionId,
-                contentType: contentType);
+        // act - set key-value with content type
+        await _appConfigService.SetKeyValue(
+           _accountName,
+           key,
+           value,
+           _subscriptionId,
+           contentType: contentType);
 
-            // act - get key-value to verify content type was preserved
-            var setting = await _appConfigService.GetKeyValue(
-                _accountName,
-                key,
-                _subscriptionId);
+        // act - get key-value to verify content type was preserved
+        var setting = await _appConfigService.GetKeyValue(
+            _accountName,
+            key,
+            _subscriptionId);
 
-            // assert - verify content type was properly set and retrieved
-            Assert.Equal(key, setting.Key);
-            Assert.Equal(value, setting.Value);
-            Assert.Equal(contentType, setting.ContentType);
-        }
-        finally
-        {
-            // cleanup
-            try
-            {
-                await _appConfigService.DeleteKeyValue(
-                    _accountName,
-                    key,
-                    _subscriptionId);
-            }
-            catch
-            {
-                // Ignore cleanup errors
-            }
-        }
+        // assert - verify content type was properly set and retrieved
+        Assert.Equal(key, setting.Key);
+        Assert.Equal(value, setting.Value);
+        Assert.Equal(contentType, setting.ContentType);
+
     }
 
     [Fact]
@@ -445,61 +418,44 @@ public class AppConfigCommandTests : CommandTestsBase,
         const string tagKey = "environment";
         const string tagValue = "production";
 
-        try
-        {
-            // act - set key-value with a single tag
-            var setResult = await CallToolAsync(
-                "azmcp-appconfig-kv-set",
-                new()
-                {
+
+        // act - set key-value with a single tag
+        var setResult = await CallToolAsync(
+            "azmcp-appconfig-kv-set",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tag", $"{tagKey}={tagValue}" }
-                });
+            });
 
-            // assert - verify the set result
-            var valueRead = setResult.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
 
-            var tagsRead = setResult.AssertProperty("tags");
-            Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
-            Assert.Single(tagsRead.EnumerateArray());
-            Assert.Equal($"{tagKey}={tagValue}", tagsRead.EnumerateArray().First().GetString());
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+        Assert.Single(tagsRead.EnumerateArray());
+        Assert.Equal($"{tagKey}={tagValue}", tagsRead.EnumerateArray().First().GetString());
 
-            // act - get the key-value to verify tag was stored
-            var getResult = await CallToolAsync(
-                "azmcp-appconfig-kv-show",
-                new()
-                {
+        // act - get the key-value to verify tag was stored
+        var getResult = await CallToolAsync(
+            "azmcp-appconfig-kv-show",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key }
-                });
+            });
 
-            // assert - verify the tag in the retrieved setting
-            var setting = getResult.AssertProperty("setting");
-            Assert.Equal(JsonValueKind.Object, setting.ValueKind);
-            valueRead = setting.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
+        // assert - verify the tag in the retrieved setting
+        var setting = getResult.AssertProperty("setting");
+        Assert.Equal(JsonValueKind.Object, setting.ValueKind);
+        valueRead = setting.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
 
-            // Check if there's a tags property that we can validate
-            // The exact structure depends on how tags are returned in the API response
-            // You may need to adjust this based on the actual response format
-        }
-        finally
-        {
-            // cleanup
-            await CallToolAsync(
-                "azmcp-appconfig-kv-delete",
-                new()
-                {
-                    { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
-                    { "key", key }
-                });
-        }
     }
 
     [Fact]
@@ -516,65 +472,47 @@ public class AppConfigCommandTests : CommandTestsBase,
             "region=westus2"
         };
 
-        try
-        {
-            // act - set key-value with multiple tags
-            var setResult = await CallToolAsync(
-                "azmcp-appconfig-kv-set",
-                new()
-                {
+        // act - set key-value with multiple tags
+        var setResult = await CallToolAsync(
+            "azmcp-appconfig-kv-set",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tag", tags }
-                });
+            });
 
-            // assert - verify the set result
-            var valueRead = setResult.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
 
-            var tagsRead = setResult.AssertProperty("tags");
-            Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
-            var tagArray = tagsRead.EnumerateArray().ToArray();
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+        var tagArray = tagsRead.EnumerateArray().ToArray();
 
-            Assert.Equal(tags.Length, tagArray.Length);
-            foreach (var tag in tags)
-            {
-                Assert.Contains(tagArray, t => t.GetString() == tag);
-            }
-
-            // act - get the key-value to verify tags were stored
-            var getResult = await CallToolAsync(
-                "azmcp-appconfig-kv-show",
-                new()
-                {
-                    { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
-                    { "key", key }
-                });
-
-            // assert - verify the value in the retrieved setting
-            var setting = getResult.AssertProperty("setting");
-            Assert.Equal(JsonValueKind.Object, setting.ValueKind);
-            valueRead = setting.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
-
-            // Check if there's a tags property that we can validate
-            // The exact structure depends on how tags are returned in the API response
-        }
-        finally
+        Assert.Equal(tags.Length, tagArray.Length);
+        foreach (var tag in tags)
         {
-            // cleanup
-            await CallToolAsync(
-                "azmcp-appconfig-kv-delete",
-                new()
-                {
+            Assert.Contains(tagArray, t => t.GetString() == tag);
+        }
+
+        // act - get the key-value to verify tags were stored
+        var getResult = await CallToolAsync(
+            "azmcp-appconfig-kv-show",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key }
-                });
-        }
+            });
+
+        // assert - verify the value in the retrieved setting
+        var setting = getResult.AssertProperty("setting");
+        Assert.Equal(JsonValueKind.Object, setting.ValueKind);
+        valueRead = setting.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
     }
 
     [Fact]
@@ -591,64 +529,46 @@ public class AppConfigCommandTests : CommandTestsBase,
             "created by=Azure MCP Test"
         };
 
-        try
-        {
-            // act - set key-value with tags containing spaces
-            var setResult = await CallToolAsync(
-                "azmcp-appconfig-kv-set",
-                new()
-                {
+        // act - set key-value with tags containing spaces
+        var setResult = await CallToolAsync(
+            "azmcp-appconfig-kv-set",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tag", tags }
-                });
+            });
 
-            // assert - verify the set result
-            var valueRead = setResult.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
 
-            var tagsRead = setResult.AssertProperty("tags");
-            Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
-            var tagArray = tagsRead.EnumerateArray().ToArray();
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+        var tagArray = tagsRead.EnumerateArray().ToArray();
 
-            Assert.Equal(tags.Length, tagArray.Length);
-            foreach (var tag in tags)
-            {
-                Assert.Contains(tagArray, t => t.GetString() == tag);
-            }
-
-            // act - get the key-value to verify tags with spaces were stored correctly
-            var getResult = await CallToolAsync(
-                "azmcp-appconfig-kv-show",
-                new()
-                {
-                    { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
-                    { "key", key }
-                });
-
-            // assert - verify the value in the retrieved setting
-            var setting = getResult.AssertProperty("setting");
-            Assert.Equal(JsonValueKind.Object, setting.ValueKind);
-            valueRead = setting.AssertProperty("value");
-            Assert.Equal(value, valueRead.GetString());
-
-            // Check if there's a tags property that we can validate
-            // The exact structure depends on how tags are returned in the API response
-        }
-        finally
+        Assert.Equal(tags.Length, tagArray.Length);
+        foreach (var tag in tags)
         {
-            // cleanup
-            await CallToolAsync(
-                "azmcp-appconfig-kv-delete",
-                new()
-                {
+            Assert.Contains(tagArray, t => t.GetString() == tag);
+        }
+
+        // act - get the key-value to verify tags with spaces were stored correctly
+        var getResult = await CallToolAsync(
+            "azmcp-appconfig-kv-show",
+            new()
+            {
                     { "subscription", _subscriptionId },
                     { "account-name", _accountName },
                     { "key", key }
-                });
-        }
+            });
+
+        // assert - verify the value in the retrieved setting
+        var setting = getResult.AssertProperty("setting");
+        Assert.Equal(JsonValueKind.Object, setting.ValueKind);
+        valueRead = setting.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
     }
 }
