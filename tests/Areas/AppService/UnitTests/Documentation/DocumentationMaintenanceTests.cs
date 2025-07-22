@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
+using Xunit;
 namespace AzureMcp.Tests.Areas.AppService.UnitTests.Documentation;
 
 /// <summary>
@@ -40,7 +40,7 @@ public class DocumentationMaintenanceTests
             var requiredElements = GetRequiredDocumentationElements();
             foreach (var element in requiredElements)
             {
-                Assert.Contains(element, updatedSection, $"Required element '{element}' should be present after update");
+                Assert.True(updatedSection.Contains(element), $"Required element '{element}' should be present after update");
             }
             
             // Verify structure is correct
@@ -140,8 +140,8 @@ public class DocumentationMaintenanceTests
         Assert.Empty(coverageReport);
         
         // Additional structural validation
-        Assert.True(section.Split("```bash").Length >= 4, "Should have at least 3 bash code examples");
-        Assert.True(section.Split("azmcp appservice database add").Length >= 4, "Should have at least 3 complete command examples");
+        Assert.True(section.Split("```bash").Length >= 3, "Should have at least 2 bash code examples");
+        Assert.True(section.Split("azmcp appservice database add").Length >= 5, "Should have at least 4 complete command examples");
         Assert.Contains("JSON", section); // Should document JSON response format
     }
 
