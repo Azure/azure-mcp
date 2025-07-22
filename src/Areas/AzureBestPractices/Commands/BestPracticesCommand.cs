@@ -36,47 +36,69 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var resource = parseResult.GetValueForOption(_resourceOption);
-        var action = parseResult.GetValueForOption(_actionOption);
+        try
+        {
+            var validationResult = Validate(parseResult.CommandResult, context.Response);
+            if (!validationResult.IsValid)
+            {
+                return Task.FromResult(context.Response);
+            }
+
+            var resource = parseResult.GetValueForOption(_resourceOption);
+            var action = parseResult.GetValueForOption(_actionOption);
+
+            var resourceFileName = GetResourceFileName(resource!, action!);
+            var bestPractices = GetBestPracticesText(resourceFileName);
+
+            context.Response.Status = 200;
+            context.Response.Results = ResponseResult.Create(new List<string> { bestPractices }, JsonSourceGenerationContext.Default.ListString);
+            context.Response.Message = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting best practices for Resource: {Resource}, Action: {Action}", 
+                parseResult.GetValueForOption(_resourceOption), parseResult.GetValueForOption(_actionOption));
+            HandleException(context, ex);
+        }
+
+        return Task.FromResult(context.Response);
+    }
+
+    public override ValidationResult Validate(CommandResult commandResult, CommandResponse? commandResponse = null)
+    {
+        var validationResult = new ValidationResult { IsValid = true };
+        
+        var resource = commandResult.GetValueForOption(BestPracticesOptionDefinitions.Resource);
+        var action = commandResult.GetValueForOption(BestPracticesOptionDefinitions.Action);
 
         if (string.IsNullOrEmpty(resource) || string.IsNullOrEmpty(action))
         {
-            context.Response.Status = 400;
-            context.Response.Message = "Both resource and action parameters are required.";
-            return Task.FromResult(context.Response);
+            validationResult.IsValid = false;
+            validationResult.ErrorMessage = "Both resource and action parameters are required.";
         }
-
-        // Validate resource parameter
-        if (resource != "general" && resource != "azurefunctions")
+        else if (resource != "general" && resource != "azurefunctions")
         {
-            context.Response.Status = 400;
-            context.Response.Message = "Invalid resource. Must be 'general' or 'azurefunctions'.";
-            return Task.FromResult(context.Response);
+            validationResult.IsValid = false;
+            validationResult.ErrorMessage = "Invalid resource. Must be 'general' or 'azurefunctions'.";
         }
-
-        // Validate action parameter
-        if (action != "all" && action != "code-generation" && action != "deployment")
+        else if (action != "all" && action != "code-generation" && action != "deployment")
         {
-            context.Response.Status = 400;
-            context.Response.Message = "Invalid action. Must be 'all', 'code-generation' or 'deployment'.";
-            return Task.FromResult(context.Response);
+            validationResult.IsValid = false;
+            validationResult.ErrorMessage = "Invalid action. Must be 'all', 'code-generation' or 'deployment'.";
         }
-
-        // Validate specific combinations
-        if (resource == "general" && (action == "deployment" || action == "code-generation"))
+        else if (resource == "general" && (action == "deployment" || action == "code-generation"))
         {
-            context.Response.Status = 400;
-            context.Response.Message = "The 'general' resource only supports 'all' action.";
-            return Task.FromResult(context.Response);
+            validationResult.IsValid = false;
+            validationResult.ErrorMessage = "The 'general' resource only supports 'all' action.";
         }
 
-        var resourceFileName = GetResourceFileName(resource, action);
-        var bestPractices = GetBestPracticesText(resourceFileName);
+        if (!validationResult.IsValid && commandResponse != null)
+        {
+            commandResponse.Status = 400;
+            commandResponse.Message = validationResult.ErrorMessage!;
+        }
 
-        context.Response.Status = 200;
-        context.Response.Results = ResponseResult.Create(new List<string> { bestPractices }, JsonSourceGenerationContext.Default.ListString);
-        context.Response.Message = string.Empty;
-        return Task.FromResult(context.Response);
+        return validationResult;
     }
 
     private static string GetResourceFileName(string resource, string action)
