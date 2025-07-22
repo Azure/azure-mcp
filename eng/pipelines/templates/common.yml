@@ -126,6 +126,7 @@ extends:
     - stage: BuildVSIX
       displayName: 'Build VSIX Extension'
       dependsOn:
+        - Initialize
         - SignAndPack
       pool:
         name: $(LINUXPOOL)
@@ -142,7 +143,6 @@ extends:
             SparseCheckout: false
             JobTemplatePath: /eng/pipelines/templates/jobs/build-vscode.yml
             AdditionalParameters:
-              Version: $(Version)
               TestTimeoutInMinutes: 10
               SkipSigning: ${{ parameters.SkipSigning }}
 
@@ -159,6 +159,7 @@ extends:
       ${{ else }}:
         displayName: 'VSIX Sign and Pack'
       dependsOn:
+      - Initialize
       - BuildVSIX
       variables:
       - template: /eng/pipelines/templates/variables/image.yml
