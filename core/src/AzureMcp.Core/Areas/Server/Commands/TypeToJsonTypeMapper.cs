@@ -127,11 +127,11 @@ public static class TypeToJsonTypeMapper
     public static JsonObject CreateOptionSchema(Type optionType, string? description)
     {
         ArgumentNullException.ThrowIfNull(optionType);
-        
+
         // Handle nullable types - get the underlying type for schema generation
         var underlyingType = Nullable.GetUnderlyingType(optionType);
         var effectiveType = underlyingType ?? optionType;
-        
+
         var jsonType = effectiveType.ToJsonType();
         var optionSchema = new JsonObject()
         {
