@@ -12,6 +12,8 @@ parameters:
   type: object
 - name: TestTimeoutInMinutes
   type: number
+- name: Version
+  type: string
 - name: SkipSigning
   type: boolean
   default: false
@@ -76,7 +78,7 @@ jobs:
     displayName: "Install npm dependencies and vsce"
     workingDirectory: eng/vscode
     
-  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '$(Version)'
+  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '${{ parameters.Version }}'
     workingDirectory: eng/vscode
     displayName: "Package VS Code Extension"
 

@@ -142,6 +142,7 @@ extends:
             SparseCheckout: false
             JobTemplatePath: /eng/pipelines/templates/jobs/build-vscode.yml
             AdditionalParameters:
+              Version: $(Version)
               TestTimeoutInMinutes: 10
               SkipSigning: ${{ parameters.SkipSigning }}
 
