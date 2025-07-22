@@ -4,25 +4,53 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
 
 ## Table of Contents
 
-- [Common Issues](#common-issues)
-  - [Console window is empty when running Azure MCP Server](#console-window-is-empty-when-running-azure-mcp-server)
-  - [Can I select what tools to load in the MCP server?](#can-i-select-what-tools-to-load-in-the-mcp-server)
-  - [Why does VS Code only show a subset of tools available?](#why-does-vs-code-only-show-a-subset-of-tools-available)
-  - [Bring your own language model key](#bring-your-own-language-model-key)
-- [Tool Limitations](#tool-limitations)
-  - [128-Tool Limit Issue](#128-tool-limit-issue)
-- [Authentication](#authentication)
-  - [401 Unauthorized: Local authorization is disabled](#401-unauthorized-local-authorization-is-disabled)
-  - [403 Forbidden: Authorization Failure](#403-forbidden-authorization-failure)
-  - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
-  - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
-  - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
-  - [Platform Package Installation Issues](#platform-package-installation-issues)
-- [Logging and Diagnostics](#logging-and-diagnostics)
-  - [Logging](#logging)
-  - [Observability with OpenTelemetry](#observability-with-opentelemetry)
-- [Development Environment](#development-environment)
-  - [Development in VS Code](#development-in-vs-code)
+- [Troubleshooting](#troubleshooting)
+  - [Table of Contents](#table-of-contents)
+  - [Common Issues](#common-issues)
+    - [Console window is empty when running Azure MCP Server](#console-window-is-empty-when-running-azure-mcp-server)
+    - [Can I select what tools to load in the MCP server?](#can-i-select-what-tools-to-load-in-the-mcp-server)
+    - [Why does VS Code only show a subset of tools available?](#why-does-vs-code-only-show-a-subset-of-tools-available)
+  - [Tool Limitations](#tool-limitations)
+    - [128-Tool Limit Issue](#128-tool-limit-issue)
+      - [Problem](#problem)
+      - [Root Cause](#root-cause)
+      - [Workarounds](#workarounds)
+      - [How to Check Your Tool Count](#how-to-check-your-tool-count)
+  - [Authentication](#authentication)
+    - [401 Unauthorized: Local authorization is disabled](#401-unauthorized-local-authorization-is-disabled)
+      - [Root Cause](#root-cause-1)
+      - [Working with Resource Administrators](#working-with-resource-administrators)
+    - [403 Forbidden: Authorization Failure](#403-forbidden-authorization-failure)
+      - [Possible Causes and Resolutions](#possible-causes-and-resolutions)
+    - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
+      - [Common Network Issues](#common-network-issues)
+      - [Working with Network Administrators](#working-with-network-administrators)
+      - [Troubleshooting Network Connectivity](#troubleshooting-network-connectivity)
+      - [Questions to Ask Your Network Administrator](#questions-to-ask-your-network-administrator)
+    - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
+      - [Service Principal Authentication for Restricted Environments](#service-principal-authentication-for-restricted-environments)
+      - [Conditional Access Policy Compliance](#conditional-access-policy-compliance)
+      - [Resource Access in Locked-Down Environments](#resource-access-in-locked-down-environments)
+    - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
+      - [Why This Happens](#why-this-happens)
+      - [Resolution Options](#resolution-options)
+      - [Next Steps](#next-steps)
+    - [Platform Package Installation Issues](#platform-package-installation-issues)
+      - [Error Examples:](#error-examples)
+      - [Resolution Steps:](#resolution-steps)
+      - [Common Causes of Auto-Installation Failure:](#common-causes-of-auto-installation-failure)
+      - [For Enterprise Users:](#for-enterprise-users)
+  - [Logging and Diagnostics](#logging-and-diagnostics)
+    - [Logging](#logging)
+      - [Collecting logs with dotnet-trace](#collecting-logs-with-dotnet-trace)
+      - [Collecting logs with VS Code](#collecting-logs-with-vs-code)
+      - [Collecting logs with PerfView](#collecting-logs-with-perfview)
+      - [Visualizing EventSource logs in PerfView](#visualizing-eventsource-logs-in-perfview)
+      - [Collect logs to a local file](#collect-logs-to-a-local-file)
+    - [Observability with OpenTelemetry](#observability-with-opentelemetry)
+  - [Development Environment](#development-environment)
+    - [Development in VS Code](#development-in-vs-code)
+      - [Bring your own language model key](#bring-your-own-language-model-key)
 
 ## Common Issues
 
@@ -531,6 +559,16 @@ By default, VS Code logs informational, warning, and error level messages. To ge
 2. In the file explorer, double-click to expand the `.nettrace` file
 3. Select the "Events" item
 4. Under Event Types, examine events under `Microsoft-Extensions-Logging/*`
+
+#### Collect logs to a local file
+
+To collect logs to a local file, you can use the `--log-file` option when starting the server:
+
+```bash
+azmcp server start --log-file /path/to/logfile.log
+```
+
+This is especially useful if you want to see logs at the `Informational` without disrupting communication between the server and clients or persist logs for later analysis.
 
 ### Observability with OpenTelemetry
 
