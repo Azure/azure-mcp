@@ -22,35 +22,19 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 public sealed class CommandFactoryToolLoader(
     IServiceProvider serviceProvider,
     CommandFactory commandFactory,
-    IOptions<ServiceStartOptions> options,
+    IOptions<ToolLoaderOptions> options,
     ITelemetryService telemetry,
     ILogger<CommandFactoryToolLoader> logger) : IToolLoader
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly CommandFactory _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
-    private readonly IOptions<ServiceStartOptions> _options = options;
+    private readonly IOptions<ToolLoaderOptions> _options = options;
     private readonly ITelemetryService _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands =
         (options.Value.Namespace == null || options.Value.Namespace.Length == 0)
             ? commandFactory.AllCommands
             : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
-
-    /// <summary>
-    /// Gets whether the tool loader operates in read-only mode.
-    /// </summary>
-    private bool ReadOnly
-    {
-        get => _options.Value.ReadOnly ?? false;
-    }
-
-    /// <summary>
-    /// Gets the namespaces to filter commands by.
-    /// </summary>
-    private string[]? Namespaces
-    {
-        get => _options.Value.Namespace;
-    }
 
     /// <summary>
     /// Lists all tools available from the command factory.
@@ -62,7 +46,7 @@ public sealed class CommandFactoryToolLoader(
     {
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
-            .Where(tool => !ReadOnly || (tool.Annotations?.ReadOnlyHint == true))
+            .Where(tool => !_options.Value.ReadOnly || (tool.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         var listToolsResult = new ListToolsResult { Tools = tools };

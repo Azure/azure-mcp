@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
+using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands;
@@ -89,7 +91,7 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithNamespaceProxy_RegistersServerToolLoader()
+    public async Task AddAzureMcpServer_WithNamespaceProxy_RegistersCompositeToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
@@ -106,12 +108,18 @@ public class ServiceCollectionExtensionsTests
         var provider = services.BuildServiceProvider();
 
         // Verify the correct tool loader is registered
+        // In namespace mode, we now use CompositeToolLoader that includes ServerToolLoader
         Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<ServerToolLoader>(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
 
         // Verify discovery strategy is registered
         Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
         Assert.IsType<CompositeDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
+
+        var mcpRuntime = provider.GetService<IMcpRuntime>();
+        var server = Substitute.For<IMcpServer>();
+        var listToolsRequest = new RequestContext<ListToolsRequestParams>(server);
+        var listToolsResult = await mcpRuntime!.ListToolsHandler(listToolsRequest, CancellationToken.None);
     }
 
     [Fact]
@@ -161,8 +169,6 @@ public class ServiceCollectionExtensionsTests
         // Verify that the service collection contains an IMcpServer registration
         Assert.Contains(services, sd => sd.ServiceType == typeof(IMcpServer));
     }
-
-
 
     [Fact]
     public void AddAzureMcpServer_ConfiguresMcpServerOptions()

@@ -9,9 +9,9 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class SingleProxyToolLoader : BaseToolLoader
+public sealed class SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger) : BaseToolLoader(logger)
 {
-    private readonly IMcpDiscoveryStrategy _discoveryStrategy;
+    private readonly IMcpDiscoveryStrategy _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 
@@ -31,12 +31,6 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
           "additionalProperties": false
         }
         """;
-
-    public SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger)
-        : base(logger)
-    {
-        _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
-    }
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
         {

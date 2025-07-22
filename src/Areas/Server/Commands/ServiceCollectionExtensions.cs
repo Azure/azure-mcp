@@ -6,6 +6,8 @@ using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
+using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
@@ -31,20 +33,32 @@ public static class AzureMcpServiceCollectionExtensions
         services.AddSingleton(serviceStartOptions);
         services.AddSingleton(Options.Options.Create(serviceStartOptions));
 
+        // Register default tool loader options from service start options
+        var defaultToolLoaderOptions = new ToolLoaderOptions(serviceStartOptions.Namespace, serviceStartOptions.ReadOnly ?? false);
+        services.AddSingleton(defaultToolLoaderOptions);
+        services.AddSingleton(Options.Options.Create(defaultToolLoaderOptions));
+
         // Register tool loader strategies
         services.AddSingleton<CommandFactoryToolLoader>();
         services.AddSingleton(sp =>
         {
             return new RegistryToolLoader(
                 sp.GetRequiredService<RegistryDiscoveryStrategy>(),
-                sp.GetRequiredService<IOptions<ServiceStartOptions>>(),
+                sp.GetRequiredService<IOptions<ToolLoaderOptions>>(),
                 sp.GetRequiredService<ILogger<RegistryToolLoader>>()
             );
         });
 
         services.AddSingleton<SingleProxyToolLoader>();
         services.AddSingleton<CompositeToolLoader>();
-        services.AddSingleton<ServerToolLoader>();
+        services.AddSingleton(sp =>
+        {
+            return new ServerToolLoader(
+                sp.GetRequiredService<IMcpDiscoveryStrategy>(),
+                sp.GetRequiredService<IOptions<ToolLoaderOptions>>(),
+                sp.GetRequiredService<ILogger<ServerToolLoader>>()
+            );
+        });
 
         // Register server discovery strategies
         services.AddSingleton<CommandGroupDiscoveryStrategy>();
@@ -81,7 +95,27 @@ public static class AzureMcpServiceCollectionExtensions
         }
         else if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
         {
-            services.AddSingleton<IToolLoader, ServerToolLoader>();
+            services.AddSingleton<IToolLoader>(sp =>
+            {
+                var extensionToolLoaderOptions = defaultToolLoaderOptions;
+                if (extensionToolLoaderOptions.Namespace?.Length == 0 || extensionToolLoaderOptions.Namespace == null)
+                {
+                    extensionToolLoaderOptions = extensionToolLoaderOptions with { Namespace = ["extension"] };
+                }
+
+                // Redefine extension tool loader options
+                services.AddSingleton(extensionToolLoaderOptions);
+                services.AddSingleton(Options.Options.Create(extensionToolLoaderOptions));
+
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                var toolLoaders = new List<IToolLoader>
+                {
+                    sp.GetRequiredService<ServerToolLoader>(),
+                    sp.GetRequiredService<CommandFactoryToolLoader>(),
+                };
+
+                return new CompositeToolLoader(toolLoaders, loggerFactory.CreateLogger<CompositeToolLoader>());
+            });
         }
         else
         {

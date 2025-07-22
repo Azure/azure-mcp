@@ -11,10 +11,11 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : BaseToolLoader(logger)
+public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ToolLoaderOptions> options, ILogger<ServerToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
+
     private const string ToolCallProxySchema = """
         {
           "type": "object",
@@ -31,9 +32,6 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
           "additionalProperties": false
         }
         """;
-
-    public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
-    public string[]? Namespace { get; set; } = options?.Value?.Namespace ?? null;
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
         {
@@ -371,7 +369,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
         var list = listTools
             .Select(t => t.ProtocolTool)
-            .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true))
+            .Where(t => !(options?.Value?.ReadOnly ?? false) || (t.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         _cachedToolLists[tool] = list;

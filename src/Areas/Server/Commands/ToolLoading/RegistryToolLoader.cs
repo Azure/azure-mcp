@@ -17,11 +17,11 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// </summary>
 public sealed class RegistryToolLoader(
     IMcpDiscoveryStrategy discoveryStrategy,
-    IOptions<ServiceStartOptions> options,
+    IOptions<ToolLoaderOptions> options,
     ILogger<RegistryToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = discoveryStrategy;
-    private readonly IOptions<ServiceStartOptions> _options = options;
+    private readonly IOptions<ToolLoaderOptions> _options = options;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
     private List<IMcpClient> _discoveredClients = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
@@ -31,11 +31,6 @@ public sealed class RegistryToolLoader(
     /// Gets or sets the client options used when creating MCP clients.
     /// </summary>
     public McpClientOptions ClientOptions { get; set; } = new McpClientOptions();
-
-    private bool ReadOnly
-    {
-        get => _options.Value.ReadOnly ?? false;
-    }
 
     /// <summary>
     /// Lists all tools available from registered MCP servers.
@@ -58,7 +53,7 @@ public sealed class RegistryToolLoader(
             var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
             var filteredTools = toolsResponse
                 .Select(t => t.ProtocolTool)
-                .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true));
+                .Where(t => !_options.Value.ReadOnly || (t.Annotations?.ReadOnlyHint == true));
 
             foreach (var tool in filteredTools)
             {
@@ -198,7 +193,7 @@ public sealed class RegistryToolLoader(
                 var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
                 var filteredTools = toolsResponse
                     .Select(t => t.ProtocolTool)
-                    .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true));
+                    .Where(t => !_options.Value.ReadOnly || (t.Annotations?.ReadOnlyHint == true));
 
                 foreach (var tool in filteredTools)
                 {
