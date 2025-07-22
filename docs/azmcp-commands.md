@@ -341,6 +341,11 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Key Vault Operations
 
 ```bash
+# Creates a certificate in a key vault with the default policy
+azmcp keyvault certificate create --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --name <certificate-name>
+
 # Gets a certificate in a key vault
 azmcp keyvault certificate get --subscription <subscription> \
                                --vault <vault-name> \
@@ -350,10 +355,11 @@ azmcp keyvault certificate get --subscription <subscription> \
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
 
-# Creates a certificate in a key vault with the default policy
-azmcp keyvault certificate create --subscription <subscription> \
-                                  --vault <vault-name> \
-                                  --name <certificate-name>
+# Creates a key in a key vault
+azmcp keyvault key create --subscription <subscription> \
+                          --vault <vault-name> \
+                          --key <key-name> \
+                          --key-type <key-type>
 
 # Gets a key in a key vault
 azmcp keyvault key get --subscription <subscription> \
@@ -365,11 +371,11 @@ azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
                         --include-managed <true/false>
 
-# Creates a key in a key vault
-azmcp keyvault key create --subscription <subscription> \
-                          --vault <vault-name> \
-                          --key <key-name> \
-                          --key-type <key-type>
+# Creates a secret in a key vault
+azmcp keyvault secret create --subscription <subscription> \
+                             --vault <vault-name> \
+                             --name <secret-name> \
+                             --value <secret-value
 
 # Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
@@ -379,12 +385,6 @@ azmcp keyvault secret get --subscription <subscription> \
 # Lists secrets in a key vault
 azmcp keyvault secret list --subscription <subscription> \
                            --vault <vault-name>
-
-# Creates a secret in a key vault
-azmcp keyvault secret create --subscription <subscription> \
-                             --vault <vault-name> \
-                             --name <secret-name> \
-                             --value <secret-value
 ```
 
 ### Azure Kubernetes Service (AKS) Operations
@@ -606,6 +606,17 @@ azmcp datadog monitoredresources list --subscription <subscription> \
                                       --datadog-resource <datadog-resource>
 ```
 
+### Azure Quick Review CLI Extension Operations
+
+```bash
+# Scan a subscription for recommendations
+azmcp extension azqr --subscription <subscription>
+
+# Scan a subscription and scope to a specific resource group
+azmcp extension azqr --subscription <subscription> \
+                     --resource-group <resource-group-name>
+```
+
 ### Azure RBAC Operations
 
 ```bash
@@ -737,6 +748,20 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --file-system-name <file-system-name>
 ```
 
+### Azure Subscription Management
+
+```bash
+# List available Azure subscriptions
+azmcp subscription list [--tenant-id <tenant-id>]
+```
+
+## Azure Terraform Best Practices
+
+```bash
+# Get secure, production-grade Azure Terraform best practices for effective code generation and command execution.
+azmcp azureterraformbestpractices get
+```
+
 ### Azure Workbooks Operations
 
 ```bash
@@ -764,31 +789,6 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 
 # Delete a workbook
 azmcp workbooks delete --workbook-id <workbook-resource-id>
-```
-
-### Azure Subscription Management
-
-```bash
-# List available Azure subscriptions
-azmcp subscription list [--tenant-id <tenant-id>]
-```
-
-## Azure Terraform Best Practices
-
-```bash
-# Get secure, production-grade Azure Terraform best practices for effective code generation and command execution.
-azmcp azureterraformbestpractices get
-```
-
-### Azure Quick Review CLI Extension Operations
-
-```bash
-# Scan a subscription for recommendations
-azmcp extension azqr --subscription <subscription>
-
-# Scan a subscription and scope to a specific resource group
-azmcp extension azqr --subscription <subscription> \
-                     --resource-group <resource-group-name>
 ```
 
 ### Bicep
