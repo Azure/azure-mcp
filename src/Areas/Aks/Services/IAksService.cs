@@ -12,4 +12,11 @@ public interface IAksService
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<Cluster?> GetCluster(
+        string subscription,
+        string clusterName,
+        string resourceGroup,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
