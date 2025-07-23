@@ -64,14 +64,7 @@ public static class AzureMcpServiceCollectionExtensions
 
         services.AddSingleton<SingleProxyToolLoader>();
         services.AddSingleton<CompositeToolLoader>();
-        services.AddSingleton(sp =>
-        {
-            return new ServerToolLoader(
-                sp.GetRequiredService<IMcpDiscoveryStrategy>(),
-                sp.GetRequiredService<IOptions<ToolLoaderOptions>>(),
-                sp.GetRequiredService<ILogger<ServerToolLoader>>()
-            );
-        });
+        services.AddSingleton<ServerToolLoader>();
 
         // Register server discovery strategies
         services.AddSingleton<CommandGroupDiscoveryStrategy>();
