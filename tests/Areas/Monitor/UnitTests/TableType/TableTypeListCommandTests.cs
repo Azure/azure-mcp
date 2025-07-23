@@ -26,10 +26,9 @@ public sealed class TableTypeListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "sub123";
-    private const string _knownWorkspaceName = "workspace1";
-    private const string _knownResourceGroupName = "rg1";
-    private const string _knownTenantId = "tenant123";
+    private const string _knownSubscription = "knownSubscription";
+    private const string _knownWorkspace = "knownWorkspace";
+    private const string _knownResourceGroup = "knownResourceGroup";
 
     public TableTypeListCommandTests()
     {
@@ -46,8 +45,8 @@ public sealed class TableTypeListCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscriptionId} --workspace {_knownWorkspaceName} --resource-group {_knownResourceGroupName}", true)]
-    [InlineData($"--subscription {_knownSubscriptionId}", false)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup}", true)]
+    [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -105,9 +104,9 @@ public sealed class TableTypeListCommandTests
             .Returns(expectedTableTypes);
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
-            "--resource-group", _knownResourceGroupName
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
+            "--resource-group", _knownResourceGroup
         ]);
 
         // Act
@@ -142,17 +141,17 @@ public sealed class TableTypeListCommandTests
         // Arrange
         var expectedTableTypes = new List<string> { "CustomLog", "AzureMetrics" };
         _monitorService.ListTableTypes(
-            _knownSubscriptionId, 
-            _knownResourceGroupName, 
-            _knownWorkspaceName, 
+            _knownSubscription, 
+            _knownResourceGroup, 
+            _knownWorkspace, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTableTypes);
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
-            "--resource-group", _knownResourceGroupName
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
+            "--resource-group", _knownResourceGroup
         ]);
 
         // Act
@@ -161,9 +160,9 @@ public sealed class TableTypeListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).ListTableTypes(
-            _knownSubscriptionId, 
-            _knownResourceGroupName, 
-            _knownWorkspaceName, 
+            _knownSubscription, 
+            _knownResourceGroup, 
+            _knownWorkspace, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>());
     }
@@ -181,9 +180,9 @@ public sealed class TableTypeListCommandTests
             .Returns(new List<string>());
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
-            "--resource-group", _knownResourceGroupName
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
+            "--resource-group", _knownResourceGroup
         ]);
 
         // Act
@@ -207,9 +206,9 @@ public sealed class TableTypeListCommandTests
             .Returns(Task.FromException<List<string>>(new Exception("Test error")));
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
-            "--resource-group", _knownResourceGroupName
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
+            "--resource-group", _knownResourceGroup
         ]);
 
         // Act
