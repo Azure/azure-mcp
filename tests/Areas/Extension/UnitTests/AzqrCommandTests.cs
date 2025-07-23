@@ -45,7 +45,7 @@ public sealed class AzqrCommandTests
         // Arrange
         var fixedDateTime = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
         _dateTimeProvider.UtcNow.Returns(fixedDateTime);
-        
+
         var command = new AzqrCommand(_logger);
         var parser = new Parser(command.GetCommand());
         var mockSubscriptionId = "12345678-1234-1234-1234-123456789012";
