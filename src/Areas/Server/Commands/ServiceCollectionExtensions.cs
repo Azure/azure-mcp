@@ -34,7 +34,20 @@ public static class AzureMcpServiceCollectionExtensions
         services.AddSingleton(Options.Options.Create(serviceStartOptions));
 
         // Register default tool loader options from service start options
-        var defaultToolLoaderOptions = new ToolLoaderOptions(serviceStartOptions.Namespace, serviceStartOptions.ReadOnly ?? false);
+        var defaultToolLoaderOptions = new ToolLoaderOptions
+        {
+            Namespace = serviceStartOptions.Namespace,
+            ReadOnly = serviceStartOptions.ReadOnly ?? false,
+        };
+
+        if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
+        {
+            if (defaultToolLoaderOptions.Namespace == null || defaultToolLoaderOptions.Namespace.Length == 0)
+            {
+                defaultToolLoaderOptions = defaultToolLoaderOptions with { Namespace = ["extension"] };
+            }
+        }
+
         services.AddSingleton(defaultToolLoaderOptions);
         services.AddSingleton(Options.Options.Create(defaultToolLoaderOptions));
 
@@ -97,22 +110,17 @@ public static class AzureMcpServiceCollectionExtensions
         {
             services.AddSingleton<IToolLoader>(sp =>
             {
-                var extensionToolLoaderOptions = defaultToolLoaderOptions;
-                if (extensionToolLoaderOptions.Namespace?.Length == 0 || extensionToolLoaderOptions.Namespace == null)
-                {
-                    extensionToolLoaderOptions = extensionToolLoaderOptions with { Namespace = ["extension"] };
-                }
-
-                // Redefine extension tool loader options
-                services.AddSingleton(extensionToolLoaderOptions);
-                services.AddSingleton(Options.Options.Create(extensionToolLoaderOptions));
-
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var toolLoaders = new List<IToolLoader>
                 {
                     sp.GetRequiredService<ServerToolLoader>(),
-                    sp.GetRequiredService<CommandFactoryToolLoader>(),
                 };
+
+                // Append extension commands when no other namespaces are specified.
+                if (defaultToolLoaderOptions.Namespace?.SequenceEqual(["extension"]) == true)
+                {
+                    toolLoaders.Add(sp.GetRequiredService<CommandFactoryToolLoader>());
+                }
 
                 return new CompositeToolLoader(toolLoaders, loggerFactory.CreateLogger<CompositeToolLoader>());
             });

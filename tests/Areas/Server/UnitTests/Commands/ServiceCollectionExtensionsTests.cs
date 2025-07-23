@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
-using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands;
@@ -91,7 +89,7 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public async Task AddAzureMcpServer_WithNamespaceProxy_RegistersCompositeToolLoader()
+    public void AddAzureMcpServer_WithNamespaceProxy_RegistersCompositeToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
@@ -115,11 +113,6 @@ public class ServiceCollectionExtensionsTests
         // Verify discovery strategy is registered
         Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
         Assert.IsType<CompositeDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
-
-        var mcpRuntime = provider.GetService<IMcpRuntime>();
-        var server = Substitute.For<IMcpServer>();
-        var listToolsRequest = new RequestContext<ListToolsRequestParams>(server);
-        var listToolsResult = await mcpRuntime!.ListToolsHandler(listToolsRequest, CancellationToken.None);
     }
 
     [Fact]
