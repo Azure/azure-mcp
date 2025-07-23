@@ -14,6 +14,7 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
     private readonly IMcpDiscoveryStrategy _discoveryStrategy;
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly JsonElement s_emptyJsonObject = JsonDocument.Parse("{}").RootElement;
 
     private const string ToolCallProxySchema = """
         {
@@ -395,8 +396,8 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
     {
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
-        var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        JsonElement toolParams = GetParametersJsonElement(request.Params?.Arguments);
+        var toolParamsJson = toolParams.GetRawText();
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -449,7 +450,7 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+                    parameters = paramsProp.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -465,14 +466,36 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
         return (null, new Dictionary<string, object?>());
     }
 
-    private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
+    /// <summary>
+    /// Extracts the "parameters" JsonElement from the tool call request arguments.
+    /// </summary>
+    /// <param name="args">The request arguments dictionary.</param>
+    /// <returns>
+    /// The "parameters" JsonElement if it exists and is a valid JSON object; 
+    /// otherwise, returns an empty JSON object.
+    /// </returns>
+    private static JsonElement GetParametersJsonElement(IReadOnlyDictionary<string, JsonElement>? args)
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+            return parametersElem;
         }
 
-        return [];
+        return s_emptyJsonObject;
+    }
+
+    /// <summary>
+    /// Extracts the "parameters" object from the tool call request arguments and converts it to a dictionary.
+    /// </summary>
+    /// <param name="args">The request arguments dictionary.</param>
+    /// <returns>
+    /// A dictionary containing the parameter names and values if the "parameters" object exists and is valid;
+    /// otherwise, returns an empty dictionary.
+    /// </returns>
+    private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
+    {
+        JsonElement parametersElem = GetParametersJsonElement(args);
+        return parametersElem.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
     }
 
     private McpClientOptions CreateClientOptions(IMcpServer server)
