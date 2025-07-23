@@ -269,7 +269,7 @@ To build a local image for testing purposes:
 
 ### Live Tests
 
-> ⚠️ If you are a Microsoft employee with Azure source permissions then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake). Team members can run live tests by adding this comment to the PR `/azp run azure - mcp` to start the run.
+> ⚠️ If you are a Microsoft employee with Azure source permissions then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake). As part of reviewing community contributions, Azure team members can run live tests by adding this comment to the PR `/azp run azure - mcp`.
 
 Before running live tests:
 - [Install Azure PowerShell](https://learn.microsoft.com/powershell/azure/install-azure-powershell)
