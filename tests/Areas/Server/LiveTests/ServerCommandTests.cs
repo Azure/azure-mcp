@@ -39,6 +39,9 @@ public class ServerCommandTests(ITestOutputHelper output)
         // Should include Azure service tools and extension tools
         Assert.True(toolNames.Count > 60, $"Expected more than 60 tools, got {toolNames.Count}");
 
+        // Should include the microsoft_docs_search tool
+        Assert.Contains("microsoft_docs_search", toolNames, StringComparer.OrdinalIgnoreCase);
+
         // Log for debugging
         Output.WriteLine($"Default mode loaded {toolNames.Count} tools");
         foreach (var name in toolNames.Take(10))
@@ -149,6 +152,9 @@ public class ServerCommandTests(ITestOutputHelper output)
         // In namespace mode without specific namespaces, should default to extension tools
         Assert.True(toolNames.Count > 20, "Should have more than 20 tools in namespace mode");
 
+        // Should include the documentation tool
+        Assert.Contains("documentation", toolNames, StringComparer.OrdinalIgnoreCase);
+
         Output.WriteLine($"Namespace proxy mode loaded {toolNames.Count} tools");
         foreach (var name in toolNames.Take(10))
         {
@@ -180,7 +186,49 @@ public class ServerCommandTests(ITestOutputHelper output)
 
         Assert.True(hasRelevantTools, "Should have tools related to specified namespaces");
 
+        // Should not include documentation tool when explicit namespaces are specified
+        Assert.DoesNotContain("documentation", toolNames, StringComparer.OrdinalIgnoreCase);
+
+        // Should contain exactly 2 tools for the specified namespaces
+        Assert.Equal(2, toolNames.Count);
+
+        // Verify tools are exactly from storage and keyvault namespaces
+        Assert.All(toolNames, toolName =>
+        {
+            var isStorageOrKeyVault = toolName.Contains("storage", StringComparison.OrdinalIgnoreCase) ||
+                                    toolName.Contains("keyvault", StringComparison.OrdinalIgnoreCase);
+            Assert.True(isStorageOrKeyVault, $"Tool '{toolName}' should be related to storage or keyvault namespaces");
+        });
+
         Output.WriteLine($"Namespace proxy mode with [storage, keyvault] loaded {toolNames.Count} tools");
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task NamespaceProxyMode_WithDocumentationNamespace_LoadsOnlyDocumentationTool()
+    {
+        // Arrange
+        await using var fixture = new LiveTestFixture();
+        fixture.SetArguments("server", "start", "--mode", "namespace", "--namespace", "documentation");
+        await fixture.InitializeAsync();
+
+        // Act
+        var listResult = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotEmpty(listResult);
+
+        var toolNames = listResult.Select(t => t.Name).ToList();
+
+        // Should contain only the documentation tool
+        Assert.Single(listResult);
+        Assert.Contains("documentation", toolNames, StringComparer.OrdinalIgnoreCase);
+
+        // Verify it's exactly the documentation tool
+        Assert.Equal("documentation", toolNames.First(), StringComparer.OrdinalIgnoreCase);
+
+        Output.WriteLine($"Namespace proxy mode with [documentation] loaded {toolNames.Count} tools");
+        Output.WriteLine($"Tool: {toolNames.First()}");
     }
 
     [Fact]
@@ -337,25 +385,6 @@ public class ServerCommandTests(ITestOutputHelper output)
         Assert.Empty(listResult);
 
         Output.WriteLine($"Invalid namespaces loaded {listResult.Count()} tools");
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task EmptyNamespace_LoadsDefaultTools()
-    {
-        // Arrange
-        await using var fixture = new LiveTestFixture();
-        // Don't specify any namespace arguments - should use defaults
-        fixture.SetArguments("server", "start");
-        await fixture.InitializeAsync();
-
-        // Act
-        var listResult = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.NotEmpty(listResult);
-
-        Output.WriteLine($"No namespace specified loaded {listResult.Count()} tools");
     }
 
     #endregion
