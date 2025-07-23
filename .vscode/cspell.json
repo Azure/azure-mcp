@@ -238,6 +238,7 @@
         "LINUXVMIMAGE",
         "LLM",
         "loadtestrun",
+        "logfile",
         "midsole",
         "monitoredresources",
         "msal",

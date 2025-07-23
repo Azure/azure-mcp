@@ -26,7 +26,12 @@ internal class Program
             services.AddLogging(builder =>
             {
                 builder.ConfigureOpenTelemetryLogger();
-                builder.AddConsole();
+
+                // Debug output for development
+#if DEBUG
+                builder.AddDebug();
+#endif
+
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 

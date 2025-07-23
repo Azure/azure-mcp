@@ -9,6 +9,7 @@ public static class ServiceOptionDefinitions
     public const string NamespaceName = "namespace";
     public const string ModeName = "mode";
     public const string ReadOnlyName = "read-only";
+    public const string LogFileName = "log-file";
 
     public static readonly Option<string> Transport = new(
         $"--{TransportName}",
@@ -43,4 +44,12 @@ public static class ServiceOptionDefinitions
         $"--{ReadOnlyName}",
         () => null,
         "Whether the MCP server should be read-only. If true, no write operations will be allowed.");
+
+    public static readonly Option<string?> LogFile = new(
+        $"--{LogFileName}",
+        () => null,
+        "File path to write logs to. If not specified, no file logging will occur.")
+    {
+        IsRequired = false
+    };
 }
