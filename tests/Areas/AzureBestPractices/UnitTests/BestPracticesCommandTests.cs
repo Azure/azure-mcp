@@ -35,7 +35,7 @@ public class BestPracticesCommandTests
     [Fact]
     public async Task ExecuteAsync_GeneralCodeGeneration_ReturnsAzureBestPractices()
     {
-        var args = _parser.Parse(["--resource", "general", "--action", "all"]);
+        var args = _parser.Parse(["--resource", "general", "--action", "code-generation"]);
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
@@ -49,6 +49,25 @@ public class BestPracticesCommandTests
         Assert.NotNull(result);
         Assert.Contains("When querying data plane resources, prefer using azmcp commands over az cli commands.", result[0]);
         Assert.Contains("Managed Identity (Azure-hosted)", result[0]);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_GeneralDeployment_ReturnsAzureBestPractices()
+    {
+        var args = _parser.Parse(["--resource", "general", "--action", "deployment"]);
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<string[]>(json);
+
+        Assert.NotNull(result);
+        Assert.Contains("Your IaC files must include:", result[0]);
+        Assert.Contains("Quality requirements for IaC files:", result[0]);
     }
 
     [Fact]
@@ -92,6 +111,27 @@ public class BestPracticesCommandTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_StaticWebAppAll_ReturnsAzureBestPractices()
+    {
+        var args = _parser.Parse(["--resource", "static-web-app", "--action", "all"]);
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<string[]>(json);
+
+        Assert.NotNull(result);
+        Assert.Contains("Static Web Apps CLI", result[0]);
+        Assert.Contains("npx swa init --yes", result[0]);
+        Assert.Contains("npx swa build", result[0]);
+        Assert.Contains("npx swa deploy --env production", result[0]);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_InvalidResource_ReturnsBadRequest()
     {
         var args = _parser.Parse(["--resource", "invalid", "--action", "code-generation"]);
@@ -101,6 +141,18 @@ public class BestPracticesCommandTests
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.Contains("Invalid resource", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_StaticWebAppWithInvalidAction_ReturnsBadRequest()
+    {
+        var args = _parser.Parse(["--resource", "static-web-app", "--action", "code-generation"]);
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("The 'static-web-app' resource only supports 'all' action", response.Message);
     }
 
     [Fact]
@@ -116,15 +168,27 @@ public class BestPracticesCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_GeneralDeployment_ReturnsBadRequest()
+    public async Task ExecuteAsync_GeneralWithAllAction_ReturnsBadRequest()
     {
-        var args = _parser.Parse(["--resource", "general", "--action", "deployment"]);
+        var args = _parser.Parse(["--resource", "general", "--action", "all"]);
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
-        Assert.Contains("The 'general' resource only supports 'all' action", response.Message);
+        Assert.Contains("The 'general' or 'azurefunctions' resource doesn't support 'all' action", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_AzureFunctionsWithAllAction_ReturnsBadRequest()
+    {
+        var args = _parser.Parse(["--resource", "azurefunctions", "--action", "all"]);
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(400, response.Status);
+        Assert.Contains("The 'general' or 'azurefunctions' resource doesn't support 'all' action", response.Message);
     }
 
     [Fact]

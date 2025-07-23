@@ -103,9 +103,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Areas\AzureTerraformBestPractices\Resources\terraform-best-practices-for-azure.txt" />
-    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-general-codegen-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-general-deployment-best-practices.txt" />
     <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-functions-deployment-best-practices.txt" />
     <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-functions-codegen-best-practices.txt" />
+    <EmbeddedResource Include="Areas\AzureBestPractices\Resources\azure-swa-best-practices.txt" />
     <EmbeddedResource Include="Areas\Extension\Resources\azd-best-practices.txt" />
     <EmbeddedResource Include="Areas\Server\Resources\registry.json" />
   </ItemGroup>

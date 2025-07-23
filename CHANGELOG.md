@@ -27,6 +27,7 @@
     - Use `--resource general --action all` instead of the old general command
     - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
     - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
+    - Use `--resource static-web-app --action all` to get Static Web Apps development and deployment best practices
 
 ### Bugs Fixed
 

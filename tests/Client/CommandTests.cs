@@ -120,6 +120,36 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
 
     [Fact]
     [Trait("Category", "Live")]
+    public async Task Should_get_static_web_app_best_practices()
+    {
+        // Act
+        JsonElement? result = await CallToolAsync("azmcp_bestpractices_get", new Dictionary<string, object?>
+        {
+            { "resource", "static-web-app" },
+            { "action", "all" }
+        });
+
+        Assert.True(result.HasValue, "Tool call did not return a value.");
+
+        Assert.Equal(JsonValueKind.Array, result.Value.ValueKind);
+        var entries = result.Value.EnumerateArray().ToList();
+        Assert.NotEmpty(entries);
+
+        // Combine all entries into a single normalized string for content assertion
+        var combinedText = string.Join("\n", entries
+            .Where(e => e.ValueKind == JsonValueKind.String)
+            .Select(e => e.GetString())
+            .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+        // Assert specific Static Web Apps practices are mentioned
+        Assert.Contains("Static Web Apps CLI", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("npx swa init --yes", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("npx swa build", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("npx swa deploy --env production", combinedText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
     public async Task Should_list_subscriptions()
     {
         var result = await CallToolAsync(

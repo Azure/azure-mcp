@@ -76,20 +76,25 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
             validationResult.IsValid = false;
             validationResult.ErrorMessage = "Both resource and action parameters are required.";
         }
-        else if (resource != "general" && resource != "azurefunctions")
+        else if (resource != "general" && resource != "azurefunctions" && resource != "static-web-app")
         {
             validationResult.IsValid = false;
-            validationResult.ErrorMessage = "Invalid resource. Must be 'general' or 'azurefunctions'.";
+            validationResult.ErrorMessage = "Invalid resource. Must be 'general', 'azurefunctions', or 'static-web-app'.";
         }
         else if (action != "all" && action != "code-generation" && action != "deployment")
         {
             validationResult.IsValid = false;
             validationResult.ErrorMessage = "Invalid action. Must be 'all', 'code-generation' or 'deployment'.";
         }
-        else if (resource == "general" && (action == "deployment" || action == "code-generation"))
+        else if ((resource == "general" || resource == "azurefunctions") && action == "all")
         {
             validationResult.IsValid = false;
-            validationResult.ErrorMessage = "The 'general' resource only supports 'all' action.";
+            validationResult.ErrorMessage = "The 'general' or 'azurefunctions' resource doesn't support 'all' action.";
+        }
+        else if (resource == "static-web-app" && action != "all")
+        {
+            validationResult.IsValid = false;
+            validationResult.ErrorMessage = "The 'static-web-app' resource only supports 'all' action.";
         }
 
         if (!validationResult.IsValid && commandResponse != null)
@@ -105,9 +110,11 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
     {
         return (resource, action) switch
         {
-            ("general", "all") => "azure-best-practices.txt",
+            ("general", "code-generation") => "azure-general-codegen-best-practices.txt",
+            ("general", "deployment") => "azure-general-deployment-best-practices.txt",
             ("azurefunctions", "code-generation") => "azure-functions-codegen-best-practices.txt",
             ("azurefunctions", "deployment") => "azure-functions-deployment-best-practices.txt",
+            ("static-web-app", "all") => "azure-swa-best-practices.txt",
             _ => throw new ArgumentException($"Invalid combination of resource '{resource}' and action '{action}'")
         };
     }

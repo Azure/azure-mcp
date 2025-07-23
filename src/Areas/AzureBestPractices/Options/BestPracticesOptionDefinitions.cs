@@ -10,7 +10,7 @@ public static class BestPracticesOptionDefinitions
 
     public static readonly Option<string> Resource = new(
         $"--{ResourceName}",
-        "The Azure resource type for which to get best practices. Options: 'general' (general Azure), 'azurefunctions' (Azure Functions)."
+        "The Azure resource type for which to get best practices. Options: 'general' (general Azure), 'azurefunctions' (Azure Functions), 'static-web-app' (Azure Static Web Apps)."
     )
     {
         IsRequired = true
@@ -18,7 +18,7 @@ public static class BestPracticesOptionDefinitions
 
     public static readonly Option<string> Action = new(
         $"--{ActionName}",
-        "The action type for the best practices. Options: 'all', 'code-generation', 'deployment'. Note: 'general' resource only supports 'all'."
+        "The action type for the best practices. Options: 'all', 'code-generation', 'deployment'. Note: 'static-web-app' resource only supports 'all'."
     )
     {
         IsRequired = true
