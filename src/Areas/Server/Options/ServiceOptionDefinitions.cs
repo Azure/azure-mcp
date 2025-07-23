@@ -36,7 +36,8 @@ public static class ServiceOptionDefinitions
         "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' (default) exposes one tool per service namespace. 'all' exposes all tools individually."
     )
     {
-        IsRequired = false
+        IsRequired = false,
+        Arity = ArgumentArity.ZeroOrOne
     };
 
     public static readonly Option<bool?> ReadOnly = new(

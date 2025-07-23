@@ -20,7 +20,7 @@ public class ServerCommandTests(ITestOutputHelper output)
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task DefaultMode_LoadsAllTools()
+    public async Task DefaultMode_LoadsNamespaceTools()
     {
         // Arrange
         await using var fixture = new LiveTestFixture();
@@ -36,15 +36,51 @@ public class ServerCommandTests(ITestOutputHelper output)
         // Should have tools from multiple areas
         var toolNames = listResult.Select(t => t.Name).ToList();
 
-        // Should include Azure service tools and extension tools
-        Assert.True(toolNames.Count > 60, $"Expected more than 60 tools, got {toolNames.Count}");
+        // Default mode is now namespace mode, so should have namespace-level tools (not 60+ individual tools)
+        Assert.True(toolNames.Count > 20, $"Expected more than 20 namespace tools, got {toolNames.Count}");
+
+        // Should include the documentation tool
+        Assert.Contains("documentation", toolNames, StringComparer.OrdinalIgnoreCase);
+
+        // Log for debugging
+        Output.WriteLine($"Default mode (namespace) loaded {toolNames.Count} tools");
+        foreach (var name in toolNames)
+        {
+            Output.WriteLine($"  - {name}");
+        }
+    }
+
+    #endregion
+
+    #region All Mode Tests
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task AllMode_LoadsAllIndividualTools()
+    {
+        // Arrange
+        await using var fixture = new LiveTestFixture();
+        fixture.SetArguments("server", "start", "--mode", "all");
+        await fixture.InitializeAsync();
+
+        // Act
+        var listResult = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotEmpty(listResult);
+
+        // Should have tools from multiple areas
+        var toolNames = listResult.Select(t => t.Name).ToList();
+
+        // Should include Azure service tools and extension tools (all individual tools)
+        Assert.True(toolNames.Count > 60, $"Expected more than 60 individual tools, got {toolNames.Count}");
 
         // Should include the microsoft_docs_search tool
         Assert.Contains("microsoft_docs_search", toolNames, StringComparer.OrdinalIgnoreCase);
 
         // Log for debugging
-        Output.WriteLine($"Default mode loaded {toolNames.Count} tools");
-        foreach (var name in toolNames.Take(10))
+        Output.WriteLine($"All mode loaded {toolNames.Count} tools");
+        foreach (var name in toolNames)
         {
             Output.WriteLine($"  - {name}");
         }
@@ -156,7 +192,7 @@ public class ServerCommandTests(ITestOutputHelper output)
         Assert.Contains("documentation", toolNames, StringComparer.OrdinalIgnoreCase);
 
         Output.WriteLine($"Namespace proxy mode loaded {toolNames.Count} tools");
-        foreach (var name in toolNames.Take(10))
+        foreach (var name in toolNames)
         {
             Output.WriteLine($"  - {name}");
         }
@@ -284,6 +320,7 @@ public class ServerCommandTests(ITestOutputHelper output)
 
         // Assert
         Assert.NotEmpty(listResult);
+        Assert.Equal(2, listResult.Count());
 
         var toolNames = listResult.Select(t => t.Name).ToList();
 
@@ -295,15 +332,49 @@ public class ServerCommandTests(ITestOutputHelper output)
         Assert.True(hasStorageOrKeyVault, "Should have tools related to storage or keyvault namespaces");
 
         Output.WriteLine($"Default mode with namespaces [storage, keyvault] loaded {toolNames.Count} tools");
+        foreach (var name in toolNames)
+        {
+            Output.WriteLine($"  - {name}");
+        }
     }
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task DefaultMode_WithReadOnlyFlag_LoadsOnlyReadOnlyTools()
+    public async Task AllMode_WithNamespaceFilter_LoadsFilteredIndividualTools()
     {
         // Arrange
         await using var fixture = new LiveTestFixture();
-        fixture.SetArguments("server", "start", "--read-only");
+        fixture.SetArguments("server", "start", "--mode", "all", "--namespace", "storage", "--namespace", "keyvault");
+        await fixture.InitializeAsync();
+
+        // Act
+        var listResult = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotEmpty(listResult);
+
+        var toolNames = listResult.Select(t => t.Name).ToList();
+
+        // Should only include individual tools from specified namespaces
+        var hasStorageOrKeyVault = toolNames.Any(name =>
+            name.Contains("storage", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("keyvault", StringComparison.OrdinalIgnoreCase));
+
+        Assert.True(hasStorageOrKeyVault, "Should have tools related to storage or keyvault namespaces");
+
+        // In all mode with namespace filter, should have more individual tools than namespace mode
+        Assert.True(toolNames.Count > 2, $"Expected more than 2 individual tools, got {toolNames.Count}");
+
+        Output.WriteLine($"All mode with namespaces [storage, keyvault] loaded {toolNames.Count} tools");
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task AllMode_WithReadOnlyFlag_LoadsOnlyReadOnlyTools()
+    {
+        // Arrange
+        await using var fixture = new LiveTestFixture();
+        fixture.SetArguments("server", "start", "--mode", "all", "--read-only");
         await fixture.InitializeAsync();
 
         // Act
@@ -357,12 +428,17 @@ public class ServerCommandTests(ITestOutputHelper output)
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task InvalidMode_GracefullyHandlesError()
+    public async Task InvalidMode_FailsToStartServer()
     {
         // Arrange
         await using var fixture = new LiveTestFixture();
         fixture.SetArguments("server", "start", "--mode", "invalid-mode");
-        await fixture.InitializeAsync();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<IOException>(async () =>
+        {
+            await fixture.InitializeAsync();
+        });
     }
 
     [Fact]
@@ -393,6 +469,27 @@ public class ServerCommandTests(ITestOutputHelper output)
 
     [Fact]
     [Trait("Category", "Live")]
+    public async Task VerifyUniqueToolNames_InAllMode()
+    {
+        // Arrange
+        await using var fixture = new LiveTestFixture();
+        fixture.SetArguments("server", "start", "--mode", "all");
+        await fixture.InitializeAsync();
+
+        // Act
+        var listResult = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        var toolNames = listResult.Select(t => t.Name).ToList();
+        var uniqueNames = toolNames.Distinct().ToList();
+
+        Assert.Equal(toolNames.Count, uniqueNames.Count);
+
+        Output.WriteLine($"Verified {toolNames.Count} unique tool names in all mode");
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
     public async Task VerifyUniqueToolNames_InDefaultMode()
     {
         // Arrange
@@ -409,7 +506,7 @@ public class ServerCommandTests(ITestOutputHelper output)
 
         Assert.Equal(toolNames.Count, uniqueNames.Count);
 
-        Output.WriteLine($"Verified {toolNames.Count} unique tool names in default mode");
+        Output.WriteLine($"Verified {toolNames.Count} unique tool names in default (namespace) mode");
     }
 
     #endregion

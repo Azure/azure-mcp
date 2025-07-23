@@ -74,6 +74,11 @@ public sealed class ServiceStartCommand : BaseCommand
             ? ServiceOptionDefinitions.ReadOnly.GetDefaultValue()
             : parseResult.GetValueForOption(_readOnlyOption);
 
+        if (!IsValidMode(mode))
+        {
+            throw new ArgumentException($"Invalid mode '{mode}'. Valid modes are: {ModeTypes.SingleToolProxy}, {ModeTypes.NamespaceProxy}, {ModeTypes.All}.");
+        }
+
         var serverOptions = new ServiceStartOptions
         {
             Transport = parseResult.GetValueForOption(_transportOption) ?? TransportTypes.StdIo,
@@ -87,6 +92,18 @@ public sealed class ServiceStartCommand : BaseCommand
         await host.WaitForShutdownAsync(CancellationToken.None);
 
         return context.Response;
+    }
+
+    /// <summary>
+    /// Validates if the provided mode is a valid mode type.
+    /// </summary>
+    /// <param name="mode">The mode to validate.</param>
+    /// <returns>True if the mode is valid, otherwise false.</returns>
+    private static bool IsValidMode(string? mode)
+    {
+        return mode == ModeTypes.SingleToolProxy ||
+               mode == ModeTypes.NamespaceProxy ||
+               mode == ModeTypes.All;
     }
 
     /// <summary>

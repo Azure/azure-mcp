@@ -134,7 +134,7 @@ public class ServiceCollectionExtensionsTests
 
         // Verify the correct tool loader is registered (ServerToolLoader for namespace mode)
         Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<ServerToolLoader>(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
     }
 
     [Fact]
@@ -317,9 +317,8 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Should default to CompositeToolLoader (normal mode) when proxy mode is invalid
-        Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IMcpDiscoveryStrategy>());
     }
 
     [Fact]
@@ -339,9 +338,8 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Should use CompositeToolLoader (normal mode) when proxy is null
-        Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IMcpDiscoveryStrategy>());
     }
 
     [Fact]
