@@ -87,4 +87,12 @@ public sealed class McpRuntime : IMcpRuntime
         using var activity = _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
         return await _toolLoader.ListToolsHandler(request!, cancellationToken);
     }
+
+    /// <summary>
+    /// Disposes the tool loader and releases associated resources.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        await _toolLoader.DisposeAsync();
+    }
 }

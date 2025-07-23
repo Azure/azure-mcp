@@ -75,13 +75,8 @@ jobs:
       npm ci --no-optional
     displayName: "Install npm dependencies and vsce"
     workingDirectory: eng/vscode
-
-  - pwsh: |
-      $packageJson = Get-Content eng/vscode/package.json -Raw | ConvertFrom-Json
-      Write-Host "##vso[task.setvariable variable=VsixVersion]$($packageJson.version)"
-    displayName: "Extract VSIX version from package.json"
-
-  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '$(VsixVersion)'
+    
+  - pwsh: ./ci-package.ps1 -os '${{ parameters.OSName }}_$(Architecture)' -Version '$(Version)'
     workingDirectory: eng/vscode
     displayName: "Package VS Code Extension"
 

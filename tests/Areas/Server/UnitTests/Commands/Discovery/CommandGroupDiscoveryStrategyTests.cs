@@ -1,16 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NSubstitute;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
@@ -38,7 +31,8 @@ public class CommandGroupDiscoveryStrategyTests
     {
         var factory = commandFactory ?? CommandFactoryHelpers.CreateCommandFactory();
         var startOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ServiceStartOptions());
-        var strategy = new CommandGroupDiscoveryStrategy(factory, startOptions);
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
+        var strategy = new CommandGroupDiscoveryStrategy(factory, startOptions, logger);
         if (entryPoint != null)
         {
             strategy.EntryPoint = entryPoint;
@@ -51,10 +45,11 @@ public class CommandGroupDiscoveryStrategyTests
     {
         // Arrange
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
 
         // Act & Assert
         // Primary constructor syntax doesn't automatically validate null parameters
-        var strategy = new CommandGroupDiscoveryStrategy(null!, options);
+        var strategy = new CommandGroupDiscoveryStrategy(null!, options, logger);
         Assert.NotNull(strategy);
     }
 
@@ -63,10 +58,11 @@ public class CommandGroupDiscoveryStrategyTests
     {
         // Arrange
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
 
         // Act & Assert
         // Primary constructor syntax doesn't automatically validate null parameters
-        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, null!);
+        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, null!, logger);
         Assert.NotNull(strategy);
     }
 
@@ -76,9 +72,10 @@ public class CommandGroupDiscoveryStrategyTests
         // Arrange
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
 
         // Act
-        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options);
+        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options, logger);
 
         // Assert
         Assert.NotNull(strategy);
@@ -465,7 +462,8 @@ public class CommandGroupDiscoveryStrategyTests
     {
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
-        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options);
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
+        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options, logger);
         var result = await strategy.DiscoverServersAsync();
         Assert.NotNull(result);
     }
@@ -476,7 +474,8 @@ public class CommandGroupDiscoveryStrategyTests
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
         var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions { ReadOnly = true });
         var azmcpEntryPoint = GetAzmcpExecutablePath();
-        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options)
+        var logger = NSubstitute.Substitute.For<Microsoft.Extensions.Logging.ILogger<CommandGroupDiscoveryStrategy>>();
+        var strategy = new CommandGroupDiscoveryStrategy(commandFactory, options, logger)
         {
             EntryPoint = azmcpEntryPoint
         };

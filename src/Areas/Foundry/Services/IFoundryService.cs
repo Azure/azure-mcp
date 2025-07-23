@@ -24,7 +24,7 @@ public interface IFoundryService
         RetryPolicyOptions? retryPolicy = null
     );
 
-    Task<Dictionary<string, object>> DeployModel(string deploymentName,
+    Task<ModelDeploymentResult> DeployModel(string deploymentName,
         string modelName,
         string modelFormat,
         string azureAiServicesName,

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Foundry.Commands.Models;
+using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;

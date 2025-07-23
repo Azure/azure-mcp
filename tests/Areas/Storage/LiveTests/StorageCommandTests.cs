@@ -225,5 +225,30 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
             var actual = result.AssertProperty("paths");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
         }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Should_create_datalake_directory()
+        {
+            var directoryPath = "testfilesystem/test-directory";
+
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_directory_create",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account-name", Settings.ResourceBaseName },
+                    { "directory-path", directoryPath }
+                });
+
+            var directory = result.AssertProperty("directory");
+            Assert.Equal(JsonValueKind.Object, directory.ValueKind);
+
+            var name = directory.GetProperty("name").GetString();
+            var type = directory.GetProperty("type").GetString();
+
+            Assert.Equal(directoryPath, name);
+            Assert.Equal("directory", type);
+        }
     }
 }

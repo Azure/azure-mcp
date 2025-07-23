@@ -10,6 +10,12 @@
   - `azmcp-keyvault-certificate-create`
   - `azmcp-keyvault-secret-list`
   - `azmcp-keyvault-secret-create`
+- Added support for Azure Workbooks management operations:
+  - `azmcp-workbooks-list` - List workbooks in a resource group with optional filtering
+  - `azmcp-workbooks-show` - Get detailed information about a specific workbook
+  - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
+  - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
+  - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
 
 - Added support for Azure Virtual Desktop with new commands:
   - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
@@ -18,7 +24,18 @@
 
 ### Breaking Changes
 
+- Consolidated Azure best practices commands into a single command `azmcp-bestpractices-get` with parameters:
+  - Removed: `azmcp-bestpractices-general-get`
+  - Removed: `azmcp-bestpractices-azurefunctions-get-code-generation`
+  - Removed: `azmcp-bestpractices-azurefunctions-get-deployment`
+  - Added: `azmcp-bestpractices-get` with `--resource` and `--action` parameters
+    - Use `--resource general --action all` instead of the old general command
+    - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
+    - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
+
 ### Bugs Fixed
+
+- Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
 
 ### Other Changes
 

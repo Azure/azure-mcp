@@ -1,13 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Text.Json;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Services.Telemetry;
-using AzureMcp.Tests.Areas.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
@@ -294,5 +291,67 @@ public class CommandFactoryToolLoaderTests
         var textContent = result.Content.First() as TextContentBlock;
         Assert.NotNull(textContent);
         Assert.Contains("Could not find command: non-existent-tool", textContent.Text);
+    }
+
+    [Fact]
+    public async Task CallToolHandler_BeforeListToolsHandler_ExecutesSuccessfully()
+    {
+        // Arrange
+        var (toolLoader, commandFactory) = CreateToolLoader();
+
+        // Get the subscription list command for testing
+        var availableCommands = CommandFactory.GetVisibleCommands(commandFactory.AllCommands);
+
+        // Find the subscription list command
+        var subscriptionListCommand = availableCommands.FirstOrDefault(cmd => cmd.Key.Contains("subscription") && cmd.Key.Contains("list"));
+
+        var targetCommand = subscriptionListCommand;
+
+        var mockServer = Substitute.For<ModelContextProtocol.Server.IMcpServer>();
+        var arguments = new Dictionary<string, JsonElement>();
+
+        var callToolRequest = new ModelContextProtocol.Server.RequestContext<CallToolRequestParams>(mockServer)
+        {
+            Params = new CallToolRequestParams
+            {
+                Name = targetCommand.Key,
+                Arguments = arguments
+            }
+        };
+
+        // Act - Call CallToolHandler BEFORE ListToolsHandler
+        var callResult = await toolLoader.CallToolHandler(callToolRequest, CancellationToken.None);
+
+        // Assert based on what we know might happen
+        Assert.NotNull(callResult);
+        Assert.NotNull(callResult.Content);
+        Assert.NotEmpty(callResult.Content);
+
+        // If the command fails due to missing parameters, that's expected behavior we want to test
+        // The key is that the tool lookup works correctly whether the command succeeds or fails
+        var textContent = callResult.Content.First() as TextContentBlock;
+        Assert.NotNull(textContent);
+        Assert.NotEmpty(textContent.Text);
+
+        // The response should be valid JSON regardless of success/failure
+        var jsonDoc = JsonDocument.Parse(textContent.Text);
+        Assert.NotNull(jsonDoc);
+
+        // Now call ListToolsHandler to verify it still works after CallToolHandler
+        var listToolsRequest = CreateRequest();
+        var listResult = await toolLoader.ListToolsHandler(listToolsRequest, CancellationToken.None);
+
+        // Assert that ListToolsHandler still works
+        Assert.NotNull(listResult);
+        Assert.NotNull(listResult.Tools);
+        Assert.NotEmpty(listResult.Tools);
+
+        // Verify the tool we called is in the list
+        var calledTool = listResult.Tools.FirstOrDefault(t => t.Name == targetCommand.Key);
+        Assert.NotNull(calledTool);
+        Assert.Equal(targetCommand.Key, calledTool.Name);
+
+        // This test passes if we can call a tool before listing tools, regardless of the tool's success/failure
+        // The important thing is that the tool lookup mechanism works correctly
     }
 }

@@ -182,7 +182,7 @@ module virtualdesktop 'services/virtualdesktop.bicep' = if (empty(areas) || cont
   }
 }
 
-module loadtesting 'services/loadtesting.bicep' = {
+module loadtesting 'services/loadtesting.bicep' = if (empty(areas) || contains(areas, 'Loadtesting')) {
   name: '${deploymentName}-loadtesting'
   params: {
     baseName: baseName
@@ -190,5 +190,18 @@ module loadtesting 'services/loadtesting.bicep' = {
     tenantId: tenantId
     testApplicationOid: testApplicationOid
   }
+}
+
+module workbooks 'services/workbooks.bicep' = if (empty(areas) || contains(areas, 'Workbooks')) {
+  name: '${deploymentName}-workbooks'
+  params: {
+    baseName: baseName
+    location: location
+    tenantId: tenantId
+    testApplicationOid: testApplicationOid
+  }
+  dependsOn: [
+    monitoring
+  ]
 }
 

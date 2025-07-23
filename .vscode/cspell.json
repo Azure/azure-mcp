@@ -43,6 +43,7 @@
                 "rohit",
                 "vcolin",
                 "vinay",
+                "wbreza",
                 "xiangyan"
             ]
         },
@@ -63,10 +64,14 @@
                 "assemblyfilters",
                 "authkey",
                 "autoscale",
+                "azurecr",
+                "azuresdkimages",
                 "backoff",
                 "batchfile",
                 "bestpractices",
+                "buildid",
                 "buildtransitive",
+                "cctor",
                 "centralus",
                 "classdef",
                 "classfilters",
@@ -224,6 +229,7 @@
         "ESRPRELPACMANTEST",
         "facetable",
         "hnsw",
+        "idempotency",
         "idtyp",
         "keyvault",
         "Kusto",
@@ -239,6 +245,7 @@
         "monitoredresources",
         "msal",
         "myaccount",
+        "myfilesystem",
         "mysvc",
         "mycluster",
         "Microbundle",
@@ -294,6 +301,7 @@
         "Vnet",
         "vsts",
         "vscodeignore",
+        "vsmarketplace",
         "westus",
         "westus2",
         "wscript",
@@ -302,6 +310,12 @@
         "WINDOWSVMIMAGE",
         "winget",
         "xvfb",
-        "Xunit"
+        "Xunit",
+        "operationalinsights",
+        "piechart",
+        "timechart",
+        "myapp",
+        "mygroup",
+        "myworkbook"
     ]
 }
