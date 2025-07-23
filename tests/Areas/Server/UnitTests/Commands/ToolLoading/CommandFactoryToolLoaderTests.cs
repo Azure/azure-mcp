@@ -294,6 +294,61 @@ public class CommandFactoryToolLoaderTests
     }
 
     [Fact]
+    public async Task GetsToolsWithRawMcpInputOption()
+    {
+        var multiServiceOptions = new ServiceStartOptions
+        {
+            Namespace = new[] { "deploy" }  // Real Azure service groups from the codebase
+        };
+        var (toolLoader, commandFactory) = CreateToolLoader(multiServiceOptions);
+        var request = CreateRequest();
+        var result = await toolLoader.ListToolsHandler(request, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.Tools);
+
+        var tool = result.Tools.FirstOrDefault(tool =>
+            tool.Name.Equals("deploy_architecture-diagram-generate", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(tool);
+        Assert.NotNull(tool.Name);
+        Assert.NotNull(tool.Description!);
+        Assert.NotNull(tool.Annotations);
+
+        Assert.Equal(JsonValueKind.Object, tool.InputSchema.ValueKind);
+
+        foreach (var properties in tool.InputSchema.EnumerateObject())
+        {
+            if (properties.NameEquals("type"))
+            {
+                Assert.Equal("object", properties.Value.GetString());
+            }
+
+            if (!properties.NameEquals("properties"))
+            {
+                continue;
+            }
+
+            var commandArguments = properties.Value.EnumerateObject().ToArray();
+            Assert.Contains(commandArguments, arg => arg.Name.Equals("projectName", StringComparison.OrdinalIgnoreCase));
+            Assert.Contains(commandArguments, arg => arg.Name.Equals("services", StringComparison.OrdinalIgnoreCase) &&
+                                                    arg.Value.GetProperty("type").GetString() == "array");
+            var servicesArgument = commandArguments.FirstOrDefault(arg => arg.Name.Equals("services", StringComparison.OrdinalIgnoreCase));
+            if (servicesArgument.Value.ValueKind != JsonValueKind.Undefined)
+            {
+                if (servicesArgument.Value.TryGetProperty("items", out var itemsProperty))
+                {
+                    if (itemsProperty.TryGetProperty("properties", out var servicesProperties))
+                    {
+                        var servicePropertyArgs = servicesProperties.EnumerateObject().ToArray();
+                        Assert.Contains(servicePropertyArgs, prop => prop.Name.Equals("dependencies", StringComparison.OrdinalIgnoreCase) &&
+                                                                    prop.Value.GetProperty("type").GetString() == "array");
+                    }
+                }
+            }
+        }
+    }
+
+    [Fact]
     public async Task CallToolHandler_BeforeListToolsHandler_ExecutesSuccessfully()
     {
         // Arrange
@@ -355,3 +410,4 @@ public class CommandFactoryToolLoaderTests
         // The important thing is that the tool lookup mechanism works correctly
     }
 }
+

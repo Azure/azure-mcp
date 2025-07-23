@@ -78,6 +78,7 @@ internal class Program
             new AzureMcp.Areas.Storage.StorageSetup(),
             new AzureMcp.Areas.Workbooks.WorkbooksSetup(),
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.Areas.Deploy.DeploySetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
         ];

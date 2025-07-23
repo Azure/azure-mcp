@@ -802,6 +802,21 @@ azmcp extension azqr --subscription <subscription> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Quota
+```bash
+# Check the usage for Azure resources type
+azmcp quota usage-get --subscription <subscription> \
+                         --region <region> \
+                         --resource-types <resource-types>
+
+# Get the available regions for the resources types
+azmcp quota available-region-get --subscription <subscription> \
+                                  --resource-types <resource-types> \
+                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:

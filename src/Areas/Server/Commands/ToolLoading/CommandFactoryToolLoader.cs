@@ -36,6 +36,8 @@ public sealed class CommandFactoryToolLoader(
             : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
 
+    public const string RawMcpToolInputOptionName = "rawMcpToolInput";
+
     /// <summary>
     /// Gets whether the tool loader operates in read-only mode.
     /// </summary>
@@ -120,7 +122,16 @@ public sealed class CommandFactoryToolLoader(
         var commandContext = new CommandContext(_serviceProvider);
 
         var realCommand = command.GetCommand();
-        var commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        ParseResult? commandOptions = null;
+
+        if (realCommand.Options.Count == 1 && realCommand.Options[0].Name == RawMcpToolInputOptionName)
+        {
+            commandOptions = realCommand.ParseFromRawMcpToolInput(request.Params.Arguments);
+        }
+        else
+        {
+            commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        }
 
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
 
@@ -191,18 +202,26 @@ public sealed class CommandFactoryToolLoader(
 
         if (options != null && options.Count > 0)
         {
-            var arguments = new JsonObject();
-            foreach (var option in options)
+            if (options.Count == 1 && options[0].Name == RawMcpToolInputOptionName)
             {
-                arguments.Add(option.Name, new JsonObject()
-                {
-                    ["type"] = option.ValueType.ToJsonType(),
-                    ["description"] = option.Description,
-                });
+                var arguments = JsonNode.Parse(options[0].Description ?? "{}") as JsonObject ?? new JsonObject();
+                schema = arguments;
             }
+            else
+            {
+                var arguments = new JsonObject();
+                foreach (var option in options)
+                {
+                    arguments.Add(option.Name, new JsonObject()
+                    {
+                        ["type"] = option.ValueType.ToJsonType(),
+                        ["description"] = option.Description,
+                    });
+                }
 
-            schema["properties"] = arguments;
-            schema["required"] = new JsonArray(options.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
+                schema["properties"] = arguments;
+                schema["required"] = new JsonArray(options.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
+            }
         }
         else
         {
