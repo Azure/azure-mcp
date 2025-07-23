@@ -73,21 +73,5 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
         return context.Response;
     }
 
-    protected override string GetErrorMessage(Exception ex) => ex switch
-    {
-        AuthenticationFailedException => "Authentication failed. Please run 'az login' to sign in or check your credentials.",
-        RequestFailedException rfEx when rfEx.Status == 403 => "Access denied. Verify you have Virtual Desktop permissions for this subscription.",
-        RequestFailedException rfEx when rfEx.Status == 404 => "Subscription not found or no hostpools exist in this subscription.",
-        RequestFailedException rfEx => rfEx.Message,
-        _ => base.GetErrorMessage(ex)
-    };
-
-    protected override int GetStatusCode(Exception ex) => ex switch
-    {
-        AuthenticationFailedException => 401,
-        RequestFailedException rfEx => rfEx.Status,
-        _ => base.GetStatusCode(ex)
-    };
-
     internal record HostPoolListCommandResult(List<Models.HostPool> hostpools);
 }

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 
 public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSessionListCommand> logger)
-    : BaseSessionHostCommand<SessionHostUserSessionListOptions>
+    : BaseSessionHostCommand
 {
     private const string CommandTitle = "List User Sessions on Session Host";
     private readonly ILogger<SessionHostUserSessionListCommand> _logger = logger;

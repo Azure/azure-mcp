@@ -10,10 +10,8 @@ using AzureMcp.Commands;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 
-public abstract class BaseSessionHostCommand<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
-    : BaseHostPoolCommand<T>
-    where T : BaseHostPoolOptions, new()
+public abstract class BaseSessionHostCommand
+    : BaseHostPoolCommand<SessionHostUserSessionListOptions>
 {
     protected readonly Option<string> _sessionHostOption = VirtualDesktopOptionDefinitions.SessionHost;
 
@@ -23,15 +21,12 @@ public abstract class BaseSessionHostCommand<
         command.AddOption(_sessionHostOption);
     }
 
-    protected override T BindOptions(ParseResult parseResult)
+    protected override SessionHostUserSessionListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
 
-        if (options is SessionHostUserSessionListOptions sessionHostOptions)
-        {
-            sessionHostOptions.SessionHostName = parseResult.GetValueForOption(_sessionHostOption);
-        }
-
+        options.SessionHostName = parseResult.GetValueForOption(_sessionHostOption);
+        
         return options;
     }
 }
