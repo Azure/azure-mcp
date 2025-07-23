@@ -26,9 +26,9 @@ public sealed class TableListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "sub123";
-    private const string _knownWorkspaceName = "workspace1";
-    private const string _knownResourceGroupName = "rg1";
+    private const string _knownSubscription = "knownSubscription";
+    private const string _knownWorkspace = "knownWorkspace";
+    private const string _knownResourceGroupName = "knownResourceGroup";
     private const string _knownTableType = "CustomLog";
 
     public TableListCommandTests()
@@ -46,9 +46,9 @@ public sealed class TableListCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscriptionId} --workspace {_knownWorkspaceName} --table-type {_knownTableType} --resource-group {_knownResourceGroupName}", true)]
-    [InlineData($"--subscription {_knownSubscriptionId} --workspace {_knownWorkspaceName} --resource-group {_knownResourceGroupName}", true)]
-    [InlineData($"--subscription {_knownSubscriptionId}", false)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --table-type {_knownTableType} --resource-group {_knownResourceGroupName}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroupName}", true)]
+    [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -108,8 +108,8 @@ public sealed class TableListCommandTests
             .Returns(expectedTables);
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroupName
         ]);
 
@@ -146,17 +146,17 @@ public sealed class TableListCommandTests
         // Arrange
         var expectedTables = new List<string> { "CustomTable1", "CustomTable2" };
         _monitorService.ListTables(
-            _knownSubscriptionId, 
+            _knownSubscription, 
             _knownResourceGroupName, 
-            _knownWorkspaceName, 
+            _knownWorkspace, 
             _knownTableType, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTables);
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroupName,
             "--table-type", _knownTableType
         ]);
@@ -167,9 +167,9 @@ public sealed class TableListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).ListTables(
-            _knownSubscriptionId, 
+            _knownSubscription, 
             _knownResourceGroupName, 
-            _knownWorkspaceName, 
+            _knownWorkspace, 
             _knownTableType, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>());
@@ -189,8 +189,8 @@ public sealed class TableListCommandTests
             .Returns(new List<string>());
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroupName
         ]);
 
@@ -216,8 +216,8 @@ public sealed class TableListCommandTests
             .Returns(Task.FromException<List<string>>(new Exception("Test error")));
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--workspace", _knownWorkspaceName,
+            "--subscription", _knownSubscription,
+            "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroupName
         ]);
 
