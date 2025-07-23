@@ -15,7 +15,6 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly JsonElement s_emptyJsonObject = JsonDocument.Parse("{}").RootElement;
     private const string ToolCallProxySchema = """
         {
           "type": "object",
@@ -495,39 +494,6 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         }
 
         return (null, new Dictionary<string, object?>());
-    }
-
-    /// <summary>
-    /// Extracts the "parameters" object from the tool call request arguments and converts it to a dictionary.
-    /// </summary>
-    /// <param name="request">The request context containing the tool call parameters.</param>
-    /// <returns>
-    /// A dictionary containing the parameter names and values if the "parameters" object exists and is valid;
-    /// otherwise, returns an empty dictionary.
-    /// </returns>
-    private static Dictionary<string, object?> GetParametersDictionary(RequestContext<CallToolRequestParams> request)
-    {
-        JsonElement parametersElem = GetParametersJsonElement(request);
-        return parametersElem.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
-    }
-
-    /// <summary>
-    /// Extracts the "parameters" JsonElement from the tool call request arguments.
-    /// </summary>
-    /// <param name="request">The request context containing the tool call parameters.</param>
-    /// <returns>
-    /// The "parameters" JsonElement if it exists and is a valid JSON object;
-    /// otherwise, returns an empty JSON object.
-    /// </returns>
-    private static JsonElement GetParametersJsonElement(RequestContext<CallToolRequestParams> request)
-    {
-        IReadOnlyDictionary<string, JsonElement>? args = request.Params?.Arguments;
-        if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
-        {
-            return parametersElem;
-        }
-
-        return s_emptyJsonObject;
     }
 
     private McpClientOptions CreateClientOptions(IMcpServer server)
