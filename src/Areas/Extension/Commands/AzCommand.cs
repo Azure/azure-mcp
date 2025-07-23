@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Extension.Options;
+using AzureMcp.Areas.Extension.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Areas.Extension.Services;
 
 namespace AzureMcp.Areas.Extension.Commands;
 

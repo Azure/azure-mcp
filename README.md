@@ -132,15 +132,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Get secure, production-grade Azure SDK best practices for effective code generation.
 
 ### 🖥️ Azure CLI Extension
-- Generate Azure CLI commands from natural language intent
-- Support for all Azure CLI functionality
-- JSON output formatting
-- Cross-platform compatibility
 
-* Execute Azure CLI commands directly
-* Support for all Azure CLI functionality
-* JSON output formatting
-* Cross-platform compatibility
+* Generate Azure CLI commands from natural language intent
 
 ### 📊 Azure Cosmos DB (NoSQL Databases)
 

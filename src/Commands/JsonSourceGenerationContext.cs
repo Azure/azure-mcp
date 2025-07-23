@@ -4,9 +4,9 @@
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using AzureMcp.Areas.Extension.Commands;
+using AzureMcp.Areas.Extension.Models;
 using AzureMcp.Areas.Group.Commands;
 using AzureMcp.Commands;
-using AzureMcp.Areas.Extension.Models;
 
 namespace AzureMcp;
 

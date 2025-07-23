@@ -15,12 +15,13 @@ public sealed class ExtensionService(HttpClient httpClient) : IExtensionService
     public async Task<string> GenerateAzCommandAsync(string intent)
     {
         var requestUri = $"https://azclis-copilot-apim-prod-eus.azure-api.net/azcli/copilot";
-        var payload = new GenerateAzCommandPayload() {
+        var payload = new GenerateAzCommandPayload()
+        {
             Question = intent,
             EnableParameterInjection = true
         };
         var credential = new CustomChainedCredential();
-        var token  = await credential.GetTokenAsync(
+        var token = await credential.GetTokenAsync(
             new TokenRequestContext(["https://management.core.windows.net/.default"]),
             CancellationToken.None
         );
