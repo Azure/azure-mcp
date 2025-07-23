@@ -25,10 +25,6 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseA
         """
         Get details for a specific Azure Kubernetes Service (AKS) cluster.
         Returns detailed cluster information including configuration, network settings, and status.
-          Required options:
-        - subscription: Azure subscription ID or name
-        - resource-group: Resource group containing the AKS cluster
-        - cluster-name: Name of the AKS cluster
         """;
 
     public override string Title => CommandTitle;

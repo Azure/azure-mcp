@@ -44,8 +44,6 @@ public class ClusterGetCommandTests
         Assert.Equal("get", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
-        Assert.Contains("cluster-name", command.Description);
-        Assert.Contains("resource-group", command.Description);
     }
 
     [Theory]
