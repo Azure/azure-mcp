@@ -14,12 +14,14 @@ public abstract class BaseKeyValueCommand<
 {
     protected readonly Option<string> _keyOption = AppConfigOptionDefinitions.Key;
     protected readonly Option<string> _labelOption = AppConfigOptionDefinitions.Label;
+    protected readonly Option<string> _contentTypeOption = AppConfigOptionDefinitions.ContentType;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_keyOption);
         command.AddOption(_labelOption);
+        command.AddOption(_contentTypeOption);
     }
 
     protected override T BindOptions(ParseResult parseResult)
@@ -27,6 +29,7 @@ public abstract class BaseKeyValueCommand<
         var options = base.BindOptions(parseResult);
         options.Key = parseResult.GetValueForOption(_keyOption);
         options.Label = parseResult.GetValueForOption(_labelOption);
+        options.ContentType = parseResult.GetValueForOption(_contentTypeOption);
         return options;
     }
 }

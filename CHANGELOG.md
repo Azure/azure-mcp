@@ -4,6 +4,7 @@
 
 ### Features Added
 
+- Switching to trimmer friendly `CreateSlimBuilder` API from `CreateBuilder`, saving 0.63 MB in native executable [#564](https://github.com/Azure/azure-mcp/pull/564)
 - Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`
@@ -16,6 +17,7 @@
   - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
   - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
   - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
+- App Configuration Put command now also supports setting the `ContentType` and `Tags` properties [#459](https://github.com/Azure/azure-mcp/pull/459)
 
 ### Breaking Changes
 
