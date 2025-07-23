@@ -26,7 +26,7 @@ public abstract class BaseSessionHostCommand
         var options = base.BindOptions(parseResult);
 
         options.SessionHostName = parseResult.GetValueForOption(_sessionHostOption);
-        
+
         return options;
     }
 }
