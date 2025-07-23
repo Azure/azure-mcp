@@ -27,6 +27,9 @@ public sealed class WorkspaceListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
+
+    private const string _knownSubscription = "knownSubscription";
+
     public WorkspaceListCommandTests()
     {
         _monitorService = Substitute.For<IMonitorService>();
@@ -42,8 +45,8 @@ public sealed class WorkspaceListCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub123", true)]
-    [InlineData("--subscription sub123 --tenant tenant123", true)]
+    [InlineData($"--subscription {_knownSubscription}", true)]
+    [InlineData($"--subscription {_knownSubscription} --tenant tenant123", true)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -89,7 +92,7 @@ public sealed class WorkspaceListCommandTests
             .Returns(expectedWorkspaces);
 
         // Act
-        var response = await _command.ExecuteAsync(_context, _parser.Parse("--subscription sub123"));
+        var response = await _command.ExecuteAsync(_context, _parser.Parse($"--subscription {_knownSubscription}"));
 
         // Assert
         Assert.Equal(200, response.Status);
@@ -117,7 +120,7 @@ public sealed class WorkspaceListCommandTests
             .Returns(new List<WorkspaceInfo>());
 
         // Act
-        var response = await _command.ExecuteAsync(_context, _parser.Parse("--subscription sub123"));
+        var response = await _command.ExecuteAsync(_context, _parser.Parse($"--subscription {_knownSubscription}"));
 
         // Assert
         Assert.Equal(200, response.Status);
@@ -132,7 +135,7 @@ public sealed class WorkspaceListCommandTests
             .Returns(Task.FromException<List<WorkspaceInfo>>(new Exception("Test error")));
 
         // Act
-        var response = await _command.ExecuteAsync(_context, _parser.Parse("--subscription sub123"));
+        var response = await _command.ExecuteAsync(_context, _parser.Parse($"--subscription {_knownSubscription}"));
 
         // Assert
         Assert.Equal(500, response.Status);

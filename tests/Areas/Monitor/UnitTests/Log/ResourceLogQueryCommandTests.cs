@@ -25,11 +25,11 @@ public sealed class ResourceLogQueryCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscriptionId = "sub123";
-    private const string _knownResourceId = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/storage1";
+    private const string _knownSubscription = "knownSubscription";
+    private const string _knownResourceId = $"/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/storage1";
     private const string _knownTableName = "StorageEvents";
     private const string _knownQuery = "| limit 10";
-    private const string _knownTenantId = "tenant123";
+    private const string _knownTenant = "knownTenant";
     private const string _knownHours = "24";
     private const string _knownLimit = "100";
 
@@ -48,10 +48,10 @@ public sealed class ResourceLogQueryCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscriptionId} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery}", true)]
-    [InlineData($"--subscription {_knownSubscriptionId} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
-    [InlineData($"--subscription {_knownSubscriptionId} --table-name {_knownTableName} --query {_knownQuery}", false)] // missing resource-id
-    [InlineData($"--subscription {_knownSubscriptionId}", false)]
+    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery}", true)]
+    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
+    [InlineData($"--subscription {_knownSubscription} --table-name {_knownTableName} --query {_knownQuery}", false)] // missing resource-id
+    [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -64,7 +64,7 @@ public sealed class ResourceLogQueryCommandTests
                 JsonNode.Parse(@"{""TimeGenerated"": ""2023-01-01T12:01:00Z"", ""Message"": ""Another resource log entry""}") ?? JsonNode.Parse("{}") ?? new JsonObject()
             };
             _monitorService.QueryResourceLogs(
-                _knownSubscriptionId, 
+                _knownSubscription, 
                 _knownResourceId, 
                 _knownQuery, 
                 _knownTableName, 
@@ -102,7 +102,7 @@ public sealed class ResourceLogQueryCommandTests
             JsonNode.Parse($@"{{""TimeGenerated"": ""2023-01-01T12:02:00Z"", ""ResourceId"": ""{_knownResourceId}"", ""Level"": ""Error""}}") ?? new JsonObject()
         };
         _monitorService.QueryResourceLogs(
-            _knownSubscriptionId, 
+            _knownSubscription, 
             _knownResourceId, 
             _knownQuery, 
             _knownTableName, 
@@ -113,7 +113,7 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
+            "--subscription", _knownSubscription,
             "--resource-id", _knownResourceId,
             "--table-name", _knownTableName,
             "--query", _knownQuery
@@ -128,7 +128,7 @@ public sealed class ResourceLogQueryCommandTests
 
         // Verify the mock was called
         await _monitorService.Received(1).QueryResourceLogs(
-            _knownSubscriptionId, 
+            _knownSubscription, 
             _knownResourceId, 
             _knownQuery, 
             _knownTableName, 
@@ -144,24 +144,24 @@ public sealed class ResourceLogQueryCommandTests
         // Arrange
         var mockResults = new List<JsonNode> { JsonNode.Parse(@"{""result"": ""data""}") ?? new JsonObject() };
         _monitorService.QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             _knownResourceId,
             _knownQuery,
             _knownTableName,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
-            _knownTenantId,
+            _knownTenant,
             Arg.Any<RetryPolicyOptions>())
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscriptionId,
+            $"--subscription", _knownSubscription,
             $"--resource-id", $"{_knownResourceId}",
             $"--table-name", _knownTableName,
             $"--query", $"{_knownQuery}",
             $"--hours", _knownHours.ToString(),
             $"--limit", _knownLimit.ToString(),
-            $"--tenant", _knownTenantId
+            $"--tenant", _knownTenant
         ]);
 
         // Act
@@ -170,13 +170,13 @@ public sealed class ResourceLogQueryCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             _knownResourceId,
             _knownQuery,
             _knownTableName,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
-            _knownTenantId,
+            _knownTenant,
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -186,7 +186,7 @@ public sealed class ResourceLogQueryCommandTests
         // Arrange
         var mockResults = new List<JsonNode> { JsonNode.Parse(@"{""result"": ""data""}") ?? new JsonObject() };
         _monitorService.QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             _knownResourceId,
             _knownQuery,
             _knownTableName,
@@ -197,7 +197,7 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscriptionId,
+            $"--subscription", _knownSubscription,
             $"--resource-id", $"{_knownResourceId}",
             $"--table-name", _knownTableName,
             $"--query", $"{_knownQuery}"
@@ -209,7 +209,7 @@ public sealed class ResourceLogQueryCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             _knownResourceId,
             _knownQuery,
             _knownTableName,
@@ -224,7 +224,7 @@ public sealed class ResourceLogQueryCommandTests
     {
         // Arrange
         _monitorService.QueryResourceLogs(
-            _knownSubscriptionId, 
+            _knownSubscription, 
             _knownResourceId, 
             _knownQuery, 
             _knownTableName, 
@@ -235,7 +235,7 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(Task.FromException<List<JsonNode>>(new Exception("Test error")));
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscriptionId,
+            $"--subscription", _knownSubscription,
             $"--resource-id", $"{_knownResourceId}",
             $"--table-name", _knownTableName,
             $"--query", $"{_knownQuery}"
@@ -259,7 +259,7 @@ public sealed class ResourceLogQueryCommandTests
         var table = "VMEvents";
         var mockResults = new List<JsonNode> { JsonNode.Parse(@"{""result"": ""vm data""}") ?? new JsonObject() };
         _monitorService.QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             complexResourceId,
             query,
             table,
@@ -270,7 +270,7 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscriptionId,
+            $"--subscription", _knownSubscription,
             $"--resource-id", $"{complexResourceId}",
             $"--table-name", table,
             $"--query", $"{query}"
@@ -282,7 +282,7 @@ public sealed class ResourceLogQueryCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).QueryResourceLogs(
-            _knownSubscriptionId,
+            _knownSubscription,
             complexResourceId,
             query,
             table,
