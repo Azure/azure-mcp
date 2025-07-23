@@ -9,7 +9,7 @@ namespace AzureMcp.Areas.Server.Commands.Runtime;
 /// Defines the core functionality for a Model Context Protocol (MCP) runtime.
 /// The runtime is responsible for handling tool discovery and invocation requests.
 /// </summary>
-public interface IMcpRuntime
+public interface IMcpRuntime : IAsyncDisposable
 {
     /// <summary>
     /// Handles requests to list all tools available in the MCP server.

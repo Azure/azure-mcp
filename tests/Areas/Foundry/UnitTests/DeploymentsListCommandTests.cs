@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 using Azure.AI.Projects;
-using AzureMcp.Areas.Foundry.Commands.Models;
+using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Models.Command;
 using AzureMcp.Options;

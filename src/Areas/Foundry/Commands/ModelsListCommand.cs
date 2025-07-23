@@ -7,7 +7,7 @@ using AzureMcp.Areas.Foundry.Options.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Commands;
 
-namespace AzureMcp.Areas.Foundry.Commands.Models;
+namespace AzureMcp.Areas.Foundry.Commands;
 
 public sealed class ModelsListCommand : GlobalCommand<ModelsListOptions>
 {

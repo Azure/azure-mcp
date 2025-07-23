@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using AzureMcp.Areas.Server.Models;
 using AzureMcp.Areas.Server.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
@@ -14,7 +15,8 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// This strategy loads server configurations from a JSON resource bundled with the assembly.
 /// </summary>
 /// <param name="options">Options for configuring the service behavior.</param>
-public sealed class RegistryDiscoveryStrategy(IOptions<ServiceStartOptions> options) : BaseDiscoveryStrategy()
+/// <param name="logger">Logger instance for this discovery strategy.</param>
+public sealed class RegistryDiscoveryStrategy(IOptions<ServiceStartOptions> options, ILogger<RegistryDiscoveryStrategy> logger) : BaseDiscoveryStrategy(logger)
 {
     private readonly IOptions<ServiceStartOptions> _options = options;
     /// <summary>

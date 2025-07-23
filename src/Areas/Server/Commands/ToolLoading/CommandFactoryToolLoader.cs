@@ -216,4 +216,14 @@ public sealed class CommandFactoryToolLoader(
 
         return tool;
     }
+
+    /// <summary>
+    /// Disposes resources owned by this tool loader.
+    /// CommandFactoryToolLoader doesn't own external resources that need disposal.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        // CommandFactoryToolLoader doesn't create or manage disposable resources
+        await ValueTask.CompletedTask;
+    }
 }

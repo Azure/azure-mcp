@@ -4,7 +4,7 @@
 using System.CommandLine;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Areas.Foundry.Commands.Models;
+using AzureMcp.Areas.Foundry.Commands;
 using AzureMcp.Areas.Foundry.Models;
 using AzureMcp.Areas.Foundry.Services;
 using AzureMcp.Models.Command;

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Server.Commands.Discovery;
@@ -9,12 +10,18 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// Base class for MCP server discovery strategies that provides common functionality.
 /// Implements client caching and server provider lookup by name.
 /// </summary>
-public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
+public abstract class BaseDiscoveryStrategy(ILogger logger) : IMcpDiscoveryStrategy
 {
+    /// <summary>
+    /// Logger instance for this discovery strategy.
+    /// </summary>
+    protected readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     /// <summary>
     /// Cache of MCP clients created by this discovery strategy, keyed by server name (case-insensitive).
     /// </summary>
     protected readonly Dictionary<string, IMcpClient> _clientCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private bool _disposed = false;
 
     /// <summary>
     /// Discovers available MCP servers via the implementing strategy.
@@ -75,5 +82,66 @@ public abstract class BaseDiscoveryStrategy() : IMcpDiscoveryStrategy
         _clientCache[name] = client;
 
         return client;
+    }
+
+    /// <summary>
+    /// Disposes all cached MCP clients with double disposal protection.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        try
+        {
+            // First, let derived classes dispose their resources (isolated from base cleanup)
+            try
+            {
+                await DisposeAsyncCore();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while disposing derived resources in discovery strategy {StrategyType}", GetType().Name);
+            }
+
+            // Then dispose our own critical resources using best-effort approach
+            var clientDisposalTasks = _clientCache.Values.Select(async client =>
+            {
+                try
+                {
+                    await client.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to dispose MCP client in discovery strategy {StrategyType}", GetType().Name);
+                }
+            });
+
+            await Task.WhenAll(clientDisposalTasks);
+            _clientCache.Clear();
+        }
+        catch (Exception ex)
+        {
+            // Log disposal failures but don't throw - we want to ensure cleanup continues
+            // Individual disposal errors shouldn't stop the overall disposal process
+            _logger.LogError(ex, "Error occurred while disposing discovery strategy {StrategyType}. Some resources may not have been properly disposed.", GetType().Name);
+        }
+        finally
+        {
+            _disposed = true;
+        }
+    }
+
+    /// <summary>
+    /// Override this method in derived classes to implement disposal logic.
+    /// This method is called exactly once during disposal.
+    /// </summary>
+    /// <returns>A task representing the asynchronous disposal operation.</returns>
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        // Default implementation does nothing - derived classes override to add their specific cleanup
+        return ValueTask.CompletedTask;
     }
 }

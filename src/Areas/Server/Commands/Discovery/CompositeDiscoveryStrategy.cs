@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Logging;
+
 namespace AzureMcp.Areas.Server.Commands.Discovery;
 
 /// <summary>
@@ -8,7 +10,8 @@ namespace AzureMcp.Areas.Server.Commands.Discovery;
 /// This allows discovering servers from multiple sources and aggregating the results.
 /// </summary>
 /// <param name="strategies">The collection of discovery strategies to combine.</param>
-public sealed class CompositeDiscoveryStrategy(IEnumerable<IMcpDiscoveryStrategy> strategies) : BaseDiscoveryStrategy()
+/// <param name="logger">Logger instance for this discovery strategy.</param>
+public sealed class CompositeDiscoveryStrategy(IEnumerable<IMcpDiscoveryStrategy> strategies, ILogger<CompositeDiscoveryStrategy> logger) : BaseDiscoveryStrategy(logger)
 {
     private readonly List<IMcpDiscoveryStrategy> _strategies = InitializeStrategies(strategies);
 
@@ -43,5 +46,27 @@ public sealed class CompositeDiscoveryStrategy(IEnumerable<IMcpDiscoveryStrategy
         var results = await Task.WhenAll(tasks);
 
         return results.SelectMany(result => result);
+    }
+
+    /// <summary>
+    /// Disposes all child discovery strategies and then calls the base dispose.
+    /// Uses best-effort disposal to ensure all strategies are disposed even if some fail.
+    /// </summary>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        // Dispose all child strategies using best-effort approach
+        var childDisposalTasks = _strategies.Select(async strategy =>
+        {
+            try
+            {
+                await strategy.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to dispose discovery strategy {StrategyType}", strategy.GetType().Name);
+            }
+        });
+
+        await Task.WhenAll(childDisposalTasks);
     }
 }

@@ -1,3 +1,14 @@
+parameters:
+- name: Platforms
+  type: object
+  default:
+  - linux_x64
+  - linux_arm64
+  - osx_x64
+  - osx_arm64
+  - win_x64
+  - win_arm64
+
 jobs:
 - job: TagRepository
   displayName: "Create release tag"
@@ -82,6 +93,43 @@ jobs:
             PathToArtifacts: $(Pipeline.Workspace)/drop
             Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
             Tag: latest
+
+
+# Deployment Jobs: Publish VSIX artifacts to Marketplace for each platform
+- ${{ each platform in parameters.Platforms }}:
+  - deployment: PublishVSIX_${{ platform }}
+    displayName: "Publish VSIX Artifact to Marketplace - ${{ platform }}"
+    dependsOn: Publish
+    condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
+    environment: package-publish
+    variables: 
+      artifactName: vsix_package_${{ platform }}_signed
+    pool:
+      name: azsdk-pool
+      image: ubuntu-24.04
+      os: linux
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: $(artifactName)
+            displayName: "Download artifact for ${{ platform }}"
+
+          - task: AzureCLI@2
+            displayName: "Publish (using vsce) - ${{ platform }}"
+            inputs:
+              azureSubscription: azure-sdk-vsmarketplace
+              scriptType: pscore
+              scriptLocation: inlineScript
+              workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+              inlineScript: |
+                Write-Host "Publishing VSIX for ${{ platform }}"
+                $baseName = Get-ChildItem *.vsix | Select-Object -First 1 | ForEach-Object { $_.BaseName }
+                Write-Host "VSIX baseName: $baseName"
+                npm install -g @vscode/vsce
+                vsce publish --azure-credential --packagePath "$($baseName).vsix" --manifestPath "$($baseName).manifest" --signaturePath "$($baseName).signature.p7s"
+
 
 - job: UpdatePackageVersion
   displayName: "Update Package Versions"
