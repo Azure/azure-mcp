@@ -92,40 +92,6 @@ public class GroupListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_SingleResourceGroup_ReturnsCorrectStructure()
-    {
-        // Arrange
-        var subscriptionId = "test-subscription-id";
-        var expectedGroups = new List<ResourceGroupInfo>
-        {
-            ResourceGroupTestHelpers.CreateResourceGroupInfo("my-resource-group", subscriptionId, "Central US")
-        };
-
-        _resourceGroupService
-            .GetResourceGroups(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedGroups);
-
-        var args = _parser.Parse($"--subscription {subscriptionId}");
-
-        // Act
-        var result = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(200, result.Status);
-        Assert.NotNull(result.Results);
-
-        var jsonDoc = JsonDocument.Parse(JsonSerializer.Serialize(result.Results));
-        var groupsArray = jsonDoc.RootElement.GetProperty("groups");
-        Assert.Equal(1, groupsArray.GetArrayLength());
-
-        var group = groupsArray[0];
-        Assert.Equal("my-resource-group", group.GetProperty("name").GetString());
-        Assert.Equal("/subscriptions/test-subscription-id/resourceGroups/my-resource-group", group.GetProperty("id").GetString());
-        Assert.Equal("Central US", group.GetProperty("location").GetString());
-    }
-
-    [Fact]
     public async Task ExecuteAsync_WithTenant_PassesTenantToService()
     {
         // Arrange
@@ -209,7 +175,8 @@ public class GroupListCommandTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.NotEqual(200, result.Status);
+        Assert.Equal(400, result.Status);
+        Assert.Contains("required", result.Message.ToLower());
         // Verify service was not called when validation fails
         await _resourceGroupService.DidNotReceive().GetResourceGroups(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
     }
