@@ -15,6 +15,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly JsonElement s_emptyJsonObject = JsonDocument.Parse("{}").RootElement;
     private const string ToolCallProxySchema = """
         {
           "type": "object",
@@ -425,8 +426,8 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     {
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
-        var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        JsonElement toolParams = GetParametersJsonElement(request.Params?.Arguments);
+        var toolParamsJson = toolParams.GetRawText();
         var availableToolsJson = JsonSerializer.Serialize(availableTools, ServerJsonContext.Default.ListTool);
 
         var samplingRequest = new CreateMessageRequestParams
@@ -480,7 +481,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+                    parameters = paramsProp.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -500,10 +501,20 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     {
         if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
         {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+            return parametersElem.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
         }
 
         return [];
+    }
+
+    private static JsonElement GetParametersJsonElement(IReadOnlyDictionary<string, JsonElement>? args)
+    {
+        if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
+        {
+            return parametersElem;
+        }
+
+        return s_emptyJsonObject;
     }
 
     private McpClientOptions CreateClientOptions(IMcpServer server)
