@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
