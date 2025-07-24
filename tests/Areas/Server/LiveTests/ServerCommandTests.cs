@@ -3,6 +3,7 @@
 
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.LiveTests;
@@ -300,6 +301,48 @@ public class ServerCommandTests(ITestOutputHelper output)
         {
             Output.WriteLine($"  - {name}");
         }
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task NamespaceProxyMode_StorageToolLearnMode_ReturnsStorageCommands()
+    {
+        // Arrange
+        await using var fixture = new LiveTestFixture();
+        fixture.SetArguments("server", "start", "--mode", "namespace");
+        await fixture.InitializeAsync();
+
+        // Act - Call storage tool in learn mode
+        var learnParameters = new Dictionary<string, object?>
+        {
+            ["learn"] = true
+        };
+
+        var result = await fixture.Client.CallToolAsync("storage", learnParameters, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Content);
+        Assert.NotEmpty(result.Content);
+
+        // Get the text content
+        var textContent = result.Content.OfType<TextContentBlock>().FirstOrDefault();
+        Assert.NotNull(textContent);
+        Assert.NotEmpty(textContent.Text);
+
+        var responseText = textContent.Text;
+
+        // Verify the response contains information about storage commands
+        Assert.Contains("available command", responseText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("storage", responseText, StringComparison.OrdinalIgnoreCase);
+
+        // Verify it contains specific storage commands we expect
+        Assert.Contains("storage_account_list", responseText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("storage_blob_container_details", responseText, StringComparison.OrdinalIgnoreCase);
+
+        Output.WriteLine("Storage tool learn mode response:");
+        Output.WriteLine(responseText);
+        Output.WriteLine($"✓ Learn mode returned {responseText.Length} characters of storage command information");
     }
 
     #endregion
