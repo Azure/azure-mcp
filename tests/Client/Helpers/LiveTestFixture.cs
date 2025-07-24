@@ -29,7 +29,7 @@ public class LiveTestFixture : LiveTestSettingsFixture
         string executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath, "azmcp.exe") : Path.Combine(testAssemblyPath, "azmcp");
 
         // Use custom arguments if provided, otherwise default to ["server", "start"]
-        var arguments = _customArguments ?? ["server", "start"];
+        var arguments = _customArguments ?? ["server", "start", "--mode", "all"];
 
         StdioClientTransportOptions transportOptions = new()
         {

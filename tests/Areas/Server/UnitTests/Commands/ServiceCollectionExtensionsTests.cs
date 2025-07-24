@@ -132,7 +132,7 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Verify the correct tool loader is registered (ServerToolLoader for namespace mode)
+        // Verify the correct tool loader is registered
         Assert.NotNull(provider.GetService<IToolLoader>());
         Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
     }
