@@ -766,6 +766,13 @@ azmcp storage blob container details --subscription <subscription> \
 azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --account-name <account-name> \
                                               --file-system-name <file-system-name>
+
+# Upload a local file to Data Lake Storage Gen2
+azmcp storage datalake file upload --subscription <subscription> \
+                                   --account-name <account-name> \
+                                   --file-system-name <file-system-name> \
+                                   --file-path <destination-path> \
+                                   --local-file-path <local-file-path>
 ```
 
 ### Azure Workbooks Operations

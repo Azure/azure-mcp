@@ -402,4 +402,48 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             throw new Exception($"Error creating directory: {ex.Message}", ex);
         }
     }
+
+    public async Task<DataLakePathInfo> UploadFile(
+        string accountName,
+        string fileSystemName,
+        string filePath,
+        string localFilePath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, fileSystemName, filePath, localFilePath, subscriptionId);
+
+        // Validate local file exists
+        if (!File.Exists(localFilePath))
+        {
+            throw new FileNotFoundException($"Local file not found: {localFilePath}");
+        }
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+
+        try
+        {
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+            var fileClient = fileSystemClient.GetFileClient(filePath);
+
+            // Upload the file, overwriting if it exists
+            using var fileStream = File.OpenRead(localFilePath);
+            var response = await fileClient.UploadAsync(fileStream, overwrite: true);
+
+            // Get file properties after upload
+            var properties = await fileClient.GetPropertiesAsync();
+
+            return new DataLakePathInfo(
+                filePath,
+                "file",
+                properties.Value.ContentLength,
+                properties.Value.LastModified,
+                properties.Value.ETag.ToString());
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error uploading file: {ex.Message}", ex);
+        }
+    }
 }

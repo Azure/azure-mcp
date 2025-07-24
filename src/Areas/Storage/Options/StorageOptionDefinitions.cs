@@ -10,6 +10,8 @@ public static class StorageOptionDefinitions
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
+    public const string FilePathName = "file-path";
+    public const string LocalFilePathName = "local-file-path";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -46,6 +48,22 @@ public static class StorageOptionDefinitions
     public static readonly Option<string> DirectoryPath = new(
         $"--{DirectoryPathName}",
         "The full path of the directory to create in the Data Lake, including the file system name (e.g., 'myfilesystem/data/logs' or 'myfilesystem/archives/2024'). Use forward slashes (/) to separate the file system name from the directory path and for subdirectories."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> FilePath = new(
+        $"--{FilePathName}",
+        "The destination path for the file in the Data Lake file system (e.g., 'data/logs/app.log' or 'archives/2024/backup.zip'). Use forward slashes (/) to separate directories and the filename."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> LocalFilePath = new(
+        $"--{LocalFilePathName}",
+        "The path to the local file to upload to the Data Lake. This can be an absolute path (e.g., '/home/user/file.txt') or a relative path (e.g., './data/file.txt')."
     )
     {
         IsRequired = true

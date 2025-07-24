@@ -35,6 +35,7 @@
 
 ### Features Added
 
+- Added `azmcp storage datalake file upload` command to upload local files to Azure Data Lake Storage Gen2 file systems
 - Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`

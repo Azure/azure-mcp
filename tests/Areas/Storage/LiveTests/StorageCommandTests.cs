@@ -250,5 +250,50 @@ namespace AzureMcp.Tests.Areas.Storage.LiveTests
             Assert.Equal(directoryPath, name);
             Assert.Equal("directory", type);
         }
+
+        [Fact]
+        [Trait("Category", "Live")]
+        public async Task Should_upload_file_to_datalake()
+        {
+            // Create a temporary test file
+            var tempFilePath = Path.GetTempFileName();
+            var testContent = "This is a test file for Azure Data Lake upload.";
+            await File.WriteAllTextAsync(tempFilePath, testContent, TestContext.Current.CancellationToken);
+
+            try
+            {
+                var filePath = "test-uploads/testfile.txt";
+
+                var result = await CallToolAsync(
+                    "azmcp_storage_datalake_file_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "account-name", Settings.ResourceBaseName },
+                        { "file-system-name", "testfilesystem" },
+                        { "file-path", filePath },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                var file = result.AssertProperty("file");
+                Assert.Equal(JsonValueKind.Object, file.ValueKind);
+
+                var name = file.GetProperty("name").GetString();
+                var type = file.GetProperty("type").GetString();
+                var size = file.GetProperty("size").GetInt64();
+
+                Assert.Equal(filePath, name);
+                Assert.Equal("file", type);
+                Assert.True(size > 0);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
     }
 }
