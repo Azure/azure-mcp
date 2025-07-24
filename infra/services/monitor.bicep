@@ -190,3 +190,22 @@ resource tableServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-
     ]
   }
 }
+
+// Role assignment for the test application to access the storage account
+resource blobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Storage Blob Data Contributor role.
+  // Read, write, and delete Azure Storage containers and blobs
+  // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage
+  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+}
+
+resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
+  name: guid(blobContributorRoleDefinition.id, testApplicationOid, storageAccount.id)
+  scope: storageAccount
+  properties:{
+    principalId: testApplicationOid
+    roleDefinitionId: blobContributorRoleDefinition.id
+    description: 'Blob Contributor for testApplicationOid'
+  }
+}

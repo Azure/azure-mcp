@@ -21,6 +21,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     private LogAnalyticsHelper? _logHelper;
     private const string TestLogType = "TestLogs_CL";
     private IMonitorService? _monitorService;
+    private string _storageAccountName = $"{fixture.Settings.ResourceBaseName}mon";
 
     ValueTask IAsyncLifetime.InitializeAsync()
     {
@@ -169,7 +170,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     [Trait("Category", "Live")]
     public async Task Should_query_monitor_logs_by_resource_id()
     {
-        var storageResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
+        var storageResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{_storageAccountName}";
         await QueryForLogsAsync(
             async args => await CallToolAsync("azmcp_monitor_resource_log_query", args),
             new()
@@ -275,7 +276,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_list_metric_definitions()
     {
         // Example resource ID - uses a storage account that should exist from the test fixture
-        string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
+        string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{_storageAccountName}";
 
         var result = await CallToolAsync(
             "azmcp_monitor_metrics_definitions",
@@ -347,7 +348,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     public async Task Should_query_metrics()
     {
         // Example resource ID - uses a storage account that should exist from the test fixture
-        string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
+        string resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{_storageAccountName}";
 
         var result = await CallToolAsync(
             "azmcp_monitor_metrics_query",
@@ -413,7 +414,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             var listResult = await CallToolAsync("azmcp_storage_blob_container_list", new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName }
+                { "account-name", _storageAccountName }
             });
 
             Output.WriteLine("Listed storage containers to generate metrics");
@@ -428,7 +429,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
                     var blobListResult = await CallToolAsync("azmcp_storage_blob_list", new()
                     {
                         { "subscription", Settings.SubscriptionId },
-                        { "account-name", Settings.ResourceBaseName },
+                        { "account-name", _storageAccountName },
                         { "container-name", containerName.GetString() }
                     });
 
