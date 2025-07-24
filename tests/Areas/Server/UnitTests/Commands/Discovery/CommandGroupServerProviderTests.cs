@@ -2,8 +2,12 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Server.Commands.Discovery;
+using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using ModelContextProtocol.Client;
+using System.CommandLine;
+using System.CommandLine.Parsing;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
@@ -130,6 +134,38 @@ public class CommandGroupServerProviderTests
 
         // Assert
         Assert.Equal(customEntryPoint, mcpCommandGroup.EntryPoint);
+    }
+
+    [Fact]
+    public void BuildArguments_WithoutReadOnly_ReturnsBasicArguments()
+    {
+        // Arrange
+        var commandGroup = new CommandGroup("testGroup", "Test Description");
+        var provider = new CommandGroupServerProvider(commandGroup);
+        provider.ReadOnly = false;
+
+        // Act
+        var arguments = provider.BuildArguments();
+
+        // Assert
+        var expected = new[] { "server", "start", "--mode", "all", "--namespace", "testGroup" };
+        Assert.Equal(expected, arguments);
+    }
+
+    [Fact]
+    public void BuildArguments_WithReadOnly_IncludesReadOnlyFlag()
+    {
+        // Arrange
+        var commandGroup = new CommandGroup("testGroup", "Test Description");
+        var provider = new CommandGroupServerProvider(commandGroup);
+        provider.ReadOnly = true;
+
+        // Act
+        var arguments = provider.BuildArguments();
+
+        // Assert
+        var expected = new[] { "server", "start", "--mode", "all", "--namespace", "testGroup", "--read-only" };
+        Assert.Equal(expected, arguments);
     }
 }
 
