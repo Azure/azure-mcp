@@ -13,29 +13,39 @@ param(
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/../common/scripts/common.ps1"
 
-# Function to retry operations with exponential backoff
-function Invoke-WithRetry {
+# Function to retry dotnet test command on macOS to handle Coverlet file locking issues
+function Invoke-TestWithRetry {
     param(
-        [ScriptBlock]$ScriptBlock,
-        [int]$MaxAttempts = 5,
-        [int]$InitialDelaySeconds = 2,
-        [string]$Operation = "operation"
+        [string]$TestCommand,
+        [int]$MaxAttempts = 3,
+        [int]$DelaySeconds = 5
     )
     
     for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
         try {
-            Write-Host "Attempting $Operation (attempt $attempt of $MaxAttempts)..."
-            return & $ScriptBlock
+            Write-Host "Running tests (attempt $attempt of $MaxAttempts)..."
+            Invoke-LoggedCommand $TestCommand -AllowedExitCodes @(0, 1)
+            return $LastExitCode
         }
         catch {
-            if ($attempt -eq $MaxAttempts) {
-                Write-Error "Failed $Operation after $MaxAttempts attempts. Last error: $($_.Exception.Message)"
+            $errorMessage = $_.Exception.Message
+            
+            # Check if this is the specific Coverlet file locking issue on macOS
+            if ($IsMacOS -and $errorMessage -match "cannot access the file.*because it is being used by another process") {
+                Write-Host "Detected Coverlet file locking issue on macOS: $errorMessage"
+                
+                if ($attempt -eq $MaxAttempts) {
+                    Write-Error "Test execution failed after $MaxAttempts attempts due to file locking. Last error: $errorMessage"
+                    throw
+                }
+                
+                Write-Host "Retrying in $DelaySeconds seconds..."
+                Start-Sleep -Seconds $DelaySeconds
+            }
+            else {
+                # For other errors, don't retry
                 throw
             }
-            
-            $delay = $InitialDelaySeconds * [Math]::Pow(2, $attempt - 1)
-            Write-Host "Attempt $attempt failed: $($_.Exception.Message). Retrying in $delay seconds..."
-            Start-Sleep -Seconds $delay
         }
     }
 }
@@ -64,35 +74,33 @@ if ($Areas) {
     $filter = "$filter & ($($Areas | ForEach-Object { "Area=$_" } | Join-String -Separator ' | '))"
 }
 
-Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
+# Use a dedicated temp directory for Coverlet on macOS to reduce file conflicts
+$coverletTempDir = if ($IsMacOS) { "$TestResultsPath/coverlet-temp" } else { "" }
+if ($coverletTempDir) {
+    New-Item -ItemType Directory -Path $coverletTempDir -Force | Out-Null
+}
+
+$testCommand = "dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
   " --collect:'XPlat Code Coverage'" +
   " --filter '$filter'" +
   " --results-directory '$TestResultsPath'" +
-  " --logger 'trx'") -AllowedExitCodes @(0, 1)
+  " --logger 'trx'"
 
-$testExitCode = $LastExitCode
+# Add Coverlet temp directory configuration for macOS
+if ($coverletTempDir) {
+    $testCommand += " -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.TempDirectory='$coverletTempDir'"
+}
 
-# Find the coverage file with retry logic to handle file locking issues on macOS
-$coverageFile = Invoke-WithRetry -Operation "find and verify coverage file" -ScriptBlock {
-    Write-Host "Searching for coverage files in $TestResultsPath..."
-    $files = Get-ChildItem -Path $TestResultsPath -Recurse -Filter "coverage.cobertura.xml" -ErrorAction Stop |
-        Where-Object { $_.FullName.Replace('\','/') -notlike "*/in/*" } |
-        Select-Object -First 1
-    
-    if (-not $files) {
-        throw "No coverage file found in $TestResultsPath"
-    }
-    
-    # Try to access the file to ensure it's not locked
-    try {
-        $stream = [System.IO.File]::OpenRead($files.FullName)
-        $stream.Close()
-        Write-Host "Successfully found and verified coverage file: $($files.FullName)"
-        return $files
-    }
-    catch {
-        throw "Coverage file found but is locked or inaccessible: $($_.Exception.Message)"
-    }
+$testExitCode = Invoke-TestWithRetry -TestCommand $testCommand
+
+# Find the coverage file
+$coverageFile = Get-ChildItem -Path $TestResultsPath -Recurse -Filter "coverage.cobertura.xml"
+| Where-Object { $_.FullName.Replace('\','/') -notlike "*/in/*" }
+| Select-Object -First 1
+
+if (-not $coverageFile) {
+    Write-Error "No coverage file found!"
+    exit 1
 }
 
 # Coverage Report Generation
