@@ -8,6 +8,7 @@ using AzureMcp.Areas.Extension.Commands;
 using AzureMcp.Models.Command;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.ProcessExecution;
+using AzureMcp.Services.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -21,17 +22,20 @@ public sealed class AzqrCommandTests
     private readonly IServiceProvider _serviceProvider;
     private readonly IExternalProcessService _processService;
     private readonly ISubscriptionService _subscriptionService;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<AzqrCommand> _logger;
 
     public AzqrCommandTests()
     {
         _processService = Substitute.For<IExternalProcessService>();
         _subscriptionService = Substitute.For<ISubscriptionService>();
+        _dateTimeProvider = Substitute.For<IDateTimeProvider>();
         _logger = Substitute.For<ILogger<AzqrCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_processService);
         collection.AddSingleton(_subscriptionService);
+        collection.AddSingleton<IDateTimeProvider>(_dateTimeProvider);
         _serviceProvider = collection.BuildServiceProvider();
     }
 
@@ -39,6 +43,9 @@ public sealed class AzqrCommandTests
     public async Task ExecuteAsync_ReturnsSuccessResult_WhenScanSucceeds()
     {
         // Arrange
+        var fixedDateTime = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
+        _dateTimeProvider.UtcNow.Returns(fixedDateTime);
+
         var command = new AzqrCommand(_logger);
         var parser = new Parser(command.GetCommand());
         var mockSubscriptionId = "12345678-1234-1234-1234-123456789012";
@@ -46,7 +53,7 @@ public sealed class AzqrCommandTests
         var context = new CommandContext(_serviceProvider);
 
         var expectedOutput = "Scan completed successfully";
-        var reportFilePath = Path.Combine(Path.GetTempPath(), $"azqr-report-{mockSubscriptionId}-{DateTime.UtcNow:yyyyMMdd-HHmmss}");
+        var reportFilePath = Path.Combine(Path.GetTempPath(), $"azqr-report-{mockSubscriptionId}-{fixedDateTime:yyyyMMdd-HHmmss}");
         var xlsxReportFilePath = $"{reportFilePath}.xlsx";
         var jsonReportFilePath = $"{reportFilePath}.json";
         // Create empty files to simulate the report generation

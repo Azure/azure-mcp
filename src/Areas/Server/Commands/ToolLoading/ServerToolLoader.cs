@@ -11,10 +11,11 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ServiceStartOptions> options, ILogger<ServerToolLoader> logger) : BaseToolLoader(logger)
+public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrategy, IOptions<ToolLoaderOptions> options, ILogger<ServerToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = serverDiscoveryStrategy ?? throw new ArgumentNullException(nameof(serverDiscoveryStrategy));
     private readonly Dictionary<string, List<Tool>> _cachedToolLists = new(StringComparer.OrdinalIgnoreCase);
+
     private const string ToolCallProxySchema = """
         {
           "type": "object",
@@ -31,9 +32,6 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
           "additionalProperties": false
         }
         """;
-
-    public bool ReadOnly { get; set; } = options?.Value?.ReadOnly ?? false;
-    public string[]? Namespace { get; set; } = options?.Value?.Namespace ?? null;
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
         {
@@ -133,7 +131,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
             }
             else if (!string.IsNullOrEmpty(tool) && !string.IsNullOrEmpty(command))
             {
-                var toolParams = GetParametersDictionary(args);
+                var toolParams = GetParametersDictionary(request);
                 return await InvokeChildToolAsync(request, intent ?? "", tool, command, toolParams, cancellationToken);
             }
         }
@@ -371,7 +369,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
 
         var list = listTools
             .Select(t => t.ProtocolTool)
-            .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true))
+            .Where(t => !(options?.Value?.ReadOnly ?? false) || (t.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         _cachedToolLists[tool] = list;
@@ -425,8 +423,8 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     {
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
-        var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        JsonElement toolParams = GetParametersJsonElement(request);
+        var toolParamsJson = toolParams.GetRawText();
         var availableToolsJson = JsonSerializer.Serialize(availableTools, ServerJsonContext.Default.ListTool);
 
         var samplingRequest = new CreateMessageRequestParams
@@ -478,9 +476,9 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                 {
                     commandName = toolProp.GetString();
                 }
-                if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
+                if (root.TryGetProperty("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+                    parameters = parametersElem.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value) ?? [];
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -494,16 +492,6 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         }
 
         return (null, new Dictionary<string, object?>());
-    }
-
-    private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
-    {
-        if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
-        {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
-        }
-
-        return [];
     }
 
     private McpClientOptions CreateClientOptions(IMcpServer server)

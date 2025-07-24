@@ -17,6 +17,11 @@ public abstract class BaseToolLoader(ILogger logger) : IToolLoader
     /// </summary>
     protected readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
+    /// <summary>
+    /// Cached empty JSON object to avoid repeated parsing.
+    /// </summary>
+    protected static readonly JsonElement EmptyJsonObject = JsonDocument.Parse("{}").RootElement;
+
     private bool _disposed = false;
 
     /// <summary>
@@ -34,6 +39,39 @@ public abstract class BaseToolLoader(ILogger logger) : IToolLoader
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>
     public abstract ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Extracts the "parameters" JsonElement from the tool call request arguments.
+    /// </summary>
+    /// <param name="request">The request context containing the tool call parameters.</param>
+    /// <returns>
+    /// The "parameters" JsonElement if it exists and is a valid JSON object; 
+    /// otherwise, returns an empty JSON object.
+    /// </returns>
+    protected static JsonElement GetParametersJsonElement(RequestContext<CallToolRequestParams> request)
+    {
+        IReadOnlyDictionary<string, JsonElement>? args = request.Params?.Arguments;
+        if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
+        {
+            return parametersElem;
+        }
+
+        return EmptyJsonObject;
+    }
+
+    /// <summary>
+    /// Extracts the "parameters" object from the tool call request arguments and converts it to a dictionary.
+    /// </summary>
+    /// <param name="request">The request context containing the tool call parameters.</param>
+    /// <returns>
+    /// A dictionary containing the parameter names and values if the "parameters" object exists and is valid;
+    /// otherwise, returns an empty dictionary.
+    /// </returns>
+    protected static Dictionary<string, object?> GetParametersDictionary(RequestContext<CallToolRequestParams> request)
+    {
+        JsonElement parametersElem = GetParametersJsonElement(request);
+        return parametersElem.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
+    }
 
     /// <summary>
     /// Disposes resources owned by this tool loader with double disposal protection.

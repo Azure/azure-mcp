@@ -6,6 +6,7 @@ using AzureMcp.Areas.Extension.Options;
 using AzureMcp.Commands.Subscription;
 using AzureMcp.Services.Azure.Subscription;
 using AzureMcp.Services.ProcessExecution;
+using AzureMcp.Services.Time;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Extension.Commands;
@@ -52,6 +53,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
             var azqrPath = FindAzqrCliPath() ?? throw new FileNotFoundException("Azure Quick Review CLI (azqr) executable not found in PATH. Please ensure azqr is installed. Go to https://aka.ms/azqr to learn more about how to install Azure Quick Review CLI.");
 
             var subscriptionService = context.GetService<ISubscriptionService>();
+            var dateTimeProvider = context.GetService<IDateTimeProvider>();
             var subscription = await subscriptionService.GetSubscription(options.Subscription, options.Tenant);
 
             // Compose azqr command
@@ -62,7 +64,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
             }
 
             var tempDir = Path.GetTempPath();
-            var dateString = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+            var dateString = dateTimeProvider.UtcNow.ToString("yyyyMMdd-HHmmss");
             var reportFileName = Path.Combine(tempDir, $"azqr-report-{options.Subscription}-{dateString}");
 
             // Azure Quick Review always appends the file extension to the report file's name, we need to create a new path with the file extension to check for the existence of the report file.

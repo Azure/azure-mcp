@@ -16,15 +16,15 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.ToolLoading;
 [Trait("Area", "Server")]
 public class ServerToolLoaderTests
 {
-    private static (ServerToolLoader toolLoader, IMcpDiscoveryStrategy mockDiscoveryStrategy) CreateToolLoader(ServiceStartOptions? options = null)
+    private static (ServerToolLoader toolLoader, IMcpDiscoveryStrategy mockDiscoveryStrategy) CreateToolLoader(ToolLoaderOptions? options = null)
     {
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var mockDiscoveryStrategy = Substitute.For<IMcpDiscoveryStrategy>();
         var logger = loggerFactory.CreateLogger<ServerToolLoader>();
-        var serviceOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ServiceStartOptions());
+        var toolLoaderOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ToolLoaderOptions());
 
-        var toolLoader = new ServerToolLoader(mockDiscoveryStrategy, serviceOptions, logger);
+        var toolLoader = new ServerToolLoader(mockDiscoveryStrategy, toolLoaderOptions, logger);
         return (toolLoader, mockDiscoveryStrategy);
     }
 
@@ -56,12 +56,13 @@ public class ServerToolLoaderTests
         // Arrange - use real RegistryDiscoveryStrategy since ServerToolLoader depends on it
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var serviceStartOptions = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var toolLoaderOptions = Microsoft.Extensions.Options.Options.Create(new ToolLoaderOptions());
         var discoveryLogger = loggerFactory.CreateLogger<RegistryDiscoveryStrategy>();
-        var discoveryStrategy = new RegistryDiscoveryStrategy(options, discoveryLogger);
+        var discoveryStrategy = new RegistryDiscoveryStrategy(serviceStartOptions, discoveryLogger);
         var logger = loggerFactory.CreateLogger<ServerToolLoader>();
 
-        var toolLoader = new ServerToolLoader(discoveryStrategy, options, logger);
+        var toolLoader = new ServerToolLoader(discoveryStrategy, toolLoaderOptions, logger);
         var request = CreateCallToolRequest("documentation",
             new Dictionary<string, JsonElement>
             {
@@ -109,12 +110,13 @@ public class ServerToolLoaderTests
         // Arrange - use real RegistryDiscoveryStrategy
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        var options = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var serviceStartOptions = Microsoft.Extensions.Options.Options.Create(new ServiceStartOptions());
+        var toolLoaderOptions = Microsoft.Extensions.Options.Options.Create(new ToolLoaderOptions());
         var discoveryLogger = loggerFactory.CreateLogger<RegistryDiscoveryStrategy>();
-        var discoveryStrategy = new RegistryDiscoveryStrategy(options, discoveryLogger);
+        var discoveryStrategy = new RegistryDiscoveryStrategy(serviceStartOptions, discoveryLogger);
         var logger = loggerFactory.CreateLogger<ServerToolLoader>();
 
-        var toolLoader = new ServerToolLoader(discoveryStrategy, options, logger);
+        var toolLoader = new ServerToolLoader(discoveryStrategy, toolLoaderOptions, logger);
         var request = CreateRequest();
 
         // Act

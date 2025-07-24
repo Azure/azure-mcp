@@ -3,7 +3,8 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.Json.Nodes;
+using AzureMcp.Areas.Server;
+using AzureMcp.Areas.Server.Models;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using AzureMcp.Services.Telemetry;
@@ -22,35 +23,19 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 public sealed class CommandFactoryToolLoader(
     IServiceProvider serviceProvider,
     CommandFactory commandFactory,
-    IOptions<ServiceStartOptions> options,
+    IOptions<ToolLoaderOptions> options,
     ITelemetryService telemetry,
     ILogger<CommandFactoryToolLoader> logger) : IToolLoader
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly CommandFactory _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
-    private readonly IOptions<ServiceStartOptions> _options = options;
+    private readonly IOptions<ToolLoaderOptions> _options = options;
     private readonly ITelemetryService _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands =
         (options.Value.Namespace == null || options.Value.Namespace.Length == 0)
             ? commandFactory.AllCommands
             : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
-
-    /// <summary>
-    /// Gets whether the tool loader operates in read-only mode.
-    /// </summary>
-    private bool ReadOnly
-    {
-        get => _options.Value.ReadOnly ?? false;
-    }
-
-    /// <summary>
-    /// Gets the namespaces to filter commands by.
-    /// </summary>
-    private string[]? Namespaces
-    {
-        get => _options.Value.Namespace;
-    }
 
     /// <summary>
     /// Lists all tools available from the command factory.
@@ -62,7 +47,7 @@ public sealed class CommandFactoryToolLoader(
     {
         var tools = CommandFactory.GetVisibleCommands(_toolCommands)
             .Select(kvp => GetTool(kvp.Key, kvp.Value))
-            .Where(tool => !ReadOnly || (tool.Annotations?.ReadOnlyHint == true))
+            .Where(tool => !_options.Value.ReadOnly || (tool.Annotations?.ReadOnlyHint == true))
             .ToList();
 
         var listToolsResult = new ListToolsResult { Tools = tools };
@@ -184,35 +169,23 @@ public sealed class CommandFactoryToolLoader(
 
         var options = command.GetCommand().Options;
 
-        var schema = new JsonObject
-        {
-            ["type"] = "object"
-        };
+        var schema = new ToolInputSchema();
 
         if (options != null && options.Count > 0)
         {
-            var arguments = new JsonObject();
             foreach (var option in options)
             {
-                arguments.Add(option.Name, new JsonObject()
+                schema.Properties.Add(option.Name, new ToolPropertySchema
                 {
-                    ["type"] = option.ValueType.ToJsonType(),
-                    ["description"] = option.Description,
+                    Type = option.ValueType.ToJsonType(),
+                    Description = option.Description,
                 });
             }
 
-            schema["properties"] = arguments;
-            schema["required"] = new JsonArray(options.Where(p => p.IsRequired).Select(p => (JsonNode)p.Name).ToArray());
-        }
-        else
-        {
-            var arguments = new JsonObject();
-            schema["properties"] = arguments;
+            schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
         }
 
-        var newOptions = new JsonSerializerOptions(McpJsonUtilities.DefaultOptions);
-
-        tool.InputSchema = JsonSerializer.SerializeToElement(schema, new JsonSourceGenerationContext(newOptions).JsonNode);
+        tool.InputSchema = JsonSerializer.SerializeToElement(schema, ServerJsonContext.Default.ToolInputSchema);
 
         return tool;
     }

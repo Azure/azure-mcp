@@ -99,4 +99,102 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
         // Should return error response for missing subscription (no results)
         Assert.False(result.HasValue);
     }
+
+    [Fact]
+    public async Task Should_get_specific_aks_cluster()
+    {
+        // First, get a list of clusters to find one we can test against
+        var listResult = await CallToolAsync(
+            "azmcp_aks_cluster_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId }
+            });
+
+        var clusters = listResult.AssertProperty("clusters");
+        Assert.True(clusters.GetArrayLength() > 0, "Expected at least one AKS cluster for testing get command");
+
+        // Get the first cluster's details
+        var firstCluster = clusters.EnumerateArray().First();
+        var clusterName = firstCluster.GetProperty("name").GetString()!;
+        var resourceGroupName = firstCluster.GetProperty("resourceGroupName").GetString()!;
+
+        // Now test the get command
+        var getResult = await CallToolAsync(
+            "azmcp_aks_cluster_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", resourceGroupName },
+                { "cluster-name", clusterName }
+            });
+
+        var cluster = getResult.AssertProperty("cluster");
+        Assert.Equal(JsonValueKind.Object, cluster.ValueKind);
+
+        // Verify the cluster details
+        Assert.True(cluster.TryGetProperty("name", out var nameProperty));
+        Assert.Equal(clusterName, nameProperty.GetString());
+
+        Assert.True(cluster.TryGetProperty("resourceGroupName", out var rgProperty));
+        Assert.Equal(resourceGroupName, rgProperty.GetString());
+
+        // Verify other common properties exist
+        Assert.True(cluster.TryGetProperty("subscriptionId", out _));
+        Assert.True(cluster.TryGetProperty("location", out _));
+    }
+
+    [Fact]
+    public async Task Should_handle_nonexistent_cluster_gracefully()
+    {
+        var result = await CallToolAsync(
+            "azmcp_aks_cluster_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", "nonexistent-rg" },
+                { "cluster-name", "nonexistent-cluster" }
+            });
+
+        // Should return runtime error response with error details
+        Assert.True(result.HasValue);
+        var errorDetails = result.Value;
+        Assert.True(errorDetails.TryGetProperty("message", out _));
+        Assert.True(errorDetails.TryGetProperty("type", out var typeProperty));
+        Assert.Equal("Exception", typeProperty.GetString());
+    }
+
+    [Fact]
+    public async Task Should_validate_required_parameters_for_get_command()
+    {
+        // Test missing cluster-name
+        var result1 = await CallToolAsync(
+            "azmcp_aks_cluster_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", "test-rg" }
+            });
+        Assert.False(result1.HasValue);
+
+        // Test missing resource-group
+        var result2 = await CallToolAsync(
+            "azmcp_aks_cluster_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "cluster-name", "test-cluster" }
+            });
+        Assert.False(result2.HasValue);
+
+        // Test missing subscription
+        var result3 = await CallToolAsync(
+            "azmcp_aks_cluster_get",
+            new()
+            {
+                { "resource-group", "test-rg" },
+                { "cluster-name", "test-cluster" }
+            });
+        Assert.False(result3.HasValue);
+    }
 }

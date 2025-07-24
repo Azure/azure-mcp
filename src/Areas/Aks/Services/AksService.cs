@@ -66,6 +66,61 @@ public sealed class AksService(
         return clusters;
     }
 
+    public async Task<Cluster?> GetCluster(
+        string subscription,
+        string clusterName,
+        string resourceGroup,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, clusterName, resourceGroup);
+
+        // Create cache key
+        var cacheKey = string.IsNullOrEmpty(tenant)
+            ? $"cluster_{subscription}_{resourceGroup}_{clusterName}"
+            : $"cluster_{subscription}_{resourceGroup}_{clusterName}_{tenant}";
+
+        // Try to get from cache first
+        var cachedCluster = await _cacheService.GetAsync<Cluster>(CacheGroup, cacheKey, s_cacheDuration);
+        if (cachedCluster != null)
+        {
+            return cachedCluster;
+        }
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
+        try
+        {
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup);
+
+            if (resourceGroupResource?.Value == null)
+            {
+                return null;
+            }
+
+            var clusterResource = await resourceGroupResource.Value
+                .GetContainerServiceManagedClusters()
+                .GetAsync(clusterName);
+
+            if (clusterResource?.Value?.Data == null)
+            {
+                return null;
+            }
+
+            var cluster = ConvertToClusterModel(clusterResource.Value);
+
+            // Cache the result
+            await _cacheService.SetAsync(CacheGroup, cacheKey, cluster, s_cacheDuration);
+
+            return cluster;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving AKS cluster '{clusterName}': {ex.Message}", ex);
+        }
+    }
+
     private static Cluster ConvertToClusterModel(ContainerServiceManagedClusterResource clusterResource)
     {
         var data = clusterResource.Data;

@@ -89,7 +89,7 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithNamespaceProxy_RegistersServerToolLoader()
+    public void AddAzureMcpServer_WithNamespaceProxy_RegistersCompositeToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
@@ -106,8 +106,9 @@ public class ServiceCollectionExtensionsTests
         var provider = services.BuildServiceProvider();
 
         // Verify the correct tool loader is registered
+        // In namespace mode, we now use CompositeToolLoader that includes ServerToolLoader
         Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<ServerToolLoader>(provider.GetService<IToolLoader>());
+        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
 
         // Verify discovery strategy is registered
         Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
@@ -115,14 +116,14 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddAzureMcpServer_WithDefaultService_RegistersCompositeToolLoader()
+    public void AddAzureMcpServer_WithDefaultMode_RegistersServerToolLoader()
     {
         // Arrange
         var services = SetupBaseServices();
         var options = new ServiceStartOptions
         {
             Transport = StdioTransport,
-            // No service specified
+            // No mode specified - should use default "namespace" mode
         };
 
         // Act
@@ -161,8 +162,6 @@ public class ServiceCollectionExtensionsTests
         // Verify that the service collection contains an IMcpServer registration
         Assert.Contains(services, sd => sd.ServiceType == typeof(IMcpServer));
     }
-
-
 
     [Fact]
     public void AddAzureMcpServer_ConfiguresMcpServerOptions()
@@ -318,9 +317,8 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Should default to CompositeToolLoader (normal mode) when proxy mode is invalid
-        Assert.NotNull(provider.GetService<IToolLoader>());
-        Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IMcpDiscoveryStrategy>());
     }
 
     [Fact]
@@ -340,8 +338,33 @@ public class ServiceCollectionExtensionsTests
         // Assert
         var provider = services.BuildServiceProvider();
 
-        // Should use CompositeToolLoader (normal mode) when proxy is null
+        Assert.Null(provider.GetService<IToolLoader>());
+        Assert.Null(provider.GetService<IMcpDiscoveryStrategy>());
+    }
+
+    [Fact]
+    public void AddAzureMcpServer_WithAllMode_RegistersCompositeToolLoader()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport,
+            Mode = "all"
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+
+        // Verify the correct tool loader is registered (CompositeToolLoader for all tools mode)
         Assert.NotNull(provider.GetService<IToolLoader>());
         Assert.IsType<CompositeToolLoader>(provider.GetService<IToolLoader>());
+
+        // Verify discovery strategy is registered for individual tools
+        Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
+        Assert.IsType<RegistryDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
     }
 }

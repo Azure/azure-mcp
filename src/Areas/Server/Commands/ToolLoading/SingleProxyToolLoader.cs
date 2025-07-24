@@ -9,9 +9,9 @@ using ModelContextProtocol.Protocol;
 
 namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 
-public sealed class SingleProxyToolLoader : BaseToolLoader
+public sealed class SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger) : BaseToolLoader(logger)
 {
-    private readonly IMcpDiscoveryStrategy _discoveryStrategy;
+    private readonly IMcpDiscoveryStrategy _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
     private string? _cachedRootToolsJson;
     private readonly Dictionary<string, string> _cachedToolListsJson = new(StringComparer.OrdinalIgnoreCase);
 
@@ -31,12 +31,6 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
           "additionalProperties": false
         }
         """;
-
-    public SingleProxyToolLoader(IMcpDiscoveryStrategy discoveryStrategy, ILogger<SingleProxyToolLoader> logger)
-        : base(logger)
-    {
-        _discoveryStrategy = discoveryStrategy ?? throw new ArgumentNullException(nameof(discoveryStrategy));
-    }
 
     private static readonly JsonElement ToolSchema = JsonSerializer.Deserialize("""
         {
@@ -146,7 +140,7 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
         }
         else if (!learn && !string.IsNullOrEmpty(tool) && !string.IsNullOrEmpty(command))
         {
-            var toolParams = GetParametersDictionary(args);
+            var toolParams = GetParametersDictionary(request);
             return await CommandModeAsync(request, intent ?? "", tool!, command!, toolParams, cancellationToken);
         }
 
@@ -395,8 +389,8 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
     {
         await NotifyProgressAsync(request, $"Learning about {tool} capabilities...", cancellationToken);
 
-        var toolParams = GetParametersDictionary(request.Params?.Arguments);
-        var toolParamsJson = JsonSerializer.Serialize(toolParams, ServerJsonContext.Default.DictionaryStringObject);
+        JsonElement toolParams = GetParametersJsonElement(request);
+        var toolParamsJson = toolParams.GetRawText();
 
         var samplingRequest = new CreateMessageRequestParams
         {
@@ -449,7 +443,7 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
                 }
                 if (root.TryGetProperty("parameters", out var paramsProp) && paramsProp.ValueKind == JsonValueKind.Object)
                 {
-                    parameters = JsonSerializer.Deserialize(paramsProp.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
+                    parameters = paramsProp.EnumerateObject().ToDictionary(prop => prop.Name, prop => (object?)prop.Value);
                 }
             }
             if (commandName != null && commandName != "Unknown")
@@ -463,16 +457,6 @@ public sealed class SingleProxyToolLoader : BaseToolLoader
         }
 
         return (null, new Dictionary<string, object?>());
-    }
-
-    private static Dictionary<string, object?> GetParametersDictionary(IReadOnlyDictionary<string, JsonElement>? args)
-    {
-        if (args != null && args.TryGetValue("parameters", out var parametersElem) && parametersElem.ValueKind == JsonValueKind.Object)
-        {
-            return JsonSerializer.Deserialize(parametersElem.GetRawText(), ServerJsonContext.Default.DictionaryStringObject) ?? [];
-        }
-
-        return [];
     }
 
     private McpClientOptions CreateClientOptions(IMcpServer server)

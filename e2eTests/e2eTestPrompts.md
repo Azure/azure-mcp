@@ -127,6 +127,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-aks-cluster-list | List all AKS clusters in my subscription |
 | azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
 | azmcp-aks-cluster-list | What AKS clusters do I have? |
+| azmcp-aks-cluster-get | Show me the details of AKS cluster \<cluster-name> in resource group \<resource-group> |
+| azmcp-aks-cluster-get | Get the configuration of AKS cluster \<cluster-name> |
+| azmcp-aks-cluster-get | What are the details of my AKS cluster \<cluster-name> in \<resource-group>? |
+| azmcp-aks-cluster-get | Show me the network configuration for AKS cluster \<cluster-name> |
 
 ## Azure Load Testing
 

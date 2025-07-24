@@ -24,19 +24,48 @@ The following options are available for all commands:
 
 The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
 
-#### Default Mode
+#### Default Mode (Namespace)
+
+Exposes Azure tools grouped by service namespace. Each Azure service appears as a single namespace-level tool that routes to individual operations internally. This is the default mode to reduce tool count and prevent VS Code from hitting the 128 tool limit.
+
+```bash
+# Start MCP Server with namespace-level tools (default behavior)
+azmcp server start \
+    [--transport <transport>] \
+    [--read-only]
+
+# Explicitly specify namespace mode
+azmcp server start \
+    --mode namespace \
+    [--transport <transport>] \
+    [--read-only]
+```
+
+#### All Tools Mode
 
 Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
 
 ```bash
 # Start MCP Server with all tools exposed individually
 azmcp server start \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
-#### Namespace Mode
+#### Single Tool Mode
+
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+
+```bash
+# Start MCP Server with single azure tool
+azmcp server start \
+    --mode single \
+    [--transport <transport>] \
+    [--read-only]
+```
+
+#### Namespace Filtering
 
 Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
 
@@ -44,20 +73,20 @@ Exposes only tools for specific Azure service namespaces. Use multiple `--namesp
 # Start MCP Server with only Storage tools
 azmcp server start \
     --namespace storage \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 
 # Start MCP Server with Storage and Key Vault tools
 azmcp server start \
     --namespace storage \
     --namespace keyvault \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
-#### Service Proxy Mode
+#### Namespace Mode (Default)
 
 Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
 
@@ -66,7 +95,6 @@ Collapses all tools within each namespace into a single tool (e.g., all storage 
 azmcp server start \
     --mode namespace \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
@@ -79,7 +107,6 @@ Exposes a single "azure" tool that handles internal routing across all Azure MCP
 azmcp server start \
     --mode single \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
@@ -415,12 +442,12 @@ azmcp loadtesting test get --subscription <subscription> \
                            --test-resource-name <test-resource-name> \
                            --test-id <test-id>
 
-# List load test resources 
+# List load test resources
 azmcp loadtesting testresource list --subscription <subscription> \
                                     --resource-group <resource-group> \
                                     --test-resource-name <test-resource-name>
 
-# Create load test resources 
+# Create load test resources
 azmcp loadtesting testresource create --subscription <subscription> \
                                       --resource-group <resource-group> \
                                       --test-resource-name <test-resource-name>
@@ -486,7 +513,7 @@ azmcp marketplace product get --subscription <subscription> \
 ```bash
 # Get best practices for secure, production-grade Azure usage
 azmcp bestpractices get --resource <resource> --action <action>
- 
+
 # Resource options:
 #   general        - General Azure best practices
 #   azurefunctions - Azure Functions specific best practices
@@ -762,7 +789,7 @@ azmcp workbooks create --subscription <subscription> \
                        --serialized-content <json-content> \
                        [--source-id <source-id>]
 
-# Update an existing workbook  
+# Update an existing workbook
 azmcp workbooks update --workbook-id <workbook-resource-id> \
                        [--display-name <display-name>] \
                        [--serialized-content <json-content>]

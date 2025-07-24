@@ -17,11 +17,11 @@ namespace AzureMcp.Areas.Server.Commands.ToolLoading;
 /// </summary>
 public sealed class RegistryToolLoader(
     IMcpDiscoveryStrategy discoveryStrategy,
-    IOptions<ServiceStartOptions> options,
+    IOptions<ToolLoaderOptions> options,
     ILogger<RegistryToolLoader> logger) : BaseToolLoader(logger)
 {
     private readonly IMcpDiscoveryStrategy _serverDiscoveryStrategy = discoveryStrategy;
-    private readonly IOptions<ServiceStartOptions> _options = options;
+    private readonly IOptions<ToolLoaderOptions> _options = options;
     private Dictionary<string, IMcpClient> _toolClientMap = new();
     private List<IMcpClient> _discoveredClients = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
@@ -31,11 +31,6 @@ public sealed class RegistryToolLoader(
     /// Gets or sets the client options used when creating MCP clients.
     /// </summary>
     public McpClientOptions ClientOptions { get; set; } = new McpClientOptions();
-
-    private bool ReadOnly
-    {
-        get => _options.Value.ReadOnly ?? false;
-    }
 
     /// <summary>
     /// Lists all tools available from registered MCP servers.
@@ -58,7 +53,7 @@ public sealed class RegistryToolLoader(
             var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
             var filteredTools = toolsResponse
                 .Select(t => t.ProtocolTool)
-                .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true));
+                .Where(t => !_options.Value.ReadOnly || (t.Annotations?.ReadOnlyHint == true));
 
             foreach (var tool in filteredTools)
             {
@@ -118,9 +113,10 @@ public sealed class RegistryToolLoader(
 
     /// <summary>
     /// Transforms tool call arguments to a parameters dictionary.
+    /// This transformation is used because McpClientExtensions.CallToolAsync expects parameters as Dictionary&lt;string, object?&gt;.
     /// </summary>
     /// <param name="args">The arguments to transform to parameters.</param>
-    /// <returns>A dictionary of parameter names and values.</returns>
+    /// <returns>A dictionary of parameter names and values compatible with McpClientExtensions.CallToolAsync.</returns>
     private static Dictionary<string, object?> TransformArgumentsToDictionary(IReadOnlyDictionary<string, JsonElement>? args)
     {
         if (args == null)
@@ -128,25 +124,7 @@ public sealed class RegistryToolLoader(
             return [];
         }
 
-        var parameters = new Dictionary<string, object?>();
-        foreach (var kvp in args)
-        {
-            // For simple types, extract the value directly
-            // For complex types, keep as JsonElement (which MCP client can handle)
-            parameters[kvp.Key] = kvp.Value.ValueKind switch
-            {
-                JsonValueKind.String => kvp.Value.GetString(),
-                JsonValueKind.Number when kvp.Value.TryGetInt32(out var intValue) => intValue,
-                JsonValueKind.Number when kvp.Value.TryGetInt64(out var longValue) => longValue,
-                JsonValueKind.Number when kvp.Value.TryGetDouble(out var doubleValue) => doubleValue,
-                JsonValueKind.True => true,
-                JsonValueKind.False => false,
-                JsonValueKind.Null => null,
-                _ => kvp.Value // Keep as JsonElement for objects/arrays
-            };
-        }
-
-        return parameters;
+        return args.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
     }
 
     /// <summary>
@@ -198,7 +176,7 @@ public sealed class RegistryToolLoader(
                 var toolsResponse = await mcpClient.ListToolsAsync(cancellationToken: cancellationToken);
                 var filteredTools = toolsResponse
                     .Select(t => t.ProtocolTool)
-                    .Where(t => !ReadOnly || (t.Annotations?.ReadOnlyHint == true));
+                    .Where(t => !_options.Value.ReadOnly || (t.Annotations?.ReadOnlyHint == true));
 
                 foreach (var tool in filteredTools)
                 {

@@ -16,16 +16,16 @@ namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.ToolLoading;
 [Trait("Area", "Server")]
 public class CommandFactoryToolLoaderTests
 {
-    private static (CommandFactoryToolLoader toolLoader, CommandFactory commandFactory) CreateToolLoader(ServiceStartOptions? options = null)
+    private static (CommandFactoryToolLoader toolLoader, CommandFactory commandFactory) CreateToolLoader(ToolLoaderOptions? options = null)
     {
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory(serviceProvider);
         var telemetryService = new CommandFactoryHelpers.NoOpTelemetryService();
         var logger = loggerFactory.CreateLogger<CommandFactoryToolLoader>();
-        var serviceOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ServiceStartOptions());
+        var toolLoaderOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ToolLoaderOptions());
 
-        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, serviceOptions, telemetryService, logger);
+        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, toolLoaderOptions, telemetryService, logger);
         return (toolLoader, commandFactory);
     }
 
@@ -80,7 +80,7 @@ public class CommandFactoryToolLoaderTests
     [Fact]
     public async Task ListToolsHandler_WithReadOnlyOption_ReturnsOnlyReadOnlyTools()
     {
-        var readOnlyOptions = new ServiceStartOptions { ReadOnly = true };
+        var readOnlyOptions = new ToolLoaderOptions { ReadOnly = true };
         var (toolLoader, _) = CreateToolLoader(readOnlyOptions);
         var request = CreateRequest();
 
@@ -103,7 +103,7 @@ public class CommandFactoryToolLoaderTests
     public async Task ListToolsHandler_WithServiceFilter_ReturnsOnlyFilteredTools()
     {
         // Try to filter by a specific service/group - using a common Azure service name
-        var filteredOptions = new ServiceStartOptions
+        var filteredOptions = new ToolLoaderOptions
         {
             Namespace = new[] { "storage" }  // Assuming there's a storage service group
         };
@@ -142,7 +142,7 @@ public class CommandFactoryToolLoaderTests
     public async Task ListToolsHandler_WithMultipleServiceFilters_ReturnsToolsFromAllSpecifiedServices()
     {
         // Try to filter by multiple real service/group names from the codebase
-        var multiServiceOptions = new ServiceStartOptions
+        var multiServiceOptions = new ToolLoaderOptions
         {
             Namespace = new[] { "storage", "appconfig", "search" }  // Real Azure service groups from the codebase
         };
@@ -188,7 +188,7 @@ public class CommandFactoryToolLoaderTests
                 }
 
                 // Verify that tools from non-specified services are not included
-                var allToolsOptions = new ServiceStartOptions(); // No filter = all tools
+                var allToolsOptions = new ToolLoaderOptions(); // No filter = all tools
                 var (allToolsLoader, _) = CreateToolLoader(allToolsOptions);
                 var allToolsResult = await allToolsLoader.ListToolsHandler(request, CancellationToken.None);
 

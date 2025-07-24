@@ -1,5 +1,36 @@
 # Release History
 
+## 0.5.0 (Unreleased)
+
+### Features Added
+
+- Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
+  - `azmcp-keyvault-certificate-list`
+  - `azmcp-keyvault-certificate-get`
+  - `azmcp-keyvault-certificate-create`
+  - `azmcp-keyvault-secret-list`
+  - `azmcp-keyvault-secret-create`
+- Added support for Azure Workbooks management operations:
+  - `azmcp-workbooks-list` - List workbooks in a resource group with optional filtering
+  - `azmcp-workbooks-show` - Get detailed information about a specific workbook
+  - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
+  - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
+  - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
+- Added `--mode all` option to expose all Azure MCP tools individually [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+
+### Breaking Changes
+
+- **BREAKING**: Changed default `--mode` from `all` (individual tools) to `"namespace"` (namespace-level tools) [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+  - **Before**: `npx @azure/mcp server start` exposed ~128 individual tools
+  - **After**: `npx @azure/mcp server start` exposes ~25 namespace-level tools  
+  - **Migration**: Use `--mode all` to restore the previous behavior of exposing all tools individually
+
+### Bugs Fixed
+
+- Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
+
+### Other Changes
+
 ## 0.4.2 (Unreleased)
 
 ### Features Added

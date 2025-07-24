@@ -18,4 +18,9 @@ internal static class ModeTypes
     /// (e.g., all storage operations become one "storage" tool with internal routing).
     /// </summary>
     public const string NamespaceProxy = "namespace";
+
+    /// <summary>
+    /// All tools mode - exposes all Azure MCP tools individually (one tool per command).
+    /// </summary>
+    public const string All = "all";
 }

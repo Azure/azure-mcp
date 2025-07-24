@@ -32,11 +32,12 @@ public static class ServiceOptionDefinitions
 
     public static readonly Option<string?> Mode = new Option<string?>(
         $"--{ModeName}",
-        () => null,
-        "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' exposes one tool per service namespace."
+        () => ModeTypes.NamespaceProxy,
+        "Mode for the MCP server. 'single' exposes one azure tool that routes to all services. 'namespace' (default) exposes one tool per service namespace. 'all' exposes all tools individually."
     )
     {
-        IsRequired = false
+        IsRequired = false,
+        Arity = ArgumentArity.ZeroOrOne
     };
 
     public static readonly Option<bool?> ReadOnly = new(

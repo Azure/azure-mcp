@@ -28,5 +28,6 @@ public class AksSetup : IAreaSetup
 
         // Register AKS commands
         cluster.AddCommand("list", new ClusterListCommand(loggerFactory.CreateLogger<ClusterListCommand>()));
+        cluster.AddCommand("get", new ClusterGetCommand(loggerFactory.CreateLogger<ClusterGetCommand>()));
     }
 }

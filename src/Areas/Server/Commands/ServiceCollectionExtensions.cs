@@ -6,6 +6,8 @@ using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
+using AzureMcp.Commands;
+using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
@@ -31,13 +33,31 @@ public static class AzureMcpServiceCollectionExtensions
         services.AddSingleton(serviceStartOptions);
         services.AddSingleton(Options.Options.Create(serviceStartOptions));
 
+        // Register default tool loader options from service start options
+        var defaultToolLoaderOptions = new ToolLoaderOptions
+        {
+            Namespace = serviceStartOptions.Namespace,
+            ReadOnly = serviceStartOptions.ReadOnly ?? false,
+        };
+
+        if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
+        {
+            if (defaultToolLoaderOptions.Namespace == null || defaultToolLoaderOptions.Namespace.Length == 0)
+            {
+                defaultToolLoaderOptions = defaultToolLoaderOptions with { Namespace = ["extension"] };
+            }
+        }
+
+        services.AddSingleton(defaultToolLoaderOptions);
+        services.AddSingleton(Options.Options.Create(defaultToolLoaderOptions));
+
         // Register tool loader strategies
         services.AddSingleton<CommandFactoryToolLoader>();
         services.AddSingleton(sp =>
         {
             return new RegistryToolLoader(
                 sp.GetRequiredService<RegistryDiscoveryStrategy>(),
-                sp.GetRequiredService<IOptions<ServiceStartOptions>>(),
+                sp.GetRequiredService<IOptions<ToolLoaderOptions>>(),
                 sp.GetRequiredService<ILogger<RegistryToolLoader>>()
             );
         });
@@ -81,9 +101,24 @@ public static class AzureMcpServiceCollectionExtensions
         }
         else if (serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
         {
-            services.AddSingleton<IToolLoader, ServerToolLoader>();
+            services.AddSingleton<IToolLoader>(sp =>
+            {
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                var toolLoaders = new List<IToolLoader>
+                {
+                    sp.GetRequiredService<ServerToolLoader>(),
+                };
+
+                // Append extension commands when no other namespaces are specified.
+                if (defaultToolLoaderOptions.Namespace?.SequenceEqual(["extension"]) == true)
+                {
+                    toolLoaders.Add(sp.GetRequiredService<CommandFactoryToolLoader>());
+                }
+
+                return new CompositeToolLoader(toolLoaders, loggerFactory.CreateLogger<CompositeToolLoader>());
+            });
         }
-        else
+        else if (serviceStartOptions.Mode == ModeTypes.All)
         {
             services.AddSingleton<IMcpDiscoveryStrategy, RegistryDiscoveryStrategy>();
             services.AddSingleton<IToolLoader>(sp =>
