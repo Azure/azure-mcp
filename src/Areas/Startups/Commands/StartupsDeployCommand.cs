@@ -14,7 +14,7 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
     private const string CommandTitle = "Deploy Static Website for Startups";
     private readonly ILogger<StartupsDeployCommand> _logger = logger;
     private readonly Option<string> _storageAccount = StartupsOptionDefinitions.StorageAccount;
-    // private readonly Option<string> _resourceGroup = StartupsOptionDefinitions.ResourceGroup;
+    private readonly Option<string> _resourceGroup = StartupsOptionDefinitions.ResourceGroup;
     private readonly Option<string> _sourcePath = StartupsOptionDefinitions.SourcePath;
 
     private readonly Option<string> _subscription = StartupsOptionDefinitions.Subscription;
@@ -33,7 +33,7 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
         base.RegisterOptions(command);
         command.AddOption(_subscription);
         command.AddOption(_storageAccount);
-        // command.AddOption(_resourceGroup);
+        command.AddOption(_resourceGroup);
         command.AddOption(_sourcePath);
     }
 
@@ -41,32 +41,16 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
     {
         var options = base.BindOptions(parseResult);
         options.Subscription = parseResult.GetValueForOption(_subscription);
-        // ?? throw new ArgumentNullException(nameof(options.Subscription), "Subscription cannot be null.");
+        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroup);
         options.StorageAccount = parseResult.GetValueForOption(_storageAccount);
-        // ?? throw new ArgumentNullException(nameof(options.StorageAccount), "Storage account cannot be null.");
-        // options.ResourceGroup = parseResult.GetValueForOption(_resourceGroup);
-        // ?? throw new ArgumentNullException(nameof(options.ResourceGroup), "Resource group cannot be null.");
         options.SourcePath = parseResult.GetValueForOption(_sourcePath);
-            // ?? throw new ArgumentNullException(nameof(options.SourcePath), "Source path cannot be null.");
         return options;
     }
 
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var subscription = parseResult.GetValueForOption<string>(StartupsOptionDefinitions.Subscription);
-        var storageAccount = parseResult.GetValueForOption<string>(StartupsOptionDefinitions.StorageAccount);
-        var resourceGroup = parseResult.GetValueForOption<string>(StartupsOptionDefinitions.ResourceGroup);
-        var sourcePath = parseResult.GetValueForOption<string>(StartupsOptionDefinitions.SourcePath);
-
-        // if (options.Subscription is null)
-        //     throw new ArgumentNullException(nameof(subscription), "Subscription cannot be null.");
-        // if (storageAccount is null)
-        //     throw new ArgumentNullException(nameof(storageAccount), "Storage account cannot be null.");
-        // if (resourceGroup is null)
-        //     throw new ArgumentNullException(nameof(resourceGroup), "Resource group cannot be null.");
-        // if (sourcePath is null)
-        //     throw new ArgumentNullException(nameof(sourcePath), "Source path cannot be null.");
+        var options = BindOptions(parseResult);
 
         try
         {
@@ -74,18 +58,18 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
             {
                 return context.Response;
             }
-            _logger.LogInformation("Starting deployment to storage account {StorageAccount}", options.storageAccount);
+            _logger.LogInformation("Starting deployment to storage account {StorageAccount}", options.StorageAccount);
 
-            var startupsService = context.GetService<IStartupsService>();
+            var service = context.GetService<IStartupsService>();
 
-            var result = await startupsService.DeployStaticWebAsync(subscription, storageAccount, resourceGroup, sourcePath);
+            var results = await service.DeployStaticWebAsync(options.Subscription!, options.ResourceGroup!, options.StorageAccount!, options.SourcePath!);
 
-            _logger.LogInformation("Successfully deployed to storage account {StorageAccount}", storageAccount);
-            context.Response.Results = ResponseResult.Create(result, DeployJsonContext.Default.StartupsDeployResources);
+            _logger.LogInformation("Successfully deployed to storage account {StorageAccount}", options.StorageAccount);
+            context.Response.Results = ResponseResult.Create(results, DeployJsonContext.Default.StartupsDeployResources);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deploying static website to {StorageAccount}", storageAccount);
+            _logger.LogError(ex, "Error deploying static website to {StorageAccount}", options.StorageAccount);
             HandleException(context, ex);
         }
         return context.Response;
