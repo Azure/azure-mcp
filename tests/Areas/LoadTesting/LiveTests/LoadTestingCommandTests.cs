@@ -24,7 +24,7 @@ public class LoadTestingCommandTests : CommandTestsBase,
     {
         // Arrange
         var result = await CallToolAsync(
-            "azmcp-loadtesting-testresource-list",
+            "azmcp_loadtesting_testresource_list",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -33,7 +33,7 @@ public class LoadTestingCommandTests : CommandTestsBase,
             });
 
         // Assert
-        var items = result.AssertProperty("LoadTests");
+        var items = result.AssertProperty("LoadTest");
         Assert.Equal(JsonValueKind.Array, items.ValueKind);
         Assert.NotEmpty(items.EnumerateArray());
         foreach (var item in items.EnumerateArray())

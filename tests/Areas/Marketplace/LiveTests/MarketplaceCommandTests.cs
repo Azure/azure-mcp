@@ -39,7 +39,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -78,7 +78,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -104,7 +104,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -129,7 +129,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -161,7 +161,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -188,7 +188,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "subscription", _subscriptionId },
@@ -211,7 +211,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "product-id", productId }
@@ -230,7 +230,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "subscription", _subscriptionId }
@@ -252,7 +252,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
