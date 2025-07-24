@@ -58,7 +58,6 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
             {
                 return context.Response;
             }
-<<<<<<< HEAD
 
             _logger.LogInformation("Starting deployment to storage account {StorageAccount}", options.StorageAccount);
 
@@ -67,16 +66,6 @@ public sealed class StartupsDeployCommand(ILogger<StartupsDeployCommand> logger)
 
             _logger.LogInformation("Successfully deployed to storage account {StorageAccount}", options.StorageAccount);
             context.Response.Results = ResponseResult.Create(result, DeployJsonContext.Default.StartupsDeployResources);
-=======
-            _logger.LogInformation("Starting deployment to storage account {StorageAccount}", options.StorageAccount);
-
-            var service = context.GetService<IStartupsService>();
-
-            var results = await service.DeployStaticWebAsync(options.Subscription!, options.ResourceGroup!, options.StorageAccount!, options.SourcePath!);
-
-            _logger.LogInformation("Successfully deployed to storage account {StorageAccount}", options.StorageAccount);
-            context.Response.Results = ResponseResult.Create(results, DeployJsonContext.Default.StartupsDeployResources);
->>>>>>> f4a1aa41efc1063eefe6ad9738f2443dddf47295
         }
         catch (Exception ex)
         {
