@@ -402,7 +402,7 @@ azmcp keyvault key list --subscription <subscription> \
 azmcp keyvault secret create --subscription <subscription> \
                              --vault <vault-name> \
                              --name <secret-name> \
-                             --value <secret-value
+                             --value <secret-value>
 
 # Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
