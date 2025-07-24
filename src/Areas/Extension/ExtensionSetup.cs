@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Areas.Extension.Commands;
+using AzureMcp.Areas.Extension.Services;
 using AzureMcp.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ internal sealed class ExtensionSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        // No additional services needed for Extension area
+        services.AddHttpClient<IExtensionService, ExtensionService>();
     }
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
