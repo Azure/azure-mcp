@@ -328,13 +328,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
+| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
 | azmcp-workbooks-list | List all workbooks in my resource group <resource_group_name> |
 | azmcp-workbooks-list | What workbooks do I have in resource group <resource_group_name>? |
 | azmcp-workbooks-show | Show me the workbook with display name <workbook_display_name> |
 | azmcp-workbooks-show | Get information about the workbook with resource ID <workbook_resource_id> |
-| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
 | azmcp-workbooks-update | Update the workbook <workbook_resource_id> with a new text step |
-| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
 
 ## Bicep
 
