@@ -6,7 +6,6 @@ param(
     [string] $TestResultsPath,
     [string[]] $Areas,
     [switch] $Live,
-    [switch] $CoverageSummary,
     [switch] $OpenReport,
     [switch] $CollectCoverage
 )
@@ -113,7 +112,7 @@ if ($CollectCoverage) {
 
 # Command Coverage Summary
 
-if($CoverageSummary -and $CollectCoverage) {
+if($CollectCoverage) {
     try{
         $CommandCoverageSummaryFile = "$TestResultsPath/Coverage.md"
 

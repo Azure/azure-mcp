@@ -57,7 +57,6 @@ jobs:
       pwsh: true
       filePath:  $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
       arguments: >
-        -CoverageSummary:$${{ eq(parameters.OSName, 'linux') }}
         -CollectCoverage:$${{ eq(parameters.OSName, 'linux') }}
       workingDirectory: $(Build.SourcesDirectory)
 
