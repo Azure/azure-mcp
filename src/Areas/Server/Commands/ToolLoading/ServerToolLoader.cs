@@ -470,7 +470,7 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
             Dictionary<string, object?> parameters = [];
             if (!string.IsNullOrEmpty(toolCallJson))
             {
-                using var doc = JsonDocument.Parse(toolCallJson);
+                var doc = JsonDocument.Parse(toolCallJson);
                 var root = doc.RootElement;
                 if (root.TryGetProperty("tool", out var toolProp) && toolProp.ValueKind == JsonValueKind.String)
                 {
