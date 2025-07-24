@@ -47,7 +47,7 @@ public class BestPracticesCommandTests
         var result = JsonSerializer.Deserialize<string[]>(json);
 
         Assert.NotNull(result);
-        Assert.Contains("When querying data plane resources, prefer using azmcp commands over az cli commands.", result[0]);
+        Assert.Contains("Implement retry logic with exponential backoff for transient failures", result[0]);
         Assert.Contains("Managed Identity (Azure-hosted)", result[0]);
     }
 
