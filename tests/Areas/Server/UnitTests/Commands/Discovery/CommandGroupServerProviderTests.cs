@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Server.Commands.Discovery;
+using System.CommandLine;
+using System.CommandLine.Parsing;
 using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
 using ModelContextProtocol.Client;
-using System.CommandLine;
-using System.CommandLine.Parsing;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Server.UnitTests.Commands.Discovery;
