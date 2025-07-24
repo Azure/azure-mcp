@@ -55,7 +55,9 @@
   - Removed: `azmcp-bestpractices-azurefunctions-get-code-generation`
   - Removed: `azmcp-bestpractices-azurefunctions-get-deployment`
   - Added: `azmcp-bestpractices-get` with `--resource` and `--action` parameters
-    - Use `--resource general --action all` instead of the old general command
+    - Removed `azmcp-bestpractices-general-get`, `azmcp-bestpractices-azurefunctions-get-code-generation` and `azmcp-bestpractices-azurefunctions-get-deployment`
+    - Use `--resource general --action code-generation` for general Azure code generation best practices
+    - Use `--resource general --action deployment` for general Azure deployment best practices
     - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
     - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
     - Use `--resource static-web-app --action all` to get Static Web Apps development and deployment best practices

@@ -54,7 +54,7 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
         // Assert specific practices are mentioned based on azure-general-codegen-best-practices.txt content
         Assert.Contains("Managed Identity (Azure-hosted)", combinedText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("retry logic", combinedText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("azmcp commands over az cli commands", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Generate secure, efficient, and maintainable Azure service code following these requirements:", combinedText, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
