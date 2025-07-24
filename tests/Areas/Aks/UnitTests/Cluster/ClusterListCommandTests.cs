@@ -33,6 +33,7 @@ public sealed class ClusterListCommandTests
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_aksService);
+        collection.AddLogging();
         _serviceProvider = collection.BuildServiceProvider();
 
         _command = new(_logger);

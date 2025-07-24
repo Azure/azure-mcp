@@ -5,6 +5,9 @@ using AzureMcp.Areas.Aks.Models;
 using AzureMcp.Areas.Aks.Options.Cluster;
 using AzureMcp.Areas.Aks.Services;
 using AzureMcp.Commands.Aks;
+using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Services.Azure.Tenant;
+using AzureMcp.Services.Caching;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +28,23 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
 
     public override string Title => CommandTitle;
 
+    private IAksService GetAksService(CommandContext context)
+    {
+        try
+        {
+            var aksService = context.GetService<IAksService>();
+            return aksService;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "AksService hasn't been retrieved from context.");
+        }
+        var subscriptionService = context.GetService<ISubscriptionService>();
+        var tenantService = context.GetService<ITenantService>();
+        var cacheService = context.GetService<ICacheService>();
+        return new AksService(subscriptionService, tenantService, cacheService);
+    }
+
     [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -39,7 +59,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var aksService = context.GetService<IAksService>();
+            var aksService = GetAksService(context);
             var clusters = await aksService.ListClusters(
                 options.Subscription!,
                 options.Tenant,

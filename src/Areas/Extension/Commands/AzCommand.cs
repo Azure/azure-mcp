@@ -6,13 +6,14 @@ using AzureMcp.Areas.Extension.Options;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.Authentication;
 using AzureMcp.Services.ProcessExecution;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.Extension.Commands;
 
 public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSeconds = 300) : GlobalCommand<AzOptions>()
 {
-    private const string CommandTitle = "Azure CLI Command";
+    private const string CommandTitle = "Azure Resource Management Command";
     private readonly ILogger<AzCommand> _logger = logger;
     private readonly int _processTimeoutSeconds = processTimeoutSeconds;
     private readonly Option<string> _commandOption = ExtensionOptionDefinitions.Az.Command;
@@ -32,11 +33,10 @@ public sealed class AzCommand(ILogger<AzCommand> logger, int processTimeoutSecon
 
     public override string Description =>
         """
-Your job is to answer questions about an Azure environment by executing Azure CLI commands. You have the following rules:
+Your job is to answer questions about an Azure environment by executing specific commands. You have the following rules:
 
-- Use the Azure CLI to manage Azure resources and services. Do not use any other tool.
-- Provide a valid Azure CLI command. For example: 'group list'.
-- When deleting or modifying resources, ALWAYS request user confirmation.
+- Provide a valid Azure CLI like command. For example: 'group list'.
+- When managing resources, ALWAYS request user confirmation.
 - If a command fails, retry 3 times before giving up with an improved version of the code based on the returned feedback.
 - When listing resources, ensure pagination is handled correctly so that all resources are returned.
 - You can ONLY write code that interacts with Azure. It CANNOT generate charts, tables, graphs, etc.
@@ -171,29 +171,49 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 
             ArgumentNullException.ThrowIfNull(options.Command);
             var command = options.Command;
-            var processService = context.GetService<IExternalProcessService>();
 
-            // Try to authenticate, but continue even if it fails
-            await AuthenticateWithAzureCredentialsAsync(processService, _logger);
+            // First, try to execute via ReverseAzCommand for better MCP integration
+            var reverseAzCommand = new ReverseAzCommand(_logger);
+            var reverseResult = await reverseAzCommand.ExecuteAzCommand(command, context);
 
-            var azPath = FindAzCliPath() ?? throw new FileNotFoundException("Azure CLI executable not found in PATH or common installation locations. Please ensure Azure CLI is installed.");
-            var result = await processService.ExecuteAsync(azPath, command, _processTimeoutSeconds);
-
-            if (result.ExitCode != 0)
+            if (reverseResult.Status == 200)
             {
-                context.Response.Status = 500;
-                context.Response.Message = result.Error;
+                _logger.LogInformation("Successfully executed command '{Command}' via ReverseAzCommand", command);
+                return reverseResult;
+            }
+            else if (reverseResult.Status == 404)
+            {
+                _logger.LogWarning("Command '{Command}' not recognized by ReverseAzCommand, falling back to Azure CLI execution", command);
+                // Fallback to original Azure CLI execution
+                var processService = context.GetService<IExternalProcessService>();
+
+                // Try to authenticate, but continue even if it fails
+                await AuthenticateWithAzureCredentialsAsync(processService, _logger);
+
+                var azPath = FindAzCliPath() ?? throw new FileNotFoundException("Azure CLI executable not found in PATH or common installation locations. Please ensure Azure CLI is installed.");
+                var result = await processService.ExecuteAsync(azPath, command, _processTimeoutSeconds);
+
+                if (result.ExitCode != 0)
+                {
+                    context.Response.Status = 500;
+                    context.Response.Message = result.Error;
+                }
+
+                var jElem = processService.ParseJsonOutput(result);
+                context.Response.Results = ResponseResult.Create(jElem, JsonSourceGenerationContext.Default.JsonElement);
+            }
+            else
+            {
+                _logger.LogError("Error executing command '{Command}' via ReverseAzCommand: {Message}", command, reverseResult.Message);
+                return reverseResult;
             }
 
-            var jElem = processService.ParseJsonOutput(result);
-            context.Response.Results = ResponseResult.Create(jElem, JsonSourceGenerationContext.Default.JsonElement);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred executing command. Command: {Command}.", options.Command);
             HandleException(context, ex);
         }
-
         return context.Response;
     }
 }

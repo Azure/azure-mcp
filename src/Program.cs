@@ -60,7 +60,6 @@ internal class Program
             new AzureMcp.Areas.Tools.ToolsSetup(),
 
             // Register Azure service areas
-            new AzureMcp.Areas.Aks.AksSetup(),
             new AzureMcp.Areas.AppConfig.AppConfigSetup(),
             new AzureMcp.Areas.Authorization.AuthorizationSetup(),
             new AzureMcp.Areas.AzureIsv.AzureIsvSetup(),
@@ -81,6 +80,9 @@ internal class Program
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
+
+            // replaced by extension tool
+            // new AzureMcp.Areas.Aks.AksSetup(),
         ];
     }
 

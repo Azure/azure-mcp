@@ -18,10 +18,10 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_list_aks_clusters_by_subscription()
     {
         var result = await CallToolAsync(
-            "azmcp_aks_cluster_list",
+            "azmcp_extension_az",
             new()
             {
-                { "subscription", Settings.SubscriptionId }
+                { "command", $"aks list --subscription \"{Settings.SubscriptionName}\"" }
             });
 
         var clusters = result.AssertProperty("clusters");
@@ -61,10 +61,10 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_handle_empty_subscription_gracefully()
     {
         var result = await CallToolAsync(
-            "azmcp_aks_cluster_list",
+            "azmcp_extension_az",
             new()
             {
-                { "subscription", "" }
+                { "command", $"aks list --subscription \"\"" }
             });
 
         // Should return validation error response with no results
@@ -75,10 +75,10 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_handle_invalid_subscription_gracefully()
     {
         var result = await CallToolAsync(
-            "azmcp_aks_cluster_list",
+            "azmcp_extension_az",
             new()
             {
-                { "subscription", "invalid-subscription" }
+                { "command", "aks list --subscription \"invalid-subscription\"" }
             });
 
         // Should return runtime error response with error details in results
@@ -93,8 +93,11 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     public async Task Should_validate_required_subscription_parameter()
     {
         var result = await CallToolAsync(
-            "azmcp_aks_cluster_list",
-            new Dictionary<string, object?>());
+            "azmcp_extension_az",
+            new()
+            {
+                { "command", "aks list" }
+            });
 
         // Should return error response for missing subscription (no results)
         Assert.False(result.HasValue);
