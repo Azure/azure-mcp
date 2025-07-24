@@ -104,11 +104,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
-| azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-get | Show me the details of the key <key_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-get | Show me the key <key_name> in the key vault <key_vault_account_name> |
@@ -124,13 +124,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-aks-cluster-list | List all AKS clusters in my subscription |
-| azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
-| azmcp-aks-cluster-list | What AKS clusters do I have? |
 | azmcp-aks-cluster-get | Show me the details of AKS cluster \<cluster-name> in resource group \<resource-group> |
 | azmcp-aks-cluster-get | Get the configuration of AKS cluster \<cluster-name> |
 | azmcp-aks-cluster-get | What are the details of my AKS cluster \<cluster-name> in \<resource-group>? |
 | azmcp-aks-cluster-get | Show me the network configuration for AKS cluster \<cluster-name> |
+| azmcp-aks-cluster-list | List all AKS clusters in my subscription |
+| azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
+| azmcp-aks-cluster-list | What AKS clusters do I have? |
 
 ## Azure Load Testing
 
@@ -304,20 +304,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
-
-## Azure Workbooks
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-workbooks-list | List all workbooks in my resource group <resource_group_name> |
-| azmcp-workbooks-list | What workbooks do I have in resource group <resource_group_name>? |
-| azmcp-workbooks-show | Show me the workbook with display name <workbook_display_name> |
-| azmcp-workbooks-show | Get information about the workbook with resource ID <workbook_resource_id> |
-| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
-| azmcp-workbooks-update | Update the workbook <workbook_resource_id> with a new text step |
-| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
 
 ## Azure Subscription Management
 
@@ -334,6 +323,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
+
+## Azure Workbooks
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-workbooks-list | List all workbooks in my resource group <resource_group_name> |
+| azmcp-workbooks-list | What workbooks do I have in resource group <resource_group_name>? |
+| azmcp-workbooks-show | Show me the workbook with display name <workbook_display_name> |
+| azmcp-workbooks-show | Get information about the workbook with resource ID <workbook_resource_id> |
+| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
+| azmcp-workbooks-update | Update the workbook <workbook_resource_id> with a new text step |
+| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
 
 ## Bicep
 
