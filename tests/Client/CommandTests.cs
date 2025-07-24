@@ -30,17 +30,16 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_get_best_practices()
+    public async Task Should_get_general_code_generation_best_practices()
     {
         // Act
         JsonElement? result = await CallToolAsync("azmcp_bestpractices_get", new Dictionary<string, object?>
         {
             { "resource", "general" },
-            { "action", "all" }
+            { "action", "code-generation" }
         });
 
         Assert.True(result.HasValue, "Tool call did not return a value.");
-
 
         Assert.Equal(JsonValueKind.Array, result.Value.ValueKind);
         var entries = result.Value.EnumerateArray().ToList();
@@ -52,10 +51,40 @@ public class CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper out
             .Select(e => e.GetString())
             .Where(s => !string.IsNullOrWhiteSpace(s)));
 
-        // Assert specific practices are mentioned
-        Assert.Contains("Implement credential rotation", combinedText, StringComparison.OrdinalIgnoreCase);
+        // Assert specific practices are mentioned based on azure-general-codegen-best-practices.txt content
+        Assert.Contains("Managed Identity (Azure-hosted)", combinedText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("retry logic", combinedText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("logging and monitoring", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("azmcp commands over az cli commands", combinedText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_get_general_deployment_best_practices()
+    {
+        // Act
+        JsonElement? result = await CallToolAsync("azmcp_bestpractices_get", new Dictionary<string, object?>
+        {
+            { "resource", "general" },
+            { "action", "deployment" }
+        });
+
+        Assert.True(result.HasValue, "Tool call did not return a value.");
+
+        Assert.Equal(JsonValueKind.Array, result.Value.ValueKind);
+        var entries = result.Value.EnumerateArray().ToList();
+        Assert.NotEmpty(entries);
+
+        // Combine all entries into a single normalized string for content assertion
+        var combinedText = string.Join("\n", entries
+            .Where(e => e.ValueKind == JsonValueKind.String)
+            .Select(e => e.GetString())
+            .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+        // Assert specific practices are mentioned based on azure-general-deployment-best-practices.txt content
+        Assert.Contains("Infrastructure as Code (IaC)", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("azd commands such as 'azd up'", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Bicep files under the 'infra/' folder", combinedText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("azure_recommend_service_config", combinedText, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
