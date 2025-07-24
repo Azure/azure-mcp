@@ -11,6 +11,7 @@ namespace AzureMcp.Tests.Client.Helpers
     public class LiveTestSettingsFixture : IAsyncLifetime
     {
         public LiveTestSettings Settings { get; private set; } = new();
+        public bool IsSettingsAvailable { get; private set; } = false;
 
         public virtual async ValueTask InitializeAsync()
         {
@@ -28,6 +29,7 @@ namespace AzureMcp.Tests.Client.Helpers
 
                     Settings.SettingsDirectory = directory;
                     await SetPrincipalSettingsAsync();
+                    IsSettingsAvailable = true;
 
                     return;
                 }
@@ -35,7 +37,8 @@ namespace AzureMcp.Tests.Client.Helpers
                 directory = Path.GetDirectoryName(directory);
             }
 
-            throw new FileNotFoundException($"Test settings file '{testSettingsFileName}' not found in the assembly directory or its parent directories.");
+            // Don't throw exception - just mark as unavailable
+            IsSettingsAvailable = false;
         }
 
         private async Task SetPrincipalSettingsAsync()
