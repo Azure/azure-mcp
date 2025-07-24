@@ -113,7 +113,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             failMessage: "No storage metrics found after waiting 180 seconds");
     }
 
-    [Fact(Skip="Intermittent failures due to slow ingestion")]
+    [Fact(Skip = "Intermittent failures due to slow ingestion")]
     public async Task Should_query_monitor_logs()
     {
         await QueryForLogsAsync(
