@@ -368,6 +368,11 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Key Vault Operations
 
 ```bash
+# Creates a certificate in a key vault with the default policy
+azmcp keyvault certificate create --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --name <certificate-name>
+
 # Gets a certificate in a key vault
 azmcp keyvault certificate get --subscription <subscription> \
                                --vault <vault-name> \
@@ -377,10 +382,11 @@ azmcp keyvault certificate get --subscription <subscription> \
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
 
-# Creates a certificate in a key vault with the default policy
-azmcp keyvault certificate create --subscription <subscription> \
-                                  --vault <vault-name> \
-                                  --name <certificate-name>
+# Creates a key in a key vault
+azmcp keyvault key create --subscription <subscription> \
+                          --vault <vault-name> \
+                          --key <key-name> \
+                          --key-type <key-type>
 
 # Gets a key in a key vault
 azmcp keyvault key get --subscription <subscription> \
@@ -392,11 +398,11 @@ azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
                         --include-managed <true/false>
 
-# Creates a key in a key vault
-azmcp keyvault key create --subscription <subscription> \
-                          --vault <vault-name> \
-                          --key <key-name> \
-                          --key-type <key-type>
+# Creates a secret in a key vault
+azmcp keyvault secret create --subscription <subscription> \
+                             --vault <vault-name> \
+                             --name <secret-name> \
+                             --value <secret-value
 
 # Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
@@ -406,12 +412,6 @@ azmcp keyvault secret get --subscription <subscription> \
 # Lists secrets in a key vault
 azmcp keyvault secret list --subscription <subscription> \
                            --vault <vault-name>
-
-# Creates a secret in a key vault
-azmcp keyvault secret create --subscription <subscription> \
-                             --vault <vault-name> \
-                             --name <secret-name> \
-                             --value <secret-value
 ```
 
 ### Azure Kubernetes Service (AKS) Operations
@@ -419,6 +419,10 @@ azmcp keyvault secret create --subscription <subscription> \
 ```bash
 # List AKS clusters in a subscription
 azmcp aks cluster list --subscription <subscription>
+
+# Get details of a specific AKS cluster
+azmcp aks cluster get --subscription <subscription> \
+                      --name <cluster-name>
 ```
 
 ### Azure Load Testing Operations
@@ -522,7 +526,6 @@ azmcp bestpractices get --resource <resource> --action <action>
 #   all             - Best practices for both code generation and deployment
 #   code-generation - Best practices for code generation
 #   deployment      - Best practices for deployment (only for azurefunctions)
-
 ```
 
 ### Azure MCP Tools
@@ -635,6 +638,17 @@ azmcp monitor metrics definitions --subscription <subscription> \
 azmcp datadog monitoredresources list --subscription <subscription> \
                                       --resource-group <resource-group> \
                                       --datadog-resource <datadog-resource>
+```
+
+### Azure Quick Review CLI Extension Operations
+
+```bash
+# Scan a subscription for recommendations
+azmcp extension azqr --subscription <subscription>
+
+# Scan a subscription and scope to a specific resource group
+azmcp extension azqr --subscription <subscription> \
+                     --resource-group <resource-group-name>
 ```
 
 ### Azure RBAC Operations
@@ -766,35 +780,11 @@ azmcp storage blob container details --subscription <subscription> \
 azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --account-name <account-name> \
                                               --file-system-name <file-system-name>
-```
 
-### Azure Workbooks Operations
-
-```bash
-# List Azure Monitor workbooks in a resource group
-azmcp workbooks list --subscription <subscription> \
-                     --resource-group <resource-group> \
-                     [--category <category>] \
-                     [--kind <kind>] \
-                     [--source-id <source-id>]
-
-# Show details of a specific workbook by resource ID
-azmcp workbooks show --workbook-id <workbook-resource-id>
-
-# Create a new workbook
-azmcp workbooks create --subscription <subscription> \
-                       --resource-group <resource-group> \
-                       --display-name <display-name> \
-                       --serialized-content <json-content> \
-                       [--source-id <source-id>]
-
-# Update an existing workbook
-azmcp workbooks update --workbook-id <workbook-resource-id> \
-                       [--display-name <display-name>] \
-                       [--serialized-content <json-content>]
-
-# Delete a workbook
-azmcp workbooks delete --workbook-id <workbook-resource-id>
+# Create a directory in DataLake using a specific path
+azmcp storage datalake directory create --subscription <subscription> \
+                                        --account-name <account-name> \
+                                        --directory-path <directory-path>
 ```
 
 ### Azure Subscription Management
@@ -811,15 +801,33 @@ azmcp subscription list [--tenant-id <tenant-id>]
 azmcp azureterraformbestpractices get
 ```
 
-### Azure Quick Review CLI Extension Operations
+### Azure Workbooks Operations
 
 ```bash
-# Scan a subscription for recommendations
-azmcp extension azqr --subscription <subscription>
+# Create a new workbook
+azmcp workbooks create --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --display-name <display-name> \
+                       --serialized-content <json-content> \
+                       [--source-id <source-id>]
 
-# Scan a subscription and scope to a specific resource group
-azmcp extension azqr --subscription <subscription> \
-                     --resource-group <resource-group-name>
+# Delete a workbook
+azmcp workbooks delete --workbook-id <workbook-resource-id>
+
+# List Azure Monitor workbooks in a resource group
+azmcp workbooks list --subscription <subscription> \
+                     --resource-group <resource-group> \
+                     [--category <category>] \
+                     [--kind <kind>] \
+                     [--source-id <source-id>]
+
+# Show details of a specific workbook by resource ID
+azmcp workbooks show --workbook-id <workbook-resource-id>
+
+# Update an existing workbook
+azmcp workbooks update --workbook-id <workbook-resource-id> \
+                       [--display-name <display-name>] \
+                       [--serialized-content <json-content>]
 ```
 
 ### Bicep
