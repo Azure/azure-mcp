@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Diagnostics;
 using AzureMcp.Areas;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.ResourceGroup;
@@ -16,9 +17,17 @@ using Microsoft.Extensions.Logging;
 internal class Program
 {
     private static IAreaSetup[] Areas = RegisterAreas();
-
+    private static bool AttachDebugger { get; } = true;
     private static async Task<int> Main(string[] args)
     {
+#if DEBUG
+        if (AttachDebugger)
+        {
+            while (!Debugger.IsAttached)
+                Thread.Sleep(1000);
+            Debugger.Break();
+        }
+#endif
         try
         {
             ServiceCollection services = new();
@@ -81,6 +90,7 @@ internal class Program
             new AzureMcp.Areas.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Areas.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Areas.LoadTesting.LoadTestingSetup(),
+            new AzureMcp.Areas.Startups.StartupsSetup(),
         ];
     }
 
