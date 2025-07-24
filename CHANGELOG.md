@@ -1,72 +1,42 @@
-# Release History
+# CHANGELOG 📝
 
-## 0.5.0 (Unreleased)
+The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
+
+## 0.5.0 (2025-07-24)
 
 ### Features Added
 
+- Added a new VS Code extension (VSIX installer) for the VS Code Marketplace. [[#661](https://github.com/Azure/azure-mcp/pull/661)]
+- Added `--mode all` startup option to expose all Azure MCP tools individually. [[#689](https://github.com/Azure/azure-mcp/issues/689)]
 - Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
-  - `azmcp-keyvault-certificate-list`
-  - `azmcp-keyvault-certificate-get`
-  - `azmcp-keyvault-certificate-create`
-  - `azmcp-keyvault-secret-list`
-  - `azmcp-keyvault-secret-create`
-- Added support for Azure Workbooks management operations:
+  - `azmcp-keyvault-certificate-list` - List certificates in a key vault
+  - `azmcp-keyvault-certificate-get` - Get details of a specific certificate
+  - `azmcp-keyvault-certificate-create` - Create a new certificate
+  - `azmcp-keyvault-secret-list` - List secrets in a key vault
+  - `azmcp-keyvault-secret-create` - Create a new secret
+- Added support for Azure Workbooks management operations: [[#629](https://github.com/Azure/azure-mcp/pull/629)]
   - `azmcp-workbooks-list` - List workbooks in a resource group with optional filtering
   - `azmcp-workbooks-show` - Get detailed information about a specific workbook
   - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
   - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
   - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
-- Added `--mode all` option to expose all Azure MCP tools individually [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+- Added support for creating a directory in Azure Storage DataLake via the `azmcp-storage-datalake-directory-create` command. [[#647](https://github.com/Azure/azure-mcp/pull/647)]
+- Added support for getting the details of an Azure Kubernetes Service (AKS) cluster via the `azmcp-aks-cluster-get` command. [[#700](https://github.com/Azure/azure-mcp/pull/700)]
 
 ### Breaking Changes
 
-- **BREAKING**: Changed default `--mode` from `all` (individual tools) to `"namespace"` (namespace-level tools) [[#689](https://github.com/Azure/azure-mcp/issues/689)]
-  - **Before**: `npx @azure/mcp server start` exposed ~128 individual tools
-  - **After**: `npx @azure/mcp server start` exposes ~25 namespace-level tools  
-  - **Migration**: Use `--mode all` to restore the previous behavior of exposing all tools individually
+- Changed the default startup mode to list tools at the namespace level instead of at an individual level, reducing total tool count from around 128 tools to 25. Use `--mode all` to restore the previous behavior of exposing all tools individually. [[#689](https://github.com/Azure/azure-mcp/issues/689)]
+- Consolidated Azure best practices commands into the command `azmcp-bestpractices-get` with `--resource` and `--action` parameters: [[#677](https://github.com/Azure/azure-mcp/pull/677)]
+  - Removed `azmcp-bestpractices-general-get`, `azmcp-bestpractices-azurefunctions-get-code-generation` and `azmcp-bestpractices-azurefunctions-get-deployment`
+  - Use `--resource general --action code-generation` for general Azure code generation best practices
+  - Use `--resource general --action deployment` for general Azure deployment best practices
+  - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
+  - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
+  - Use `--resource static-web-app --action all` to get Static Web Apps development and deployment best practices
 
 ### Bugs Fixed
 
-- Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
-
-### Other Changes
-
-## 0.4.2 (Unreleased)
-
-### Features Added
-
-- Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
-  - `azmcp-keyvault-certificate-list`
-  - `azmcp-keyvault-certificate-get`
-  - `azmcp-keyvault-certificate-create`
-  - `azmcp-keyvault-secret-list`
-  - `azmcp-keyvault-secret-create`
-- Added support for Azure Workbooks management operations:
-  - `azmcp-workbooks-list` - List workbooks in a resource group with optional filtering
-  - `azmcp-workbooks-show` - Get detailed information about a specific workbook
-  - `azmcp-workbooks-create` - Create new workbooks with custom visualizations and content
-  - `azmcp-workbooks-update` - Update existing workbook configurations and metadata
-  - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
-
-### Breaking Changes
-
-- Consolidated Azure best practices commands into a single command `azmcp-bestpractices-get` with parameters:
-  - Removed: `azmcp-bestpractices-general-get`
-  - Removed: `azmcp-bestpractices-azurefunctions-get-code-generation`
-  - Removed: `azmcp-bestpractices-azurefunctions-get-deployment`
-  - Added: `azmcp-bestpractices-get` with `--resource` and `--action` parameters
-    - Removed `azmcp-bestpractices-general-get`, `azmcp-bestpractices-azurefunctions-get-code-generation` and `azmcp-bestpractices-azurefunctions-get-deployment`
-    - Use `--resource general --action code-generation` for general Azure code generation best practices
-    - Use `--resource general --action deployment` for general Azure deployment best practices
-    - Use `--resource azurefunctions --action code-generation` instead of the old azurefunctions code-generation command
-    - Use `--resource azurefunctions --action deployment` instead of the old azurefunctions deployment command
-    - Use `--resource static-web-app --action all` to get Static Web Apps development and deployment best practices
-
-### Bugs Fixed
-
-- Fixes issue where tool call can fail if MCP host does not first list tools [[#556](https://github.com/Azure/azure-mcp/issues/556)]
-
-### Other Changes
+- Fixes tool discovery race condition causing "tool not found" errors in MCP clients that use different processes to start and use the server, like LangGraph. [[#556](https://github.com/Azure/azure-mcp/issues/556)]
 
 ## 0.4.1 (2025-07-17)
 
