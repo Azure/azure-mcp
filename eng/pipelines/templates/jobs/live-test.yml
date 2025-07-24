@@ -81,7 +81,7 @@ jobs:
         azurePowerShellVersion: 'LatestVersion'
         scriptType: InlineScript
         Inline: |
-          ./eng/scripts/Test-Code.ps1 -Live -CoverageSummary -Areas (ConvertFrom-Json $env:TESTAREAS)
+          ./eng/scripts/Test-Code.ps1 -Live -CollectCoverage -Areas (ConvertFrom-Json $env:TESTAREAS)
           exit $LastExitCode
         pwsh: true
         workingDirectory: $(Build.SourcesDirectory)
