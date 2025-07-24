@@ -6,8 +6,8 @@ param(
     [string] $TestResultsPath,
     [string[]] $Areas,
     [switch] $Live,
-    [switch] $OpenReport,
-    [switch] $CollectCoverage
+    [switch] $CollectCoverage,
+    [switch] $OpenReport
 )
 
 $ErrorActionPreference = 'Stop'
@@ -37,16 +37,13 @@ if ($Areas) {
     $filter = "$filter & ($($Areas | ForEach-Object { "Area=$_" } | Join-String -Separator ' | '))"
 }
 
-$testCommand = "dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
+$coverageArg = $CollectCoverage ? " --collect:'XPlat Code Coverage'" : ""
+
+Invoke-LoggedCommand ("dotnet test '$RepoRoot/tests/AzureMcp.Tests.csproj'" +
+  $coverageArg +
   " --filter '$filter'" +
   " --results-directory '$TestResultsPath'" +
-  " --logger 'trx'"
-
-if ($CollectCoverage) {
-    $testCommand += " --collect:'XPlat Code Coverage'"
-}
-
-Invoke-LoggedCommand $testCommand -AllowedExitCodes @(0, 1)
+  " --logger 'trx'") -AllowedExitCodes @(0, 1)
 
 $testExitCode = $LastExitCode
 
