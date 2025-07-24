@@ -97,6 +97,16 @@ export function activate(context: vscode.ExtensionContext) {
             }
         })
     );
+
+    // Listen for changes to VS Code telemetry settings and re-register MCP server
+    context.subscriptions.push(
+        vscode.env.onDidChangeTelemetryEnabled(() => {
+            void vscode.window.showInformationMessage(
+                'VS Code telemetry setting changed. Re-registering the MCP server.'
+            );
+            didChangeEmitter.fire();
+        })
+    );
 }
 
 export function deactivate() {
