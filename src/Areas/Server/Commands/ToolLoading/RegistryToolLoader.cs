@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Areas.Server;
 using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Options;
 using Microsoft.Extensions.Logging;
@@ -93,12 +94,16 @@ public sealed class RegistryToolLoader(
 
         if (!_toolClientMap.TryGetValue(request.Params.Name, out var mcpClient) || mcpClient == null)
         {
+            var errorMessage = $"The tool {request.Params.Name} was not found";
+            var errorData = new Dictionary<string, object?> { ["error"] = errorMessage };
+            var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
             var content = new TextContentBlock
             {
-                Text = $"The tool {request.Params.Name} was not found",
+                Text = errorJson,
             };
 
-            _logger.LogWarning(content.Text);
+            _logger.LogWarning(errorMessage);
 
             return new CallToolResult
             {

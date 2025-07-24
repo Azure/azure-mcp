@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using System.Threading;
+using AzureMcp.Areas.Server;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
@@ -120,12 +122,16 @@ public sealed class CompositeToolLoader(IEnumerable<IToolLoader> toolLoaders, IL
 
         if (!_toolLoaderMap.TryGetValue(request.Params.Name, out var toolCaller))
         {
+            var errorMessage = $"The tool {request.Params.Name} was not found";
+            var errorData = new Dictionary<string, object?> { ["error"] = errorMessage };
+            var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
             var content = new TextContentBlock
             {
-                Text = $"The tool {request.Params.Name} was not found",
+                Text = errorJson,
             };
 
-            _logger.LogWarning(content.Text);
+            _logger.LogWarning(errorMessage);
 
             return new CallToolResult
             {

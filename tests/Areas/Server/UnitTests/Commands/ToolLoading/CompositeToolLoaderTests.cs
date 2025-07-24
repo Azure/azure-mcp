@@ -192,7 +192,13 @@ public class CompositeToolLoaderTests
         Assert.Single(result.Content);
         var textContent = Assert.IsType<TextContentBlock>(result.Content[0]);
         Assert.NotNull(callRequest.Params);
-        Assert.Equal($"The tool {callRequest.Params.Name} was not found", textContent.Text);
+
+        // Verify the response is valid JSON with the correct error message
+        using var doc = JsonDocument.Parse(textContent.Text);
+        Assert.True(doc.RootElement.TryGetProperty("error", out var errorElement));
+        var errorMessage = errorElement.GetString();
+        Assert.NotNull(errorMessage);
+        Assert.Equal($"The tool {callRequest.Params.Name} was not found", errorMessage);
     }
 
     [Fact]

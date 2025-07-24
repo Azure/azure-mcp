@@ -139,32 +139,32 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         {
             _logger.LogError(ex, "Key not found while calling tool: {Tool}", tool);
 
+            var keyNotFoundMessage = $"The tool '{tool}.{command}' was not found or does not support the specified command. Please ensure the tool name and command are correct. If you want to learn about available tools, run again with the \"learn=true\" argument.";
+            var keyNotFoundErrorData = new Dictionary<string, object?> { ["error"] = keyNotFoundMessage };
+            var keyNotFoundJson = JsonSerializer.Serialize(keyNotFoundErrorData, ServerJsonContext.Default.DictionaryStringObject);
+
             return new CallToolResult
             {
                 Content =
                 [
                     new TextContentBlock {
-                        Text = $"""
-                            The tool '{tool}.{command}' was not found or does not support the specified command.
-                            Please ensure the tool name and command are correct.
-                            If you want to learn about available tools, run again with the "learn=true" argument.
-                        """
+                        Text = keyNotFoundJson
                     }
                 ],
                 IsError = true
             };
         }
 
+        var errorMessage = "The \"command\" parameters are required when not learning. Run again with the \"learn\" argument to get a list of available tools and their parameters. To learn about a specific tool, use the \"tool\" argument with the name of the tool.";
+        var errorData = new Dictionary<string, object?> { ["error"] = errorMessage };
+        var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
         return new CallToolResult
         {
             Content =
                 [
                     new TextContentBlock {
-                    Text = """
-                        The "command" parameters are required when not learning
-                        Run again with the "learn" argument to get a list of available tools and their parameters.
-                        To learn about a specific tool, use the "tool" argument with the name of the tool.
-                    """
+                    Text = errorJson
                 }
                 ]
         };
@@ -174,12 +174,16 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
     {
         if (request.Params == null)
         {
+            var errorMessage = "Cannot call tools with null parameters.";
+            var errorData = new Dictionary<string, object?> { ["error"] = errorMessage };
+            var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
             var content = new TextContentBlock
             {
-                Text = "Cannot call tools with null parameters.",
+                Text = errorJson,
             };
 
-            _logger.LogWarning(content.Text);
+            _logger.LogWarning(errorMessage);
 
             return new CallToolResult
             {
@@ -250,24 +254,23 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
                     var childToolSpecJson = await GetChildToolJsonAsync(request, tool, command);
 
                     _logger.LogWarning("Tool {Tool} command {Command} requires additional parameters.", tool, command);
+
+                    var errorMessage = $"The '{command}' command is missing required parameters. Review the following command spec and identify the required arguments from the input schema. Omit any arguments that are not required or do not apply to your use case. Wrap all command arguments into the root \"parameters\" argument. If required data is missing infer the data from your context or prompt the user as needed. Run the tool again with the \"command\" and root \"parameters\" object.";
+                    var errorData = new Dictionary<string, object?>
+                    {
+                        ["error"] = errorMessage,
+                        ["commandSpec"] = childToolSpecJson
+                    };
+                    var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
                     var finalResponse = new CallToolResult
                     {
                         Content =
                         [
-                            new TextContentBlock {
-                                    Text = $"""
-                                        The '{command}' command is missing required parameters.
-
-                                        - Review the following command spec and identify the required arguments from the input schema.
-                                        - Omit any arguments that are not required or do not apply to your use case.
-                                        - Wrap all command arguments into the root "parameters" argument.
-                                        - If required data is missing infer the data from your context or prompt the user as needed.
-                                        - Run the tool again with the "command" and root "parameters" object.
-
-                                        Command Spec:
-                                        {childToolSpecJson}
-                                        """
-                                }
+                            new TextContentBlock
+                            {
+                                Text = errorJson
+                            }
                         ]
                     };
 
@@ -285,18 +288,18 @@ public sealed class ServerToolLoader(IMcpDiscoveryStrategy serverDiscoveryStrate
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception thrown while calling tool: {Tool}, command: {Command}", tool, command);
+
+            var errorMessage = $"There was an error finding or calling tool and command. Failed to call tool: {tool}, command: {command}. Error: {ex.Message}. Run again with the \"learn=true\" to get a list of available commands and their parameters.";
+            var errorData = new Dictionary<string, object?> { ["error"] = errorMessage };
+            var errorJson = JsonSerializer.Serialize(errorData, ServerJsonContext.Default.DictionaryStringObject);
+
             return new CallToolResult
             {
                 Content =
                 [
-                    new TextContentBlock {
-                        Text = $"""
-                            There was an error finding or calling tool and command.
-                            Failed to call tool: {tool}, command: {command}
-                            Error: {ex.Message}
-
-                            Run again with the "learn=true" to get a list of available commands and their parameters.
-                            """
+                    new TextContentBlock
+                    {
+                        Text = errorJson
                     }
                 ]
             };
