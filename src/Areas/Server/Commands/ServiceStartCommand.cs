@@ -3,7 +3,6 @@
 
 using AzureMcp.Areas.Server.Options;
 using AzureMcp.Commands;
-using AzureMcp.Models.Option;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

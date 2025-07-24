@@ -3,6 +3,7 @@
 
 using Azure.Core;
 using AzureMcp.Areas.Workbooks.Models;
+using AzureMcp.Helpers;
 using AzureMcp.Options;
 using Microsoft.Extensions.Logging;
 
@@ -61,7 +62,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                     Category: properties.TryGetProperty("category", out var cat) ? cat.GetString() : null,
                     Location: location,
                     Kind: kind,
-                    Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? ConvertTagsToString(tags) : null,
+                    Tags: tags.ValueKind != JsonValueKind.Undefined && tags.ValueKind != JsonValueKind.Null ? TagConverter.ConvertTagsToString(tags) : null,
                     SerializedData: properties.TryGetProperty("serializedData", out var data) ? data.GetString() : null,
                     Version: properties.TryGetProperty("version", out var ver) ? ver.GetString() : null,
                     TimeModified: properties.TryGetProperty("timeModified", out var modified) ? modified.GetDateTimeOffset() : null,
@@ -112,7 +113,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                 Category: workbook.Data.Category,
                 Location: workbook.Data.Location.ToString(),
                 Kind: workbook.Data.Kind?.ToString(),
-                Tags: ConvertTagsToString(workbook.Data.Tags),
+                Tags: TagConverter.ConvertTagsToString(workbook.Data.Tags),
                 SerializedData: workbook.Data.SerializedData,
                 Version: workbook.Data.Version,
                 TimeModified: workbook.Data.ModifiedOn,
@@ -185,7 +186,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                 Category: updatedWorkbook.Data.Category,
                 Location: updatedWorkbook.Data.Location.ToString(),
                 Kind: updatedWorkbook.Data.Kind?.ToString(),
-                Tags: ConvertTagsToString(updatedWorkbook.Data.Tags),
+                Tags: TagConverter.ConvertTagsToString(updatedWorkbook.Data.Tags),
                 SerializedData: updatedWorkbook.Data.SerializedData,
                 Version: updatedWorkbook.Data.Version,
                 TimeModified: updatedWorkbook.Data.ModifiedOn,
@@ -243,7 +244,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
                 Category: createdWorkbook.Data.Category,
                 Location: createdWorkbook.Data.Location.ToString(),
                 Kind: createdWorkbook.Data.Kind?.ToString(),
-                Tags: ConvertTagsToString(createdWorkbook.Data.Tags),
+                Tags: TagConverter.ConvertTagsToString(createdWorkbook.Data.Tags),
                 SerializedData: createdWorkbook.Data.SerializedData,
                 Version: createdWorkbook.Data.Version,
                 TimeModified: createdWorkbook.Data.ModifiedOn,
@@ -286,31 +287,6 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
     /// <summary>
     /// Converts a JsonElement containing tags to a comma-separated string representation.
     /// This helps keep the output flat for the model.
-    /// </summary>
-    private static string? ConvertTagsToString(JsonElement tagsElement)
-    {
-        if (tagsElement.ValueKind != JsonValueKind.Object)
-            return null;
-
-        var tags = new List<string>();
-        foreach (var tag in tagsElement.EnumerateObject())
-        {
-            var value = tag.Value.GetString() ?? "";
-            tags.Add($"{tag.Name}={value}");
-        }
-
-        return tags.Count > 0 ? string.Join(", ", tags) : null;
-    }
-
-    /// <summary>
-    /// Converts a dictionary of tags to a comma-separated string representation.
-    /// This helps keep the output flat for the model.
-    /// </summary>
-    private static string? ConvertTagsToString(IDictionary<string, string>? tags)
-    {
-        return tags?.Count > 0 ? string.Join(", ", tags.Select(kvp => $"{kvp.Key}={kvp.Value}")) : null;
-    }
-
     /// <summary>
     /// Builds a KQL query for retrieving workbooks with optional filters.
     /// </summary>

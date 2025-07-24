@@ -1,4 +1,7 @@
-﻿using System.CommandLine.Parsing;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.CommandLine.Parsing;
 using System.Text.Json;
 using AzureMcp.Areas.AzureTerraformBestPractices.Commands;
 using AzureMcp.Models.Command;

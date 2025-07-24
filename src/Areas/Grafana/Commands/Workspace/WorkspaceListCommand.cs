@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Grafana.Models.Workspace;
 using AzureMcp.Areas.Grafana.Options.Workspace;
 using AzureMcp.Areas.Grafana.Services;
 using AzureMcp.Commands.Grafana;

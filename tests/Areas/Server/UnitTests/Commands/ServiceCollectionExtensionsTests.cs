@@ -5,12 +5,9 @@ using AzureMcp.Areas.Server.Commands.Discovery;
 using AzureMcp.Areas.Server.Commands.Runtime;
 using AzureMcp.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Areas.Server.Options;
-using AzureMcp.Commands;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using Xunit;
 

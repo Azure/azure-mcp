@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas;
 using AzureMcp.Commands;
 using AzureMcp.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;

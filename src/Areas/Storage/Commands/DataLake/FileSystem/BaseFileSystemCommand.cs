@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Areas.Storage.Commands;
 using AzureMcp.Areas.Storage.Options;
 using AzureMcp.Areas.Storage.Options.DataLake;
 using AzureMcp.Commands;

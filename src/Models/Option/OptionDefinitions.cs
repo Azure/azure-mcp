@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Azure.Core;
-using AzureMcp.Areas.Server.Options;
 
 namespace AzureMcp.Models.Option;
 
@@ -47,6 +46,18 @@ public static partial class OptionDefinitions
         )
         {
             IsRequired = true
+        };
+
+        /// <summary>
+        /// Creates an optional resource group option (IsRequired = false).
+        /// Use this when resource group is not mandatory for a command.
+        /// </summary>
+        public static Option<string> CreateOptionalResourceGroup() => new(
+            $"--{ResourceGroupName}",
+            "The name of the Azure resource group. This is a logical container for Azure resources."
+        )
+        {
+            IsRequired = false
         };
     }
 

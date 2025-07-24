@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using System.Text.Json;
 using AzureMcp.Areas.LoadTesting.Commands.LoadTestRun;
 using AzureMcp.Areas.LoadTesting.Models.LoadTestRun;
 using AzureMcp.Areas.LoadTesting.Services;

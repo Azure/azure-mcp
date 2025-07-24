@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for Azure Container Apps operations via the command: `azmcp-containerapp-list`. List all Azure Container Apps within a specified subscription or resource group. [[#675](https://github.com/Azure/azure-mcp/pull/675)]
+
 - Added more tools for Azure Key Vault: [[#517](https://github.com/Azure/azure-mcp/pull/517)]
   - `azmcp-keyvault-certificate-list`
   - `azmcp-keyvault-certificate-get`

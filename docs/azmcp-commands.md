@@ -200,6 +200,34 @@ azmcp extension az --command "storage account show --name <account-name> --resou
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure Container Apps Operations
+
+```bash
+# List all Container Apps in a subscription
+azmcp containerapp list --subscription <subscription>
+
+# List Container Apps in a specific resource group
+azmcp containerapp list --subscription <subscription> \
+                        --resource-group <resource-group>
+
+# List Container Apps in a specific environment
+azmcp containerapp list --subscription <subscription> \
+                        --environment <environment-name>
+
+# List Container Apps with both resource group and environment filters
+azmcp containerapp list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --environment <environment-name>
+```
+
+**Parameters:**
+- `--subscription` (required): Azure subscription ID or name
+- `--resource-group` (optional): Filter by resource group name
+- `--environment` (optional): Filter by managed environment name or ID
+
+**Return Format:**
+Returns an array of Container App objects with properties including name, location, resource group, managed environment ID, provisioning state, configuration, and template details.
+
 ### Azure Cosmos DB Operations
 
 ```bash

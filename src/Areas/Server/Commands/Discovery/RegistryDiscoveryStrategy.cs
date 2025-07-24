@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
-using System.Text.Json;
 using AzureMcp.Areas.Server.Models;
 using AzureMcp.Areas.Server.Options;
 using Microsoft.Extensions.Logging;

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.Aks.Models;
 using AzureMcp.Areas.Aks.Options.Cluster;
 using AzureMcp.Areas.Aks.Services;
 using AzureMcp.Commands.Aks;

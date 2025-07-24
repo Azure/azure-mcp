@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AzureMcp.Areas.Marketplace.Commands.Product;
 using AzureMcp.Areas.Marketplace.Models;
 using AzureMcp.Areas.Marketplace.Services;

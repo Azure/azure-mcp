@@ -62,6 +62,7 @@
     <PackageReference Include="Azure.Monitor.Query" />
     <PackageReference Include="Azure.ResourceManager.ApplicationInsights" />
     <PackageReference Include="Azure.ResourceManager.AppConfiguration" />
+    <PackageReference Include="Azure.ResourceManager.AppContainers" />
     <PackageReference Include="Azure.ResourceManager.Authorization" />
     <PackageReference Include="Azure.ResourceManager.ContainerService" />
     <PackageReference Include="Azure.ResourceManager.CognitiveServices" />

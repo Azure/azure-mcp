@@ -263,6 +263,27 @@
             }
         },
         {
+            "name": "Debug Container App List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "containerapp",
+                "list",
+                "--subscription",
+                "${input:subscription}",
+                "--tenant",
+                "${input:tenant}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
             "name": "Debug Tools List",
             "type": "coreclr",
             "request": "launch",
@@ -467,6 +488,12 @@
             "id": "subscription",
             "type": "promptString",
             "description": "Azure Subscription",
+            "default": ""
+        },
+        {
+            "id": "tenant",
+            "type": "promptString",
+            "description": "Azure Tenant ID",
             "default": ""
         },
         {

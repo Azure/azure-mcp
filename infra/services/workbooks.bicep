@@ -354,7 +354,7 @@ resource simpleTestWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
 resource userWorkbook 'Microsoft.Insights/workbooks@2023-06-01' = {
   name: guid('${baseName}-user-workbook')
   location: location
-  kind: 'user'
+  kind: 'shared'
   properties: {
     displayName: '${baseName} User Workbook'
     description: 'User workbook for testing different kind filter'
