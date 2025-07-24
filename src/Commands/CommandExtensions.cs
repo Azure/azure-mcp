@@ -42,7 +42,10 @@ public static class CommandExtensions
                 JsonValueKind.False => "false",
                 JsonValueKind.Number => value.GetRawText(),
                 JsonValueKind.String => value.GetString(),
-                JsonValueKind.Array => string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
+                JsonValueKind.Object => "\'" + value.GetRawText() + "\'",
+                JsonValueKind.Array => value.EnumerateArray().All(t => t.ValueKind == JsonValueKind.String) ?
+                    string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)) : // simple string array
+                    "\'" + value.GetRawText() + "\'", // for complex JSON, pass as JSON to preserve structure
                 _ => value.GetRawText()
             };
 
