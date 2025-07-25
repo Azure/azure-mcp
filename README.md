@@ -274,7 +274,7 @@ Installation in VS Code should be in one of the previous forms and the update in
 
 ### 🐋 Docker Install Steps (Optional)
 
-Microsoft publishes an official Azure MCP Server docker container on the [Microsoft Artifact Registry](https://mcr.microsoft.com/en-us/artifact/mar/azure-sdk/azure-mcp).
+Microsoft publishes an official Azure MCP Server Docker container on the [Microsoft Artifact Registry](https://mcr.microsoft.com/en-us/artifact/mar/azure-sdk/azure-mcp).
 
 For a step-by-step Docker installation, follow these instructions:
 
