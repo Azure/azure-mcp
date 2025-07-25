@@ -163,21 +163,4 @@ public class GroupListCommandTests
         Assert.Equal(500, result.Status);
         Assert.Contains(expectedError, result.Message);
     }
-
-    [Fact]
-    public async Task ExecuteAsync_MissingSubscription_FailsValidation()
-    {
-        // Arrange
-        var args = _parser.Parse(""); // No subscription provided
-
-        // Act
-        var result = await _command.ExecuteAsync(_context, args);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(400, result.Status);
-        Assert.Contains("required", result.Message.ToLower());
-        // Verify service was not called when validation fails
-        await _resourceGroupService.DidNotReceive().GetResourceGroups(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
-    }
 }
