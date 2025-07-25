@@ -48,7 +48,7 @@ public class GroupListCommandTests
     public async Task ExecuteAsync_WithValidSubscription_ReturnsResourceGroups()
     {
         // Arrange
-        var subscriptionId = "test-subscription-id";
+        var subscriptionId = "test-subs-id";
         var expectedGroups = new List<ResourceGroupInfo>
         {
             ResourceGroupTestHelpers.CreateResourceGroupInfo("rg1", subscriptionId, "East US"),
@@ -78,7 +78,7 @@ public class GroupListCommandTests
         var second = groupsArray[1];
 
         Assert.Equal("rg1", first.GetProperty("name").GetString());
-        Assert.Equal("/subscriptions/test-subscription-id/resourceGroups/rg1", first.GetProperty("id").GetString());
+        Assert.Equal("/subscriptions/test-subs-id/resourceGroups/rg1", first.GetProperty("id").GetString());
         Assert.Equal("East US", first.GetProperty("location").GetString());
 
         Assert.Equal("rg2", second.GetProperty("name").GetString());
@@ -95,7 +95,7 @@ public class GroupListCommandTests
     public async Task ExecuteAsync_WithTenant_PassesTenantToService()
     {
         // Arrange
-        var subscriptionId = "test-subscription-id";
+        var subscriptionId = "test-subs-id";
         var tenantId = "test-tenant-id";
         var expectedGroups = new List<ResourceGroupInfo>
         {
@@ -127,7 +127,7 @@ public class GroupListCommandTests
     public async Task ExecuteAsync_EmptyResourceGroupList_ReturnsNullResults()
     {
         // Arrange
-        var subscriptionId = "test-subscription-id";
+        var subscriptionId = "test-subs-id";
         _resourceGroupService
             .GetResourceGroups(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns([]);
@@ -147,7 +147,7 @@ public class GroupListCommandTests
     public async Task ExecuteAsync_ServiceThrowsException_ReturnsErrorInResponse()
     {
         // Arrange
-        var subscriptionId = "test-subscription-id";
+        var subscriptionId = "test-subs-id";
         var expectedError = "Test error message";
         _resourceGroupService
             .GetResourceGroups(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
