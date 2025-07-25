@@ -13,10 +13,12 @@
     "useGitignore": true,
     "enableGlobDot": true,
     "ignorePaths": [
+        "**/*.binlog",
         "**/.editorconfig",
         "**/.github/CODEOWNERS",
         "**/.git/",
         "**/.gitattributes",
+        "**/.gitignore",
         "**/.vscode/**",
         "**/eng/common/**",
         "**/obj/**",
