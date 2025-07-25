@@ -24,19 +24,48 @@ The following options are available for all commands:
 
 The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
 
-#### Default Mode
+#### Default Mode (Namespace)
+
+Exposes Azure tools grouped by service namespace. Each Azure service appears as a single namespace-level tool that routes to individual operations internally. This is the default mode to reduce tool count and prevent VS Code from hitting the 128 tool limit.
+
+```bash
+# Start MCP Server with namespace-level tools (default behavior)
+azmcp server start \
+    [--transport <transport>] \
+    [--read-only]
+
+# Explicitly specify namespace mode
+azmcp server start \
+    --mode namespace \
+    [--transport <transport>] \
+    [--read-only]
+```
+
+#### All Tools Mode
 
 Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
 
 ```bash
 # Start MCP Server with all tools exposed individually
 azmcp server start \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
-#### Namespace Mode
+#### Single Tool Mode
+
+Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
+
+```bash
+# Start MCP Server with single azure tool
+azmcp server start \
+    --mode single \
+    [--transport <transport>] \
+    [--read-only]
+```
+
+#### Namespace Filtering
 
 Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
 
@@ -44,20 +73,20 @@ Exposes only tools for specific Azure service namespaces. Use multiple `--namesp
 # Start MCP Server with only Storage tools
 azmcp server start \
     --namespace storage \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 
 # Start MCP Server with Storage and Key Vault tools
 azmcp server start \
     --namespace storage \
     --namespace keyvault \
+    --mode all \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
-#### Service Proxy Mode
+#### Namespace Mode (Default)
 
 Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
 
@@ -66,7 +95,6 @@ Collapses all tools within each namespace into a single tool (e.g., all storage 
 azmcp server start \
     --mode namespace \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
@@ -79,7 +107,6 @@ Exposes a single "azure" tool that handles internal routing across all Azure MCP
 azmcp server start \
     --mode single \
     [--transport <transport>] \
-    [--port <port>] \
     [--read-only]
 ```
 
@@ -341,6 +368,11 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Key Vault Operations
 
 ```bash
+# Creates a certificate in a key vault with the default policy
+azmcp keyvault certificate create --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --name <certificate-name>
+
 # Gets a certificate in a key vault
 azmcp keyvault certificate get --subscription <subscription> \
                                --vault <vault-name> \
@@ -350,10 +382,11 @@ azmcp keyvault certificate get --subscription <subscription> \
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
 
-# Creates a certificate in a key vault with the default policy
-azmcp keyvault certificate create --subscription <subscription> \
-                                  --vault <vault-name> \
-                                  --name <certificate-name>
+# Creates a key in a key vault
+azmcp keyvault key create --subscription <subscription> \
+                          --vault <vault-name> \
+                          --key <key-name> \
+                          --key-type <key-type>
 
 # Gets a key in a key vault
 azmcp keyvault key get --subscription <subscription> \
@@ -365,11 +398,11 @@ azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
                         --include-managed <true/false>
 
-# Creates a key in a key vault
-azmcp keyvault key create --subscription <subscription> \
-                          --vault <vault-name> \
-                          --key <key-name> \
-                          --key-type <key-type>
+# Creates a secret in a key vault
+azmcp keyvault secret create --subscription <subscription> \
+                             --vault <vault-name> \
+                             --name <secret-name> \
+                             --value <secret-value>
 
 # Gets a secret in a key vault
 azmcp keyvault secret get --subscription <subscription> \
@@ -379,12 +412,6 @@ azmcp keyvault secret get --subscription <subscription> \
 # Lists secrets in a key vault
 azmcp keyvault secret list --subscription <subscription> \
                            --vault <vault-name>
-
-# Creates a secret in a key vault
-azmcp keyvault secret create --subscription <subscription> \
-                             --vault <vault-name> \
-                             --name <secret-name> \
-                             --value <secret-value
 ```
 
 ### Azure Kubernetes Service (AKS) Operations
@@ -392,6 +419,10 @@ azmcp keyvault secret create --subscription <subscription> \
 ```bash
 # List AKS clusters in a subscription
 azmcp aks cluster list --subscription <subscription>
+
+# Get details of a specific AKS cluster
+azmcp aks cluster get --subscription <subscription> \
+                      --name <cluster-name>
 ```
 
 ### Azure Load Testing Operations
@@ -415,12 +446,12 @@ azmcp loadtesting test get --subscription <subscription> \
                            --test-resource-name <test-resource-name> \
                            --test-id <test-id>
 
-# List load test resources 
+# List load test resources
 azmcp loadtesting testresource list --subscription <subscription> \
                                     --resource-group <resource-group> \
                                     --test-resource-name <test-resource-name>
 
-# Create load test resources 
+# Create load test resources
 azmcp loadtesting testresource create --subscription <subscription> \
                                       --resource-group <resource-group> \
                                       --test-resource-name <test-resource-name>
@@ -486,15 +517,16 @@ azmcp marketplace product get --subscription <subscription> \
 ```bash
 # Get best practices for secure, production-grade Azure usage
 azmcp bestpractices get --resource <resource> --action <action>
- 
+
 # Resource options:
 #   general        - General Azure best practices
 #   azurefunctions - Azure Functions specific best practices
+#   static-web-app - Azure Static Web Apps specific best practices
 #
 # Action options:
-#   all             - Best practices for both code generation and deployment
-#   code-generation - Best practices for code generation
-#   deployment      - Best practices for deployment (only for azurefunctions)
+#   all             - Best practices for both code generation and deployment (only for static-web-app)
+#   code-generation - Best practices for code generation (for general and azurefunctions)
+#   deployment      - Best practices for deployment (for general and azurefunctions)
 
 ```
 
@@ -608,6 +640,17 @@ azmcp monitor metrics definitions --subscription <subscription> \
 azmcp datadog monitoredresources list --subscription <subscription> \
                                       --resource-group <resource-group> \
                                       --datadog-resource <datadog-resource>
+```
+
+### Azure Quick Review CLI Extension Operations
+
+```bash
+# Scan a subscription for recommendations
+azmcp extension azqr --subscription <subscription>
+
+# Scan a subscription and scope to a specific resource group
+azmcp extension azqr --subscription <subscription> \
+                     --resource-group <resource-group-name>
 ```
 
 ### Azure RBAC Operations
@@ -739,35 +782,11 @@ azmcp storage blob container details --subscription <subscription> \
 azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --account-name <account-name> \
                                               --file-system-name <file-system-name>
-```
 
-### Azure Workbooks Operations
-
-```bash
-# List Azure Monitor workbooks in a resource group
-azmcp workbooks list --subscription <subscription> \
-                     --resource-group <resource-group> \
-                     [--category <category>] \
-                     [--kind <kind>] \
-                     [--source-id <source-id>]
-
-# Show details of a specific workbook by resource ID
-azmcp workbooks show --workbook-id <workbook-resource-id>
-
-# Create a new workbook
-azmcp workbooks create --subscription <subscription> \
-                       --resource-group <resource-group> \
-                       --display-name <display-name> \
-                       --serialized-content <json-content> \
-                       [--source-id <source-id>]
-
-# Update an existing workbook  
-azmcp workbooks update --workbook-id <workbook-resource-id> \
-                       [--display-name <display-name>] \
-                       [--serialized-content <json-content>]
-
-# Delete a workbook
-azmcp workbooks delete --workbook-id <workbook-resource-id>
+# Create a directory in DataLake using a specific path
+azmcp storage datalake directory create --subscription <subscription> \
+                                        --account-name <account-name> \
+                                        --directory-path <directory-path>
 ```
 
 ### Azure Subscription Management
@@ -837,15 +856,33 @@ azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
                                                 --hostpool-resource-id /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.DesktopVirtualization/hostPools/<pool>
 ```
 
-### Azure Quick Review CLI Extension Operations
+### Azure Workbooks Operations
 
 ```bash
-# Scan a subscription for recommendations
-azmcp extension azqr --subscription <subscription>
+# Create a new workbook
+azmcp workbooks create --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --display-name <display-name> \
+                       --serialized-content <json-content> \
+                       [--source-id <source-id>]
 
-# Scan a subscription and scope to a specific resource group
-azmcp extension azqr --subscription <subscription> \
-                     --resource-group <resource-group-name>
+# Delete a workbook
+azmcp workbooks delete --workbook-id <workbook-resource-id>
+
+# List Azure Monitor workbooks in a resource group
+azmcp workbooks list --subscription <subscription> \
+                     --resource-group <resource-group> \
+                     [--category <category>] \
+                     [--kind <kind>] \
+                     [--source-id <source-id>]
+
+# Show details of a specific workbook by resource ID
+azmcp workbooks show --workbook-id <workbook-resource-id>
+
+# Update an existing workbook
+azmcp workbooks update --workbook-id <workbook-resource-id> \
+                       [--display-name <display-name>] \
+                       [--serialized-content <json-content>]
 ```
 
 ### Bicep

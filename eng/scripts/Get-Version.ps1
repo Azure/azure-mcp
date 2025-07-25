@@ -11,9 +11,10 @@ param(
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
-$projectFile = "$RepoRoot/src/AzureMcp.csproj"
+$projectFile = "$RepoRoot/Directory.Build.props"
 $project = [xml](Get-Content $projectFile)
-$version = [AzureEngSemanticVersion]::new($project.Project.PropertyGroup.Version[0])
+$version = $project.Project.PropertyGroup.Version | Select-Object -First 1
+$version = [AzureEngSemanticVersion]::new($version)
 
 if ($PrereleaseLabel) {
     $version.PrereleaseLabel = $PrereleaseLabel

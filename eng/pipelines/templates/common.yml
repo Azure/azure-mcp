@@ -45,6 +45,7 @@ extends:
       - template: /eng/pipelines/templates/jobs/initialize.yml
         parameters:
           ReleaseRun: ${{ parameters.ReleaseRun }}
+
     - stage: Build
       dependsOn:
       - Initialize
@@ -83,26 +84,8 @@ extends:
         variables:
         - template: /eng/pipelines/templates/variables/image.yml
         - template: /eng/pipelines/templates/variables/globals.yml
-        - name: TestAreas
-          value: $[ stageDependencies.Initialize.Initialize.outputs['GetTestAreas.TestAreas'] ]
-        condition: and(succeeded(), eq(dependencies.Initialize.outputs['Initialize.GetTestAreas.HasTestAreas'], 'True'))
         jobs:
-        - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
-          parameters:
-            SparseCheckout: false
-            MatrixConfigs:
-            - Name: test_matrix
-              Path: eng/pipelines/test-matrix.json
-              Selection: all
-              GenerateVMJobs: true
-            JobTemplatePath: /eng/pipelines/templates/jobs/live-test.yml
-            AdditionalParameters:
-              TimeoutInMinutes: 90
-              EnvVars:
-                AZURE_POD_IDENTITY_AUTHORITY_HOST: "FakeAuthorityHost"
-            CloudConfig:
-              Cloud: Public
-              ServiceConnection: azure-sdk-tests-public
+        - template: /eng/pipelines/templates/jobs/live-test.yml
 
     # All builds in the internal project get signing
     - stage: SignAndPack
