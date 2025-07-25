@@ -5,6 +5,7 @@ using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Commands.Blob;
+using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
@@ -46,6 +47,10 @@ public class StorageSetup : IAreaSetup
         var dataLake = new CommandGroup("datalake", "Data Lake Storage operations - Commands for managing Azure Data Lake Storage Gen2 file systems and paths.");
         storage.AddSubGroup(dataLake);
 
+        // Create Batch subgroup under storage
+        var batch = new CommandGroup("batch", "Storage batch operations - Commands for performing batch operations on multiple storage resources efficiently.");
+        storage.AddSubGroup(batch);
+
         // Create file-system subgroup under datalake
         var fileSystem = new CommandGroup("file-system", "Data Lake file system operations - Commands for managing file systems and paths in Azure Data Lake Storage Gen2.");
         dataLake.AddSubGroup(fileSystem);
@@ -72,5 +77,8 @@ public class StorageSetup : IAreaSetup
 
         directory.AddCommand("create", new DirectoryCreateCommand(
             loggerFactory.CreateLogger<DirectoryCreateCommand>()));
+
+        batch.AddCommand("settier", new BatchSetTierCommand(
+            loggerFactory.CreateLogger<BatchSetTierCommand>()));
     }
 }

@@ -402,4 +402,77 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             throw new Exception($"Error creating directory: {ex.Message}", ex);
         }
     }
+
+    public async Task<BatchSetTierResult> SetBlobTierBatch(
+        string accountName,
+        string containerName,
+        string tier,
+        string[] blobNames,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, tier, subscriptionId);
+
+        if (blobNames == null || blobNames.Length == 0)
+        {
+            throw new ArgumentException("At least one blob name must be provided.", nameof(blobNames));
+        }
+
+        // Validate tier
+        if (!IsValidTier(tier))
+        {
+            throw new ArgumentException("Invalid tier. Valid tiers are: Hot, Cool, Archive.", nameof(tier));
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        var successfulBlobs = new List<string>();
+        var failedBlobs = new List<string>();
+
+        try
+        {
+            // Parse the access tier
+            var accessTier = Enum.Parse<AccessTier>(tier, true);
+
+            // Process each blob individually to track success/failure
+            var tasks = blobNames.Select(async blobName =>
+            {
+                try
+                {
+                    var blobClient = containerClient.GetBlobClient(blobName);
+                    await blobClient.SetAccessTierAsync(accessTier);
+                    
+                    lock (successfulBlobs)
+                    {
+                        successfulBlobs.Add(blobName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lock (failedBlobs)
+                    {
+                        failedBlobs.Add($"{blobName}: {ex.Message}");
+                    }
+                }
+            });
+
+            // Wait for all operations to complete
+            await Task.WhenAll(tasks);
+
+            return new BatchSetTierResult(successfulBlobs, failedBlobs);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error setting blob tier batch: {ex.Message}", ex);
+        }
+    }
+
+    private static bool IsValidTier(string tier)
+    {
+        return tier.Equals("Hot", StringComparison.OrdinalIgnoreCase) ||
+               tier.Equals("Cool", StringComparison.OrdinalIgnoreCase) ||
+               tier.Equals("Archive", StringComparison.OrdinalIgnoreCase);
+    }
 }

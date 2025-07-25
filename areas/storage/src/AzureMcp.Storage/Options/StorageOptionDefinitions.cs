@@ -10,6 +10,8 @@ public static class StorageOptionDefinitions
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
+    public const string TierName = "tier-name";
+    public const string BlobNamesParam = "blob-names";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -49,5 +51,22 @@ public static class StorageOptionDefinitions
     )
     {
         IsRequired = true
+    };
+
+    public static readonly Option<string> Tier = new(
+        $"--{TierName}",
+        "The access tier to set for the blobs. Valid values are: Hot, Cool, Archive. Hot tier provides the fastest access but costs more for storage. Cool tier provides lower storage costs but higher access costs. Archive tier provides the lowest storage costs but highest access costs and retrieval latency."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string[]> BlobNames = new(
+        $"--{BlobNamesParam}",
+        "The names of the blobs to set the access tier for. Provide multiple blob names separated by spaces. Each blob name should be the full path within the container (e.g., 'file1.txt' or 'folder/file2.txt')."
+    )
+    {
+        IsRequired = true,
+        AllowMultipleArgumentsPerToken = true
     };
 }

@@ -37,4 +37,12 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<BatchSetTierResult> SetBlobTierBatch(
+        string accountName,
+        string containerName,
+        string tier,
+        string[] blobNames,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
