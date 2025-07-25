@@ -402,4 +402,56 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             throw new Exception($"Error creating directory: {ex.Message}", ex);
         }
     }
+
+    public async Task<DataLakePathInfo> UploadFile(
+        string accountName,
+        string filePath,
+        string localFilePath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, filePath, localFilePath, subscriptionId);
+
+        if (!File.Exists(localFilePath))
+        {
+            throw new FileNotFoundException($"Local file not found: {localFilePath}");
+        }
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+
+        try
+        {
+            // Parse the file path to extract file system name and file path
+            var pathParts = filePath.Split('/', 2);
+            if (pathParts.Length < 2)
+            {
+                throw new ArgumentException("FilePath must include file system name (e.g., 'myfilesystem/path/to/file.txt')");
+            }
+
+            var fileSystemName = pathParts[0];
+            var filePathWithinFileSystem = pathParts[1];
+
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+            var fileClient = fileSystemClient.GetFileClient(filePathWithinFileSystem);
+
+            // Upload the file with overwrite option
+            using var fileStream = File.OpenRead(localFilePath);
+            var response = await fileClient.UploadAsync(fileStream, overwrite: true);
+
+            // Get file properties to return comprehensive information
+            var properties = await fileClient.GetPropertiesAsync();
+
+            return new DataLakePathInfo(
+                filePath,
+                "file",
+                properties.Value.ContentLength,
+                properties.Value.LastModified,
+                properties.Value.ETag.ToString());
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error uploading file: {ex.Message}", ex);
+        }
+    }
 }

@@ -37,4 +37,11 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<DataLakePathInfo> UploadFile(
+        string accountName,
+        string filePath,
+        string localFilePath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
