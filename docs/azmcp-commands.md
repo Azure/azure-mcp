@@ -787,6 +787,13 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
 azmcp storage datalake directory create --subscription <subscription> \
                                         --account-name <account-name> \
                                         --directory-path <directory-path>
+
+# Set access tier for multiple blobs in a batch operation
+azmcp storage batch settier --subscription <subscription> \
+                           --account-name <account-name> \
+                           --container-name <container-name> \
+                           --tier-name <tier-name> \
+                           --blob-names <blob-name1> <blob-name2> ...
 ```
 
 ### Azure Subscription Management
