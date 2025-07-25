@@ -46,7 +46,7 @@ public static class CommandExtensions
                 _ => value.GetRawText()
             };
 
-            if (!string.IsNullOrEmpty(strValue))
+            if (strValue != null)
             {
                 args.Add(strValue);
             }
