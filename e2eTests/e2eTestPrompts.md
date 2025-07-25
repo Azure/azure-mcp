@@ -104,11 +104,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
-| azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-get | Show me the details of the key <key_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-get | Show me the key <key_name> in the key vault <key_vault_account_name> |
@@ -124,6 +124,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-aks-cluster-get | Show me the details of AKS cluster \<cluster-name> in resource group \<resource-group> |
+| azmcp-aks-cluster-get | Get the configuration of AKS cluster \<cluster-name> |
+| azmcp-aks-cluster-get | What are the details of my AKS cluster \<cluster-name> in \<resource-group>? |
+| azmcp-aks-cluster-get | Show me the network configuration for AKS cluster \<cluster-name> |
 | azmcp-aks-cluster-list | List all AKS clusters in my subscription |
 | azmcp-aks-cluster-list | Show me my Azure Kubernetes Service clusters |
 | azmcp-aks-cluster-list | What AKS clusters do I have? |
@@ -157,10 +161,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-azurefunctions-get-code-generation | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-azurefunctions-get-deployment | Fetch the latest Azure Functions deployment best practices |
-| azmcp-bestpractices-general-get | Fetch the latest Azure best practices |
-| azmcp-bestpractices-general-get | Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault |
+| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
 
 ## Azure MCP Tools
 
@@ -168,6 +173,19 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-tool-list | List all available tools in the Azure MCP server |
 | azmcp-tool-list | Show me the available tools in the Azure MCP server |
+
+## Azure Load Testing
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-loadtesting-testresource-list | List all load testing resources in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testresource-create | Create a load test resource <load-test-resource-name> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-test-get | Get the load test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-test-create | Create a basic URL test using the following endpoint URL <test-url> that runs for 30 minutes with 45 virtual users. The test name is <sample-name> with the test id <test-id> and the load testing resource is <load-test-resource> in the resource group <resource-group> in my subscription |
+| azmcp-loadtesting-testrun-get | Get the load test run with id <testrun-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-list |  Get all the load test runs for the test with id <test-id> in the load test resource <test-resource> in resource group <resource-group> |
+| azmcp-loadtesting-testrun-create | Create a test run using the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>. Use the name of test run <display-name> and description as <description> |
+| azmcp-loadtesting-testrun-update | Update a test run display name as <display-name> for the id <testrun-id> for test <test-id> in the load testing resource <load-testing-resource> in resource group <resource-group>.|
 
 ## Azure Monitor
 
@@ -288,6 +306,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 
@@ -306,6 +325,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
+
+## Azure Workbooks
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-workbooks-create | Create a new workbook named <workbook_name> |
+| azmcp-workbooks-delete | Delete the workbook with resource ID <workbook_resource_id> |
+| azmcp-workbooks-list | List all workbooks in my resource group <resource_group_name> |
+| azmcp-workbooks-list | What workbooks do I have in resource group <resource_group_name>? |
+| azmcp-workbooks-show | Show me the workbook with display name <workbook_display_name> |
+| azmcp-workbooks-show | Get information about the workbook with resource ID <workbook_resource_id> |
+| azmcp-workbooks-update | Update the workbook <workbook_resource_id> with a new text step |
 
 ## Bicep
 

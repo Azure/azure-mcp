@@ -39,7 +39,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
   "servers": {
     "Azure Storage": {
       "type": "stdio",
-      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
       "args": [
         "server",
         "start",
@@ -49,7 +49,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
     },
     "Azure KeyVault": {
       "type": "stdio",
-      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
       "args": [
         "server",
         "start",
@@ -69,6 +69,20 @@ The Azure MCP Server can run in multiple modes. Review your MCP configuration to
 - `azmcp server start --namespace <service-name>` - Launches an MCP server with tools for the specified service (e.g., `storage`, `keyvault`)
 - `azmcp server start --mode single` - Launches an MCP server with a single `azure` tool that performs internal dynamic proxy and tool selection
 - `azmcp server start --mode namespace` - Launches an MCP server with a tool registered for each Azure service/namespace.
+
+### VS Code Permission Dialog for Language Model Calls
+
+When using the Azure MCP Server in VS Code, you may see a permission dialog requesting authorization for the MCP server to make language model calls:
+
+![VS Code MCP Permission Dialog](https://github.com/user-attachments/assets/8fddb369-046b-46d1-84c2-b1dd4a1b4e6a)
+
+The dialog shows: "The MCP server 'Azure' has issued a request to make an language model call. Do you want to allow it to make requests during chat?"
+
+**To continue using the Azure MCP Server, you must click one of the following:**
+- **"Allow in this Session"** - Allows the server to make language model calls for the current VS Code session
+- **"Always"** - Permanently allows the server to make language model calls
+
+This permission is required because some Azure MCP tools may need to make additional language model calls to process complex requests or provide enhanced responses.
 
 ## Tool Limitations
 

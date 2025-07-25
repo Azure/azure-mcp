@@ -7,11 +7,11 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/AzureMcp.csproj",
+                "${workspaceFolder}/AzureMcp.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         }
     ]
-} 
+}

@@ -17,9 +17,9 @@ jobs:
     displayName: Tag build reason
 
   - pwsh: |
-      ./eng/scripts/Get-AreasToTest.ps1 -SetDevOpsVariables
-    name: GetTestAreas
-    displayName: "Get areas to test"
+      ./eng/scripts/Get-AreasToTest.ps1 -SetDevOpsVariables -TestType 'Live'
+    name: GetTestAreasLive
+    displayName: "Get areas to test (Live)"
     workingDirectory: $(Build.SourcesDirectory)
 
   - task: Powershell@2
