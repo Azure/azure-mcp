@@ -37,7 +37,7 @@ public sealed class ResourceLogQueryCommand(ILogger<ResourceLogQueryCommand> log
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {

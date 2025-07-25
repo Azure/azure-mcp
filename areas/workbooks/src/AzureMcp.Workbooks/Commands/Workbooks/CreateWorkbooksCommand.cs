@@ -31,7 +31,7 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: false);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {

@@ -77,19 +77,4 @@ public sealed class ToolMetadata
     public ToolMetadata()
     {
     }
-
-    /// <summary>
-    /// Creates a new instance of <see cref="ToolMetadata"/> with the specified values.
-    /// </summary>
-    /// <param name="destructive">Whether the command performs destructive operations.</param>
-    /// <param name="readOnly">Whether the command only performs read operations.</param>
-    /// <param name="idempotent">Whether the command is idempotent.</param>
-    /// <param name="openWorld">Whether the command operates in an open world context.</param>
-    public ToolMetadata(bool destructive = true, bool readOnly = false, bool idempotent = false, bool openWorld = true)
-    {
-        Destructive = destructive;
-        ReadOnly = readOnly;
-        Idempotent = idempotent;
-        OpenWorld = openWorld;
-    }
 }

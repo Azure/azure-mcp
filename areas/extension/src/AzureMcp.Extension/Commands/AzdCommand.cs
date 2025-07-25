@@ -76,7 +76,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
 
     public override string Title => CommandTitle;
     
-    public override ToolMetadata Metadata => new(destructive: true, readOnly: false);
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {

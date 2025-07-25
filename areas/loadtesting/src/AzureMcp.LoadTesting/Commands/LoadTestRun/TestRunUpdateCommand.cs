@@ -27,7 +27,7 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
         """;
     public override string Title => _commandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: false);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {

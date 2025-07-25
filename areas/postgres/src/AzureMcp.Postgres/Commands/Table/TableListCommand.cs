@@ -19,7 +19,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     public override string Description => "Lists all tables in the PostgreSQL database.";
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {

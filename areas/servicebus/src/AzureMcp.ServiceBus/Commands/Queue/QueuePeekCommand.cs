@@ -36,7 +36,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {

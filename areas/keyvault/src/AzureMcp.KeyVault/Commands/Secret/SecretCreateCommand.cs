@@ -24,7 +24,7 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: false);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     public override string Description =>
         """

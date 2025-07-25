@@ -23,7 +23,7 @@ public sealed class TestGetCommand(ILogger<TestGetCommand> logger)
         """;
     public override string Title => _commandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {

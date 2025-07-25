@@ -20,7 +20,7 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
     public override string Description => "Retrieves the schema of a specified table in a PostgreSQL database.";
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {

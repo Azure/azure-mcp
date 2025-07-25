@@ -32,7 +32,7 @@ namespace AzureMcp.BicepSchema.Commands
 
         public override string Title => CommandTitle;
 
-        public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+        public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
         private static readonly Lazy<IServiceProvider> s_serviceProvider;
 

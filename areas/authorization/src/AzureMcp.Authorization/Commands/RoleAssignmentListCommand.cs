@@ -28,7 +28,7 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
 
     public override string Title => _commandTitle;
     
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     private readonly Option<string> _scopeOption = OptionDefinitions.Authorization.Scope;
 

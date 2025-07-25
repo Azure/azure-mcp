@@ -26,7 +26,7 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(destructive: false, readOnly: false);
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
