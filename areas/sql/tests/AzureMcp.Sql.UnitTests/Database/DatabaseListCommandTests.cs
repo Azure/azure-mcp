@@ -53,12 +53,12 @@ public class DatabaseListCommandTests
         {
             var databases = new List<SqlDatabase>
             {
-                new("master", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/master", 
-                    "Microsoft.Sql/servers/databases", "East US", null, "Online", "SQL_Latin1_General_CP1_CI_AS", 
+                new("master", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/master",
+                    "Microsoft.Sql/servers/databases", "East US", null, "Online", "SQL_Latin1_General_CP1_CI_AS",
                     DateTimeOffset.UtcNow, null, "System", "System", null, DateTimeOffset.UtcNow, "Disabled", false),
-                new("testdb", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/testdb", 
-                    "Microsoft.Sql/servers/databases", "East US", 
-                    new DatabaseSku("Standard", "Standard", 20, null, "268435456000"), "Online", "SQL_Latin1_General_CP1_CI_AS", 
+                new("testdb", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/testdb",
+                    "Microsoft.Sql/servers/databases", "East US",
+                    new DatabaseSku("Standard", "Standard", 20, null, "268435456000"), "Online", "SQL_Latin1_General_CP1_CI_AS",
                     DateTimeOffset.UtcNow, 268435456000, "S0", "Standard", null, DateTimeOffset.UtcNow, "Disabled", false)
             };
 
@@ -116,12 +116,12 @@ public class DatabaseListCommandTests
 
         var expectedDatabases = new List<SqlDatabase>
         {
-            new("master", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/master", 
-                "Microsoft.Sql/servers/databases", "East US", null, "Online", "SQL_Latin1_General_CP1_CI_AS", 
+            new("master", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/master",
+                "Microsoft.Sql/servers/databases", "East US", null, "Online", "SQL_Latin1_General_CP1_CI_AS",
                 DateTimeOffset.UtcNow, null, "System", "System", null, DateTimeOffset.UtcNow, "Disabled", false),
-            new("testdb", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/testdb", 
-                "Microsoft.Sql/servers/databases", "East US", 
-                new DatabaseSku("Standard", "Standard", 20, null, "268435456000"), "Online", "SQL_Latin1_General_CP1_CI_AS", 
+            new("testdb", "/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/testdb",
+                "Microsoft.Sql/servers/databases", "East US",
+                new DatabaseSku("Standard", "Standard", 20, null, "268435456000"), "Online", "SQL_Latin1_General_CP1_CI_AS",
                 DateTimeOffset.UtcNow, 268435456000, "S0", "Standard", null, DateTimeOffset.UtcNow, "Disabled", false)
         };
 

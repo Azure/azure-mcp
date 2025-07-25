@@ -66,12 +66,12 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         Assert.True(databaseArray.Count >= 2, "Should contain at least master and testdb databases");
 
         // Verify that master database exists
-        var masterDb = databaseArray.FirstOrDefault(db => 
+        var masterDb = databaseArray.FirstOrDefault(db =>
             db.GetProperty("name").GetString() == "master");
         Assert.NotEqual(default, masterDb);
 
         // Verify that our test database exists
-        var testDb = databaseArray.FirstOrDefault(db => 
+        var testDb = databaseArray.FirstOrDefault(db =>
             db.GetProperty("name").GetString() == "testdb");
         Assert.NotEqual(default, testDb);
 
