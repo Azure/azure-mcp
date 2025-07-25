@@ -307,6 +307,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
+| azmcp-storage-batch-settier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
+| azmcp-storage-batch-settier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 
