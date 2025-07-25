@@ -42,7 +42,7 @@
   <!-- Remove Cosmos native files from the build output directory -->
   <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems">
     <ItemGroup>
-      <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy(`%(FullPath)`).Contains(`$(PkgMicrosoft_Azure_Cosmos)`))" />
+      <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(FullPath)').Contains('$(PkgMicrosoft_Azure_Cosmos)'))" />
     </ItemGroup>
     <ItemGroup>
       <ContentWithTargetPath Remove="@(FilesToRemove)" />
