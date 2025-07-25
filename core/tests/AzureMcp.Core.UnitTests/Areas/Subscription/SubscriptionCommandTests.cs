@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using AzureMcp.Areas.Storage.Commands.Account;
-using AzureMcp.Areas.Storage.Services;
-using AzureMcp.Models.Command;
-using AzureMcp.Options;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
+using AzureMcp.Storage.Commands.Account;
+using AzureMcp.Storage.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -80,7 +80,7 @@ public class SubscriptionCommandTests
             Assert.NotNull(response);
 
             // Verify the service was called with the environment variable subscription
-            await _storageService.Received(1).GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            _ = _storageService.Received(1).GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
         }
         finally
         {
@@ -112,8 +112,8 @@ public class SubscriptionCommandTests
             Assert.NotNull(response);
 
             // Verify the service was called with the option subscription, not the environment variable
-            await _storageService.Received(1).GetStorageAccounts("option-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
-            await _storageService.DidNotReceive().GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            _ = _storageService.Received(1).GetStorageAccounts("option-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
+            _ = _storageService.DidNotReceive().GetStorageAccounts("env-subs", Arg.Any<string>(), Arg.Any<RetryPolicyOptions>());
         }
         finally
         {
