@@ -210,11 +210,11 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new(
-        destructive: false,     // Set to true for commands that modify resources
-        readOnly: true,         // Set to false for commands that modify resources  
-        idempotent: false,      // Set to true if calling repeatedly has no additional effect
-        openWorld: true);       // Set to false for closed/well-defined interactions
+    public override ToolMetadata Metadata => new()
+    {
+        Destructive = false,    // Set to true for commands that modify resources
+        ReadOnly = true         // Set to false for commands that modify resources  
+    };
 
     protected override void RegisterOptions(Command command)
     {
