@@ -26,6 +26,8 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         "This command returns the content of the best practices file as a string array.";
 
     public override string Title => CommandTitle;
+    
+    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
 
     protected override void RegisterOptions(Command command)
     {
@@ -33,7 +35,6 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         command.AddOption(_actionOption);
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

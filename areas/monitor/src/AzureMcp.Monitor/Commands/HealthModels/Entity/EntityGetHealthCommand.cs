@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Options.HealthModels.Entity;
@@ -26,6 +27,8 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         """;
 
     public override string Title => CommandTitle;
+    
+    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
 
     private readonly ILogger<EntityGetHealthCommand> _logger = logger;
 
@@ -46,7 +49,6 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle, Name = CommandName)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using System.Reflection;
 using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Areas.Server.Options;
@@ -153,19 +152,16 @@ public sealed class CommandFactoryToolLoader(
             Description = underlyingCommand.Description,
         };
 
-        // Get the ExecuteAsync method info to check for McpServerToolAttribute
-        var executeAsyncMethod = command.GetType().GetMethod(nameof(IBaseCommand.ExecuteAsync));
-        if (executeAsyncMethod?.GetCustomAttribute<McpServerToolAttribute>() is { } mcpServerToolAttr)
+        // Get tool metadata from the command's Metadata property
+        var metadata = command.Metadata;
+        tool.Annotations = new ToolAnnotations()
         {
-            tool.Annotations = new ToolAnnotations()
-            {
-                DestructiveHint = mcpServerToolAttr.Destructive,
-                IdempotentHint = mcpServerToolAttr.Idempotent,
-                OpenWorldHint = mcpServerToolAttr.OpenWorld,
-                ReadOnlyHint = mcpServerToolAttr.ReadOnly,
-                Title = mcpServerToolAttr.Title,
-            };
-        }
+            DestructiveHint = metadata.Destructive,
+            IdempotentHint = metadata.Idempotent,
+            OpenWorldHint = metadata.OpenWorld,
+            ReadOnlyHint = metadata.ReadOnly,
+            Title = command.Title,
+        };
 
         var options = command.GetCommand().Options;
 

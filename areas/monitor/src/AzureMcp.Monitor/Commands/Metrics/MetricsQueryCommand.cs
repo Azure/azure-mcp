@@ -51,6 +51,8 @@ public sealed class MetricsQueryCommand(ILogger<MetricsQueryCommand> logger)
         """;
 
     public override string Title => CommandTitle;
+    
+    public override ToolMetadata Metadata => new(destructive: false, readOnly: true);
 
     protected override void RegisterOptions(Command command)
     {
@@ -105,10 +107,6 @@ public sealed class MetricsQueryCommand(ILogger<MetricsQueryCommand> logger)
         return result;
     }
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

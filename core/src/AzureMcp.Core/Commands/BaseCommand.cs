@@ -22,6 +22,7 @@ public abstract class BaseCommand : IBaseCommand
     public abstract string Name { get; }
     public abstract string Description { get; }
     public abstract string Title { get; }
+    public abstract ToolMetadata Metadata { get; }
 
     protected virtual void RegisterOptions(Command command)
     {
