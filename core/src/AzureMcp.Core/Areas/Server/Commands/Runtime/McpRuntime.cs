@@ -7,6 +7,7 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
+using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Core.Areas.Server.Commands.Runtime;
 
@@ -53,6 +54,8 @@ public sealed class McpRuntime : IMcpRuntime
     /// <returns>A result containing the output of the tool invocation.</returns>
     public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
+        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
+
         return _toolLoader.CallToolHandler(request, cancellationToken);
     }
 
@@ -71,8 +74,8 @@ public sealed class McpRuntime : IMcpRuntime
     /// <summary>
     /// Disposes the tool loader and releases associated resources.
     /// </summary>
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await _toolLoader.DisposeAsync();
+        return _toolLoader.DisposeAsync();
     }
 }
