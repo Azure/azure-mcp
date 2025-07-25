@@ -7,15 +7,25 @@ Here's a short (16 seconds) video to help you get the Azure MCP Server installed
 
 ### ⚙️ VS Code Install Steps (Recommended)
 
-1. Install either the stable or Insiders release of VS Code:
-   * [💫 Stable release](https://code.visualstudio.com/download)
-   * [🔮 Insiders release](https://code.visualstudio.com/insiders)
-1. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions
-1. Install [Node.js](https://nodejs.org/en/download) 20 or later
-   * Ensure `npx` is included in your environment path.
-1. Install [all Azure MCP Servers](https://vscode.dev/redirect/mcp/install?name=Azure%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D) (recommended), or install one or more specific Azure MCP Servers from the table below.
-1. Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
-1. Click `refresh` on the tools list.
+1. **Install either the stable or Insiders release of VS Code:**
+   - [💫 Stable release](https://code.visualstudio.com/download)
+   - [🔮 Insiders release](https://code.visualstudio.com/insiders)
+
+2. **Install the [Azure MCP Server extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server) from the VS Code Marketplace.**
+    - Open VS Code, go to the Extensions view (`Ctrl+Shift+X` on Windows/Linux, `Cmd+Shift+X` on macOS), and search for "Azure MCP Server".
+   - Click "Install" on the Azure MCP Server extension by Microsoft.
+
+3. **Install [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions** for enhanced AI agent experiences.
+
+4. **Start the Azure MCP Server from the Command Palette:**
+   - Open the Command Palette (`Ctrl+Shift+P` on Windows/Linux, `Cmd+Shift+P` on macOS).
+   - Search for `MCP: List Servers`.
+   - Select `azure-mcp-server-ext` from the list.
+   - Choose `Start` to launch the MCP server.
+
+5. **Open GitHub Copilot in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode).**
+
+6. **Click `refresh` on the tools list.**
 
 #### 🤖 Available Azure MCP Servers
 
