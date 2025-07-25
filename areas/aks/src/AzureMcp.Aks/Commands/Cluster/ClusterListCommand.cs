@@ -25,7 +25,7 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
         """;
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)

@@ -26,7 +26,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         """;
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)

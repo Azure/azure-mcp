@@ -30,7 +30,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
         """;
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)

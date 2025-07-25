@@ -31,7 +31,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         """;
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)

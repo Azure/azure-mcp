@@ -26,7 +26,7 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         "This command returns the content of the best practices file as a string array.";
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)

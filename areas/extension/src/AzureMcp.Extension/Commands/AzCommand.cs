@@ -45,7 +45,7 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 """;
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)

@@ -31,7 +31,7 @@ public sealed class AzureTerraformBestPracticesGetCommand(ILogger<AzureTerraform
         "This command returns the content of the markdown file as a string array.";
 
     public override string Title => CommandTitle;
-    
+
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
