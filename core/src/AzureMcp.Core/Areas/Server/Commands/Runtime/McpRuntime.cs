@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
-using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Core.Areas.Server.Commands.Runtime;
 
@@ -53,27 +51,9 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="request">The request context containing the tool name and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>
-    public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+    public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, request?.Server?.ClientInfo);
-
-        if (request?.Params == null)
-        {
-            var content = new TextContentBlock
-            {
-                Text = "Cannot call tools with null parameters.",
-            };
-
-            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
-
-            return new CallToolResult
-            {
-                Content = [content],
-                IsError = true,
-            };
-        }
-
-        return await _toolLoader.CallToolHandler(request!, cancellationToken);
+        return _toolLoader.CallToolHandler(request!, cancellationToken);
     }
 
     /// <summary>
