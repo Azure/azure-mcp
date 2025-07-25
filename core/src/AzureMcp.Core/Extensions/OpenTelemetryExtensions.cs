@@ -42,9 +42,11 @@ public static class OpenTelemetryExtensions
                     var address = NetworkInterface.GetAllNetworkInterfaces()
                         .Where(x => x.OperationalStatus == OperationalStatus.Up && x.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                         .Select(x => x.GetPhysicalAddress().ToString())
-                        .FirstOrDefault(x => !string.IsNullOrEmpty(x), "None");
+                        .FirstOrDefault(x => !string.IsNullOrEmpty(x));
 
-                    options.MacAddressHash = Sha256Helper.GetHashedValue(address);
+                    options.MacAddressHash = address != default
+                        ? Sha256Helper.GetHashedValue(address)
+                        : "N/A";
                 }
             });
 
