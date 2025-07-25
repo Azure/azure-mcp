@@ -7,6 +7,7 @@ using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.Storage.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Batch;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Files.DataLake;
 using AzureMcp.Core.Options;
@@ -433,30 +434,44 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            // Process each blob concurrently for efficiency
-            var tasks = blobNames.Select(async blobName =>
+            // Use Azure.Storage.Blobs.Batch for true batch operations
+            var blobBatchClient = blobServiceClient.GetBlobBatchClient();
+            var batch = blobBatchClient.CreateBatch();
+
+            // Add all blob tier operations to the batch
+            var batchOperations = new List<(string blobName, Response batchResponse)>();
+            foreach (var blobName in blobNames)
             {
+                var blobClient = containerClient.GetBlobClient(blobName);
+                var batchResponse = batch.SetBlobAccessTier(blobClient.Uri, accessTier);
+                batchOperations.Add((blobName, batchResponse));
+            }
+
+            // Submit the batch operation
+            var batchResult = await blobBatchClient.SubmitBatchAsync(batch);
+
+            // Process results
+            for (int i = 0; i < batchOperations.Count; i++)
+            {
+                var (blobName, batchResponse) = batchOperations[i];
                 try
                 {
-                    var blobClient = containerClient.GetBlobClient(blobName);
-                    await blobClient.SetAccessTierAsync(accessTier);
-                    
-                    lock (successfulBlobs)
+                    // Check if the individual operation succeeded
+                    var response = batchResult.GetRawResponse();
+                    if (batchResponse.Status >= 200 && batchResponse.Status < 300)
                     {
                         successfulBlobs.Add(blobName);
+                    }
+                    else
+                    {
+                        failedBlobs.Add($"{blobName}: HTTP {batchResponse.Status}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    lock (failedBlobs)
-                    {
-                        failedBlobs.Add($"{blobName}: {ex.Message}");
-                    }
+                    failedBlobs.Add($"{blobName}: {ex.Message}");
                 }
-            });
-
-            // Wait for all operations to complete
-            await Task.WhenAll(tasks);
+            }
 
             return new BatchSetTierResult(successfulBlobs, failedBlobs);
         }
@@ -464,10 +479,5 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         {
             throw new Exception($"Error setting blob tier batch: {ex.Message}", ex);
         }
-    }
-
-    private static bool IsValidTier(string tier)
-    {
-        return Enum.TryParse(tier, true, out AccessTier _);
     }
 }
