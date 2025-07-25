@@ -53,7 +53,7 @@ public sealed class McpRuntime : IMcpRuntime
     /// <returns>A result containing the output of the tool invocation.</returns>
     public ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        return _toolLoader.CallToolHandler(request!, cancellationToken);
+        return _toolLoader.CallToolHandler(request, cancellationToken);
     }
 
     /// <summary>
@@ -62,10 +62,10 @@ public sealed class McpRuntime : IMcpRuntime
     /// <param name="request">The request context containing metadata and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the list of available tools.</returns>
-    public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+    public ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
-        return await _toolLoader.ListToolsHandler(request!, cancellationToken);
+        using var activity = _telemetry.StartActivity(nameof(ListToolsHandler), request.Server.ClientInfo);
+        return _toolLoader.ListToolsHandler(request, cancellationToken);
     }
 
     /// <summary>
