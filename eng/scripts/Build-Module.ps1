@@ -21,7 +21,7 @@ param(
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
 $npmPackagePath = "$RepoRoot/eng/npm/platform"
-$projectFile = "$RepoRoot/src/AzureMcp.csproj"
+$projectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
 
 if(!$Version) {
     $Version = & "$PSScriptRoot/Get-Version.ps1"
@@ -55,7 +55,7 @@ try {
     } else {
         $arch = $parts[1]
     }
-    
+
     switch($os) {
         'win' { $node_os = 'win32'; $extension = '.exe' }
         'osx' { $node_os = 'darwin'; $extension = '' }
@@ -65,7 +65,7 @@ try {
 
     $outputDir = "$OutputPath/$os-$arch"
     Write-Host "Building version $Version, $os-$arch in $outputDir" -ForegroundColor Green
-    
+
     # Clear and recreate the package output directory
     Remove-Item -Path $outputDir -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
     New-Item -Path "$outputDir/dist" -ItemType Directory -Force | Out-Null
@@ -75,7 +75,7 @@ try {
 
     $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
-    
+
     if($SelfContained) {
         $command += " --self-contained"
     }

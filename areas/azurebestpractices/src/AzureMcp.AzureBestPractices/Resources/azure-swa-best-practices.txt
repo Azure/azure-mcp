@@ -1,0 +1,43 @@
+When creating, deploying, or managing static web apps, make use of the Static Web Apps CLI.
+
+## Handling Configuration Files
+
+Do not create the staticwebapp.config.json or swa-cli.config.json files manually.
+They will be created by the Static Web Apps CLI.
+
+## Installing the Static Web Apps CLI
+
+Install the Static Web Apps CLI using npm, if it hasn't been installed already:
+```bash
+npm install -g @azure/static-web-apps-cli
+```
+
+## Initializing a Static Web App
+
+When creating a new Static Web App, initialize it with the following command:
+```bash
+npx swa init --yes
+```
+
+Call this before creating any files.
+
+## Building the Static Web App
+
+To build the Static Web App, use the following command:
+```bash
+npx swa build
+```
+
+## Pre-deployment check
+Check *.config.json file to make sure "appLocation" and "outputLocation" are not pointing to the same location. If they are, create a new folder under the root directory and update "outputLocation" to point to it.
+
+## Deploying the Static Web App to Azure
+
+To deploy the Static Web App, use the following command:
+```bash
+npx swa deploy --env production
+```
+
+This will deploy it to the "production" environment. Always confirm with the user before deploying the static web app.
+
+When deployment succeeds the CLI will always return the URL of the deployed static web app. If it does not return a URL, then the deployment failed.

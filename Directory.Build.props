@@ -1,8 +1,12 @@
 <Project>
   <PropertyGroup>
+    <Version>0.5.1</Version>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsPackable>False</IsPackable>
+    <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
+    <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
   </PropertyGroup>
 </Project>

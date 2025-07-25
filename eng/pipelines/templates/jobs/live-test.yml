@@ -1,35 +1,15 @@
 parameters:
-# required matrix parameters
-- name: UsePlatformContainer
-  type: boolean
-- name: OSName
-  type: string
-- name: Matrix
-  type: object
-- name: DependsOn
-  type: string
-- name: CloudConfig
-  type: object
 - name: TimeoutInMinutes
   type: number
-- name: EnvVars
-  type: object
+  default: 60
 
 jobs:
-- job: Test_${{ parameters.OSName }}
-  displayName: "Live test"
-  dependsOn:
-  - ${{ parameters.DependsOn }}
+- job: LiveTest
+  displayName: "Live tests -"
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+  condition: and(succeeded(), eq(stageDependencies.Initialize.Initialize.outputs['GetTestAreasLive.HasTestAreas'], 'true'))
   strategy:
-    matrix: $[ ${{ parameters.Matrix }} ]
-  pool:
-    name: $(Pool)
-    ${{ if eq(parameters.OSName, 'macOS') }}:
-      vmImage: $(OSVmImage)
-    ${{ else }}:
-      image: $(OSVmImage)
-    os: ${{ parameters.OSName }}
+    matrix: $[ stageDependencies.Initialize.Initialize.outputs['GetTestAreasLive.TestMatrix'] ]
   steps:
   - checkout: self
 
@@ -38,67 +18,65 @@ jobs:
     retryCountOnTaskFailure: 3
     inputs:
       useGlobalJson: true
-  
+
+
   - task: NodeTool@0
     displayName: "Install Node.js 22"
     inputs:
       versionSpec: '22.x'
 
-  - ${{ if eq(parameters.OSName, 'linux') }}:
-    - template: /eng/common/TestResources/build-test-resource-config.yml
-      parameters:
-        EnvVars:
-          Pool: $(Pool)
-          ${{insert}}: ${{ parameters.EnvVars }}
+  - pwsh: |
+      Get-ChildItem . -Recurse -Directory
+      Get-ChildItem areas/keyvault/tests -Recurse
+    displayName: "List source contents"
+    workingDirectory: $(Build.SourcesDirectory)
 
-    - template: /eng/common/TestResources/deploy-test-resources.yml
-      parameters:
-        Location: ${{ parameters.CloudConfig.Location }}
-        SubscriptionConfiguration: $(SubscriptionConfiguration)
-        ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
-        ArmTemplateParameters: '@{ areas = [array](ConvertFrom-Json $env:TESTAREAS) }'
-        PersistOidcToken: true
-        EnvVars:
-          Pool: $(Pool)
-          ${{insert}}: ${{ parameters.EnvVars }}
+  - template: /eng/common/TestResources/build-test-resource-config.yml
+    parameters:
+      EnvVars:
+        Pool: $(Pool)
+
+  - template: /eng/common/TestResources/deploy-test-resources.yml
+    parameters:
+      ServiceConnection: azure-sdk-tests-public
+      PersistOidcToken: true
+      TestResourcesDirectory: $(Build.SourcesDirectory)/$(TestResourcesPath)
 
   - pwsh: |
       ./eng/scripts/Build-Local.ps1 -VerifyNpx
     displayName: "Build local package"
     workingDirectory: $(Build.SourcesDirectory)
 
-  - ${{ if eq(parameters.OSName, 'linux') }}:
-    - task: AzurePowershell@5
-      displayName: "Run tests - az pwsh"
-      condition: and(succeeded(), eq(variables['CI_HAS_DEPLOYED_RESOURCES'], 'true'))
-      timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
-      env:
-        AZURE_TEST_MODE: 'live'
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        ${{ insert }}: ${{ parameters.EnvVars }}
-      inputs:
-        azureSubscription: ${{ parameters.CloudConfig.ServiceConnection }}
-        azurePowerShellVersion: 'LatestVersion'
-        scriptType: InlineScript
-        Inline: |
-          ./eng/scripts/Test-Code.ps1 -Live -CoverageSummary -Areas (ConvertFrom-Json $env:TESTAREAS)
-          exit $LastExitCode
-        pwsh: true
-        workingDirectory: $(Build.SourcesDirectory)
+  - task: AzurePowershell@5
+    displayName: "Run tests - az pwsh"
+    env:
+      AZURE_TEST_MODE: 'live'
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      azureSubscription: azure-sdk-tests-public
+      azurePowerShellVersion: 'LatestVersion'
+      scriptType: InlineScript
+      Inline: |
+        ./eng/scripts/Test-Code.ps1 `
+          -TestType 'Live' `
+          -Area $(Area) `
+          -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults'
 
-    - task: PublishTestResults@2
-      condition: succeededOrFailed()
-      displayName: "Publish Results"
-      inputs:
-        testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
-        testRunTitle: "live-${{ parameters.OSName }}"
-        testResultsFormat: "VSTest"
-        mergeTestResults: true
+        exit $LastExitCode
+      pwsh: true
+      workingDirectory: $(Build.SourcesDirectory)
 
-    - template: /eng/common/TestResources/remove-test-resources.yml
-      parameters:
-        SubscriptionConfiguration: $(SubscriptionConfiguration)
-        ServiceConnection: ${{ parameters.CloudConfig.ServiceConnection }}
-        EnvVars:
-          Pool: $(Pool)
-          ${{insert}}: ${{ parameters.EnvVars }}
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: "Publish Results"
+    inputs:
+      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/*.trx"
+      testRunTitle: "live-$(Area)"
+      testResultsFormat: "VSTest"
+      mergeTestResults: true
+
+  - template: /eng/common/TestResources/remove-test-resources.yml
+    parameters:
+      ServiceConnection: azure-sdk-tests-public
+      EnvVars:
+        Pool: $(Pool)

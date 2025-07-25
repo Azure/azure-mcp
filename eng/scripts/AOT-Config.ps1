@@ -4,16 +4,17 @@
 # Defines shared constants used by both Analyze-AOT-Compact.ps1 and Render-AOT-Analysis-Result.ps1
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
+$RepoRoot = $RepoRoot.Path.Replace('\', '/')
 $script:AOTConfig = @{
     # Base paths
-    RootPath = $RepoRoot.Path.Replace('\', '/')
-    ProjectFile = "$($RepoRoot.Path.Replace('\', '/'))/src/AzureMcp.csproj"
-    
-    # AOT report directories and files 
-    ReportDirectory = "$($RepoRoot.Path.Replace('\', '/'))/.work/aotCompactReport"
-    RawReportPath = "$($RepoRoot.Path.Replace('\', '/'))/.work/aotCompactReport/aot-compact-report.txt"
-    JsonReportPath = "$($RepoRoot.Path.Replace('\', '/'))/.work/aotCompactReport/aot-compact-report.json"
-    HtmlReportPath = "$($RepoRoot.Path.Replace('\', '/'))/.work/aotCompactReport/aot-compact-report.html"
+    RootPath = $RepoRoot
+    ProjectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+
+    # AOT report directories and files
+    ReportDirectory = "$RepoRoot/.work/aotCompactReport"
+    RawReportPath = "$RepoRoot/.work/aotCompactReport/aot-compact-report.txt"
+    JsonReportPath = "$RepoRoot/.work/aotCompactReport/aot-compact-report.json"
+    HtmlReportPath = "$RepoRoot/.work/aotCompactReport/aot-compact-report.html"
 }
 
 function Get-AOTConfig {
