@@ -82,7 +82,7 @@ public class GroupListCommandTests
         Assert.Equal("East US", first.GetProperty("location").GetString());
 
         Assert.Equal("rg2", second.GetProperty("name").GetString());
-        Assert.Equal("/subscriptions/test-subscription-id/resourceGroups/rg2", second.GetProperty("id").GetString());
+        Assert.Equal("/subscriptions/test-subs-id/resourceGroups/rg2", second.GetProperty("id").GetString());
         Assert.Equal("West US", second.GetProperty("location").GetString());
 
         await _resourceGroupService.Received(1).GetResourceGroups(
