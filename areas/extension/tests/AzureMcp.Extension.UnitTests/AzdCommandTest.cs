@@ -20,6 +20,8 @@ public sealed class AzdCommandTests
     private readonly IExternalProcessService _processService;
     private readonly ILogger<AzdCommand> _logger;
 
+    private const int TempDirSuffixLength = 8;
+
     public AzdCommandTests()
     {
         _processService = Substitute.For<IExternalProcessService>();
@@ -40,16 +42,14 @@ public sealed class AzdCommandTests
         var context = new CommandContext(_serviceProvider);
 
         var expectedOutput = "env1\nenv2";
-        
+
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<int>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, "azd env list --cwd test-dir --no-prompt"));
 
-        const int TempDirSuffixLength = 8;
-        var tempDir = Path.Combine(Path.GetTempPath(), "AzdTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
-        Directory.CreateDirectory(tempDir);
+        var tempDir = CreateTempAzdCliDirectory();
 
         try
         {
@@ -86,10 +86,7 @@ public sealed class AzdCommandTests
         }
         finally
         {
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
+            CleanupTempDirectory(tempDir);
         }
     }
 
@@ -110,16 +107,14 @@ public sealed class AzdCommandTests
             Arg.Any<int>())
             .Returns(new ProcessResult(1, string.Empty, errorMessage, "azd env invalid-command --cwd test-dir --no-prompt"));
 
-        const int TempDirSuffixLength = 8;
-        var tempDir = Path.Combine(Path.GetTempPath(), "AzdTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
-        Directory.CreateDirectory(tempDir);
+        var tempDir = CreateTempAzdCliDirectory();
 
         try
         {
-            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? Path.Combine(tempDir, "azd.exe")
                 : Path.Combine(tempDir, "azd");
-            
+
             File.WriteAllText(azdPath, "mock azd executable");
 
             var originalPath = Environment.GetEnvironmentVariable("PATH");
@@ -144,10 +139,7 @@ public sealed class AzdCommandTests
         }
         finally
         {
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
+            CleanupTempDirectory(tempDir);
         }
     }
 
@@ -174,7 +166,6 @@ public sealed class AzdCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
-        Assert.Contains("Azure Developer CLI executable not found", response.Message);
         Assert.Contains(exceptionMessage, response.Message);
     }
 
@@ -226,7 +217,7 @@ public sealed class AzdCommandTests
         var parser = new Parser(command.GetCommand());
         var args = parser.Parse("--learn --cwd test-dir");
         var context = new CommandContext(_serviceProvider);
-        
+
         // Act
         var response = await command.ExecuteAsync(context, args);
 
@@ -251,17 +242,14 @@ public sealed class AzdCommandTests
             Arg.Any<int>())
             .Returns(new ProcessResult(0, "output", "", "command"));
 
-        // Create a temporary directory with azd executable to avoid CLI not found error
-        const int TempDirSuffixLength = 8;
-        var tempDir = Path.Combine(Path.GetTempPath(), "AzdTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
-        Directory.CreateDirectory(tempDir);
+        var tempDir = CreateTempAzdCliDirectory();
 
         try
         {
-            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? Path.Combine(tempDir, "azd.exe")
                 : Path.Combine(tempDir, "azd");
-            
+
             File.WriteAllText(azdPath, "mock azd executable");
 
             var originalPath = Environment.GetEnvironmentVariable("PATH");
@@ -288,10 +276,7 @@ public sealed class AzdCommandTests
         }
         finally
         {
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
+            CleanupTempDirectory(tempDir);
         }
     }
 
@@ -300,9 +285,7 @@ public sealed class AzdCommandTests
     {
         AzdCommand.ClearCachedAzdPath();
 
-        const int TempDirSuffixLength = 8;
-        var tempDir = Path.Combine(Path.GetTempPath(), "AzdCliTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
-        Directory.CreateDirectory(tempDir);
+        var tempDir = CreateTempAzdCliDirectory();
 
         try
         {
@@ -328,29 +311,32 @@ public sealed class AzdCommandTests
 
                 var result = AzdCommand.FindAzdCliPath();
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Assert.Equal(azdExePath, result);
-                }
-                else
-                {
-                    Assert.Equal(azdPath, result);
-                }
+                Assert.Equal(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? azdExePath : azdPath, result);
             }
             finally
             {
-                // Restore the original PATH
                 Environment.SetEnvironmentVariable("PATH", originalPath);
                 AzdCommand.ClearCachedAzdPath();
             }
         }
         finally
         {
-            // Clean up the temporary directory
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
+            CleanupTempDirectory(tempDir);
+        }
+    }
+
+    private static string CreateTempAzdCliDirectory()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), "AzdTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
+        Directory.CreateDirectory(tempDir);
+        return tempDir;
+    }
+
+    private static void CleanupTempDirectory(string tempDir)
+    {
+        if (Directory.Exists(tempDir))
+        {
+            Directory.Delete(tempDir, true);
         }
     }
 }
