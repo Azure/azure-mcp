@@ -4,8 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.VirtualDesktop.Options;
 using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
-using AzureMcp.Commands;
-using AzureMcp.Commands.Subscription;
+using AzureMcp.Core.Commands;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 public abstract class BaseHostPoolCommand<

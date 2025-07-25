@@ -5,7 +5,7 @@ using AzureMcp.Areas.VirtualDesktop.Models;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;
 
-using AzureMcp.Options;
+using AzureMcp.Core.Options;
 
 public interface IVirtualDesktopService
 {

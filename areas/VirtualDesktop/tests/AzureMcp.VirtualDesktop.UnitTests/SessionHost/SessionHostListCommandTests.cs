@@ -4,8 +4,8 @@
 using System.CommandLine.Parsing;
 using AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
-using AzureMcp.Models.Command;
-using AzureMcp.Options;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

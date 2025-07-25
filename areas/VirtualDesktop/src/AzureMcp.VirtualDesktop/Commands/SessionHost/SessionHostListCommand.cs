@@ -5,7 +5,7 @@ using Azure;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
-using AzureMcp.Models.Option;
+using AzureMcp.Core.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;

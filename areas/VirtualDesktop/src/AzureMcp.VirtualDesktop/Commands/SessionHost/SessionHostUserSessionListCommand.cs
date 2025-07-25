@@ -3,7 +3,6 @@
 
 using Azure;
 using AzureMcp.Areas.VirtualDesktop.Models;
-using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
 using Microsoft.Extensions.Logging;
 

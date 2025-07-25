@@ -4,11 +4,12 @@
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 using AzureMcp.Areas.VirtualDesktop.Services;
-using AzureMcp.Commands;
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.Areas.VirtualDesktop;
+namespace AzureMcp.VirtualDesktop;
 
 public class VirtualDesktopSetup : IAreaSetup
 {

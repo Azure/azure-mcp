@@ -3,7 +3,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Options;
+using AzureMcp.Core.Options;
 
 namespace AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
 public class BaseHostPoolOptions : SubscriptionOptions

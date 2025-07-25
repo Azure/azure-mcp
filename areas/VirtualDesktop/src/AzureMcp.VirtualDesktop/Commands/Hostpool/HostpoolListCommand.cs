@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure;
-using Azure.Identity;
 using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Services;
-using AzureMcp.Models.Option;
+using AzureMcp.Core.Models.Option;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;

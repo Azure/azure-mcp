@@ -3,8 +3,8 @@
 
 using Azure.ResourceManager.DesktopVirtualization;
 using AzureMcp.Areas.VirtualDesktop.Models;
-using AzureMcp.Options;
-using AzureMcp.Services.Azure.Subscription;
+using AzureMcp.Core.Options;
+using AzureMcp.Core.Services.Azure.Subscription;
 
 namespace AzureMcp.Areas.VirtualDesktop.Services;
 

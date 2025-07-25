@@ -1,12 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Options;
-using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Options.SessionHost;
-using AzureMcp.Commands;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
 
