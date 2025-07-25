@@ -48,7 +48,7 @@ public class StorageSetup : IAreaSetup
         storage.AddSubGroup(dataLake);
 
         // Create Batch subgroup under storage
-        var batch = new CommandGroup("batch", "Storage batch operations - Commands for performing batch operations on multiple storage resources efficiently.");
+        var batch = new CommandGroup("batch", "Storage batch operations - Commands for performing batch operations on multiple storage blobs efficiently.");
         storage.AddSubGroup(batch);
 
         // Create file-system subgroup under datalake

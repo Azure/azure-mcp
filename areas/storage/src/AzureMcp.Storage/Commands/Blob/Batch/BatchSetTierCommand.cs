@@ -23,11 +23,9 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     public override string Description =>
         $"""
         Set access tier for multiple blobs in a single batch operation. This tool efficiently changes the 
-        storage tier (Hot, Cool, Archive) for multiple blobs simultaneously, in a single request. 
-        Hot tier provides fastest access but higher storage costs. Cool tier provides lower storage costs 
-        but higher access costs. Archive tier provides lowest storage costs but highest access costs and 
-        retrieval latency. Requires {StorageOptionDefinitions.AccountName}, {StorageOptionDefinitions.ContainerName}, 
-        {StorageOptionDefinitions.TierName}, and {StorageOptionDefinitions.BlobNames}.
+        storage tier for multiple blobs simultaneously in a single request. Different tiers offer different 
+        trade-offs between storage costs, access costs, and retrieval latency. Requires {StorageOptionDefinitions.AccountName}, 
+        {StorageOptionDefinitions.ContainerName}, {StorageOptionDefinitions.TierName}, and {StorageOptionDefinitions.BlobNames}.
         """;
 
     public override string Title => CommandTitle;
@@ -93,7 +91,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
         Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
             $"Authorization failed accessing the storage resource. Ensure you have Storage Blob Data Contributor role. Details: {reqEx.Message}",
         Azure.RequestFailedException reqEx when reqEx.ErrorCode == "InvalidBlobTier" =>
-            "Invalid tier specified. Valid tiers are: Hot, Cool, Archive.",
+            "Invalid tier specified. See Azure documentation for valid access tier values.",
         Azure.RequestFailedException reqEx => reqEx.Message,
         _ => base.GetErrorMessage(ex)
     };

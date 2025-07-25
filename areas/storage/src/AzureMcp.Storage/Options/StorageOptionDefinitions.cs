@@ -55,7 +55,7 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<string> Tier = new(
         $"--{TierName}",
-        "The access tier to set for the blobs. Valid values are: Hot, Cool, Archive. Hot tier provides the fastest access but costs more for storage. Cool tier provides lower storage costs but higher access costs. Archive tier provides the lowest storage costs but highest access costs and retrieval latency."
+        "The access tier to set for the blobs. Valid values include Hot, Cool, Archive, and others depending on the storage account type. See Azure documentation for the complete list of supported access tiers."
     )
     {
         IsRequired = true

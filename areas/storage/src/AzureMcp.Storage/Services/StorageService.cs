@@ -419,10 +419,10 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             throw new ArgumentException("At least one blob name must be provided.", nameof(blobNames));
         }
 
-        // Validate tier
-        if (!IsValidTier(tier))
+        // Validate tier using Enum.TryParse
+        if (!Enum.TryParse(tier, true, out AccessTier accessTier))
         {
-            throw new ArgumentException("Invalid tier. Valid tiers are: Hot, Cool, Archive.", nameof(tier));
+            throw new ArgumentException($"Invalid tier '{tier}'. Valid tiers are: {string.Join(", ", Enum.GetNames<AccessTier>())}.", nameof(tier));
         }
 
         var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
@@ -433,10 +433,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            // Parse the access tier
-            var accessTier = Enum.Parse<AccessTier>(tier, true);
-
-            // Process each blob individually to track success/failure
+            // Process each blob concurrently for efficiency
             var tasks = blobNames.Select(async blobName =>
             {
                 try
@@ -471,8 +468,6 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
     private static bool IsValidTier(string tier)
     {
-        return tier.Equals("Hot", StringComparison.OrdinalIgnoreCase) ||
-               tier.Equals("Cool", StringComparison.OrdinalIgnoreCase) ||
-               tier.Equals("Archive", StringComparison.OrdinalIgnoreCase);
+        return Enum.TryParse(tier, true, out AccessTier _);
     }
 }
