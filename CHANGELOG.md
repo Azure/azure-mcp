@@ -15,6 +15,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Major repository structure change.
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
+- The Azure MCP Server can now be packaged as a .NET SDK Tool for easier use by users with the .NET 10 SDK installed.
 
 ## 0.5.0 (2025-07-24)
 
