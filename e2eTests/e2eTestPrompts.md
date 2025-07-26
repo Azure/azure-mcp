@@ -326,6 +326,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
 
+## Azure Virtual Desktop
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-virtualdesktop-hostpool-list | List all host pools in my subscription |
+| azmcp-virtualdesktop-hostpool-sessionhost-list | List all session hosts in host pool <hostpool_name> |
+| azmcp-virtualdesktop-hostpool-sessionhost-usersession-list | List all user sessions on session host <sessionhost_name> in host pool <hostpool_name> |
+
 ## Azure Workbooks
 
 | Tool Name | Test Prompt |
@@ -343,3 +351,4 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+
