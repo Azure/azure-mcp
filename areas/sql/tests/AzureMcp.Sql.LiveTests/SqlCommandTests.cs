@@ -42,6 +42,50 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         Assert.Equal("Microsoft.Sql/servers/databases", dbType);
     }
 
+    [Fact]
+    public async Task Should_ListDatabases_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+
+        var result = await CallToolAsync(
+            "azmcp_sql_db_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "server", serverName }
+            });
+
+        // Should successfully retrieve the list of databases
+        var databases = result.AssertProperty("databases");
+        Assert.Equal(JsonValueKind.Array, databases.ValueKind);
+
+        // Should contain at least the master database and our test database
+        var databaseArray = databases.EnumerateArray().ToList();
+        Assert.True(databaseArray.Count >= 2, "Should contain at least master and testdb databases");
+
+        // Verify that master database exists
+        var masterDb = databaseArray.FirstOrDefault(db =>
+            db.GetProperty("name").GetString() == "master");
+        Assert.NotEqual(default, masterDb);
+
+        // Verify that our test database exists
+        var testDb = databaseArray.FirstOrDefault(db =>
+            db.GetProperty("name").GetString() == "testdb");
+        Assert.NotEqual(default, testDb);
+
+        // Verify database properties for test database
+        if (testDb.ValueKind != JsonValueKind.Undefined)
+        {
+            var dbType = testDb.GetProperty("type").GetString();
+            Assert.Equal("Microsoft.Sql/servers/databases", dbType);
+
+            var dbStatus = testDb.GetProperty("status").GetString();
+            Assert.Equal("Online", dbStatus);
+        }
+    }
+
     [Theory]
     [InlineData("--invalid-param", new string[0])]
     [InlineData("--subscription", new[] { "invalidSub" })]
