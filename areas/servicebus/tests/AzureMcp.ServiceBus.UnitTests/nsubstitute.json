@@ -1,0 +1,10 @@
+{
+  "Suppressions": [
+    {
+      "Target": "M:AzureMcp.ServiceBus.Models.Command~System.Int32",
+      "Rules": [
+        "NS1004"
+      ]
+    }
+  ]
+}
