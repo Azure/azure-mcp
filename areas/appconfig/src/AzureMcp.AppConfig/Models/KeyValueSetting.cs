@@ -12,4 +12,7 @@ public class KeyValueSetting
     public ETag ETag { get; set; } = new();
     public DateTimeOffset? LastModified { get; set; }
     public bool? Locked { get; set; }
+    internal record KeyValueResult(string Key, string? Label = null, string? Value = null, string? IsLocked = null);
+    internal record KeyValueSettingsCollection(IReadOnlyList<KeyValueSetting> Settings);
+    internal record KeyValueSettingsResult(KeyValueSetting Setting);
 }
