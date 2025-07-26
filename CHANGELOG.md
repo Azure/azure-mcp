@@ -10,6 +10,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Fixed issue where `ToolExecuted` activity was double recorded. [[#741](https://github.com/Azure/azure-mcp/pull/741)]
+
 ### Other Changes
 
 - Major repository structure change.
