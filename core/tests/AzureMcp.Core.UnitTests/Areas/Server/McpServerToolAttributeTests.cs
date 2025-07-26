@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
-using AzureMcp.Tests;
 using ModelContextProtocol.Server;
 using Xunit;
 

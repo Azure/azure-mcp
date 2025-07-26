@@ -9,7 +9,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Models.ResourceGroup;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
-using AzureMcp.Tests;
 using AzureMcp.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
