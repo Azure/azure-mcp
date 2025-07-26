@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Redis.Commands;
@@ -29,7 +30,8 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

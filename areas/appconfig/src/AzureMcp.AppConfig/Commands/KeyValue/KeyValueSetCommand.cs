@@ -5,6 +5,7 @@ using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Options;
 using AzureMcp.AppConfig.Options.KeyValue;
 using AzureMcp.AppConfig.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +28,8 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -40,7 +43,6 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

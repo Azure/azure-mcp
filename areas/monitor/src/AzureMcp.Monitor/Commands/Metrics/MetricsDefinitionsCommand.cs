@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Models;
 using AzureMcp.Monitor.Options;
@@ -40,6 +41,8 @@ public sealed class MetricsDefinitionsCommand(ILogger<MetricsDefinitionsCommand>
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -57,10 +60,6 @@ public sealed class MetricsDefinitionsCommand(ILogger<MetricsDefinitionsCommand>
         return options;
     }
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

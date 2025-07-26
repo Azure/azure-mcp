@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Workbooks.Models;
 using AzureMcp.Workbooks.Options;
 using AzureMcp.Workbooks.Options.Workbook;
@@ -26,6 +27,8 @@ public sealed class ShowWorkbooksCommand(ILogger<ShowWorkbooksCommand> logger) :
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -39,7 +42,6 @@ public sealed class ShowWorkbooksCommand(ILogger<ShowWorkbooksCommand> logger) :
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

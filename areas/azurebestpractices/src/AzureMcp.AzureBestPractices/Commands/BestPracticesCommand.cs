@@ -27,13 +27,14 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         command.AddOption(_resourceOption);
         command.AddOption(_actionOption);
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

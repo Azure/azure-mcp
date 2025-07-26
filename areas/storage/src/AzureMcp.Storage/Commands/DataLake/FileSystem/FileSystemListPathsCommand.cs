@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Models;
@@ -26,7 +27,8 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

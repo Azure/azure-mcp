@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Marketplace.Models;
@@ -57,6 +58,8 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -88,10 +91,6 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         return options;
     }
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

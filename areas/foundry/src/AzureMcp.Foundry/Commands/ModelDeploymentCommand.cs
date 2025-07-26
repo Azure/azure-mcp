@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Foundry.Models;
@@ -34,6 +35,8 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
@@ -69,7 +72,6 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

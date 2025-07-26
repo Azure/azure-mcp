@@ -5,6 +5,7 @@ using AzureMcp.BicepSchema.Commands;
 using AzureMcp.BicepSchema.Options;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
+using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -31,6 +32,8 @@ namespace AzureMcp.BicepSchema.Commands
 
         public override string Title => CommandTitle;
 
+        public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
         private static readonly Lazy<IServiceProvider> s_serviceProvider;
 
         static BicepSchemaGetCommand()
@@ -43,7 +46,6 @@ namespace AzureMcp.BicepSchema.Commands
             });
         }
 
-        [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
         public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
         {
             BicepSchemaOptions options = BindOptions(parseResult);

@@ -45,7 +45,7 @@ This keeps all code, options, models, and tests for an area together. See `areas
    - Classes are always sealed unless explicitly intended for inheritance
    - Commands inheriting from SubscriptionCommand must handle subscription parameters
    - Service-specific base commands should add service-wide options
-   - Commands are marked with [McpServerTool] attribute to define their characteristics
+   - Commands return `ToolMetadata` property to define their behavioral characteristics
 
 3. **Command Pattern**
    Commands follow the Model-Context-Protocol (MCP) pattern with this naming convention:
@@ -210,6 +210,12 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new()
+    {
+        Destructive = false,    // Set to true for commands that modify resources
+        ReadOnly = true         // Set to false for commands that modify resources  
+    };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -223,10 +229,6 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
         return options;
     }
 
-    [McpServerTool(
-        Destructive = false,     // Set to true for commands that modify resources
-        ReadOnly = true,        // Set to false for commands that modify resources
-        Title = CommandTitle)]  // Display name shown in UI
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -1139,6 +1141,7 @@ Before submitting:
 - [ ] RBAC permissions configured for test application in Bicep template
 - [ ] Live tests use deployed resources via `Settings.ResourceBaseName` pattern
 - [ ] Resource outputs defined in Bicep template for `test-resources-post.ps1` script consumption
+- [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
 
 ### Documentation Requirements
 

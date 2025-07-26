@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.KeyVault.Commands;
@@ -21,6 +22,8 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
 
     public override string Title => _commandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override string Description =>
         """
         List all secrets in an Azure Key Vault. This command retrieves and displays the names of all secrets
@@ -40,7 +43,6 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

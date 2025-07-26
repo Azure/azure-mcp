@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Options.TableType;
@@ -21,6 +22,8 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -34,7 +37,6 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

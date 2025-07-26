@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options.Server;
@@ -20,7 +21,8 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseP
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

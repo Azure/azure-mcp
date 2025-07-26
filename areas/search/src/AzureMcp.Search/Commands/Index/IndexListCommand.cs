@@ -27,6 +27,8 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -40,7 +42,6 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

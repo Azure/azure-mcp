@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.LoadTesting.Models.LoadTestResource;
 using AzureMcp.LoadTesting.Options.LoadTestResource;
 using AzureMcp.LoadTesting.Services;
@@ -20,10 +21,8 @@ public sealed class TestResourceCreateCommand(ILogger<TestResourceCreateCommand>
         """;
     public override string Title => _commandTitle;
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = _commandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

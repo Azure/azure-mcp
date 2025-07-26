@@ -40,6 +40,11 @@ public sealed class ServiceStartCommand : BaseCommand
     /// </summary>
     public override string Title => CommandTitle;
 
+    /// <summary>
+    /// Gets the metadata for this command.
+    /// </summary>
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public static Action<IServiceCollection> ConfigureServices { get; set; } = _ => { };
 
     /// <summary>

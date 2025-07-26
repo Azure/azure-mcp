@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.ServiceBus.Commands;
@@ -32,6 +33,8 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -47,7 +50,6 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
