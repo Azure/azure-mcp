@@ -730,6 +730,11 @@ azmcp sql db show --subscription <subscription> \
                   --server <server-name> \
                   --database <database-name>
 
+# Gets a list of all databases in a SQL server
+azmcp sql db list --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name>
+
 # Gets a list of firewall rules for a SQL server
 azmcp sql firewall-rule list --subscription <subscription> \
                                   --resource-group <resource-group> \
