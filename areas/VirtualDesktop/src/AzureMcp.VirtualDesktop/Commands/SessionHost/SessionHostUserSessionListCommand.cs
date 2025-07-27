@@ -4,6 +4,7 @@
 using Azure;
 using AzureMcp.Areas.VirtualDesktop.Models;
 using AzureMcp.Areas.VirtualDesktop.Services;
+using AzureMcp.Core.Commands;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.SessionHost;
@@ -25,7 +26,8 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

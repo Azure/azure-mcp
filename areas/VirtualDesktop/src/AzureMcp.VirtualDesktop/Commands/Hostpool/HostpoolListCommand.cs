@@ -3,6 +3,7 @@
 
 using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
 using AzureMcp.Areas.VirtualDesktop.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +25,8 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
