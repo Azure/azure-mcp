@@ -1141,6 +1141,7 @@ Before submitting:
 - [ ] RBAC permissions configured for test application in Bicep template
 - [ ] Live tests use deployed resources via `Settings.ResourceBaseName` pattern
 - [ ] Resource outputs defined in Bicep template for `test-resources-post.ps1` script consumption
+- [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
 
 ### Documentation Requirements
 
