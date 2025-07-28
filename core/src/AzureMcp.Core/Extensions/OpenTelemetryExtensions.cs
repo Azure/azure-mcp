@@ -44,7 +44,7 @@ public static class OpenTelemetryExtensions
                         .Select(x => x.GetPhysicalAddress().ToString())
                         .FirstOrDefault(x => !string.IsNullOrEmpty(x));
 
-                    options.MacAddressHash = address != default
+                    options.MacAddressHash = address != null
                         ? Sha256Helper.GetHashedValue(address)
                         : "N/A";
                 }
