@@ -3,6 +3,7 @@
 
 using System.CommandLine.Parsing;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Blob.Batch;
@@ -73,7 +74,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt blob2.txt blob3.txt",
+            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -86,7 +87,7 @@ public class BatchSetTierCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<BatchSetTierCommand.BatchSetTierCommandResult>(json);
+        var result = JsonSerializer.Deserialize<BatchSetTierResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(3, result.SuccessfulBlobs.Count);
@@ -118,7 +119,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt blob2.txt blob3.txt",
+            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -131,7 +132,7 @@ public class BatchSetTierCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<BatchSetTierCommand.BatchSetTierCommandResult>(json);
+        var result = JsonSerializer.Deserialize<BatchSetTierResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.SuccessfulBlobs.Count);
@@ -285,5 +286,14 @@ public class BatchSetTierCommandTests
         Assert.Equal(403, response.Status);
         Assert.Contains("forbidden", response.Message.ToLower());
         Assert.Contains("troubleshooting", response.Message);
+    }
+
+    private class BatchSetTierResult
+    {
+        [JsonPropertyName("successfulBlobs")]
+        public List<string> SuccessfulBlobs { get; set; } = [];
+
+        [JsonPropertyName("failedBlobs")]
+        public List<string> FailedBlobs { get; set; } = [];
     }
 }

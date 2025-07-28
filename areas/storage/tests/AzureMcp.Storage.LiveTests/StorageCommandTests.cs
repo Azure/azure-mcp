@@ -251,7 +251,7 @@ namespace AzureMcp.Storage.LiveTests
                     { "account-name", Settings.ResourceBaseName },
                     { "container-name", "bar" },
                     { "tier-name", "Cool" },
-                    { "blob-names", "testblob1.txt testblob2.txt" }
+                    { "blob-names", "blob1.txt blob2.txt" }
                 });
 
             var successfulBlobs = result.AssertProperty("successfulBlobs");
