@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure;
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Options;
 using AzureMcp.ServiceBus.Commands.Topic;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Services;

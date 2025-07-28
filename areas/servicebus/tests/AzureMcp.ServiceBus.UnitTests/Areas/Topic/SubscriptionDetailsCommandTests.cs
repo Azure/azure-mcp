@@ -8,6 +8,7 @@ using Azure.Messaging.ServiceBus;
 using AzureMcp.ServiceBus.Commands.Topic;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Services;
+using AzureMcp.Core.Options;
 using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

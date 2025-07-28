@@ -5,6 +5,7 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Options;
 using AzureMcp.ServiceBus.Commands.Queue;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Services;
