@@ -57,9 +57,9 @@ public interface IFoundryService
         string? tenantId = null,
         List<string>? evaluatorNames = null,
         RetryPolicyOptions? retryPolicy = null);
-    //
-    // Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinition, RetryPolicyOptions? retryPolicy = null);
-    //
+
+    Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null);
+
     // Task<Dictionary<string, object>> EvaluateText(
     //     List<string>? evaluatorNames = null,
     //     string? filePath = null,

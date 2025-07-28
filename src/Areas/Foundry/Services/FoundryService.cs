@@ -7,6 +7,7 @@ using Azure;
 using Azure.AI.Agents.Persistent;
 using Azure.AI.OpenAI;
 using Azure.AI.Projects;
+using Azure.Core;
 using Azure.ResourceManager;
 using Azure.ResourceManager.CognitiveServices;
 using Azure.ResourceManager.CognitiveServices.Models;
@@ -18,40 +19,27 @@ using AzureMcp.Services.Azure;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
-using Microsoft.Extensions.AI.Evaluation.Safety;
+using ModelContextProtocol.Client;
 
 namespace AzureMcp.Areas.Foundry.Services;
 
 public class FoundryService : BaseAzureService, IFoundryService
 {
-    private static readonly Dictionary<string, Func<IEvaluator>> TextEvaluatorDictionary = new()
-    {
-        { "coherence", () => new CoherenceEvaluator() },
-        { "completeness", () => new CompletenessEvaluator() },
-        { "equivalence", () => new EquivalenceEvaluator() },
-        { "fluency", () => new FluencyEvaluator() },
-        { "groundedness", () => new GroundednessEvaluator() },
-        { "relevance", () => new RelevanceEvaluator() },
-        //{"relevance_truth_and_completeness", () => new RelevanceTruthAndCompletenessEvaluator()},
-        { "retrieval", () => new RetrievalEvaluator() },
-
-        { "code_vulnerability", () => new CodeVulnerabilityEvaluator() },
-        { "content_harm", () => new ContentHarmEvaluator() },
-        { "groundedness_pro", () => new GroundednessProEvaluator() },
-        { "hate_and_unfairness", () => new HateAndUnfairnessEvaluator() },
-        { "indirect_attack", () => new IndirectAttackEvaluator() },
-        { "protected_material", () => new ProtectedMaterialEvaluator() },
-        { "self_harm", () => new SelfHarmEvaluator() },
-        { "sexual", () => new SexualEvaluator() },
-        { "ungrounded_attributes", () => new UngroundedAttributesEvaluator() },
-        { "violence", () => new ViolenceEvaluator() },
-    };
     private static readonly Dictionary<string, Func<IEvaluator>> AgentEvaluatorDictionary = new()
     {
 #pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         { "intent_resolution", () => new IntentResolutionEvaluator()},
         { "tool_call_accuracy", () => new ToolCallAccuracyEvaluator()},
         { "task_adherence", () => new TaskAdherenceEvaluator()},
+#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+    };
+
+     private static readonly Dictionary<string, Func<IEnumerable<AITool>, EvaluationContext>> AgentEvaluatorContextDictionary = new()
+    {
+#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        { "intent_resolution", toolDefinitons => new IntentResolutionEvaluatorContext(toolDefinitons)},
+        { "tool_call_accuracy", toolDefinitons => new ToolCallAccuracyEvaluatorContext(toolDefinitons)},
+        { "task_adherence", toolDefinitons => new TaskAdherenceEvaluatorContext(toolDefinitons)},
 #pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     };
 
@@ -342,49 +330,14 @@ public class FoundryService : BaseAzureService, IFoundryService
                 };
             }
 
-            var responseMessage = await agentsClient.Messages.GetMessagesAsync(threadId).FirstOrDefaultAsync(msg => msg.Role == MessageRole.Agent);
-
-            var result = new StringBuilder();
-            var citations = new List<string>();
-
-            if (responseMessage != null)
-            {
-                foreach (var messageContent in responseMessage.ContentItems)
-                {
-                    if (messageContent is MessageTextContent messageTextContent)
-                    {
-                        result.AppendLine(messageTextContent.Text);
-                        foreach (var messageTextAnnotation in messageTextContent.Annotations)
-                        {
-                            if (messageTextAnnotation is MessageTextUriCitationAnnotation
-                                messageTextUriCitationAnnotation)
-                            {
-                                var citation = $"[{messageTextUriCitationAnnotation.UriCitation.Title}]({messageTextUriCitationAnnotation.UriCitation.Uri})";
-                                if (!citations.Contains(citation))
-                                {
-                                    citations.Add(citation);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (citations.Count > 0)
-            {
-                result.AppendLine("\n\n## Sources");
-                foreach (var citation in citations)
-                {
-                    result.AppendLine($"- {citation}");
-                }
-            }
+            var (response, citations) = buildResponseAndCitations(agentsClient, threadId);
 
             return new Dictionary<string, object>
             {
                 { "success", true },
                 { "thread_id", threadId },
                 { "run_id", runId },
-                { "result", result.ToString().Trim() },
+                { "response", response.ToString().Trim() },
                 { "citations", citations }
             };
         }
@@ -408,15 +361,45 @@ public class FoundryService : BaseAzureService, IFoundryService
 
             var agentsChatClient = agentClient.AsIChatClient(agentId, thread.Value.Id);
 
-            List<ChatMessage> chatRequest = [new(ChatRole.User, query)];
-            var chatResponse = await agentsChatClient.GetResponseAsync(chatRequest);
-            var messageList = await agentClient.Messages.GetMessagesAsync(thread.Value.Id).ToListAsync();
+            var chatResponse = await agentsChatClient.GetResponseAsync(new ChatMessage(ChatRole.User, query));
+            var messages = await agentClient.Messages.GetMessagesAsync(thread.Value.Id, order: ListSortOrder.Ascending).ToListAsync();
+            var runSteps = await agentClient.Runs.GetRunStepsAsync(thread.Value.Id, chatResponse.ResponseId, order: ListSortOrder.Ascending).ToListAsync();
+            var run = await agentClient.Runs.GetRunAsync(thread.Value.Id, chatResponse.ResponseId);
 
+            List<PersistentThreadMessage> requestMessages = [];
+            List<PersistentThreadMessage> responseMessages = [];
 
-            var evaluationClient = new AIProjectClient(new Uri(endpoint), credential);
+            foreach (var message in messages)
+            {
+                if (message.Role == MessageRole.User)
+                {
+                    requestMessages.Add(message);
+                }
+                else
+                {
+                    responseMessages.Add(message);
+                }
+            }
+
+            var convertedRequestMessages = ConvertMessages(requestMessages).ToList();
+            convertedRequestMessages.Prepend(new ChatMessage(ChatRole.System, run.Value.Instructions));
+
+            // full list of messages converted to Microsoft.Extensions.AI.ChatMessage for evaluation
+            var convertedResponse = ConvertMessages(messages)
+                .Concat(ConvertSteps(runSteps))
+                .OrderBy(o => o.RawRepresentation switch
+                {
+                    PersistentThreadMessage m => m.CreatedAt,
+                    RunStep s => s.CreatedAt,
+                    _ => default,
+                })
+                .ThenBy(o => o.Contents!.OfType<FunctionCallContent>().Any() ? 0 : o.Contents!.OfType<FunctionResultContent>().Any() ? 1 : 2)
+                .ToList();
+
+            var convertedTools = ConvertTools(run.Value.Tools);
 
             List<IEvaluator> evaluators = [];
-            var evaluationConfig = new Dictionary<string, EvaluatorConfiguration>();
+            List<EvaluationContext> evaluationContexts = [];
 
             if (evaluatorNames == null || evaluatorNames.Count == 0)
             {
@@ -430,44 +413,19 @@ public class FoundryService : BaseAzureService, IFoundryService
                 {
                     var evaluator = createEvaluator();
                     evaluators.Add(evaluator);
+                    evaluationContexts.Add(AgentEvaluatorContextDictionary[evaluatorName](toolDefinitons));
                 }
             }
             var compositeEvaluator = new CompositeEvaluator(evaluators);
 
-            var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
-            var azureOpenAIEndpointUri = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
-            if (azureOpenAIEndpointUri == null)
-            {
-                throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT environment variable is not set.");
-            }
-
-
-            var azureOpenAIDeployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT");
-            if (azureOpenAIDeployment == null)
-            {
-                throw new InvalidOperationException("AZURE_OPENAI_DEPLOYMENT environment variable is not set.");
-            }
-
-            IChatClient azureOpenAIChatClient;
-
-            switch (azureOpenAIKey)
-            {
-                case null:
-                    azureOpenAIChatClient = new AzureOpenAIClient(
-                    new Uri(azureOpenAIEndpointUri),
-                    credential).GetChatClient(azureOpenAIDeployment).AsIChatClient();
-                    break;
-                default:
-                    azureOpenAIChatClient = new AzureOpenAIClient(
-                    new Uri(azureOpenAIEndpointUri),
-                    new ApiKeyCredential(azureOpenAIKey)).GetChatClient(azureOpenAIDeployment).AsIChatClient();
-                    break;
-            }
+            var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
 
             var evaluationResult = await compositeEvaluator.EvaluateAsync(
-                chatRequest,
-                chatResponse,
+                convertedRequestMessages,
+                new ChatResponse(convertedResponse),
                 new ChatConfiguration(azureOpenAIChatClient));
+
+            var (result, citations) = buildResponseAndCitations(agentClient, thread.Value.Id);
 
             // Prepare the response
             var response = new Dictionary<string, object>
@@ -476,9 +434,10 @@ public class FoundryService : BaseAzureService, IFoundryService
                 { "agent_id", agentId },
                 { "thread_id", thread.Value.Id },
                 { "run_id", chatResponse.ResponseId ?? string.Empty },
+                { "result", result.ToString().Trim() },
                 { "query", query },
-                { "response", chatResponse },
-                // { "citations", messageList.Contains("citations") ? messageList["citations"] : new List<string>() },
+                { "response", new ChatResponse(convertedResponse) },
+                { "citations", citations },
                 { "evaluation_metrics", evaluationResult }
             };
 
@@ -494,194 +453,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    // public async Task<Dictionary<string, object>> EvaluateText(
-    //     List<string>? evaluatorNames = null,
-    //     string? filePath = null,
-    //     string? content = null,
-    //     bool includeStudioUrl = true,
-    //     bool returnRowResults = false,
-    //     string? endpoint = null,
-    //     string? tenantId = null,
-    //     RetryPolicyOptions? retryPolicy = null)
-    // {
-    //     try
-    //     {
-    //         if (string.IsNullOrEmpty(filePath) && string.IsNullOrEmpty(content))
-    //         {
-    //             return new Dictionary<string, object>
-    //             {
-    //                 { "success", false },
-    //                 { "error", "Either filePath or content must be provided" }
-    //             };
-    //         }
-    //
-    //         evaluatorNames ??= TextEvaluatorDictionary.Keys.ToList();
-    //
-    //         if (evaluatorNames.Count == 0)
-    //         {
-    //             return new Dictionary<string, object>
-    //             {
-    //                 { "success", false },
-    //                 { "error", "At least one evaluator name must be provided" }
-    //             };
-    //         }
-    //
-    //         foreach (var name in evaluatorNames)
-    //         {
-    //             if (!TextEvaluatorDictionary.ContainsKey(name.ToLowerInvariant()))
-    //             {
-    //                 return new Dictionary<string, object>
-    //                 {
-    //                     { "success", false },
-    //                     { "error", $"Unknown evaluator: {name}" }
-    //                 };
-    //             }
-    //         }
-    //
-    //         string? tempFile = null;
-    //         int rowCount = 0;
-    //         string inputFile;
-    //
-    //         try
-    //         {
-    //             if (!string.IsNullOrEmpty(filePath))
-    //             {
-    //                 if (!File.Exists(filePath))
-    //                 {
-    //                     return new Dictionary<string, object>
-    //                     {
-    //                         { "success", false },
-    //                         { "error", $"File not found: {filePath}" }
-    //                     };
-    //                 }
-    //
-    //                 inputFile = filePath;
-    //
-    //                 using (var fileReader = new StreamReader(inputFile))
-    //                 {
-    //                     while (await fileReader.ReadLineAsync() != null)
-    //                     {
-    //                         rowCount++;
-    //                     }
-    //                 }
-    //             }
-    //             else if (!string.IsNullOrEmpty(content))
-    //             {
-    //                 tempFile = Path.GetTempFileName();
-    //                 await File.WriteAllTextAsync(tempFile, content);
-    //
-    //                 inputFile = tempFile;
-    //                 rowCount = content.Split('\n').Count(line => !string.IsNullOrWhiteSpace(line));
-    //             }
-    //
-    //             Console.WriteLine($"Processing {rowCount} rows for {evaluatorNames.Length} evaluator(s)");
-    //
-    //             var evaluators = new Dictionary<string, IEvaluator>();
-    //             var evaluationConfig = new Dictionary<string, EvaluatorConfiguration>();
-    //
-    //             foreach (var name in evaluatorNames)
-    //             {
-    //                 var evaluatorName = name.ToLowerInvariant();
-    //                 if (TextEvaluatorDictionary.TryGetValue(evaluatorName, out var createEvaluator))
-    //                 {
-    //                     var evaluator = createEvaluator();
-    //                     evaluators.Add(evaluatorName, evaluator);
-    //
-    //                     var requirements = TextEvaluatorRequirements[evaluatorName];
-    //                     var columnMapping = new Dictionary<string, string>();
-    //                     foreach (var fieldRequirement in requirements)
-    //                     {
-    //                         var field = fieldRequirement.Key;
-    //                         var requirement = fieldRequirement.Value;
-    //
-    //                         if (requirement == "Required")
-    //                         {
-    //                             columnMapping[field] = $"{{data.{field}}}";
-    //                         }
-    //                     }
-    //
-    //                     evaluationConfig[evaluatorName] = new EvaluatorConfiguration { ColumnMapping = columnMapping };
-    //                 }
-    //             }
-    //
-    //             var evaluationSettings = new EvaluationSettings
-    //             {
-    //                 DataSource = inputFile,
-    //                 Evaluators = evaluators,
-    //                 EvaluatorConfigurations = evaluationConfig
-    //             };
-    //
-    //             if (includeStudioUrl && !string.IsNullOrEmpty(endpoint))
-    //             {
-    //                 evaluationSettings.AzureAiProjectEndpoint = new Uri(endpoint);
-    //
-    //                 if (!string.IsNullOrEmpty(tenantId))
-    //                 {
-    //                     var credential = await GetCredential(tenantId);
-    //                     evaluationSettings.AzureAiProjectCredential = credential;
-    //                 }
-    //             }
-    //
-    //             var evaluationResult = await EvaluationHelper.EvaluateAsync(evaluationSettings);
-    //
-    //             // Prepare response
-    //             var response = new Dictionary<string, object>
-    //             {
-    //                 { "success", true },
-    //                 { "evaluators", evaluatorNames },
-    //                 { "row_count", rowCount },
-    //                 { "metrics", evaluationResult.Metrics ?? new Dictionary<string, object>() }
-    //             };
-    //
-    //             // Only include detailed row results if explicitly requested
-    //             if (returnRowResults && evaluationResult.RowResults != null)
-    //             {
-    //                 response["row_results"] = evaluationResult.RowResults;
-    //             }
-    //
-    //             // Include studio URL if available
-    //             if (includeStudioUrl && !string.IsNullOrEmpty(evaluationResult.StudioUrl))
-    //             {
-    //                 response["studio_url"] = evaluationResult.StudioUrl;
-    //             }
-    //
-    //             return response;
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             return new Dictionary<string, object>
-    //             {
-    //                 { "success", false },
-    //                 { "error", $"Evaluation error: {ex.Message}" }
-    //             };
-    //         }
-    //         finally
-    //         {
-    //             // Clean up temp file if we created one
-    //             if (!string.IsNullOrEmpty(tempFile) && File.Exists(tempFile))
-    //             {
-    //                 try
-    //                 {
-    //                     File.Delete(tempFile);
-    //                 }
-    //                 catch
-    //                 {
-    //                     // Ignore errors in cleanup
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         return new Dictionary<string, object>
-    //         {
-    //             { "success", false },
-    //             { "error", $"Error in text evaluation: {ex.Message}" }
-    //         };
-    //     }
-    // }
-
-    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string azureEndpoint, string deploymentName, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
     {
         try
         {
@@ -689,27 +461,51 @@ public class FoundryService : BaseAzureService, IFoundryService
             {
                 return new Dictionary<string, object>
                 {
+                    { "success", false },
                     { "error", $"Unknown evaluator: {evaluatorName}" }
                 };
             }
 
             var evaluator = AgentEvaluatorDictionary[evaluatorName.ToLowerInvariant()]();
+            List<EvaluationContext> evaluationContext = [];
 
-            List<ChatMessage> messages =
-            [
-                new ChatMessage(ChatRole.User, query)
-            ];
+#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+            switch (evaluator)
+            {
+                case IntentResolutionEvaluator:
+                    evaluationContext.Add(new IntentResolutionEvaluatorContext(parseToolDefinitions(toolDefinitions)));
+                    break;
+                case ToolCallAccuracyEvaluator:
+                    evaluationContext.Add(new ToolCallAccuracyEvaluatorContext(parseToolDefinitions(toolDefinitions)));
+                    break;
+                case TaskAdherenceEvaluator:
+                    evaluationContext.Add(new TaskAdherenceEvaluatorContext(parseToolDefinitions(toolDefinitions)));
+                    break;
+            }
+#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
             var credential = await GetCredential(tenantId);
 
-            var azureOpenAIClient = new AzureOpenAIClient(new Uri(azureEndpoint), credential);
-            var chatClient = azureOpenAIClient.GetChatClient(deploymentName).AsIChatClient();
-            var chatConfiguration = new ChatConfiguration(chatClient);
+            var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
+
+            List<ChatMessage> chatRequest = [new(ChatRole.User, query)];
+
+            var toolDefinitionsList = parseToolDefinitions(toolDefinitions);
+            ChatResponse chatResponse;
+            try
+            {
+                chatResponse = parseChatResponse(agentResponse);
+            }
+            catch (JsonException)
+            {
+                chatResponse = new(new ChatMessage(ChatRole.Assistant, agentResponse));
+            }
 
             var result = await evaluator.EvaluateAsync(
-                messages,
-                new ChatResponse(new ChatMessage(ChatRole.Assistant, agentResponse)),
-                chatConfiguration);
+                chatRequest,
+                chatResponse,
+                new ChatConfiguration(azureOpenAIChatClient),
+                evaluationContext);
 
             return new Dictionary<string, object>
             {
@@ -725,5 +521,333 @@ public class FoundryService : BaseAzureService, IFoundryService
                 { "error", $"Error in text evaluation: {ex.Message}" }
             };
         }
+    }
+
+    private static List<AIFunction> parseToolDefinitions(string? toolDefinitions)
+    {
+        if (string.IsNullOrEmpty(toolDefinitions))
+        {
+            return [];
+        }
+
+        using JsonDocument toolDefinitionsAsJson = JsonDocument.Parse(toolDefinitions, new() { AllowTrailingCommas = true });
+        List<AIFunction> parseToolDefinitions = [];
+
+        foreach (JsonElement jsonElement in toolDefinitionsAsJson.RootElement.EnumerateArray())
+        {
+            string? name = jsonElement.TryGetProperty("name", out var ne) ? ne.GetString() : null;
+            string? description = jsonElement.TryGetProperty("description", out var de) ? de.GetString() : null;
+            JsonElement schema = jsonElement.TryGetProperty("parameters", out var se) ? se : default;
+
+            parseToolDefinitions.Add(new ToolDefinitionAIFunction(name ?? "", description ?? "", schema.Clone()));
+        }
+
+        return parseToolDefinitions;
+    }
+
+    private static ChatResponse parseChatResponse(string? agentResponse)
+    {
+        if (string.IsNullOrEmpty(agentResponse))
+        {
+            return new();
+        }
+
+        List<ChatMessage> messages = [];
+
+
+        using JsonDocument responseJson = JsonDocument.Parse(agentResponse, new() { AllowTrailingCommas = true });
+        foreach (JsonElement jsonElement in responseJson.RootElement.EnumerateArray())
+        {
+            ChatRole role = jsonElement.TryGetProperty("role", out var roleElement) ? new ChatRole(roleElement.GetRawText()) : ChatRole.User;
+            List<AIContent> contents = [];
+
+            if (jsonElement.TryGetProperty("content", out var content))
+            {
+                if (content.ValueKind == JsonValueKind.String)
+                {
+                    contents.Add(new TextContent(content.GetRawText()));
+                }
+                else if (content.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (JsonElement contentElement in content.EnumerateArray())
+                    {
+                        if (!contentElement.TryGetProperty("type", out var typeElement) || typeElement.ValueKind != JsonValueKind.String)
+                            continue;
+
+                        switch (typeElement.GetString())
+                        {
+                            case "text":
+                                if (contentElement.TryGetProperty("text", out var textElement))
+                                {
+                                    contents.Add(new TextContent(textElement.GetRawText()));
+                                }
+                                break;
+
+                            case "tool_call":
+                                if (contentElement.TryGetProperty("tool_call_id", out var callId) && callId.ValueKind == JsonValueKind.String &&
+                                    contentElement.TryGetProperty("name", out var nameElement) && nameElement.ValueKind == JsonValueKind.String &&
+                                    contentElement.TryGetProperty("arguments", out var argumentsElement))
+                                {
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+                                    contents.Add(new FunctionCallContent(callId.GetRawText(), nameElement.GetString() ?? "",
+                                        JsonSerializer.Deserialize<Dictionary<string, object?>>(argumentsElement)));
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+                                }
+                                break;
+
+                            case "tool_result":
+                                if (jsonElement.TryGetProperty("tool_call_id", out var resultId) && resultId.ValueKind == JsonValueKind.String &&
+                                    contentElement.TryGetProperty("tool_result", out var toolResultElement))
+                                {
+                                    contents.Add(new FunctionResultContent(resultId.GetString() ?? "", toolResultElement.Clone()));
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            messages.Add(new(role, contents));
+        }
+        return new(messages);
+    }
+
+    private static IEnumerable<ChatMessage> ConvertMessages(IEnumerable<PersistentThreadMessage> messages)
+    {
+        foreach (PersistentThreadMessage message in messages)
+        {
+            ChatMessage result = new()
+            {
+                AuthorName = message.AssistantId,
+                MessageId = message.Id,
+                RawRepresentation = message,
+                Role = message.Role == MessageRole.Agent ? ChatRole.Assistant : ChatRole.User,
+            };
+
+            foreach (var messageContent in message.ContentItems)
+            {
+                AIContent content = messageContent switch
+                {
+                    MessageTextContent mtc => new TextContent(mtc.Text),
+                    _ => new AIContent(),
+                };
+                content.RawRepresentation = messageContent;
+                result.Contents.Add(content);
+            }
+
+            yield return result;
+        }
+    }
+
+    private static IEnumerable<ChatMessage> ConvertSteps(IEnumerable<RunStep> steps)
+    {
+        foreach (RunStep step in steps)
+        {
+            if (step.StepDetails is RunStepToolCallDetails { ToolCalls: not null } details)
+            {
+                foreach (RunStepToolCall toolCall in details.ToolCalls)
+                {
+                    ChatMessage CreateRequestMessage(string name, Dictionary<string, object?> arguments) =>
+                        new(ChatRole.Assistant, [new FunctionCallContent(toolCall.Id, name, arguments)])
+                        {
+                            AuthorName = step.AssistantId,
+                            MessageId = step.Id,
+                            RawRepresentation = step,
+                        };
+
+                    ChatMessage CreateResponseMessage(object result) =>
+                        new(ChatRole.Tool, [new FunctionResultContent(toolCall.Id, result)])
+                        {
+                            AuthorName = step.AssistantId,
+                            MessageId = step.Id,
+                            RawRepresentation = step,
+                        };
+
+                    switch (toolCall)
+                    {
+                        case RunStepFunctionToolCall function:
+                            yield return CreateRequestMessage(function.Name, Parse(function.Arguments) ?? []);
+                            // TODO: output doesn't appear to be available in the API
+
+                            static Dictionary<string, object?>? Parse(string arguments)
+                            {
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+                                try
+                                { return JsonSerializer.Deserialize<Dictionary<string, object?>>(arguments); }
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+                                catch { return null; }
+                            }
+                            break;
+
+                        case RunStepCodeInterpreterToolCall code:
+                            yield return CreateRequestMessage("code_interpreter", new() { ["input"] = code.Input });
+                            yield return CreateResponseMessage(string.Concat(code.Outputs.OfType<RunStepCodeInterpreterLogOutput>().Select(o => o.Logs)));
+                            break;
+
+                        case RunStepBingGroundingToolCall bing:
+                            yield return CreateRequestMessage("bing_grounding", new() { ["requesturl"] = bing.BingGrounding["requesturl"] });
+                            break;
+
+                        case RunStepFileSearchToolCall fileSearch:
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+                            yield return CreateRequestMessage("file_search", new()
+                            {
+                                ["ranking_options"] = JsonSerializer.SerializeToElement(new
+                                {
+                                    ranker = fileSearch.FileSearch.RankingOptions.Ranker,
+                                    score_threshold = fileSearch.FileSearch.RankingOptions.ScoreThreshold,
+                                })
+                            });
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+                            yield return CreateResponseMessage(fileSearch.FileSearch.Results.Select(r => new
+                            {
+                                file_id = r.FileId,
+                                file_name = r.FileName,
+                                score = r.Score,
+                                content = r.Content,
+                            }).ToList());
+                            break;
+
+                        case RunStepAzureAISearchToolCall aiSearch:
+                            yield return CreateRequestMessage("azure_ai_search", new() { ["input"] = aiSearch.AzureAISearch["input"] });
+                            yield return CreateResponseMessage(new Dictionary<string, object?>
+                            {
+                                ["output"] = aiSearch.AzureAISearch["output"]
+                            });
+                            break;
+
+                        case RunStepMicrosoftFabricToolCall fabric:
+                            yield return CreateRequestMessage("fabric_dataagent", new() { ["input"] = fabric.MicrosoftFabric["input"] });
+                            yield return CreateResponseMessage(fabric.MicrosoftFabric["output"]);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<AITool> ConvertTools(IEnumerable<ToolDefinition> tools)
+    {
+        foreach (var tool in tools)
+        {
+            switch (tool)
+            {
+                case FunctionToolDefinition functionToolDefinition:
+                    yield return new ToolDefinitionAIFunction(functionToolDefinition.Name,
+                        functionToolDefinition.Description,
+                        functionToolDefinition.InputSchema);
+                    break;
+                case CodeInterpreterToolDefinition codeInterpreter:
+                    yield return new ToolDefinitionAIFunction(
+                        "code_interpreter",
+                        "Use code interpreter to read and interpret information from datasets, "
+                        + "generate code, and create graphs and charts using your data. Supports "
+                        + "up to 20 files.",
+                        codeInterpreter.InputSchema);
+                    break;
+                case BingGroundingToolDefinition bingGrounding:
+                    yield return new ToolDefinitionAIFunction(
+                        "bing_grounding",
+                        "Enhance model output with web data.");
+                    break;
+                case FileSearchToolDefinition fileSearch:
+                    yield return new ToolDefinitionAIFunction(
+                        "file_search",
+                        "Search for data across uploaded files.",
+                        fileSearch.RankingOptions);
+                    break;
+                case AzureAISearchToolDefinition azureAISearch:
+                    yield return new ToolDefinitionAIFunction(
+                        "azure_ai_search",
+                        "Search an Azure AI Search index for relevant data.");
+                    break;
+                case MicrosoftFabricToolDefinition microsoftFabric:
+                    yield return new ToolDefinitionAIFunction(
+                        "microsoft_fabric",
+                        "Connect to Microsoft Fabric data agents to retrieve data across different data sources.");
+                    break;
+            }
+    }
+
+    private static (string messageContents, List<string> citations) buildResponseAndCitations(PersistentAgentsClient agentClient, string threadId)
+    {
+        var responseMessage = agentClient.Messages.GetMessagesAsync(threadId).FirstOrDefaultAsync(msg => msg.Role == MessageRole.Agent).Result;
+
+        var result = new StringBuilder();
+        var citations = new List<string>();
+
+        if (responseMessage != null)
+        {
+            foreach (var messageContent in responseMessage.ContentItems)
+            {
+                if (messageContent is MessageTextContent messageTextContent)
+                {
+                    result.AppendLine(messageTextContent.Text);
+                    foreach (var messageTextAnnotation in messageTextContent.Annotations)
+                    {
+                        if (messageTextAnnotation is MessageTextUriCitationAnnotation messageTextUriCitationAnnotation)
+                        {
+                            var citation = $"[{messageTextUriCitationAnnotation.UriCitation.Title}]({messageTextUriCitationAnnotation.UriCitation.Uri})";
+                            if (!citations.Contains(citation))
+                            {
+                                citations.Add(citation);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (citations.Count > 0)
+        {
+            result.AppendLine("\n\n## Sources");
+            foreach (var citation in citations)
+            {
+                result.AppendLine($"- {citation}");
+            }
+        }
+        return (result.ToString().Trim(), citations);
+    }
+
+    private static IChatClient GetAzureOpenAIChatClient(TokenCredential credential)
+    {
+        var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+        var azureOpenAIEndpointUri = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+        if (azureOpenAIEndpointUri == null)
+        {
+            throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT environment variable is not set. Please set it to use evaluation features.");
+        }
+
+
+        var azureOpenAIDeployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT");
+        if (azureOpenAIDeployment == null)
+        {
+            throw new InvalidOperationException("AZURE_OPENAI_DEPLOYMENT environment variable is not set. Please set it to use evaluation features.");
+        }
+
+        switch (azureOpenAIKey)
+        {
+            case null:
+                return new AzureOpenAIClient(
+                new Uri(azureOpenAIEndpointUri),
+                credential).GetChatClient(azureOpenAIDeployment).AsIChatClient();
+            default:
+                return new AzureOpenAIClient(
+                new Uri(azureOpenAIEndpointUri),
+                new ApiKeyCredential(azureOpenAIKey)).GetChatClient(azureOpenAIDeployment).AsIChatClient();
+        }
+    }
+
+    private sealed class ToolDefinitionAIFunction(string name, string description, JsonElement schema) : AIFunction
+    {
+        public override string Name => name;
+        public override string Description => description;
+        public override JsonElement JsonSchema => schema;
+        protected override ValueTask<object?> InvokeCoreAsync(AIFunctionArguments arguments, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

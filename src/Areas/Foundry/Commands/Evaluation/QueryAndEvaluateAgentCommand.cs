@@ -15,7 +15,7 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
     private readonly Option<string> _agentIdOption = FoundryOptionDefinitions.AgentIdOption;
     private readonly Option<string> _queryOption = FoundryOptionDefinitions.QueryOption;
     private readonly Option<string> _endpointOption = FoundryOptionDefinitions.EndpointOption;
-    private readonly Option<string> _evaluators= FoundryOptionDefinitions.EvaluatorsOption;
+    private readonly Option<string> _evaluators = FoundryOptionDefinitions.EvaluatorsOption;
 
     public override string Name => "query-and-evaluate";
 
@@ -26,7 +26,7 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
         Parameters:
         - agent_id: ID of the agent to query
         - query: Text query to send to the agent
-        - evaluator_names: Optional list of agent evaluator names to use (defaults to all)
+        - evaluators: Optional list of agent evaluator names to use (intent_resolution, tool_call_accuracy, task_adherence). Default is all evaluators if not specified.
 
         Returns both the agent response and evaluation results
         """;
