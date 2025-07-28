@@ -3,6 +3,7 @@
 
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Models;
 
 namespace AzureMcp.Storage.Services;
@@ -34,6 +35,14 @@ public interface IStorageService
     Task<DataLakePathInfo> CreateDirectory(
         string accountName,
         string directoryPath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+    Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
+        string accountName,
+        string containerName,
+        string tier,
+        string[] blobNames,
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
