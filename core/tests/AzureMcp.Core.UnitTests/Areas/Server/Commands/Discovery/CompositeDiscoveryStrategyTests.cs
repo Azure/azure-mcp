@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
-using AzureMcp.Tests;
 using NSubstitute;
 using Xunit;
 

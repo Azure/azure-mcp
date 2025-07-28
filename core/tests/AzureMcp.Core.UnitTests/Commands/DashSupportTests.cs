@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Commands;

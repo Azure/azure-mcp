@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using AzureMcp.Core.Areas.Server.Models;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server.Models;

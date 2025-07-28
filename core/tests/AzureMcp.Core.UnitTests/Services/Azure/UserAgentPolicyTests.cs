@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Core;
 using AzureMcp.Core.Services.Azure;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Services.Azure;

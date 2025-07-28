@@ -5,7 +5,6 @@ using System.Text.Json;
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Protocol;
