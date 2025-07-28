@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Options;
-using AzureMcp.ServiceBus.Commands.Queue;
+using AzureMcp.ServiceBus.Commands.Topic;
 using AzureMcp.ServiceBus.Services;
 using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,27 +15,28 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.ServiceBus.UnitTests.Areas.Queue;
+namespace AzureMcp.ServiceBus.UnitTests.Topic;
 
-public class QueuePeekCommandTests
+public class SubscriptionPeekCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceBusService _serviceBusService;
-    private readonly ILogger<QueuePeekCommand> _logger;
-    private readonly QueuePeekCommand _command;
+    private readonly ILogger<SubscriptionPeekCommand> _logger;
+    private readonly SubscriptionPeekCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
     // Test constants
     private const string SubscriptionId = "sub123";
-    private const string QueueName = "testQueue";
+    private const string TopicName = "testTopic";
+    private const string SubscriptionName = "testSubscription";
     private const string NamespaceName = "test.servicebus.windows.net";
     private const int MaxMessages = 5;
 
-    public QueuePeekCommandTests()
+    public SubscriptionPeekCommandTests()
     {
         _serviceBusService = Substitute.For<IServiceBusService>();
-        _logger = Substitute.For<ILogger<QueuePeekCommand>>();
+        _logger = Substitute.For<ILogger<SubscriptionPeekCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_serviceBusService);
 
@@ -55,15 +56,22 @@ public class QueuePeekCommandTests
             CreateTestMessage("message2", "Second test message")
         };
 
-        _serviceBusService.PeekQueueMessages(
+        _serviceBusService.PeekSubscriptionMessages(
             Arg.Is(NamespaceName),
-            Arg.Is(QueueName),
+            Arg.Is(TopicName),
+            Arg.Is(SubscriptionName),
             Arg.Is(MaxMessages),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()
         ).Returns(messages);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName, "--max-messages", MaxMessages.ToString()]);
+        var args = _parser.Parse([
+            "--subscription", SubscriptionId,
+            "--namespace", NamespaceName,
+            "--topic-name", TopicName,
+            "--subscription-name", SubscriptionName,
+            "--max-messages", MaxMessages.ToString()
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -73,7 +81,7 @@ public class QueuePeekCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Messages.Count);
@@ -87,15 +95,22 @@ public class QueuePeekCommandTests
         // Arrange
         var messages = new List<ServiceBusReceivedMessage>();
 
-        _serviceBusService.PeekQueueMessages(
+        _serviceBusService.PeekSubscriptionMessages(
             Arg.Is(NamespaceName),
-            Arg.Is(QueueName),
+            Arg.Is(TopicName),
+            Arg.Is(SubscriptionName),
             Arg.Is(MaxMessages),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()
         ).Returns(messages);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName, "--max-messages", MaxMessages.ToString()]);
+        var args = _parser.Parse([
+            "--subscription", SubscriptionId,
+            "--namespace", NamespaceName,
+            "--topic-name", TopicName,
+            "--subscription-name", SubscriptionName,
+            "--max-messages", MaxMessages.ToString()
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -105,27 +120,33 @@ public class QueuePeekCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json);
 
         Assert.NotNull(result);
         Assert.Empty(result.Messages);
     }
 
     [Fact]
-    public async Task ExecuteAsync_HandlesQueueNotFound()
+    public async Task ExecuteAsync_HandlesSubscriptionNotFound()
     {
         // Arrange
-        var serviceBusException = new ServiceBusException("Queue not found", ServiceBusFailureReason.MessagingEntityNotFound);
+        var serviceBusException = new ServiceBusException("Subscription not found", ServiceBusFailureReason.MessagingEntityNotFound);
 
-        _serviceBusService.PeekQueueMessages(
+        _serviceBusService.PeekSubscriptionMessages(
             Arg.Is(NamespaceName),
-            Arg.Is(QueueName),
+            Arg.Is(TopicName),
+            Arg.Is(SubscriptionName),
             Arg.Any<int>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(serviceBusException);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
+        var args = _parser.Parse([
+            "--subscription", SubscriptionId,
+            "--namespace", NamespaceName,
+            "--topic-name", TopicName,
+            "--subscription-name", SubscriptionName
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -133,7 +154,7 @@ public class QueuePeekCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(404, response.Status);
-        Assert.Contains("Queue not found", response.Message);
+        Assert.Contains("Subscription not found", response.Message);
     }
 
     [Fact]
@@ -142,15 +163,21 @@ public class QueuePeekCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _serviceBusService.PeekQueueMessages(
+        _serviceBusService.PeekSubscriptionMessages(
             Arg.Is(NamespaceName),
-            Arg.Is(QueueName),
+            Arg.Is(TopicName),
+            Arg.Is(SubscriptionName),
             Arg.Any<int>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(new Exception(expectedError));
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
+        var args = _parser.Parse([
+            "--subscription", SubscriptionId,
+            "--namespace", NamespaceName,
+            "--topic-name", TopicName,
+            "--subscription-name", SubscriptionName
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -170,15 +197,21 @@ public class QueuePeekCommandTests
             CreateTestMessage("message1", "Test message")
         };
 
-        _serviceBusService.PeekQueueMessages(
+        _serviceBusService.PeekSubscriptionMessages(
             Arg.Is(NamespaceName),
-            Arg.Is(QueueName),
+            Arg.Is(TopicName),
+            Arg.Is(SubscriptionName),
             Arg.Is(1), // Default is 1
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()
         ).Returns(messages);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
+        var args = _parser.Parse([
+            "--subscription", SubscriptionId,
+            "--namespace", NamespaceName,
+            "--topic-name", TopicName,
+            "--subscription-name", SubscriptionName
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -188,7 +221,7 @@ public class QueuePeekCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json);
 
         Assert.NotNull(result);
         Assert.Single(result.Messages);
@@ -204,7 +237,7 @@ public class QueuePeekCommandTests
         return message;
     }
 
-    private class QueuePeekResult
+    private class SubscriptionPeekResult
     {
         [JsonPropertyName("messages")]
         public List<ServiceBusReceivedMessage> Messages { get; set; } = new();

@@ -16,7 +16,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.ServiceBus.UnitTests.Areas.Queue;
+namespace AzureMcp.ServiceBus.UnitTests.Queue;
 
 public class QueueDetailsCommandTests
 {
