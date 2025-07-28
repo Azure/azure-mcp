@@ -6,7 +6,7 @@
 
 The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services. Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 
-> **🚀 New in v0.5.0:** Namespace mode (default), improved tool organization, and Azure Workbooks support  
+> **🚀 New in v0.5.0:** Namespace mode (default), improved tool organization, and Azure Workbooks support
 > **📢 Public Preview:** This project is in Public Preview - implementation may significantly change prior to General Availability.
 
 ## 📋 Table of Contents
@@ -289,7 +289,7 @@ For comprehensive documentation of all 130+ available tools across 29+ Azure ser
 
 The tools documentation provides:
 - **Detailed tool reference** with parameters and examples
-- **Service-specific workflows** and common scenarios  
+- **Service-specific workflows** and common scenarios
 - **Authentication and security** considerations
 - **Performance optimization** tips
 - **Troubleshooting guidance** for each tool category
