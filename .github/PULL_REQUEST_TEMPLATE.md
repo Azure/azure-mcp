@@ -15,7 +15,8 @@
     - [ ] Added comprehensive tests for new/modified functionality
     - [ ] Updated `CHANGELOG.md` for product changes (`features, bug fixes, UI/UX, updated dependencies`)
     - [ ] Spelling check passes: `.\eng\common\spelling\Invoke-Cspell.ps1`
-- [ ] For MCP tool changes, updated:
+- [ ] If adding an MCP tool, updated the docstring and/or documentation
+- [ ] If adding/modifying MCP tools, updated [docs/tools.md](../docs/tools.md) with tool descriptions and examples
     - [ ] Updated `README.md` documentation
     - [ ] Updated command list in `/docs/azmcp-commands.md`
     - [ ] Updated test prompts in `/e2eTests/e2eTestPrompts.md`
