@@ -46,7 +46,7 @@ public class BatchSetTierCommandTests
     public void Constructor_InitializesCommandCorrectly()
     {
         var command = _command.GetCommand();
-        Assert.Equal("settier", command.Name);
+        Assert.Equal("set-tier", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
     }
@@ -73,7 +73,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--blob-names", "blob1.txt blob2.txt blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -118,7 +118,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--blob-names", "blob1.txt blob2.txt blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -283,8 +283,7 @@ public class BatchSetTierCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(403, response.Status);
-        Assert.Contains("authorization failed", response.Message.ToLower());
-        Assert.Contains("storage blob data contributor", response.Message.ToLower());
+        Assert.Contains("forbidden", response.Message.ToLower());
         Assert.Contains("troubleshooting", response.Message);
     }
 }

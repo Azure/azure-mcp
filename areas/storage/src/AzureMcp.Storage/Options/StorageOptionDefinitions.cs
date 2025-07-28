@@ -52,8 +52,8 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true
     };
-    
-        public static readonly Option<string> Tier = new(
+
+    public static readonly Option<string> Tier = new(
         $"--{TierName}",
         "The access tier to set for the blobs. Valid values include Hot, Cool, Archive, and others depending on the storage account type. See Azure documentation for the complete list of supported access tiers."
     )

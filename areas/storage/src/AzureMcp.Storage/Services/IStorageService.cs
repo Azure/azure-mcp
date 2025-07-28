@@ -3,7 +3,6 @@
 
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Core.Options;
-using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Models;
 
 namespace AzureMcp.Storage.Services;

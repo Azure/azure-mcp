@@ -452,13 +452,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
                 try
                 {
                     // Check if the individual operation succeeded
-                    if (batchResponse.Status >= 200 && batchResponse.Status < 300)
+                    if (batchOperationResponse.Status >= 200 && batchOperationResponse.Status < 300)
                     {
                         successfulBlobs.Add(blobName);
                     }
                     else
                     {
-                        failedBlobs.Add($"{blobName}: HTTP {batchResponse.Status}");
+                        failedBlobs.Add($"{blobName}: HTTP {batchOperationResponse.Status}");
                     }
                 }
                 catch (Exception ex)

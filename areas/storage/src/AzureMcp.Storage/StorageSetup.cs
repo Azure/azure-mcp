@@ -67,7 +67,7 @@ public class StorageSetup : IAreaSetup
 
         blobs.AddCommand("list", new BlobListCommand(loggerFactory.CreateLogger<BlobListCommand>()));
 
-        batch.AddCommand("settier", new BatchSetTierCommand(
+        batch.AddCommand("set-tier", new BatchSetTierCommand(
             loggerFactory.CreateLogger<BatchSetTierCommand>()));
 
         blobContainer.AddCommand("list", new ContainerListCommand(

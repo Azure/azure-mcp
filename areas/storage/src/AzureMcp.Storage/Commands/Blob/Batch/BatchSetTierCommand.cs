@@ -19,7 +19,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     private readonly Option<string> _tierOption = StorageOptionDefinitions.Tier;
     private readonly Option<string[]> _blobNamesOption = StorageOptionDefinitions.BlobNames;
 
-    public override string Name => "settier";
+    public override string Name => "set-tier";
 
     public override string Description =>
         $"""
@@ -31,7 +31,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
