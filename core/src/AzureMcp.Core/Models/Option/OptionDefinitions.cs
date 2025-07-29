@@ -26,7 +26,8 @@ public static partial class OptionDefinitions
 
         public static readonly Option<string> Subscription = new(
             $"--{SubscriptionName}",
-            "The Azure subscription ID or name. This can be either the GUID identifier or the display name of the Azure subscription to use. If not provided, will use the AZURE_SUBSCRIPTION_ID environment variable."
+    "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. " +
+    "If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead."
         )
         {
             IsRequired = false
