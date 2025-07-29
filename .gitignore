@@ -1,14 +1,16 @@
-bin
-obj
-.dist
-.work
+.dist/
+.work/
 tests/test-cmds.txt
-.vs
-tests/TestResults
-
-node_modules
-.npmrc
 .testsettings.json
+
+bin/
+obj/
+.vs/
+TestResults/
+*.binlog
+
+node_modules/
+.npmrc
 
 .env
 .env.local
