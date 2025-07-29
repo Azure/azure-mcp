@@ -12,7 +12,7 @@ public class EntityStatusConverter : JsonConverter<EntityStatus>
     {
         if (reader.TokenType == JsonTokenType.String)
         {
-            return new EntityStatus(reader.GetString()!);
+            return new EntityStatus(reader.GetString());
         }
         return default;
     }
