@@ -11,7 +11,7 @@ public static class StorageOptionDefinitions
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
     public const string FilterPathName = "filter-path";
-    public const string ResursiveName = "recursive";
+    public const string RecursiveName = "recursive";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -62,7 +62,7 @@ public static class StorageOptionDefinitions
     };
 
     public static readonly Option<bool> Recursive = new(
-        $"--{ResursiveName}",
+        $"--{RecursiveName}",
         () => false,
         "Flag to indicate whether the command will operate recursively on all subdirectories."
     )

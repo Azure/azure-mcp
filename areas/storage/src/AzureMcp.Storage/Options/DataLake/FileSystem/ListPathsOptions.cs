@@ -10,6 +10,6 @@ public class ListPathsOptions : BaseFileSystemOptions
     [JsonPropertyName(StorageOptionDefinitions.FilterPathName)]
     public string? FilterPath { get; set; }
 
-    [JsonPropertyName(StorageOptionDefinitions.ResursiveName)]
+    [JsonPropertyName(StorageOptionDefinitions.RecursiveName)]
     public bool Recursive { get; set; } = false;
 }
