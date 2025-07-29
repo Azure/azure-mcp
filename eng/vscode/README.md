@@ -9,15 +9,19 @@ A Visual Studio Code extension that brings Model Context Protocol (MCP) capabili
 ## Getting Started
 
 1. **Install the Extension**
-   - Install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server) 
+   - Install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server)
 
 2. **Start the MCP Server**
    - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
    - Run `MCP: List Servers`
+         ![List Servers](resources/Walkthrough/ListServers.png)
    - Select `Azure MCP Server ext`, then click **Start Server**
+      ![Select Server](resources/Walkthrough/SelectServer.png)
+      ![Start Server](resources/Walkthrough/StartServer.png)
 
 3. **Confirm the Server is Running**
    - Go to the `Output` tab and look for confirmation logs
+   ![Output](resources/Walkthrough/Output.png)
 
 4. **(Optional) Enable Azure Services**
    - Add the following to `.vscode/settings.json`:
@@ -26,7 +30,7 @@ A Visual Studio Code extension that brings Model Context Protocol (MCP) capabili
      "azureMcp.enabledServices": ["storage", "keyvault"]
      ```
 
-   - Restart the MCP Server
+   - Restart the MCP Server (Follow Step 2)
 
 You're all set to use Azure MCP features!
 
