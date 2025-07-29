@@ -3,7 +3,6 @@
 
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Options;
 using AzureMcp.ServiceBus.Commands.Queue;
@@ -15,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using static AzureMcp.ServiceBus.Commands.Queue.QueueDetailsCommand;
 
 namespace AzureMcp.ServiceBus.UnitTests.Queue;
 
@@ -78,8 +78,13 @@ public class QueueDetailsCommandTests
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
 
-        var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<QueueDetailsResult>(json);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        var json = JsonSerializer.Serialize(response.Results, options);
+        var result = JsonSerializer.Deserialize<QueueDetailsCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Equal(QueueName, result.QueueDetails.Name);
@@ -133,11 +138,5 @@ public class QueueDetailsCommandTests
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expectedError, response.Message);
-    }
-
-    private class QueueDetailsResult
-    {
-        [JsonPropertyName("queueDetails")]
-        public QueueDetails QueueDetails { get; set; } = new();
     }
 }

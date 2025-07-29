@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using static AzureMcp.ServiceBus.Commands.Topic.SubscriptionPeekCommand;
 
 namespace AzureMcp.ServiceBus.UnitTests.Topic;
 
@@ -95,11 +96,14 @@ public class SubscriptionPeekCommandTests
         }
 
         // Serialize and deserialize to test the body field handling
-        var options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
 
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Messages.Count);
@@ -173,10 +177,13 @@ public class SubscriptionPeekCommandTests
             }
         }
 
-        var options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Empty(result.Messages);
@@ -291,9 +298,10 @@ public class SubscriptionPeekCommandTests
         }
 
         var options = new JsonSerializerOptions();
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<SubscriptionPeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<SubscriptionPeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Single(result.Messages);
@@ -512,11 +520,5 @@ public class SubscriptionPeekCommandTests
 
             writer.WriteEndObject();
         }
-    }
-
-    private class SubscriptionPeekResult
-    {
-        [JsonPropertyName("Messages")]
-        public List<ServiceBusReceivedMessage> Messages { get; set; } = new();
     }
 }

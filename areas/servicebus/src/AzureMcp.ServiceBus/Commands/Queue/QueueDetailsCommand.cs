@@ -96,6 +96,5 @@ public sealed class QueueDetailsCommand(ILogger<QueueDetailsCommand> logger) : S
         ServiceBusException sbEx when sbEx.Reason == ServiceBusFailureReason.MessagingEntityNotFound => 404,
         _ => base.GetStatusCode(ex)
     };
-
     internal record QueueDetailsCommandResult(QueueDetails QueueDetails);
 }

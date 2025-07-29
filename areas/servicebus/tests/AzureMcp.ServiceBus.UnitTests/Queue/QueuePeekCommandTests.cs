@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using static AzureMcp.ServiceBus.Commands.Queue.QueuePeekCommand;
 
 namespace AzureMcp.ServiceBus.UnitTests.Queue;
 
@@ -88,10 +89,11 @@ public class QueuePeekCommandTests
 
         // Serialize and deserialize to test the body field handling
         var options = new JsonSerializerOptions();
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
 
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<QueuePeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Messages.Count);
@@ -159,9 +161,10 @@ public class QueuePeekCommandTests
         }
 
         var options = new JsonSerializerOptions();
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<QueuePeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Empty(result.Messages);
@@ -258,9 +261,10 @@ public class QueuePeekCommandTests
         }
 
         var options = new JsonSerializerOptions();
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.Converters.Add(new ServiceBusReceivedMessageConverter());
         var json = JsonSerializer.Serialize(actualResult, options);
-        var result = JsonSerializer.Deserialize<QueuePeekResult>(json, options);
+        var result = JsonSerializer.Deserialize<QueuePeekCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Single(result.Messages);
@@ -479,11 +483,5 @@ public class QueuePeekCommandTests
 
             writer.WriteEndObject();
         }
-    }
-
-    private class QueuePeekResult
-    {
-        [JsonPropertyName("Messages")]
-        public List<ServiceBusReceivedMessage> Messages { get; set; } = new();
     }
 }

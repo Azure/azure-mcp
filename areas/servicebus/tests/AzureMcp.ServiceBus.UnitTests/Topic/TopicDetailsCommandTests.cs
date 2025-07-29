@@ -3,20 +3,18 @@
 
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Azure;
 using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Options;
 using AzureMcp.ServiceBus.Commands.Topic;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Services;
 using AzureMcp.Core.Models.Command;
-using Castle.Components.DictionaryAdapter.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using static AzureMcp.ServiceBus.Commands.Topic.TopicDetailsCommand;
 
 namespace AzureMcp.ServiceBus.UnitTests.Topic;
 
@@ -80,8 +78,12 @@ public class TopicDetailsCommandTests
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
         // write a json convertor that extends from EntityStatus 
-        var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<TopicDetailsResult>(json);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        var json = JsonSerializer.Serialize(response.Results, options);
+        var result = JsonSerializer.Deserialize<TopicDetailsCommandResult>(json, options);
 
         Assert.NotNull(result);
         Assert.Equal(TopicName, result.TopicDetails.Name);
@@ -134,11 +136,5 @@ public class TopicDetailsCommandTests
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expectedError, response.Message);
-    }
-
-    private class TopicDetailsResult
-    {
-        [JsonPropertyName("topicDetails")]
-        public TopicDetails TopicDetails { get; set; } = new();
     }
 }
