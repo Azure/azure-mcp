@@ -3,6 +3,7 @@
 
 using System.ClientModel;
 using System.Text;
+using System.Text.Json.Serialization.Metadata;
 using Azure;
 using Azure.AI.Agents.Persistent;
 using Azure.AI.OpenAI;
@@ -19,7 +20,8 @@ using AzureMcp.Services.Azure;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
-using ModelContextProtocol.Client;
+
+#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 namespace AzureMcp.Areas.Foundry.Services;
 
@@ -27,20 +29,16 @@ public class FoundryService : BaseAzureService, IFoundryService
 {
     private static readonly Dictionary<string, Func<IEvaluator>> AgentEvaluatorDictionary = new()
     {
-#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         { "intent_resolution", () => new IntentResolutionEvaluator()},
         { "tool_call_accuracy", () => new ToolCallAccuracyEvaluator()},
         { "task_adherence", () => new TaskAdherenceEvaluator()},
-#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     };
 
      private static readonly Dictionary<string, Func<IEnumerable<AITool>, EvaluationContext>> AgentEvaluatorContextDictionary = new()
     {
-#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         { "intent_resolution", toolDefinitons => new IntentResolutionEvaluatorContext(toolDefinitons)},
         { "tool_call_accuracy", toolDefinitons => new ToolCallAccuracyEvaluatorContext(toolDefinitons)},
         { "task_adherence", toolDefinitons => new TaskAdherenceEvaluatorContext(toolDefinitons)},
-#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     };
 
     public async Task<List<ModelInformation>> ListModels(
@@ -396,7 +394,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                 .ThenBy(o => o.Contents!.OfType<FunctionCallContent>().Any() ? 0 : o.Contents!.OfType<FunctionResultContent>().Any() ? 1 : 2)
                 .ToList();
 
-            var convertedTools = ConvertTools(run.Value.Tools);
+            var convertedTools = ConvertTools(run.Value.Tools).ToList();
 
             List<IEvaluator> evaluators = [];
             List<EvaluationContext> evaluationContexts = [];
@@ -413,7 +411,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                 {
                     var evaluator = createEvaluator();
                     evaluators.Add(evaluator);
-                    evaluationContexts.Add(AgentEvaluatorContextDictionary[evaluatorName](toolDefinitons));
+                    evaluationContexts.Add(AgentEvaluatorContextDictionary[evaluatorName](convertedTools));
                 }
             }
             var compositeEvaluator = new CompositeEvaluator(evaluators);
@@ -469,7 +467,6 @@ public class FoundryService : BaseAzureService, IFoundryService
             var evaluator = AgentEvaluatorDictionary[evaluatorName.ToLowerInvariant()]();
             List<EvaluationContext> evaluationContext = [];
 
-#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             switch (evaluator)
             {
                 case IntentResolutionEvaluator:
@@ -482,7 +479,6 @@ public class FoundryService : BaseAzureService, IFoundryService
                     evaluationContext.Add(new TaskAdherenceEvaluatorContext(parseToolDefinitions(toolDefinitions)));
                     break;
             }
-#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
             var credential = await GetCredential(tenantId);
 
@@ -588,12 +584,8 @@ public class FoundryService : BaseAzureService, IFoundryService
                                     contentElement.TryGetProperty("name", out var nameElement) && nameElement.ValueKind == JsonValueKind.String &&
                                     contentElement.TryGetProperty("arguments", out var argumentsElement))
                                 {
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
                                     contents.Add(new FunctionCallContent(callId.GetRawText(), nameElement.GetString() ?? "",
-                                        JsonSerializer.Deserialize<Dictionary<string, object?>>(argumentsElement)));
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+                                        JsonSerializer.Deserialize(argumentsElement, DictionaryTypeInfo)));
                                 }
                                 break;
 
@@ -672,12 +664,7 @@ public class FoundryService : BaseAzureService, IFoundryService
 
                             static Dictionary<string, object?>? Parse(string arguments)
                             {
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-                                try
-                                { return JsonSerializer.Deserialize<Dictionary<string, object?>>(arguments); }
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+                                try { return JsonSerializer.Deserialize(arguments, DictionaryTypeInfo); }
                                 catch { return null; }
                             }
                             break;
@@ -692,18 +679,14 @@ public class FoundryService : BaseAzureService, IFoundryService
                             break;
 
                         case RunStepFileSearchToolCall fileSearch:
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
                             yield return CreateRequestMessage("file_search", new()
                             {
-                                ["ranking_options"] = JsonSerializer.SerializeToElement(new
+                                ["ranking_options"] = JsonSerializer.SerializeToElement(new()
                                 {
-                                    ranker = fileSearch.FileSearch.RankingOptions.Ranker,
-                                    score_threshold = fileSearch.FileSearch.RankingOptions.ScoreThreshold,
-                                })
+                                    ["ranker"] = fileSearch.FileSearch.RankingOptions.Ranker,
+                                    ["score_threshold"] = fileSearch.FileSearch.RankingOptions.ScoreThreshold,
+                                }, DictionaryTypeInfo)
                             });
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
                             yield return CreateResponseMessage(fileSearch.FileSearch.Results.Select(r => new
                             {
                                 file_id = r.FileId,
@@ -740,38 +723,26 @@ public class FoundryService : BaseAzureService, IFoundryService
                 case FunctionToolDefinition functionToolDefinition:
                     yield return new ToolDefinitionAIFunction(functionToolDefinition.Name,
                         functionToolDefinition.Description,
-                        JsonDocument.Parse(functionToolDefinition.Parameters).RootElement.Clone());
+                        DeserializeToElement(functionToolDefinition.Parameters));
                     break;
                 case CodeInterpreterToolDefinition codeInterpreter:
                     yield return new ToolDefinitionAIFunction(
                         "code_interpreter",
                         "Use code interpreter to read and interpret information from datasets, "
                         + "generate code, and create graphs and charts using your data. Supports "
-                        + "up to 20 files.",
-                        JsonElement element = JsonSerializer.SerializeToElement(new
-                        {
-                            type = "object",
-                            properties = new
-                            {
-                                input = new
-                                {
-                                    type = "string",
-                                    description = "Generated code to be executed."
-                                }
-                            }
-                        }));
+                        + "up to 20 files.");
+                    // codeInterpreter.InputSchema
                     break;
                 case BingGroundingToolDefinition bingGrounding:
                     yield return new ToolDefinitionAIFunction(
                         "bing_grounding",
-                        "Enhance model output with web data.",
-                        new { });
+                        "Enhance model output with web data.");
                     break;
                 case FileSearchToolDefinition fileSearch:
                     yield return new ToolDefinitionAIFunction(
                         "file_search",
-                        "Search for data across uploaded files.",
-                        fileSearch.RankingOptions);
+                        "Search for data across uploaded files.");
+                    // fileSearch.RankingOptions
                     break;
                 case AzureAISearchToolDefinition azureAISearch:
                     yield return new ToolDefinitionAIFunction(
@@ -784,6 +755,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                         "Connect to Microsoft Fabric data agents to retrieve data across different data sources.");
                     break;
             }
+        }
     }
 
     private static (string messageContents, List<string> citations) buildResponseAndCitations(PersistentAgentsClient agentClient, string threadId)
@@ -855,11 +827,17 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    private sealed class ToolDefinitionAIFunction(string name, string description, JsonElement schema) : AIFunction
+    private static JsonTypeInfo<Dictionary<string, object?>> DictionaryTypeInfo { get; } =
+        (JsonTypeInfo<Dictionary<string, object?>>)AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(Dictionary<string, object?>));
+
+    private static JsonElement DeserializeToElement(BinaryData data) =>
+        (JsonElement)JsonSerializer.Deserialize(data.ToMemory().Span, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonElement)))!;
+
+    private sealed class ToolDefinitionAIFunction(string name, string description, JsonElement? schema = null) : AIFunction
     {
         public override string Name => name;
         public override string Description => description;
-        public override JsonElement JsonSchema => schema;
+        public override JsonElement JsonSchema => schema ?? base.JsonSchema;
         protected override ValueTask<object?> InvokeCoreAsync(AIFunctionArguments arguments, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }
