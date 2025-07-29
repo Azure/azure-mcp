@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace AzureMcp.ServiceBus.Json.Converters;
+namespace AzureMcp.ServiceBus.Models.Utilities;
 
 public class EntityStatusConverter : JsonConverter<EntityStatus>
 {

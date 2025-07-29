@@ -3,7 +3,7 @@
 
 using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus.Administration;
-using AzureMcp.ServiceBus.Json.Converters;
+using AzureMcp.ServiceBus.Models.Utilities;
 
 namespace AzureMcp.ServiceBus.Models;
 

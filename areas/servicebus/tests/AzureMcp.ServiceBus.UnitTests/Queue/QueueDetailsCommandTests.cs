@@ -15,6 +15,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 using static AzureMcp.ServiceBus.Commands.Queue.QueueDetailsCommand;
+using AzureMcp.ServiceBus.UnitTests.Utilities.JsonConverters;
 
 namespace AzureMcp.ServiceBus.UnitTests.Queue;
 
@@ -82,7 +83,6 @@ public class QueueDetailsCommandTests
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-
         var json = JsonSerializer.Serialize(response.Results, options);
         var result = JsonSerializer.Deserialize<QueueDetailsCommandResult>(json, options);
 
