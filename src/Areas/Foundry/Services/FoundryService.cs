@@ -3,6 +3,7 @@
 
 using System.ClientModel;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using Azure;
 using Azure.AI.Agents.Persistent;
@@ -421,7 +422,8 @@ public class FoundryService : BaseAzureService, IFoundryService
             var evaluationResult = await compositeEvaluator.EvaluateAsync(
                 convertedRequestMessages,
                 new ChatResponse(convertedResponse),
-                new ChatConfiguration(azureOpenAIChatClient));
+                new ChatConfiguration(azureOpenAIChatClient),
+                evaluationContexts);
 
             var (result, citations) = buildResponseAndCitations(agentClient, thread.Value.Id);
 
@@ -725,34 +727,90 @@ public class FoundryService : BaseAzureService, IFoundryService
                         functionToolDefinition.Description,
                         DeserializeToElement(functionToolDefinition.Parameters));
                     break;
-                case CodeInterpreterToolDefinition codeInterpreter:
+                case CodeInterpreterToolDefinition:
+                    JsonObject codeInterpreterSchema = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["input"] = new JsonObject { ["type"] = "string", ["description"] = "Generated code to be executed." },
+                        }
+                    };
                     yield return new ToolDefinitionAIFunction(
                         "code_interpreter",
                         "Use code interpreter to read and interpret information from datasets, "
                         + "generate code, and create graphs and charts using your data. Supports "
-                        + "up to 20 files.");
-                    // codeInterpreter.InputSchema
+                        + "up to 20 files.",
+                        JsonSerializer.SerializeToElement(codeInterpreterSchema, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonObject))));
                     break;
-                case BingGroundingToolDefinition bingGrounding:
+                case BingGroundingToolDefinition:
+                    var bingGroundingSchema = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["requesturl"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "URL used in Bing Search API."
+                            }
+                        }
+                    };
                     yield return new ToolDefinitionAIFunction(
                         "bing_grounding",
-                        "Enhance model output with web data.");
+                        "Enhance model output with web data.",
+                        JsonSerializer.SerializeToElement(bingGroundingSchema, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonObject))));
                     break;
-                case FileSearchToolDefinition fileSearch:
+                case FileSearchToolDefinition:
+                    JsonObject fileSearchSchema = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["ranking_options"] = new JsonObject
+                            {
+                                ["type"] = "object",
+                                ["properties"] = new JsonObject
+                                {
+                                    ["ranker"] = new JsonObject { ["type"] = "string", ["description"] = "Ranking algorithm to use" },
+                                    ["score_threshold"] = new JsonObject { ["type"] = "number", ["description"] = "Minimum score threshold for search results." },
+                                },
+                                ["description"] = "Ranking options for search results."
+                            }
+                        }
+                    };
                     yield return new ToolDefinitionAIFunction(
                         "file_search",
-                        "Search for data across uploaded files.");
-                    // fileSearch.RankingOptions
+                        "Search for data across uploaded files.",
+                        JsonSerializer.SerializeToElement(fileSearchSchema, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonObject))));
                     break;
-                case AzureAISearchToolDefinition azureAISearch:
+                case AzureAISearchToolDefinition:
+                    JsonObject azureAISearchSchema = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["input"] = new JsonObject { ["type"] = "string", ["description"] = "Search terms to use." },
+                        }
+                    };
                     yield return new ToolDefinitionAIFunction(
                         "azure_ai_search",
-                        "Search an Azure AI Search index for relevant data.");
+                        "Search an Azure AI Search index for relevant data.",
+                        JsonSerializer.SerializeToElement(azureAISearchSchema, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonObject))));
                     break;
-                case MicrosoftFabricToolDefinition microsoftFabric:
+                case MicrosoftFabricToolDefinition:
+                    JsonObject microsoftFabricSchema = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["input"] = new JsonObject { ["type"] = "string", ["description"] = "Search terms to use." },
+                        }
+                    };
                     yield return new ToolDefinitionAIFunction(
                         "microsoft_fabric",
-                        "Connect to Microsoft Fabric data agents to retrieve data across different data sources.");
+                        "Connect to Microsoft Fabric data agents to retrieve data across different data sources.",
+                        JsonSerializer.SerializeToElement(microsoftFabricSchema, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonObject))));
                     break;
             }
         }
