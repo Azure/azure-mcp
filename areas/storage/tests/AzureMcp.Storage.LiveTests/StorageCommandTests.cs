@@ -215,6 +215,40 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_list_datalake_filesystem_paths_with_filter_path()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_file-system_list-paths",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account-name", Settings.ResourceBaseName },
+                { "file-system-name", "testfilesystem" },
+                { "filter-path", "test-directory" }
+                });
+
+            var actual = result.AssertProperty("paths");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+        }
+
+        [Fact]
+        public async Task Should_list_datalake_filesystem_paths_recursively()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_file-system_list-paths",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account-name", Settings.ResourceBaseName },
+                { "file-system-name", "testfilesystem" },
+                { "recursive", true }
+                });
+
+            var actual = result.AssertProperty("paths");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+        }
+
+        [Fact]
         public async Task Should_create_datalake_directory()
         {
             var directoryPath = "testfilesystem/test-directory";

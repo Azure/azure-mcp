@@ -10,6 +10,8 @@ public static class StorageOptionDefinitions
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
+    public const string FilterPathName = "filter-path";
+    public const string ResursiveName = "recursive";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -49,5 +51,22 @@ public static class StorageOptionDefinitions
     )
     {
         IsRequired = true
+    };
+
+    public static readonly Option<string> FilterPath = new(
+        $"--{FilterPathName}",
+        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> Recursive = new(
+        $"--{ResursiveName}",
+        () => false,
+        "Flag to indicate whether the command will operate recursively on all subdirectories."
+    )
+    {
+        IsRequired = false
     };
 }

@@ -786,7 +786,9 @@ azmcp storage blob container details --subscription <subscription> \
 # List paths in a Data Lake file system
 azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --account-name <account-name> \
-                                              --file-system-name <file-system-name>
+                                              --file-system-name <file-system-name> \
+                                              [--filter-path <filter-path>] \
+                                              [--recursive]
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
