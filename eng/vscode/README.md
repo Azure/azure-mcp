@@ -13,17 +13,6 @@ Follow these simple steps to start using Azure MCP in VS Code:
 1. **Install the Extension**
    - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
 
-2. **Start the MCP Server**
-   - Open the Command Palette (`Ctrl+Shift+P` on Windows/Linux or `Cmd+Shift+P` on macOS).
-   - Run `MCP: List Servers`.
-
-   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
-
-   - Choose `Azure MCP Server ext` from the list, then click **Start Server**.
-
-   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
-   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
-
 
 2. **Start the MCP Server**
    - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
