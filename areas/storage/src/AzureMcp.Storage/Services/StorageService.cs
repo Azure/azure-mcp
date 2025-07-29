@@ -402,4 +402,73 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             throw new Exception($"Error creating directory: {ex.Message}", ex);
         }
     }
+
+    public async Task<FileUploadResult> UploadFile(
+        string accountName,
+        string fileSystemName,
+        string filePath,
+        string sourceFilePath,
+        bool overwrite,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, fileSystemName, filePath, sourceFilePath, subscriptionId);
+
+        // Validate that source file exists
+        if (!File.Exists(sourceFilePath))
+        {
+            throw new FileNotFoundException($"Source file not found: {sourceFilePath}");
+        }
+
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+        var fileClient = fileSystemClient.GetFileClient(filePath);
+
+        try
+        {
+            // Check if file exists and handle overwrite logic
+            bool fileExists = false;
+            try
+            {
+                await fileClient.GetPropertiesAsync();
+                fileExists = true;
+            }
+            catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+            {
+                // File doesn't exist, which is fine
+                fileExists = false;
+            }
+
+            if (fileExists && !overwrite)
+            {
+                throw new Azure.RequestFailedException(409, "File already exists and overwrite is not enabled.", null, null);
+            }
+
+            // Get file info for the result
+            var fileInfo = new FileInfo(sourceFilePath);
+
+            // Upload the file
+            using var fileStream = File.OpenRead(sourceFilePath);
+            var uploadResponse = await fileClient.UploadAsync(fileStream, overwrite);
+
+            // Calculate MD5 hash
+            string contentMd5;
+            using var md5 = System.Security.Cryptography.MD5.Create();
+            fileStream.Position = 0;
+            var hash = await md5.ComputeHashAsync(fileStream);
+            contentMd5 = Convert.ToBase64String(hash);
+
+            return new FileUploadResult(
+                filePath,
+                fileInfo.Length,
+                contentMd5,
+                uploadResponse.Value.LastModified,
+                fileExists);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error uploading file: {ex.Message}", ex);
+        }
+    }
 }

@@ -305,6 +305,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
+| azmcp-storage-datalake-file-upload | Upload the file <local_file_path> to the Data Lake file system <file_system_name> at path <destination_path> in storage account <account_name> |
+| azmcp-storage-datalake-file-upload | Upload <local_file_path> to the Data Lake Storage Gen2 at path <destination_path> in file system <file_system_name> |
+| azmcp-storage-datalake-file-upload | Upload my local file <local_file_path> to Data Lake Storage and overwrite if it exists at path <destination_path> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 

@@ -782,6 +782,14 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
 azmcp storage datalake directory create --subscription <subscription> \
                                         --account-name <account-name> \
                                         --directory-path <directory-path>
+
+# Upload a file to Data Lake Storage Gen2
+azmcp storage datalake file upload --subscription <subscription> \
+                                   --account-name <account-name> \
+                                   --file-system-name <file-system-name> \
+                                   --file-path <destination-path> \
+                                   --source-file-path <local-file-path> \
+                                   [--overwrite]
 ```
 
 ### Azure Subscription Management

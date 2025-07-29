@@ -37,4 +37,13 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<FileUploadResult> UploadFile(
+        string accountName,
+        string fileSystemName,
+        string filePath,
+        string sourceFilePath,
+        bool overwrite,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

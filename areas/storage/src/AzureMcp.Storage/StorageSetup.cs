@@ -7,6 +7,7 @@ using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Commands.Blob;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
+using AzureMcp.Storage.Commands.DataLake.File;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
@@ -54,6 +55,10 @@ public class StorageSetup : IAreaSetup
         var directory = new CommandGroup("directory", "Data Lake directory operations - Commands for managing directories in Azure Data Lake Storage Gen2.");
         dataLake.AddSubGroup(directory);
 
+        // Create file subgroup under datalake
+        var file = new CommandGroup("file", "Data Lake file operations - Commands for managing files in Azure Data Lake Storage Gen2.");
+        dataLake.AddSubGroup(file);
+
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(
             loggerFactory.CreateLogger<AccountListCommand>()));
@@ -72,5 +77,8 @@ public class StorageSetup : IAreaSetup
 
         directory.AddCommand("create", new DirectoryCreateCommand(
             loggerFactory.CreateLogger<DirectoryCreateCommand>()));
+
+        file.AddCommand("upload", new FileUploadCommand(
+            loggerFactory.CreateLogger<FileUploadCommand>()));
     }
 }

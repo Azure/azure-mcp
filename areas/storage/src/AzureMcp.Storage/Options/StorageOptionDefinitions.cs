@@ -10,6 +10,9 @@ public static class StorageOptionDefinitions
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
+    public const string FilePathName = "file-path";
+    public const string SourceFilePathName = "source-file-path";
+    public const string OverwriteName = "overwrite";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -49,5 +52,29 @@ public static class StorageOptionDefinitions
     )
     {
         IsRequired = true
+    };
+
+    public static readonly Option<string> FilePath = new(
+        $"--{FilePathName}",
+        "The destination path for the file in the Data Lake (e.g., 'data/myfile.txt' or 'logs/2024/app.log'). Use forward slashes (/) to separate directories."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> SourceFilePath = new(
+        $"--{SourceFilePathName}",
+        "The local file path to upload to the Data Lake. Must be a valid file path accessible to the application."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<bool> Overwrite = new(
+        $"--{OverwriteName}",
+        "Whether to overwrite the file if it already exists in the Data Lake. Default is false."
+    )
+    {
+        IsRequired = false
     };
 }
