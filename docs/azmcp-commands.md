@@ -388,11 +388,6 @@ azmcp keyvault key create --subscription <subscription> \
                           --key <key-name> \
                           --key-type <key-type>
 
-# Gets a key in a key vault
-azmcp keyvault key get --subscription <subscription> \
-                       --vault <vault-name> \
-                       --key <key-name>
-
 # Lists keys in a key vault
 azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
@@ -403,11 +398,6 @@ azmcp keyvault secret create --subscription <subscription> \
                              --vault <vault-name> \
                              --name <secret-name> \
                              --value <secret-value>
-
-# Gets a secret in a key vault
-azmcp keyvault secret get --subscription <subscription> \
-                          --vault <vault-name> \
-                          --name <secret-name>
 
 # Lists secrets in a key vault
 azmcp keyvault secret list --subscription <subscription> \

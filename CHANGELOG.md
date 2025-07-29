@@ -9,9 +9,15 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Added support for listing SQL databases via the command: `azmcp-sql-db-list`. [[#746](https://github.com/Azure/azure-mcp/pull/746)]
 - Added support for reading `AZURE_SUBSCRIPTION_ID` from the environment variables if a subscription is not provided. [[#533](https://github.com/Azure/azure-mcp/pull/533)]
 
+### Breaking Changes
+
+- Removed the following Key Vault operations: [[#768](https://github.com/Azure/azure-mcp/pull/768)]
+  - `azmcp-keyvault-secret-get`
+  - `azmcp-keyvault-key-get`
+
 ### Other Changes
 
-- [Telemetry] Broadened search for MAC address. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
+- Broadened search for MAC address for telemetry purposes. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
 - Major repository structure change:
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
