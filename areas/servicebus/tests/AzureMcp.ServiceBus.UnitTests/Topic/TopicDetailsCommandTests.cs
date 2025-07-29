@@ -77,7 +77,7 @@ public class TopicDetailsCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.NotNull(response.Results);
-        // write a json convertor that extends from EntityStatus 
+        // write a json converter that extends from EntityStatus 
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
