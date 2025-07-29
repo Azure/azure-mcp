@@ -740,7 +740,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                 case FunctionToolDefinition functionToolDefinition:
                     yield return new ToolDefinitionAIFunction(functionToolDefinition.Name,
                         functionToolDefinition.Description,
-                        functionToolDefinition.InputSchema);
+                        JsonDocument.Parse(functionToolDefinition.Parameters).RootElement.Clone());
                     break;
                 case CodeInterpreterToolDefinition codeInterpreter:
                     yield return new ToolDefinitionAIFunction(
@@ -748,12 +748,24 @@ public class FoundryService : BaseAzureService, IFoundryService
                         "Use code interpreter to read and interpret information from datasets, "
                         + "generate code, and create graphs and charts using your data. Supports "
                         + "up to 20 files.",
-                        codeInterpreter.InputSchema);
+                        JsonElement element = JsonSerializer.SerializeToElement(new
+                        {
+                            type = "object",
+                            properties = new
+                            {
+                                input = new
+                                {
+                                    type = "string",
+                                    description = "Generated code to be executed."
+                                }
+                            }
+                        }));
                     break;
                 case BingGroundingToolDefinition bingGrounding:
                     yield return new ToolDefinitionAIFunction(
                         "bing_grounding",
-                        "Enhance model output with web data.");
+                        "Enhance model output with web data.",
+                        new { });
                     break;
                 case FileSearchToolDefinition fileSearch:
                     yield return new ToolDefinitionAIFunction(
