@@ -138,7 +138,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             },
             output: Output,
             cancellationToken: TestContext.Current.CancellationToken,
-            maxWaitTimeSeconds: 180, // 3 minutes - realistic for storage diagnostic logs
+            maxWaitTimeSeconds: 300, // 5 minutes - realistic for storage diagnostic logs
             failMessage: "No storage blob logs found after waiting 180 seconds");
     }
 
