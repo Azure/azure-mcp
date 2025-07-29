@@ -422,13 +422,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        var containerBatchClient = new BlobBatchClient(containerClient);
+        var batchClient = blobServiceClient.GetBlobBatchClient();
         var accessTier = new AccessTier(tier);
 
         try
         {
             // Use Azure.Storage.Blobs.Batch for true batch operations
-            var batch = containerBatchClient.CreateBatch();
+            var batch = batchClient.CreateBatch();
 
             // Add all blob tier operations to the batch
             var batchOperations = new List<(string blobName, Response batchOperationResponse)>();
@@ -440,7 +440,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             // Submit the batch operation
-            var batchResponse = await containerBatchClient.SubmitBatchAsync(batch);
+            var batchResponse = await batchClient.SubmitBatchAsync(batch);
 
             // Process results
             var successfulBlobs = new List<string>();

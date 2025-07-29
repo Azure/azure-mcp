@@ -244,7 +244,7 @@ namespace AzureMcp.Storage.LiveTests
             // This test assumes the test storage account has the "bar" container with some test blobs
             // We'll set tier to Cool for multiple blobs
             var result = await CallToolAsync(
-                "azmcp_storage_batch_set-tier",
+                "azmcp_storage_blob_batch_set-tier",
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
