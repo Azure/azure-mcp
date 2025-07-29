@@ -139,4 +139,48 @@ public class QueueDetailsCommandTests
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expectedError, response.Message);
     }
+
+    [Theory]
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --queue-name testQueue", true)]
+    [InlineData("--namespace test.servicebus.windows.net --queue-name testQueue", false)]  // Missing subscription
+    [InlineData("--subscription sub123 --queue-name testQueue", false)]   // Missing namespace
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net", false)] // Missing queue-name
+    [InlineData("", false)]  // Missing all required options
+    public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
+    {
+        // Arrange
+        if (shouldSucceed)
+        {
+            var expectedDetails = new QueueDetails
+            {
+                Name = QueueName,
+                Status = "Active",
+                ActiveMessageCount = 5
+            };
+
+            _serviceBusService.GetQueueDetails(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<RetryPolicyOptions>())
+                .Returns(expectedDetails);
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        if (shouldSucceed)
+        {
+            Assert.Equal(200, response.Status);
+            Assert.Equal("Success", response.Message);
+        }
+        else
+        {
+            Assert.Equal(400, response.Status);
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
 }
