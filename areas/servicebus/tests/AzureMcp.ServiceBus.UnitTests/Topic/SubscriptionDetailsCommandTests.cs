@@ -156,4 +156,50 @@ public class SubscriptionDetailsCommandTests
         Assert.StartsWith(expectedError, response.Message);
     }
 
+    [Theory]
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --topic-name testTopic --subscription-name testSubscription", true)]
+    [InlineData("--namespace test.servicebus.windows.net --topic-name testTopic --subscription-name testSubscription", false)]  // Missing subscription
+    [InlineData("--subscription sub123 --topic-name testTopic --subscription-name testSubscription", false)]   // Missing namespace
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --subscription-name testSubscription", false)] // Missing topic-name
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --topic-name testTopic", false)] // Missing subscription-name
+    [InlineData("", false)]  // Missing all required options
+    public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
+    {
+        // Arrange
+        if (shouldSucceed)
+        {
+            var expectedDetails = new SubscriptionDetails
+            {
+                SubscriptionName = SubscriptionName,
+                TopicName = TopicName,
+                ActiveMessageCount = 5
+            };
+
+            _serviceBusService.GetSubscriptionDetails(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<RetryPolicyOptions>())
+                .Returns(expectedDetails);
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        if (shouldSucceed)
+        {
+            Assert.Equal(200, response.Status);
+            Assert.Equal("Success", response.Message);
+        }
+        else
+        {
+            Assert.Equal(400, response.Status);
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
+
 }
