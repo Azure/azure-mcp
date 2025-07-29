@@ -724,16 +724,16 @@ azmcp servicebus topic subscription details --subscription <subscription> \
 ### Azure SQL Database Operations
 
 ```bash
+# Gets a list of all databases in a SQL server
+azmcp sql db list --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name>
+
 # Show details of a specific SQL database
 azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \
                   --server <server-name> \
                   --database <database-name>
-
-# Gets a list of all databases in a SQL server
-azmcp sql db list --subscription <subscription> \
-                  --resource-group <resource-group> \
-                  --server <server-name>
 
 # Gets a list of firewall rules for a SQL server
 azmcp sql firewall-rule list --subscription <subscription> \
