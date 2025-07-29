@@ -11,7 +11,6 @@ using AzureMcp.ServiceBus.Commands.Topic;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Services;
 using AzureMcp.Core.Models.Command;
-using Castle.Components.DictionaryAdapter.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
