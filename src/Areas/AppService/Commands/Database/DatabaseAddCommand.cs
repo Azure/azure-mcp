@@ -1,12 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Areas.AppService.Models;
-using AzureMcp.Areas.AppService.Options;
-using AzureMcp.Areas.AppService.Options.Database;
-using AzureMcp.Areas.AppService.Services;
-using Microsoft.Extensions.Logging;
-
 namespace AzureMcp.Areas.AppService.Commands.Database;
 
 public sealed class DatabaseAddCommand : BaseAppServiceCommand<DatabaseAddOptions>

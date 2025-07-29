@@ -33,7 +33,7 @@ public class AppServiceService(
             appName, resourceGroup);
         var tenantId = await ResolveTenantIdAsync(tenant);
         var armClient = await CreateArmClientAsync(tenant: tenantId, retryPolicy: retryPolicy);
-        var subscriptionResource = await armClient.GetDefaultSubscriptionAsync();
+        var subscriptionResource = await armClient.GetSubscriptionAsync();
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
 
         // For now, we'll simulate the operation since Azure.ResourceManager.AppService is not available
