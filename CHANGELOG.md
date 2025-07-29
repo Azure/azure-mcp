@@ -7,6 +7,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Features Added
 - Added support for listing SQL databases via the command: `azmcp-sql-db-list`. [[#746](https://github.com/Azure/azure-mcp/pull/746)]
 
+- Read `AZURE_SUBSCRIPTION_ID` from the environment if the subscription is not provided. [[#533](https://github.com/Azure/azure-mcp/pull/533)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
