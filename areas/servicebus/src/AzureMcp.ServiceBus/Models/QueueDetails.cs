@@ -9,7 +9,7 @@ namespace AzureMcp.ServiceBus.Models;
 
 public class QueueDetails
 {
-    [property: JsonPropertyName("activeMessageCount")]
+    [JsonPropertyName("activeMessageCount")]
     public long ActiveMessageCount { get; set; }
     [JsonPropertyName("deadLetteringOnMessageExpiration")]
     public bool DeadLetteringOnMessageExpiration { get; set; }
