@@ -11,7 +11,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Breaking Changes
 
-- Removed the following Key Vault operations:
+- Removed the following Key Vault operations: [[#768](https://github.com/Azure/azure-mcp/pull/768)]
   - `azmcp-keyvault-secret-get`
   - `azmcp-keyvault-key-get`
 
