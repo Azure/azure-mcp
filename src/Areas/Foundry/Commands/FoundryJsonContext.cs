@@ -25,7 +25,7 @@ namespace AzureMcp.Areas.Foundry.Commands;
 [JsonSerializable(typeof(CognitiveServicesAccountSku))]
 [JsonSerializable(typeof(CognitiveServicesAccountDeploymentProperties))]
 [JsonSerializable(typeof(QueryAndEvaluateAgentCommand.QueryAndEvaluateAgentCommandResult))]
-[JsonSerializable(typeof(ChatResponse))]
+[JsonSerializable(typeof(List<ChatMessage>))]
 [JsonSerializable(typeof(EvaluationResult))]
 [JsonSerializable(typeof(EvaluateAgentCommand.EvaluateAgentCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault)]

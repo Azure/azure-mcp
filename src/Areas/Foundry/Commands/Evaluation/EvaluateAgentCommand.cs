@@ -16,7 +16,6 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
     private readonly Option<string> _queryOption = FoundryOptionDefinitions.QueryOption;
     private readonly Option<string> _evaluatorNameOption = FoundryOptionDefinitions.EvaluatorNameOption;
     private readonly Option<string> _responseOption = FoundryOptionDefinitions.ResponseOption;
-    private readonly Option<string> _toolCallsOption = FoundryOptionDefinitions.ToolCallsOption;
     private readonly Option<string> _toolDefinitionsOption = FoundryOptionDefinitions.ToolDefinitionsOption;
 
     public override string Name => "evaluate-data";
@@ -42,7 +41,6 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
         command.AddOption(_queryOption);
         command.AddOption(_evaluatorNameOption);
         command.AddOption(_responseOption);
-        command.AddOption(_toolCallsOption);
         command.AddOption(_toolDefinitionsOption);
     }
 
@@ -53,7 +51,6 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
         options.Query = parseResult.GetValueForOption(_queryOption);
         options.EvaluatorName = parseResult.GetValueForOption(_evaluatorNameOption);
         options.Response = parseResult.GetValueForOption(_responseOption);
-        options.ToolCalls = parseResult.GetValueForOption(_toolCallsOption);
         options.ToolDefinitions = parseResult.GetValueForOption(_toolDefinitionsOption);
 
         return options;
@@ -75,8 +72,7 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
             var result = await service.EvaluateAgent(
                 options.EvaluatorName!,
                 options.Query!,
-                options.Response,
-                options.ToolCalls,
+                options.Response!,
                 options.ToolDefinitions);
 
             context.Response.Results = ResponseResult.Create(

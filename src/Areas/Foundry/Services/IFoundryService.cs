@@ -58,15 +58,5 @@ public interface IFoundryService
         List<string>? evaluatorNames = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null);
-
-    // Task<Dictionary<string, object>> EvaluateText(
-    //     List<string>? evaluatorNames = null,
-    //     string? filePath = null,
-    //     string? content = null,
-    //     bool includeStudioUrl = true,
-    //     bool returnRowResults = false,
-    //     string? endpoint = null,
-    //     string? tenantId = null,
-    //     RetryPolicyOptions? retryPolicy = null);
+    Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null);
 }

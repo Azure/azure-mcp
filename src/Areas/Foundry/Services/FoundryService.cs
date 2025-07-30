@@ -4,6 +4,7 @@
 using System.ClientModel;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Azure;
 using Azure.AI.Agents.Persistent;
@@ -329,41 +330,9 @@ public class FoundryService : BaseAzureService, IFoundryService
                 };
             }
 
-            var (response, citations) = buildResponseAndCitations(agentsClient, threadId);
-
-            return new Dictionary<string, object>
-            {
-                { "success", true },
-                { "thread_id", threadId },
-                { "run_id", runId },
-                { "response", response.ToString().Trim() },
-                { "citations", citations }
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to connect to agent: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string? tenant = null, List<string>? evaluatorNames = null, RetryPolicyOptions? retryPolicy = null)
-    {
-        try
-        {
-            ValidateRequiredParameters(agentId, query, endpoint);
-
-            var credential = await GetCredential(tenant);
-
-            var agentClient = new PersistentAgentsClient(endpoint, credential);
-
-            var thread = await agentClient.Threads.CreateThreadAsync();
-
-            var agentsChatClient = agentClient.AsIChatClient(agentId, thread.Value.Id);
-
-            var chatResponse = await agentsChatClient.GetResponseAsync(new ChatMessage(ChatRole.User, query));
-            var messages = await agentClient.Messages.GetMessagesAsync(thread.Value.Id, order: ListSortOrder.Ascending).ToListAsync();
-            var runSteps = await agentClient.Runs.GetRunStepsAsync(thread.Value.Id, chatResponse.ResponseId, order: ListSortOrder.Ascending).ToListAsync();
-            var run = await agentClient.Runs.GetRunAsync(thread.Value.Id, chatResponse.ResponseId);
+            var (textResponse, citations) = buildResponseAndCitations(agentsClient, threadId);
+            var messages = await agentsClient.Messages.GetMessagesAsync(threadId, order: ListSortOrder.Ascending).ToListAsync();
+            var runSteps = await agentsClient.Runs.GetRunStepsAsync(threadId, runId, order: ListSortOrder.Ascending).ToListAsync();
 
             List<PersistentThreadMessage> requestMessages = [];
             List<PersistentThreadMessage> responseMessages = [];
@@ -395,10 +364,85 @@ public class FoundryService : BaseAzureService, IFoundryService
                 .ThenBy(o => o.Contents!.OfType<FunctionCallContent>().Any() ? 0 : o.Contents!.OfType<FunctionResultContent>().Any() ? 1 : 2)
                 .ToList();
 
-            var convertedTools = ConvertTools(run.Value.Tools).ToList();
+            var toolDefinitions = ConvertTools(run.Value.Tools).ToList();
+
+            return new Dictionary<string, object>
+            {
+                { "success", true },
+                { "thread_id", threadId },
+                { "run_id", runId },
+                { "text_response", textResponse.ToString().Trim() },
+                { "text_query", query },
+                { "agent_id", agentId },
+                { "response", convertedResponse },
+                { "query", convertedRequestMessages },
+                { "tool_definitions", JsonSerializer.Serialize(toolDefinitions, (JsonTypeInfo<List<ToolDefinitionAIFunction>>)AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(List<ToolDefinitionAIFunction>))) },
+                { "citations", citations }
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to connect to agent: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string? tenant = null, List<string>? evaluatorNames = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        try
+        {
+            ValidateRequiredParameters(agentId, query, endpoint);
+
+            var connectAgentResult = await ConnectAgent(agentId, query, endpoint, tenant, retryPolicy);
+
+            var credential = await GetCredential(tenant);
+
+            // var agentClient = new PersistentAgentsClient(endpoint, credential);
+
+            // var thread = await agentClient.Threads.CreateThreadAsync();
+
+            // var agentsChatClient = agentClient.AsIChatClient(agentId, thread.Value.Id);
+
+            // var chatResponse = await agentsChatClient.GetResponseAsync(new ChatMessage(ChatRole.User, query));
+            // var messages = await agentClient.Messages.GetMessagesAsync(thread.Value.Id, order: ListSortOrder.Ascending).ToListAsync();
+            // var runSteps = await agentClient.Runs.GetRunStepsAsync(thread.Value.Id, chatResponse.ResponseId, order: ListSortOrder.Ascending).ToListAsync();
+            // var run = await agentClient.Runs.GetRunAsync(thread.Value.Id, chatResponse.ResponseId);
+
+            // List<PersistentThreadMessage> requestMessages = [];
+            // List<PersistentThreadMessage> responseMessages = [];
+
+            // foreach (var message in messages)
+            // {
+            //     if (message.Role == MessageRole.User)
+            //     {
+            //         requestMessages.Add(message);
+            //     }
+            //     else
+            //     {
+            //         responseMessages.Add(message);
+            //     }
+            // }
+
+            // var convertedRequestMessages = ConvertMessages(requestMessages).ToList();
+            // convertedRequestMessages.Prepend(new ChatMessage(ChatRole.System, run.Value.Instructions));
+
+            // // full list of messages converted to Microsoft.Extensions.AI.ChatMessage for evaluation
+            // var convertedResponse = ConvertMessages(messages)
+            //     .Concat(ConvertSteps(runSteps))
+            //     .OrderBy(o => o.RawRepresentation switch
+            //     {
+            //         PersistentThreadMessage m => m.CreatedAt,
+            //         RunStep s => s.CreatedAt,
+            //         _ => default,
+            //     })
+            //     .ThenBy(o => o.Contents!.OfType<FunctionCallContent>().Any() ? 0 : o.Contents!.OfType<FunctionResultContent>().Any() ? 1 : 2)
+            //     .ToList();
+
+            // var convertedTools = ConvertTools(run.Value.Tools).ToList();
 
             List<IEvaluator> evaluators = [];
             List<EvaluationContext> evaluationContexts = [];
+            var toolDefinitions = connectAgentResult["tool_definitions"] as string;
+            var loadedToolDefinitions = ConvertToolDefinitionsFromString(toolDefinitions);
 
             if (evaluatorNames == null || evaluatorNames.Count == 0)
             {
@@ -412,7 +456,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                 {
                     var evaluator = createEvaluator();
                     evaluators.Add(evaluator);
-                    evaluationContexts.Add(AgentEvaluatorContextDictionary[evaluatorName](convertedTools));
+                    evaluationContexts.Add(AgentEvaluatorContextDictionary[evaluatorName](loadedToolDefinitions ?? []));
                 }
             }
             var compositeEvaluator = new CompositeEvaluator(evaluators);
@@ -420,24 +464,25 @@ public class FoundryService : BaseAzureService, IFoundryService
             var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
 
             var evaluationResult = await compositeEvaluator.EvaluateAsync(
-                convertedRequestMessages,
-                new ChatResponse(convertedResponse),
+                connectAgentResult["query"] as List<ChatMessage> ?? [],
+                new ChatResponse(connectAgentResult["response"] as List<ChatMessage> ?? []),
                 new ChatConfiguration(azureOpenAIChatClient),
                 evaluationContexts);
-
-            var (result, citations) = buildResponseAndCitations(agentClient, thread.Value.Id);
 
             // Prepare the response
             var response = new Dictionary<string, object>
             {
                 { "success", true },
                 { "agent_id", agentId },
-                { "thread_id", thread.Value.Id },
-                { "run_id", chatResponse.ResponseId ?? string.Empty },
-                { "result", result.ToString().Trim() },
-                { "query", query },
-                { "response", new ChatResponse(convertedResponse) },
-                { "citations", citations },
+                { "thread_id", connectAgentResult["thread_id"] },
+                { "run_id", connectAgentResult["run_id"] ?? string.Empty },
+                { "text_response", connectAgentResult["text_response"] ?? string.Empty },
+                { "text_query", query },
+                { "query", connectAgentResult["query"] as List<ChatMessage> ?? [] },
+                { "response", connectAgentResult["response"] as List<ChatMessage> ?? [] },
+                { "evaluators", evaluatorNames },
+                { "evaluation_result", evaluationResult },
+                { "citations", connectAgentResult["citations"] ?? string.Empty },
                 { "evaluation_metrics", evaluationResult }
             };
 
@@ -453,8 +498,9 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string? agentResponse, string? toolCalls, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
     {
+        ValidateRequiredParameters(evaluatorName, query, agentResponse);
         try
         {
             if (!AgentEvaluatorDictionary.ContainsKey(evaluatorName.ToLowerInvariant()))
@@ -466,42 +512,21 @@ public class FoundryService : BaseAzureService, IFoundryService
                 };
             }
 
+            var loadedQuery = JsonSerializer.Deserialize(query, (JsonTypeInfo<List<ChatMessage>>)AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(List<ChatMessage>)));
+            var loadedAgentResponse = JsonSerializer.Deserialize(agentResponse, (JsonTypeInfo<List<ChatMessage>>)AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(List<ChatMessage>)));
+            var loadedToolDefinitions = ConvertToolDefinitionsFromString(toolDefinitions);
+
             var evaluator = AgentEvaluatorDictionary[evaluatorName.ToLowerInvariant()]();
             List<EvaluationContext> evaluationContext = [];
-
-            switch (evaluator)
-            {
-                case IntentResolutionEvaluator:
-                    evaluationContext.Add(new IntentResolutionEvaluatorContext(parseToolDefinitions(toolDefinitions)));
-                    break;
-                case ToolCallAccuracyEvaluator:
-                    evaluationContext.Add(new ToolCallAccuracyEvaluatorContext(parseToolDefinitions(toolDefinitions)));
-                    break;
-                case TaskAdherenceEvaluator:
-                    evaluationContext.Add(new TaskAdherenceEvaluatorContext(parseToolDefinitions(toolDefinitions)));
-                    break;
-            }
+            evaluationContext.Add(AgentEvaluatorContextDictionary[evaluatorName.ToLowerInvariant()](loadedToolDefinitions!));
 
             var credential = await GetCredential(tenantId);
 
             var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
 
-            List<ChatMessage> chatRequest = [new(ChatRole.User, query)];
-
-            var toolDefinitionsList = parseToolDefinitions(toolDefinitions);
-            ChatResponse chatResponse;
-            try
-            {
-                chatResponse = parseChatResponse(agentResponse);
-            }
-            catch (JsonException)
-            {
-                chatResponse = new(new ChatMessage(ChatRole.Assistant, agentResponse));
-            }
-
             var result = await evaluator.EvaluateAsync(
-                chatRequest,
-                chatResponse,
+                loadedQuery ?? [],
+                new ChatResponse(loadedAgentResponse),
                 new ChatConfiguration(azureOpenAIChatClient),
                 evaluationContext);
 
@@ -516,7 +541,7 @@ public class FoundryService : BaseAzureService, IFoundryService
             return new Dictionary<string, object>
             {
                 { "success", false },
-                { "error", $"Error in text evaluation: {ex.Message}" }
+                { "error", $"Error in text evaluation: {ex.StackTrace}" }
             };
         }
     }
@@ -543,7 +568,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         return parseToolDefinitions;
     }
 
-    private static ChatResponse parseChatResponse(string? agentResponse)
+    private static List<ChatMessage> parseChatResponse(string? agentResponse)
     {
         if (string.IsNullOrEmpty(agentResponse))
         {
@@ -602,9 +627,27 @@ public class FoundryService : BaseAzureService, IFoundryService
                     }
                 }
             }
-            messages.Add(new(role, contents));
+            ChatMessage message = new(role, contents);
+            message.RawRepresentation = jsonElement.Clone();
+            messages.Add(message);
         }
-        return new(messages);
+        return messages;
+    }
+
+    private List<ToolDefinitionAIFunction> ConvertToolDefinitionsFromString(string? toolDefinitions)
+    {
+        if (string.IsNullOrEmpty(toolDefinitions))
+        {
+            return [];
+        }
+
+        List<ToolDefinitionAIFunction> functionDefinitions = [];
+        using JsonDocument toolDefinitionsAsJson = JsonDocument.Parse(toolDefinitions, new() { AllowTrailingCommas = true });
+        foreach (JsonElement jsonElement in toolDefinitionsAsJson.RootElement.EnumerateArray())
+        {
+            functionDefinitions.Add(ToolDefinitionAIFunction.DeserializeToolDefinition(jsonElement));
+        }
+        return functionDefinitions;
     }
 
     private static IEnumerable<ChatMessage> ConvertMessages(IEnumerable<PersistentThreadMessage> messages)
@@ -716,7 +759,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    private static IEnumerable<AITool> ConvertTools(IEnumerable<ToolDefinition> tools)
+    private static IEnumerable<ToolDefinitionAIFunction> ConvertTools(IEnumerable<ToolDefinition> tools)
     {
         foreach (var tool in tools)
         {
@@ -891,11 +934,19 @@ public class FoundryService : BaseAzureService, IFoundryService
     private static JsonElement DeserializeToElement(BinaryData data) =>
         (JsonElement)JsonSerializer.Deserialize(data.ToMemory().Span, AIJsonUtilities.DefaultOptions.GetTypeInfo(typeof(JsonElement)))!;
 
-    private sealed class ToolDefinitionAIFunction(string name, string description, JsonElement? schema = null) : AIFunction
+    public sealed class ToolDefinitionAIFunction(string name, string description, JsonElement? schema = null) : AIFunction
     {
         public override string Name => name;
         public override string Description => description;
         public override JsonElement JsonSchema => schema ?? base.JsonSchema;
         protected override ValueTask<object?> InvokeCoreAsync(AIFunctionArguments arguments, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public static ToolDefinitionAIFunction DeserializeToolDefinition(JsonElement json)
+        {
+            string name = json.GetProperty("name").GetString() ?? "";
+            string description = json.GetProperty("description").GetString() ?? "";
+            JsonElement? schema = json.TryGetProperty("jsonSchema", out JsonElement schemaElement) ? schemaElement.Clone() : null;
+            return new ToolDefinitionAIFunction(name, description, schema);
+        }
     }
 }
