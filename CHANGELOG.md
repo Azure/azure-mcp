@@ -4,6 +4,11 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ## 0.5.7 (Unreleased)
 
+- Added support for Azure Monitor Web Tests management operations:
+  - `azmcp-monitor-webtests-list` - List all web tests in a subscription or optionally, within a resource group
+  - `azmcp-monitor-webtests-get` - Get details for a specific web test
+  - `azmcp-monitor-webtests-createorupdate` - Create or update a web test in Azure Monitor
+  
 ### Features Added
 
 ### Breaking Changes

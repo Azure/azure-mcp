@@ -48,6 +48,14 @@ public static partial class OptionDefinitions
         {
             IsRequired = false
         };
+
+        public static readonly Option<string> ResourceGroupOptional = new(
+            $"--{ResourceGroupName}",
+            "The name of the Azure resource group. This is a logical container for Azure resources."
+        )
+        {
+            IsRequired = false
+        };
     }
 
     public static class RetryPolicy

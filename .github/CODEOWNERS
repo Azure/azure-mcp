@@ -121,10 +121,10 @@
 
 
 # PRLabel: %area-Monitor
-/areas/monitor/                        @smritiy @srnagar @jongio @Azure/azure-mcp
+/areas/monitor/                        @smritiy @srnagar @jongio @zaaslam @Azure/azure-mcp
 
 # ServiceLabel: %area-Monitor
-# ServiceOwners:                       @smritiy @srnagar @jongio
+# ServiceOwners:                       @smritiy @srnagar @jongio @zaaslam
 
 
 # PRLabel: %area-Postgres
