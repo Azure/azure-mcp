@@ -139,7 +139,7 @@ public class FileSystemListPathsCommandTests
             new("folder1/subfolder", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, 
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
             Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
@@ -178,7 +178,7 @@ public class FileSystemListPathsCommandTests
             new("folder1/subfolder/file3.txt", "file", 512, DateTimeOffset.Now, "\"etag5\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true, 
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
             Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
@@ -217,7 +217,7 @@ public class FileSystemListPathsCommandTests
             new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, 
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
             Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
@@ -255,7 +255,7 @@ public class FileSystemListPathsCommandTests
             new("documents/archive/old.pdf", "file", 2048, DateTimeOffset.Now, "\"etag3\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true, 
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
             Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
@@ -295,7 +295,7 @@ public class FileSystemListPathsCommandTests
             new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, 
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
             Arg.Is(_knownSubscriptionId), Arg.Is(""), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
