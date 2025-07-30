@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Sql.Models;
@@ -8,7 +9,6 @@ using AzureMcp.Sql.Options;
 using AzureMcp.Sql.Options.FirewallRule;
 using AzureMcp.Sql.Services;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace AzureMcp.Sql.Commands.FirewallRule;
 
@@ -182,7 +182,7 @@ public sealed class FirewallRuleCreateCommand(ILogger<FirewallRuleCreateCommand>
 
     private static bool IsValidIpRange(string startIp, string endIp)
     {
-        if (!IPAddress.TryParse(startIp, out var startIpAddr) || 
+        if (!IPAddress.TryParse(startIp, out var startIpAddr) ||
             !IPAddress.TryParse(endIp, out var endIpAddr))
         {
             return false;
