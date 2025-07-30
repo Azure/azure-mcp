@@ -100,7 +100,7 @@ jobs:
 - ${{ each VsixTarget in parameters.VsixTargets }}:
   - deployment: PublishVSIX_${{ VsixTarget }}
     displayName: "Publish VSIX Artifact to Marketplace - ${{ VsixTarget }}"
-    dependsOn: Publish
+    #dependsOn: Publish
     condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
     templateContext:
       type: releaseJob
