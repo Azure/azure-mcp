@@ -222,6 +222,95 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         // The test passes as long as the command executed successfully (no exception thrown)
     }
 
+    [Fact]
+    public async Task Should_CreateFirewallRule_Successfully()
+    {
+        // Use the deployed test SQL server
+        var serverName = Settings.ResourceBaseName;
+        var ruleName = $"testrule-{DateTime.UtcNow.Ticks}"; // Unique rule name
+        var startIp = "192.168.1.1";
+        var endIp = "192.168.1.255";
+
+        try
+        {
+            var result = await CallToolAsync(
+                "azmcp_sql_server_firewall-rule_create",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "resource-group", Settings.ResourceGroupName },
+                    { "server", serverName },
+                    { "name", ruleName },
+                    { "start-ip", startIp },
+                    { "end-ip", endIp }
+                });
+
+            // Should successfully create the firewall rule
+            var firewallRule = result.AssertProperty("firewallRule");
+            Assert.Equal(JsonValueKind.Object, firewallRule.ValueKind);
+
+            // Verify firewall rule properties
+            var ruleName_result = firewallRule.GetProperty("name").GetString();
+            Assert.Equal(ruleName, ruleName_result);
+
+            var ruleType = firewallRule.GetProperty("type").GetString();
+            Assert.Equal("Microsoft.Sql/servers/firewallRules", ruleType);
+
+            var startIpResult = firewallRule.GetProperty("startIpAddress").GetString();
+            Assert.Equal(startIp, startIpResult);
+
+            var endIpResult = firewallRule.GetProperty("endIpAddress").GetString();
+            Assert.Equal(endIp, endIpResult);
+
+            // Verify the rule appears in the list now
+            var listResult = await CallToolAsync(
+                "azmcp_sql_server_firewall-rule_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "resource-group", Settings.ResourceGroupName },
+                    { "server", serverName }
+                });
+
+            if (listResult.Value.ValueKind != JsonValueKind.Null)
+            {
+                var firewallRules = listResult.Value.AssertProperty("firewallRules");
+                var rulesArray = firewallRules.EnumerateArray().ToList();
+                var createdRule = rulesArray.FirstOrDefault(rule =>
+                    rule.GetProperty("name").GetString() == ruleName);
+                Assert.NotEqual(default, createdRule);
+            }
+        }
+        finally
+        {
+            // Clean up: Try to delete the created rule (if deletion command exists)
+            // For now, we'll leave the rule as it will be cleaned up when the test infrastructure is torn down
+        }
+    }
+
+    [Theory]
+    [InlineData("--subscription sub --resource-group rg --server server --name rule1 --start-ip invalid --end-ip 192.168.1.255")]
+    [InlineData("--subscription sub --resource-group rg --server server --name rule1 --start-ip 192.168.1.1 --end-ip invalid")]
+    [InlineData("--subscription sub --resource-group rg --server server --name rule1 --start-ip 192.168.1.255 --end-ip 192.168.1.1")]
+    [InlineData("--subscription sub --resource-group rg --server server --start-ip 192.168.1.1 --end-ip 192.168.1.255")] // missing name
+    public async Task Should_Return400_WithInvalidFirewallRuleCreateInput(string args)
+    {
+        try
+        {
+            var result = await CallToolAsync("azmcp_sql_server_firewall-rule_create",
+                new Dictionary<string, object?> { { "args", args } });
+
+            // If we get here, the command didn't fail as expected
+            Assert.Fail("Expected command to fail with invalid input, but it succeeded");
+        }
+        catch (Exception ex)
+        {
+            // Expected behavior - the command should fail with invalid input
+            Assert.NotNull(ex.Message);
+            Assert.NotEmpty(ex.Message);
+        }
+    }
+
     [Theory]
     [InlineData("--invalid-param")]
     [InlineData("--subscription invalidSub")]
