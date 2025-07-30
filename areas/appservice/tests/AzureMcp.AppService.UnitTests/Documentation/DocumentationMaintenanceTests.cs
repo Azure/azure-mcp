@@ -104,7 +104,7 @@ public class DocumentationMaintenanceTests
             },
             ["Optional Parameters"] = new[] 
             { 
-                "connection-string", "tenant-id", "auth-method", "retry-max-retries" 
+                "connection-string", "tenant", "auth-method", "retry-max-retries" 
             },
             ["Database Types"] = new[] { "SqlServer", "MySql", "PostgreSql", "CosmosDb" },
             ["Auth Methods"] = new[] { "credential", "key", "connectionString" },
@@ -255,7 +255,7 @@ azmcp appservice database add --subscription <subscription> \
                               --database-server <database-server> \
                               --database-name <database-name> \
                               [--connection-string <connection-string>] \
-                              [--tenant-id <tenant-id>] \
+                              [--tenant <tenant>] \
                               [--auth-method <auth-method>] \
                               [--retry-max-retries <retries>]
 ```
@@ -268,7 +268,7 @@ azmcp appservice database add --subscription <subscription> \
 - `--database-server`: Database server name or endpoint (required)
 - `--database-name`: Name of the database to connect to (required)
 - `--connection-string`: Optional custom connection string (generated if not provided)
-- `--tenant-id`: Azure tenant ID for authentication (optional)
+- `--tenant`: Azure tenant ID for authentication (optional)
 - `--auth-method`: Authentication method - 'credential', 'key', or 'connectionString' (optional, defaults to 'credential')
 - `--retry-max-retries`: Maximum retry attempts for failed operations (optional, defaults to 3)
 

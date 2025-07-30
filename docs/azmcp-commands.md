@@ -10,7 +10,7 @@ The following options are available for all commands:
 | Option | Required | Default | Description |
 |-----------|----------|---------|-------------|
 | `--subscription` | Yes | - | Azure subscription ID for target resources |
-| `--tenant-id` | No | - | Azure tenant ID for authentication |
+| `--tenant` | No | - | Azure tenant ID for authentication |
 | `--auth-method` | No | 'credential' | Authentication method ('credential', 'key', 'connectionString') |
 | `--retry-max-retries` | No | 3 | Maximum retry attempts for failed operations |
 | `--retry-delay` | No | 2 | Delay between retry attempts (seconds) |
@@ -793,7 +793,7 @@ azmcp storage datalake directory create --subscription <subscription> \
 
 ```bash
 # List available Azure subscriptions
-azmcp subscription list [--tenant-id <tenant-id>]
+azmcp subscription list [--tenant <tenant>]
 ```
 
 ## Azure Terraform Best Practices
@@ -850,7 +850,7 @@ azmcp appservice database add --subscription <subscription> \
                               --database-server <database-server> \
                               --database-name <database-name> \
                               [--connection-string <connection-string>] \
-                              [--tenant-id <tenant-id>] \
+                              [--tenant <tenant>] \
                               [--auth-method <auth-method>] \
                               [--retry-max-retries <retries>]
 ```
@@ -863,7 +863,7 @@ azmcp appservice database add --subscription <subscription> \
 - `--database-server`: Database server name or endpoint (required)
 - `--database-name`: Name of the database to connect to (required)
 - `--connection-string`: Optional custom connection string (generated if not provided)
-- `--tenant-id`: Azure tenant ID for authentication (optional)
+- `--tenant`: Azure tenant ID for authentication (optional)
 - `--auth-method`: Authentication method - 'credential', 'key', or 'connectionString' (optional, defaults to 'credential')
 - `--retry-max-retries`: Maximum retry attempts for failed operations (optional, defaults to 3)
 
@@ -925,6 +925,15 @@ azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789a
                               --database-type "CosmosDb" \
                               --database-server "mycosmosdb" \
                               --database-name "MyDatabase"
+
+# Add a SQL Server database connection with specific tenant
+azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
+                              --resource-group "my-resource-group" \
+                              --app-name "my-web-app" \
+                              --database-type "SqlServer" \
+                              --database-server "myserver.database.windows.net" \
+                              --database-name "MyDatabase" \
+                              --tenant "87654321-4321-4321-4321-210987654321"
 ```
 
 **Common Errors:**

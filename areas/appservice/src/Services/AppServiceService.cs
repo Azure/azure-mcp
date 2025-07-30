@@ -1,21 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Core;
-using Azure.Core.Pipeline;
-using Azure.ResourceManager;
-using AzureMcp.Areas.AppService.Models;
-using AzureMcp.Services.Azure;
-using AzureMcp.Services.Azure.Tenant;
-using Microsoft.Extensions.Logging;
-
 namespace AzureMcp.Areas.AppService.Services;
 
 public class AppServiceService(
     ITenantService tenantService,
+    ISubscriptionService subscriptionService,
     ILogger<AppServiceService> logger) : BaseAzureService(tenantService), IAppServiceService
 {
     private readonly ITenantService _tenantService = tenantService;
+    private readonly ISubscriptionService _subscriptionService = subscriptionService;
     private readonly ILogger<AppServiceService> _logger = logger;
 
     public async Task<DatabaseConnectionInfo> AddDatabaseAsync(
@@ -31,15 +25,17 @@ public class AppServiceService(
     {
         _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", 
             appName, resourceGroup);
-        var tenantId = await ResolveTenantIdAsync(tenant);
-        var armClient = await CreateArmClientAsync(tenant: tenantId, retryPolicy: retryPolicy);
-        var subscriptionResource = await armClient.GetSubscriptionAsync();
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+       
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
+        resourceGroupResource ??= throw new ArgumentException($"Resource group '{resourceGroup}' not found in subscription '{subscription}'.");
+        
 
         // For now, we'll simulate the operation since Azure.ResourceManager.AppService is not available
         // In a real implementation, you would use the Azure.ResourceManager.AppService package
         // to get the web app resource and update its connection strings
-        
+
         // Build connection string if not provided
         var finalConnectionString = connectionString ?? BuildConnectionString(databaseType, databaseServer, databaseName);
         var connectionStringName = $"{databaseName}Connection";
@@ -53,6 +49,7 @@ public class AppServiceService(
 
         return new DatabaseConnectionInfo
         {
+
             DatabaseType = databaseType,
             DatabaseServer = databaseServer,
             DatabaseName = databaseName,
