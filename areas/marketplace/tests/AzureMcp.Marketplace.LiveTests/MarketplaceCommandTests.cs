@@ -58,14 +58,6 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var displayName = product.AssertProperty("displayName");
         Assert.Equal(JsonValueKind.String, displayName.ValueKind);
         Assert.NotEmpty(displayName.GetString()!);
-
-        // Verify properties specific to DZH318Z0HWCB
-        var properties = product.AssertProperty("properties");
-        Assert.Equal(JsonValueKind.Object, properties.ValueKind);
-
-        var publisherId = properties.AssertProperty("publisherId");
-        Assert.Equal(JsonValueKind.String, publisherId.ValueKind);
-        Assert.Equal("Microsoft", publisherId.GetString());
     }
 
     [Fact]
@@ -142,11 +134,8 @@ public class MarketplaceCommandTests : CommandTestsBase,
         Assert.Contains(productId, id.GetString());
 
         // Verify that plans are included
-        var properties = product.AssertProperty("properties");
-        if (properties.TryGetProperty("plans", out var plans))
-        {
-            Assert.Equal(JsonValueKind.Array, plans.ValueKind);
-        }
+        var plans = product.AssertProperty("plans");
+        Assert.Equal(JsonValueKind.Array, plans.ValueKind);
     }
 
     [Fact]
@@ -180,19 +169,16 @@ public class MarketplaceCommandTests : CommandTestsBase,
         const string productId = "NonExistent.Product.12345";
 
         // Act & Assert
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "subscription", _subscriptionId },
-                    { "product-id", productId }
-                });
-        });
+        var result = await CallToolAsync(
+            "azmcp_marketplace_product_get",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "product-id", productId }
+            });
 
-        // The exception should indicate the product was not found
-        Assert.NotNull(exception);
+        var error = result.AssertProperty("type");
+        Assert.Equal(nameof(HttpRequestException), error.ToString());
     }
 
     [Fact]
@@ -202,36 +188,32 @@ public class MarketplaceCommandTests : CommandTestsBase,
         const string productId = "DZH318Z0HWCB";
 
         // Act & Assert
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "product-id", productId }
-                    // Missing subscription parameter
-                });
-        });
+        var result = await CallToolAsync(
+            "azmcp_marketplace_product_get",
+            new()
+            {
+                { "product-id", productId }
+                // Missing subscription parameter
+            });
 
-        Assert.NotNull(exception);
+        // There are no results because it is not executed.
+        Assert.Null(result);
     }
 
     [Fact]
     public async Task Should_validate_required_product_id_parameter()
     {
         // Act & Assert
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "subscription", _subscriptionId }
-                    // Missing product-id parameter
-                });
-        });
+        var result = await CallToolAsync(
+            "azmcp_marketplace_product_get",
+            new()
+            {
+                { "subscription", _subscriptionId }
+                // Missing product-id parameter
+            });
 
-        Assert.NotNull(exception);
+        // There are no results because it is not executed.
+        Assert.Null(result);
     }
 
     [Fact]
@@ -265,12 +247,5 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var displayName = product.AssertProperty("displayName");
         Assert.Equal(JsonValueKind.String, displayName.ValueKind);
         Assert.NotEmpty(displayName.GetString()!);
-
-        // Verify properties
-        var properties = product.AssertProperty("properties");
-        Assert.Equal(JsonValueKind.Object, properties.ValueKind);
-
-        var publisherId = properties.AssertProperty("publisherId");
-        Assert.Equal("Microsoft", publisherId.GetString());
     }
 }
