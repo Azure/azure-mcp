@@ -257,19 +257,17 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-servicebus-queue-details | Show me the details of service bus <service_bus_name> queue <queue_name> |
-| azmcp-servicebus-queue-peek | Show me the latest message in service bus <service_bus_name> queue <queue_name> |
 | azmcp-servicebus-topic-details | Show me the details of service bus <service_bus_name> topic <topic_name> |
 | azmcp-servicebus-topic-subscription-details | Show me the details of service bus <service_bus_name> subscription <subscription_name> |
-| azmcp-servicebus-topic-subscription-peek | Show me the latest message in service bus <service_bus_name> subscription <subscription_name> for the topic <topic_name> |
 
 ## Azure SQL Database
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
-| azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
 | azmcp-sql-db-list | List all databases in the Azure SQL server <server_name> |
 | azmcp-sql-db-list | Show me all the databases configuration details in the Azure SQL server <server_name> |
+| azmcp-sql-db-show | Show me the details of SQL database <database_name> in server <server_name> |
+| azmcp-sql-db-show | Get the configuration details for the SQL database <database_name> on server <server_name> |
 
 ## Azure SQL Elastic Pool Operations
 

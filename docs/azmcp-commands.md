@@ -681,12 +681,6 @@ azmcp group list --subscription <subscription>
 ### Azure Service Bus Operations
 
 ```bash
-# Peeks at messages in a Service Bus queue
-azmcp servicebus queue peek --subscription <subscription> \
-                            --namespace <service-bus-namespace> \
-                            --queue-name <queue-name> \
-                            [--max-messages <int>]
-
 # Returns runtime and details about the Service Bus queue
 azmcp servicebus queue details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -696,13 +690,6 @@ azmcp servicebus queue details --subscription <subscription> \
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
                                --topic-name <topic-name>
-
-# Peeks at messages in a Service Bus subscription within a topic.
-azmcp servicebus topic subscription peek --subscription <subscription> \
-                                         --namespace <service-bus-namespace> \
-                                         --topic-name <topic-name> \
-                                         --subscription-name <subscription-name> \
-                                         [--max-messages <int>]
 
 # Gets runtime details and message counts for a Service Bus subscription
 azmcp servicebus topic subscription details --subscription <subscription> \
@@ -714,16 +701,16 @@ azmcp servicebus topic subscription details --subscription <subscription> \
 ### Azure SQL Database Operations
 
 ```bash
+# Gets a list of all databases in a SQL server
+azmcp sql db list --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name>
+
 # Show details of a specific SQL database
 azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \
                   --server <server-name> \
                   --database <database-name>
-
-# Gets a list of all databases in a SQL server
-azmcp sql db list --subscription <subscription> \
-                  --resource-group <resource-group> \
-                  --server <server-name>
 
 # Gets a list of firewall rules for a SQL server
 azmcp sql firewall-rule list --subscription <subscription> \
