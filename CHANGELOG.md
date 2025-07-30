@@ -12,6 +12,8 @@
 
 ### Other Changes
 
+- Updated Azure Marketplace API version to `2023-05-01-preview`.[[#656](https://github.com/Azure/azure-mcp/pull/656)]
+
 ## 0.4.1 (2025-07-17)
 
 ### Features Added

@@ -57,7 +57,7 @@ public class ProductGetCommandTests
         var productId = "test-product";
         var expectedProduct = new ProductDetails
         {
-            Id = "test-product",
+            ProductId = "test-product",
             DisplayName = "Test Product"
         };
 

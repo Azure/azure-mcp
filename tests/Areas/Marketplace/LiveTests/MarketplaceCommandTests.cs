@@ -13,6 +13,7 @@ using Xunit;
 
 namespace AzureMcp.Tests.Areas.Marketplace.LiveTests;
 
+[Trait("Area", "Marketplace")]
 public class MarketplaceCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {
@@ -39,7 +40,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -51,7 +52,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
         // Verify essential product properties
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Equal(JsonValueKind.String, id.ValueKind);
         Assert.Contains(productId, id.GetString());
 
@@ -78,7 +79,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -90,7 +91,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var product = result.AssertProperty(ProductKey);
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Contains(productId, id.GetString());
     }
 
@@ -104,7 +105,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -116,7 +117,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var product = result.AssertProperty(ProductKey);
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Contains(productId, id.GetString());
     }
 
@@ -129,7 +130,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -141,7 +142,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var product = result.AssertProperty(ProductKey);
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Contains(productId, id.GetString());
 
         // Verify that plans are included
@@ -161,7 +162,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -173,7 +174,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var product = result.AssertProperty(ProductKey);
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Contains(productId, id.GetString());
     }
 
@@ -252,7 +253,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
         // Act
         var result = await CallToolAsync(
-            "azmcp-marketplace-product-get",
+            "azmcp_marketplace_product_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -267,7 +268,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var product = result.AssertProperty(ProductKey);
         Assert.Equal(JsonValueKind.Object, product.ValueKind);
 
-        var id = product.AssertProperty("id");
+        var id = product.AssertProperty("productId");
         Assert.Contains(productId, id.GetString());
 
         var displayName = product.AssertProperty("displayName");
