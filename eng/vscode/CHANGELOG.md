@@ -3,13 +3,8 @@
 
 ## 0.1.0-alpha.1 - Unreleased
 
-### Added
-
-### Chnaged
-- Toast notifications updating about Azure MCP server registration and startup instructions
-
-### Fixed
-
+### Changed
+- Removed toast notifications related to Azure MCP server registration and startup instructions.
 
 ### Added
 
