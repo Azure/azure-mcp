@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.LoadTesting.Models.LoadTest;
 
 namespace AzureMcp.LoadTesting.Models.LoadTestRun;
+
 public class TestRunRequest
 {
     /// <summary>
