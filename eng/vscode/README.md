@@ -1,49 +1,57 @@
+# Azure MCP Server Extension for Visual Studio Code
 
-# Azure MCP Visual Studio Code Extension
+Easily bring the power of Model Context Protocol (MCP) to your Azure projects in VS Code.
 
-This extension provides Model Context Protocol (MCP) integration and tooling for Azure in Visual Studio Code.
+## Overview
 
-## What is Azure MCP?
-Azure MCP enables advanced AI and model context workflows for Azure resources and applications, directly within VS Code.
+**Azure MCP Server** adds smart, context-aware AI tools right inside VS Code to help you work more efficiently with Azure resources.
 
 ## Getting Started
 
-Follow these steps to get up and running with the Azure MCP extension:
+Follow these simple steps to start using Azure MCP in VS Code:
 
-1. **Install the extension**
-	- Install from the VS Code Marketplace, or
-	- Clone/download this repository and install from source.
+1. **Install the Extension**
+   - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
 
-2. **(Optional) Configure selected services**
-	 - Open your workspace settings (`.vscode/settings.json`)
-	 - Add or edit the following entry to enable specific Azure MCP services:
 
-		 ```json
-		 "azureMcp.enabledServices": [
-			 "storage",
-			 "keyvault"
-		 ]
-		 ```
-	 - The extension in next step will start the MCP server with only the selected services enabled.
+2. **Start the MCP Server**
+   - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+   - Run `MCP: List Servers`
 
-3. **Start the MCP Server**
-	- Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
-	- Type `MCP: List Servers` and select it
-	- Choose `Azure MCP Server ext` from the list
-	- Click `Start Server`
+   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
 
-4. **Verify the server is running**
-	- Open the `Output` tab in VS Code
-	- Look for messages indicating the server started successfully
+   - Select `Azure MCP Server ext`, then click **Start Server**
 
-You're now ready to use Azure MCP features in VS Code!
+   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
+   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+
+3. **Check That It's Running**
+   - Go to the **Output** tab in VS Code.
+   - Look for log messages confirming the server started successfully.
+
+   ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
+
+4. **(Optional) Enable Specific Azure Services**
+   - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
+
+     ```json
+     "azureMcp.enabledServices": ["storage", "keyvault"]
+     ```
+
+   - Then restart the MCP Server (repeat Step 2).
+
+You’re all set! Azure MCP Server is now ready to help you work smarter with Azure resources in VS Code.
 
 ## Feedback & Support
-- File issues and feature requests on [GitHub](https://github.com/Azure/azure-mcp/issues)
+
+Have questions, feedback, or feature requests?
+Open an issue on our [GitHub repository](https://github.com/Azure/azure-mcp/issues) — we’d love to hear from you!
 
 ## Contributing
-See [the contribution guidelines] for ideas and guidance on how to improve the extension. Thank you!
+
+Want to contribute?
+Check out our [contribution guide](https://github.com/Azure/azure-mcp/blob/main/eng/vscode/CONTRIBUTING.md) to get started.
 
 ## License
-[MIT](https://github.com/Azure/azure-mcp/blob/main/LICENSE)
 
+This project is licensed under the [MIT License](https://github.com/Azure/azure-mcp/blob/main/LICENSE).
