@@ -1,5 +1,5 @@
 # Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0.5-bookworm-slim AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0.7-bookworm-slim AS runtime
 
 # Add build argument for publish directory
 ARG PUBLISH_DIR

@@ -4,6 +4,7 @@
 using System.Text.Json.Serialization;
 
 namespace AzureMcp.LoadTesting.Models.LoadTestRun;
+
 public class TestRun
 {
     /// <summary>

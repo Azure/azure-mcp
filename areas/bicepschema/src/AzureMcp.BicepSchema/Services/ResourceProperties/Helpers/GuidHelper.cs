@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace AzureMcp.BicepSchema.Services.ResourceProperties.Helpers;
+
 public static class GuidHelper
 {
     public static Guid GenerateDeterministicGuid(params string[] strings)

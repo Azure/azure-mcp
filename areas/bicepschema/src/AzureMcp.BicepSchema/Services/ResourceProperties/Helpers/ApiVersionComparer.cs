@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 namespace AzureMcp.BicepSchema.Services.ResourceProperties.Helpers;
+
 public class ApiVersionComparer : IComparer<string>
 {
     /// <summary>

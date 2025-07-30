@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 namespace AzureMcp.LoadTesting.Models.LoadTestResource;
+
 public class TestResource
 {
     /// <summary>

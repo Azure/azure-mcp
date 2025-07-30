@@ -8,6 +8,7 @@ using AzureMcp.LoadTesting.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.LoadTesting.Commands.LoadTestResource;
+
 public sealed class TestResourceListCommand(ILogger<TestResourceListCommand> logger)
     : BaseLoadTestingCommand<TestResourceListOptions>
 {

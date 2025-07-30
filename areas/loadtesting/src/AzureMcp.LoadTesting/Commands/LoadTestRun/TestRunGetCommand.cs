@@ -9,6 +9,7 @@ using AzureMcp.LoadTesting.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.LoadTesting.Commands.LoadTestRun;
+
 public sealed class TestRunGetCommand(ILogger<TestRunGetCommand> logger)
     : BaseLoadTestingCommand<TestRunGetOptions>
 {
