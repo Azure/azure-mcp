@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Tests;
 using OpenTelemetry.Logs;
 using Xunit;
 

@@ -145,8 +145,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🔑 Azure Key Vault
 
-* List, create, and get keys
-* Get secrets
+* List and create certificates
+* List and create keys
+* List and create secrets
 
 ### ☸️ Azure Kubernetes Service (AKS)
 
