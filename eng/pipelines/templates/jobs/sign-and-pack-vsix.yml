@@ -1,4 +1,7 @@
 parameters:
+- name: DependsOn
+  type: object
+  default: []
 - name: VsixTarget
   type: string
   default: not-specified
@@ -6,6 +9,7 @@ parameters:
 jobs:
 - job:
   displayName: "Sign and Pack VSIX for ${{ parameters.VsixTarget }}"
+  dependsOn: ${{ parameters.DependsOn }}
   variables:
     VsixTarget: ${{ parameters.VsixTarget }}
     VsixServerPath: $(Pipeline.Workspace)/eng/vscode/server
