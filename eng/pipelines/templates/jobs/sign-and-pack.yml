@@ -6,7 +6,6 @@ parameters:
 jobs:
 - job: SignAndPack
   displayName: "Sign and Pack"
-  condition: and(succeededOrFailed())
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   steps:
   - checkout: self
