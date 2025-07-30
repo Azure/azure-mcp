@@ -8,6 +8,8 @@
 
 ### Bugs Fixed
 
+- Update CREATE and SET operations to destructive = true. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+
 ### Other Changes
 
 ## 0.5.1 (2025-07-29)
