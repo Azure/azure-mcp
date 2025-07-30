@@ -1,13 +1,21 @@
-# CHANGELOG 📝
+# Release History
 
-The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
-
-## 0.5.1 (Unreleased)
+## 0.5.2 (Unreleased)
 
 ### Features Added
-- Added support for listing SQL databases via the command: `azmcp-sql-db-list`. [[#746](https://github.com/Azure/azure-mcp/pull/746)]
 
-- Read `AZURE_SUBSCRIPTION_ID` from the environment if the subscription is not provided. [[#533](https://github.com/Azure/azure-mcp/pull/533)]
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 0.5.1 (2025-07-29)
+
+### Features Added
+
+- Added support for listing SQL databases via the command: `azmcp-sql-db-list`. [[#746](https://github.com/Azure/azure-mcp/pull/746)]
+- Added support for reading `AZURE_SUBSCRIPTION_ID` from the environment variables if a subscription is not provided. [[#533](https://github.com/Azure/azure-mcp/pull/533)]
 
 ### Breaking Changes
 
@@ -15,12 +23,10 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp-keyvault-secret-get`
   - `azmcp-keyvault-key-get`
 
-### Bugs Fixed
-
 ### Other Changes
 
-- Broaden search for MAC address [[#759](https://github.com/Azure/azure-mcp/pull/759)]
-- Major repository structure change.
+- Broadened search for MAC address for telemetry purposes. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
+- Major repository structure change:
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
 
