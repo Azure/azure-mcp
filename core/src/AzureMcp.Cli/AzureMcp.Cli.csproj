@@ -71,6 +71,27 @@
     <None Include="../../../README.md" Pack="true" PackagePath="./README.md" />
   </ItemGroup>
 
+  <ItemGroup Label="Container command args">
+    <!-- These are the command line arguments that will be passed to the container app when it starts.
+         The path to the dll is handled for you -->
+    <ContainerAppCommandArgs Include="server;start" />
+    <!-- Add any additional labels you want here -->
+    <!-- You get several for free from the SDK: https://learn.microsoft.com/en-us/dotnet/core/containers/publish-configuration#default-container-labels -->
+    <!-- <ContainerLabel Include="" Value="" /> -->
+  </ItemGroup>
+  <PropertyGroup Label="Container properties">
+    <!-- The platforms to build images for - you get a nice, multi-arch image manifest automatically -->
+    <ContainerRuntimeIdentifiers>linux-x64;linux-arm64</ContainerRuntimeIdentifiers>
+    <!-- You can easily specify just the 'variant' part of the base image, so that the SDK handles the rest
+         and keeps you up to date automatically. -->
+    <ContainerFamily>bookworm-slim</ContainerFamily>
+    <!-- This is the 'name' of the container, minus the registry and the tag. -->
+    <ContainerRepository>azure-sdk/azure-mcp</ContainerRepository>
+    <!-- The tag for the container image, which is usually the version of the package, but you can
+         specify a different tag (or even multiple with 'ContainerTags') if needed -->
+    <ContainerTag>$(PackageVersion)</ContainerTag>
+  </PropertyGroup>
+
   <!-- Remove Cosmos native files from the build output directory -->
   <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems">
     <ItemGroup>
