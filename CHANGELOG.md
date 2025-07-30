@@ -13,6 +13,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Fixed issue where Azure Marketplace product result had no id. Set correct HTTP status code on HttpResultException.
+
 ### Other Changes
 
 - Broaden search for MAC address [[#759](https://github.com/Azure/azure-mcp/pull/759)]
