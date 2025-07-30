@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using AzureMcp.Core.Options;
@@ -60,8 +61,15 @@ public class MarketplaceService(ITenantService tenantService)
         string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market,
             lookupOfferInTenantLevel, planId, skuId, includeServiceInstructionTemplates);
 
-        return await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
+        var productDetails = await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
             pricingAudience, tenant, retryPolicy);
+
+        if (string.IsNullOrEmpty(productDetails.Id))
+        {
+            productDetails.Id = productId;
+        }
+
+        return productDetails;
     }
 
     private static string BuildProductUrl(
@@ -138,13 +146,14 @@ public class MarketplaceService(ITenantService tenantService)
         if (!string.IsNullOrEmpty(pricingAudience))
             request.Headers.Add("PricingAudience", pricingAudience);
 
-        var response = await pipeline.SendRequestAsync(request, CancellationToken.None);
+        using var response = await pipeline.SendRequestAsync(request, CancellationToken.None);
 
         if (!response.IsError)
         {
             try
             {
                 var productDetails = JsonSerializer.Deserialize(response.Content.ToStream(), MarketplaceJsonContext.Default.ProductDetails);
+
                 return productDetails ?? throw new JsonException("Failed to deserialize marketplace response to ProductDetails.");
             }
             catch (JsonException ex)
@@ -153,7 +162,16 @@ public class MarketplaceService(ITenantService tenantService)
             }
         }
 
-        throw new HttpRequestException($"Request failed with status {response.Status}: {response.ReasonPhrase}");
+        var errorMessage = $"Request failed with status {response.Status}: {response.ReasonPhrase}";
+
+        if (Enum.IsDefined(typeof(HttpStatusCode), response.Status))
+        {
+            throw new HttpRequestException(errorMessage, null, (HttpStatusCode)response.Status);
+        }
+        else
+        {
+            throw new HttpRequestException(errorMessage);
+        }
     }
 
     private async Task<string> GetAccessTokenAsync(string? tenant = null)
