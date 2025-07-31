@@ -15,7 +15,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 using static AzureMcp.ServiceBus.Commands.Queue.QueueDetailsCommand;
-using AzureMcp.ServiceBus.UnitTests.Utilities.JsonConverters;
 
 namespace AzureMcp.ServiceBus.UnitTests.Queue;
 
