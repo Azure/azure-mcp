@@ -4,36 +4,37 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Areas.Monitor.Commands.TableType;
-using AzureMcp.Areas.Monitor.Services;
-using AzureMcp.Commands.Monitor;
-using AzureMcp.Models.Command;
-using AzureMcp.Options;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
+using AzureMcp.Monitor.Commands;
+using AzureMcp.Monitor.Commands.Table;
+using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Monitor.UnitTests.TableType;
+namespace AzureMcp.Monitor.UnitTests.Table;
 
 [Trait("Area", "Monitor")]
-public sealed class TableTypeListCommandTests
+public sealed class TableListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMonitorService _monitorService;
-    private readonly ILogger<TableTypeListCommand> _logger;
-    private readonly TableTypeListCommand _command;
+    private readonly ILogger<TableListCommand> _logger;
+    private readonly TableListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
     private const string _knownSubscription = "knownSubscription";
     private const string _knownWorkspace = "knownWorkspace";
-    private const string _knownResourceGroup = "knownResourceGroup";
+    private const string _knownResourceGroupName = "knownResourceGroup";
+    private const string _knownTableType = "CustomLog";
 
-    public TableTypeListCommandTests()
+    public TableListCommandTests()
     {
         _monitorService = Substitute.For<IMonitorService>();
-        _logger = Substitute.For<ILogger<TableTypeListCommand>>();
+        _logger = Substitute.For<ILogger<TableListCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_monitorService);
@@ -45,7 +46,8 @@ public sealed class TableTypeListCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --table-type {_knownTableType} --resource-group {_knownResourceGroupName}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroupName}", true)]
     [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
@@ -53,19 +55,20 @@ public sealed class TableTypeListCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            var testTableTypes = new List<string>
+            var testTables = new List<string>
             {
-                "CustomLog",
-                "AzureMetrics",
-                "SystemEvents"
+                "AppEvents",
+                "AppRequests",
+                "AppDependencies"
             };
-            _monitorService.ListTableTypes(
+            _monitorService.ListTables(
+                Arg.Any<string>(), 
                 Arg.Any<string>(), 
                 Arg.Any<string>(), 
                 Arg.Any<string>(), 
                 Arg.Any<string>(), 
                 Arg.Any<RetryPolicyOptions>())
-                .Returns(testTableTypes);
+                .Returns(testTables);
         }
 
         // Act
@@ -85,28 +88,29 @@ public sealed class TableTypeListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsTableTypesList()
+    public async Task ExecuteAsync_ReturnsTablesList()
     {
         // Arrange
-        var expectedTableTypes = new List<string>
+        var expectedTables = new List<string>
         {
-            "CustomLog",
-            "AzureMetrics",
-            "SystemEvents",
-            "ApplicationEvents"
+            "AppEvents",
+            "AppRequests", 
+            "AppDependencies",
+            "AppMetrics"
         };
-        _monitorService.ListTableTypes(
+        _monitorService.ListTables(
+            Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedTableTypes);
+            .Returns(expectedTables);
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
-            "--resource-group", _knownResourceGroup
+            "--resource-group", _knownResourceGroupName
         ]);
 
         // Act
@@ -117,7 +121,8 @@ public sealed class TableTypeListCommandTests
         Assert.NotNull(response.Results);
 
         // Verify the mock was called
-        await _monitorService.Received(1).ListTableTypes(
+        await _monitorService.Received(1).ListTables(
+            Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
@@ -125,33 +130,35 @@ public sealed class TableTypeListCommandTests
             Arg.Any<RetryPolicyOptions>());
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<TableTypeListCommand.TableTypeListCommandResult>(json, MonitorJsonContext.Default.TableTypeListCommandResult);
+        var result = JsonSerializer.Deserialize<TableListCommand.TableListCommandResult>(json, MonitorJsonContext.Default.TableListCommandResult);
 
         Assert.NotNull(result);
-        Assert.Equal(expectedTableTypes.Count, result.TableTypes.Count);
-        Assert.Equal(expectedTableTypes[0], result.TableTypes[0]);
-        Assert.Equal(expectedTableTypes[1], result.TableTypes[1]);
-        Assert.Equal(expectedTableTypes[2], result.TableTypes[2]);
-        Assert.Equal(expectedTableTypes[3], result.TableTypes[3]);
+        Assert.Equal(expectedTables.Count, result.Tables.Count);
+        Assert.Equal(expectedTables[0], result.Tables[0]);
+        Assert.Equal(expectedTables[1], result.Tables[1]);
+        Assert.Equal(expectedTables[2], result.Tables[2]);
+        Assert.Equal(expectedTables[3], result.Tables[3]);
     }
 
     [Fact]
-    public async Task ExecuteAsync_CallsServiceWithCorrectParameters()
+    public async Task ExecuteAsync_WithTableTypeParameter_CallsServiceWithCorrectParameters()
     {
         // Arrange
-        var expectedTableTypes = new List<string> { "CustomLog", "AzureMetrics" };
-        _monitorService.ListTableTypes(
+        var expectedTables = new List<string> { "CustomTable1", "CustomTable2" };
+        _monitorService.ListTables(
             _knownSubscription, 
-            _knownResourceGroup, 
+            _knownResourceGroupName, 
             _knownWorkspace, 
+            _knownTableType, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedTableTypes);
+            .Returns(expectedTables);
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
-            "--resource-group", _knownResourceGroup
+            "--resource-group", _knownResourceGroupName,
+            "--table-type", _knownTableType
         ]);
 
         // Act
@@ -159,19 +166,21 @@ public sealed class TableTypeListCommandTests
 
         // Assert
         Assert.Equal(200, response.Status);
-        await _monitorService.Received(1).ListTableTypes(
+        await _monitorService.Received(1).ListTables(
             _knownSubscription, 
-            _knownResourceGroup, 
+            _knownResourceGroupName, 
             _knownWorkspace, 
+            _knownTableType, 
             Arg.Any<string>(), 
             Arg.Any<RetryPolicyOptions>());
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNullWhenNoTableTypes()
+    public async Task ExecuteAsync_ReturnsNullWhenNoTables()
     {
         // Arrange
-        _monitorService.ListTableTypes(
+        _monitorService.ListTables(
+            Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
@@ -182,7 +191,7 @@ public sealed class TableTypeListCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
-            "--resource-group", _knownResourceGroup
+            "--resource-group", _knownResourceGroupName
         ]);
 
         // Act
@@ -197,7 +206,8 @@ public sealed class TableTypeListCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _monitorService.ListTableTypes(
+        _monitorService.ListTables(
+            Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
             Arg.Any<string>(), 
@@ -208,7 +218,7 @@ public sealed class TableTypeListCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
-            "--resource-group", _knownResourceGroup
+            "--resource-group", _knownResourceGroupName
         ]);
 
         // Act
