@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Marketplace.Services;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
+using AzureMcp.Marketplace.Services;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Microsoft.Extensions.Caching.Memory;
