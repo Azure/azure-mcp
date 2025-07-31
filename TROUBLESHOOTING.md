@@ -17,6 +17,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
   - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
   - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
+  - [Platform Package Installation Issues](#platform-package-installation-issues)
 - [Logging and Diagnostics](#logging-and-diagnostics)
   - [Logging](#logging)
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
@@ -38,7 +39,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
   "servers": {
     "Azure Storage": {
       "type": "stdio",
-      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
       "args": [
         "server",
         "start",
@@ -48,7 +49,7 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
     },
     "Azure KeyVault": {
       "type": "stdio",
-      "command": "<absolute-path-to>/azure-mcp/src/bin/Debug/net9.0/azmcp[.exe]",
+      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
       "args": [
         "server",
         "start",
@@ -68,6 +69,20 @@ The Azure MCP Server can run in multiple modes. Review your MCP configuration to
 - `azmcp server start --namespace <service-name>` - Launches an MCP server with tools for the specified service (e.g., `storage`, `keyvault`)
 - `azmcp server start --mode single` - Launches an MCP server with a single `azure` tool that performs internal dynamic proxy and tool selection
 - `azmcp server start --mode namespace` - Launches an MCP server with a tool registered for each Azure service/namespace.
+
+### VS Code Permission Dialog for Language Model Calls
+
+When using the Azure MCP Server in VS Code, you may see a permission dialog requesting authorization for the MCP server to make language model calls:
+
+![VS Code MCP Permission Dialog](https://github.com/user-attachments/assets/8fddb369-046b-46d1-84c2-b1dd4a1b4e6a)
+
+The dialog shows: "The MCP server 'Azure' has issued a request to make an language model call. Do you want to allow it to make requests during chat?"
+
+**To continue using the Azure MCP Server, you must click one of the following:**
+- **"Allow in this Session"** - Allows the server to make language model calls for the current VS Code session
+- **"Always"** - Permanently allows the server to make language model calls
+
+This permission is required because some Azure MCP tools may need to make additional language model calls to process complex requests or provide enhanced responses.
 
 ## Tool Limitations
 
@@ -421,6 +436,62 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 1. Choose the option that best fits your scenario
 2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
+
+### Platform Package Installation Issues
+
+The Azure MCP wrapper automatically installs the correct platform-specific package when needed. However, if you encounter persistent errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this may indicate network connectivity issues or permission problems.
+
+#### Error Examples:
+- `Failed to load platform specific package '@azure/mcp-linux-x64'`
+- `Cannot find module '@azure/mcp-linux-x64'`
+- `'@azure/mcp-linux-x64' module is missing`
+
+#### Resolution Steps:
+
+**First, ensure you have the latest VS Code version** (v1.101 or later), as older versions may cause compatibility issues with the Azure MCP Server on Ubuntu systems.
+
+**The wrapper will attempt automatic installation first.** If auto-installation fails, try these manual steps:
+
+1. **Clear npm cache and reinstall:**
+   ```bash
+   npm cache clean --force
+   npm uninstall -g @azure/mcp
+   npm install -g @azure/mcp@latest
+   ```
+
+2. **If using npx, clear the cache:**
+   ```bash
+   npx clear-npx-cache
+   npx -y @azure/mcp@latest server start
+   ```
+
+3. **Manually install the platform package:**
+   ```bash
+   npm install @azure/mcp-linux-x64@latest  # Linux x64
+   npm install @azure/mcp-darwin-x64@latest # macOS x64
+   npm install @azure/mcp-win32-x64@latest  # Windows x64
+   ```
+
+4. **Check your internet connection and try again**
+
+5. **Verify Node.js and npm versions:**
+   ```bash
+   node --version  # Should be 20.0.0 or later
+   npm --version
+   ```
+
+#### Common Causes of Auto-Installation Failure:
+- **Network connectivity issues** during package installation
+- **Permission problems** preventing npm from installing packages
+- **Corporate firewall/proxy** blocking npm registry access  
+- **Disk space issues** preventing package extraction
+- **npm cache corruption** preventing proper package resolution
+
+#### For Enterprise Users:
+If you're behind a corporate firewall, you may need to:
+- Configure npm proxy settings
+- Whitelist npm registry domains (`*.npmjs.org`, `registry.npmjs.org`)
+- Work with IT to ensure npm can download packages
 
 ## Logging and Diagnostics
 
