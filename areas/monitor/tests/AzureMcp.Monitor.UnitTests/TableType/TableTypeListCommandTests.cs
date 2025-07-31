@@ -60,10 +60,10 @@ public sealed class TableTypeListCommandTests
                 "SystemEvents"
             };
             _monitorService.ListTableTypes(
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(testTableTypes);
         }
@@ -96,10 +96,10 @@ public sealed class TableTypeListCommandTests
             "ApplicationEvents"
         };
         _monitorService.ListTableTypes(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTableTypes);
 
@@ -118,10 +118,10 @@ public sealed class TableTypeListCommandTests
 
         // Verify the mock was called
         await _monitorService.Received(1).ListTableTypes(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
 
         var json = JsonSerializer.Serialize(response.Results);
@@ -141,10 +141,10 @@ public sealed class TableTypeListCommandTests
         // Arrange
         var expectedTableTypes = new List<string> { "CustomLog", "AzureMetrics" };
         _monitorService.ListTableTypes(
-            _knownSubscription, 
-            _knownResourceGroup, 
-            _knownWorkspace, 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceGroup,
+            _knownWorkspace,
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTableTypes);
 
@@ -160,10 +160,10 @@ public sealed class TableTypeListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).ListTableTypes(
-            _knownSubscription, 
-            _knownResourceGroup, 
-            _knownWorkspace, 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceGroup,
+            _knownWorkspace,
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -172,10 +172,10 @@ public sealed class TableTypeListCommandTests
     {
         // Arrange
         _monitorService.ListTableTypes(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(new List<string>());
 
@@ -198,10 +198,10 @@ public sealed class TableTypeListCommandTests
     {
         // Arrange
         _monitorService.ListTableTypes(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<string>>(new Exception("Test error")));
 

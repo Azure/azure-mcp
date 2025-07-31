@@ -65,13 +65,13 @@ public sealed class WorkspaceLogQueryCommandTests
                 JsonNode.Parse(@"{""TimeGenerated"": ""2023-01-01T12:01:00Z"", ""Message"": ""Another log entry""}") ?? JsonNode.Parse("{}") ?? new JsonObject()
             };
             _monitorService.QueryWorkspaceLogs(
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<int?>(), 
-                Arg.Any<int?>(), 
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<int?>(),
+                Arg.Any<int?>(),
+                Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(mockResults);
         }
@@ -103,13 +103,13 @@ public sealed class WorkspaceLogQueryCommandTests
             JsonNode.Parse(@"{""TimeGenerated"": ""2023-01-01T12:02:00Z"", ""Message"": ""Error occurred"", ""Level"": ""Error""}") ?? new JsonObject()
         };
         _monitorService.QueryWorkspaceLogs(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(mockResults);
 
@@ -130,13 +130,13 @@ public sealed class WorkspaceLogQueryCommandTests
 
         // Verify the mock was called
         await _monitorService.Received(1).QueryWorkspaceLogs(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -228,13 +228,13 @@ public sealed class WorkspaceLogQueryCommandTests
     {
         // Arrange
         _monitorService.QueryWorkspaceLogs(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<JsonNode>>(new Exception("Test error")));
 

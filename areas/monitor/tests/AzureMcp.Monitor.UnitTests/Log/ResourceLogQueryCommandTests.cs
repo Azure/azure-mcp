@@ -64,13 +64,13 @@ public sealed class ResourceLogQueryCommandTests
                 JsonNode.Parse(@"{""TimeGenerated"": ""2023-01-01T12:01:00Z"", ""Message"": ""Another resource log entry""}") ?? JsonNode.Parse("{}") ?? new JsonObject()
             };
             _monitorService.QueryResourceLogs(
-                _knownSubscription, 
-                _knownResourceId, 
-                _knownQuery, 
-                _knownTableName, 
-                Arg.Any<int?>(), 
-                Arg.Any<int?>(), 
-                Arg.Any<string>(), 
+                _knownSubscription,
+                _knownResourceId,
+                _knownQuery,
+                _knownTableName,
+                Arg.Any<int?>(),
+                Arg.Any<int?>(),
+                Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(mockResults);
         }
@@ -102,13 +102,13 @@ public sealed class ResourceLogQueryCommandTests
             JsonNode.Parse($@"{{""TimeGenerated"": ""2023-01-01T12:02:00Z"", ""ResourceId"": ""{_knownResourceId}"", ""Level"": ""Error""}}") ?? new JsonObject()
         };
         _monitorService.QueryResourceLogs(
-            _knownSubscription, 
-            _knownResourceId, 
-            _knownQuery, 
-            _knownTableName, 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceId,
+            _knownQuery,
+            _knownTableName,
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(mockResults);
 
@@ -128,13 +128,13 @@ public sealed class ResourceLogQueryCommandTests
 
         // Verify the mock was called
         await _monitorService.Received(1).QueryResourceLogs(
-            _knownSubscription, 
-            _knownResourceId, 
-            _knownQuery, 
-            _knownTableName, 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceId,
+            _knownQuery,
+            _knownTableName,
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -224,13 +224,13 @@ public sealed class ResourceLogQueryCommandTests
     {
         // Arrange
         _monitorService.QueryResourceLogs(
-            _knownSubscription, 
-            _knownResourceId, 
-            _knownQuery, 
-            _knownTableName, 
-            Arg.Any<int?>(), 
-            Arg.Any<int?>(), 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceId,
+            _knownQuery,
+            _knownTableName,
+            Arg.Any<int?>(),
+            Arg.Any<int?>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<JsonNode>>(new Exception("Test error")));
 
