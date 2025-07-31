@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 $testSettings = New-TestSettings @PSBoundParameters -OutputPath $PSScriptRoot
 
 # Write a blob to storage
-$context = New-AzStorageContext -StorageAccountName $testSettings.ResourceBaseName -UseConnectedAccount
+$context = New-AzStorageContext -StorageAccountName $testSettings.ResourceBaseName -UseConnectedAccount -EnableFileBackupRequestIntent
 
 Write-Host "Uploading README.md to blob storage: $BaseName/bar" -ForegroundColor Yellow
 Set-AzStorageBlobContent `
@@ -27,8 +27,6 @@ Set-AzStorageBlobContent `
 | Out-Null
 
 # Write a file to file share
-$context = New-AzStorageContext -StorageAccountName $testSettings.ResourceBaseName -UseConnectedAccount -EnableFileBackupRequestIntent
-
 # Upload README.md to file share
 Write-Host "Uploading README.md to file share: testshare" -ForegroundColor Yellow
 Set-AzStorageFileContent `
