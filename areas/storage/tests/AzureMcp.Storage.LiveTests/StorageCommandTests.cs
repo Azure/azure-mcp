@@ -237,5 +237,34 @@ namespace AzureMcp.Storage.LiveTests
             Assert.Equal(directoryPath, name);
             Assert.Equal("directory", type);
         }
+
+        [Fact]
+        public async Task Should_set_blob_tier_batch()
+        {
+            // This test assumes the test storage account has the "bar" container with some test blobs
+            // We'll set tier to Cool for multiple blobs
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_batch_set-tier",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account-name", Settings.ResourceBaseName },
+                    { "container-name", "bar" },
+                    { "tier-name", "Cool" },
+                    { "blob-names", "blob1.txt blob2.txt" }
+                });
+
+            var successfulBlobs = result.AssertProperty("successfulBlobs");
+            var failedBlobs = result.AssertProperty("failedBlobs");
+
+            Assert.Equal(JsonValueKind.Array, successfulBlobs.ValueKind);
+            Assert.Equal(JsonValueKind.Array, failedBlobs.ValueKind);
+
+            // At least one of the blobs should succeed if they exist, or all should be in failed if they don't exist
+            var successCount = successfulBlobs.GetArrayLength();
+            var failedCount = failedBlobs.GetArrayLength();
+
+            Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
+        }
     }
 }

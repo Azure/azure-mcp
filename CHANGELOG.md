@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for batch setting access tier for multiple Azure Storage blobs via the `azmcp-storage-blob-batch-set-tier` command. This command efficiently changes the storage tier (Hot, Cool, Archive, etc) for multiple blobs simultaneously in a single operation. [[#735](https://github.com/Azure/azure-mcp/issues/735)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
