@@ -271,7 +271,7 @@ namespace AzureMcp.Storage.LiveTests
         public async Task Should_list_files_in_share_directory()
         {
             var result = await CallToolAsync(
-                "azmcp_storage_files_shares_files_list",
+                "azmcp_storage_share_file_list",
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
@@ -289,7 +289,7 @@ namespace AzureMcp.Storage.LiveTests
         public async Task Should_list_files_in_share_directory_with_prefix()
         {
             var result = await CallToolAsync(
-                "azmcp_storage_files_shares_files_list",
+                "azmcp_storage_share_file_list",
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
