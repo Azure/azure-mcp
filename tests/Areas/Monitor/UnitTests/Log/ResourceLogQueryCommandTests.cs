@@ -26,7 +26,7 @@ public sealed class ResourceLogQueryCommandTests
     private readonly Parser _parser;
 
     private const string _knownSubscription = "knownSubscription";
-    private const string _knownResourceId = $"/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/storage1";
+    private const string _knownResourceId = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/storage1";
     private const string _knownTableName = "StorageEvents";
     private const string _knownQuery = "| limit 10";
     private const string _knownTenant = "knownTenant";
@@ -155,13 +155,13 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscription,
-            $"--resource-id", $"{_knownResourceId}",
-            $"--table-name", _knownTableName,
-            $"--query", $"{_knownQuery}",
-            $"--hours", _knownHours.ToString(),
-            $"--limit", _knownLimit.ToString(),
-            $"--tenant", _knownTenant
+            "--subscription", _knownSubscription,
+            "--resource-id", _knownResourceId,
+            "--table-name", _knownTableName,
+            "--query", _knownQuery,
+            "--hours", _knownHours,
+            "--limit", _knownLimit,
+            "--tenant", _knownTenant
         ]);
 
         // Act
@@ -197,10 +197,10 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscription,
-            $"--resource-id", $"{_knownResourceId}",
-            $"--table-name", _knownTableName,
-            $"--query", $"{_knownQuery}"
+            "--subscription", _knownSubscription,
+            "--resource-id", _knownResourceId,
+            "--table-name", _knownTableName,
+            "--query", _knownQuery
         ]);
 
         // Act
@@ -235,10 +235,10 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(Task.FromException<List<JsonNode>>(new Exception("Test error")));
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscription,
-            $"--resource-id", $"{_knownResourceId}",
-            $"--table-name", _knownTableName,
-            $"--query", $"{_knownQuery}"
+            "--subscription", _knownSubscription,
+            "--resource-id", _knownResourceId,
+            "--table-name", _knownTableName,
+            "--query", _knownQuery
         ]);
 
         // Act
@@ -270,10 +270,10 @@ public sealed class ResourceLogQueryCommandTests
             .Returns(mockResults);
 
         var args = _parser.Parse([
-            $"--subscription", _knownSubscription,
-            $"--resource-id", $"{complexResourceId}",
-            $"--table-name", table,
-            $"--query", $"{query}"
+            "--subscription", _knownSubscription,
+            "--resource-id", complexResourceId,
+            "--table-name", table,
+            "--query", query
         ]);
 
         // Act
