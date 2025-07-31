@@ -52,6 +52,7 @@ public class QueueMessageSendCommandTests
     [InlineData("--account-name testaccount --queue-name testqueue --subscription sub123", false)] // Missing message content
     [InlineData("--account-name testaccount --message-content \"test message\" --subscription sub123", false)] // Missing queue name
     [InlineData("--queue-name testqueue --message-content \"test message\" --subscription sub123", false)] // Missing account name
+    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\"", false)] // Missing subscription
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange

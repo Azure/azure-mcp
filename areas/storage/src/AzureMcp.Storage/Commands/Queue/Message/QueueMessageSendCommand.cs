@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace AzureMcp.Storage.Commands.Queue.Message;
 
 public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> logger)
-    : BaseStorageCommand<QueueMessageSendOptions>
+    : BaseQueueCommand<QueueMessageSendOptions>
 {
     private const string CommandTitle = "Send message to Azure Storage queue";
     private readonly ILogger<QueueMessageSendCommand> _logger = logger;

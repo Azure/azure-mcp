@@ -499,9 +499,6 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
             var queueClient = queueServiceClient.GetQueueClient(queueName);
 
-            // Ensure queue exists
-            await queueClient.CreateIfNotExistsAsync();
-
             // Send message with optional parameters
             TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
             TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null; 
