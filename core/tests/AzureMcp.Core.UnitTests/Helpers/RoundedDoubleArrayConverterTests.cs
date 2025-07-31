@@ -3,11 +3,10 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureMcp.Monitor.Models;
-using AzureMcp.Tests;
+using AzureMcp.Core.Helpers;
 using Xunit;
 
-namespace AzureMcp.Monitor.UnitTests.Models;
+namespace AzureMcp.Core.UnitTests.Helpers;
 
 public class RoundedDoubleArrayConverterTests
 {

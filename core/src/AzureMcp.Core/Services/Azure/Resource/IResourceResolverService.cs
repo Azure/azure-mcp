@@ -4,7 +4,7 @@
 using Azure.Core;
 using AzureMcp.Core.Options;
 
-namespace AzureMcp.Monitor.Services;
+namespace AzureMcp.Core.Services.Azure.Resource;
 
 /// <summary>
 /// Service interface for resolving Azure resource identifiers

@@ -8,14 +8,13 @@ using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Core.Options;
+using AzureMcp.Core.Services.Azure.Resource;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
-using AzureMcp.Monitor.Services;
-using AzureMcp.Tests;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Monitor.UnitTests.Metrics;
+namespace AzureMcp.Core.UnitTests.Services.Azure;
 
 public class ResourceResolverServiceTests
 {

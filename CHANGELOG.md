@@ -68,6 +68,8 @@
 
 - Fixes tool discovery race condition causing "tool not found" errors in MCP clients that use different processes to start and use the server, like LangGraph. [[#556](https://github.com/Azure/azure-mcp/issues/556)]
 
+- Added support for JSON tool parameters
+
 ## 0.4.1 (2025-07-17)
 
 ### Features Added

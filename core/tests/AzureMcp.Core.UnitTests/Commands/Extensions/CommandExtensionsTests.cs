@@ -319,4 +319,260 @@ public class CommandExtensionsTests
         Assert.Empty(result.Errors);
         Assert.Equal("echo \"User's home: '$HOME'\" && echo 'Path: \"$PATH\"'", result.GetValueForOption(scriptOption));
     }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingMixedStringAndNumeric_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--mixed-items", "Mixed items option");
+        command.AddOption(option);
+
+        var mixedArray = new object[] { "item1", 42, "item2", 3.14, "item3" };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["mixed-items"] = JsonSerializer.SerializeToElement(mixedArray)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"item1\",42,\"item2\",3.14,\"item3\"]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingBooleans_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--bool-items", "Boolean items option");
+        command.AddOption(option);
+
+        var boolArray = new object[] { true, false, "string", true };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["bool-items"] = JsonSerializer.SerializeToElement(boolArray)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[true,false,\"string\",true]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingObjects_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--object-items", "Object items option");
+        command.AddOption(option);
+
+        var objectArray = new object[] 
+        { 
+            "string-item",
+            new { name = "test", value = 123 },
+            "another-string"
+        };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["object-items"] = JsonSerializer.SerializeToElement(objectArray)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"string-item\",{\"name\":\"test\",\"value\":123},\"another-string\"]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingNestedArrays_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--nested-arrays", "Nested arrays option");
+        command.AddOption(option);
+
+        var nestedArrays = new object[] 
+        { 
+            "item1",
+            new[] { "nested1", "nested2" },
+            "item2"
+        };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["nested-arrays"] = JsonSerializer.SerializeToElement(nestedArrays)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"item1\",[\"nested1\",\"nested2\"],\"item2\"]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingMixedComplexTypes_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--complex-items", "Complex items option");
+        command.AddOption(option);
+
+        var complexArray = new object[] 
+        { 
+            "string",
+            42,
+            true,
+            new { key = "value", number = 123 },
+            new[] { "a", "b" },
+            false
+        };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["complex-items"] = JsonSerializer.SerializeToElement(complexArray)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"string\",42,true,{\"key\":\"value\",\"number\":123},[\"a\",\"b\"],false]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingNulls_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--null-items", "Null items option");
+        command.AddOption(option);
+
+        var arrayWithNulls = new object?[] { "item1", null, "item2", null };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["null-items"] = JsonSerializer.SerializeToElement(arrayWithNulls)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"item1\",null,\"item2\",null]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingEmptyObjectsAndArrays_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--empty-items", "Empty items option");
+        command.AddOption(option);
+
+        var emptyStructures = new object[] 
+        { 
+            "item",
+            new { },  // empty object
+            new object[] { },  // empty array
+            "final"
+        };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["empty-items"] = JsonSerializer.SerializeToElement(emptyStructures)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.Equal("'[\"item\",{},[],\"final\"]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithArrayContainingComplexNestedStructures_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--complex-nested", "Complex nested option");
+        command.AddOption(option);
+
+        var complexNested = new object[] 
+        { 
+            "start",
+            new 
+            { 
+                array = new[] { 1, 2, 3 },
+                nested = new { inner = "value" }
+            },
+            new object[] { "a", new { x = 1 }, "b" }
+        };
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["complex-nested"] = JsonSerializer.SerializeToElement(complexNested)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.NotNull(value);
+        Assert.Equal("'[\"start\",{\"array\":[1,2,3],\"nested\":{\"inner\":\"value\"}},[\"a\",{\"x\":1},\"b\"]]'", value);
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithObjectContainingComplexNestedStructures_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string>("--complex-nested", "Complex nested option");
+        command.AddOption(option);
+
+        var complexNested = new
+        {
+            array = new[] { 1, 2, 3 },
+            nested = new { inner = "value" }
+        };
+
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["complex-nested"] = JsonSerializer.SerializeToElement(complexNested)
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var value = result.GetValueForOption(option);
+        Assert.NotNull(value);
+        Assert.Equal("'{\"array\":[1,2,3],\"nested\":{\"inner\":\"value\"}}'", value);
+    }
 }
