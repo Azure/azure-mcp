@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Areas.Marketplace.Services;
-using AzureMcp.Services.Azure.Tenant;
-using AzureMcp.Services.Caching;
+using AzureMcp.Marketplace.Services;
+using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Core.Services.Caching;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Microsoft.Extensions.Caching.Memory;
@@ -105,7 +105,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "subscription", _subscriptionId },
@@ -123,7 +123,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "product-id", ProductId }
@@ -141,7 +141,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
         {
             await CallToolAsync(
-                "azmcp-marketplace-product-get",
+                "azmcp_marketplace_product_get",
                 new()
                 {
                     { "subscription", _subscriptionId }
