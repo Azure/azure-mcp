@@ -12,7 +12,7 @@ jobs:
   dependsOn: ${{ parameters.DependsOn }}
   variables:
     VsixTarget: ${{ parameters.VsixTarget }}
-    VsixServerPath: $(Pipeline.Workspace)/eng/vscode/server
+    VsixServerPath: $(Pipeline.Workspace)/eng/vscode
   condition: and(succeeded(), ne(variables['NoPackagesChanged'], 'true'))
   steps:
   - checkout: self
@@ -24,7 +24,7 @@ jobs:
 
   - powershell: |
       $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/$(VsixTarget)/dist/*"
-      $dest = "$(VsixServerPath)"
+      $dest = "$(VsixServerPath)/server"
       New-Item -ItemType Directory -Force -Path $dest
       Copy-Item -Path $src -Destination $dest -Recurse -Force
     displayName: "Copy signed MCP server binaries to VSIX ${{ parameters.VsixTarget }}"
