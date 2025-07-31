@@ -25,6 +25,12 @@ public class LiveTestFixture : LiveTestSettingsFixture
     {
         await base.InitializeAsync();
 
+        // Skip initialization if settings are not available
+        if (!IsSettingsAvailable)
+        {
+            return;
+        }
+
         string testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         string executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath, "azmcp.exe") : Path.Combine(testAssemblyPath, "azmcp");
 
