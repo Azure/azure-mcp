@@ -4,7 +4,6 @@
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
 using AzureMcp.Core.Areas.Server.Options;
 using AzureMcp.Core.Commands;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server.Commands.Discovery;

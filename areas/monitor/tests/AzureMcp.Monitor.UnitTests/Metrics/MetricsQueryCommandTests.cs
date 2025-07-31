@@ -98,7 +98,6 @@ public class MetricsQueryCommandTests
         var options = command.Options.Select(o => o.Name).ToList();
 
         // Base options from BaseMetricsCommand
-        Assert.Contains("subscription", options);
         Assert.Contains("resource-group", options);
         Assert.Contains("resource-type", options);
         Assert.Contains("resource-name", options);
@@ -115,7 +114,6 @@ public class MetricsQueryCommandTests
 
         // Verify required options are marked as required
         var requiredOptions = command.Options.Where(o => o.IsRequired).Select(o => o.Name).ToList();
-        Assert.Contains("subscription", requiredOptions);
         Assert.Contains("resource-name", requiredOptions);
         Assert.Contains("metric-names", requiredOptions);
     }

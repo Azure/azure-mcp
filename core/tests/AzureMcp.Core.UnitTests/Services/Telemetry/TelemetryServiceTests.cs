@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Configuration;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Tests;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using NSubstitute;

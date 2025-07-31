@@ -26,10 +26,11 @@ public static partial class OptionDefinitions
 
         public static readonly Option<string> Subscription = new(
             $"--{SubscriptionName}",
-            "The Azure subscription ID or name. This can be either the GUID identifier or the display name of the Azure subscription to use."
+    "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. " +
+    "If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead."
         )
         {
-            IsRequired = true
+            IsRequired = false
         };
 
         public static readonly Option<AuthMethod> AuthMethod = new(
@@ -219,7 +220,6 @@ public static partial class OptionDefinitions
         public const string PlanIdName = "plan-id";
         public const string SkuIdName = "sku-id";
         public const string IncludeServiceInstructionTemplatesName = "include-service-instruction-templates";
-        public const string PartnerTenantIdName = "partner-tenant-id";
         public const string PricingAudienceName = "pricing-audience";
 
         public static readonly Option<string> ProductId = new(
@@ -286,14 +286,6 @@ public static partial class OptionDefinitions
             $"--{IncludeServiceInstructionTemplatesName}",
             () => false,
             "Include service instruction templates in the response."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<string> PartnerTenantId = new(
-            $"--{PartnerTenantIdName}",
-            "Partner tenant ID for the request header."
         )
         {
             IsRequired = false

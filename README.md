@@ -58,9 +58,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🗄️ Azure SQL Database
 
 * "Show me details about my Azure SQL database 'mydb'"
-* "List Active Directory administrators for my SQL server 'myserver'"
-* "List all firewall rules for my SQL server 'myserver'"
-* "List all elastic pools in my SQL server 'myserver'"
+* "List all databases in my Azure SQL server 'myserver'"
+* "List Active Directory administrators for my Azure SQL server 'myserver'"
+* "List all firewall rules for my Azure SQL server 'myserver'"
+* "List all elastic pools in my Azure SQL server 'myserver'"
 
 ### 🔧 Azure Resource Management
 
@@ -144,8 +145,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🔑 Azure Key Vault
 
-* List, create, and get keys
-* Get secrets
+* List and create certificates
+* List and create keys
+* List and create secrets
 
 ### ☸️ Azure Kubernetes Service (AKS)
 
@@ -208,6 +210,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🗄️ Azure SQL Database
 
 * Show database details and properties
+* List the details and properties of all databases
 * List SQL server firewall rules
 * List elastic pools and their configurations
 

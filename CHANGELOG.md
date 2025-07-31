@@ -1,18 +1,36 @@
-# CHANGELOG 📝
+# Release History
 
-The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
-
-## 0.5.1 (Unreleased)
+## 0.5.2 (Unreleased)
 
 ### Features Added
 
+- Added support for batch setting access tier for multiple Azure Storage blobs via the `azmcp-storage-blob-batch-set-tier` command. This command efficiently changes the storage tier (Hot, Cool, Archive, etc) for multiple blobs simultaneously in a single operation. [[#735](https://github.com/Azure/azure-mcp/issues/735)]
+
 ### Breaking Changes
+
+- Removed `--partner-tenant-id` option from `azmcp-marketplace-product-get` command. [[#656](https://github.com/Azure/azure-mcp/pull/656)]
 
 ### Bugs Fixed
 
 ### Other Changes
 
-- Major repository structure change.
+## 0.5.1 (2025-07-29)
+
+### Features Added
+
+- Added support for listing SQL databases via the command: `azmcp-sql-db-list`. [[#746](https://github.com/Azure/azure-mcp/pull/746)]
+- Added support for reading `AZURE_SUBSCRIPTION_ID` from the environment variables if a subscription is not provided. [[#533](https://github.com/Azure/azure-mcp/pull/533)]
+
+### Breaking Changes
+
+- Removed the following Key Vault operations: [[#768](https://github.com/Azure/azure-mcp/pull/768)]
+  - `azmcp-keyvault-secret-get`
+  - `azmcp-keyvault-key-get`
+
+### Other Changes
+
+- Broadened search for MAC address for telemetry purposes. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
+- Major repository structure change:
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
 

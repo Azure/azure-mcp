@@ -9,7 +9,7 @@ The following options are available for all commands:
 
 | Option | Required | Default | Description |
 |-----------|----------|---------|-------------|
-| `--subscription` | Yes | - | Azure subscription ID for target resources |
+| `--subscription` | No | Environment variable `AZURE_SUBSCRIPTION_ID` | Azure subscription ID for target resources |
 | `--tenant-id` | No | - | Azure tenant ID for authentication |
 | `--auth-method` | No | 'credential' | Authentication method ('credential', 'key', 'connectionString') |
 | `--retry-max-retries` | No | 3 | Maximum retry attempts for failed operations |
@@ -388,11 +388,6 @@ azmcp keyvault key create --subscription <subscription> \
                           --key <key-name> \
                           --key-type <key-type>
 
-# Gets a key in a key vault
-azmcp keyvault key get --subscription <subscription> \
-                       --vault <vault-name> \
-                       --key <key-name>
-
 # Lists keys in a key vault
 azmcp keyvault key list --subscription <subscription> \
                         --vault <vault-name> \
@@ -403,11 +398,6 @@ azmcp keyvault secret create --subscription <subscription> \
                              --vault <vault-name> \
                              --name <secret-name> \
                              --value <secret-value>
-
-# Gets a secret in a key vault
-azmcp keyvault secret get --subscription <subscription> \
-                          --vault <vault-name> \
-                          --name <secret-name>
 
 # Lists secrets in a key vault
 azmcp keyvault secret list --subscription <subscription> \
@@ -508,7 +498,6 @@ azmcp marketplace product get --subscription <subscription> \
                               [--plan-id <plan-id>] \
                               [--sku-id <sku-id>] \
                               [--include-service-instruction-templates <true/false>] \
-                              [--partner-tenant-id <partner-tenant-id>] \
                               [--pricing-audience <pricing-audience>]
 ```
 
@@ -691,12 +680,6 @@ azmcp group list --subscription <subscription>
 ### Azure Service Bus Operations
 
 ```bash
-# Peeks at messages in a Service Bus queue
-azmcp servicebus queue peek --subscription <subscription> \
-                            --namespace <service-bus-namespace> \
-                            --queue-name <queue-name> \
-                            [--max-messages <int>]
-
 # Returns runtime and details about the Service Bus queue
 azmcp servicebus queue details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -706,13 +689,6 @@ azmcp servicebus queue details --subscription <subscription> \
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
                                --topic-name <topic-name>
-
-# Peeks at messages in a Service Bus subscription within a topic.
-azmcp servicebus topic subscription peek --subscription <subscription> \
-                                         --namespace <service-bus-namespace> \
-                                         --topic-name <topic-name> \
-                                         --subscription-name <subscription-name> \
-                                         [--max-messages <int>]
 
 # Gets runtime details and message counts for a Service Bus subscription
 azmcp servicebus topic subscription details --subscription <subscription> \
@@ -724,6 +700,11 @@ azmcp servicebus topic subscription details --subscription <subscription> \
 ### Azure SQL Database Operations
 
 ```bash
+# Gets a list of all databases in a SQL server
+azmcp sql db list --subscription <subscription> \
+                  --resource-group <resource-group> \
+                  --server <server-name>
+
 # Show details of a specific SQL database
 azmcp sql db show --subscription <subscription> \
                   --resource-group <resource-group> \
@@ -777,6 +758,13 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob container details --subscription <subscription> \
                                      --account-name <account-name> \
                                      --container-name <container-name>
+
+# Set access tier for multiple blobs in a batch operation
+azmcp storage blob batch set-tier --subscription <subscription> \
+                                  --account-name <account-name> \
+                                  --container-name <container-name> \
+                                  --tier-name <tier-name> \
+                                  --blob-names <blob-name1> <blob-name2> ...
 
 # List paths in a Data Lake file system
 azmcp storage datalake file-system list-paths --subscription <subscription> \
