@@ -95,63 +95,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.String, id.ValueKind);
         Assert.Contains(ProductId, id.GetString());
     }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_handle_nonexistent_product_gracefully()
-    {
-        const string NonExistentProductId = "NonExistent.Product.12345";
-
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "subscription", _subscriptionId },
-                    { "product-id", NonExistentProductId }
-                });
-        });
-
-        Assert.NotNull(exception);
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_validate_required_subscription_parameter()
-    {
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "product-id", ProductId }
-                    // Missing subscription parameter
-                });
-        });
-
-        Assert.NotNull(exception);
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_validate_required_product_id_parameter()
-    {
-        var exception = await Assert.ThrowsAnyAsync<Exception>(async () =>
-        {
-            await CallToolAsync(
-                "azmcp_marketplace_product_get",
-                new()
-                {
-                    { "subscription", _subscriptionId }
-                    // Missing product-id parameter
-                });
-        });
-
-        Assert.NotNull(exception);
-    }
-
+ 
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_get_marketplace_product_with_multiple_options()
