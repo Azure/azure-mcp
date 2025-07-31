@@ -10,6 +10,4 @@ namespace AzureMcp.Areas.AppService.Commands;
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(DatabaseAddCommandResult))]
 [JsonSerializable(typeof(DatabaseConnectionInfo))]
-public partial class AppServiceJsonContext : JsonSerializerContext
-{
-}
+public partial class AppServiceJsonContext : JsonSerializerContext;
