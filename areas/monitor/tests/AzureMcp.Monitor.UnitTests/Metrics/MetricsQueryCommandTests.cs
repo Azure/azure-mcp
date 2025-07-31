@@ -9,7 +9,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Monitor.Commands.Metrics;
 using AzureMcp.Monitor.Models;
 using AzureMcp.Monitor.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

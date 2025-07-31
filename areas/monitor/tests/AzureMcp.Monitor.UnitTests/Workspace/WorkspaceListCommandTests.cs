@@ -4,18 +4,18 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using AzureMcp.Areas.Monitor.Commands.Workspace;
-using AzureMcp.Areas.Monitor.Models;
-using AzureMcp.Areas.Monitor.Services;
-using AzureMcp.Commands.Monitor;
-using AzureMcp.Models.Command;
-using AzureMcp.Options;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
+using AzureMcp.Monitor.Commands;
+using AzureMcp.Monitor.Commands.Workspace;
+using AzureMcp.Monitor.Models;
+using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Tests.Areas.Monitor.UnitTests.Workspace;
+namespace AzureMcp.Monitor.UnitTests.Workspace;
 
 [Trait("Area", "Monitor")]
 public sealed class WorkspaceListCommandTests
