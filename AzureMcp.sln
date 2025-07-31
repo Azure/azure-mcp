@@ -283,6 +283,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.Core.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.Tests", "core\tests\AzureMcp.Tests\AzureMcp.Tests.csproj", "{527FE0F6-40AE-4E71-A483-0F0A2368F2A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AppConfig.UnitTests", "areas\appconfig\tests\AzureMcp.AppConfig.UnitTests\AzureMcp.AppConfig.UnitTests.csproj", "{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1097,6 +1099,18 @@ Global
 		{527FE0F6-40AE-4E71-A483-0F0A2368F2A7}.Release|x64.Build.0 = Release|Any CPU
 		{527FE0F6-40AE-4E71-A483-0F0A2368F2A7}.Release|x86.ActiveCfg = Release|Any CPU
 		{527FE0F6-40AE-4E71-A483-0F0A2368F2A7}.Release|x86.Build.0 = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|x64.Build.0 = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|x64.ActiveCfg = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|x64.Build.0 = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1240,5 +1254,6 @@ Global
 		{2A3CD1B4-38A3-46A1-AEDC-2C2AC47CB8F1} = {8783C0BC-EE27-8E0C-7452-5882FB8E96CA}
 		{1AE3FC50-8E8C-4637-AAB1-A871D5FB4535} = {8783C0BC-EE27-8E0C-7452-5882FB8E96CA}
 		{527FE0F6-40AE-4E71-A483-0F0A2368F2A7} = {8783C0BC-EE27-8E0C-7452-5882FB8E96CA}
+		{A3ADC1CC-6020-7233-DCFA-106CA917B0CD} = {7ECA6DB2-F8EF-407B-F2FD-DEF81B86CC73}
 	EndGlobalSection
 EndGlobal

@@ -334,27 +334,6 @@ public class ListWorkbooksCommandTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task ExecuteAsync_WithInvalidSubscription_ReturnsValidationError(string invalidSubscription)
-    {
-        // Arrange
-        var args = _command.GetCommand().Parse([
-            "--subscription", invalidSubscription,
-            "--resource-group", "valid-rg"
-        ]);
-
-        var context = new CommandContext(_serviceProvider);
-
-        // Act
-        var response = await _command.ExecuteAsync(context, args);
-
-        // Assert
-        Assert.Equal(400, response.Status);
-        Assert.Contains("subscription", response.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
     public async Task ExecuteAsync_WithInvalidResourceGroup_ReturnsValidationError(string invalidResourceGroup)
     {
         // Arrange

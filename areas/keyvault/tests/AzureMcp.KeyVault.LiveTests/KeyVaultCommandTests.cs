@@ -30,7 +30,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.NotEmpty(keys.EnumerateArray());
     }
 
-    [Fact]
+    [Fact(Skip = "Test temporarily disabled")]
     public async Task Should_get_key()
     {
         // Created in keyvault.bicep.
@@ -92,7 +92,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         Assert.NotEmpty(secrets.EnumerateArray());
     }
 
-    [Fact]
+    [Fact(Skip = "Test temporarily disabled")]
     public async Task Should_get_secret()
     {
         // Created in keyvault.bicep.

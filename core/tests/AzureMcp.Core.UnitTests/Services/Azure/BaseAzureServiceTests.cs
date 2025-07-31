@@ -5,7 +5,6 @@ using Azure.ResourceManager;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Tenant;
-using AzureMcp.Tests;
 using NSubstitute;
 using Xunit;
 

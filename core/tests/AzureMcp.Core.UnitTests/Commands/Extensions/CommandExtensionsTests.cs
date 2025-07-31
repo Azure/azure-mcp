@@ -4,7 +4,6 @@
 using System.CommandLine;
 using System.Text.Json;
 using AzureMcp.Core.Commands;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Commands.Extensions;

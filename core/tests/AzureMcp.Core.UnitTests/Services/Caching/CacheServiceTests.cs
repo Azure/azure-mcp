@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Services.Caching;
-using AzureMcp.Tests;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 

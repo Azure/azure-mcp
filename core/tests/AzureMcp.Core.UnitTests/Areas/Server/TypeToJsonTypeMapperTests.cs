@@ -3,7 +3,6 @@
 
 using System.Collections;
 using AzureMcp.Core.Areas.Server.Commands;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server;
