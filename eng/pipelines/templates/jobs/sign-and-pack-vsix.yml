@@ -12,7 +12,7 @@ jobs:
   dependsOn: ${{ parameters.DependsOn }}
   variables:
     VsixTarget: ${{ parameters.VsixTarget }}
-    VsixServerPath: $(Pipeline.Workspace)/eng/vscode
+    VsixServerPath: $(System.DefaultWorkingDirectory)/eng/vscode
   condition: and(succeeded(), ne(variables['NoPackagesChanged'], 'true'))
   steps:
   - checkout: self
