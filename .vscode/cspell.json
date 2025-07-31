@@ -292,6 +292,7 @@
         "skillsets",
         "submode",
         "testaccount",
+        "testfilesystem",
         "testqueue",
         "test_test_pmc2pc1.vmsr_uat_beta",
         "testresource",
