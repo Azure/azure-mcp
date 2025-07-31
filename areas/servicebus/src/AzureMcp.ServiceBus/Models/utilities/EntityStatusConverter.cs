@@ -8,7 +8,7 @@ namespace AzureMcp.ServiceBus.Models.Utilities;
 
 public class EntityStatusConverter : JsonConverter<EntityStatus>
 {
-   public override EntityStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override EntityStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.String)
         {
