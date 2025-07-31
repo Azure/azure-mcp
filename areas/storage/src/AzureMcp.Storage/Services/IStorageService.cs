@@ -45,4 +45,13 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+    Task<QueueMessageSendResult> SendQueueMessage(
+        string accountName,
+        string queueName,
+        string messageContent,
+        int? timeToLiveInSeconds,
+        int? visibilityTimeoutInSeconds,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

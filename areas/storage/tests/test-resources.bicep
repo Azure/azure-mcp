@@ -45,6 +45,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource barTable 'tables' = { name: 'bar' }
     resource bazTable 'tables' = { name: 'baz' }
   }
+
+  resource queueServices 'queueServices' = {
+    name: 'default'
+    resource testQueue 'queues' = { 
+      name: 'testqueue'
+    }
+  }
 }
 
 resource blobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {

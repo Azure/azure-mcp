@@ -10,6 +10,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
+using Azure.Storage.Queues;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -472,6 +473,52 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error setting blob tier batch: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<QueueMessageSendResult> SendQueueMessage(
+        string accountName,
+        string queueName,
+        string messageContent,
+        int? timeToLiveInSeconds,
+        int? visibilityTimeoutInSeconds,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
+            
+            // Get storage account connection string using existing method
+            var connectionString = await GetStorageAccountConnectionString(accountName, subscriptionId, tenant);
+
+            // Create queue service client
+            var queueServiceClient = new QueueServiceClient(connectionString);
+            var queueClient = queueServiceClient.GetQueueClient(queueName);
+
+            // Ensure queue exists
+            await queueClient.CreateIfNotExistsAsync();
+
+            // Send message with optional parameters
+            TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
+            TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null; 
+
+            var response = await queueClient.SendMessageAsync(messageContent, visibilityTimeout, timeToLive);
+
+            return new QueueMessageSendResult
+            {
+                MessageId = response.Value.MessageId,
+                InsertionTime = response.Value.InsertionTime,
+                ExpirationTime = response.Value.ExpirationTime,
+                PopReceipt = response.Value.PopReceipt,
+                NextVisibleTime = response.Value.TimeNextVisible,
+                MessageContent = messageContent
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error sending queue message: {ex.Message}", ex);
         }
     }
 }
