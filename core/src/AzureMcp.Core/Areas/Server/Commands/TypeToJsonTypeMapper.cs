@@ -58,24 +58,32 @@ public static class TypeToJsonTypeMapper
             return "null";
         }
 
-        // Handle nullable types - for ToJsonType, we keep the original behavior returning "object"
-        // We only get the underlying type in CreateOptionSchema, not here
-        if (Nullable.GetUnderlyingType(type) != null)
-        {
-            return "object";
-        }
+        // Handle nullable types - treat them as the primitive they're based on
+        var effectiveType = Nullable.GetUnderlyingType(type) ?? type;
 
-        if (s_typeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
+        if (s_typeToJsonMap.TryGetValue(effectiveType, out string? jsonType) && jsonType != null)
         {
             return jsonType;
         }
 
         if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
-            return typeof(IDictionary).IsAssignableFrom(type) ? "object" : "array";
+            // Check for dictionary types in an AOT-safe way
+            var isDictionary = typeof(IDictionary).IsAssignableFrom(type);
+            
+            // Also check for common generic dictionary types
+            if (!isDictionary && type.IsGenericType)
+            {
+                var genericTypeDef = type.GetGenericTypeDefinition();
+                isDictionary = genericTypeDef == typeof(IDictionary<,>) ||
+                              genericTypeDef == typeof(Dictionary<,>) ||
+                              genericTypeDef == typeof(SortedDictionary<,>);
+            }
+            
+            return isDictionary ? "object" : "array";
         }
 
-        if (type.IsEnum)
+        if (effectiveType.IsEnum)
         {
             return "integer";
         }
@@ -88,7 +96,7 @@ public static class TypeToJsonTypeMapper
     /// </summary>
     /// <param name="type">The array or collection type to analyze.</param>
     /// <returns>The element type if the type is an array or collection, otherwise null.</returns>
-    public static Type? GetArrayElementType(Type type)
+    public static Type? GetArrayOrCollectionElementType(Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
 
@@ -99,19 +107,21 @@ public static class TypeToJsonTypeMapper
         }
 
         // Handle generic collections like List<T>, IEnumerable<T>, etc.
-        if (type.IsGenericType)
+        // Note: Dictionary types are handled as "object" in ToJsonType() so they won't reach this method
+        if (type.IsGenericType && !type.IsGenericTypeDefinition)
         {
             var genericArgs = type.GetGenericArguments();
+
             if (genericArgs.Length == 1)
             {
                 return genericArgs[0];
             }
         }
 
-        // Handle non-generic IEnumerable
+        // Handle non-generic IEnumerable or open generics
         if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
-            // Default to object for non-generic collections
+            // Default to object
             return typeof(object);
         }
 
@@ -129,9 +139,7 @@ public static class TypeToJsonTypeMapper
         ArgumentNullException.ThrowIfNull(optionType);
 
         // Handle nullable types - get the underlying type for schema generation
-        var underlyingType = Nullable.GetUnderlyingType(optionType);
-        var effectiveType = underlyingType ?? optionType;
-
+        var effectiveType = Nullable.GetUnderlyingType(optionType) ?? optionType;
         var jsonType = effectiveType.ToJsonType();
         var optionSchema = new JsonObject()
         {
@@ -139,19 +147,48 @@ public static class TypeToJsonTypeMapper
             ["description"] = description ?? string.Empty,
         };
 
-        // If the type is an array, we need to specify the items type
+        // If the type is an array, we need to specify the items type recursively
         if (jsonType == "array")
         {
-            var elementType = GetArrayElementType(effectiveType);
+            var elementType = GetArrayOrCollectionElementType(effectiveType);
+
             if (elementType != null)
             {
-                optionSchema["items"] = new JsonObject()
-                {
-                    ["type"] = elementType.ToJsonType()
-                };
+                // Recursively create schema for nested arrays
+                optionSchema["items"] = CreateItemsSchema(elementType);
             }
         }
 
         return optionSchema;
+    }
+
+    /// <summary>
+    /// Creates a JSON schema object for items in an array or collection, handling nested arrays recursively.
+    /// </summary>
+    /// <param name="itemType">The type of the items in the array or collection.</param>
+    /// <returns>A JsonObject representing the JSON schema for the array/collection items.</returns>
+    private static JsonObject CreateItemsSchema(Type itemType)
+    {
+        ArgumentNullException.ThrowIfNull(itemType);
+
+        // Handle nullable types for array items
+        var effectiveType = Nullable.GetUnderlyingType(itemType) ?? itemType;
+        var jsonType = effectiveType.ToJsonType();
+        var itemsSchema = new JsonObject()
+        {
+            ["type"] = jsonType
+        };
+
+        // If the item type is also an array, recursively define its items
+        if (jsonType == "array")
+        {
+            var nestedElementType = GetArrayOrCollectionElementType(effectiveType);
+            if (nestedElementType != null)
+            {
+                itemsSchema["items"] = CreateItemsSchema(nestedElementType);
+            }
+        }
+
+        return itemsSchema;
     }
 }
