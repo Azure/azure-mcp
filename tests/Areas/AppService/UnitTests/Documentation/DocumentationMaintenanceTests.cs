@@ -321,14 +321,14 @@ azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789a
                               --database-type "PostgreSql" \
                               --database-server "myserver.postgres.database.azure.com" \
                               --database-name "MyDatabase" \
-                              --connection-string "Host=myserver.postgres.database.azure.com;Database=MyDatabase;Username=myuser;Password=mypassword;"
+                              --connection-string "Host=myserver.postgres.database.azure.com;Database=MyDatabase;Username=myuser;Password=password;"
 
 # Add a Cosmos DB connection
 azmcp appservice database add --subscription "12345678-1234-1234-1234-123456789abc" \
                               --resource-group "my-resource-group" \
                               --app-name "my-web-app" \
                               --database-type "CosmosDb" \
-                              --database-server "mycosmosdb" \
+                              --database-server "cosmosdb" \
                               --database-name "MyDatabase"
 ```
 
