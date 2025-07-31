@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
-
-namespace AzureMcp.Areas.Marketplace.Models;
+namespace AzureMcp.Marketplace.Models;
 // ===============================
 // MAIN PRODUCT CLASSES
 // ===============================
