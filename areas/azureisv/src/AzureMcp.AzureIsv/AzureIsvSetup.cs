@@ -20,7 +20,7 @@ public class AzureIsvSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var datadog = new CommandGroup("datadog", "Datadog operations - Commands for managing and querying Datadog resources.");
+        var datadog = new CommandGroup("datadog", "Datadog operations - Commands for managing and monitoring Azure resources through Datadog integration. Includes operations for listing Datadog monitors and retrieving information about monitored Azure resources and their health status.");
         rootGroup.AddSubGroup(datadog);
 
         var monitoredResources = new CommandGroup("monitoredresources", "Datadog monitored resources operations - Commands for listing monitored resources in a specific Datadog monitor.");

@@ -20,7 +20,7 @@ public class KustoSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Kusto command group
-        var kusto = new CommandGroup("kusto", "Kusto operations - Commands for managing and querying Azure Kusto clusters.");
+        var kusto = new CommandGroup("kusto", "Kusto operations - Commands for managing and querying Azure Data Explorer (Kusto) resources. Includes operations for listing clusters and databases, executing KQL queries, retrieving table schemas, and working with Kusto data analytics workloads.");
         rootGroup.AddSubGroup(kusto);
 
         // Create Kusto cluster subgroups

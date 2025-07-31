@@ -498,7 +498,6 @@ azmcp marketplace product get --subscription <subscription> \
                               [--plan-id <plan-id>] \
                               [--sku-id <sku-id>] \
                               [--include-service-instruction-templates <true/false>] \
-                              [--partner-tenant-id <partner-tenant-id>] \
                               [--pricing-audience <pricing-audience>]
 ```
 
@@ -759,6 +758,13 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob container details --subscription <subscription> \
                                      --account-name <account-name> \
                                      --container-name <container-name>
+
+# Set access tier for multiple blobs in a batch operation
+azmcp storage blob batch set-tier --subscription <subscription> \
+                                  --account-name <account-name> \
+                                  --container-name <container-name> \
+                                  --tier-name <tier-name> \
+                                  --blob-names <blob-name1> <blob-name2> ...
 
 # List paths in a Data Lake file system
 azmcp storage datalake file-system list-paths --subscription <subscription> \

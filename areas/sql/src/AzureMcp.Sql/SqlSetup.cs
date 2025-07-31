@@ -22,7 +22,7 @@ public class SqlSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var sql = new CommandGroup("sql", "Azure SQL operations - Commands for managing Azure SQL databases and servers.");
+        var sql = new CommandGroup("sql", "Azure SQL operations - Commands for managing Azure SQL databases, servers, and elastic pools. Includes operations for listing databases, configuring server settings, managing firewall rules, Entra ID administrators, and elastic pool resources.");
         rootGroup.AddSubGroup(sql);
 
         var database = new CommandGroup("db", "SQL database operations");

@@ -18,6 +18,7 @@ using Xunit;
 
 namespace AzureMcp.Marketplace.UnitTests.Product;
 
+[Trait("Area", "Marketplace")]
 public class ProductGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
@@ -32,7 +33,7 @@ public class ProductGetCommandTests
         _marketplaceService = Substitute.For<IMarketplaceService>();
         _logger = Substitute.For<ILogger<ProductGetCommand>>();
 
-        var collection = new ServiceCollection().AddSingleton(_marketplaceService);
+        var collection = new ServiceCollection().AddSingleton<IMarketplaceService>(_marketplaceService);
         _serviceProvider = collection.BuildServiceProvider();
 
         _command = new(_logger);
@@ -58,7 +59,7 @@ public class ProductGetCommandTests
         var productId = "test-product";
         var expectedProduct = new ProductDetails
         {
-            Id = "test-product",
+            UniqueProductId = "test-product",
             DisplayName = "Test Product"
         };
 
@@ -72,7 +73,6 @@ public class ProductGetCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<bool?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions?>())
@@ -122,7 +122,6 @@ public class ProductGetCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<bool?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<RetryPolicyOptions?>())

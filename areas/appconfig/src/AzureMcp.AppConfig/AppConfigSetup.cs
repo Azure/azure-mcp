@@ -21,7 +21,7 @@ public class AppConfigSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create AppConfig command group
-        var appConfig = new CommandGroup("appconfig", "App Configuration operations - Commands for managing App Configuration stores");
+        var appConfig = new CommandGroup("appconfig", "App Configuration operations - Commands for managing Azure App Configuration stores and key-value settings. Includes operations for listing configuration stores, managing key-value pairs, setting labels, locking/unlocking settings, and retrieving configuration data.");
         rootGroup.AddSubGroup(appConfig);
 
         // Create AppConfig subgroups

@@ -20,7 +20,7 @@ public class RedisSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var redis = new CommandGroup("redis", "Redis Cache operations - Commands for managing and accessing Azure Redis Cache resources.");
+        var redis = new CommandGroup("redis", "Redis Cache operations - Commands for managing Azure Redis Cache and Azure Managed Redis resources. Includes operations for listing cache instances, managing clusters and databases, configuring access policies, and working with both traditional Redis Cache and Managed Redis services.");
         rootGroup.AddSubGroup(redis);
 
         // Azure Cache for Redis

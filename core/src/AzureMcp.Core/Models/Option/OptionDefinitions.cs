@@ -220,7 +220,6 @@ public static partial class OptionDefinitions
         public const string PlanIdName = "plan-id";
         public const string SkuIdName = "sku-id";
         public const string IncludeServiceInstructionTemplatesName = "include-service-instruction-templates";
-        public const string PartnerTenantIdName = "partner-tenant-id";
         public const string PricingAudienceName = "pricing-audience";
 
         public static readonly Option<string> ProductId = new(
@@ -287,14 +286,6 @@ public static partial class OptionDefinitions
             $"--{IncludeServiceInstructionTemplatesName}",
             () => false,
             "Include service instruction templates in the response."
-        )
-        {
-            IsRequired = false
-        };
-
-        public static readonly Option<string> PartnerTenantId = new(
-            $"--{PartnerTenantIdName}",
-            "Partner tenant ID for the request header."
         )
         {
             IsRequired = false
