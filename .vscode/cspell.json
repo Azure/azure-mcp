@@ -286,6 +286,8 @@
         "syslib",
         "skillsets",
         "submode",
+        "testaccount",
+        "testqueue",
         "testresource",
         "testrun",
         "testsettings",
