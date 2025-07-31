@@ -70,6 +70,7 @@ public static class StorageOptionDefinitions
     )
     {
         IsRequired = false
+    };
 
     public static readonly Option<string> Tier = new(
         $"--{TierName}",
