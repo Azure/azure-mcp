@@ -1,6 +1,8 @@
-# Release History
+# CHANGELOG 📝
 
-## 0.5.2 (Unreleased)
+The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
+
+## 0.5.2 (2025-07-31)
 
 ### Features Added
 
@@ -9,10 +11,6 @@
 ### Breaking Changes
 
 - Removed `--partner-tenant-id` option from `azmcp-marketplace-product-get` command. [[#656](https://github.com/Azure/azure-mcp/pull/656)]
-
-### Bugs Fixed
-
-### Other Changes
 
 ## 0.5.1 (2025-07-29)
 
