@@ -95,7 +95,7 @@ public class MarketplaceCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.String, id.ValueKind);
         Assert.Contains(ProductId, id.GetString());
     }
- 
+
     [Fact]
     [Trait("Category", "Live")]
     public async Task Should_get_marketplace_product_with_multiple_options()
