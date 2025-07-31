@@ -11,12 +11,12 @@ parameters:
 - name: VsixTargets
   type: object
   default:
-    - linux_x64
-    - linux_arm64
-    - osx_x64
-    - osx_arm64
-    - win_x64
-    - win_arm64
+    - linux-x64
+    - linux-arm64
+    - osx-x64
+    - osx-arm64
+    - win-x64
+    - win-arm64
 
 resources:
   repositories:
