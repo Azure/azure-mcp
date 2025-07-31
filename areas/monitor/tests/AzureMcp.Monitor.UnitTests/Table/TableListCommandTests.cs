@@ -62,11 +62,11 @@ public sealed class TableListCommandTests
                 "AppDependencies"
             };
             _monitorService.ListTables(
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>())
                 .Returns(testTables);
         }
@@ -94,16 +94,16 @@ public sealed class TableListCommandTests
         var expectedTables = new List<string>
         {
             "AppEvents",
-            "AppRequests", 
+            "AppRequests",
             "AppDependencies",
             "AppMetrics"
         };
         _monitorService.ListTables(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTables);
 
@@ -122,11 +122,11 @@ public sealed class TableListCommandTests
 
         // Verify the mock was called
         await _monitorService.Received(1).ListTables(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
 
         var json = JsonSerializer.Serialize(response.Results);
@@ -146,11 +146,11 @@ public sealed class TableListCommandTests
         // Arrange
         var expectedTables = new List<string> { "CustomTable1", "CustomTable2" };
         _monitorService.ListTables(
-            _knownSubscription, 
-            _knownResourceGroupName, 
-            _knownWorkspace, 
-            _knownTableType, 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceGroupName,
+            _knownWorkspace,
+            _knownTableType,
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedTables);
 
@@ -167,11 +167,11 @@ public sealed class TableListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).ListTables(
-            _knownSubscription, 
-            _knownResourceGroupName, 
-            _knownWorkspace, 
-            _knownTableType, 
-            Arg.Any<string>(), 
+            _knownSubscription,
+            _knownResourceGroupName,
+            _knownWorkspace,
+            _knownTableType,
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>());
     }
 
@@ -180,11 +180,11 @@ public sealed class TableListCommandTests
     {
         // Arrange
         _monitorService.ListTables(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(new List<string>());
 
@@ -207,11 +207,11 @@ public sealed class TableListCommandTests
     {
         // Arrange
         _monitorService.ListTables(
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
-            Arg.Any<string>(), 
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<List<string>>(new Exception("Test error")));
 
