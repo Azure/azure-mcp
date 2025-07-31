@@ -1,10 +1,5 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
-using System.Diagnostics.CodeAnalysis;
-using AzureMcp.Areas.AppService.Options;
-using AzureMcp.Commands;
-using AzureMcp.Commands.Subscription;
 namespace AzureMcp.Areas.AppService.Commands;
 
 public abstract class BaseAppServiceCommand<

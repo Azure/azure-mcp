@@ -1,18 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CommandLine.Parsing;
-using AzureMcp.Areas.AppService.Commands.Database;
-using AzureMcp.Areas.AppService.Models;
-using AzureMcp.Areas.AppService.Services;
-using AzureMcp.Models.Command;
-using AzureMcp.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using Xunit;
-
 namespace AzureMcp.Tests.Areas.AppService.UnitTests.Database;
 
 [Trait("Area", "AppService")]

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Core.Pipeline;
-
 namespace AzureMcp.Areas.AppService.Options.Database;
 
 public class DatabaseAddOptions : BaseAppServiceOptions
