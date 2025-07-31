@@ -213,6 +213,8 @@
         "exfiltration",
         "filefilters",
         "fnames",
+        "functionapp",
+        "functionapps",
         "gethealth",
         "grpcio",
         "healthmodels",
