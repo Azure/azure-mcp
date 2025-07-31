@@ -501,7 +501,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
             // Send message with optional parameters
             TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
-            TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null; 
+            TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null;
 
             var response = await queueClient.SendMessageAsync(messageContent, visibilityTimeout, timeToLive);
 

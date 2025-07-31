@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine.Parsing;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Storage.Commands.Queue.Message;
 using AzureMcp.Storage.Models;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System.CommandLine.Parsing;
 using Xunit;
 
 namespace AzureMcp.Storage.UnitTests.Queue.Message;
@@ -156,7 +156,7 @@ public class QueueMessageSendCommandTests
     {
         // Arrange
         var requestFailedException = new Azure.RequestFailedException(403, "Access denied");
-        
+
         _service.SendQueueMessage(
             Arg.Any<string>(),
             Arg.Any<string>(),
