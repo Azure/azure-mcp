@@ -1,6 +1,11 @@
 
 # Release History
 
+## 0.1.0-alpha.1 - Unreleased
+
+### Changed
+- Removed toast notifications related to Azure MCP server registration and startup instructions.
+
 ## 0.5.1 - 2025-07-29
 
 ### Added

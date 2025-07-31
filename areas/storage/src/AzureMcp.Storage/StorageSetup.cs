@@ -5,6 +5,7 @@ using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Commands.Blob;
+using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
@@ -38,6 +39,10 @@ public class StorageSetup : IAreaSetup
         var blobs = new CommandGroup("blob", "Storage blob operations - Commands for uploading, downloading, and managing blob in your Azure Storage accounts.");
         storage.AddSubGroup(blobs);
 
+        // Create Batch subgroup under blobs
+        var batch = new CommandGroup("batch", "Storage batch operations - Commands for performing batch operations on multiple storage blobs efficiently.");
+        blobs.AddSubGroup(batch);
+
         // Create a containers subgroup under blobs
         var blobContainer = new CommandGroup("container", "Storage blob container operations - Commands for managing blob container in your Azure Storage accounts.");
         blobs.AddSubGroup(blobContainer);
@@ -61,6 +66,9 @@ public class StorageSetup : IAreaSetup
             loggerFactory.CreateLogger<TableListCommand>()));
 
         blobs.AddCommand("list", new BlobListCommand(loggerFactory.CreateLogger<BlobListCommand>()));
+
+        batch.AddCommand("set-tier", new BatchSetTierCommand(
+            loggerFactory.CreateLogger<BatchSetTierCommand>()));
 
         blobContainer.AddCommand("list", new ContainerListCommand(
             loggerFactory.CreateLogger<ContainerListCommand>()));
