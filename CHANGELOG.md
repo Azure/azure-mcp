@@ -8,6 +8,8 @@
 
 ### Breaking Changes
 
+- Removed `--partner-tenant-id` option from `azmcp-marketplace-product-get` command. [[#656](https://github.com/Azure/azure-mcp/pull/656)]
+
 ### Bugs Fixed
 
 ### Other Changes
