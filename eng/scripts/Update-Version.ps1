@@ -13,9 +13,9 @@ param(
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
-$projectFile = "$RepoRoot/src/AzureMcp.csproj"
+$projectFile = "$RepoRoot/Directory.Build.props"
 $project = [xml](Get-Content $projectFile)
-$currentVersion = $project.Project.PropertyGroup.Version[0]
+$currentVersion = $project.Project.PropertyGroup.Version | Select-Object -First 1
 
 $autoVersion = $false
 if (!$Version) {

@@ -58,16 +58,19 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                 }
 
-                // Show info message when MCP server is registered
-                void vscode.window.showInformationMessage(
-                    'Azure MCP server registered. To start it: open Command Palette → MCP: List Servers → azure-mcp-server-ext → Start.'
-                );
+                // Honor VS Code telemetry settings
+                // Only set AZURE_MCP_COLLECT_TELEMETRY if telemetry is disabled
+                const env: Record<string, string | number | null> = {};
+                if (!vscode.env.isTelemetryEnabled) {
+                    env.AZURE_MCP_COLLECT_TELEMETRY = 'false';
+                }
 
                 return [
                     new vscode.McpStdioServerDefinition(
                         'azure-mcp-server-ext',
                         binPath,
-                        args
+                        args,
+                        env
                     )
                 ];
             },
@@ -82,11 +85,18 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration((event) => {
             if (event.affectsConfiguration('azureMcp.enabledServices')) {
-                void vscode.window.showInformationMessage(
-                    'Re-registering the MCP server with the updated services.'
-                );
                 didChangeEmitter.fire();
             }
+        })
+    );
+
+    // Listen for changes to VS Code telemetry settings and re-register MCP server
+    context.subscriptions.push(
+        vscode.env.onDidChangeTelemetryEnabled(() => {
+            void vscode.window.showInformationMessage(
+                'VS Code telemetry setting changed. Re-registering the MCP server.'
+            );
+            didChangeEmitter.fire();
         })
     );
 }
