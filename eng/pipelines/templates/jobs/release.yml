@@ -91,7 +91,7 @@ jobs:
 
 # Deployment Jobs: Publish VSIX artifacts to Marketplace for each vsix target
 - ${{ each VsixTarget in parameters.VsixTargets }}:
-  - deployment:
+  - deployment: PublishVSIX_${{ replace(VsixTarget, "-", "_") }}
     displayName: "Publish VSIX Artifact to Marketplace - ${{ VsixTarget }}"
     #dependsOn: Publish
     condition: and(succeeded(), ne(variables['Skip.PublishPackage'], 'true'))
