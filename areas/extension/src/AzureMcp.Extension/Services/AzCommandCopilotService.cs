@@ -47,6 +47,12 @@ public sealed class AzCommandCopilotService : IAzCommandCopilotService
             System.Text.Encoding.UTF8, "application/json"
         );
         using var httpResponse = await _httpClient.SendAsync(httpRequest);
-        return await httpResponse.Content.ReadAsStringAsync();
+        var responseContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Request failed with status code {(int)httpResponse.StatusCode} ({httpResponse.StatusCode}): {responseContent}");
+        }
+        return responseContent;
     }
 }
