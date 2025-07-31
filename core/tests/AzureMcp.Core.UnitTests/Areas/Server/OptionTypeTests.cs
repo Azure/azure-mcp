@@ -29,7 +29,7 @@ public class OptionTypeTests
         var listType = typeof(List<string>);
 
         // Act
-        var result = TypeToJsonTypeMapper.GetArrayElementType(listType);
+        var result = TypeToJsonTypeMapper.GetArrayOrCollectionElementType(listType);
 
         // Assert
         Assert.Equal(typeof(string), result);
@@ -233,7 +233,7 @@ public class OptionTypeTests
     public void GetArrayElementType_Should_Throw_ArgumentNullException_For_Null_Type()
     {
         // Arrange & Act & Assert
-        Assert.Throws<ArgumentNullException>(() => TypeToJsonTypeMapper.GetArrayElementType(null!));
+        Assert.Throws<ArgumentNullException>(() => TypeToJsonTypeMapper.GetArrayOrCollectionElementType(null!));
     }
 
     [Fact]
@@ -289,5 +289,153 @@ public class OptionTypeTests
         Assert.Equal("integer", result["type"]?.ToString()); // Enums are integers in JSON
         Assert.Equal(description, result["description"]?.ToString());
         Assert.Null(result["items"]); // Enums should not have items
+    }
+
+    [Fact]
+    public void CreateOptionSchema_Should_Handle_Deeply_Nested_Arrays()
+    {
+        // Arrange
+        var deeplyNestedType = typeof(List<List<List<int>>>);
+        var description = "A deeply nested array";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(deeplyNestedType, description);
+
+        // Assert
+        Assert.Equal("array", result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        
+        // Check first level of nesting
+        Assert.NotNull(result["items"]);
+        Assert.Equal("array", result["items"]?["type"]?.ToString());
+        
+        // Check second level of nesting
+        Assert.NotNull(result["items"]?["items"]);
+        Assert.Equal("array", result["items"]?["items"]?["type"]?.ToString());
+        
+        // Check third level (final element type)
+        Assert.NotNull(result["items"]?["items"]?["items"]);
+        Assert.Equal("integer", result["items"]?["items"]?["items"]?["type"]?.ToString());
+    }
+
+    [Fact]
+    public void CreateOptionSchema_Should_Handle_Mixed_Array_Types()
+    {
+        // Arrange
+        var mixedArrayType = typeof(List<int[]>); // List containing arrays
+        var description = "A list of integer arrays";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(mixedArrayType, description);
+
+        // Assert
+        Assert.Equal("array", result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        
+        // Check inner array type
+        Assert.NotNull(result["items"]);
+        Assert.Equal("array", result["items"]?["type"]?.ToString());
+        
+        // Check final element type
+        Assert.NotNull(result["items"]?["items"]);
+        Assert.Equal("integer", result["items"]?["items"]?["type"]?.ToString());
+    }
+
+    [Theory]
+    [InlineData(typeof(List<int?>), "integer")]
+    [InlineData(typeof(bool?[]), "boolean")]
+    [InlineData(typeof(IEnumerable<DateTime?>), "string")]
+    public void CreateOptionSchema_Should_Handle_Arrays_With_Nullable_Elements(Type arrayWithNullableType, string expectedElementType)
+    {
+        // Arrange
+        var description = "An array with nullable elements";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(arrayWithNullableType, description);
+
+        // Assert
+        Assert.Equal("array", result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        Assert.NotNull(result["items"]);
+        Assert.Equal(expectedElementType, result["items"]?["type"]?.ToString());
+    }
+
+    [Theory]
+    [InlineData(typeof(HashSet<string>), "string")]
+    [InlineData(typeof(Queue<int>), "integer")]
+    [InlineData(typeof(Stack<bool>), "boolean")]
+    [InlineData(typeof(ISet<double>), "number")]
+    public void CreateOptionSchema_Should_Handle_Other_Collection_Types(Type collectionType, string expectedElementType)
+    {
+        // Arrange
+        var description = $"A {collectionType.Name} collection";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(collectionType, description);
+
+        // Assert
+        Assert.Equal("array", result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        Assert.NotNull(result["items"]);
+        Assert.Equal(expectedElementType, result["items"]?["type"]?.ToString());
+    }
+
+    [Fact]
+    public void CreateOptionSchema_Should_Handle_Jagged_Arrays()
+    {
+        // Arrange
+        var jaggedArrayType = typeof(int[][]);
+        var description = "A jagged array";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(jaggedArrayType, description);
+
+        // Assert
+        Assert.Equal("array", result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        
+        // Check inner array type
+        Assert.NotNull(result["items"]);
+        Assert.Equal("array", result["items"]?["type"]?.ToString());
+        
+        // Check final element type
+        Assert.NotNull(result["items"]?["items"]);
+        Assert.Equal("integer", result["items"]?["items"]?["type"]?.ToString());
+    }
+
+    [Theory]
+    [InlineData(typeof(Dictionary<string, List<int>>))]
+    [InlineData(typeof(IDictionary<int, string[]>))]
+    [InlineData(typeof(SortedDictionary<string, bool>))]
+    public void CreateOptionSchema_Should_Handle_Complex_Dictionary_Types(Type dictionaryType)
+    {
+        // Arrange
+        var description = "A complex dictionary";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(dictionaryType, description);
+
+        // Assert
+        Assert.Equal("object", result["type"]?.ToString()); // Dictionaries are objects
+        Assert.Equal(description, result["description"]?.ToString());
+        Assert.Null(result["items"]); // Objects don't have items schema
+    }
+
+    [Theory]
+    [InlineData(typeof(TestEnum?), "integer")]
+    [InlineData(typeof(ConsoleColor?), "integer")]
+    [InlineData(typeof(DayOfWeek?), "integer")]
+    public void CreateOptionSchema_Should_Handle_Nullable_Enums(Type nullableEnumType, string expectedType)
+    {
+        // Arrange
+        var description = "A nullable enum";
+
+        // Act
+        var result = TypeToJsonTypeMapper.CreateOptionSchema(nullableEnumType, description);
+
+        // Assert
+        Assert.Equal(expectedType, result["type"]?.ToString());
+        Assert.Equal(description, result["description"]?.ToString());
+        Assert.Null(result["items"]);
     }
 }
