@@ -8,6 +8,7 @@ using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.Storage.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
@@ -400,6 +401,77 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error creating directory: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
+        string accountName,
+        string containerName,
+        string tier,
+        string[] blobNames,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, tier, subscriptionId);
+
+        if (blobNames == null || blobNames.Length == 0)
+        {
+            throw new ArgumentException("At least one blob name must be provided.", nameof(blobNames));
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var batchClient = blobServiceClient.GetBlobBatchClient();
+        var accessTier = new AccessTier(tier);
+
+        try
+        {
+            // Use Azure.Storage.Blobs.Batch for true batch operations
+            var batch = batchClient.CreateBatch();
+
+            // Add all blob tier operations to the batch
+            var batchOperations = new List<(string blobName, Response batchOperationResponse)>();
+            foreach (var blobName in blobNames)
+            {
+                var blobClient = containerClient.GetBlobClient(blobName);
+                var batchOperationResponse = batch.SetBlobAccessTier(blobClient.Uri, accessTier);
+                batchOperations.Add((blobName, batchOperationResponse));
+            }
+
+            // Submit the batch operation
+            var batchResponse = await batchClient.SubmitBatchAsync(batch);
+
+            // Process results
+            var successfulBlobs = new List<string>();
+            var failedBlobs = new List<string>();
+
+            for (int i = 0; i < batchOperations.Count; i++)
+            {
+                var (blobName, batchOperationResponse) = batchOperations[i];
+                try
+                {
+                    // Check if the individual operation succeeded
+                    if (batchOperationResponse.Status >= 200 && batchOperationResponse.Status < 300)
+                    {
+                        successfulBlobs.Add(blobName);
+                    }
+                    else
+                    {
+                        failedBlobs.Add($"{blobName}: HTTP {batchOperationResponse.Status}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failedBlobs.Add($"{blobName}: {ex.Message}");
+                }
+            }
+
+            return (successfulBlobs, failedBlobs);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error setting blob tier batch: {ex.Message}", ex);
         }
     }
 }
