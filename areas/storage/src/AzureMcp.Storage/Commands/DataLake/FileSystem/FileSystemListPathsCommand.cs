@@ -3,8 +3,8 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Models;
+using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.DataLake.FileSystem;
 using AzureMcp.Storage.Services;
 using Microsoft.Extensions.Logging;
@@ -20,14 +20,30 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
 
     public override string Description =>
         """
-        List all paths in a Data Lake file system. This command retrieves and displays all paths (files and directories)
+        List paths in a Data Lake file system. This command retrieves and displays paths (files and directories)
         available in the specified Data Lake file system within the storage account. Results include path names, 
         types (file or directory), and metadata, returned as a JSON array. Requires account-name and file-system-name.
+        Optional filter-path can be used to filter results and recursive to include all subdirectories.
         """;
 
     public override string Title => CommandTitle;
 
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(StorageOptionDefinitions.FilterPath);
+        command.AddOption(StorageOptionDefinitions.Recursive);
+    }
+
+    protected override ListPathsOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.FilterPath = parseResult.GetValueForOption(StorageOptionDefinitions.FilterPath);
+        options.Recursive = parseResult.GetValueForOption(StorageOptionDefinitions.Recursive);
+        return options;
+    }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -46,7 +62,9 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
             var paths = await storageService.ListDataLakePaths(
                 options.Account!,
                 options.FileSystem!,
+                options.Recursive,
                 options.Subscription!,
+                options.FilterPath,
                 options.Tenant,
                 options.RetryPolicy);
 

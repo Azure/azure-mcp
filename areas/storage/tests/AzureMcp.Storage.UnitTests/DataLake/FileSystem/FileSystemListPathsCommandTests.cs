@@ -9,7 +9,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -53,8 +52,8 @@ public class FileSystemListPathsCommandTests
             new("directory1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(expectedPaths);
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+            null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(expectedPaths);
 
         var args = _parser.Parse([
             "--account-name", _knownAccountName,
@@ -82,8 +81,8 @@ public class FileSystemListPathsCommandTests
     public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoPaths()
     {
         // Arrange
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), Arg.Is(_knownSubscriptionId),
-            Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+            null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
             "--account-name", _knownAccountName,
@@ -111,8 +110,8 @@ public class FileSystemListPathsCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), Arg.Is(_knownSubscriptionId),
-            null, Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+            null, null, Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
             "--account-name", _knownAccountName,
@@ -129,6 +128,198 @@ public class FileSystemListPathsCommandTests
         Assert.StartsWith(expectedError, response.Message);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithFilterPath_FiltersResults()
+    {
+        // Arrange
+        var filterPath = "folder1/";
+        var expectedPaths = new List<DataLakePathInfo>
+        {
+            new("folder1/file1.txt", "file", 1024, DateTimeOffset.Now, "\"etag1\""),
+            new("folder1/subfolder", "directory", null, DateTimeOffset.Now, "\"etag2\"")
+        };
+
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
+            Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedPaths);
+
+        var args = _parser.Parse([
+            "--account-name", _knownAccountName,
+            "--file-system-name", _knownFileSystemName,
+            "--subscription", _knownSubscriptionId,
+            "--filter-path", filterPath
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedPaths.Count, result.Paths.Count);
+        Assert.All(result.Paths, path => Assert.StartsWith(filterPath, path.Name));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithRecursiveTrue_ReturnsAllPaths()
+    {
+        // Arrange
+        var expectedPaths = new List<DataLakePathInfo>
+        {
+            new("file1.txt", "file", 1024, DateTimeOffset.Now, "\"etag1\""),
+            new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\""),
+            new("folder1/file2.txt", "file", 2048, DateTimeOffset.Now, "\"etag3\""),
+            new("folder1/subfolder", "directory", null, DateTimeOffset.Now, "\"etag4\""),
+            new("folder1/subfolder/file3.txt", "file", 512, DateTimeOffset.Now, "\"etag5\"")
+        };
+
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
+            Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedPaths);
+
+        var args = _parser.Parse([
+            "--account-name", _knownAccountName,
+            "--file-system-name", _knownFileSystemName,
+            "--subscription", _knownSubscriptionId,
+            "--recursive"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedPaths.Count, result.Paths.Count);
+        // Verify we get both top-level and nested paths
+        Assert.Contains(result.Paths, p => p.Name == "file1.txt");
+        Assert.Contains(result.Paths, p => p.Name == "folder1/file2.txt");
+        Assert.Contains(result.Paths, p => p.Name == "folder1/subfolder/file3.txt");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithRecursiveFalse_ReturnsOnlyTopLevelPaths()
+    {
+        // Arrange
+        var expectedPaths = new List<DataLakePathInfo>
+        {
+            new("file1.txt", "file", 1024, DateTimeOffset.Now, "\"etag1\""),
+            new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
+        };
+
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
+            Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedPaths);
+
+        var args = _parser.Parse([
+            "--account-name", _knownAccountName,
+            "--file-system-name", _knownFileSystemName,
+            "--subscription", _knownSubscriptionId
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedPaths.Count, result.Paths.Count);
+        // Verify we only get top-level paths (no nested paths)
+        Assert.All(result.Paths, path => Assert.DoesNotContain("/", path.Name.Substring(1)));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithFilterPathAndRecursive_CombinesOptions()
+    {
+        // Arrange
+        var filterPath = "documents/";
+        var expectedPaths = new List<DataLakePathInfo>
+        {
+            new("documents/file1.pdf", "file", 1024, DateTimeOffset.Now, "\"etag1\""),
+            new("documents/archive", "directory", null, DateTimeOffset.Now, "\"etag2\""),
+            new("documents/archive/old.pdf", "file", 2048, DateTimeOffset.Now, "\"etag3\"")
+        };
+
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
+            Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedPaths);
+
+        var args = _parser.Parse([
+            "--account-name", _knownAccountName,
+            "--file-system-name", _knownFileSystemName,
+            "--subscription", _knownSubscriptionId,
+            "--filter-path", filterPath,
+            "--recursive"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedPaths.Count, result.Paths.Count);
+        Assert.All(result.Paths, path => Assert.StartsWith(filterPath, path.Name));
+        // Verify we get both filtered and nested paths
+        Assert.Contains(result.Paths, p => p.Name == "documents/file1.pdf");
+        Assert.Contains(result.Paths, p => p.Name == "documents/archive/old.pdf");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithEmptyFilterPath_ReturnsAllPaths()
+    {
+        // Arrange
+        var expectedPaths = new List<DataLakePathInfo>
+        {
+            new("file1.txt", "file", 1024, DateTimeOffset.Now, "\"etag1\""),
+            new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
+        };
+
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
+            Arg.Is(_knownSubscriptionId), Arg.Is(""), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedPaths);
+
+        var args = _parser.Parse([
+            "--account-name", _knownAccountName,
+            "--file-system-name", _knownFileSystemName,
+            "--subscription", _knownSubscriptionId,
+            "--filter-path", ""
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<FileSystemListPathsResult>(json);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedPaths.Count, result.Paths.Count);
+    }
+
     [Theory]
     [InlineData("--file-system-name filesystem123 --subscription sub123", false)] // Missing account
     [InlineData("--account-name account123 --subscription sub123", false)] // Missing file-system
@@ -139,8 +330,8 @@ public class FileSystemListPathsCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            _storageService.ListDataLakePaths(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
+            _storageService.ListDataLakePaths(Arg.Any<string>(), Arg.Any<string>(), false, Arg.Any<string>(),
+                null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
         }
 
         var parseResult = _parser.Parse(args.Split(' '));
