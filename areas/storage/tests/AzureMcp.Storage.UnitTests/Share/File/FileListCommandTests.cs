@@ -2,17 +2,12 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Share.File;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.Storage.UnitTests.Share.File;

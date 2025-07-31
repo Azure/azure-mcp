@@ -157,6 +157,7 @@
                 "testproxy",
                 "testrg",
                 "testserver",
+                "testshare",
                 "testsub",
                 "toplevel",
                 "uploadsummary",

@@ -75,6 +75,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
 * "List paths in my Data Lake file system"
+* "List files and directories in my File Share"
 
 ## 🛠️ Currently Supported Tools
 
@@ -221,6 +222,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List and query Storage tables
 * List paths in Data Lake file systems
 * Get container properties and metadata
+* List files and directories in File Shares
 
 ### 📋 Azure Subscription
 
