@@ -26,7 +26,7 @@ jobs:
       $src = "$(Pipeline.Workspace)/$(PipelineArtifactName)_signed/$(VsixTarget)/dist/*"
       $dest = "$(VsixServerPath)"
       New-Item -ItemType Directory -Force -Path $dest
-      Copy-Item -Path $src -Destination  -Recurse -Force
+      Copy-Item -Path $src -Destination $dest -Recurse -Force
     displayName: "Copy signed MCP server binaries to VSIX ${{ parameters.VsixTarget }}"
 
   # --- VS Code Extension Packaging Steps ---
