@@ -123,10 +123,13 @@ extends:
             value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/release.yml
-          - template: /eng/pipelines/templates/jobs/docker.yml
             parameters:
-              ContainerRegistry: 'azuresdkimages'
-              DeploymentEnvironment: 'public'
+              VsixTargets: ${{ parameters.VsixTargets }}
+          #TODO: commented out for testing add back before merging
+          # - template: /eng/pipelines/templates/jobs/docker.yml
+          #   parameters:
+          #     ContainerRegistry: 'azuresdkimages'
+          #     DeploymentEnvironment: 'public'
 
       - ${{ else }}:
         - stage: Integration
