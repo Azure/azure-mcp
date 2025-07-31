@@ -498,7 +498,6 @@ azmcp marketplace product get --subscription <subscription> \
                               [--plan-id <plan-id>] \
                               [--sku-id <sku-id>] \
                               [--include-service-instruction-templates <true/false>] \
-                              [--partner-tenant-id <partner-tenant-id>] \
                               [--pricing-audience <pricing-audience>]
 ```
 
