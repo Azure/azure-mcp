@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace AzureMcp.Storage.Options.Queue.Message;
 
 public class QueueMessageSendOptions : BaseQueueOptions

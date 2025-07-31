@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Commands.Blob;
 using AzureMcp.Storage.Commands.Blob.Batch;

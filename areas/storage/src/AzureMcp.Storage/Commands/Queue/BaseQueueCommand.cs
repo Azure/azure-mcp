@@ -5,8 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Core.Commands;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Queue;
-using System.CommandLine;
-using System.CommandLine.Parsing;
 
 namespace AzureMcp.Storage.Commands.Queue;
 

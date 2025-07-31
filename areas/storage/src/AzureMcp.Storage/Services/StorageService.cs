@@ -315,6 +315,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
+    private async Task<QueueServiceClient> CreateQueueServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.queue.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new QueueClientOptions()), retryPolicy);
+        return new QueueServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
@@ -488,13 +495,8 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     {
         try
         {
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
-            
-            // Get storage account connection string using existing method
-            var connectionString = await GetStorageAccountConnectionString(accountName, subscriptionId, tenant);
-
             // Create queue service client
-            var queueServiceClient = new QueueServiceClient(connectionString);
+            var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
             var queueClient = queueServiceClient.GetQueueClient(queueName);
 
             // Ensure queue exists

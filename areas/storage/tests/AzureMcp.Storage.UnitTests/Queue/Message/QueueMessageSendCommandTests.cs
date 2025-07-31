@@ -12,7 +12,7 @@ using NSubstitute.ExceptionExtensions;
 using System.CommandLine.Parsing;
 using Xunit;
 
-namespace AzureMcp.Storage.UnitTests.Queue;
+namespace AzureMcp.Storage.UnitTests.Queue.Message;
 
 public class QueueMessageSendCommandTests
 {
@@ -45,14 +45,13 @@ public class QueueMessageSendCommandTests
     }
 
     [Theory]
-    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\"", true)]
-    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --time-to-live-in-seconds 3600", true)]
-    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --visibility-timeout-in-seconds 30", true)]
-    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --time-to-live-in-seconds 3600 --visibility-timeout-in-seconds 30", true)]
-    [InlineData("--account-name testaccount --queue-name testqueue", false)] // Missing message content
-    [InlineData("--account-name testaccount --message-content \"test message\"", false)] // Missing queue name
-    [InlineData("--queue-name testqueue --message-content \"test message\"", false)] // Missing account name
-    [InlineData("", false)] // Missing everything
+    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --subscription sub123", true)]
+    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --time-to-live-in-seconds 3600 --subscription sub123", true)]
+    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --visibility-timeout-in-seconds 30 --subscription sub123", true)]
+    [InlineData("--account-name testaccount --queue-name testqueue --message-content \"test message\" --time-to-live-in-seconds 3600 --visibility-timeout-in-seconds 30 --subscription sub123", true)]
+    [InlineData("--account-name testaccount --queue-name testqueue --subscription sub123", false)] // Missing message content
+    [InlineData("--account-name testaccount --message-content \"test message\" --subscription sub123", false)] // Missing queue name
+    [InlineData("--queue-name testqueue --message-content \"test message\" --subscription sub123", false)] // Missing account name
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
@@ -113,7 +112,7 @@ public class QueueMessageSendCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(Task.FromException<QueueMessageSendResult>(new Exception("Test error")));
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message"]);
+        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -141,7 +140,7 @@ public class QueueMessageSendCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestFailedException);
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message"]);
+        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -168,7 +167,7 @@ public class QueueMessageSendCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestFailedException);
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message"]);
+        var parseResult = _parser.Parse(["--account-name", "testaccount", "--queue-name", "testqueue", "--message-content", "test message", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
