@@ -4,6 +4,7 @@
 using System.Text.Json;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
+using Azure.AI.Agents.Persistent;
 using Xunit;
 
 namespace AzureMcp.Tests.Areas.Foundry.LiveTests;
@@ -52,6 +53,75 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
     [Trait("Category", "Live")]
     public async Task Should_deploy_foundry_model()
     {
+        var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_deploy",
+            new()
+            {
+                { "deployment-name", deploymentName },
+                { "model-name", "gpt-4o" },
+                { "model-format", "OpenAI"},
+                { "azure-ai-services-name", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "subscription", Settings.SubscriptionId },
+            });
+
+        var deploymentResource = result.AssertProperty("deploymentData");
+        Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
+        Assert.NotEmpty(deploymentResource.EnumerateObject());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_connect_agent()
+    {
+        // to be filled in
+        var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_deploy",
+            new()
+            {
+                { "deployment-name", deploymentName },
+                { "model-name", "gpt-4o" },
+                { "model-format", "OpenAI"},
+                { "azure-ai-services-name", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "subscription", Settings.SubscriptionId },
+            });
+
+        var deploymentResource = result.AssertProperty("deploymentData");
+        Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
+        Assert.NotEmpty(deploymentResource.EnumerateObject());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_query_and_evaluate_agent()
+    {
+        // to be filled in
+        var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_deploy",
+            new()
+            {
+                { "deployment-name", deploymentName },
+                { "model-name", "gpt-4o" },
+                { "model-format", "OpenAI"},
+                { "azure-ai-services-name", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "subscription", Settings.SubscriptionId },
+            });
+
+        var deploymentResource = result.AssertProperty("deploymentData");
+        Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
+        Assert.NotEmpty(deploymentResource.EnumerateObject());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_evaluate_agent()
+    {
+        // to be filled in
         var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
         var result = await CallToolAsync(
             "azmcp_foundry_models_deploy",
