@@ -53,7 +53,8 @@ Your job is to generate one ore more Azure CLI commands based on a provided inte
 
             // Always resolve the real API client from DI at execution time
             var copilotService = context.GetService<IAzCommandCopilotService>();
-            var apiResponse = await copilotService.GenerateAzCliCommandAsync(intent, CancellationToken.None);
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+            var apiResponse = await copilotService.GenerateAzCliCommandAsync(intent, cancellationTokenSource.Token);
 
             // Use source-generated context for AOT safety
 
@@ -66,7 +67,7 @@ Your job is to generate one ore more Azure CLI commands based on a provided inte
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred executing command. Intent: {Intent}.", options.Intent);
+            _logger.LogError(ex, "An exception occurred executing command.");
             HandleException(context, ex);
         }
 

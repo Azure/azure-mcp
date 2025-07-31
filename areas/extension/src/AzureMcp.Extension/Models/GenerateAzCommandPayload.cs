@@ -7,7 +7,7 @@ namespace AzureMcp.Extension.Models;
 
 public sealed class GenerateAzCommandPayload
 {
-    public string Question { get; set; } = string.Empty;
+    public required string Question { get; set; }
 
     [JsonPropertyName("enable_parameter_injection")]
     public bool EnableParameterInjection { get; set; } = true;
