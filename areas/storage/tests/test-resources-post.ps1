@@ -25,3 +25,14 @@ Set-AzStorageBlobContent `
     -Force `
     -ProgressAction SilentlyContinue
 | Out-Null
+
+# Upload README.md to file share
+Write-Host "Uploading README.md to file share: testshare" -ForegroundColor Yellow
+Set-AzStorageFileContent `
+    -ShareName "testshare" `
+    -Source "$RepoRoot/README.md" `
+    -Path "README.md" `
+    -Context $context `
+    -Force `
+    -ProgressAction SilentlyContinue
+| Out-Null

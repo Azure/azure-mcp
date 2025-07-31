@@ -266,5 +266,42 @@ namespace AzureMcp.Storage.LiveTests
 
             Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
         }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_files_shares_files_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account-name", Settings.ResourceBaseName },
+                    { "share-name", "testshare" },
+                    { "directory-path", "/" }
+                });
+
+            var files = result.AssertProperty("files");
+            Assert.Equal(JsonValueKind.Array, files.ValueKind);
+            // Files array may be empty for a new share, but should be a valid array
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory_with_prefix()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_files_shares_files_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account-name", Settings.ResourceBaseName },
+                    { "share-name", "testshare" },
+                    { "directory-path", "/" },
+                    { "prefix", "test" }
+                });
+
+            var files = result.AssertProperty("files");
+            Assert.Equal(JsonValueKind.Array, files.ValueKind);
+            // Files array may be empty for a new share with no matching prefix, but should be a valid array
+        }
     }
 }
