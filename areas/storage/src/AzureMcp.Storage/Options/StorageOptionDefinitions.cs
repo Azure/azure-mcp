@@ -12,6 +12,8 @@ public static class StorageOptionDefinitions
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier-name";
     public const string BlobNamesParam = "blob-names";
+    public const string ShareName = "share-name";
+    public const string PrefixName = "prefix";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -68,5 +70,21 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true,
         AllowMultipleArgumentsPerToken = true
+    };
+
+    public static readonly Option<string> Share = new(
+        $"--{ShareName}",
+        "The name of the file share to access within the storage account."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> Prefix = new(
+        $"--{PrefixName}",
+        "Optional prefix to filter results. Only items that start with this prefix will be returned."
+    )
+    {
+        IsRequired = false
     };
 }
