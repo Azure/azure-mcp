@@ -328,3 +328,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+
+## Deploy
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-deploy-plan-get | Create a plan to deploy this application to azure |
+| azmcp-deploy-iac-rules-get | Show me the rules to generate bicep scripts  |
+| azmcp-deploy-azd-app-log-get | Show me the log of the application deployed by azd  |
+| azmcp-deploy-cicd-pipeline-guidance-get | How can I create a CI/CD pipeline to deploy this app to Azure? |
+| azmcp-deploy-architecture-diagram-generate | Generate the azure architecture diagram for this application |
+
+## Quota
+| azmcp-quota-available-region-list | Show me the available regions for these resource types <resource_types> |
+| azmcp-quota-usage-get | Check usage information for <resource_type> in region <region> |

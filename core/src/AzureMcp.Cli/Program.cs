@@ -83,6 +83,8 @@ internal class Program
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
+            new AzureMcp.Deploy.DeploySetup(),
+            new AzureMcp.Quota.QuotaSetup(),
         ];
     }
 

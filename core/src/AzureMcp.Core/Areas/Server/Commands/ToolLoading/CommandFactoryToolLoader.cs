@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Areas.Server.Options;
@@ -35,6 +36,8 @@ public sealed class CommandFactoryToolLoader(
             ? commandFactory.AllCommands
             : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
+
+    public const string RawMcpToolInputOptionName = "raw-mcp-tool-input";
 
     /// <summary>
     /// Lists all tools available from the command factory.
@@ -104,7 +107,16 @@ public sealed class CommandFactoryToolLoader(
         var commandContext = new CommandContext(_serviceProvider);
 
         var realCommand = command.GetCommand();
-        var commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        ParseResult? commandOptions = null;
+
+        if (realCommand.Options.Count == 1 && realCommand.Options[0].Name == RawMcpToolInputOptionName)
+        {
+            commandOptions = realCommand.ParseFromRawMcpToolInput(request.Params.Arguments);
+        }
+        else
+        {
+            commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        }
 
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
 
@@ -169,16 +181,25 @@ public sealed class CommandFactoryToolLoader(
 
         if (options != null && options.Count > 0)
         {
-            foreach (var option in options)
+            if (options.Count == 1 && options[0].Name == RawMcpToolInputOptionName)
             {
-                schema.Properties.Add(option.Name, new ToolPropertySchema
-                {
-                    Type = option.ValueType.ToJsonType(),
-                    Description = option.Description,
-                });
+                var arguments = JsonNode.Parse(options[0].Description ?? "{}") as JsonObject ?? new JsonObject();
+                tool.InputSchema = JsonSerializer.SerializeToElement(arguments, ServerJsonContext.Default.JsonObject);
+                return tool;
             }
+            else
+            {
+                foreach (var option in options)
+                {
+                    schema.Properties.Add(option.Name, new ToolPropertySchema
+                    {
+                        Type = option.ValueType.ToJsonType(),
+                        Description = option.Description,
+                    });
+                }
 
-            schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
+                schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
+            }
         }
 
         tool.InputSchema = JsonSerializer.SerializeToElement(schema, ServerJsonContext.Default.ToolInputSchema);

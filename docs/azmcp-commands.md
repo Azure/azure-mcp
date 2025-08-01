@@ -828,6 +828,50 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Quota
+```bash
+# Check the usage for Azure resources type
+azmcp quota usage-get --subscription <subscription> \
+                         --region <region> \
+                         --resource-types <resource-types>
+
+# Get the available regions for the resources types
+azmcp quota available-region-list --subscription <subscription> \
+                                  --resource-types <resource-types> \
+                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+```
+
+### Deploy
+```bash
+# Get a deployment plan for a specific project
+azmcp deploy plan-get --workspace-folder <workspace-folder> \
+                      --project-name <project-name> \
+                      --target-app-service <target-app-service> \
+                      --provisioning-tool <provisioning-tool> \
+                      [--azd-iac-options <azd-iac-options>]
+                         
+# Get the iac generation rules for the resource types
+azmcp deploy iac-rules-get --deployment-tool <deployment-tool> \
+                           --iac-type <iac-type> \
+                           --resource-types <resource-types>
+
+# Get the application service log for a specific azd environment
+azmcp deploy azd-app-log-get --workspace-folder <workspace-folder> \
+                             --azd-env-name <azd-env-name> \
+                             [--limit <limit>]
+
+# Get the ci/cd pipeline guidance
+azmcp deploy cicd-pipeline-guidance-get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
+                                        [--organization-name <organization-name>] \
+                                        [--repository-name <repository-name>] \
+                                        [--github-environment-name <github-environment-name>]
+
+# Generate a mermaid architecture diagram for the application topology
+azmcp deploy architecture-diagram-generate --raw-mcp-tool-input <app-topology>
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:

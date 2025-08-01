@@ -6,6 +6,7 @@ using AzureMcp.Core.Areas;
 using AzureMcp.Core.Areas.Subscription;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Deploy;
 using AzureMcp.KeyVault;
 using AzureMcp.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +29,8 @@ internal class CommandFactoryHelpers
         IAreaSetup[] areaSetups = [
             new SubscriptionSetup(),
             new KeyVaultSetup(),
-            new StorageSetup()
+            new StorageSetup(),
+            new DeploySetup(),
         ];
 
         var commandFactory = new CommandFactory(services, areaSetups, telemetryService, logger);
