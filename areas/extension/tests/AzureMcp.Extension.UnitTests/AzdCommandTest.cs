@@ -9,9 +9,11 @@ using AzureMcp.Core.Services.ProcessExecution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Xunit;
+using Microsoft.VisualBasic;
 
-namespace AzureMcp.Tests.Areas.Extension.UnitTests;
+namespace AzureMcp.Extension.UnitTests;
 
 [Trait("Area", "Extension")]
 public sealed class AzdCommandTests
@@ -46,17 +48,18 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>())
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, "azd env list --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
 
         try
         {
-            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? Path.Combine(tempDir, "azd.exe")
                 : Path.Combine(tempDir, "azd");
-            
+
             File.WriteAllText(azdPath, "mock azd executable");
 
             var originalPath = Environment.GetEnvironmentVariable("PATH");
@@ -104,7 +107,8 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>())
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
             .Returns(new ProcessResult(1, string.Empty, errorMessage, "azd env invalid-command --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -157,8 +161,9 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>())
-            .Returns(Task.FromException<ProcessResult>(new FileNotFoundException(exceptionMessage)));
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
+            .ThrowsAsync(new FileNotFoundException(exceptionMessage));
 
         // Act
         var response = await command.ExecuteAsync(context, args);
@@ -239,7 +244,8 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>())
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
             .Returns(new ProcessResult(0, "output", "", "command"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -325,6 +331,122 @@ public sealed class AzdCommandTests
         }
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithComplexCommand_HandlesArgumentsProperly()
+    {
+        // Arrange
+        var command = new AzdCommand(_logger);
+        var parser = new Parser(command.GetCommand());
+        var args = parser.Parse("--command \"env get-values --output json\" --cwd test-dir");
+        var context = new CommandContext(_serviceProvider);
+
+        var expectedOutput = """{"AZURE_LOCATION":"eastus","AZURE_SUBSCRIPTION_ID":"12345"}""";
+
+        _processService.ExecuteAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
+            .Returns(new ProcessResult(0, expectedOutput, string.Empty, "azd env get-values --output json --cwd test-dir --no-prompt"));
+
+        var tempDir = CreateTempAzdCliDirectory();
+
+        try
+        {
+            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? Path.Combine(tempDir, "azd.exe")
+                : Path.Combine(tempDir, "azd");
+
+            File.WriteAllText(azdPath, "mock azd executable");
+
+            var originalPath = Environment.GetEnvironmentVariable("PATH");
+            try
+            {
+                Environment.SetEnvironmentVariable("PATH", tempDir + Path.PathSeparator + originalPath);
+                AzdCommand.ClearCachedAzdPath();
+
+                // Act
+                var response = await command.ExecuteAsync(context, args);
+
+                // Assert
+                Assert.NotNull(response);
+                Assert.Equal(200, response.Status);
+                Assert.NotNull(response.Results);
+
+                await _processService.Received(1).ExecuteAsync(
+                    Arg.Any<string>(),
+                    Arg.Is<string>(cmd => cmd.Contains("env get-values") && cmd.Contains("--output json") && cmd.Contains("--no-prompt")),
+                    Arg.Any<int>(),
+                    Arg.Any<IEnumerable<string>>());
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("PATH", originalPath);
+                AzdCommand.ClearCachedAzdPath();
+            }
+        }
+        finally
+        {
+            CleanupTempDirectory(tempDir);
+        }
+    }
+
+    [Theory]
+    [InlineData("help")]
+    [InlineData("version")]
+    [InlineData("config show")]
+    [InlineData("template list")]
+    public async Task ExecuteAsync_WithInfoCommands_ExecutesSuccessfully(string infoCommand)
+    {
+        // Arrange
+        var command = new AzdCommand(_logger);
+        var parser = new Parser(command.GetCommand());
+        var args = parser.Parse($"--command \"{infoCommand}\" --cwd test-dir");
+        var context = new CommandContext(_serviceProvider);
+
+        var expectedOutput = $"Mock output for {infoCommand}";
+
+        _processService.ExecuteAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<int>(),
+            Arg.Any<IEnumerable<string>>())
+            .Returns(new ProcessResult(0, expectedOutput, string.Empty, $"azd {infoCommand} --cwd test-dir --no-prompt"));
+
+        var tempDir = CreateTempAzdCliDirectory();
+
+        try
+        {
+            var azdPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? Path.Combine(tempDir, "azd.exe")
+                : Path.Combine(tempDir, "azd");
+
+            File.WriteAllText(azdPath, "mock azd executable");
+
+            var originalPath = Environment.GetEnvironmentVariable("PATH");
+            try
+            {
+                Environment.SetEnvironmentVariable("PATH", tempDir + Path.PathSeparator + originalPath);
+                AzdCommand.ClearCachedAzdPath();
+
+                // Act
+                var response = await command.ExecuteAsync(context, args);
+
+                // Assert
+                Assert.Equal(200, response.Status);
+                Assert.NotNull(response.Results);
+            }
+            finally
+            {
+                CleanupPath(originalPath);
+            }
+        }
+        finally
+        {
+            CleanupTempDirectory(tempDir);
+        }
+    }
+
     private static string CreateTempAzdCliDirectory()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), "AzdTest_" + Guid.NewGuid().ToString("N")[..TempDirSuffixLength]);
@@ -338,5 +460,11 @@ public sealed class AzdCommandTests
         {
             Directory.Delete(tempDir, true);
         }
+    }
+
+    private static void CleanupPath(string? originalPath)
+    {
+        Environment.SetEnvironmentVariable("PATH", originalPath);
+        AzdCommand.ClearCachedAzdPath();
     }
 }
