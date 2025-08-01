@@ -773,6 +773,19 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --account-name <account-name> \
                                               --file-system-name <file-system-name>
 
+# Create a directory in DataLake using a specific path
+azmcp storage datalake directory create --subscription <subscription> \
+                                        --account-name <account-name> \
+                                        --directory-path <directory-path>
+
+# Send a message to a Storage queue
+azmcp storage queue message send --subscription <subscription> \
+                                 --account-name <account-name> \
+                                 --queue-name <queue-name> \
+                                 --message-content "<message-content>" \
+                                 [--time-to-live-in-seconds <seconds>] \
+                                 [--visibility-timeout-in-seconds <seconds>]
+
 # List tables in a Storage account
 azmcp storage table list --subscription <subscription> \
                          --account-name <account-name>

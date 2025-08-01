@@ -75,6 +75,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
 * "List paths in my Data Lake file system"
+* "Send a message to my storage queue"
 
 ## 🛠️ Currently Supported Tools
 
