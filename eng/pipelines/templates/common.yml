@@ -125,11 +125,10 @@ extends:
           - template: /eng/pipelines/templates/jobs/release.yml
             parameters:
               VsixTargets: ${{ parameters.VsixTargets }}
-          #TODO: commented out for testing add back before merging
-          # - template: /eng/pipelines/templates/jobs/docker.yml
-          #   parameters:
-          #     ContainerRegistry: 'azuresdkimages'
-          #     DeploymentEnvironment: 'public'
+           - template: /eng/pipelines/templates/jobs/docker.yml
+             parameters:
+               ContainerRegistry: 'azuresdkimages'
+               DeploymentEnvironment: 'public'
 
       - ${{ else }}:
         - stage: Integration
