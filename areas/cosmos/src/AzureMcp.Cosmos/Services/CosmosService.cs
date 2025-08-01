@@ -184,7 +184,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
-        var cacheKey = CosmosDatabasesCacheKeyPrefix + accountName;
+        var cacheKey = $"{CosmosDatabasesCacheKeyPrefix}{accountName}";
 
         var cachedDatabases = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDurationResources);
         if (cachedDatabases != null)
