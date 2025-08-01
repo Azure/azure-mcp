@@ -2,6 +2,7 @@ parameters:
 - name: VsixTargets
   type: object
   default: []
+
 jobs:
 - job: TagRepository
   displayName: "Create release tag"
