@@ -81,6 +81,7 @@ internal class Program
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
         ];

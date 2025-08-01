@@ -230,6 +230,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Get secure, production-grade Azure Terraform best practices for effective code generation and command execution
 
+### 🖥️ Azure Virtual Desktop
+  
+* List Azure Virtual Desktop host pools
+* List session hosts in host pools
+* List user sessions on a session host
+
 ### 📊 Azure Workbooks
 
 * List workbooks in resource groups
