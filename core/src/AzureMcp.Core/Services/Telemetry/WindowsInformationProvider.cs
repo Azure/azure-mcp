@@ -17,7 +17,7 @@ internal class WindowsInformationProvider(ILogger<WindowsInformationProvider> lo
 
     public override Task<string?> GetOrCreateDeviceId()
     {
-        return Task.Run(() =>
+        return Task.Run<string?>(() =>
         {
             try
             {
