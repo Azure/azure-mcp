@@ -36,18 +36,6 @@ public static class OpenTelemetryExtensions
 
                 options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
                     || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
-
-                if (options.IsTelemetryEnabled)
-                {
-                    var address = NetworkInterface.GetAllNetworkInterfaces()
-                        .Where(x => x.OperationalStatus == OperationalStatus.Up && x.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                        .Select(x => x.GetPhysicalAddress().ToString())
-                        .FirstOrDefault(x => !string.IsNullOrEmpty(x));
-
-                    options.MacAddressHash = address != null
-                        ? Sha256Helper.GetHashedValue(address)
-                        : "N/A";
-                }
             });
 
         services.AddSingleton<ITelemetryService, TelemetryService>();
