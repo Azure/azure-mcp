@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
-using Microsoft.VisualBasic;
 
 namespace AzureMcp.Extension.UnitTests;
 
@@ -83,8 +82,7 @@ public sealed class AzdCommandTests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("PATH", originalPath);
-                AzdCommand.ClearCachedAzdPath();
+                CleanupPath(originalPath);
             }
         }
         finally
@@ -137,8 +135,7 @@ public sealed class AzdCommandTests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("PATH", originalPath);
-                AzdCommand.ClearCachedAzdPath();
+                CleanupPath(originalPath);
             }
         }
         finally
@@ -276,8 +273,7 @@ public sealed class AzdCommandTests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("PATH", originalPath);
-                AzdCommand.ClearCachedAzdPath();
+                CleanupPath(originalPath);
             }
         }
         finally
@@ -321,8 +317,7 @@ public sealed class AzdCommandTests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("PATH", originalPath);
-                AzdCommand.ClearCachedAzdPath();
+                CleanupPath(originalPath);
             }
         }
         finally
@@ -381,8 +376,7 @@ public sealed class AzdCommandTests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("PATH", originalPath);
-                AzdCommand.ClearCachedAzdPath();
+                CleanupPath(originalPath);
             }
         }
         finally
