@@ -24,7 +24,7 @@ The following options are available for all commands:
 
 The Azure MCP Server can be started in several different modes depending on how you want to expose the Azure tools:
 
-#### Default Mode (Namespace)
+#### Default Mode (Namespace-level Tools)
 
 Exposes Azure tools grouped by service namespace. Each Azure service appears as a single namespace-level tool that routes to individual operations internally. This is the default mode to reduce tool count and prevent VS Code from hitting the 128 tool limit.
 
@@ -34,7 +34,7 @@ azmcp server start \
     [--transport <transport>] \
     [--read-only]
 
-# Explicitly specify namespace mode
+# Explicitly specify namespace mode (same as default)
 azmcp server start \
     --mode namespace \
     [--transport <transport>] \
@@ -43,7 +43,7 @@ azmcp server start \
 
 #### All Tools Mode
 
-Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool.
+Exposes all Azure tools individually. Each Azure service operation appears as a separate MCP tool. This was the default behavior before v0.5.0.
 
 ```bash
 # Start MCP Server with all tools exposed individually
@@ -67,17 +67,17 @@ azmcp server start \
 
 #### Namespace Filtering
 
-Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces.
+Exposes only tools for specific Azure service namespaces. Use multiple `--namespace` parameters to include multiple namespaces. Can be combined with different modes.
 
 ```bash
-# Start MCP Server with only Storage tools
+# Start MCP Server with only Storage and Key Vault namespace tools (default mode)
 azmcp server start \
     --namespace storage \
-    --mode all \
+    --namespace keyvault \
     [--transport <transport>] \
     [--read-only]
 
-# Start MCP Server with Storage and Key Vault tools
+# Start MCP Server with Storage and Key Vault individual tools
 azmcp server start \
     --namespace storage \
     --namespace keyvault \
@@ -86,36 +86,14 @@ azmcp server start \
     [--read-only]
 ```
 
-#### Namespace Mode (Default)
-
-Collapses all tools within each namespace into a single tool (e.g., all storage operations become one "storage" tool with internal routing). This mode is particularly useful when working with MCP clients that have tool limits - for example, VS Code only supports a maximum of 128 tools across all registered MCP servers.
-
-```bash
-# Start MCP Server with service proxy tools
-azmcp server start \
-    --mode namespace \
-    [--transport <transport>] \
-    [--read-only]
-```
-
-#### Single Tool Proxy Mode
-
-Exposes a single "azure" tool that handles internal routing across all Azure MCP tools.
-
-```bash
-# Start MCP Server with single Azure tool proxy
-azmcp server start \
-    --mode single \
-    [--transport <transport>] \
-    [--read-only]
-```
-
 > **Note:**
 >
-> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
-> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
-> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
-> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+> - **Default Mode**: No additional parameters starts namespace-level tools (~25 tools) - recommended for VS Code
+> - **All Tools Mode**: Use `--mode all` to restore pre-v0.5.0 behavior (~128 individual tools)
+> - **Namespace Filtering**: Use `--namespace <name>` to limit to specific Azure services
+> - **Combined Usage**: `--namespace` and `--mode` parameters can be used together
+> - **Read-Only Mode**: The `--read-only` flag filters to read-only operations only
+> - **Available Namespaces**: Run `azmcp -h` to see available namespaces like `storage`, `keyvault`, `cosmos`, `monitor`, etc.
 
 ### Azure AI Foundry Operations
 

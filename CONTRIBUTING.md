@@ -173,7 +173,7 @@ Update your mcp.json to point to the locally built azmcp executable:
 
 Optional `--namespace` and `--mode` parameters can be used to configure different server modes:
 
-**Default Mode** (no additional parameters):
+**Namespace Mode** - namespace-level tools (default behavior):
 ```json
 {
   "servers": {
@@ -186,7 +186,20 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 }
 ```
 
-**Namespace Mode** (expose specific services):
+**All Tools Mode** (expose all individual tools):
+```json
+{
+  "servers": {
+    "azure-mcp-server": {
+      "type": "stdio",
+      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
+      "args": ["server", "start", "--mode", "all"]
+    }
+  }
+}
+```
+
+**Namespace Filtering** (expose specific services):
 ```json
 {
   "servers": {
@@ -199,20 +212,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 }
 ```
 
-**Namespace Proxy Mode** (collapse tools by namespace):
-```json
-{
-  "servers": {
-    "azure-mcp-server": {
-      "type": "stdio",
-      "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
-      "args": ["server", "start", "--mode", "namespace"]
-    }
-  }
-}
-```
-
-**Single Tool Proxy Mode** (single "azure" tool with internal routing):
+**Single Tool Mode** (single "azure" tool with internal routing):
 ```json
 {
   "servers": {
@@ -225,23 +225,23 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 }
 ```
 
-**Combined Mode** (filter namespaces with proxy mode):
+**Combined Mode** (filter namespaces with all tools mode):
 ```json
 {
   "servers": {
     "azure-mcp-server": {
       "type": "stdio",
       "command": "<absolute-path-to>/azure-mcp/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp[.exe]",
-      "args": ["server", "start", "--namespace", "storage", "--namespace", "keyvault", "--mode", "namespace"]
+      "args": ["server", "start", "--namespace", "storage", "--namespace", "keyvault", "--mode", "all"]
     }
   }
 }
 ```
 
 > **Server Mode Summary:**
-> - **Default Mode**: No additional parameters - exposes all tools individually
-> - **Namespace Mode**: `--namespace <service-name>` - expose specific services
-> - **Namespace Proxy Mode**: `--mode namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
+> - **Namespace Mode**: No additional parameters - exposes namespace-level tools (recommended for VS Code's 128 tool limit)
+> - **All Tools Mode**: `--mode all` - expose all individual tools (pre-v0.5.0 behavior)
+> - **Namespace Filtering**: `--namespace <service-name>` - expose specific services only
 > - **Single Tool Mode**: `--mode single` - single "azure" tool with internal routing
 > - **Combined Mode**: Both `--namespace` and `--mode` can be used together
 
