@@ -5,20 +5,20 @@ using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Queue;
 using AzureMcp.ServiceBus.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.ServiceBus.Commands.Queue;
 
-public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
+public sealed class QueueDetailsCommand(ILogger<QueueDetailsCommand> logger) : SubscriptionCommand<BaseQueueOptions>
 {
     private const string CommandTitle = "Get Service Bus Queue Details";
     private readonly Option<string> _queueOption = ServiceBusOptionDefinitions.Queue;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
-
+    private readonly ILogger<QueueDetailsCommand> _logger = logger;
     public override string Name => "details";
 
     public override string Description =>
@@ -76,6 +76,7 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error getting Service Bus queue details");
             HandleException(context, ex);
         }
 
@@ -94,6 +95,5 @@ public sealed class QueueDetailsCommand : SubscriptionCommand<BaseQueueOptions>
         ServiceBusException sbEx when sbEx.Reason == ServiceBusFailureReason.MessagingEntityNotFound => 404,
         _ => base.GetStatusCode(ex)
     };
-
     internal record QueueDetailsCommandResult(QueueDetails QueueDetails);
 }

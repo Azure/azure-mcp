@@ -21,7 +21,7 @@ public class BicepSchemaSetup : IAreaSetup
     {
 
         // Create Bicep Schema command group
-        var bicep = new CommandGroup("bicepschema", "Bicep schema operations - Commands for working with Bicep IaC generation.");
+        var bicep = new CommandGroup("bicepschema", "Bicep schema operations - Commands for working with Azure Bicep Infrastructure as Code (IaC) generation and schema management. Includes operations for retrieving Bicep schemas, templates, and resource definitions to support infrastructure deployment automation.");
         rootGroup.AddSubGroup(bicep);
 
         // Register Bicep Schema command
