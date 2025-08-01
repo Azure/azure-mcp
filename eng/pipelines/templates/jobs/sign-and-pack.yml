@@ -7,6 +7,10 @@ jobs:
 - job: SignAndPack
   displayName: "Sign and Pack"
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
+  pool: # Binary signing of mac bits needs to happen on mac see https://github.com/Azure/azure-mcp/blob/4ff032fafc77bc618738879b7028665c0de2e632/eng/scripts/Compress-ForSigning.ps1#L40
+    name: $(MACPOOL)
+    vmImage: $(MACVMIMAGE)
+    os: macos
   steps:
   - checkout: self
 
