@@ -11,6 +11,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.Shares;
+using Azure.Storage.Files.Shares.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -315,6 +316,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
+    private async Task<ShareServiceClient> CreateShareServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.file.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
+        options.ShareTokenIntent = ShareTokenIntent.Backup; // Set the intent for file backup, needed for Manged Identity
+        return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
@@ -512,12 +521,5 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         {
             throw new Exception($"Error listing files and directories: {ex.Message}", ex);
         }
-    }
-
-    private async Task<ShareServiceClient> CreateShareServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
-    {
-        var uri = $"https://{accountName}.file.core.windows.net";
-        var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
-        return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 }
