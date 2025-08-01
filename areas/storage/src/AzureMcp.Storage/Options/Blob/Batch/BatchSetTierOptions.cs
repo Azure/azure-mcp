@@ -10,6 +10,6 @@ public class BatchSetTierOptions : BaseContainerOptions
     [JsonPropertyName(StorageOptionDefinitions.TierName)]
     public string? Tier { get; set; }
 
-    [JsonPropertyName(StorageOptionDefinitions.BlobNamesParam)]
-    public string[]? BlobNames { get; set; }
+    [JsonPropertyName(StorageOptionDefinitions.BlobNamesName)]
+    public string? BlobNames { get; set; }
 }

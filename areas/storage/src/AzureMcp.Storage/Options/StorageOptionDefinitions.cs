@@ -11,7 +11,7 @@ public static class StorageOptionDefinitions
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier-name";
-    public const string BlobNamesParam = "blob-names";
+    public const string BlobNamesName = "blob-names";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -61,9 +61,9 @@ public static class StorageOptionDefinitions
         IsRequired = true
     };
 
-    public static readonly Option<string[]> BlobNames = new(
-        $"--{BlobNamesParam}",
-        "The names of the blobs to set the access tier for. Provide multiple blob names separated by spaces. Each blob name should be the full path within the container (e.g., 'file1.txt' or 'folder/file2.txt')."
+    public static readonly Option<string> BlobNames = new(
+        $"--{BlobNamesName}",
+        "The names of the blobs to set the access tier for (comma-separated). Each blob name should be the full path within the container (e.g., 'file1.txt' or 'folder/file2.txt')."
     )
     {
         IsRequired = true,

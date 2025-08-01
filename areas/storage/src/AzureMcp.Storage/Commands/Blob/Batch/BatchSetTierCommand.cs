@@ -17,16 +17,16 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     private readonly ILogger<BatchSetTierCommand> _logger = logger;
 
     private readonly Option<string> _tierOption = StorageOptionDefinitions.Tier;
-    private readonly Option<string[]> _blobNamesOption = StorageOptionDefinitions.BlobNames;
+    private readonly Option<string> _blobNamesOption = StorageOptionDefinitions.BlobNames;
 
     public override string Name => "set-tier";
 
     public override string Description =>
         $"""
-        Set access tier for multiple blobs in a single batch operation. This tool efficiently changes the 
+        Set access tier for multiple blobs (comma-separated list) in a single batch operation. This tool efficiently changes the 
         storage tier for multiple blobs simultaneously in a single request. Different tiers offer different 
         trade-offs between storage costs, access costs, and retrieval latency. Requires {StorageOptionDefinitions.AccountName}, 
-        {StorageOptionDefinitions.ContainerName}, {StorageOptionDefinitions.TierName}, and {StorageOptionDefinitions.BlobNames}.
+        {StorageOptionDefinitions.ContainerName}, {StorageOptionDefinitions.TierName}, and {StorageOptionDefinitions.BlobNamesName}.
         """;
 
     public override string Title => CommandTitle;
@@ -44,8 +44,37 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     {
         var options = base.BindOptions(parseResult);
         options.Tier = parseResult.GetValueForOption(_tierOption);
-        options.BlobNames = parseResult.GetValueForOption(_blobNamesOption);
+        var blobNames = parseResult.GetValueForOption(_blobNamesOption) == default
+            ? StorageOptionDefinitions.BlobNames.GetDefaultValue()
+            : parseResult.GetValueForOption(_blobNamesOption);
+        options.BlobNames = blobNames;
         return options;
+    }
+
+    public override ValidationResult Validate(CommandResult commandResult, CommandResponse? commandResponse = null)
+    {
+        var result = base.Validate(commandResult, commandResponse);
+
+        if (result.IsValid)
+        {
+            string blobNamesValue = commandResult.GetValueForOption(_blobNamesOption)!;
+
+            // Validate the metric names
+            string[] blobNames = blobNamesValue.Split(',').Select(t => t.Trim()).ToArray();
+
+            if (blobNames.Length == 0 || blobNames.Any(string.IsNullOrWhiteSpace))
+            {
+                result.IsValid = false;
+                result.ErrorMessage = $"Invalid format for --{_blobNamesOption.Name}. Provide a comma-separated list of blob names (e.g. foo.txt,bar.csv).";
+
+                if (commandResponse != null)
+                {
+                    commandResponse.Status = 400;
+                    commandResponse.Message = result.ErrorMessage!;
+                }
+            }
+        }
+        return result;
     }
 
     [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
@@ -62,18 +91,22 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
 
             context.Activity?.WithSubscriptionTag(options);
 
+            string[] blobNames = options.BlobNames!.Split(',').Select(t => t.Trim()).ToArray();
+
             var storageService = context.GetService<IStorageService>();
             var result = await storageService.SetBlobTierBatch(
                 options.Account!,
                 options.Container!,
                 options.Tier!,
-                options.BlobNames!,
+                blobNames,
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy);
 
             context.Response.Results = ResponseResult.Create(
-                new BatchSetTierCommandResult(result.SuccessfulBlobs, result.FailedBlobs),
+                new BatchSetTierCommandResult(
+                    result.SuccessfulBlobs.Count == 0 ? null : result.SuccessfulBlobs,
+                    result.FailedBlobs.Count == 0 ? null : result.FailedBlobs),
                 StorageJsonContext.Default.BatchSetTierCommandResult);
         }
         catch (Exception ex)
@@ -87,5 +120,5 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
         return context.Response;
     }
 
-    internal record BatchSetTierCommandResult(List<string> SuccessfulBlobs, List<string> FailedBlobs);
+    internal record BatchSetTierCommandResult(List<string>? SuccessfulBlobs, List<string>? FailedBlobs);
 }

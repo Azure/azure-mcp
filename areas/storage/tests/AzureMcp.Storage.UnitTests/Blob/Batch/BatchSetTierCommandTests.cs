@@ -74,7 +74,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--blob-names", "blob1.txt,blob2.txt,blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -119,7 +119,7 @@ public class BatchSetTierCommandTests
             "--account-name", _knownAccountName,
             "--container-name", _knownContainerName,
             "--tier-name", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--blob-names", "blob1.txt,blob2.txt,blob3.txt",
             "--subscription", _knownSubscriptionId
         ]);
 
