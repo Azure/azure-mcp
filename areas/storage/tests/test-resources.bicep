@@ -79,10 +79,10 @@ resource blobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@
 
 resource fileContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
-  // This is the Storage File Data SMB Share Contributor role.
+  // This is the Storage File Data Privileged Contributor role.
   // Read, write, and delete Azure Storage files and directories
   // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage
-  name: '0c867c2a-1d8c-454a-a3db-ab2ea1bdc8bb'
+  name: '69566ab7-960f-475b-8e7c-b3118f30c6bd'
 }
 
 resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
