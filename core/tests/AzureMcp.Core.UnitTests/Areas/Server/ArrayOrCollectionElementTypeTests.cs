@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Collections;
-using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Core.Areas.Server.Commands;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Core.UnitTests.Areas.Server;
 
 public class ArrayOrCollectionElementTypeTests
 {

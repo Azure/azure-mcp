@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using AzureMcp.Areas.Server.Commands;
+using AzureMcp.Core.Areas.Server.Commands;
 using Xunit;
 
-namespace AzureMcp.Tests.Commands.Server;
+namespace AzureMcp.Core.UnitTests.Areas.Server;
 
 public class OptionTypeTests
 {
@@ -43,13 +43,13 @@ public class OptionTypeTests
         var description = "A list of strings";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(listType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(listType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.NotNull(result["items"]);
-        Assert.Equal("string", result["items"]?["type"]?.ToString());
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.NotNull(result.Items);
+        Assert.Equal("string", result.Items.Type);
     }
 
     [Fact]
@@ -60,12 +60,12 @@ public class OptionTypeTests
         var description = "A string value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(stringType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(stringType, description);
 
         // Assert
-        Assert.Equal("string", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Should not have items for non-array types
+        Assert.Equal("string", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items);
     }
 
     [Fact]
@@ -76,12 +76,12 @@ public class OptionTypeTests
         var description = "An integer value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(intType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(intType, description);
 
         // Assert
-        Assert.Equal("integer", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Should not have items for non-array types
+        Assert.Equal("integer", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Should not have items for non-array types
     }
 
     [Fact]
@@ -92,12 +92,12 @@ public class OptionTypeTests
         var description = "A boolean value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(boolType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(boolType, description);
 
         // Assert
-        Assert.Equal("boolean", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Should not have items for non-array types
+        Assert.Equal("boolean", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Should not have items for non-array types
     }
 
     [Fact]
@@ -108,12 +108,12 @@ public class OptionTypeTests
         var description = "A number value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(doubleType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(doubleType, description);
 
         // Assert
-        Assert.Equal("number", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Should not have items for non-array types
+        Assert.Equal("number", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Should not have items for non-array types
     }
 
     [Fact]
@@ -124,12 +124,12 @@ public class OptionTypeTests
         var description = "An object value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(objectType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(objectType, description);
 
         // Assert
-        Assert.Equal("object", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Should not have items for non-array types
+        Assert.Equal("object", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Should not have items for non-array types
     }
 
     [Fact]
@@ -140,12 +140,12 @@ public class OptionTypeTests
         string? description = null;
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(stringType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(stringType, description);
 
         // Assert
-        Assert.Equal("string", result["type"]?.ToString());
-        Assert.Equal(string.Empty, result["description"]?.ToString()); // Should default to empty string
-        Assert.Null(result["items"]);
+        Assert.Equal("string", result.Type);
+        Assert.Equal(string.Empty, result.Description); // Should default to empty string
+        Assert.Null(result.Items);
     }
 
     [Fact]
@@ -156,13 +156,13 @@ public class OptionTypeTests
         var description = "An array of integers";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(intArrayType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(intArrayType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.NotNull(result["items"]);
-        Assert.Equal("integer", result["items"]?["type"]?.ToString());
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.NotNull(result.Items);
+        Assert.Equal("integer", result.Items.Type); // Items should be integers
     }
 
     [Fact]
@@ -173,12 +173,12 @@ public class OptionTypeTests
         var description = "A GUID value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(guidType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(guidType, description);
 
         // Assert
-        Assert.Equal("string", result["type"]?.ToString()); // GUIDs are serialized as strings
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]);
+        Assert.Equal("string", result.Type); // GUIDs are serialized as strings
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items);
     }
 
     [Theory]
@@ -195,12 +195,12 @@ public class OptionTypeTests
         var description = $"A {type.Name} value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(type, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(type, description);
 
         // Assert
-        Assert.Equal(expectedJsonType, result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Non-array types should not have items
+        Assert.Equal(expectedJsonType, result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Non-array types should not have items
     }
 
     [Theory]
@@ -214,19 +214,19 @@ public class OptionTypeTests
         var description = $"A nullable {nullableType.Name} value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(nullableType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(nullableType, description);
 
         // Assert
-        Assert.Equal(expectedJsonType, result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Nullable types should not have items
+        Assert.Equal(expectedJsonType, result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Nullable types should not have items
     }
 
     [Fact]
     public void CreateOptionSchema_Should_Throw_ArgumentNullException_For_Null_Type()
     {
         // Arrange & Act & Assert
-        Assert.Throws<ArgumentNullException>(() => TypeToJsonTypeMapper.CreateOptionSchema(null!, "description"));
+        Assert.Throws<ArgumentNullException>(() => TypeToJsonTypeMapper.CreatePropertySchema(null!, "description"));
     }
 
     [Fact]
@@ -244,13 +244,13 @@ public class OptionTypeTests
         var description = "A nested array";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(nestedArrayType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(nestedArrayType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.NotNull(result["items"]);
-        Assert.Equal("array", result["items"]?["type"]?.ToString()); // Inner type should also be array
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.NotNull(result.Items);
+        Assert.Equal("array", result.Items.Type);
     }
 
     [Fact]
@@ -261,12 +261,12 @@ public class OptionTypeTests
         var description = "A dictionary";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(dictType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(dictType, description);
 
         // Assert
-        Assert.Equal("object", result["type"]?.ToString()); // Dictionaries are objects in JSON
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Objects don't have items
+        Assert.Equal("object", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items);
     }
 
     public enum TestEnum
@@ -283,12 +283,12 @@ public class OptionTypeTests
         var description = "An enum value";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(enumType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(enumType, description);
 
         // Assert
-        Assert.Equal("integer", result["type"]?.ToString()); // Enums are integers in JSON
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Enums should not have items
+        Assert.Equal("integer", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items);
     }
 
     [Fact]
@@ -299,23 +299,23 @@ public class OptionTypeTests
         var description = "A deeply nested array";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(deeplyNestedType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(deeplyNestedType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+
         // Check first level of nesting
-        Assert.NotNull(result["items"]);
-        Assert.Equal("array", result["items"]?["type"]?.ToString());
-        
+        Assert.NotNull(result.Items);
+        Assert.Equal("array", result.Items.Type);
+
         // Check second level of nesting
-        Assert.NotNull(result["items"]?["items"]);
-        Assert.Equal("array", result["items"]?["items"]?["type"]?.ToString());
-        
+        Assert.NotNull(result.Items.Items);
+        Assert.Equal("array", result.Items.Items.Type);
+
         // Check third level (final element type)
-        Assert.NotNull(result["items"]?["items"]?["items"]);
-        Assert.Equal("integer", result["items"]?["items"]?["items"]?["type"]?.ToString());
+        Assert.NotNull(result.Items.Items.Items);
+        Assert.Equal("integer", result.Items.Items.Items.Type);
     }
 
     [Fact]
@@ -326,19 +326,19 @@ public class OptionTypeTests
         var description = "A list of integer arrays";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(mixedArrayType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(mixedArrayType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+
         // Check inner array type
-        Assert.NotNull(result["items"]);
-        Assert.Equal("array", result["items"]?["type"]?.ToString());
-        
+        Assert.NotNull(result.Items);
+        Assert.Equal("array", result.Items.Type);
+
         // Check final element type
-        Assert.NotNull(result["items"]?["items"]);
-        Assert.Equal("integer", result["items"]?["items"]?["type"]?.ToString());
+        Assert.NotNull(result.Items.Items);
+        Assert.Equal("integer", result.Items.Items.Type);
     }
 
     [Theory]
@@ -351,13 +351,13 @@ public class OptionTypeTests
         var description = "An array with nullable elements";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(arrayWithNullableType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(arrayWithNullableType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.NotNull(result["items"]);
-        Assert.Equal(expectedElementType, result["items"]?["type"]?.ToString());
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.NotNull(result.Items);
+        Assert.Equal(expectedElementType, result.Items.Type);
     }
 
     [Theory]
@@ -371,13 +371,13 @@ public class OptionTypeTests
         var description = $"A {collectionType.Name} collection";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(collectionType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(collectionType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.NotNull(result["items"]);
-        Assert.Equal(expectedElementType, result["items"]?["type"]?.ToString());
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.NotNull(result.Items);
+        Assert.Equal(expectedElementType, result.Items.Type);
     }
 
     [Fact]
@@ -388,19 +388,19 @@ public class OptionTypeTests
         var description = "A jagged array";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(jaggedArrayType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(jaggedArrayType, description);
 
         // Assert
-        Assert.Equal("array", result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        
+        Assert.Equal("array", result.Type);
+        Assert.Equal(description, result.Description);
+
         // Check inner array type
-        Assert.NotNull(result["items"]);
-        Assert.Equal("array", result["items"]?["type"]?.ToString());
-        
+        Assert.NotNull(result.Items);
+        Assert.Equal("array", result.Items.Type);
+
         // Check final element type
-        Assert.NotNull(result["items"]?["items"]);
-        Assert.Equal("integer", result["items"]?["items"]?["type"]?.ToString());
+        Assert.NotNull(result.Items.Items);
+        Assert.Equal("integer", result.Items.Items.Type);
     }
 
     [Theory]
@@ -413,12 +413,12 @@ public class OptionTypeTests
         var description = "A complex dictionary";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(dictionaryType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(dictionaryType, description);
 
         // Assert
-        Assert.Equal("object", result["type"]?.ToString()); // Dictionaries are objects
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]); // Objects don't have items schema
+        Assert.Equal("object", result.Type); // Dictionaries are objects
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Objects don't have items schema
     }
 
     [Theory]
@@ -431,11 +431,11 @@ public class OptionTypeTests
         var description = "A nullable enum";
 
         // Act
-        var result = TypeToJsonTypeMapper.CreateOptionSchema(nullableEnumType, description);
+        var result = TypeToJsonTypeMapper.CreatePropertySchema(nullableEnumType, description);
 
         // Assert
-        Assert.Equal(expectedType, result["type"]?.ToString());
-        Assert.Equal(description, result["description"]?.ToString());
-        Assert.Null(result["items"]);
+        Assert.Equal(expectedType, result.Type);
+        Assert.Equal(description, result.Description);
+        Assert.Null(result.Items); // Nullable enums should not have items
     }
 }

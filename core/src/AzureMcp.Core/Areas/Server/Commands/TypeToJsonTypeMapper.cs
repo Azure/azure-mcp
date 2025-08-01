@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections;
-using System.Text.Json.Nodes;
+using AzureMcp.Core.Areas.Server.Models;
 
 namespace AzureMcp.Core.Areas.Server.Commands;
 
@@ -70,7 +70,7 @@ public static class TypeToJsonTypeMapper
         {
             // Check for dictionary types in an AOT-safe way
             var isDictionary = typeof(IDictionary).IsAssignableFrom(type);
-            
+
             // Also check for common generic dictionary types
             if (!isDictionary && type.IsGenericType)
             {
@@ -79,7 +79,7 @@ public static class TypeToJsonTypeMapper
                               genericTypeDef == typeof(Dictionary<,>) ||
                               genericTypeDef == typeof(SortedDictionary<,>);
             }
-            
+
             return isDictionary ? "object" : "array";
         }
 
@@ -119,7 +119,7 @@ public static class TypeToJsonTypeMapper
         }
 
         // Handle non-generic IEnumerable or open generics
-        if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
+        if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
             // Default to object
             return typeof(object);
@@ -134,18 +134,14 @@ public static class TypeToJsonTypeMapper
     /// <param name="optionType">The type of the option to create schema for.</param>
     /// <param name="description">The description for the option.</param>
     /// <returns>A JsonObject representing the JSON schema for the option.</returns>
-    public static JsonObject CreateOptionSchema(Type optionType, string? description)
+    public static ToolPropertySchema CreatePropertySchema(Type optionType, string? description)
     {
         ArgumentNullException.ThrowIfNull(optionType);
 
         // Handle nullable types - get the underlying type for schema generation
         var effectiveType = Nullable.GetUnderlyingType(optionType) ?? optionType;
         var jsonType = effectiveType.ToJsonType();
-        var optionSchema = new JsonObject()
-        {
-            ["type"] = jsonType,
-            ["description"] = description ?? string.Empty,
-        };
+        ToolPropertySchema? itemsSchema = null;
 
         // If the type is an array, we need to specify the items type recursively
         if (jsonType == "array")
@@ -155,11 +151,16 @@ public static class TypeToJsonTypeMapper
             if (elementType != null)
             {
                 // Recursively create schema for nested arrays
-                optionSchema["items"] = CreateItemsSchema(elementType);
+                itemsSchema = CreateItemsSchema(elementType);
             }
         }
 
-        return optionSchema;
+        return new ToolPropertySchema()
+        {
+            Type = jsonType,
+            Description = description ?? string.Empty,
+            Items = itemsSchema
+        };
     }
 
     /// <summary>
@@ -167,28 +168,30 @@ public static class TypeToJsonTypeMapper
     /// </summary>
     /// <param name="itemType">The type of the items in the array or collection.</param>
     /// <returns>A JsonObject representing the JSON schema for the array/collection items.</returns>
-    private static JsonObject CreateItemsSchema(Type itemType)
+    private static ToolPropertySchema CreateItemsSchema(Type itemType)
     {
         ArgumentNullException.ThrowIfNull(itemType);
 
         // Handle nullable types for array items
         var effectiveType = Nullable.GetUnderlyingType(itemType) ?? itemType;
         var jsonType = effectiveType.ToJsonType();
-        var itemsSchema = new JsonObject()
-        {
-            ["type"] = jsonType
-        };
+        ToolPropertySchema? itemsSchema = null;
 
         // If the item type is also an array, recursively define its items
         if (jsonType == "array")
         {
             var nestedElementType = GetArrayOrCollectionElementType(effectiveType);
+
             if (nestedElementType != null)
             {
-                itemsSchema["items"] = CreateItemsSchema(nestedElementType);
+                itemsSchema = CreateItemsSchema(nestedElementType);
             }
         }
 
-        return itemsSchema;
+        return new ToolPropertySchema()
+        {
+            Type = jsonType,
+            Items = itemsSchema
+        };
     }
 }
