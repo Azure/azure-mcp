@@ -282,7 +282,7 @@ namespace AzureMcp.Storage.LiveTests
 
             var files = result.AssertProperty("files");
             Assert.Equal(JsonValueKind.Array, files.ValueKind);
-            // Files array may be empty for a new share, but should be a valid array
+            Assert.NotEmpty(files.EnumerateArray());
         }
 
         [Fact]
@@ -296,12 +296,12 @@ namespace AzureMcp.Storage.LiveTests
                     { "account-name", Settings.ResourceBaseName },
                     { "share-name", "testshare" },
                     { "directory-path", "/" },
-                    { "prefix", "test" }
+                    { "prefix", "NoSuchPrefix" }
                 });
 
-            var files = result.AssertProperty("files");
-            Assert.Equal(JsonValueKind.Array, files.ValueKind);
-            // Files array may be empty for a new share with no matching prefix, but should be a valid array
+            // When using a prefix that does not match any files, we should still return a valid response
+            // with no result.
+            Assert.Null(result);
         }
     }
 }
