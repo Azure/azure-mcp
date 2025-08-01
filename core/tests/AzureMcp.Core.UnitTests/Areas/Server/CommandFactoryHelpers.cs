@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using AzureMcp.AppConfig;
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Areas.Subscription;
 using AzureMcp.Core.Commands;
@@ -28,7 +29,8 @@ internal class CommandFactoryHelpers
         IAreaSetup[] areaSetups = [
             new SubscriptionSetup(),
             new KeyVaultSetup(),
-            new StorageSetup()
+            new StorageSetup(),
+            new AppConfigSetup()
         ];
 
         var commandFactory = new CommandFactory(services, areaSetups, telemetryService, logger);

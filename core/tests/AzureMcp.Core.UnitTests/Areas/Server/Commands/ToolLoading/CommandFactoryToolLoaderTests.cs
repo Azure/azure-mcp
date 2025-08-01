@@ -352,4 +352,38 @@ public class CommandFactoryToolLoaderTests
         // This test passes if we can call a tool before listing tools, regardless of the tool's success/failure
         // The important thing is that the tool lookup mechanism works correctly
     }
+
+    [Fact]
+    public async Task ListToolsHandler_ReturnsToolWithArrayOrCollectionProperty()
+    {
+        // Arrange
+        var (toolLoader, commandFactory) = CreateToolLoader();
+        var request = CreateRequest();
+
+        // Act
+        var result = await toolLoader.ListToolsHandler(request, CancellationToken.None);
+
+        // Find the appconfig_kv_set tool and print all tool names
+        var appConfigSetTool = result.Tools.FirstOrDefault(t => t.Name == "azmcp_appconfig_kv_set");
+
+        // Assert
+        Assert.NotNull(appConfigSetTool);
+        Assert.Equal(JsonValueKind.Object, appConfigSetTool.InputSchema.ValueKind);
+
+        // Check that the tags parameter exists and has correct structure
+        var properties = appConfigSetTool.InputSchema.GetProperty("properties");
+        Assert.True(properties.TryGetProperty("tags", out var tagsProperty));
+
+        // Verify tags parameter has array type
+        Assert.True(tagsProperty.TryGetProperty("type", out var typeProperty));
+        Assert.Equal("array", typeProperty.GetString());
+
+        // Verify tags parameter has items property
+        Assert.True(tagsProperty.TryGetProperty("items", out var itemsProperty));
+        Assert.Equal(JsonValueKind.Object, itemsProperty.ValueKind);
+
+        // Verify items has string type
+        Assert.True(itemsProperty.TryGetProperty("type", out var itemTypeProperty));
+        Assert.Equal("string", itemTypeProperty.GetString());
+    }
 }

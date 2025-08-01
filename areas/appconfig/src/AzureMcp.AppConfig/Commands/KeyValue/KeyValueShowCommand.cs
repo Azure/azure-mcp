@@ -23,6 +23,7 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
         Show a specific key-value setting in an App Configuration store. This command retrieves and displays the value,
         label, content type, ETag, last modified time, and lock status for a specific setting. You must specify an
         account name and key. Optionally, you can specify a label otherwise the setting with default label will be retrieved.
+        You can also specify a content type to indicate how the value should be interpreted.
         """;
 
     public override string Title => CommandTitle;
@@ -49,7 +50,8 @@ public sealed class KeyValueShowCommand(ILogger<KeyValueShowCommand> logger) : B
                 options.Subscription!,
                 options.Tenant,
                 options.RetryPolicy,
-                options.Label);
+                options.Label,
+                options.ContentType);
 
             context.Response.Results = ResponseResult.Create(
                 new KeyValueShowResult(setting),

@@ -12,7 +12,7 @@ public sealed class ToolPropertySchema
 {
     /// <summary>
     /// The JSON type of the property (e.g., "string", "integer", "boolean", "array", "object").
-    /// The type mapping is handled by <see cref="AzureMcp.Core.Areas.Server.Commands.TypeToJsonTypeMapper"/>.
+    /// The type mapping is handled by <see cref="Commands.TypeToJsonTypeMapper"/>.
     /// </summary>
     [JsonPropertyName("type")]
     public required string Type { get; init; }
@@ -26,7 +26,7 @@ public sealed class ToolPropertySchema
 
     /// <summary>
     /// The type of the items in the array.
-    /// The type mapping is handled by <see cref="AzureMcp.Core.Areas.Server.Commands.TypeToJsonTypeMapper"/>.
+    /// The type mapping is handled by <see cref="Commands.TypeToJsonTypeMapper"/>.
     /// </summary>
     [JsonPropertyName("items")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
