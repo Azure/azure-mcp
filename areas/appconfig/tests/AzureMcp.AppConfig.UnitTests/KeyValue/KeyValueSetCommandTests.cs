@@ -62,7 +62,9 @@ public class KeyValueSetCommandTests
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
-            null);
+            null,
+            Arg.Any<string>(),
+            Arg.Any<List<string>>());
 
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetCommandResult>(json, new JsonSerializerOptions
@@ -99,7 +101,9 @@ public class KeyValueSetCommandTests
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
-            "prod");
+            "prod",
+            Arg.Any<string>(),
+            Arg.Any<List<string>>());
 
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetCommandResult>(json, new JsonSerializerOptions
@@ -124,7 +128,9 @@ public class KeyValueSetCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>(),
-            Arg.Any<string>())
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<List<string>>())
             .ThrowsAsync(new Exception("Failed to set key-value"));
 
         var args = _parser.Parse([
