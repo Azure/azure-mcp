@@ -44,10 +44,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     {
         var options = base.BindOptions(parseResult);
         options.Tier = parseResult.GetValueForOption(_tierOption);
-        var blobNames = parseResult.GetValueForOption(_blobNamesOption) == default
-            ? StorageOptionDefinitions.BlobNames.GetDefaultValue()
-            : parseResult.GetValueForOption(_blobNamesOption);
-        options.BlobNames = blobNames;
+        options.BlobNames = parseResult.GetValueForOption(_blobNamesOption);
         return options;
     }
 
@@ -59,7 +56,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
         {
             string blobNamesValue = commandResult.GetValueForOption(_blobNamesOption)!;
 
-            // Validate the metric names
+            // Validate the blob names
             string[] blobNames = blobNamesValue.Split(',').Select(t => t.Trim()).ToArray();
 
             if (blobNames.Length == 0 || blobNames.Any(string.IsNullOrWhiteSpace))
