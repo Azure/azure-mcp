@@ -13,6 +13,7 @@ internal static class TelemetryConstants
         public const string AzureMcpVersion = "Version";
         public const string ClientName = "ClientName";
         public const string ClientVersion = "ClientVersion";
+        public const string DevDeviceId = "DevDeviceId";
         public const string ErrorDetails = "ErrorDetails";
         public const string EventId = "EventId";
         public const string MacAddressHash = "MacAddressHash";
