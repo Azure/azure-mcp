@@ -211,6 +211,7 @@
         "DEBUGTELEMETRY",
         "dotenv",
         "drawcord",
+        "discoverability",
         "enumerables",
         "eslintcache",
         "eventgrid",

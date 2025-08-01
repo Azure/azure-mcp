@@ -62,6 +62,14 @@ resource blobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@
   name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 }
 
+resource queueDataContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Storage Queue Data Contributor role.
+  // Read, write, and delete Azure Storage queues and messages
+  // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-queue-data-contributor
+  name: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+}
+
 resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
   name: guid(blobContributorRoleDefinition.id, testApplicationOid, storageAccount.id)
   scope: storageAccount
@@ -69,5 +77,15 @@ resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
     principalId: testApplicationOid
     roleDefinitionId: blobContributorRoleDefinition.id
     description: 'Blob Contributor for testApplicationOid'
+  }
+}
+
+resource appQueueRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
+  name: guid(queueDataContributorRoleDefinition.id, testApplicationOid, storageAccount.id)
+  scope: storageAccount
+  properties:{
+    principalId: testApplicationOid
+    roleDefinitionId: queueDataContributorRoleDefinition.id
+    description: 'Queue Data Contributor for testApplicationOid'
   }
 }
