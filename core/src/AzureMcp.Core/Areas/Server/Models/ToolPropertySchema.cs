@@ -23,4 +23,12 @@ public sealed class ToolPropertySchema
     [JsonPropertyName("description")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; init; }
+
+    /// <summary>
+    /// The type of the items in the array.
+    /// The type mapping is handled by <see cref="AzureMcp.Core.Areas.Server.Commands.TypeToJsonTypeMapper"/>.
+    /// </summary>
+    [JsonPropertyName("items")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ToolPropertySchema? Items { get; init; }
 }

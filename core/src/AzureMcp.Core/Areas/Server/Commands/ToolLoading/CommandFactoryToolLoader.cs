@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Text.Json.Serialization.Metadata;
 using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Areas.Server.Options;
@@ -171,11 +172,30 @@ public sealed class CommandFactoryToolLoader(
         {
             foreach (var option in options)
             {
-                schema.Properties.Add(option.Name, new ToolPropertySchema
+                if (option.ValueType.ToJsonType() == "array")
                 {
-                    Type = option.ValueType.ToJsonType(),
-                    Description = option.Description,
-                });
+                    // "array" is returned when the type is Array or IEnumerable
+                    var itemType = option.ValueType.IsArray
+                        ? option.ValueType.GetElementType().ToJsonType()
+                        : option.ValueType.GetGenericArguments().FirstOrDefault().ToJsonType();
+                    schema.Properties.Add(option.Name, new ToolPropertySchema
+                    {
+                        Type = "array",
+                        Description = option.Description,
+                        Items = new ToolPropertySchema
+                        {
+                            Type = itemType
+                        }
+                    });
+                }
+                else
+                {
+                    schema.Properties.Add(option.Name, new ToolPropertySchema
+                    {
+                        Type = option.ValueType.ToJsonType(),
+                        Description = option.Description,
+                    });
+                }
             }
 
             schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
