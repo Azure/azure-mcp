@@ -16,15 +16,12 @@ jobs:
   - template: /eng/common/pipelines/templates/steps/retain-run.yml
 
   - pwsh: |
-      gh release create `
-       "$(Version)" `
-       --title "$(Version)"
-
+      gh release create $(Version) --title "$(Version)"
       gh release upload $(Version) $(Pipeline.Workspace)/$(PipelineArtifactName)_packed/platform/*.tgz
       gh release upload $(Version) $(Pipeline.Workspace)/$(PipelineArtifactName)_packed/wrapper/*.tgz
-   displayName: Create GitHub Release and upload artifacts
-   env:
-     GH_TOKEN: $(azuresdk-github-pat)
+    displayName: Create GitHub Release and upload artifacts
+    env:
+      GH_TOKEN: $(azuresdk-github-pat)
 
 - deployment: Publish
   displayName: "Publish to npmjs.com"
@@ -34,8 +31,8 @@ jobs:
     isProduction: true
     inputs:
     - input: pipelineArtifact
-     artifactName: $(PipelineArtifactName)_packed
-     targetPath: $(Pipeline.Workspace)/drop
+      artifactName: $(PipelineArtifactName)_packed
+      targetPath: $(Pipeline.Workspace)/drop
   environment: package-publish
   timeoutInMinutes: 120
   dependsOn: TagRepository
@@ -82,7 +79,7 @@ jobs:
             MainPublisher: 'ESRPRELPACMANTEST'
             ProductState: latest
         - template: /eng/pipelines/templates/steps/publish-to-dev-feed.yml
-            parameters:
+          parameters:
             PathToArtifacts: $(Pipeline.Workspace)/drop
             Registry: https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-js/npm/registry/
             Tag: latest
