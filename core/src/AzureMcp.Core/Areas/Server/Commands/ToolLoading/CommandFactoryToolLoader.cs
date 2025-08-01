@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Text.Json.Serialization.Metadata;
 using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Areas.Server.Options;
