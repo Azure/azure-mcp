@@ -28,17 +28,12 @@ public class FoundrySetup : IAreaSetup
 
         var deployments = new CommandGroup("deployments", "Foundry models deployments operations - Commands for listing and managing models deployments in AI Foundry.");
         models.AddSubGroup(deployments);
-
-        var evaluation = new CommandGroup("evaluation", "Foundry evaluation evaluations operations - Commands for working with evaluation services and resources in AI Foundry.");
-        foundry.AddSubGroup(evaluation);
-
-        var agents = new CommandGroup("agents", "Foundry evaluation agents operations - Commands for listing and managing evaluation agents in AI Foundry.");
-        evaluation.AddSubGroup(agents);
-
         deployments.AddCommand("list", new DeploymentsListCommand());
-
         models.AddCommand("list", new ModelsListCommand());
         models.AddCommand("deploy", new ModelDeploymentCommand());
+
+        var agents = new CommandGroup("agents", "Foundry agents operations - Commands for listing, querying, and evaluating agents in AI Foundry.");
+        foundry.AddSubGroup(agents);
 
         agents.AddCommand("list", new AgentsListCommand());
         agents.AddCommand("connect", new AgentsConnectCommand());

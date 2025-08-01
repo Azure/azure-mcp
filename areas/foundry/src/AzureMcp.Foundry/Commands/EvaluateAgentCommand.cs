@@ -16,16 +16,16 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
     private readonly Option<string> _responseOption = FoundryOptionDefinitions.ResponseOption;
     private readonly Option<string> _toolDefinitionsOption = FoundryOptionDefinitions.ToolDefinitionsOption;
 
-    public override string Name => "evaluate-data";
+    public override string Name => "evaluate";
 
     public override string Description =>
         """
-        Run agent evaluation on agent data. Accepts both plain text and JSON strings.
+        Run agent evaluation on agent data. Accepts JSON strings.
 
         Parameters:
         - evaluator_name: Name of the agent evaluator to use (intent_resolution, tool_call_accuracy, task_adherence)
-        - query: User query (plain text or JSON string)
-        - response: Agent response (plain text or JSON string)
+        - query: User query (JSON string)
+        - response: Agent response (JSON string)
         - tool_calls: Optional tool calls data (JSON string)
         - tool_definitions: Optional tool definitions (JSON string)
         """;

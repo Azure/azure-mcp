@@ -43,7 +43,7 @@
     <PackageVersion Include="Azure.ResourceManager.Grafana" Version="1.1.1" />
     <PackageVersion Include="Azure.ResourceManager.ResourceGraph" Version="1.1.0-beta.3" />
     <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="13.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.7.1" />
     <PackageVersion Include="Microsoft.Extensions.AI.Evaluation" Version="9.7.0" />
     <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Quality" Version="9.7.0" />
     <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Safety" Version="9.7.0-preview.1.25356.2" />
