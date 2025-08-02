@@ -1,7 +1,4 @@
 parameters:
-- name: SkipSigning
-  type: boolean
-  default: true
 - name: PublishPackages
   type: boolean
   default: false
@@ -11,15 +8,15 @@ parameters:
 - name: RunLiveTests
   type: boolean
   default: false
-- name: VsixArtifacts
+- name: VsixTargets
   type: object
   default:
-    - vsix_package_linux_x64
-    - vsix_package_linux_arm64
-    - vsix_package_osx_x64
-    - vsix_package_osx_arm64
-    - vsix_package_win_x64
-    - vsix_package_win_arm64
+    - linux-x64
+    - linux-arm64
+    - osx-x64
+    - osx-arm64
+    - win-x64
+    - win-arm64
 
 resources:
   repositories:
@@ -87,83 +84,34 @@ extends:
         jobs:
         - template: /eng/pipelines/templates/jobs/live-test.yml
 
-    # All builds in the internal project get signing
-    - stage: SignAndPack
-      ${{ if parameters.SkipSigning }}:
-        displayName: 'Pack'
-      ${{ else }}:
-        displayName: 'Sign and Pack'
-      dependsOn:
-      - Initialize
-      - Build
-      variables:
-      - template: /eng/pipelines/templates/variables/image.yml
-      - template: /eng/pipelines/templates/variables/globals.yml
-      - name: Version
-        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
-      jobs:
-      - template: /eng/pipelines/templates/jobs/sign-and-pack.yml
-        parameters:
-          SkipSigning: ${{ parameters.SkipSigning }}
-    
-    - stage: BuildVSIX
-      displayName: 'Build VSIX Extension'
-      dependsOn:
+    - ${{ if eq(parameters.PublishPackages, 'true') }}:
+      - stage: Sign
+        displayName: 'Sign'
+        dependsOn:
         - Initialize
-        - SignAndPack
-      pool:
-        name: $(LINUXPOOL)
-        image: $(LINUXVMIMAGE)
-        os: linux
-      variables:
+        - Build
+        pool:
+          name: $(LINUXPOOL)
+          image: $(LINUXVMIMAGE)
+          os: linux
+        variables:
         - template: /eng/pipelines/templates/variables/image.yml
         - template: /eng/pipelines/templates/variables/globals.yml
         - name: Version
           value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
-      jobs:
-        - template: /eng/common/pipelines/templates/jobs/generate-job-matrix.yml
-          parameters:
-            SparseCheckout: false
-            JobTemplatePath: /eng/pipelines/templates/jobs/build-vscode.yml
-            AdditionalParameters:
-              TestTimeoutInMinutes: 10
-              SkipSigning: ${{ parameters.SkipSigning }}
-
-            MatrixConfigs:
-              - Name: build_matrix
-                Path: eng/pipelines/build-matrix.json
-                Selection: all
-                GenerateVMJobs: true
-
-        # # All builds in the internal project get signing
-    - stage: SignAndPackVSIX
-      ${{ if parameters.SkipSigning }}:
-        displayName: 'Pack VSIX'
-      ${{ else }}:
-        displayName: 'VSIX Sign and Pack'
-      dependsOn:
-      - Initialize
-      - BuildVSIX
-      variables:
-      - template: /eng/pipelines/templates/variables/image.yml
-      - template: /eng/pipelines/templates/variables/globals.yml
-      - name: Version
-        value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
-
-      jobs:
-      - ${{ each artifact in parameters.VsixArtifacts }}:
-          - template: /eng/pipelines/templates/jobs/vscode-sign-and-pack.yml
+        jobs:
+        - template: /eng/pipelines/templates/jobs/sign-and-pack.yml
+        - ${{ each vsixtarget in parameters.VsixTargets }}:
+          - template: /eng/pipelines/templates/jobs/sign-and-pack-vsix.yml
             parameters:
-              SkipSigning: ${{ parameters.SkipSigning }}
-              ArtifactName: ${{ artifact }}
+              DependsOn: SignAndPack
+              VsixTarget: ${{ vsixtarget }}
 
-    - ${{ if eq(parameters.PublishPackages, 'true') }}:
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release
           dependsOn:
           - Initialize
-          - SignAndPack
-          - SignAndPackVSIX
+          - Sign
           pool:
             name: $(LINUXPOOL)
             image: $(LINUXVMIMAGE)
@@ -175,6 +123,8 @@ extends:
             value: $[ stageDependencies.Initialize.Initialize.outputs['Version.Version'] ]
           jobs:
           - template: /eng/pipelines/templates/jobs/release.yml
+            parameters:
+              VsixTargets: ${{ parameters.VsixTargets }}
           - template: /eng/pipelines/templates/jobs/docker.yml
             parameters:
               ContainerRegistry: 'azuresdkimages'
@@ -184,7 +134,7 @@ extends:
         - stage: Integration
           dependsOn:
           - Initialize
-          - SignAndPack
+          - Sign
           pool:
             name: $(LINUXPOOL)
             image: $(LINUXVMIMAGE)

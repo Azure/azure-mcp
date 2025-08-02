@@ -2,19 +2,12 @@ parameters:
 - name: TimeoutInMinutes
   type: number
   default: 120
-- name: SkipSigning
-  type: boolean
-  default: false
 
 jobs:
 - job: SignAndPack
-  ${{ if parameters.SkipSigning }}:
-    displayName: "Pack"
-  ${{ else }}:
-    displayName: "Sign and Pack"
-  condition: and(succeededOrFailed(), ne(variables['Skip.Analyze'], 'true'))
+  displayName: "Sign and Pack"
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
-  pool:
+  pool: # Binary signing of mac bits needs to happen on mac see https://github.com/Azure/azure-mcp/blob/4ff032fafc77bc618738879b7028665c0de2e632/eng/scripts/Compress-ForSigning.ps1#L40
     name: $(MACPOOL)
     vmImage: $(MACVMIMAGE)
     os: macos
@@ -34,16 +27,15 @@ jobs:
         -ArtifactPrefix '$(PipelineArtifactName)_'
         -OutputPath '$(Build.ArtifactStagingDirectory)/signed'
 
-  - ${{ if not(parameters.SkipSigning) }}:
-    - template: pipelines/steps/azd-cli-win-signing.yml@azure-sdk-build-tools
-      parameters:
-        WinPath: $(Build.ArtifactStagingDirectory)/signed
-        WinPattern: '**/*.exe'
+  - template: pipelines/steps/azd-cli-win-signing.yml@azure-sdk-build-tools
+    parameters:
+      WinPath: $(Build.ArtifactStagingDirectory)/signed
+      WinPattern: '**/*.exe'
 
-    - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
-      parameters:
-        MacPath: $(Build.ArtifactStagingDirectory)/signed
-        MacPattern: "**/*.zip"
+  - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
+    parameters:
+      MacPath: $(Build.ArtifactStagingDirectory)/signed
+      MacPattern: "**/*.zip"
 
   - task: Powershell@2
     displayName: "Expand packages"
@@ -53,12 +45,11 @@ jobs:
       arguments: >
         -Path '$(Build.ArtifactStagingDirectory)/signed'
 
-  - ${{ if not(parameters.SkipSigning) }}:
-    - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
-      parameters:
-        ArtifactPath: $(Build.ArtifactStagingDirectory)/signed
-        ArtifactName: $(PipelineArtifactName)_signed
-        SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed
+      ArtifactName: $(PipelineArtifactName)_signed
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
   - task: Powershell@2
     displayName: "Pack modules"
