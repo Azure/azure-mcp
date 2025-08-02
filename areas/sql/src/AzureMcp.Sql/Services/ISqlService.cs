@@ -89,4 +89,26 @@ public interface ISqlService
         string subscription,
         RetryPolicyOptions? retryPolicy,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a new firewall rule for a SQL server.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server</param>
+    /// <param name="ruleName">The name of the firewall rule</param>
+    /// <param name="startIpAddress">The start IP address for the rule</param>
+    /// <param name="endIpAddress">The end IP address for the rule</param>
+    /// <param name="resourceGroup">The name of the resource group</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy options</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The created SQL server firewall rule</returns>
+    Task<SqlServerFirewallRule> CreateFirewallRuleAsync(
+        string serverName,
+        string ruleName,
+        string startIpAddress,
+        string endIpAddress,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default);
 }

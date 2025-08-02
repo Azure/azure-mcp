@@ -284,4 +284,54 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
             throw;
         }
     }
+
+    public async Task<SqlServerFirewallRule> CreateFirewallRuleAsync(
+        string serverName,
+        string ruleName,
+        string startIpAddress,
+        string endIpAddress,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var firewallRuleData = new SqlFirewallRuleData
+            {
+                StartIPAddress = startIpAddress,
+                EndIPAddress = endIpAddress
+            };
+
+            var firewallRuleOperation = await sqlServerResource.Value
+                .GetSqlFirewallRules()
+                .CreateOrUpdateAsync(Azure.WaitUntil.Completed, ruleName, firewallRuleData, cancellationToken);
+
+            var rule = firewallRuleOperation.Value.Data;
+
+            return new SqlServerFirewallRule(
+                Name: rule.Name,
+                Id: rule.Id.ToString(),
+                Type: rule.ResourceType.ToString() ?? "Unknown",
+                StartIpAddress: rule.StartIPAddress,
+                EndIpAddress: rule.EndIPAddress
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error creating SQL server firewall rule. Server: {Server}, RuleName: {RuleName}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, ruleName, resourceGroup, subscription);
+            throw;
+        }
+    }
 }
