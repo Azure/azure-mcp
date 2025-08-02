@@ -10,6 +10,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Update CREATE and SET operations to destructive = true. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+
 ### Other Changes
 
 ## 0.5.2 (2025-07-31)

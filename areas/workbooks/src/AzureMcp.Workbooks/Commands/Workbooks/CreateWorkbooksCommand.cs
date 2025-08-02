@@ -24,14 +24,14 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
 
     public override string Description =>
         """
-        Create a new workbook in the specified resource group and subscription. 
+        Create a new workbook in the specified resource group and subscription.
         You can set the display name and serialized data JSON content for the workbook.
         Returns the created workbook information upon successful completion.
         """;
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
