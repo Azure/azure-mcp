@@ -25,8 +25,6 @@ public sealed class FirewallRuleCreateCommand(ILogger<FirewallRuleCreateCommand>
         an IP address range that can access the SQL server. The rule will be created with 
         the specified name and IP range. Returns the created firewall rule object with 
         its properties.
-
-        Example: azmcp sql server firewall-rule create --server myserver --resource-group mygroup --subscription mysub --name "AllowOffice" --start-ip "192.168.1.1" --end-ip "192.168.1.255"
         """;
 
     public override string Title => CommandTitle;

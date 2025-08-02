@@ -227,7 +227,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
     {
         // Use the deployed test SQL server
         var serverName = Settings.ResourceBaseName;
-        var ruleName = $"testrule-{DateTime.UtcNow.Ticks}"; // Unique rule name
+        var ruleName = $"testRuleName-{DateTime.UtcNow.Ticks}"; // Unique rule name
         var startIp = "192.168.1.1";
         var endIp = "192.168.1.255";
 
