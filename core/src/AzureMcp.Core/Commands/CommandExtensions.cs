@@ -35,23 +35,59 @@ public static class CommandExtensions
             {
                 continue;
             }
-            args.Add($"--{option.Name}"); // Use the actual option name for consistency            // Handle different value types
-            var strValue = value.ValueKind switch
-            {
-                JsonValueKind.True => "true",
-                JsonValueKind.False => "false",
-                JsonValueKind.Number => value.GetRawText(),
-                JsonValueKind.String => value.GetString(),
-                JsonValueKind.Array => string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
-                _ => value.GetRawText()
-            };
 
-            if (strValue != null)
+            // Handle arrays for options that accept multiple values (string[])
+            if (value.ValueKind == JsonValueKind.Array && IsStringArrayOption(option))
             {
-                args.Add(strValue);
+                foreach (var arrayElement in value.EnumerateArray())
+                {
+                    args.Add($"--{option.Name}");
+                    var elementValue = arrayElement.ValueKind switch
+                    {
+                        JsonValueKind.True => "true",
+                        JsonValueKind.False => "false",
+                        JsonValueKind.Number => arrayElement.GetRawText(),
+                        JsonValueKind.String => arrayElement.GetString(),
+                        _ => arrayElement.GetRawText()
+                    };
+                    
+                    if (elementValue != null)
+                    {
+                        args.Add(elementValue);
+                    }
+                }
+            }
+            else
+            {
+                args.Add($"--{option.Name}"); // Use the actual option name for consistency            // Handle different value types
+                var strValue = value.ValueKind switch
+                {
+                    JsonValueKind.True => "true",
+                    JsonValueKind.False => "false",
+                    JsonValueKind.Number => value.GetRawText(),
+                    JsonValueKind.String => value.GetString(),
+                    JsonValueKind.Array => string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
+                    _ => value.GetRawText()
+                };
+
+                if (strValue != null)
+                {
+                    args.Add(strValue);
+                }
             }
         }
 
         return command.Parse(args.ToArray());
+    }
+
+    /// <summary>
+    /// Determines if an option expects a string array (string[])
+    /// </summary>
+    /// <param name="option">The option to check</param>
+    /// <returns>True if the option expects a string array, false otherwise</returns>
+    private static bool IsStringArrayOption(Option option)
+    {
+        // Check if the option's ValueType is string[]
+        return option.ValueType == typeof(string[]);
     }
 }
