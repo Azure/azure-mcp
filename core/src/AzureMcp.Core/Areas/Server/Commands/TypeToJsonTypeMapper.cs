@@ -3,6 +3,7 @@
 
 using System.Collections;
 using AzureMcp.Core.Areas.Server.Models;
+using AzureMcp.Core.Helpers;
 
 namespace AzureMcp.Core.Areas.Server.Commands;
 
@@ -68,19 +69,7 @@ public static class TypeToJsonTypeMapper
 
         if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
-            // Check for dictionary types in an AOT-safe way
-            var isDictionary = typeof(IDictionary).IsAssignableFrom(type);
-
-            // Also check for common generic dictionary types
-            if (!isDictionary && type.IsGenericType)
-            {
-                var genericTypeDef = type.GetGenericTypeDefinition();
-                isDictionary = genericTypeDef == typeof(IDictionary<,>) ||
-                              genericTypeDef == typeof(Dictionary<,>) ||
-                              genericTypeDef == typeof(SortedDictionary<,>);
-            }
-
-            return isDictionary ? "object" : "array";
+            return CollectionTypeHelper.IsDictionaryType(type) ? "object" : "array";
         }
 
         if (effectiveType.IsEnum)

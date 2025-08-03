@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Helpers;
+
 namespace AzureMcp.Core.Commands;
 
 /// <summary>
@@ -20,7 +22,9 @@ public static class CommandExtensions
         {
             return command.Parse(Array.Empty<string>());
         }
+
         var args = new List<string>();
+
         foreach (var (key, value) in arguments)
         {
             var option = command.Options.FirstOrDefault(o =>
@@ -36,21 +40,15 @@ public static class CommandExtensions
                 continue;
             }
 
-            // Handle arrays for options that accept multiple values (string[])
-            if (value.ValueKind == JsonValueKind.Array && IsStringArrayOption(option))
+            // Handle arrays for options that accept multiple values (collections)
+            if (value.ValueKind == JsonValueKind.Array && IsArrayOption(option))
             {
                 foreach (var arrayElement in value.EnumerateArray())
                 {
                     args.Add($"--{option.Name}");
-                    var elementValue = arrayElement.ValueKind switch
-                    {
-                        JsonValueKind.True => "true",
-                        JsonValueKind.False => "false",
-                        JsonValueKind.Number => arrayElement.GetRawText(),
-                        JsonValueKind.String => arrayElement.GetString(),
-                        _ => arrayElement.GetRawText()
-                    };
-                    
+
+                    var elementValue = ConvertJsonElementToString(arrayElement);
+
                     if (elementValue != null)
                     {
                         args.Add(elementValue);
@@ -59,16 +57,9 @@ public static class CommandExtensions
             }
             else
             {
-                args.Add($"--{option.Name}"); // Use the actual option name for consistency            // Handle different value types
-                var strValue = value.ValueKind switch
-                {
-                    JsonValueKind.True => "true",
-                    JsonValueKind.False => "false",
-                    JsonValueKind.Number => value.GetRawText(),
-                    JsonValueKind.String => value.GetString(),
-                    JsonValueKind.Array => string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
-                    _ => value.GetRawText()
-                };
+                args.Add($"--{option.Name}");
+
+                var strValue = ConvertJsonElementToString(value);
 
                 if (strValue != null)
                 {
@@ -81,13 +72,30 @@ public static class CommandExtensions
     }
 
     /// <summary>
-    /// Determines if an option expects a string array (string[])
+    /// Determines if an option expects a collection type that should be treated as an array
     /// </summary>
     /// <param name="option">The option to check</param>
-    /// <returns>True if the option expects a string array, false otherwise</returns>
-    private static bool IsStringArrayOption(Option option)
+    /// <returns>True if the option expects a collection type, false otherwise</returns>
+    private static bool IsArrayOption(Option option)
     {
-        // Check if the option's ValueType is string[]
-        return option.ValueType == typeof(string[]);
+        return CollectionTypeHelper.IsArrayType(option.ValueType);
+    }
+
+    /// <summary>
+    /// Converts a JsonElement to its string representation for command-line arguments
+    /// </summary>
+    /// <param name="element">The JsonElement to convert</param>
+    /// <returns>String representation of the element, or null if conversion fails</returns>
+    private static string? ConvertJsonElementToString(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            JsonValueKind.Number => element.GetRawText(),
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Array => string.Join(" ", element.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
+            _ => element.GetRawText()
+        };
     }
 }
