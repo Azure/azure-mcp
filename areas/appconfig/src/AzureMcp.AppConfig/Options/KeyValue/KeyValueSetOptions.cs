@@ -11,5 +11,5 @@ public class KeyValueSetOptions : BaseKeyValueOptions
     public string? Value { get; set; }
 
     [JsonPropertyName(AppConfigOptionDefinitions.TagsName)]
-    public List<string>? Tags { get; set; } = [];
+    public string[]? Tags { get; set; }
 }

@@ -52,7 +52,7 @@ public static class AppConfigOptionDefinitions
         IsRequired = false
     };
 
-    public static readonly Option<List<string>> Tags = new(
+    public static readonly Option<string[]> Tags = new(
         $"--{TagsName}",
         "The tags to associate with the configuration key. Tags should be in the format 'key=value'. Multiple tags can be specified."
     )

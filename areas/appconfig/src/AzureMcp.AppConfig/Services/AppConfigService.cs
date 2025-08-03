@@ -144,7 +144,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         await SetKeyValueReadOnlyState(accountName, key, subscriptionId, tenant, retryPolicy, label, false);
     }
 
-    public async Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null, List<string>? tags = null)
+    public async Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null, string[]? tags = null)
     {
         ValidateRequiredParameters(accountName, key, value, subscriptionId);
         var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
@@ -156,7 +156,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         };
 
         // Parse and add tags if provided
-        if (tags != null && tags.Count > 0)
+        if (tags != null && tags.Length > 0)
         {
             foreach (var tagPair in tags)
             {
