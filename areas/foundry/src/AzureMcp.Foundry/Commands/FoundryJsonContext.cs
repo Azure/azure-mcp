@@ -4,12 +4,16 @@
 using System.Text.Json.Serialization;
 using Azure.ResourceManager.CognitiveServices.Models;
 using AzureMcp.Foundry.Models;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI.Evaluation;
 
 namespace AzureMcp.Foundry.Commands;
 
 [JsonSerializable(typeof(ModelsListCommand.ModelsListCommandResult))]
 [JsonSerializable(typeof(DeploymentsListCommand.DeploymentsListCommandResult))]
 [JsonSerializable(typeof(ModelDeploymentCommand.ModelDeploymentCommandResult))]
+[JsonSerializable(typeof(AgentsListCommand.AgentsListCommandResult))]
+[JsonSerializable(typeof(AgentsConnectCommand.AgentsConnectCommandResult))]
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(ModelCatalogFilter))]
 [JsonSerializable(typeof(ModelCatalogRequest))]
@@ -19,5 +23,9 @@ namespace AzureMcp.Foundry.Commands;
 [JsonSerializable(typeof(ModelDeploymentResult))]
 [JsonSerializable(typeof(CognitiveServicesAccountSku))]
 [JsonSerializable(typeof(CognitiveServicesAccountDeploymentProperties))]
+[JsonSerializable(typeof(QueryAndEvaluateAgentCommand.QueryAndEvaluateAgentCommandResult))]
+[JsonSerializable(typeof(List<ChatMessage>))]
+[JsonSerializable(typeof(EvaluationResult))]
+[JsonSerializable(typeof(EvaluateAgentCommand.EvaluateAgentCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault)]
 internal sealed partial class FoundryJsonContext : JsonSerializerContext;
