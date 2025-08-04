@@ -16,6 +16,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 #### Dependency Updates
 
+Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support. AOT will enable shipping Azure MCP Server as self-contained native executable.
+
 - Upgraded `Azure.Core` from `1.46.2` to version `1.47.1`.
 - Upgraded `Azure.ResourceManager` from `1.13.1` to version `1.13.2`.
 - Upgraded `Azure.ResourceManager.ApplicationInsights` from `1.0.1` to version `1.1.0-beta.1`.
