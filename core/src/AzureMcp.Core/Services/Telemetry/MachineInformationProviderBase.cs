@@ -56,7 +56,7 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
     /// Searches for first network interface card that is up and has a physical address.
     /// </summary>
     /// <returns>Hash of the MAC address or <see cref="NotAvailable"/> if none can be found.</returns>
-    protected string? GetMacAddress()
+    protected virtual string? GetMacAddress()
     {
         return NetworkInterface.GetAllNetworkInterfaces()
             .Where(x => x.OperationalStatus == OperationalStatus.Up && x.NetworkInterfaceType != NetworkInterfaceType.Loopback)
