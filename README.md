@@ -28,10 +28,9 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 
 **Get started in under 60 seconds:**
 
-1. **Install VS Code** and **GitHub Copilot** extensions ([VS Code](https://code.visualstudio.com/download) + [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) + [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat))
-2. **Install the GitHub Copilot for Azure extension**: [![Install from VS Code Marketplace](https://img.shields.io/badge/VS_Code-Install_GitHub_Copilot_for_Azure-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot)
-3. **Open GitHub Copilot Chat** in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
-4. **Try it**: Ask "List my Azure Storage accounts" and watch the magic happen! ✨
+1. **Install the GitHub Copilot for Azure extension**: [![Install from VS Code Marketplace](https://img.shields.io/badge/VS_Code-Install_GitHub_Copilot_for_Azure-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot)
+2. **Open GitHub Copilot Chat** in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
+3. **Try it**: Ask "List my Azure Storage accounts" and watch the magic happen! ✨
 
 ### ⚙️ VS Code Install Steps (Recommended)
 
