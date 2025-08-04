@@ -14,6 +14,28 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Added caching for Cosmos DB databases and containers. [[813](https://github.com/Azure/azure-mcp/pull/813)]
 
+#### Dependency Updates
+
+- Upgraded `Azure.Core` from `1.46.2` to version `1.47.1`.
+- Upgraded `Azure.ResourceManager` from `1.13.1` to version `1.13.2`.
+- Upgraded `Azure.ResourceManager.ApplicationInsights` from `1.0.1` to version `1.1.0-beta.1`.
+- Upgraded `Azure.ResourceManager.AppConfiguration` from `1.4.0` to version `1.4.1`.
+- Upgraded `Azure.ResourceManager.Authorization` from `1.1.4` to version `1.1.5`.
+- Upgraded `Azure.ResourceManager.ContainerService` from `1.2.3` to version `1.2.5`.
+- Upgraded `Azure.ResourceManager.Kusto` from `1.6.0` to version `1.6.1`.
+- Upgraded `Azure.ResourceManager.CognitiveServices` from `1.4.0` to version `1.5.1`.
+- Upgraded `Azure.ResourceManager.Redis` from `1.5.0` to version `1.5.1`.
+- Upgraded `Azure.ResourceManager.RedisEnterprise` from `1.1.0` to version `1.2.1`.
+- Upgraded `Azure.ResourceManager.LoadTesting` from `1.1.1` to version `1.1.2`.
+- Upgraded `Azure.ResourceManager.Sql` from `1.3.0` to version `1.4.0-beta.3`.
+- Upgraded `Azure.ResourceManager.Datadog` from `1.0.0-beta.5` to version `1.0.0-beta.6`.
+- Upgraded `Azure.ResourceManager.CosmosDB` from `1.3.2` to version `1.4.0-beta.13`.
+- Upgraded `Azure.ResourceManager.OperationalInsights` from `1.3.0` to version `1.3.1`.
+- Upgraded `Azure.ResourceManager.Search` from `1.2.3` to version `1.3.0`.
+- Upgraded `Azure.ResourceManager.Storage` from `1.4.2` to version `1.4.4`.
+- Upgraded `Azure.ResourceManager.Grafana` from `1.1.1` to version `1.2.0-beta.2`.
+- Upgraded `Azure.ResourceManager.ResourceGraph` from `1.1.0-beta.3` to version `1.1.0-beta.4`.
+
 ## 0.5.2 (2025-07-31)
 
 ### Features Added
