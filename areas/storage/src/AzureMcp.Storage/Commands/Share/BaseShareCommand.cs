@@ -15,10 +15,6 @@ public abstract class BaseShareCommand<
 {
     protected readonly Option<string> _shareOption = StorageOptionDefinitions.Share;
 
-    protected BaseShareCommand()
-    {
-    }
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);

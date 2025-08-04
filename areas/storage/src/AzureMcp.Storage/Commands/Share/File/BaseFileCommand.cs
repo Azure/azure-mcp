@@ -14,10 +14,6 @@ public abstract class BaseFileCommand<
 {
     protected readonly Option<string> _directoryPathOption = StorageOptionDefinitions.DirectoryPath;
 
-    protected BaseFileCommand()
-    {
-    }
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);

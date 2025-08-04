@@ -20,9 +20,8 @@ public sealed class FileListCommand(ILogger<FileListCommand> logger) : BaseFileC
 
     public override string Description =>
         $"""
-        Lists file and directories within a file share directory. This tool recursively lists all items in a specified file share directory, including files, subdirectories, and their properties. Returns file listing as JSON. Requires 
-        {StorageOptionDefinitions.AccountName}, {StorageOptionDefinitions.ShareName}, and {StorageOptionDefinitions.DirectoryPathName}.
-        Optional parameters include {StorageOptionDefinitions.PrefixName} to filter results on a given prefix.
+        Lists files and directories within a file share directory. This tool recursively lists all items in a specified file share directory, 
+        including files, subdirectories, and their properties. Files and directories may be filtered by a prefix. Returns file listing as JSON.
         """;
 
     public override string Title => CommandTitle;
