@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ToolSelection.Models;
 
 namespace ToolSelection.Services;
 
@@ -19,12 +20,12 @@ public class EmbeddingService
 
     public async Task<float[]> CreateEmbeddingsAsync(string input)
     {
-        var requestBody = new
+        var requestBody = new EmbeddingRequest
         {
-            input = new[] { input }
+            Input = new[] { input }
         };
 
-        var json = JsonSerializer.Serialize(requestBody);
+        var json = JsonSerializer.Serialize(requestBody, SourceGenerationContext.Default.EmbeddingRequest);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var request = new HttpRequestMessage(HttpMethod.Post, _endpoint)
@@ -38,7 +39,7 @@ public class EmbeddingService
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        var embeddingResponse = JsonSerializer.Deserialize<EmbeddingResponse>(responseContent);
+        var embeddingResponse = JsonSerializer.Deserialize(responseContent, SourceGenerationContext.Default.EmbeddingResponse);
 
         if (embeddingResponse?.Error != null)
         {

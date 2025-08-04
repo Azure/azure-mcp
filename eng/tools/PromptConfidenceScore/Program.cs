@@ -319,10 +319,7 @@ class Program
             var jsonOutput = string.Join('\n', lines.Skip(jsonStartIndex));
 
             // Parse the JSON output
-            var result = JsonSerializer.Deserialize<ListToolsResult>(jsonOutput, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var result = JsonSerializer.Deserialize(jsonOutput, SourceGenerationContext.Default.ListToolsResult);
 
             return result;
         }
@@ -357,10 +354,7 @@ class Program
             json = json.Replace("\\\\\"", "'"); // Convert \\" --> '
         }
 
-        var result = JsonSerializer.Deserialize<ListToolsResult>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var result = JsonSerializer.Deserialize(json, SourceGenerationContext.Default.ListToolsResult);
 
         return result;
     }
@@ -449,7 +443,7 @@ class Program
         }
 
         var json = await File.ReadAllTextAsync(filePath);
-        var prompts = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+        var prompts = JsonSerializer.Deserialize(json, SourceGenerationContext.Default.DictionaryStringListString);
         return prompts ?? throw new InvalidOperationException($"Failed to parse prompts JSON from {filePath}");
     }
 
