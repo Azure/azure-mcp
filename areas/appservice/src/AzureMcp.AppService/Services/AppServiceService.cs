@@ -29,12 +29,12 @@ public class AppServiceService(
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", 
+        _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}",
             appName, resourceGroup);
 
         // Validate database type upfront
         ValidateDatabaseType(databaseType);
-            
+
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
 
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
@@ -48,8 +48,8 @@ public class AppServiceService(
         // to get the web app resource and update its connection strings
 
         // Build connection string if not provided
-        var finalConnectionString = string.IsNullOrEmpty(connectionString) ? 
-            BuildConnectionString(databaseType, databaseServer, databaseName) : 
+        var finalConnectionString = string.IsNullOrEmpty(connectionString) ?
+            BuildConnectionString(databaseType, databaseServer, databaseName) :
             connectionString;
         var connectionStringName = $"{databaseName}Connection";
 
@@ -57,7 +57,7 @@ public class AppServiceService(
         // In reality, this would call the Azure Resource Manager API to update the web app's connection strings
         await Task.Delay(100); // Simulate API call
 
-        _logger.LogInformation("Successfully simulated adding database connection {ConnectionName} to App Service {AppName}", 
+        _logger.LogInformation("Successfully simulated adding database connection {ConnectionName} to App Service {AppName}",
             connectionStringName, appName);
 
         return new DatabaseConnectionInfo
