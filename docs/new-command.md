@@ -976,7 +976,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 
      ```bash
      cd eng/tools/PromptConfidenceScore
-     dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
+     dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request" --prompt "a different but typical user request"
      ```
 
    - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)

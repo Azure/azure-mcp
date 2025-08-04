@@ -33,23 +33,37 @@ class Program
 
             // Check if user wants to validate specific tool descriptions
             var validateMode = args.Contains("--validate");
-            var toolDescArg = Array.FindIndex(args, arg => arg == "--tool-description");
-            var promptArg = Array.FindIndex(args, arg => arg == "--prompt");
             
             if (validateMode)
             {
-                if (toolDescArg == -1 || promptArg == -1 || 
-                    toolDescArg + 1 >= args.Length || promptArg + 1 >= args.Length)
+                // Collect all tool descriptions and prompts
+                var toolDescriptions = new List<string>();
+                var prompts = new List<string>();
+                
+                for (int i = 0; i < args.Length; i++)
                 {
-                    Console.WriteLine("❌ Error: --validate mode requires --tool-description and --prompt arguments");
-                    Console.WriteLine("Example: --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\"");
+                    if (args[i] == "--tool-description" && i + 1 < args.Length)
+                    {
+                        toolDescriptions.Add(args[i + 1]);
+                    }
+                    else if (args[i] == "--prompt" && i + 1 < args.Length)
+                    {
+                        prompts.Add(args[i + 1]);
+                    }
+                }
+                
+                if (toolDescriptions.Count == 0 || prompts.Count == 0)
+                {
+                    Console.WriteLine("❌ Error: --validate mode requires at least one --tool-description and one --prompt argument");
+                    Console.WriteLine("Examples:");
+                    Console.WriteLine("  # Single validation:");
+                    Console.WriteLine("  --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\"");
+                    Console.WriteLine("  # Multiple validations:");
+                    Console.WriteLine("  --validate --tool-description \"Lists storage accounts\" --tool-description \"Creates containers\" --prompt \"show storage\" --prompt \"create container\"");
                     Environment.Exit(1);
                 }
                 
-                var toolDescription = args[toolDescArg + 1];
-                var testPrompt = args[promptArg + 1];
-                
-                await RunValidationModeAsync(toolDescription, testPrompt, isCiMode);
+                await RunValidationModeAsync(toolDescriptions, prompts, isCiMode);
                 return;
             }
 
@@ -486,11 +500,11 @@ class Program
         {
             var input = tool.Description ?? "";
             
-            // Handle test tool specially
+            // Handle test tools specially
             string toolName;
-            if (tool.Name == "test-tool")
+            if (tool.Name.StartsWith("test-tool"))
             {
-                toolName = "azmcp-test-tool";
+                toolName = $"azmcp-{tool.Name}";
             }
             else
             {
@@ -725,8 +739,8 @@ class Program
         Console.WriteLine("  --ci                          Run in CI mode (graceful failures)");
         Console.WriteLine("  --use-json, --json           Use static JSON file instead of dynamic tool loading");
         Console.WriteLine("  --markdown                    Output results in markdown format");
-        Console.WriteLine("  --tool-description <text>     Tool description to test (used with --validate)");
-        Console.WriteLine("  --prompt <text>               Test prompt (used with --validate)");
+        Console.WriteLine("  --tool-description <text>     Tool description to test (used with --validate, can be repeated)");
+        Console.WriteLine("  --prompt <text>               Test prompt (used with --validate, can be repeated)");
         Console.WriteLine();
         Console.WriteLine("ENVIRONMENT VARIABLES:");
         Console.WriteLine("  AOAI_ENDPOINT           Azure OpenAI endpoint URL");
@@ -739,17 +753,33 @@ class Program
         Console.WriteLine("  PromptConfidenceScore --markdown         # Output in markdown format");
         Console.WriteLine("  PromptConfidenceScore --ci --use-json    # CI mode with JSON file");
         Console.WriteLine();
-        Console.WriteLine("  # Validate a specific tool description:");
+        Console.WriteLine("  # Validate a single tool description:");
         Console.WriteLine("  PromptConfidenceScore --validate \\");
         Console.WriteLine("    --tool-description \"Lists all storage accounts in a subscription\" \\");
         Console.WriteLine("    --prompt \"show me my storage accounts\"");
+        Console.WriteLine();
+        Console.WriteLine("  # Validate multiple descriptions and prompts:");
+        Console.WriteLine("  PromptConfidenceScore --validate \\");
+        Console.WriteLine("    --tool-description \"Lists storage accounts\" \\");
+        Console.WriteLine("    --tool-description \"Creates storage containers\" \\");
+        Console.WriteLine("    --prompt \"show me storage accounts\" \\");
+        Console.WriteLine("    --prompt \"create a container\"");
     }
 
-    private static async Task RunValidationModeAsync(string toolDescription, string testPrompt, bool isCiMode)
+    private static async Task RunValidationModeAsync(List<string> toolDescriptions, List<string> testPrompts, bool isCiMode)
     {
         Console.WriteLine("🔧 Tool Description Validation Mode");
-        Console.WriteLine($"📋 Tool Description: {toolDescription}");
-        Console.WriteLine($"❓ Test Prompt: {testPrompt}");
+        Console.WriteLine($"📋 Tool Descriptions: {toolDescriptions.Count}");
+        Console.WriteLine($"❓ Test Prompts: {testPrompts.Count}");
+        
+        for (int i = 0; i < toolDescriptions.Count; i++)
+        {
+            Console.WriteLine($"   Description {i + 1}: {toolDescriptions[i]}");
+        }
+        for (int i = 0; i < testPrompts.Count; i++)
+        {
+            Console.WriteLine($"   Prompt {i + 1}: {testPrompts[i]}");
+        }
         Console.WriteLine();
 
         try
@@ -801,102 +831,136 @@ class Program
                 Environment.Exit(0);
             }
 
-            // Create a temporary tool with the provided description
-            var testTool = new Tool
+            // Create test tools with the provided descriptions
+            var testTools = new List<Tool>();
+            for (int i = 0; i < toolDescriptions.Count; i++)
             {
-                Name = "test-tool",
-                Description = toolDescription
-            };
+                testTools.Add(new Tool
+                {
+                    Name = $"test-tool-{i + 1}",
+                    Description = toolDescriptions[i]
+                });
+            }
 
-            // Create vector database with existing tools + test tool
-            var allTools = new List<Tool>(listToolsResult!.Tools) { testTool };
+            // Create vector database with existing tools + test tools
+            var allTools = new List<Tool>(listToolsResult!.Tools);
+            allTools.AddRange(testTools);
             var db = new VectorDB(new CosineSimilarity());
 
             var stopwatch = Stopwatch.StartNew();
             await PopulateDatabaseAsync(db, allTools, embeddingService);
             stopwatch.Stop();
 
-            Console.WriteLine($"⚡ Loaded {allTools.Count} tools ({allTools.Count - 1} existing + 1 test) in {stopwatch.Elapsed.TotalSeconds:F2}s");
+            Console.WriteLine($"⚡ Loaded {allTools.Count} tools ({allTools.Count - testTools.Count} existing + {testTools.Count} test) in {stopwatch.Elapsed.TotalSeconds:F2}s");
             Console.WriteLine();
 
-            // Test the prompt against all tools
-            var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
-            var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
+            // Test each prompt against all tools
+            var testNumber = 1;
+            foreach (var testPrompt in testPrompts)
+            {
+                Console.WriteLine($"🎯 Test {testNumber}: \"{testPrompt}\"");
+                Console.WriteLine();
 
-            // Find where our test tool ranks
-            var testToolRank = -1;
-            var testToolScore = 0.0f;
-            
-            for (int i = 0; i < queryResults.Count; i++)
-            {
-                if (queryResults[i].Entry.Id == "azmcp-test-tool")
-                {
-                    testToolRank = i + 1;
-                    testToolScore = queryResults[i].Score;
-                    break;
-                }
-            }
+                var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
+                var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
 
-            // Display results
-            Console.WriteLine("🎯 Validation Results:");
-            Console.WriteLine($"   📊 Test tool ranked: #{testToolRank} out of {allTools.Count} tools");
-            Console.WriteLine($"   🎯 Confidence score: {testToolScore:F4}");
-            
-            if (testToolRank == 1)
-            {
-                Console.WriteLine("   ✅ EXCELLENT: Test tool is the top choice!");
-            }
-            else if (testToolRank <= 3)
-            {
-                Console.WriteLine("   🟡 GOOD: Test tool is in the top 3 choices");
-            }
-            else if (testToolRank <= 10)
-            {
-                Console.WriteLine("   🟠 FAIR: Test tool is in the top 10 choices");
-            }
-            else
-            {
-                Console.WriteLine("   🔴 POOR: Test tool is not in the top 10 choices");
-            }
-
-            if (testToolScore >= 0.5)
-            {
-                Console.WriteLine("   💪 High confidence match (≥0.5)");
-            }
-            else
-            {
-                Console.WriteLine("   ⚠️  Low confidence match (<0.5)");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("📋 Top 5 competing tools:");
-            for (int i = 0; i < Math.Min(5, queryResults.Count); i++)
-            {
-                var result = queryResults[i];
-                var isTestTool = result.Entry.Id == "azmcp-test-tool";
-                var indicator = isTestTool ? "👉 TEST TOOL" : "";
-                var toolName = isTestTool ? "test-tool" : result.Entry.Id;
+                // Find test tool rankings
+                var testToolResults = new List<(int rank, float score, string toolName, string description)>();
                 
-                Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
+                for (int i = 0; i < queryResults.Count; i++)
+                {
+                    var result = queryResults[i];
+                    if (result.Entry.Id.StartsWith("azmcp-test-tool-"))
+                    {
+                        var toolIndex = int.Parse(result.Entry.Id.Replace("azmcp-test-tool-", "")) - 1;
+                        testToolResults.Add((i + 1, result.Score, $"test-tool-{toolIndex + 1}", toolDescriptions[toolIndex]));
+                    }
+                }
+
+                // Display results for test tools
+                Console.WriteLine("📊 Test Tool Results:");
+                if (testToolResults.Count > 0)
+                {
+                    foreach (var (rank, score, toolName, description) in testToolResults.OrderBy(x => x.rank))
+                    {
+                        var quality = rank == 1 ? "✅ EXCELLENT" : 
+                                     rank <= 3 ? "🟡 GOOD" : 
+                                     rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
+                        var confidence = score >= 0.5 ? "💪 High confidence" : "⚠️  Low confidence";
+                        
+                        Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
+                        Console.WriteLine($"      Description: \"{description}\"");
+                    }
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("📋 Top 5 competing tools:");
+                for (int i = 0; i < Math.Min(5, queryResults.Count); i++)
+                {
+                    var result = queryResults[i];
+                    var isTestTool = result.Entry.Id.StartsWith("azmcp-test-tool-");
+                    var indicator = isTestTool ? "👉 TEST TOOL" : "";
+                    var toolName = isTestTool ? result.Entry.Id.Replace("azmcp-", "") : result.Entry.Id;
+                    
+                    Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
+                }
+
+                // Suggestions for improvement
+                Console.WriteLine();
+                var bestTestTool = testToolResults.OrderBy(x => x.rank).FirstOrDefault();
+                if (bestTestTool.rank > 1 || bestTestTool.score < 0.5)
+                {
+                    Console.WriteLine("💡 Suggestions for improvement:");
+                    if (bestTestTool.score < 0.3)
+                    {
+                        Console.WriteLine("   • Consider using more specific keywords from the prompt");
+                        Console.WriteLine("   • Include common synonyms or alternative phrasings");
+                    }
+                    if (bestTestTool.rank > 5)
+                    {
+                        Console.WriteLine("   • Look at top-ranking tool descriptions for inspiration");
+                        Console.WriteLine("   • Ensure the descriptions clearly match the user intent");
+                    }
+                    Console.WriteLine("   • Test with multiple different prompts users might use");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("---");
+                Console.WriteLine();
+                testNumber++;
             }
 
-            // Suggestions for improvement
-            Console.WriteLine();
-            if (testToolRank > 1 || testToolScore < 0.5)
+            // Summary
+            Console.WriteLine("📈 Summary:");
+            var totalTests = testPrompts.Count * toolDescriptions.Count;
+            var excellentCount = 0;
+            var goodCount = 0;
+            var fairCount = 0;
+            var poorCount = 0;
+
+            foreach (var testPrompt in testPrompts)
             {
-                Console.WriteLine("💡 Suggestions for improvement:");
-                if (testToolScore < 0.3)
+                var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
+                var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
+
+                foreach (var testTool in testTools)
                 {
-                    Console.WriteLine("   • Consider using more specific keywords from the prompt");
-                    Console.WriteLine("   • Include common synonyms or alternative phrasings");
+                    var testToolId = $"azmcp-{testTool.Name}";
+                    var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
+                    
+                    if (rank == 1) excellentCount++;
+                    else if (rank <= 3) goodCount++;
+                    else if (rank <= 10) fairCount++;
+                    else poorCount++;
                 }
-                if (testToolRank > 5)
-                {
-                    Console.WriteLine("   • Look at top-ranking tool descriptions for inspiration");
-                    Console.WriteLine("   • Ensure the description clearly matches the user intent");
-                }
-                Console.WriteLine("   • Test with multiple different prompts users might use");
             }
+
+            Console.WriteLine($"   Total combinations tested: {totalTests}");
+            Console.WriteLine($"   ✅ Excellent (rank #1): {excellentCount} ({excellentCount * 100.0 / totalTests:F1}%)");
+            Console.WriteLine($"   🟡 Good (rank #2-3): {goodCount} ({goodCount * 100.0 / totalTests:F1}%)");
+            Console.WriteLine($"   🟠 Fair (rank #4-10): {fairCount} ({fairCount * 100.0 / totalTests:F1}%)");
+            Console.WriteLine($"   🔴 Poor (rank #11+): {poorCount} ({poorCount * 100.0 / totalTests:F1}%)");
+
         }
         catch (Exception ex)
         {
