@@ -142,7 +142,7 @@ class Program
             }
             else
             {
-                listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+                listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("tools.json", isCiMode);
             }
 
             if (listToolsResult == null && isCiMode)
@@ -397,6 +397,13 @@ class Program
             // Parse the JSON output
             var result = JsonSerializer.Deserialize(jsonOutput, SourceGenerationContext.Default.ListToolsResult);
 
+            // Save the dynamically loaded tools to tools.json for future use
+            if (result != null)
+            {
+                await SaveToolsToJsonAsync(result, "tools.json");
+                Console.WriteLine($"💾 Saved {result.Tools.Count} tools to tools.json");
+            }
+
             return result;
         }
         catch (Exception)
@@ -433,6 +440,27 @@ class Program
         var result = JsonSerializer.Deserialize(json, SourceGenerationContext.Default.ListToolsResult);
 
         return result;
+    }
+
+    private static async Task SaveToolsToJsonAsync(ListToolsResult toolsResult, string filePath)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(toolsResult, SourceGenerationContext.Default.ListToolsResult);
+            
+            // Fix Unicode escaping in the JSON string
+            json = json.Replace("\\u0027", "'")
+                      .Replace("\\u0022", "\"")
+                      .Replace("\\u003C", "<")
+                      .Replace("\\u003E", ">")
+                      .Replace("\\u0026", "&");
+            
+            await File.WriteAllTextAsync(filePath, json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️  Warning: Failed to save tools to {filePath}: {ex.Message}");
+        }
     }
 
     private static async Task<Dictionary<string, List<string>>?> LoadPromptsFromMarkdownAsync(string filePath, bool isCiMode = false)
@@ -785,7 +813,7 @@ class Program
         Console.WriteLine("  PromptConfidenceScore --tools-file my-tools.json               # Use custom tools file");
         Console.WriteLine("  PromptConfidenceScore --prompts-file my-prompts.md             # Use custom prompts file");
         Console.WriteLine("  PromptConfidenceScore --markdown                               # Output in markdown format");
-        Console.WriteLine("  PromptConfidenceScore --ci --tools-file list-tools.json        # CI mode with JSON file");
+        Console.WriteLine("  PromptConfidenceScore --ci --tools-file tools.json        # CI mode with JSON file");
         Console.WriteLine();
         Console.WriteLine("  # Validate a single tool description:");
         Console.WriteLine("  PromptConfidenceScore --validate \\");
@@ -854,7 +882,7 @@ class Program
             var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
 
             // Load existing tools for comparison
-            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("tools.json", isCiMode);
             if (listToolsResult == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping validation in CI - tools data not available");
