@@ -1,3 +1,5 @@
+using System.Numerics.Tensors;
+
 namespace ToolSelection.VectorDb;
 
 public record Entry(string Id, object? Metadata, float[] Vector);
@@ -21,18 +23,7 @@ public class CosineSimilarity : IDistanceMetric
         if (a.Length != b.Length)
             throw new ArgumentException("Vector lengths must match");
 
-        double dotProduct = 0.0;
-        double magnitudeA = 0.0;
-        double magnitudeB = 0.0;
-
-        for (int i = 0; i < a.Length; i++)
-        {
-            dotProduct += a[i] * b[i];
-            magnitudeA += Math.Pow(a[i], 2);
-            magnitudeB += Math.Pow(b[i], 2);
-        }
-
-        return (float)(dotProduct / (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB)));
+        return TensorPrimitives.CosineSimilarity(a.AsSpan(), b.AsSpan());
     }
 }
 
