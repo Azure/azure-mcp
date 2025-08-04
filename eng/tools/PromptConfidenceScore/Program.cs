@@ -28,23 +28,48 @@ class Program
                           !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")) ||
                           args.Contains("--ci");
 
-            // Check if user wants to use JSON file instead of dynamic loading
-            var useJsonFile = args.Contains("--use-json") || args.Contains("--json");
+            // Check if user wants to use a custom tools file
+            string? customToolsFile = null;
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "--tools-file" && i + 1 < args.Length)
+                {
+                    customToolsFile = args[i + 1];
+                    break;
+                }
+            }
+
+            // Check if user wants to use a custom prompts file
+            string? customPromptsFile = null;
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "--prompts-file" && i + 1 < args.Length)
+                {
+                    customPromptsFile = args[i + 1];
+                    break;
+                }
+            }
 
             // Check if user wants to validate specific tool descriptions
             var validateMode = args.Contains("--validate");
             
             if (validateMode)
             {
-                // Collect all tool descriptions and prompts
-                var toolDescriptions = new List<string>();
+                // Collect tool description and prompts
+                string? toolDescription = null;
                 var prompts = new List<string>();
                 
                 for (int i = 0; i < args.Length; i++)
                 {
                     if (args[i] == "--tool-description" && i + 1 < args.Length)
                     {
-                        toolDescriptions.Add(args[i + 1]);
+                        if (toolDescription != null)
+                        {
+                            Console.WriteLine("❌ Error: --validate mode accepts only one --tool-description argument");
+                            Console.WriteLine("Use multiple --prompt arguments to test the same description against different prompts");
+                            Environment.Exit(1);
+                        }
+                        toolDescription = args[i + 1];
                     }
                     else if (args[i] == "--prompt" && i + 1 < args.Length)
                     {
@@ -52,18 +77,18 @@ class Program
                     }
                 }
                 
-                if (toolDescriptions.Count == 0 || prompts.Count == 0)
+                if (string.IsNullOrEmpty(toolDescription) || prompts.Count == 0)
                 {
-                    Console.WriteLine("❌ Error: --validate mode requires at least one --tool-description and one --prompt argument");
+                    Console.WriteLine("❌ Error: --validate mode requires exactly one --tool-description and at least one --prompt argument");
                     Console.WriteLine("Examples:");
-                    Console.WriteLine("  # Single validation:");
+                    Console.WriteLine("  # Single prompt validation:");
                     Console.WriteLine("  --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\"");
-                    Console.WriteLine("  # Multiple validations:");
-                    Console.WriteLine("  --validate --tool-description \"Lists storage accounts\" --tool-description \"Creates containers\" --prompt \"show storage\" --prompt \"create container\"");
+                    Console.WriteLine("  # Multiple prompt validation:");
+                    Console.WriteLine("  --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\" --prompt \"list my storage accounts\" --prompt \"what storage accounts do I have\"");
                     Environment.Exit(1);
                 }
                 
-                await RunValidationModeAsync(toolDescriptions, prompts, isCiMode);
+                await RunValidationModeAsync(toolDescription, prompts, isCiMode);
                 return;
             }
 
@@ -103,15 +128,15 @@ class Program
 
             var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
 
-            // Load tools - use JSON file if requested, otherwise try dynamic loading with JSON as fallback
+            // Load tools - use custom JSON file if specified, otherwise try dynamic loading with fallback
             ListToolsResult? listToolsResult = null;
             
-            if (useJsonFile)
+            if (!string.IsNullOrEmpty(customToolsFile))
             {
-                listToolsResult = await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+                listToolsResult = await LoadToolsFromJsonAsync(customToolsFile, isCiMode);
                 if (listToolsResult == null && !isCiMode)
                 {
-                    Console.WriteLine("⚠️  Failed to load tools from JSON file, falling back to dynamic loading");
+                    Console.WriteLine($"⚠️  Failed to load tools from {customToolsFile}, falling back to dynamic loading");
                     listToolsResult = await LoadToolsDynamicallyAsync(isCiMode);
                 }
             }
@@ -142,19 +167,25 @@ class Program
             // Determine output file path
             var outputFilePath = useMarkdown ? "results.md" : "results.txt";
 
-            // Add CI-friendly output
-            if (isCiMode)
+            // Add console output
+            Console.WriteLine("🔍 Running tool selection analysis...");
+            Console.WriteLine($"✅ Loaded {toolCount} tools in {executionTime.TotalSeconds:F2}s");
+            if (!string.IsNullOrEmpty(customToolsFile))
             {
-                Console.WriteLine("🔍 Running tool selection analysis...");
-                Console.WriteLine($"✅ Loaded {toolCount} tools in {executionTime.TotalSeconds:F2}s");
-                if (useJsonFile)
-                {
-                    Console.WriteLine("📄 Using tools from JSON file");
-                }
-                else
-                {
-                    Console.WriteLine("🔄 Using dynamic tool loading");
-                }
+                Console.WriteLine($"📄 Using custom tools file: {customToolsFile}");
+            }
+            else
+            {
+                Console.WriteLine("🔄 Using dynamic tool loading");
+            }
+            
+            if (!string.IsNullOrEmpty(customPromptsFile))
+            {
+                Console.WriteLine($"📝 Using custom prompts file: {customPromptsFile}");
+            }
+            else
+            {
+                Console.WriteLine("📝 Using default prompts (e2eTestPrompts.md)");
             }
 
             // Create or overwrite the output file
@@ -172,9 +203,33 @@ class Program
                 await writer.WriteLineAsync();
             }
 
-            // Load prompts from markdown file or JSON file as fallback
-            var toolNameAndPrompts = await LoadPromptsFromMarkdownAsync("../../../e2eTests/e2eTestPrompts.md", isCiMode) ?? 
-                                    await LoadPromptsFromJsonAsync("prompts.json", isCiMode);
+            // Load prompts from custom file, markdown file, or JSON file as fallback
+            Dictionary<string, List<string>>? toolNameAndPrompts = null;
+            
+            if (!string.IsNullOrEmpty(customPromptsFile))
+            {
+                // User specified a custom prompts file
+                if (customPromptsFile.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+                {
+                    toolNameAndPrompts = await LoadPromptsFromMarkdownAsync(customPromptsFile, isCiMode);
+                }
+                else if (customPromptsFile.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                {
+                    toolNameAndPrompts = await LoadPromptsFromJsonAsync(customPromptsFile, isCiMode);
+                }
+                else
+                {
+                    // Try to infer format or default to markdown
+                    toolNameAndPrompts = await LoadPromptsFromMarkdownAsync(customPromptsFile, isCiMode) ??
+                                        await LoadPromptsFromJsonAsync(customPromptsFile, isCiMode);
+                }
+            }
+            else
+            {
+                // Use default fallback logic
+                toolNameAndPrompts = await LoadPromptsFromMarkdownAsync("../../../e2eTests/e2eTestPrompts.md", isCiMode);
+            }
+            
             if (toolNameAndPrompts == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping prompt testing in CI - prompts data not available");
@@ -200,32 +255,17 @@ class Program
             await RunPromptsAsync(db, toolNameAndPrompts!, embeddingService, executionTime, writer, isCiMode);
 
             // Print summary to console for immediate feedback
-            if (isCiMode)
-            {
-                Console.WriteLine($"🎯 Tool selection analysis completed");
-                Console.WriteLine($"📊 Results written to: {Path.GetFullPath(outputFilePath)}");
-            }
-            else
-            {
-                Console.WriteLine($"Loaded {toolCount} tools in {executionTime.TotalSeconds:F7}s");
-                Console.WriteLine($"Results written to: {Path.GetFullPath(outputFilePath)}");
-            }
+            Console.WriteLine($"🎯 Tool selection analysis completed");
+            Console.WriteLine($"📊 Results written to: {Path.GetFullPath(outputFilePath)}");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error: {ex.Message}");
 
-            // In CI mode, provide more helpful error information
-            var isCiMode = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) ||
-                          !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")) ||
-                          args.Contains("--ci");
-
-            if (isCiMode)
-            {
-                Console.WriteLine("💡 Tip: This test requires Azure OpenAI configuration to run fully");
-                Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-                Console.WriteLine("   or ensure the azmcp server can be run from ../../../src");
-            }
+            // Provide helpful error information
+            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
+            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
+            Console.WriteLine("   or create a .env file with these values");
 
             Environment.Exit(1);
         }
@@ -671,18 +711,10 @@ class Program
         var metricsForConsole = await CalculateSuccessRateAsync(db, toolNameWithPrompts, embeddingService);
 
         // Print summary to console for feedback
-        if (isCiMode)
-        {
-            Console.WriteLine($"🧪 Tested {promptCount} prompts:");
-            Console.WriteLine($"   📊 Top choice: {metricsForConsole.TopChoicePercentage:F1}%");
-            Console.WriteLine($"   🎯 High confidence: {metricsForConsole.HighConfidencePercentage:F1}%");
-            Console.WriteLine($"   ⭐ Top + high confidence: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
-        }
-        else
-        {
-            Console.WriteLine($"Prompt count={promptCount}, Execution time={stopwatch.Elapsed.TotalSeconds:F7}s");
-            Console.WriteLine($"Top choice: {metricsForConsole.TopChoicePercentage:F1}%, High confidence: {metricsForConsole.HighConfidencePercentage:F1}%, Combined: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
-        }
+        Console.WriteLine($"🧪 Tested {promptCount} prompts:");
+        Console.WriteLine($"   📊 Top choice: {metricsForConsole.TopChoicePercentage:F1}%");
+        Console.WriteLine($"   🎯 High confidence: {metricsForConsole.HighConfidencePercentage:F1}%");
+        Console.WriteLine($"   ⭐ Top + high confidence: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
     }
 
     private static async Task<SuccessRateMetrics> CalculateSuccessRateAsync(VectorDB db, Dictionary<string, List<string>> toolNameWithPrompts, EmbeddingService embeddingService)
@@ -737,9 +769,10 @@ class Program
         Console.WriteLine("OPTIONS:");
         Console.WriteLine("  --help, -h                    Show this help message");
         Console.WriteLine("  --ci                          Run in CI mode (graceful failures)");
-        Console.WriteLine("  --use-json, --json           Use static JSON file instead of dynamic tool loading");
+        Console.WriteLine("  --tools-file <path>           Use custom JSON file for tools instead of dynamic loading");
+        Console.WriteLine("  --prompts-file <path>         Use custom prompts file (.md or .json format)");
         Console.WriteLine("  --markdown                    Output results in markdown format");
-        Console.WriteLine("  --tool-description <text>     Tool description to test (used with --validate, can be repeated)");
+        Console.WriteLine("  --tool-description <text>     Tool description to test (used with --validate, only one allowed)");
         Console.WriteLine("  --prompt <text>               Test prompt (used with --validate, can be repeated)");
         Console.WriteLine();
         Console.WriteLine("ENVIRONMENT VARIABLES:");
@@ -748,34 +781,31 @@ class Program
         Console.WriteLine("  output                  Set to 'md' for markdown output");
         Console.WriteLine();
         Console.WriteLine("EXAMPLES:");
-        Console.WriteLine("  PromptConfidenceScore                    # Use dynamic tool loading (default)");
-        Console.WriteLine("  PromptConfidenceScore --use-json         # Use static JSON file");
-        Console.WriteLine("  PromptConfidenceScore --markdown         # Output in markdown format");
-        Console.WriteLine("  PromptConfidenceScore --ci --use-json    # CI mode with JSON file");
+        Console.WriteLine("  PromptConfidenceScore                                          # Use dynamic tool loading (default)");
+        Console.WriteLine("  PromptConfidenceScore --tools-file my-tools.json               # Use custom tools file");
+        Console.WriteLine("  PromptConfidenceScore --prompts-file my-prompts.md             # Use custom prompts file");
+        Console.WriteLine("  PromptConfidenceScore --markdown                               # Output in markdown format");
+        Console.WriteLine("  PromptConfidenceScore --ci --tools-file list-tools.json        # CI mode with JSON file");
         Console.WriteLine();
         Console.WriteLine("  # Validate a single tool description:");
         Console.WriteLine("  PromptConfidenceScore --validate \\");
         Console.WriteLine("    --tool-description \"Lists all storage accounts in a subscription\" \\");
         Console.WriteLine("    --prompt \"show me my storage accounts\"");
         Console.WriteLine();
-        Console.WriteLine("  # Validate multiple descriptions and prompts:");
+        Console.WriteLine("  # Validate one description against multiple prompts:");
         Console.WriteLine("  PromptConfidenceScore --validate \\");
         Console.WriteLine("    --tool-description \"Lists storage accounts\" \\");
-        Console.WriteLine("    --tool-description \"Creates storage containers\" \\");
         Console.WriteLine("    --prompt \"show me storage accounts\" \\");
-        Console.WriteLine("    --prompt \"create a container\"");
+        Console.WriteLine("    --prompt \"list my storage accounts\" \\");
+        Console.WriteLine("    --prompt \"what storage accounts do I have\"");
     }
 
-    private static async Task RunValidationModeAsync(List<string> toolDescriptions, List<string> testPrompts, bool isCiMode)
+    private static async Task RunValidationModeAsync(string toolDescription, List<string> testPrompts, bool isCiMode)
     {
         Console.WriteLine("🔧 Tool Description Validation Mode");
-        Console.WriteLine($"📋 Tool Descriptions: {toolDescriptions.Count}");
+        Console.WriteLine($"📋 Tool Description: {toolDescription}");
         Console.WriteLine($"❓ Test Prompts: {testPrompts.Count}");
         
-        for (int i = 0; i < toolDescriptions.Count; i++)
-        {
-            Console.WriteLine($"   Description {i + 1}: {toolDescriptions[i]}");
-        }
         for (int i = 0; i < testPrompts.Count; i++)
         {
             Console.WriteLine($"   Prompt {i + 1}: {testPrompts[i]}");
@@ -831,16 +861,13 @@ class Program
                 Environment.Exit(0);
             }
 
-            // Create test tools with the provided descriptions
+            // Create test tools with the provided description
             var testTools = new List<Tool>();
-            for (int i = 0; i < toolDescriptions.Count; i++)
+            testTools.Add(new Tool
             {
-                testTools.Add(new Tool
-                {
-                    Name = $"test-tool-{i + 1}",
-                    Description = toolDescriptions[i]
-                });
-            }
+                Name = $"test-tool-1",
+                Description = toolDescription
+            });
 
             // Create vector database with existing tools + test tools
             var allTools = new List<Tool>(listToolsResult!.Tools);
@@ -865,32 +892,33 @@ class Program
                 var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
 
                 // Find test tool rankings
-                var testToolResults = new List<(int rank, float score, string toolName, string description)>();
+                var testToolResults = new List<(int rank, float score, string toolName)>();
                 
                 for (int i = 0; i < queryResults.Count; i++)
                 {
                     var result = queryResults[i];
                     if (result.Entry.Id.StartsWith("azmcp-test-tool-"))
                     {
-                        var toolIndex = int.Parse(result.Entry.Id.Replace("azmcp-test-tool-", "")) - 1;
-                        testToolResults.Add((i + 1, result.Score, $"test-tool-{toolIndex + 1}", toolDescriptions[toolIndex]));
+                        testToolResults.Add((i + 1, result.Score, "test-tool-1"));
                     }
                 }
 
-                // Display results for test tools
+                // Display results for test tool
                 Console.WriteLine("📊 Test Tool Results:");
                 if (testToolResults.Count > 0)
                 {
-                    foreach (var (rank, score, toolName, description) in testToolResults.OrderBy(x => x.rank))
-                    {
-                        var quality = rank == 1 ? "✅ EXCELLENT" : 
-                                     rank <= 3 ? "🟡 GOOD" : 
-                                     rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
-                        var confidence = score >= 0.5 ? "💪 High confidence" : "⚠️  Low confidence";
-                        
-                        Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
-                        Console.WriteLine($"      Description: \"{description}\"");
-                    }
+                    var (rank, score, toolName) = testToolResults.First();
+                    var quality = rank == 1 ? "✅ EXCELLENT" : 
+                                 rank <= 3 ? "🟡 GOOD" : 
+                                 rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
+                    var confidence = score >= 0.5 ? "💪 High confidence" : "⚠️  Low confidence";
+                    
+                    Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
+                    Console.WriteLine($"      Description: \"{toolDescription}\"");
+                }
+                else
+                {
+                    Console.WriteLine("   Test tool not found in top 10 results");
                 }
 
                 Console.WriteLine();
@@ -907,7 +935,7 @@ class Program
 
                 // Suggestions for improvement
                 Console.WriteLine();
-                var bestTestTool = testToolResults.OrderBy(x => x.rank).FirstOrDefault();
+                var bestTestTool = testToolResults.FirstOrDefault();
                 if (bestTestTool.rank > 1 || bestTestTool.score < 0.5)
                 {
                     Console.WriteLine("💡 Suggestions for improvement:");
@@ -932,7 +960,7 @@ class Program
 
             // Summary
             Console.WriteLine("📈 Summary:");
-            var totalTests = testPrompts.Count * toolDescriptions.Count;
+            var totalTests = testPrompts.Count;
             var excellentCount = 0;
             var goodCount = 0;
             var fairCount = 0;
@@ -943,19 +971,16 @@ class Program
                 var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
                 var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
 
-                foreach (var testTool in testTools)
-                {
-                    var testToolId = $"azmcp-{testTool.Name}";
-                    var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
-                    
-                    if (rank == 1) excellentCount++;
-                    else if (rank <= 3) goodCount++;
-                    else if (rank <= 10) fairCount++;
-                    else poorCount++;
-                }
+                var testToolId = $"azmcp-test-tool-1";
+                var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
+                
+                if (rank == 1) excellentCount++;
+                else if (rank <= 3) goodCount++;
+                else if (rank <= 10) fairCount++;
+                else poorCount++;
             }
 
-            Console.WriteLine($"   Total combinations tested: {totalTests}");
+            Console.WriteLine($"   Total prompts tested: {totalTests}");
             Console.WriteLine($"   ✅ Excellent (rank #1): {excellentCount} ({excellentCount * 100.0 / totalTests:F1}%)");
             Console.WriteLine($"   🟡 Good (rank #2-3): {goodCount} ({goodCount * 100.0 / totalTests:F1}%)");
             Console.WriteLine($"   🟠 Fair (rank #4-10): {fairCount} ({fairCount * 100.0 / totalTests:F1}%)");
@@ -967,15 +992,7 @@ class Program
             Console.WriteLine($"❌ Error during validation: {ex.Message}");
             Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
             Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-            
-            if (isCiMode)
-            {
-                Console.WriteLine("   or ensure the azmcp server can be run from ../../../src");
-            }
-            else
-            {
-                Console.WriteLine("   or create a .env file with these values");
-            }
+            Console.WriteLine("   or create a .env file with these values");
             
             Environment.Exit(1);
         }
