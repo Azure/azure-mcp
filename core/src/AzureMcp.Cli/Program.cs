@@ -4,6 +4,7 @@
 using System.CommandLine.Builder;
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Azure.Resource;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
@@ -63,6 +64,7 @@ internal class Program
 
             // Register Azure service areas
             new AzureMcp.Aks.AksSetup(),
+            new AzureMcp.ApplicationInsights.ApplicationInsightsSetup(),
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
@@ -129,6 +131,7 @@ internal class Program
         services.AddSingleton<ITenantService, TenantService>();
         services.AddSingleton<IResourceGroupService, ResourceGroupService>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
+        services.AddSingleton<IResourceResolverService, ResourceResolverService>();
         services.AddSingleton<CommandFactory>();
 
         foreach (var area in Areas)

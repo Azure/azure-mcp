@@ -6,6 +6,7 @@ using Azure.Core;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using AzureMcp.Core.Options;
+using AzureMcp.Core.Services.Azure.Resource;
 using AzureMcp.Monitor.Services;
 using AzureMcp.Tests;
 using NSubstitute;

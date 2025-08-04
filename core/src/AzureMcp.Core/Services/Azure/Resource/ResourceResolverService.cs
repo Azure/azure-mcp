@@ -7,7 +7,7 @@ using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 
-namespace AzureMcp.Monitor.Services;
+namespace AzureMcp.Core.Services.Azure.Resource;
 
 public class ResourceResolverService(ISubscriptionService subscriptionService, ITenantService tenantService)
     : BaseAzureService(tenantService), IResourceResolverService

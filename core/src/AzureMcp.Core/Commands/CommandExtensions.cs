@@ -36,19 +36,54 @@ public static class CommandExtensions
                 continue;
             }
             args.Add($"--{option.Name}"); // Use the actual option name for consistency            // Handle different value types
-            var strValue = value.ValueKind switch
-            {
-                JsonValueKind.True => "true",
-                JsonValueKind.False => "false",
-                JsonValueKind.Number => value.GetRawText(),
-                JsonValueKind.String => value.GetString(),
-                JsonValueKind.Array => string.Join(" ", value.EnumerateArray().Select(e => e.GetString() ?? string.Empty)),
-                _ => value.GetRawText()
-            };
 
-            if (strValue != null)
+            if (value.ValueKind == JsonValueKind.True)
             {
-                args.Add(strValue);
+                args.Add("true");
+            }
+            else if (value.ValueKind == JsonValueKind.False)
+            {
+                args.Add("false");
+            }
+            else if (value.ValueKind == JsonValueKind.Number)
+            {
+                args.Add(value.GetRawText());
+            }
+            else if (value.ValueKind == JsonValueKind.String)
+            {
+                var strValue = value.GetString();
+                if (!string.IsNullOrEmpty(strValue))
+                {
+                    args.Add(strValue);
+                }
+            }
+            else if (value.ValueKind == JsonValueKind.Object || value.ValueKind == JsonValueKind.Array)
+            {
+                if (value.EnumerateArray().All(t => t.ValueKind == JsonValueKind.String))
+                {
+                    foreach (var item in value.EnumerateArray())
+                    {
+                        var itemValue = item.GetString();
+                        if (!string.IsNullOrEmpty(itemValue))
+                        {
+                            args.Add(itemValue);
+                        }
+                    }
+                }
+                else
+                {
+                    // For complex JSON objects or arrays, pass as JSON to preserve structure
+
+                    args.Add("\'" + value.GetRawText() + "\'");
+                }
+            }
+            else
+            {
+                var strValue = value.GetRawText();
+                if (!string.IsNullOrEmpty(strValue))
+                {
+                    args.Add(strValue);
+                }
             }
         }
 

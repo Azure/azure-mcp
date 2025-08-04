@@ -21,7 +21,6 @@ public class MonitorSetup : IAreaSetup
     {
         services.AddSingleton<IMonitorService, MonitorService>();
         services.AddSingleton<IMonitorHealthModelService, MonitorHealthModelService>();
-        services.AddSingleton<IResourceResolverService, ResourceResolverService>();
         services.AddSingleton<IMetricsQueryClientService, MetricsQueryClientService>();
         services.AddSingleton<IMonitorMetricsService, MonitorMetricsService>();
     }
