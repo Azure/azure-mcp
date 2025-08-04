@@ -1,22 +1,14 @@
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using ToolSelection.Models;
 
 namespace ToolSelection.Services;
 
-public class EmbeddingService
+public class EmbeddingService(HttpClient httpClient, string endpoint, string apiKey)
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _endpoint;
-    private readonly string _apiKey;
-
-    public EmbeddingService(HttpClient httpClient, string endpoint, string apiKey)
-    {
-        _httpClient = httpClient;
-        _endpoint = endpoint;
-        _apiKey = apiKey;
-    }
+    private readonly HttpClient _httpClient = httpClient;
+    private readonly string _endpoint = endpoint;
+    private readonly string _apiKey = apiKey;
 
     public async Task<float[]> CreateEmbeddingsAsync(string input)
     {
@@ -52,29 +44,5 @@ public class EmbeddingService
         }
 
         return embeddingResponse.Data[0].Embedding;
-    }
-
-    private class EmbeddingResponse
-    {
-        [JsonPropertyName("data")]
-        public EmbeddingData[]? Data { get; set; }
-
-        [JsonPropertyName("error")]
-        public ApiError? Error { get; set; }
-    }
-
-    private class EmbeddingData
-    {
-        [JsonPropertyName("embedding")]
-        public required float[] Embedding { get; set; }
-    }
-
-    private class ApiError
-    {
-        [JsonPropertyName("message")]
-        public string? Message { get; set; }
-
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
     }
 }

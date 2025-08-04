@@ -13,6 +13,7 @@ namespace ToolSelection;
 [JsonSerializable(typeof(EmbeddingData))]
 [JsonSerializable(typeof(Usage))]
 [JsonSerializable(typeof(ApiError))]
+[JsonSerializable(typeof(SuccessRateMetrics))]
 public partial class SourceGenerationContext : JsonSerializerContext
 {
 }

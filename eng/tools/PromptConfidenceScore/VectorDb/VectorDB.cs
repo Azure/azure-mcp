@@ -55,11 +55,11 @@ public class DotProduct : IDistanceMetric
     }
 }
 
-public class VectorDB : IDisposable
+public class VectorDB(IDistanceMetric distanceMetric, IEnumerable<Entry>? entries = null) : IDisposable
 {
     private readonly ReaderWriterLockSlim _lock = new();
-    private readonly List<Entry> _entries = new();
-    private readonly IDistanceMetric _distanceMetric;
+    private readonly List<Entry> _entries = entries?.OrderBy(e => e.Id, StringComparer.Ordinal).ToList() ?? new();
+    private readonly IDistanceMetric _distanceMetric = distanceMetric;
     private bool _disposed = false;
 
     ~VectorDB()
@@ -82,15 +82,6 @@ public class VectorDB : IDisposable
                 _lock?.Dispose();
             }
             _disposed = true;
-        }
-    }
-    public VectorDB(IDistanceMetric distanceMetric, IEnumerable<Entry>? entries = null)
-    {
-        _distanceMetric = distanceMetric;
-        if (entries != null)
-        {
-            _entries.AddRange(entries);
-            _entries.Sort((a, b) => string.Compare(a.Id, b.Id, StringComparison.Ordinal));
         }
     }
 
