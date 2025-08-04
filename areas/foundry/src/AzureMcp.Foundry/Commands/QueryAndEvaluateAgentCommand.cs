@@ -14,6 +14,8 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
     private readonly Option<string> _queryOption = FoundryOptionDefinitions.QueryOption;
     private readonly Option<string> _endpointOption = FoundryOptionDefinitions.EndpointOption;
     private readonly Option<string> _evaluators = FoundryOptionDefinitions.EvaluatorsOption;
+    private readonly Option<string> _azureOpenAIEndpointOption = FoundryOptionDefinitions.AzureOpenAIEndpointOption;
+    private readonly Option<string> _azureOpenAIDeploymentOption = FoundryOptionDefinitions.AzureOpenAIDeploymentOption;
 
     public override string Name => "query-and-evaluate";
 
@@ -25,6 +27,8 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
         - agent_id: ID of the agent to query
         - query: Text query to send to the agent
         - evaluators: Optional list of agent evaluator names to use (intent_resolution, tool_call_accuracy, task_adherence). Default is all evaluators if not specified.
+        - Azure OpenAI endpoint: Endpoint of model to be used for evaluation
+        - Azure OpenAI deployment: Specific deployment of model to be used for evaluation
 
         Returns both the agent response and evaluation results
         """;
@@ -40,6 +44,8 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
         command.AddOption(_queryOption);
         command.AddOption(_endpointOption);
         command.AddOption(_evaluators);
+        command.AddOption(_azureOpenAIEndpointOption);
+        command.AddOption(_azureOpenAIDeploymentOption);
     }
 
     protected override QueryAndEvaluateAgentOptions BindOptions(ParseResult parseResult)
@@ -49,6 +55,8 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
         options.AgentId = parseResult.GetValueForOption(_agentIdOption);
         options.Query = parseResult.GetValueForOption(_queryOption);
         options.Evaluators = parseResult.GetValueForOption(_evaluators);
+        options.AzureOpenAIEndpoint = parseResult.GetValueForOption(_azureOpenAIEndpointOption);
+        options.AzureOpenAIDeployment = parseResult.GetValueForOption(_azureOpenAIDeploymentOption);
 
         return options;
     }
@@ -70,6 +78,8 @@ public sealed class QueryAndEvaluateAgentCommand : GlobalCommand<QueryAndEvaluat
                 options.AgentId!,
                 options.Query!,
                 options.Endpoint!,
+                options.AzureOpenAIEndpoint!,
+                options.AzureOpenAIDeployment!,
                 options.Tenant,
                 options.Evaluators?.Split(',').Select(e => e.Trim()).ToList());
 

@@ -54,9 +54,19 @@ public interface IFoundryService
         string agentId,
         string query,
         string endpoint,
+        string azureOpenAIEndpoint,
+        string azureOpenAIDeployment,
         string? tenantId = null,
         List<string>? evaluatorNames = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null);
+    Task<Dictionary<string, object>> EvaluateAgent(
+        string evaluatorName,
+        string query,
+        string agentResponse,
+        string azureOpenAIEndpoint,
+        string azureOpenAIDeployment,
+        string? toolDefinitions,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

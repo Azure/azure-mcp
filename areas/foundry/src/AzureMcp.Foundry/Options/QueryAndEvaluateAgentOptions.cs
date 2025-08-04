@@ -19,4 +19,10 @@ public class QueryAndEvaluateAgentOptions : GlobalOptions
 
     [JsonPropertyName(FoundryOptionDefinitions.Evaluators)]
     public string? Evaluators { get; set; }
+
+    [JsonPropertyName(FoundryOptionDefinitions.AzureOpenAIEndpoint)]
+    public string? AzureOpenAIEndpoint { get; set; }
+
+    [JsonPropertyName(FoundryOptionDefinitions.AzureOpenAIDeployment)]
+    public string? AzureOpenAIDeployment { get; set; }
 }

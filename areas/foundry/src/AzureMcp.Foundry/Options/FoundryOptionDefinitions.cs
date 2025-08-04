@@ -27,6 +27,8 @@ public static class FoundryOptionDefinitions
     public const string Response = "response";
     public const string ToolCalls = "tool-calls";
     public const string ToolDefinitions = "tool-definitions";
+    public const string AzureOpenAIEndpoint = "azure-openai-endpoint";
+    public const string AzureOpenAIDeployment = "azure-openai-deployment";
 
     public static readonly Option<string> EndpointOption = new(
         $"--{Endpoint}",
@@ -162,4 +164,20 @@ public static class FoundryOptionDefinitions
         $"--{ToolDefinitions}",
         "The tool definitions used by the agent."
     );
+
+    public static readonly Option<string> AzureOpenAIEndpointOption = new(
+        $"--{AzureOpenAIEndpoint}",
+        "The endpoint URL for the Azure OpenAI service to be used in evaluation."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> AzureOpenAIDeploymentOption = new(
+        $"--{AzureOpenAIDeployment}",
+        "The deployment name for the Azure OpenAI model to be used in evaluation."
+    )
+    {
+        IsRequired = true
+    };
 }

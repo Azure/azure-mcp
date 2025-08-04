@@ -11,6 +11,7 @@ using AzureMcp.Core.Services.Azure.Authentication;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Azure;
+using Azure.AI.Projects;
 
 namespace AzureMcp.Foundry.LiveTests;
 
@@ -92,44 +93,102 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
                 { "query", query },
                 { "endpoint", endpoint }
             });
-        result.AssertProperty("query");
-        result.AssertProperty("text_query");
-        result.AssertProperty("text_response");
-        result.AssertProperty("tool_definitions");
-        result.AssertProperty("thread_id");
-        result.AssertProperty("run_id");
+        var response = result.AssertProperty("response");
+        Assert.Equal(JsonValueKind.Object, response.ValueKind);
+        Assert.NotEmpty(response.EnumerateObject());
+        response.AssertProperty("query");
+        response.AssertProperty("response");
+        response.AssertProperty("text_query");
+        response.AssertProperty("text_response");
+        response.AssertProperty("agent_id");
+        response.AssertProperty("tool_definitions");
     }
 
-    // [Fact]
-    // [Trait("Category", "Live")]
-    // public async Task Should_query_and_evaluate_agent()
-    // {
-    //     // to be filled in
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_list_agents()
+    {
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
 
-    //     var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_agents_query_and_evaluate",
-    //         new()
-    //         {
-    //             { "deployment-name", deploymentName },
-    //             { "model-name", "gpt-4o" },
-    //             { "model-format", "OpenAI"},
-    //             { "azure-ai-services-name", Settings.ResourceBaseName },
-    //             { "resource-group", Settings.ResourceGroupName },
-    //             { "subscription", Settings.SubscriptionId },
-    //         });
+        await CreateAgent(agentName, endpoint, "gpt-4o");
 
-    //     var deploymentResource = result.AssertProperty("deploymentData");
-    //     Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
-    //     Assert.NotEmpty(deploymentResource.EnumerateObject());
-    // }
+        var result = await CallToolAsync(
+            "azmcp_foundry_agents_list",
+            new()
+            {
+                { "endpoint", endpoint }
+            });
+        var agentsArray = result.AssertProperty("agents");
+        Assert.Equal(JsonValueKind.Array, agentsArray.ValueKind);
+        Assert.NotEmpty(agentsArray.EnumerateArray());
+    }
 
-    // [Fact]
+    [Theory]
+    [InlineData("task_adherence", "Task Adherence")]
+    [InlineData("tool_call_accuracy", "Tool Call Accuracy")]
+    [InlineData("intent_resolution", "Intent Resolution")]
+    [Trait("Category", "Live")]
+    public async Task Should_query_and_evaluate_agent(string evaluatorName, string evaluationMetric)
+    {
+        // to be filled in
+
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
+        var azureOpenAIEndpoint = $"https://{accounts}.cognitiveservices.azure.com";
+        var azureOpenAIDeployment = "gpt-4o";
+
+        var agentId = await CreateAgent(agentName, endpoint, "gpt-4o");
+        var result = await CallToolAsync(
+            "azmcp_foundry_agents_query-and-evaluate",
+            new()
+            {
+                { "agent-id", agentId },
+                { "query", "What is the weather in NYC today?"},
+                { "endpoint", endpoint },
+                { "azure-openai-endpoint", azureOpenAIEndpoint },
+                { "azure-openai-deployment", azureOpenAIDeployment },
+                { "evaluators", evaluatorName }
+            });
+
+        var response = result.AssertProperty("response");
+        Assert.Equal(JsonValueKind.Object, response.ValueKind);
+        Assert.NotEmpty(response.EnumerateObject());
+        response.AssertProperty("query");
+        response.AssertProperty("response");
+        response.AssertProperty("text_query");
+        response.AssertProperty("text_response");
+        response.AssertProperty("evaluators");
+        var evaluationResults = response.AssertProperty("evaluation_result");
+        Assert.Equal(JsonValueKind.Object, evaluationResults.ValueKind);
+        Assert.NotEmpty(evaluationResults.EnumerateObject());
+        var metrics = evaluationResults.AssertProperty("metrics");
+        Assert.Equal(JsonValueKind.Object, metrics.ValueKind);
+        var metric = metrics.AssertProperty(evaluationMetric);
+        Assert.Equal(JsonValueKind.Object, metric.ValueKind);
+        metric.AssertProperty("value");
+        metric.AssertProperty("reason");
+        var interpretation = metric.AssertProperty("interpretation");
+        Assert.Equal(JsonValueKind.Object, interpretation.ValueKind);
+        var context = metric.AssertProperty("context");
+        Assert.Equal(JsonValueKind.Object, context.ValueKind);
+    }
+
+    // [Theory]
+    // [InlineData("task_adherence")]
+    // [InlineData("tool_call_accuracy")]
+    // [InlineData("intent_resolution")]
     // [Trait("Category", "Live")]
     // public async Task Should_evaluate_agent()
     // {
     //     // to be filled in
     //     var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+    //     var query = "[{\"$type\":\"text\",\"text\":\"WhatistheweatherinNYCtoday?\"}],\"messageId\":\"msg_zXUoBhasDOxV2dKHOic3phM0\"}]";
+    //     var response = "[{\"role\":\"user\",\"contents\":[{\"$type\":\"text\",\"text\":\"WhatistheweatherinNYCtoday?\"}],\"messageId\":\"msg_zXUoBhasDOxV2dKHOic3phM0\"},{\"authorName\":\"asst_XNa6yxvWUvRhCpWmE3kxk09u\",\"role\":\"assistant\",\"contents\":[{\"$type\":\"functionCall\",\"callId\":\"call_byxd7TVPnko7jfMTuGkGNvJ7\",\"name\":\"bing_grounding\",\"arguments\":{\"requesturl\":\"https://api.bing.microsoft.com/v7.0/search?q=NewYorkCityweatherAugust42025\"}}],\"messageId\":\"step_bLVeNTPgRie1iZrrXByFNaMp\"},{\"authorName\":\"asst_XNa6yxvWUvRhCpWmE3kxk09u\",\"role\":\"assistant\",\"contents\":[{\"$type\":\"text\",\"text\":\"TheweatherinNewYorkCitytoday,August4,2025,isexpectedtohaveahighof88\\u00B0Fduringthedayandalowof70\\u00B0Fatnight.Thereisa25%chanceofprecipitation,withlightwindsatabout7mph\\u30103:2\\u2020source\\u3011.\"}],\"messageId\":\"msg_RNxHhcjPFWUsaKFF7jq7AUja\"}]";
     //     var result = await CallToolAsync(
     //         "azmcp_foundry_agents_evaluate",
     //         new()

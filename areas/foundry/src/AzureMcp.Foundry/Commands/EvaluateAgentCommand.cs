@@ -15,6 +15,8 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
     private readonly Option<string> _evaluatorNameOption = FoundryOptionDefinitions.EvaluatorNameOption;
     private readonly Option<string> _responseOption = FoundryOptionDefinitions.ResponseOption;
     private readonly Option<string> _toolDefinitionsOption = FoundryOptionDefinitions.ToolDefinitionsOption;
+    private readonly Option<string> _azureOpenAIEndpointOption = FoundryOptionDefinitions.AzureOpenAIEndpointOption;
+    private readonly Option<string> _azureOpenAIDeploymentOption = FoundryOptionDefinitions.AzureOpenAIDeploymentOption;
 
     public override string Name => "evaluate";
 
@@ -28,6 +30,8 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
         - response: Agent response (JSON string)
         - tool_calls: Optional tool calls data (JSON string)
         - tool_definitions: Optional tool definitions (JSON string)
+        - azure_openai_endpoint: Endpoint of model to be used for evaluation
+        - azure_openai_deployment: Specific deployment of model to be used for evaluation
         """;
 
     public override string Title => CommandTitle;
@@ -42,6 +46,8 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
         command.AddOption(_evaluatorNameOption);
         command.AddOption(_responseOption);
         command.AddOption(_toolDefinitionsOption);
+        command.AddOption(_azureOpenAIEndpointOption);
+        command.AddOption(_azureOpenAIDeploymentOption);
     }
 
     protected override EvaluateAgentOptions BindOptions(ParseResult parseResult)
@@ -52,6 +58,8 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
         options.EvaluatorName = parseResult.GetValueForOption(_evaluatorNameOption);
         options.Response = parseResult.GetValueForOption(_responseOption);
         options.ToolDefinitions = parseResult.GetValueForOption(_toolDefinitionsOption);
+        options.AzureOpenAIEndpoint = parseResult.GetValueForOption(_azureOpenAIEndpointOption);
+        options.AzureOpenAIDeployment = parseResult.GetValueForOption(_azureOpenAIDeploymentOption);
 
         return options;
     }
@@ -73,6 +81,8 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
                 options.EvaluatorName!,
                 options.Query!,
                 options.Response!,
+                options.AzureOpenAIEndpoint!,
+                options.AzureOpenAIDeployment!,
                 options.ToolDefinitions);
 
             context.Response.Results = ResponseResult.Create(

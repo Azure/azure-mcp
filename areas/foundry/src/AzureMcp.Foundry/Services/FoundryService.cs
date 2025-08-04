@@ -384,7 +384,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string? tenant = null, List<string>? evaluatorNames = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Dictionary<string, object>> QueryAndEvaluateAgent(string agentId, string query, string endpoint, string azureOpenAIEndpoint, string azureOpenAIDeployment, string? tenant = null, List<string>? evaluatorNames = null, RetryPolicyOptions? retryPolicy = null)
     {
         try
         {
@@ -416,7 +416,7 @@ public class FoundryService : BaseAzureService, IFoundryService
             }
             var compositeEvaluator = new CompositeEvaluator(evaluators);
 
-            var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
+            var azureOpenAIChatClient = GetAzureOpenAIChatClient(azureOpenAIEndpoint, azureOpenAIDeployment, credential);
 
             var evaluationResult = await compositeEvaluator.EvaluateAsync(
                 connectAgentResult["query"] as List<ChatMessage> ?? [],
@@ -438,7 +438,6 @@ public class FoundryService : BaseAzureService, IFoundryService
                 { "evaluators", evaluatorNames },
                 { "evaluation_result", evaluationResult },
                 { "citations", connectAgentResult["citations"] ?? string.Empty },
-                { "evaluation_metrics", evaluationResult }
             };
 
             return response;
@@ -453,7 +452,7 @@ public class FoundryService : BaseAzureService, IFoundryService
         }
     }
 
-    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<Dictionary<string, object>> EvaluateAgent(string evaluatorName, string query, string agentResponse, string azureOpenAIEndpoint, string azureOpenAIDeployment, string? toolDefinitions, string? tenantId = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(evaluatorName, query, agentResponse);
         try
@@ -477,7 +476,7 @@ public class FoundryService : BaseAzureService, IFoundryService
 
             var credential = await GetCredential(tenantId);
 
-            var azureOpenAIChatClient = GetAzureOpenAIChatClient(credential);
+            var azureOpenAIChatClient = GetAzureOpenAIChatClient(azureOpenAIEndpoint, azureOpenAIDeployment, credential);
 
             var result = await evaluator.EvaluateAsync(
                 loadedQuery ?? [],
@@ -766,31 +765,19 @@ public class FoundryService : BaseAzureService, IFoundryService
         return (result.ToString().Trim(), citations);
     }
 
-    private static IChatClient GetAzureOpenAIChatClient(TokenCredential credential)
+    private static IChatClient GetAzureOpenAIChatClient(string azureOpenAIEndpoint, string azureOpenAIDeployment, TokenCredential credential)
     {
         var azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
-        var azureOpenAIEndpointUri = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
-        if (azureOpenAIEndpointUri == null)
-        {
-            throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT environment variable is not set. Please set it to use evaluation features.");
-        }
-
-
-        var azureOpenAIDeployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT");
-        if (azureOpenAIDeployment == null)
-        {
-            throw new InvalidOperationException("AZURE_OPENAI_DEPLOYMENT environment variable is not set. Please set it to use evaluation features.");
-        }
 
         switch (azureOpenAIKey)
         {
             case null:
                 return new AzureOpenAIClient(
-                new Uri(azureOpenAIEndpointUri),
+                new Uri(azureOpenAIEndpoint),
                 credential).GetChatClient(azureOpenAIDeployment).AsIChatClient();
             default:
                 return new AzureOpenAIClient(
-                new Uri(azureOpenAIEndpointUri),
+                new Uri(azureOpenAIDeployment),
                 new ApiKeyCredential(azureOpenAIKey)).GetChatClient(azureOpenAIDeployment).AsIChatClient();
         }
     }
