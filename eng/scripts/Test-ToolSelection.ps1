@@ -10,17 +10,20 @@
     will gracefully skip when required credentials are not available.
 .PARAMETER SkipIfMissingCredentials
     Skip the test if Azure OpenAI credentials are not configured (default: true in CI)
+.PARAMETER UseJsonFile
+    Use static JSON file instead of dynamic tool loading
 #>
 
 param(
-    [switch]$SkipIfMissingCredentials
+    [switch]$SkipIfMissingCredentials,
+    [switch]$UseJsonFile
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
 
 Push-Location $RepoRoot
 try {
-    $toolSelectionPath = "tests/Tools/PromptConfidenceScore"
+    $toolSelectionPath = "eng/tools/PromptConfidenceScore"
     
     if (-not (Test-Path $toolSelectionPath)) {
         Write-Host "⏭️  Tool selection test not found at $toolSelectionPath - skipping"
@@ -55,7 +58,12 @@ try {
         }
         
         # Run with CI flag to enable graceful degradation
-        dotnet run --configuration Release --no-build -- --ci
+        $runArgs = @("--configuration", "Release", "--no-build", "--", "--ci")
+        if ($UseJsonFile) {
+            $runArgs += "--use-json"
+        }
+        
+        dotnet run @runArgs
         if ($LASTEXITCODE -ne 0) {
             Write-Host "❌ Tool selection analysis failed"
             exit 1

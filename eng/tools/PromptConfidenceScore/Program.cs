@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using ToolSelection.Models;
 using ToolSelection.Services;
 using ToolSelection.VectorDb;
@@ -10,22 +9,27 @@ namespace ToolSelection;
 class Program
 {
     private static readonly HttpClient HttpClient = new();
+    private const string CommandPrefix = "azmcp ";
+    private const string SpaceReplacement = "-";
 
     static async Task Main(string[] args)
     {
-        // Build configuration
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
-
         try
         {
+            // Show help if requested
+            if (args.Contains("--help") || args.Contains("-h"))
+            {
+                ShowHelp();
+                return;
+            }
+
             // Check if we're in CI mode (skip if credentials are missing)
             var isCiMode = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) ||
                           !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")) ||
                           args.Contains("--ci");
+
+            // Check if user wants to use JSON file instead of dynamic loading
+            var useJsonFile = args.Contains("--use-json") || args.Contains("--json");
 
             // Load environment variables from .env file if it exists
             await LoadDotEnvFile();
@@ -63,8 +67,23 @@ class Program
 
             var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
 
-            // Load tools dynamically or from JSON file as fallback
-            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+            // Load tools - use JSON file if requested, otherwise try dynamic loading with JSON as fallback
+            ListToolsResult? listToolsResult = null;
+            
+            if (useJsonFile)
+            {
+                listToolsResult = await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+                if (listToolsResult == null && !isCiMode)
+                {
+                    Console.WriteLine("⚠️  Failed to load tools from JSON file, falling back to dynamic loading");
+                    listToolsResult = await LoadToolsDynamicallyAsync(isCiMode);
+                }
+            }
+            else
+            {
+                listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+            }
+            
             if (listToolsResult == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping tool selection analysis in CI - tools data not available");
@@ -92,6 +111,14 @@ class Program
             {
                 Console.WriteLine("🔍 Running tool selection analysis...");
                 Console.WriteLine($"✅ Loaded {toolCount} tools in {executionTime.TotalSeconds:F2}s");
+                if (useJsonFile)
+                {
+                    Console.WriteLine("📄 Using tools from JSON file");
+                }
+                else
+                {
+                    Console.WriteLine("🔄 Using dynamic tool loading");
+                }
             }
 
             // Create or overwrite the output file
@@ -231,15 +258,22 @@ class Program
     {
         try
         {
-            // Try to find the azmcp executable in the src folder
-            var azMcpPath = Path.GetFullPath("../../../src");
+            // Try to find the azmcp executable in the CLI folder
+            var azMcpPath = Path.GetFullPath("../../../core/src/AzureMcp.Cli/bin/Debug/net9.0");
+            var executablePath = Path.Combine(azMcpPath, "azmcp.exe");
+            
+            // Fallback to .dll if .exe doesn't exist
+            if (!File.Exists(executablePath))
+            {
+                executablePath = Path.Combine(azMcpPath, "azmcp.dll");
+            }
+            
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "dotnet",
-                    Arguments = "run --no-build -- tools list",
-                    WorkingDirectory = azMcpPath,
+                    FileName = executablePath.EndsWith(".exe") ? executablePath : "dotnet",
+                    Arguments = executablePath.EndsWith(".exe") ? "tools list" : $"{executablePath} tools list",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -328,7 +362,7 @@ class Program
             PropertyNameCaseInsensitive = true
         });
 
-        return result ?? throw new InvalidOperationException("Failed to deserialize tools JSON");
+        return result;
     }
 
     private static async Task<Dictionary<string, List<string>>?> LoadPromptsFromMarkdownAsync(string filePath, bool isCiMode = false)
@@ -660,5 +694,30 @@ class Program
         }
         
         return metrics;
+    }
+
+    private static void ShowHelp()
+    {
+        Console.WriteLine("Tool Selection Confidence Score Analyzer");
+        Console.WriteLine();
+        Console.WriteLine("USAGE:");
+        Console.WriteLine("  PromptConfidenceScore [OPTIONS]");
+        Console.WriteLine();
+        Console.WriteLine("OPTIONS:");
+        Console.WriteLine("  --help, -h         Show this help message");
+        Console.WriteLine("  --ci               Run in CI mode (graceful failures)");
+        Console.WriteLine("  --use-json, --json Use static JSON file instead of dynamic tool loading");
+        Console.WriteLine("  --markdown         Output results in markdown format");
+        Console.WriteLine();
+        Console.WriteLine("ENVIRONMENT VARIABLES:");
+        Console.WriteLine("  AOAI_ENDPOINT           Azure OpenAI endpoint URL");
+        Console.WriteLine("  TEXT_EMBEDDING_API_KEY  Azure OpenAI API key");
+        Console.WriteLine("  output                  Set to 'md' for markdown output");
+        Console.WriteLine();
+        Console.WriteLine("EXAMPLES:");
+        Console.WriteLine("  PromptConfidenceScore                    # Use dynamic tool loading (default)");
+        Console.WriteLine("  PromptConfidenceScore --use-json         # Use static JSON file");
+        Console.WriteLine("  PromptConfidenceScore --markdown         # Output in markdown format");
+        Console.WriteLine("  PromptConfidenceScore --ci --use-json    # CI mode with JSON file");
     }
 }

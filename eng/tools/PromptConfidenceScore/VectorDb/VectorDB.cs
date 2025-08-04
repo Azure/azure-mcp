@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-
 namespace ToolSelection.VectorDb;
 
 public record Entry(string Id, object? Metadata, float[] Vector);
@@ -266,10 +264,5 @@ public class VectorDB : IDisposable
         }
 
         return results;
-    }
-
-    public void Dispose()
-    {
-        _lock?.Dispose();
     }
 }
