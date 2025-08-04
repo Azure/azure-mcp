@@ -971,7 +971,20 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Include examples in description
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
-5. Live Test Infrastructure:
+5. **Tool Description Quality Validation**:
+   - Test your command descriptions for quality using the validation tool before submitting:
+
+     ```bash
+     cd eng/tools/PromptConfidenceScore
+     dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
+     ```
+
+   - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)
+   - Test with multiple different prompts that users might use
+   - Consider common synonyms and alternative phrasings in your descriptions
+   - If validation shows POOR results, refine your description and test again
+
+6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
    - Follow naming conventions: `baseName` (most common) or `{baseName}-{area}` if needed
    - Include proper RBAC assignments for test application

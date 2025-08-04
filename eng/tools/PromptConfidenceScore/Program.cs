@@ -31,6 +31,28 @@ class Program
             // Check if user wants to use JSON file instead of dynamic loading
             var useJsonFile = args.Contains("--use-json") || args.Contains("--json");
 
+            // Check if user wants to validate specific tool descriptions
+            var validateMode = args.Contains("--validate");
+            var toolDescArg = Array.FindIndex(args, arg => arg == "--tool-description");
+            var promptArg = Array.FindIndex(args, arg => arg == "--prompt");
+            
+            if (validateMode)
+            {
+                if (toolDescArg == -1 || promptArg == -1 || 
+                    toolDescArg + 1 >= args.Length || promptArg + 1 >= args.Length)
+                {
+                    Console.WriteLine("❌ Error: --validate mode requires --tool-description and --prompt arguments");
+                    Console.WriteLine("Example: --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\"");
+                    Environment.Exit(1);
+                }
+                
+                var toolDescription = args[toolDescArg + 1];
+                var testPrompt = args[promptArg + 1];
+                
+                await RunValidationModeAsync(toolDescription, testPrompt, isCiMode);
+                return;
+            }
+
             // Load environment variables from .env file if it exists
             await LoadDotEnvFile();
 
@@ -464,11 +486,20 @@ class Program
         {
             var input = tool.Description ?? "";
             
-            // Convert command to tool name format (spaces to dashes)
-            var toolName = tool.Command?.Replace(CommandPrefix, "")?.Replace(" ", SpaceReplacement) ?? tool.Name;
-            if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith($"{CommandPrefix.Trim()}-"))
+            // Handle test tool specially
+            string toolName;
+            if (tool.Name == "test-tool")
             {
-                toolName = $"azmcp-{toolName}";
+                toolName = "azmcp-test-tool";
+            }
+            else
+            {
+                // Convert command to tool name format (spaces to dashes)
+                toolName = tool.Command?.Replace(CommandPrefix, "")?.Replace(" ", SpaceReplacement) ?? tool.Name;
+                if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith($"{CommandPrefix.Trim()}-"))
+                {
+                    toolName = $"azmcp-{toolName}";
+                }
             }
             
             var vector = await embeddingService.CreateEmbeddingsAsync(input);
@@ -685,11 +716,17 @@ class Program
         Console.WriteLine("USAGE:");
         Console.WriteLine("  PromptConfidenceScore [OPTIONS]");
         Console.WriteLine();
+        Console.WriteLine("MODES:");
+        Console.WriteLine("  Default mode         Run full analysis on all tools and prompts");
+        Console.WriteLine("  --validate           Test a specific tool description against a prompt");
+        Console.WriteLine();
         Console.WriteLine("OPTIONS:");
-        Console.WriteLine("  --help, -h         Show this help message");
-        Console.WriteLine("  --ci               Run in CI mode (graceful failures)");
-        Console.WriteLine("  --use-json, --json Use static JSON file instead of dynamic tool loading");
-        Console.WriteLine("  --markdown         Output results in markdown format");
+        Console.WriteLine("  --help, -h                    Show this help message");
+        Console.WriteLine("  --ci                          Run in CI mode (graceful failures)");
+        Console.WriteLine("  --use-json, --json           Use static JSON file instead of dynamic tool loading");
+        Console.WriteLine("  --markdown                    Output results in markdown format");
+        Console.WriteLine("  --tool-description <text>     Tool description to test (used with --validate)");
+        Console.WriteLine("  --prompt <text>               Test prompt (used with --validate)");
         Console.WriteLine();
         Console.WriteLine("ENVIRONMENT VARIABLES:");
         Console.WriteLine("  AOAI_ENDPOINT           Azure OpenAI endpoint URL");
@@ -701,5 +738,182 @@ class Program
         Console.WriteLine("  PromptConfidenceScore --use-json         # Use static JSON file");
         Console.WriteLine("  PromptConfidenceScore --markdown         # Output in markdown format");
         Console.WriteLine("  PromptConfidenceScore --ci --use-json    # CI mode with JSON file");
+        Console.WriteLine();
+        Console.WriteLine("  # Validate a specific tool description:");
+        Console.WriteLine("  PromptConfidenceScore --validate \\");
+        Console.WriteLine("    --tool-description \"Lists all storage accounts in a subscription\" \\");
+        Console.WriteLine("    --prompt \"show me my storage accounts\"");
+    }
+
+    private static async Task RunValidationModeAsync(string toolDescription, string testPrompt, bool isCiMode)
+    {
+        Console.WriteLine("🔧 Tool Description Validation Mode");
+        Console.WriteLine($"📋 Tool Description: {toolDescription}");
+        Console.WriteLine($"❓ Test Prompt: {testPrompt}");
+        Console.WriteLine();
+
+        try
+        {
+            // Load environment variables from .env file if it exists
+            await LoadDotEnvFile();
+
+            // Get configuration values
+            var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
+            if (string.IsNullOrEmpty(baseEndpoint))
+            {
+                if (isCiMode)
+                {
+                    Console.WriteLine("⏭️  Skipping validation in CI - AOAI_ENDPOINT not configured");
+                    Environment.Exit(0);
+                }
+                Console.WriteLine("❌ Error: AOAI_ENDPOINT environment variable is required");
+                Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
+                Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
+                Console.WriteLine("   or create a .env file with these values");
+                Environment.Exit(1);
+            }
+
+            // Construct the full Azure OpenAI embeddings endpoint
+            const string deploymentName = "text-embedding-3-large";
+            const string apiVersion = "2024-02-01";
+
+            if (baseEndpoint.EndsWith("/"))
+            {
+                baseEndpoint = baseEndpoint.TrimEnd('/');
+            }
+
+            var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
+
+            var apiKey = await GetApiKeyAsync(isCiMode);
+            if (apiKey == null && isCiMode)
+            {
+                Console.WriteLine("⏭️  Skipping validation in CI - API key not available");
+                Environment.Exit(0);
+            }
+
+            var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
+
+            // Load existing tools for comparison
+            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
+            if (listToolsResult == null && isCiMode)
+            {
+                Console.WriteLine("⏭️  Skipping validation in CI - tools data not available");
+                Environment.Exit(0);
+            }
+
+            // Create a temporary tool with the provided description
+            var testTool = new Tool
+            {
+                Name = "test-tool",
+                Description = toolDescription
+            };
+
+            // Create vector database with existing tools + test tool
+            var allTools = new List<Tool>(listToolsResult!.Tools) { testTool };
+            var db = new VectorDB(new CosineSimilarity());
+
+            var stopwatch = Stopwatch.StartNew();
+            await PopulateDatabaseAsync(db, allTools, embeddingService);
+            stopwatch.Stop();
+
+            Console.WriteLine($"⚡ Loaded {allTools.Count} tools ({allTools.Count - 1} existing + 1 test) in {stopwatch.Elapsed.TotalSeconds:F2}s");
+            Console.WriteLine();
+
+            // Test the prompt against all tools
+            var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
+            var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
+
+            // Find where our test tool ranks
+            var testToolRank = -1;
+            var testToolScore = 0.0f;
+            
+            for (int i = 0; i < queryResults.Count; i++)
+            {
+                if (queryResults[i].Entry.Id == "azmcp-test-tool")
+                {
+                    testToolRank = i + 1;
+                    testToolScore = queryResults[i].Score;
+                    break;
+                }
+            }
+
+            // Display results
+            Console.WriteLine("🎯 Validation Results:");
+            Console.WriteLine($"   📊 Test tool ranked: #{testToolRank} out of {allTools.Count} tools");
+            Console.WriteLine($"   🎯 Confidence score: {testToolScore:F4}");
+            
+            if (testToolRank == 1)
+            {
+                Console.WriteLine("   ✅ EXCELLENT: Test tool is the top choice!");
+            }
+            else if (testToolRank <= 3)
+            {
+                Console.WriteLine("   🟡 GOOD: Test tool is in the top 3 choices");
+            }
+            else if (testToolRank <= 10)
+            {
+                Console.WriteLine("   🟠 FAIR: Test tool is in the top 10 choices");
+            }
+            else
+            {
+                Console.WriteLine("   🔴 POOR: Test tool is not in the top 10 choices");
+            }
+
+            if (testToolScore >= 0.5)
+            {
+                Console.WriteLine("   💪 High confidence match (≥0.5)");
+            }
+            else
+            {
+                Console.WriteLine("   ⚠️  Low confidence match (<0.5)");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("📋 Top 5 competing tools:");
+            for (int i = 0; i < Math.Min(5, queryResults.Count); i++)
+            {
+                var result = queryResults[i];
+                var isTestTool = result.Entry.Id == "azmcp-test-tool";
+                var indicator = isTestTool ? "👉 TEST TOOL" : "";
+                var toolName = isTestTool ? "test-tool" : result.Entry.Id;
+                
+                Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
+            }
+
+            // Suggestions for improvement
+            Console.WriteLine();
+            if (testToolRank > 1 || testToolScore < 0.5)
+            {
+                Console.WriteLine("💡 Suggestions for improvement:");
+                if (testToolScore < 0.3)
+                {
+                    Console.WriteLine("   • Consider using more specific keywords from the prompt");
+                    Console.WriteLine("   • Include common synonyms or alternative phrasings");
+                }
+                if (testToolRank > 5)
+                {
+                    Console.WriteLine("   • Look at top-ranking tool descriptions for inspiration");
+                    Console.WriteLine("   • Ensure the description clearly matches the user intent");
+                }
+                Console.WriteLine("   • Test with multiple different prompts users might use");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error during validation: {ex.Message}");
+            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
+            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
+            
+            if (isCiMode)
+            {
+                Console.WriteLine("   or ensure the azmcp server can be run from ../../../src");
+            }
+            else
+            {
+                Console.WriteLine("   or create a .env file with these values");
+            }
+            
+            Environment.Exit(1);
+        }
     }
 }
