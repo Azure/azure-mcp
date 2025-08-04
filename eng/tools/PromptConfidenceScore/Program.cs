@@ -52,13 +52,13 @@ class Program
 
             // Check if user wants to validate specific tool descriptions
             var validateMode = args.Contains("--validate");
-            
+
             if (validateMode)
             {
                 // Collect tool description and prompts
                 string? toolDescription = null;
                 var prompts = new List<string>();
-                
+
                 for (int i = 0; i < args.Length; i++)
                 {
                     if (args[i] == "--tool-description" && i + 1 < args.Length)
@@ -76,7 +76,7 @@ class Program
                         prompts.Add(args[i + 1]);
                     }
                 }
-                
+
                 if (string.IsNullOrEmpty(toolDescription) || prompts.Count == 0)
                 {
                     Console.WriteLine("❌ Error: --validate mode requires exactly one --tool-description and at least one --prompt argument");
@@ -87,7 +87,7 @@ class Program
                     Console.WriteLine("  --validate --tool-description \"Lists all storage accounts\" --prompt \"show me my storage accounts\" --prompt \"list my storage accounts\" --prompt \"what storage accounts do I have\"");
                     Environment.Exit(1);
                 }
-                
+
                 await RunValidationModeAsync(toolDescription, prompts, isCiMode);
                 return;
             }
@@ -130,7 +130,7 @@ class Program
 
             // Load tools - use custom JSON file if specified, otherwise try dynamic loading with fallback
             ListToolsResult? listToolsResult = null;
-            
+
             if (!string.IsNullOrEmpty(customToolsFile))
             {
                 listToolsResult = await LoadToolsFromJsonAsync(customToolsFile, isCiMode);
@@ -144,7 +144,7 @@ class Program
             {
                 listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("list-tools.json", isCiMode);
             }
-            
+
             if (listToolsResult == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping tool selection analysis in CI - tools data not available");
@@ -178,7 +178,7 @@ class Program
             {
                 Console.WriteLine("🔄 Using dynamic tool loading");
             }
-            
+
             if (!string.IsNullOrEmpty(customPromptsFile))
             {
                 Console.WriteLine($"📝 Using custom prompts file: {customPromptsFile}");
@@ -205,7 +205,7 @@ class Program
 
             // Load prompts from custom file, markdown file, or JSON file as fallback
             Dictionary<string, List<string>>? toolNameAndPrompts = null;
-            
+
             if (!string.IsNullOrEmpty(customPromptsFile))
             {
                 // User specified a custom prompts file
@@ -229,7 +229,7 @@ class Program
                 // Use default fallback logic
                 toolNameAndPrompts = await LoadPromptsFromMarkdownAsync("../../../e2eTests/e2eTestPrompts.md", isCiMode);
             }
-            
+
             if (toolNameAndPrompts == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping prompt testing in CI - prompts data not available");
@@ -278,7 +278,7 @@ class Program
         {
             return true;
         }
-        
+
         // Check command line arguments
         var args = Environment.GetCommandLineArgs();
         return args.Contains("--markdown", StringComparer.OrdinalIgnoreCase);
@@ -337,13 +337,13 @@ class Program
             // Try to find the azmcp executable in the CLI folder
             var azMcpPath = Path.GetFullPath("../../../core/src/AzureMcp.Cli/bin/Debug/net9.0");
             var executablePath = Path.Combine(azMcpPath, "azmcp.exe");
-            
+
             // Fallback to .dll if .exe doesn't exist
             if (!File.Exists(executablePath))
             {
                 executablePath = Path.Combine(azMcpPath, "azmcp.dll");
             }
-            
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -382,7 +382,7 @@ class Program
                     break;
                 }
             }
-            
+
             if (jsonStartIndex == -1)
             {
                 if (isCiMode)
@@ -391,7 +391,7 @@ class Program
                 }
                 throw new InvalidOperationException("No JSON output found from azmcp command");
             }
-            
+
             var jsonOutput = string.Join('\n', lines.Skip(jsonStartIndex));
 
             // Parse the JSON output
@@ -457,10 +457,10 @@ class Program
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
-                
+
                 // Skip table headers and separators
-                if (trimmedLine.StartsWith("| Tool Name") || 
-                    trimmedLine.StartsWith("|:-------") || 
+                if (trimmedLine.StartsWith("| Tool Name") ||
+                    trimmedLine.StartsWith("|:-------") ||
                     trimmedLine.StartsWith("##") ||
                     trimmedLine.StartsWith("#") ||
                     string.IsNullOrWhiteSpace(trimmedLine))
@@ -539,7 +539,7 @@ class Program
         foreach (var tool in tools)
         {
             var input = tool.Description ?? "";
-            
+
             // Handle test tools specially
             string toolName;
             if (tool.Name.StartsWith("test-tool"))
@@ -555,7 +555,7 @@ class Program
                     toolName = $"azmcp-{toolName}";
                 }
             }
-            
+
             var vector = await embeddingService.CreateEmbeddingsAsync(input);
             db.Upsert(new Entry(toolName, tool, vector));
         }
@@ -720,7 +720,7 @@ class Program
     private static async Task<SuccessRateMetrics> CalculateSuccessRateAsync(VectorDB db, Dictionary<string, List<string>> toolNameWithPrompts, EmbeddingService embeddingService)
     {
         var metrics = new SuccessRateMetrics();
-        
+
         foreach (var (toolName, prompts) in toolNameWithPrompts)
         {
             foreach (var prompt in prompts)
@@ -728,21 +728,21 @@ class Program
                 metrics.TotalTests++;
                 var vector = await embeddingService.CreateEmbeddingsAsync(prompt);
                 var queryResults = db.Query(vector, new QueryOptions(TopK: 10)); // Get more results to check confidence scores
-                
+
                 if (queryResults.Count > 0)
                 {
                     // Check if expected tool is top choice
                     if (queryResults[0].Entry.Id == toolName)
                     {
                         metrics.TopChoiceCount++;
-                        
+
                         // Check if it also has high confidence (0.5 or higher)
                         if (queryResults[0].Score >= 0.5)
                         {
                             metrics.TopChoiceHighConfidenceCount++;
                         }
                     }
-                    
+
                     // Check if expected tool appears anywhere with confidence 0.5 or higher
                     if (queryResults.Any(r => r.Entry.Id == toolName && r.Score >= 0.5))
                     {
@@ -751,7 +751,7 @@ class Program
                 }
             }
         }
-        
+
         return metrics;
     }
 
@@ -805,7 +805,7 @@ class Program
         Console.WriteLine("🔧 Tool Description Validation Mode");
         Console.WriteLine($"📋 Tool Description: {toolDescription}");
         Console.WriteLine($"❓ Test Prompts: {testPrompts.Count}");
-        
+
         for (int i = 0; i < testPrompts.Count; i++)
         {
             Console.WriteLine($"   Prompt {i + 1}: {testPrompts[i]}");
@@ -893,7 +893,7 @@ class Program
 
                 // Find test tool rankings
                 var testToolResults = new List<(int rank, float score, string toolName)>();
-                
+
                 for (int i = 0; i < queryResults.Count; i++)
                 {
                     var result = queryResults[i];
@@ -908,11 +908,11 @@ class Program
                 if (testToolResults.Count > 0)
                 {
                     var (rank, score, toolName) = testToolResults.First();
-                    var quality = rank == 1 ? "✅ EXCELLENT" : 
-                                 rank <= 3 ? "🟡 GOOD" : 
+                    var quality = rank == 1 ? "✅ EXCELLENT" :
+                                 rank <= 3 ? "🟡 GOOD" :
                                  rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
                     var confidence = score >= 0.5 ? "💪 High confidence" : "⚠️  Low confidence";
-                    
+
                     Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
                     Console.WriteLine($"      Description: \"{toolDescription}\"");
                 }
@@ -929,7 +929,7 @@ class Program
                     var isTestTool = result.Entry.Id.StartsWith("azmcp-test-tool-");
                     var indicator = isTestTool ? "👉 TEST TOOL" : "";
                     var toolName = isTestTool ? result.Entry.Id.Replace("azmcp-", "") : result.Entry.Id;
-                    
+
                     Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
                 }
 
@@ -973,11 +973,15 @@ class Program
 
                 var testToolId = $"azmcp-test-tool-1";
                 var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
-                
-                if (rank == 1) excellentCount++;
-                else if (rank <= 3) goodCount++;
-                else if (rank <= 10) fairCount++;
-                else poorCount++;
+
+                if (rank == 1)
+                    excellentCount++;
+                else if (rank <= 3)
+                    goodCount++;
+                else if (rank <= 10)
+                    fairCount++;
+                else
+                    poorCount++;
             }
 
             Console.WriteLine($"   Total prompts tested: {totalTests}");
@@ -993,7 +997,7 @@ class Program
             Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
             Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
             Console.WriteLine("   or create a .env file with these values");
-            
+
             Environment.Exit(1);
         }
     }
