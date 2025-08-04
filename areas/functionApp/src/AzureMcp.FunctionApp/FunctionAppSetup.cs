@@ -1,0 +1,30 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Core.Areas;
+using AzureMcp.Core.Commands;
+using AzureMcp.FunctionApp.Commands.FunctionApp;
+using AzureMcp.FunctionApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.FunctionApp;
+
+public class FunctionAppSetup : IAreaSetup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IFunctionAppService, FunctionAppService>();
+    }
+
+    public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
+    {
+        // Create Function App command group
+        var functionApp = new CommandGroup("functionapp", "Function App operations");
+        rootGroup.AddSubGroup(functionApp);
+
+        // Register Function App commands
+        functionApp.AddCommand("list", new FunctionAppListCommand(
+            loggerFactory.CreateLogger<FunctionAppListCommand>()));
+    }
+}

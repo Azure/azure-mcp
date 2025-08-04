@@ -68,6 +68,7 @@ internal class Program
             new AzureMcp.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
+            new AzureMcp.FunctionApp.FunctionAppSetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
