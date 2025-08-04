@@ -2,22 +2,22 @@
 
 <#
 .SYNOPSIS
-    Updates the list-tools.json file by calling azmcp.exe tools list
+    Updates the tools.json file by calling azmcp.exe tools list
 
 .DESCRIPTION
-    This script generates a fresh list-tools.json file by executing the azmcp.exe tools list command.
+    This script generates a fresh tools.json file by executing the azmcp.exe tools list command.
     The generated JSON file will have the correct format expected by the PromptConfidenceScore tool.
 
 .PARAMETER Force
-    Overwrite the existing list-tools.json file without prompting
+    Overwrite the existing tools.json file without prompting
 
 .EXAMPLE
     ./Update-ToolsJson.ps1
-    Updates the list-tools.json file, prompting before overwriting if it exists
+    Updates the tools.json file, prompting before overwriting if it exists
 
 .EXAMPLE
     ./Update-ToolsJson.ps1 -Force
-    Updates the list-tools.json file, overwriting without prompting
+    Updates the tools.json file, overwriting without prompting
 #>
 
 param(
@@ -28,7 +28,7 @@ $ErrorActionPreference = 'Stop'
 
 # Get the directory where this script is located
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$JsonFile = Join-Path $ScriptDir "list-tools.json"
+$JsonFile = Join-Path $ScriptDir "tools.json"
 $AzMcpExe = Join-Path $ScriptDir "../../../core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp.exe"
 
 # Check if azmcp.exe exists
@@ -40,14 +40,14 @@ if (-not (Test-Path $AzMcpExe)) {
 
 # Check if JSON file exists and prompt if not using -Force
 if ((Test-Path $JsonFile) -and -not $Force) {
-    $response = Read-Host "list-tools.json already exists. Overwrite? (y/N)"
+    $response = Read-Host "tools.json already exists. Overwrite? (y/N)"
     if ($response -notmatch '^[Yy]') {
         Write-Host "Operation cancelled." -ForegroundColor Yellow
         exit 0
     }
 }
 
-Write-Host "Generating list-tools.json..." -ForegroundColor Green
+Write-Host "Generating tools.json..." -ForegroundColor Green
 
 try {
     # Execute azmcp.exe tools list and save output to JSON file
@@ -56,7 +56,7 @@ try {
     # Verify the file was created and has content
     if ((Test-Path $JsonFile) -and ((Get-Item $JsonFile).Length -gt 0)) {
         $fileSize = [math]::Round((Get-Item $JsonFile).Length / 1KB, 2)
-        Write-Host "Successfully generated list-tools.json ($fileSize KB)" -ForegroundColor Green
+        Write-Host "Successfully generated tools.json ($fileSize KB)" -ForegroundColor Green
         
         # Try to parse the JSON to verify it's valid
         try {
@@ -69,7 +69,7 @@ try {
         }
     }
     else {
-        Write-Error "Failed to generate list-tools.json or file is empty"
+        Write-Error "Failed to generate tools.json or file is empty"
     }
 }
 catch {
