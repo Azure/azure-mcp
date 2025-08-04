@@ -18,7 +18,12 @@ public sealed class AzCommand(ILogger<AzCommand> logger) : GlobalCommand<AzOptio
 
     public override string Description =>
         """
-Your job is to generate one ore more Azure CLI commands based on a provided intent description. The intent describes the goal to accomplish using Azure CLI. For example, 'List all resources group in my subscription'.
+Your job is to generate one or more Azure CLI commands based on a provided intent description. The intent describes the goal to accomplish using Azure CLI. For example, 'List all resources group in my subscription'. Follow the following additional rules when invoking this tool:
+- Use the Azure CLI to manage Azure resources and services. Do not use any other tool.
+- When deleting or modifying resources, ALWAYS request user confirmation.
+- You can ONLY write code that interacts with Azure. It CANNOT generate charts, tables, graphs, etc.
+- You can delete or modify resources in your Azure environment. Always be cautious and include appropriate warnings when providing commands to users.
+- Be concise, professional and to the point. Do not give generic advice, always reply with detailed & contextual data sourced from the current Azure environment.
 """;
 
     public override string Title => CommandTitle;

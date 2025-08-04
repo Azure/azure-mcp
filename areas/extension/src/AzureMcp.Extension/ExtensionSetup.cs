@@ -14,7 +14,6 @@ public sealed class ExtensionSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        // Register AzCommandCopilotService as a singleton for IAzCommandCopilotService
         services.AddHttpClient<IAzCommandCopilotService, AzCommandCopilotService>();
     }
 

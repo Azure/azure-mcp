@@ -44,7 +44,8 @@ public sealed class AzCommandCopilotService : IAzCommandCopilotService
         httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
         httpRequest.Content = new StringContent(
             JsonSerializer.Serialize(payload, ExtensionJsonContext.Default.GenerateAzCommandPayload),
-            System.Text.Encoding.UTF8, "application/json"
+            System.Text.Encoding.UTF8,
+            "application/json"
         );
         using var httpResponse = await _httpClient.SendAsync(httpRequest);
         var responseContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
