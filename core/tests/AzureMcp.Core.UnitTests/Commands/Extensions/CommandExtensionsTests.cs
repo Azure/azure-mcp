@@ -160,7 +160,7 @@ public class CommandExtensionsTests
     }
 
     [Fact]
-    public void ParseFromDictionary_WithStringArrayArgument_ParsesCorrectly() 
+    public void ParseFromDictionary_WithStringArrayArgument_ParsesCorrectly()
     {
         // Arrange
         var command = new Command("test", "Test command");

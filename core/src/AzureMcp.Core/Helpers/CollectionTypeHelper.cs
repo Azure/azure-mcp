@@ -18,22 +18,22 @@ public static class CollectionTypeHelper
     public static bool IsArrayType(Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
-        
+
         // Handle nullable types
         var effectiveType = Nullable.GetUnderlyingType(type) ?? type;
-        
+
         // String is IEnumerable<char> but should not be treated as an array
         if (effectiveType == typeof(string))
         {
             return false;
         }
-        
+
         // Check if it's a collection type
         if (typeof(IEnumerable).IsAssignableFrom(effectiveType))
         {
             return !IsDictionaryType(effectiveType);
         }
-        
+
         return false;
     }
 
@@ -45,13 +45,13 @@ public static class CollectionTypeHelper
     public static bool IsDictionaryType(Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
-        
+
         // Handle nullable types
         var effectiveType = Nullable.GetUnderlyingType(type) ?? type;
-        
+
         // Check for dictionary types in an AOT-safe way
         var isDictionary = typeof(IDictionary).IsAssignableFrom(effectiveType);
-        
+
         // Also check for common generic dictionary types
         if (!isDictionary && effectiveType.IsGenericType)
         {
@@ -60,7 +60,7 @@ public static class CollectionTypeHelper
                           genericTypeDef == typeof(Dictionary<,>) ||
                           genericTypeDef == typeof(SortedDictionary<,>);
         }
-        
+
         return isDictionary;
     }
 }
