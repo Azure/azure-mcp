@@ -100,6 +100,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
 | azmcp-extension-azd | Deploy my web application to Azure App Service |
 
+## Azure Function App
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-aks-functionapp-list | List all function apps in my subscription |
+| azmcp-aks-functionapp-list | What function apps do I have? |
+
 ## Azure Key Vault
 
 | Tool Name | Test Prompt |
