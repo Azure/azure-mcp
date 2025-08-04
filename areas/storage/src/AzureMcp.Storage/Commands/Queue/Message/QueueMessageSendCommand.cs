@@ -26,15 +26,9 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
 
     public override string Description =>
         """
-        Send messages to an Azure Storage queue for asynchronous processing. This tool adds messages to a specified queue with configurable time-to-live and visibility delay settings. Messages are returned with receipt handles for tracking.
-        Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, next visible time, and message content.
-          Required options:
-        - account-name: The name of the storage account
-        - queue-name: The name of the queue
-        - message-content: The content of the message to send
-          Optional options:
-        - time-to-live-in-seconds: Time-to-live for the message in seconds (default: queue's default TTL)
-        - visibility-timeout-in-seconds: Visibility timeout in seconds (default: 0, immediately visible)
+        Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue with optional time-to-live and visibility delay settings. 
+        Messages are returned with receipt handles for tracking. Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, 
+        next visible time, and message content.
         """;
 
     public override string Title => CommandTitle;
