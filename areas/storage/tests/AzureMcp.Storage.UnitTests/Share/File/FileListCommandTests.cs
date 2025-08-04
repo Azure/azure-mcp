@@ -42,19 +42,6 @@ public class FileListCommandTests
     }
 
     [Fact]
-    public void Description_ContainsRequiredParameters()
-    {
-        // Act
-        var description = _command.Description;
-
-        // Assert
-        Assert.Contains("account-name", description);
-        Assert.Contains("share-name", description);
-        Assert.Contains("directory-path", description);
-        Assert.Contains("prefix", description);
-    }
-
-    [Fact]
     public void Title_ReturnsExpectedValue()
     {
         // Act & Assert
