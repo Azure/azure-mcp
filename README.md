@@ -1,6 +1,7 @@
 # 🌟 Azure MCP Server
 
 [![npm version](https://img.shields.io/npm/v/@azure/mcp.svg)](https://www.npmjs.com/package/@azure/mcp)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/ms-azuretools.vscode-azure-github-copilot.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/Azure/azure-mcp.svg)](https://github.com/Azure/azure-mcp/issues)
 
@@ -11,9 +12,8 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 
 ## 📋 Table of Contents
 
-- [🚀 Quick Start](#️-quick-start)
+- [🚀 Quick Start](#-quick-start)
 - [⚙️ VS Code Install Steps](#️-vs-code-install-steps-recommended)
-- [🤖 Available Azure MCP Servers](#-available-azure-mcp-servers)
 - [▶️ Getting Started](#️-getting-started)
 - [✨ What can you do with the Azure MCP Server?](#-what-can-you-do-with-the-azure-mcp-server)
 - [🛠️ Currently Supported Tools](#️-currently-supported-tools)
@@ -29,18 +29,20 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 **Get started in under 60 seconds:**
 
 1. **Install VS Code** and **GitHub Copilot** extensions ([VS Code](https://code.visualstudio.com/download) + [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) + [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat))
-2. **Install Node.js 20+** with `npx` in your PATH ([Download Node.js](https://nodejs.org/en/download))
-3. **Click to install Azure MCP**: [![Install All Tools](https://img.shields.io/badge/VS_Code-Install_All_Azure_Tools-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=Azure%20Server&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@azure%2Fmcp%40latest%22%2C%22server%22%2C%22start%22%5D%7D)
-4. **Open GitHub Copilot Chat** in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
-5. **Try it**: Ask "List my Azure Storage accounts" and watch the magic happen! ✨
+2. **Install the GitHub Copilot for Azure extension**: [![Install from VS Code Marketplace](https://img.shields.io/badge/VS_Code-Install_GitHub_Copilot_for_Azure-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot)
+3. **Open GitHub Copilot Chat** in VS Code and [switch to Agent mode](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode)
+4. **Try it**: Ask "List my Azure Storage accounts" and watch the magic happen! ✨
 
-### ✅ VS Code Install Guide (Recommended)
+### ⚙️ VS Code Install Steps (Recommended)
 
 1. Install either the stable or Insiders release of VS Code:
    * [💫 Stable release](https://code.visualstudio.com/download)
    * [🔮 Insiders release](https://code.visualstudio.com/insiders)
 1. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions
+<<<<<<< HEAD
 1. Install the [Azure MCP Server](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server) extension
+
+1. Install the [GitHub Copilot for Azure](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) extension from the VS Code Marketplace
 
 ### 🚀 Quick Start
 
