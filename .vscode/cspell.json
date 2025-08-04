@@ -163,6 +163,7 @@
                 "vectorizable",
                 "vectorizer",
                 "vsix",
+                "vsixtarget",
                 "VSTEST",
                 "Xunit"
             ]
