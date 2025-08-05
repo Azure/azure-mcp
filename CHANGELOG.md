@@ -6,6 +6,11 @@
 
 - Added support for batch setting access tier for multiple Azure Storage blobs via the `azmcp-storage-blob-batch-set-tier` command. This command efficiently changes the storage tier (Hot, Cool, Archive, etc) for multiple blobs simultaneously in a single operation. [[#735](https://github.com/Azure/azure-mcp/issues/735)]
 
+- Added support for Azure Virtual Desktop with new commands:
+  - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
+  - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
+  - `azmcp-virtualdesktop-sessionhost-usersession-list` - List all user sessions on a specific session host
+
 ### Breaking Changes
 
 - Removed `--partner-tenant-id` option from `azmcp-marketplace-product-get` command. [[#656](https://github.com/Azure/azure-mcp/pull/656)]
@@ -54,11 +59,6 @@
   - `azmcp-workbooks-delete` - Delete workbooks when no longer needed
 - Added support for creating a directory in Azure Storage DataLake via the `azmcp-storage-datalake-directory-create` command. [[#647](https://github.com/Azure/azure-mcp/pull/647)]
 - Added support for getting the details of an Azure Kubernetes Service (AKS) cluster via the `azmcp-aks-cluster-get` command. [[#700](https://github.com/Azure/azure-mcp/pull/700)]
-
-- Added support for Azure Virtual Desktop with new commands:
-  - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
-  - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
-  - `azmcp-virtualdesktop-sessionhost-usersession-list` - List all user sessions on a specific session host
 
 ### Breaking Changes
 
