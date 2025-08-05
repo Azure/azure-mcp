@@ -4,6 +4,7 @@
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Extension.Commands;
+using AzureMcp.Extension.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +14,8 @@ public sealed class ExtensionSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        // No additional services needed for Extension area
+        // Register AzCommandCopilotService as a singleton for IAzCommandCopilotService
+        services.AddHttpClient<IAzCommandCopilotService, AzCommandCopilotService>();
     }
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)

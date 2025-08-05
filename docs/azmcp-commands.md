@@ -213,18 +213,18 @@ azmcp appconfig kv unlock --subscription <subscription> \
 ### Azure CLI Operations
 
 ```bash
-# Execute any Azure CLI command
-azmcp extension az --command "<command>"
+# Generate Azure CLI commands using user intent
+azmcp extension az --intent "<intent>"
 
-# Examples:
+# Example:
 # List resource groups
-azmcp extension az --command "group list"
+azmcp extension az --intent "List all resource groups"
 
 # Get storage account details
-azmcp extension az --command "storage account show --name <account> --resource-group <resource-group>"
+azmcp extension az --intent "Get details of my storage account <account-name>"
 
 # List virtual machines
-azmcp extension az --command "vm list --resource-group <resource-group>"
+azmcp extension az --intent "List my virtual machines"
 ```
 
 ### Azure Cosmos DB Operations

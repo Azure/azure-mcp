@@ -8,6 +8,6 @@ namespace AzureMcp.Extension.Options;
 
 public class AzOptions : GlobalOptions
 {
-    [JsonPropertyName(ExtensionOptionDefinitions.Az.CommandName)]
-    public string? Command { get; set; }
+    [JsonPropertyName(ExtensionOptionDefinitions.Az.IntentName)]
+    public string? Intent { get; set; }
 }
