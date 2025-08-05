@@ -14,6 +14,7 @@ namespace AzureMcp.Sql.Commands;
 [JsonSerializable(typeof(DatabaseListCommand.DatabaseListResult))]
 [JsonSerializable(typeof(EntraAdminListCommand.EntraAdminListResult))]
 [JsonSerializable(typeof(FirewallRuleListCommand.FirewallRuleListResult))]
+[JsonSerializable(typeof(FirewallRuleCreateCommand.FirewallRuleCreateResult))]
 [JsonSerializable(typeof(ElasticPoolListCommand.ElasticPoolListResult))]
 [JsonSerializable(typeof(SqlDatabase))]
 [JsonSerializable(typeof(SqlServerEntraAdministrator))]

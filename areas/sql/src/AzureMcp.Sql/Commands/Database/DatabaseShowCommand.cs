@@ -22,11 +22,6 @@ public sealed class DatabaseShowCommand(ILogger<DatabaseShowCommand> logger)
         Get the details of an Azure SQL Database. This command retrieves detailed information about a specific database
         including its configuration, status, performance tier, and other properties. Equivalent to 'az sql db show'.
         Returns detailed database information including SKU, status, collation, and size information.
-          Required options:
-        - subscription: Azure subscription ID
-        - resource-group: Resource group name containing the SQL server
-        - server: Azure SQL Server name
-        - database: Database name to retrieve details for
         """;
 
     public override string Title => CommandTitle;
