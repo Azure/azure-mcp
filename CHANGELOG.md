@@ -12,7 +12,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Breaking Changes
 
-- **Parameter Name Changes**: Removed unnecessary "-name" suffixes from command parameters across 25+ parameters in 12+ Azure service areas to improve consistency and usability. Users will need to update their command-line usage and scripts. [[#853](https://github.com/Azure/azure-mcp/issues/853)]
+- **Parameter Name Changes**: Removed unnecessary "-name" suffixes from command parameters across 25+ parameters in 12+ Azure service areas to improve consistency and usability. Users will need to update their command-line usage and scripts. [[#853](https://github.com/Azure/azure-mcp/pull/853)]
   - **AppConfig**: `--account-name` → `--account`
   - **Search**: `--service-name` → `--service`, `--index-name` → `--index`
   - **Cosmos**: `--account-name` → `--account`, `--database-name` → `--database`, `--container-name` → `--container`
