@@ -11,7 +11,6 @@ namespace AzureMcp.Core.Services.Telemetry;
 internal class LinuxMachineInformationProvider(ILogger<LinuxMachineInformationProvider> logger) : UnixMachineInformationProvider(logger)
 {
     private const string PrimaryPathEnvVar = "XDG_CACHE_HOME";
-    private const string SecondaryPathEnvVar = "HOME";
     private const string SecondaryPathSubDirectory = ".cache";
 
     /// <summary>
@@ -25,7 +24,7 @@ internal class LinuxMachineInformationProvider(ILogger<LinuxMachineInformationPr
         // If this comes back as null or empty/whitespace, try environment variable.
         if (string.IsNullOrWhiteSpace(userDir))
         {
-            var rootPath = Environment.GetEnvironmentVariable(SecondaryPathEnvVar);
+            var rootPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             // If the secondary path is still null/empty/whitespace, then throw as it will lead
             // to us caching the data in the wrong directory otherwise.
