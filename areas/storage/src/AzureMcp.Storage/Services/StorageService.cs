@@ -10,6 +10,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.Shares;
+using Azure.Storage.Files.Shares.Models;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -314,6 +316,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
+    private async Task<ShareServiceClient> CreateShareServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.file.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
+        options.ShareTokenIntent = ShareTokenIntent.Backup; // Set the intent for file backup, needed for Manged Identity
+        return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
@@ -474,6 +484,44 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error setting blob tier batch: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<List<FileShareItemInfo>> ListFilesAndDirectories(
+        string accountName,
+        string shareName,
+        string directoryPath,
+        string? prefix,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, shareName, directoryPath, subscriptionId);
+
+        var shareServiceClient = await CreateShareServiceClient(accountName, tenant, retryPolicy);
+
+        try
+        {
+            var shareClient = shareServiceClient.GetShareClient(shareName);
+            var directoryClient = shareClient.GetDirectoryClient(directoryPath);
+
+            var items = new List<FileShareItemInfo>();
+
+            await foreach (var item in directoryClient.GetFilesAndDirectoriesAsync(prefix: prefix))
+            {
+                items.Add(new FileShareItemInfo(
+                    item.Name,
+                    item.IsDirectory,
+                    item.FileSize,
+                    item.Properties.LastModified,
+                    item.Properties.ETag.ToString()));
+            }
+
+            return items;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error listing files and directories: {ex.Message}", ex);
         }
     }
 }

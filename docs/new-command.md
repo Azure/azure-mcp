@@ -187,7 +187,7 @@ IMPORTANT:
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
-### 2. Command Class
+### 3. Command Class
 
 ```csharp
 public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger)
@@ -294,7 +294,45 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     internal record {Resource}{Operation}CommandResult(List<ResultType> Results);
 }
 
-### 3. Base Service Command Classes
+### 4. Service Interface and Implementation
+
+Each area has its own service interface that defines the methods that commands will call. The interface will have an implementation that contains the actual logic.
+
+```csharp
+public interface I<Area>Service
+{
+    ...
+}
+```
+
+```csharp
+public class <Area>Service(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService) : BaseAzureService(tenantService), I<Area>Service
+{
+   ...
+}
+```
+
+### Method Signature Consistency
+
+All interface methods should follow consistent formatting with proper line breaks and parameter alignment:
+
+```csharp
+// Correct formatting - parameters aligned with line breaks
+Task<List<string>> GetStorageAccounts(
+    string subscriptionId,
+    string? tenant = null,
+    RetryPolicyOptions? retryPolicy = null);
+
+// Incorrect formatting - all parameters on single line
+Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+```
+
+**Formatting Rules:**
+- Parameters indented and aligned
+- Add blank lines between method declarations for visual separation
+- Maintain consistent indentation across all methods in the interface
+
+### 5. Base Service Command Classes
 
 Each area has its own hierarchy of base command classes that inherit from `GlobalCommand` or `SubscriptionCommand`. Service classes that work with Azure resources should inject `ISubscriptionService` for subscription resolution. For example:
 
@@ -367,7 +405,7 @@ public class {Area}Service(ISubscriptionService subscriptionService, ITenantServ
 }
 ```
 
-### 4. Unit Tests
+### 6. Unit Tests
 
 Unit tests follow a standardized pattern that tests initialization, validation, and execution:
 
@@ -453,7 +491,7 @@ public class {Resource}{Operation}CommandTests
 }
 ```
 
-### 5. Integration Tests
+### 7. Integration Tests
 
 Integration tests inherit from `CommandTestsBase` and use test fixtures:
 
@@ -503,7 +541,7 @@ public class {Area}CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 }
 ```
 
-### 6. Command Registration
+### 8. Command Registration
 
 ```csharp
 private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
@@ -527,7 +565,7 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 - ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`, `"entra-admin"`
 - ❌ Bad: `"entra_admin"`, `"resource_group"`, `"storage_account"`
 
-### 7. Area registration
+### 8. Area registration
 ```csharp
     private static IAreaSetup[] RegisterAreas()
     {

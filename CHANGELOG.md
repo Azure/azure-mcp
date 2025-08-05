@@ -8,6 +8,11 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Added support for providing the `--content-type` and `--tags` properties to the `azmcp-appconfig-kv-set` command. [[#459](https://github.com/Azure/azure-mcp/pull/459)]
 - Added `filter-path` and `recursive` capabilities to `azmcp-storage-datalake-file-system-list-paths`. [[#770](https://github.com/Azure/azure-mcp/issues/770)]
+- Added support for listing files and directories in Azure File Shares via the `azmcp-storage-share-file-list` command. This command recursively lists all items in a specified file share directory with metadata including size, last modified date, and content type. [[#793](https://github.com/Azure/azure-mcp/pull/793)]
+- Added support for Azure Virtual Desktop with new commands:
+  - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
+  - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
+  - `azmcp-virtualdesktop-sessionhost-usersession-list` - List all user sessions on a specific session host
 - Added support for creating and publishing DevDeviceId in telemetry. [[#810](https://github.com/Azure/azure-mcp/pull/810/)]
 
 ### Breaking Changes
@@ -80,7 +85,7 @@ Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilati
 
 ### Other Changes
 
-- Broadened search for MAC address for telemetry purposes. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
+- Improved the MAC address search logic for telemetry by making it more robust in finding a valid network interface. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
 - Major repository structure change:
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
