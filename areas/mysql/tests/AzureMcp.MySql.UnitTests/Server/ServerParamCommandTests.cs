@@ -44,7 +44,7 @@ public class ServerParamCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--username", "user1",
+            "--user", "user1",
             "--server", "test-server",
             "--param", "max_connections"
         ]);
@@ -74,7 +74,7 @@ public class ServerParamCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--username", "user1",
+            "--user", "user1",
             "--server", "test-server",
             "--param", "invalid_param"
         ]);

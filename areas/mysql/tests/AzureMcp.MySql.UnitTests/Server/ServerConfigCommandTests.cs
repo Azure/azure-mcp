@@ -54,7 +54,7 @@ public class ServerConfigCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--username", "user1",
+            "--user", "user1",
             "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -82,7 +82,7 @@ public class ServerConfigCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--username", "user1",
+            "--user", "user1",
             "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
