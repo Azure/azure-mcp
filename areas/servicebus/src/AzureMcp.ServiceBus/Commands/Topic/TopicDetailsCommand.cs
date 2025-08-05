@@ -5,20 +5,20 @@ using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Topic;
 using AzureMcp.ServiceBus.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.ServiceBus.Commands.Topic;
 
-public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicOptions>
+public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : SubscriptionCommand<BaseTopicOptions>
 {
     private const string CommandTitle = "Get Service Bus Topic Details";
     private readonly Option<string> _topicOption = ServiceBusOptionDefinitions.Topic;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
-
+    private readonly ILogger<TopicDetailsCommand> _logger = logger;
     public override string Name => "details";
 
     public override string Description =>
@@ -78,6 +78,7 @@ public sealed class TopicDetailsCommand : SubscriptionCommand<BaseTopicOptions>
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error getting Service Bus topic details");
             HandleException(context, ex);
         }
 

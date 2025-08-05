@@ -156,7 +156,37 @@ public class CommandExtensionsTests
         Assert.NotNull(result);
         Assert.Empty(result.Errors);
         var value = result.GetValueForOption(option);
-        Assert.Equal("item1 item2 item3", value); // Array is joined with spaces
+        Assert.Equal("item1 item2 item3", value); // Array is joined with spaces for single-value options
+    }
+
+    [Fact]
+    public void ParseFromDictionary_WithStringArrayArgument_ParsesCorrectly()
+    {
+        // Arrange
+        var command = new Command("test", "Test command");
+        var option = new Option<string[]>("--tags", "Tags option")
+        {
+            AllowMultipleArgumentsPerToken = true
+        };
+        command.AddOption(option);
+
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            ["tags"] = JsonSerializer.SerializeToElement(new[] { "tag1", "tag2", "tag3" })
+        };
+
+        // Act
+        var result = command.ParseFromDictionary(arguments);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        var values = result.GetValueForOption(option);
+        Assert.NotNull(values);
+        Assert.Equal(3, values.Length);
+        Assert.Equal("tag1", values[0]);
+        Assert.Equal("tag2", values[1]);
+        Assert.Equal("tag3", values[2]);
     }
 
     [Fact]
