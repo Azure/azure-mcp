@@ -104,9 +104,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-aks-functionapp-list | List all function apps in my subscription |
-| azmcp-aks-functionapp-list | Show me my Azure function apps |
-| azmcp-aks-functionapp-list | What function apps do I have? |
+| azmcp-functionapp-list | List all function apps in my subscription |
+| azmcp-functionapp-list | Show me my Azure function apps |
+| azmcp-functionapp-list | What function apps do I have? |
 
 ## Azure Key Vault
 
