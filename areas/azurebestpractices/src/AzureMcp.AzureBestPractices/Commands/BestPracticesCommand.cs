@@ -129,25 +129,25 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
     private string LoadBestPracticesText(string resourceFileName)
     {
+        Assembly assembly = typeof(BestPracticesCommand).Assembly;
+
         // Handle multiple files separated by comma
         if (resourceFileName.Contains(','))
         {
             var fileNames = resourceFileName.Split(',');
             var combinedContent = new List<string>();
-            
+
             foreach (var fileName in fileNames)
             {
-                Assembly assembly = typeof(BestPracticesCommand).Assembly;
                 string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, fileName.Trim());
                 string content = EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
                 combinedContent.Add(content);
             }
-            
+
             return string.Join("\n\n", combinedContent);
         }
         else
         {
-            Assembly assembly = typeof(BestPracticesCommand).Assembly;
             string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, resourceFileName);
             return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
         }
