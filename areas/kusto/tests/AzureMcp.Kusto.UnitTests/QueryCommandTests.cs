@@ -34,8 +34,8 @@ public sealed class QueryCommandTests
 
     public static IEnumerable<object[]> QueryArgumentMatrix()
     {
-        yield return new object[] { "--subscription sub1 --cluster-name mycluster --database-name db1 --query \"StormEvents | take 1\"", false };
-        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database-name db1 --query \"StormEvents | take 1\"", true };
+        yield return new object[] { "--subscription sub1 --cluster mycluster --database db1 --query \"StormEvents | take 1\"", false };
+        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database db1 --query \"StormEvents | take 1\"", true };
     }
 
     [Theory]

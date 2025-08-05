@@ -6,9 +6,9 @@ namespace AzureMcp.ServiceBus.Options;
 public static class ServiceBusOptionDefinitions
 {
     public const string NamespaceName = "namespace";
-    public const string QueueName = "queue-name";
+    public const string QueueName = "queue";
     public const string MaxMessagesName = "max-messages";
-    public const string TopicName = "topic-name";
+    public const string TopicName = "topic";
     public const string SubscriptionName = "subscription-name";
 
     public static readonly Option<string> Namespace = new(

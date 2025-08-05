@@ -98,8 +98,8 @@ public class ContainerDetailsCommandTests
             .Returns(expectedProperties);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--container-name", _knownContainerName,
+            "--account", _knownAccountName,
+            "--container", _knownContainerName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -141,8 +141,8 @@ public class ContainerDetailsCommandTests
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--container-name", _knownContainerName,
+            "--account", _knownAccountName,
+            "--container", _knownContainerName,
             "--subscription", _knownSubscriptionId
         ]);
 

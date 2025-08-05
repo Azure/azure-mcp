@@ -92,7 +92,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
                 { "workspace", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName },
                 { "query", "AzureMetrics | where ResourceProvider == 'MICROSOFT.STORAGE' | project TimeGenerated, MetricName, Total, ResourceId" },
-                { "table-name", "AzureMetrics" },
+                { "table", "AzureMetrics" },
                 { "limit", 5 },
                 { "hours", 24 }
             },
@@ -123,7 +123,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
                 { "subscription", Settings.SubscriptionId },
                 { "workspace", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName },
-                { "table-name", "StorageBlobLogs" },
+                { "table", "StorageBlobLogs" },
                 { "query", "StorageBlobLogs | project TimeGenerated, OperationName, StatusText" },
                 { "limit", 1 },
                 { "hours", 24 }
@@ -170,7 +170,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-id", storageResourceId },
-                { "table-name", "StorageBlobLogs" },
+                { "table", "StorageBlobLogs" },
                 { "query", "StorageBlobLogs | project TimeGenerated, OperationName, StatusText" },
                 { "limit", 1 },
                 { "hours", 24 }
@@ -275,7 +275,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "resource-name", _storageAccountName },
+                { "resource", _storageAccountName },
                 { "resource-type", "Microsoft.Storage/storageAccounts" }
             });
 
@@ -346,7 +346,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "resource-name", _storageAccountName },
+                { "resource", _storageAccountName },
                 { "resource-type", "Microsoft.Storage/storageAccounts" },
                 { "metric-namespace", "Microsoft.storage/storageAccounts" },
                 { "metric-names", "UsedCapacity" } // Common storage account metric
@@ -405,7 +405,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
             var listResult = await CallToolAsync("azmcp_storage_blob_container_list", new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", _storageAccountName }
+                { "account", _storageAccountName }
             });
 
             Output.WriteLine("Listed storage containers to generate metrics");
@@ -420,8 +420,8 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
                     var blobListResult = await CallToolAsync("azmcp_storage_blob_list", new()
                     {
                         { "subscription", Settings.SubscriptionId },
-                        { "account-name", _storageAccountName },
-                        { "container-name", containerName.GetString() }
+                        { "account", _storageAccountName },
+                        { "container", containerName.GetString() }
                     });
 
                     Output.WriteLine($"Listed blobs in container '{containerName.GetString()}' to generate metrics");

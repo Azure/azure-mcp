@@ -183,6 +183,7 @@ IMPORTANT:
   - **CRITICAL**: Always use `subscription` (never `subscriptionId`) for subscription parameters - this allows the parameter to accept both subscription IDs and subscription names, which are resolved internally by `ISubscriptionService.GetSubscription()`
   - Use `resourceGroup` instead of `resourceGroupName`
   - Use singular nouns for resource names (e.g., `server` not `serverName`)
+  - **Remove unnecessary "-name" suffixes**: Use `--account` instead of `--account-name`, `--container` instead of `--container-name`, etc. Only keep "-name" when it provides necessary disambiguation (e.g., `--subscription-name` to distinguish from global `--subscription`)
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
@@ -969,6 +970,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - List all required options
    - Describe return format
    - Include examples in description
+   - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
 5. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
@@ -1160,6 +1162,10 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+- **IMPORTANT**: Maintain alphabetical sorting in e2eTestPrompts.md:
+  - Service sections must be in alphabetical order by service name
+  - Tool Names within each table must be sorted alphabetically
+  - When adding new tools, insert them in the correct alphabetical position to maintain sort order
 
 **README.md Table Formatting Standards**:
 - Badge text must use the pattern `Install_{namespace}` (e.g., `Install_storage`, `Install_cosmos`)
