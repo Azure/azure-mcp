@@ -222,8 +222,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "file-system-name", "testfilesystem" },
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" },
                 { "recursive", true }
                 });
 

@@ -144,8 +144,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", filterPath
         ]);
@@ -183,8 +183,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--recursive"
         ]);
@@ -222,8 +222,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -260,8 +260,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", filterPath,
             "--recursive"
@@ -300,8 +300,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", ""
         ]);
