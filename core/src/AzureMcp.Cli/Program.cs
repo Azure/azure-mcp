@@ -13,6 +13,15 @@ using AzureMcp.Core.Services.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+#if !AOT_COMPATIBLE_ONLY
+// Non-AOT compatible areas
+using AzureMcp.BicepSchema;
+using AzureMcp.Cosmos;
+using AzureMcp.Monitor;
+using AzureMcp.Postgres;
+using AzureMcp.Search;
+#endif
+
 internal class Program
 {
     private static IAreaSetup[] Areas = RegisterAreas();
@@ -51,8 +60,8 @@ internal class Program
     }
     private static IAreaSetup[] RegisterAreas()
     {
-
-        return [
+        var areas = new List<IAreaSetup>
+        {
             // Register core areas
             new AzureMcp.AzureBestPractices.AzureBestPracticesSetup(),
             new AzureMcp.Extension.ExtensionSetup(),
@@ -66,25 +75,33 @@ internal class Program
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
             new AzureMcp.Marketplace.MarketplaceSetup(),
-            new AzureMcp.Monitor.MonitorSetup(),
-            new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
-            new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
-            new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
-        ];
+        };
+
+#if !AOT_COMPATIBLE_ONLY
+        // Register non-AOT compatible Azure service areas
+        areas.AddRange([
+            new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.Cosmos.CosmosSetup(),
+            new AzureMcp.Monitor.MonitorSetup(),
+            new AzureMcp.Postgres.PostgresSetup(),
+            new AzureMcp.Search.SearchSetup(),
+        ]);
+#endif
+
+        return [.. areas];
     }
 
     private static Parser BuildCommandLineParser(IServiceProvider serviceProvider)

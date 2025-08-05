@@ -13,16 +13,26 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-  <!-- AOT compilation flags -->
+
+  <!-- Enable Trim and AOT Analyzers -->
   <PropertyGroup>
-    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-    
-  <!-- Enable Analyzers -->
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
-    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+  <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+  </PropertyGroup>
+
+  <!-- AOT native build flags -->
+  <PropertyGroup Condition="'$(PublishAotModule)' == 'true'">
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+    <!-- Suppress IL3000 warning in Microsoft.Identity.Client.NativeInterop -->
+    <NoWarn>$(NoWarn);IL3000</NoWarn>
   </PropertyGroup>
 
   <!-- Debug configuration -->
@@ -37,18 +47,45 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureMcp.Core\AzureMcp.Core.csproj" />
-    <ProjectReference Include="..\..\..\areas\*\src\**\AzureMcp.*.csproj" />
+    
+    <ProjectReference Include="..\..\..\areas\aks\src\AzureMcp.Aks\AzureMcp.Aks.csproj" />
+    <ProjectReference Include="..\..\..\areas\appconfig\src\AzureMcp.AppConfig\AzureMcp.AppConfig.csproj" />
+    <ProjectReference Include="..\..\..\areas\authorization\src\AzureMcp.Authorization\AzureMcp.Authorization.csproj" />
+    <ProjectReference Include="..\..\..\areas\azurebestpractices\src\AzureMcp.AzureBestPractices\AzureMcp.AzureBestPractices.csproj" />
+    <ProjectReference Include="..\..\..\areas\azureisv\src\AzureMcp.AzureIsv\AzureMcp.AzureIsv.csproj" />
+    <ProjectReference Include="..\..\..\areas\azureterraformbestpractices\src\AzureMcp.AzureTerraformBestPractices\AzureMcp.AzureTerraformBestPractices.csproj" />
+    <ProjectReference Include="..\..\..\areas\extension\src\AzureMcp.Extension\AzureMcp.Extension.csproj" />
+    <ProjectReference Include="..\..\..\areas\foundry\src\AzureMcp.Foundry\AzureMcp.Foundry.csproj" />
+    <ProjectReference Include="..\..\..\areas\grafana\src\AzureMcp.Grafana\AzureMcp.Grafana.csproj" />
+    <ProjectReference Include="..\..\..\areas\keyvault\src\AzureMcp.KeyVault\AzureMcp.KeyVault.csproj" />
+    <ProjectReference Include="..\..\..\areas\kusto\src\AzureMcp.Kusto\AzureMcp.Kusto.csproj" />
+    <ProjectReference Include="..\..\..\areas\loadtesting\src\AzureMcp.LoadTesting\AzureMcp.LoadTesting.csproj" />
+    <ProjectReference Include="..\..\..\areas\marketplace\src\AzureMcp.Marketplace\AzureMcp.Marketplace.csproj" />
+    <ProjectReference Include="..\..\..\areas\redis\src\AzureMcp.Redis\AzureMcp.Redis.csproj" />
+    <ProjectReference Include="..\..\..\areas\servicebus\src\AzureMcp.ServiceBus\AzureMcp.ServiceBus.csproj" />
+    <ProjectReference Include="..\..\..\areas\sql\src\AzureMcp.Sql\AzureMcp.Sql.csproj" />
+    <ProjectReference Include="..\..\..\areas\storage\src\AzureMcp.Storage\AzureMcp.Storage.csproj" />
+    <ProjectReference Include="..\..\..\areas\workbooks\src\AzureMcp.Workbooks\AzureMcp.Workbooks.csproj" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(PublishAotModule)' != 'true'">
+    <!-- Projects with Non-AOT compatible dependencies -->
+    <ProjectReference Include="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
+    <ProjectReference Include="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
+    <ProjectReference Include="..\..\..\areas\monitor\src\AzureMcp.Monitor\AzureMcp.Monitor.csproj" />
+    <ProjectReference Include="..\..\..\areas\postgres\src\AzureMcp.Postgres\AzureMcp.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\areas\search\src\AzureMcp.Search\AzureMcp.Search.csproj" />
     <!-- We need a package reference for Cosmos so we have a path to the native assets for exclusion later -->
     <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 
-  <!-- Remove Cosmos native files from the build output directory -->
-  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems">
+  <!-- Remove Cosmos native files from the build output directory if Microsoft.Azure.Cosmos was included) -->
+  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(PublishAotModule)' != 'true'">
     <ItemGroup>
       <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::new('%(FullPath)').Contains('$(PkgMicrosoft_Azure_Cosmos)'))" />
     </ItemGroup>
