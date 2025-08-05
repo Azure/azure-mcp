@@ -8,7 +8,7 @@ namespace AzureMcp.ApplicationInsights.Services
 {
     public interface IAppDiagnoseService
     {
-        Task<AppCorrelateTimeResult[]> CorrelateTimeSeries(string subscription,
+        Task<AppCorrelateTimeResult[]> CorrelateTimeSeries(string? subscription,
             string? resourceGroup,
             string? resourceName,
             string? resourceId,
@@ -19,7 +19,7 @@ namespace AzureMcp.ApplicationInsights.Services
             RetryPolicyOptions? retryPolicy = null);
 
         Task<DistributedTraceResult> GetDistributedTrace(
-            string subscription,
+            string? subscription,
             string? resourceGroup,
             string? resourceName,
             string? resourceId,
@@ -31,7 +31,7 @@ namespace AzureMcp.ApplicationInsights.Services
            RetryPolicyOptions? retryPolicy = null);
 
         Task<AppListTraceResult> ListDistributedTraces(
-            string subscription,
+            string? subscription,
             string? resourceGroup,
             string? resourceName,
             string? resourceId,
@@ -43,7 +43,7 @@ namespace AzureMcp.ApplicationInsights.Services
            RetryPolicyOptions? retryPolicy = null);
 
         Task<List<AppImpactResult>> GetImpact(
-            string subscription,
+            string? subscription,
             string? resourceGroup,
             string? resourceName,
             string? resourceId,

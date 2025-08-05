@@ -106,7 +106,7 @@ public sealed class AppGetTraceCommand(ILogger<AppGetTraceCommand> logger)
             var service = context.GetService<IAppDiagnoseService>();
 
             var result = await service.GetDistributedTrace(
-                options.Subscription!,
+                options.Subscription,
                 options.ResourceGroup,
                 options.ResourceName,
                 options.ResourceId,

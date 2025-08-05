@@ -161,7 +161,7 @@ public sealed class AppCorrelateTimeCommand(ILogger<AppCorrelateTimeCommand> log
             var service = context.GetService<IAppDiagnoseService>();
 
             var result = await service.CorrelateTimeSeries(
-                options.Subscription!,
+                options.Subscription,
                 options.ResourceGroup,
                 options.ResourceName,
                 options.ResourceId,

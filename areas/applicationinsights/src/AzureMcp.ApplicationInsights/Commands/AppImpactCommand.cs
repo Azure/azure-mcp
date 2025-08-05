@@ -133,7 +133,7 @@ public sealed class AppImpactCommand(ILogger<AppImpactCommand> logger)
             var service = context.GetService<IAppDiagnoseService>();
 
             var result = await service.GetImpact(
-                options.Subscription!,
+                options.Subscription,
                 options.ResourceGroup,
                 options.ResourceName,
                 options.ResourceId,

@@ -171,10 +171,15 @@ public sealed class CommandFactoryToolLoader(
         {
             foreach (var option in options)
             {
+                var type = option.ValueType.ToJsonType();
                 schema.Properties.Add(option.Name, new ToolPropertySchema
                 {
-                    Type = option.ValueType.ToJsonType(),
+                    Type = type,
                     Description = option.Description,
+                    Items = type == "array" ? new ArrayItemsSchema
+                    {
+                        Type = "string",
+                    } : null
                 });
             }
 

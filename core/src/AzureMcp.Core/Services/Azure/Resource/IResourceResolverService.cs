@@ -22,7 +22,7 @@ public interface IResourceResolverService
     /// <param name="retryPolicy">Optional retry policy parameters</param>
     /// <returns>The full Azure resource ID</returns>
     Task<ResourceIdentifier> ResolveResourceIdAsync(
-        string subscription,
+        string? subscription,
         string? resourceGroup,
         string? resourceType,
         string resourceName,

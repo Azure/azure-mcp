@@ -18,7 +18,7 @@ namespace AzureMcp.ApplicationInsights.Services
         private readonly IResourceResolverService _resourceResolverService = resourceResolverService;
         private readonly IAppLogsQueryService _queryService = appLogsQueryService;
 
-        public async Task<DistributedTraceResult> GetDistributedTrace(string subscription, string? resourceGroup, string? resourceName, string? resourceId, string traceId, string? spanId, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+        public async Task<DistributedTraceResult> GetDistributedTrace(string? subscription, string? resourceGroup, string? resourceName, string? resourceId, string traceId, string? spanId, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
         {
             ResourceIdentifier resolvedResource = await _resourceResolverService.ResolveResourceIdAsync(subscription, resourceGroup, "microsoft.insights/components", resourceName ?? resourceId!, tenant, retryPolicy);
 
@@ -44,7 +44,7 @@ namespace AzureMcp.ApplicationInsights.Services
             return DistributedTraceResult.Create(traceId, spans);
         }
 
-        public async Task<AppListTraceResult> ListDistributedTraces(string subscription, string? resourceGroup, string? resourceName, string? resourceId, string[] filters, string table, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+        public async Task<AppListTraceResult> ListDistributedTraces(string? subscription, string? resourceGroup, string? resourceName, string? resourceId, string[] filters, string table, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
         {
             ResourceIdentifier resolvedResource = await _resourceResolverService.ResolveResourceIdAsync(subscription, resourceGroup, "microsoft.insights/components", resourceName ?? resourceId!, tenant, retryPolicy);
 
@@ -74,7 +74,7 @@ namespace AzureMcp.ApplicationInsights.Services
             };
         }
 
-        public async Task<AppCorrelateTimeResult[]> CorrelateTimeSeries(string subscription, string? resourceGroup, string? resourceName, string? resourceId, List<AppCorrelateDataSet> dataSets, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+        public async Task<AppCorrelateTimeResult[]> CorrelateTimeSeries(string? subscription, string? resourceGroup, string? resourceName, string? resourceId, List<AppCorrelateDataSet> dataSets, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
         {
             ResourceIdentifier resolvedResource = await _resourceResolverService.ResolveResourceIdAsync(subscription, resourceGroup, "microsoft.insights/components", resourceName ?? resourceId!, tenant, retryPolicy);
 
@@ -92,7 +92,7 @@ namespace AzureMcp.ApplicationInsights.Services
             return result;
         }
 
-        public async Task<List<AppImpactResult>> GetImpact(string subscription, string? resourceGroup, string? resourceName, string? resourceId, string[] filters, string table, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+        public async Task<List<AppImpactResult>> GetImpact(string? subscription, string? resourceGroup, string? resourceName, string? resourceId, string[] filters, string table, DateTime startTime, DateTime endTime, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
         {
             ResourceIdentifier resolvedResource = await _resourceResolverService.ResolveResourceIdAsync(subscription, resourceGroup, "microsoft.insights/components", resourceName ?? resourceId!, tenant, retryPolicy);
 

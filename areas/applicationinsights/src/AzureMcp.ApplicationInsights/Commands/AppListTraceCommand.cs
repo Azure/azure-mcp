@@ -135,7 +135,7 @@ namespace AzureMcp.ApplicationInsights.Commands
                 var service = context.GetService<IAppDiagnoseService>();
 
                 var result = await service.ListDistributedTraces(
-                    options.Subscription!,
+                    options.Subscription,
                     options.ResourceGroup,
                     options.ResourceName,
                     options.ResourceId,

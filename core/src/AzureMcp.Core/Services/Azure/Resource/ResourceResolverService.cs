@@ -3,7 +3,6 @@
 
 using Azure.Core;
 using AzureMcp.Core.Options;
-using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 
@@ -15,20 +14,20 @@ public class ResourceResolverService(ISubscriptionService subscriptionService, I
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
 
     public async Task<ResourceIdentifier> ResolveResourceIdAsync(
-        string subscription,
+        string? subscription,
         string? resourceGroup,
         string? resourceType,
         string resourceName,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscription, resourceName);
-
         if (ResourceIdentifier.TryParse(resourceName, out ResourceIdentifier? result))
         {
             // If already a valid ResourceIdentifier, return it directly
             return result!;
         }
+
+        ValidateRequiredParameters(subscription, resourceName);
 
         // If both resourceGroup and resourceType are provided, build direct path
         if (!string.IsNullOrEmpty(resourceGroup) && !string.IsNullOrEmpty(resourceType))
@@ -37,7 +36,7 @@ public class ResourceResolverService(ISubscriptionService subscriptionService, I
         }
 
         // Need to discover the resource - get subscription resource
-        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription!, tenant, retryPolicy);
 
         // Get all resources matching the name
         var allMatchingResources = await subscriptionResource.GetGenericResourcesAsync()
