@@ -59,9 +59,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "Show me details about my Azure SQL database 'mydb'"
 * "List all databases in my Azure SQL server 'myserver'"
-* "List Active Directory administrators for my Azure SQL server 'myserver'"
 * "List all firewall rules for my Azure SQL server 'myserver'"
 * "List all elastic pools in my Azure SQL server 'myserver'"
+* "List Active Directory administrators for my Azure SQL server 'myserver'"
 
 ### 🔧 Azure Resource Management
 
@@ -212,6 +212,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Show database details and properties
 * List the details and properties of all databases
+* List SQL server firewall rules
 
 ### 🗄️ Azure SQL Elastic Pool
 
