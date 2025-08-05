@@ -23,6 +23,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - **Storage**: `--account-name` → `--account`, `--container-name` → `--container`, `--table-name` → `--table`, `--file-system-name` → `--file-system`, `--tier-name` → `--tier`
   - **Monitor**: `--table-name` → `--table`, `--model` → `--health-model`, `--resource-name` → `--resource`
   - **Foundry**: `--deployment-name` → `--deployment`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
+- `extension az` tool now generates Azure CLI commands using a dedicated service to improve the quality of the generated commands. It will no longer execute the generated Azure CLI commands. [[788](https://github.com/Azure/azure-mcp/pull/788)]
 
 ### Bugs Fixed
 
