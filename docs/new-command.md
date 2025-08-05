@@ -977,38 +977,38 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
       - **Single prompt validation** (test one description against one prompt):
 
         ```bash
-        cd eng/tools/PromptConfidenceScore
+        cd eng/tools/ToolDescriptionConfidenceScore
         dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
         ```
 
       - **Multiple prompt validation** (test one description against multiple prompts):
 
-          ```bash
-          dotnet run -- --validate \
-          --tool-description "Lists all storage accounts in a subscription" \
-          --prompt "show me my storage accounts" \
-          --prompt "list storage accounts" \
-          --prompt "what storage do I have"
-          ```
+        ```bash
+        dotnet run -- --validate \
+        --tool-description "Lists all storage accounts in a subscription" \
+        --prompt "show me my storage accounts" \
+        --prompt "list storage accounts" \
+        --prompt "what storage do I have"
+        ```
 
       - **Custom tools and prompts files** (use your own files for comprehensive testing):
 
-          ```bash
-          # Prompts:
-          # Use markdown format (same as e2eTests/e2eTestPrompts.md):
-          dotnet run -- --prompts-file my-prompts.md
+        ```bash
+        # Prompts:
+        # Use markdown format (same as e2eTests/e2eTestPrompts.md):
+        dotnet run -- --prompts-file my-prompts.md
 
-          # Use JSON format:
-          dotnet run -- --prompts-file my-prompts.json
+        # Use JSON format:
+        dotnet run -- --prompts-file my-prompts.json
 
-          # Tools:
-          # Use JSON format (same as eng/tools/PromptConfidenceScore/tools.json):
-          dotnet run -- --tools-file my-tools.json
+        # Tools:
+        # Use JSON format (same as eng/tools/ToolDescriptionConfidenceScore/tools.json):
+        dotnet run -- --tools-file my-tools.json
 
-          # Combine both:
-          # Use custom tools and prompts files together:
-          dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
-          ```
+        # Combine both:
+        # Use custom tools and prompts files together:
+        dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
+        ```
 
     - Quality assessment guidelines:
 
@@ -1039,7 +1039,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
         ```
 
     - Custom tools file format:
-      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/PromptConfidenceScore/tools.json`.
+      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionConfidenceScore/tools.json`.
 
 6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency

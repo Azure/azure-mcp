@@ -3,16 +3,15 @@
 
 <#
 .SYNOPSIS
-    Build script for tool selection confidence score calculation
+    Run script for tool selection confidence score calculation
 
 .DESCRIPTION
     This script builds the tool selection confidence score calculation application.
-    It restores dependencies, builds the application in Release configuration,
-    and optionally runs tests if they exist.
+    It restores dependencies, builds the application in Release configuration, and runs it.
 
 .EXAMPLE
     .\Run-ToolDescriptionConfidenceScore.ps1
-    Builds the application with default settings
+    Builds and runs the application with default settings
 #>
 
 [CmdletBinding()]
@@ -22,16 +21,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
 try {
-    Write-Host "Building tool selection confidence score calculation app..." -ForegroundColor Green
-
-    # Restore dependencies
-    Write-Host "Restoring dependencies..." -ForegroundColor Yellow
-
-    & dotnet restore
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to restore dependencies"
-    }
+    Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
 
     # Build the application
     Write-Host "Building application..." -ForegroundColor Yellow
