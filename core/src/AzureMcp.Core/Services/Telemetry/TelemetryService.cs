@@ -16,12 +16,12 @@ internal class TelemetryService : ITelemetryService
 {
     private readonly bool _isEnabled;
     private readonly List<KeyValuePair<string, object?>> _tagsList;
-    private readonly MachineInformationProviderBase _informationProvider;
+    private readonly IMachineInformationProvider _informationProvider;
     private TaskCompletionSource _isInitialized = new TaskCompletionSource();
 
     internal ActivitySource Parent { get; }
 
-    public TelemetryService(MachineInformationProviderBase informationProvider, IOptions<AzureMcpServerConfiguration> options)
+    public TelemetryService(IMachineInformationProvider informationProvider, IOptions<AzureMcpServerConfiguration> options)
     {
         _isEnabled = options.Value.IsTelemetryEnabled;
         _tagsList = new List<KeyValuePair<string, object?>>()
