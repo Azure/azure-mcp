@@ -55,7 +55,7 @@ public class HttpClientServiceCollectionExtensionsTests
     {
         // Arrange
         var services = new ServiceCollection();
-        
+
         // Set environment variables
         Environment.SetEnvironmentVariable("HTTP_PROXY", "http://test.proxy:8080");
         Environment.SetEnvironmentVariable("NO_PROXY", "localhost");

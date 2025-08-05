@@ -28,7 +28,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
     public HttpClient CreateClient(Uri? baseAddress = null)
     {
         ObjectDisposedException.ThrowIfDisposed(_disposed, this);
-        
+
         var client = CreateClientInternal();
         if (baseAddress != null)
         {
@@ -41,7 +41,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
     public HttpClient CreateClient(Uri? baseAddress, Action<HttpClient> configureClient)
     {
         ArgumentNullException.ThrowIfNull(configureClient);
-        
+
         var client = CreateClient(baseAddress);
         configureClient(client);
         return client;
@@ -51,22 +51,22 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
     {
         var handler = CreateHttpClientHandler();
         var client = new HttpClient(handler);
-        
+
         // Apply default configuration
         client.Timeout = _options.DefaultTimeout;
-        
+
         if (!string.IsNullOrEmpty(_options.DefaultUserAgent))
         {
             client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.DefaultUserAgent);
         }
-        
+
         return client;
     }
 
     private HttpClientHandler CreateHttpClientHandler()
     {
         var handler = new HttpClientHandler();
-        
+
         // Configure proxy settings
         var proxy = CreateProxy();
         if (proxy != null)
@@ -74,7 +74,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
             handler.Proxy = proxy;
             handler.UseProxy = true;
         }
-        
+
         return handler;
     }
 
@@ -82,7 +82,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
     {
         // Determine proxy address based on priority: ALL_PROXY, HTTP_PROXY/HTTPS_PROXY
         string? proxyAddress = _options.AllProxy ?? _options.HttpProxy;
-        
+
         if (string.IsNullOrEmpty(proxyAddress))
         {
             return null;
@@ -94,7 +94,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
         }
 
         var proxy = new WebProxy(proxyUri);
-        
+
         // Configure bypass list from NO_PROXY
         if (!string.IsNullOrEmpty(_options.NoProxy))
         {
@@ -103,13 +103,13 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
                 .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
-                
+
             if (bypassList.Length > 0)
             {
                 proxy.BypassList = bypassList;
             }
         }
-        
+
         return proxy;
     }
 

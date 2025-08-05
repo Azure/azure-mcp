@@ -40,7 +40,7 @@ public static class HttpClientServiceCollectionExtensions
             options.HttpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
             options.HttpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
             options.NoProxy = Environment.GetEnvironmentVariable("NO_PROXY");
-            
+
             // Apply custom configuration
             configureOptions(options);
         });
