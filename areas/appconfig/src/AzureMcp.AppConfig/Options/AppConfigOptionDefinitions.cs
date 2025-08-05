@@ -5,7 +5,7 @@ namespace AzureMcp.AppConfig.Options;
 
 public static class AppConfigOptionDefinitions
 {
-    public const string AccountName = "account-name";
+    public const string AccountName = "account";
     public const string KeyName = "key";
     public const string ValueName = "value";
     public const string LabelName = "label";

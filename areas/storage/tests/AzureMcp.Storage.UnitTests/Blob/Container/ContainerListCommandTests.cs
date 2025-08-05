@@ -51,7 +51,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).Returns(expectedContainers);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -77,7 +77,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -99,7 +99,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 

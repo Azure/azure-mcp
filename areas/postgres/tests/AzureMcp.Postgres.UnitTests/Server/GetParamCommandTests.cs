@@ -40,7 +40,7 @@ public class GetParamCommandTests
         _postgresService.GetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123").Returns(expectedValue);
 
         var command = new GetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -61,7 +61,7 @@ public class GetParamCommandTests
     {
         _postgresService.GetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123").Returns("");
         var command = new GetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -74,7 +74,7 @@ public class GetParamCommandTests
     [Theory]
     [InlineData("--subscription")]
     [InlineData("--resource-group")]
-    [InlineData("--user-name")]
+    [InlineData("--user")]
     [InlineData("--server")]
     [InlineData("--param")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
@@ -84,7 +84,7 @@ public class GetParamCommandTests
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
             missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
-            missingParameter == "--user-name" ? "" : "--user-name", "user1",
+            missingParameter == "--user" ? "" : "--user", "user1",
             missingParameter == "--server" ? "" : "--server", "server123",
             missingParameter == "--param" ? "" : "--param", "param123"
         });

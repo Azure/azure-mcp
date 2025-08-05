@@ -69,7 +69,7 @@ public class QueueDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).Returns(expectedDetails);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue-name", QueueName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -104,7 +104,7 @@ public class QueueDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(serviceBusException);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue-name", QueueName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -128,7 +128,7 @@ public class QueueDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(new Exception(expectedError));
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue-name", QueueName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--queue", QueueName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -140,10 +140,10 @@ public class QueueDetailsCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --queue-name testQueue", true)]
-    [InlineData("--namespace test.servicebus.windows.net --queue-name testQueue", false)]  // Missing subscription
-    [InlineData("--subscription sub123 --queue-name testQueue", false)]   // Missing namespace
-    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net", false)] // Missing queue-name
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --queue testQueue", true)]
+    [InlineData("--namespace test.servicebus.windows.net --queue testQueue", false)]  // Missing subscription
+    [InlineData("--subscription sub123 --queue testQueue", false)]   // Missing namespace
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net", false)] // Missing queue
     [InlineData("", false)]  // Missing all required options
     public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
     {

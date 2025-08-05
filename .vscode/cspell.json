@@ -160,6 +160,7 @@
                 "testserver",
                 "testshare",
                 "testsub",
+                "testfilesystem",
                 "toplevel",
                 "uploadsummary",
                 "vectorizable",

@@ -56,8 +56,8 @@ public class FileSystemListPathsCommandTests
             null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -85,8 +85,8 @@ public class FileSystemListPathsCommandTests
             null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -114,8 +114,8 @@ public class FileSystemListPathsCommandTests
             null, null, Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -144,8 +144,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", filterPath
         ]);
@@ -183,8 +183,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--recursive"
         ]);
@@ -222,8 +222,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -260,8 +260,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", filterPath,
             "--recursive"
@@ -300,8 +300,8 @@ public class FileSystemListPathsCommandTests
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
-            "--file-system-name", _knownFileSystemName,
+            "--account", _knownAccountName,
+            "--file-system", _knownFileSystemName,
             "--subscription", _knownSubscriptionId,
             "--filter-path", ""
         ]);
@@ -321,10 +321,10 @@ public class FileSystemListPathsCommandTests
     }
 
     [Theory]
-    [InlineData("--file-system-name filesystem123 --subscription sub123", false)] // Missing account
-    [InlineData("--account-name account123 --subscription sub123", false)] // Missing file-system
-    [InlineData("--account-name account123 --file-system-name filesystem123", false)] // Missing subscription
-    [InlineData("--account-name account123 --file-system-name filesystem123 --subscription sub123", true)] // Valid
+    [InlineData("--file-system filesystem123 --subscription sub123", false)] // Missing account
+    [InlineData("--account account123 --subscription sub123", false)] // Missing file-system
+    [InlineData("--account account123 --file-system filesystem123", false)] // Missing subscription
+    [InlineData("--account account123 --file-system filesystem123 --subscription sub123", true)] // Valid
     public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
     {
         // Arrange
