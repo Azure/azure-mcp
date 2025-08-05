@@ -39,27 +39,26 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 #### Dependency Updates
 
-Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support. AOT will enable shipping Azure MCP Server as self-contained native executable.
-
-- Upgraded `Azure.Core` from `1.46.2` to version `1.47.1`.
-- Upgraded `Azure.ResourceManager` from `1.13.1` to version `1.13.2`.
-- Upgraded `Azure.ResourceManager.ApplicationInsights` from `1.0.1` to version `1.1.0-beta.1`.
-- Upgraded `Azure.ResourceManager.AppConfiguration` from `1.4.0` to version `1.4.1`.
-- Upgraded `Azure.ResourceManager.Authorization` from `1.1.4` to version `1.1.5`.
-- Upgraded `Azure.ResourceManager.ContainerService` from `1.2.3` to version `1.2.5`.
-- Upgraded `Azure.ResourceManager.Kusto` from `1.6.0` to version `1.6.1`.
-- Upgraded `Azure.ResourceManager.CognitiveServices` from `1.4.0` to version `1.5.1`.
-- Upgraded `Azure.ResourceManager.Redis` from `1.5.0` to version `1.5.1`.
-- Upgraded `Azure.ResourceManager.RedisEnterprise` from `1.1.0` to version `1.2.1`.
-- Upgraded `Azure.ResourceManager.LoadTesting` from `1.1.1` to version `1.1.2`.
-- Upgraded `Azure.ResourceManager.Sql` from `1.3.0` to version `1.4.0-beta.3`.
-- Upgraded `Azure.ResourceManager.Datadog` from `1.0.0-beta.5` to version `1.0.0-beta.6`.
-- Upgraded `Azure.ResourceManager.CosmosDB` from `1.3.2` to version `1.4.0-beta.13`.
-- Upgraded `Azure.ResourceManager.OperationalInsights` from `1.3.0` to version `1.3.1`.
-- Upgraded `Azure.ResourceManager.Search` from `1.2.3` to version `1.3.0`.
-- Upgraded `Azure.ResourceManager.Storage` from `1.4.2` to version `1.4.4`.
-- Upgraded `Azure.ResourceManager.Grafana` from `1.1.1` to version `1.2.0-beta.2`.
-- Upgraded `Azure.ResourceManager.ResourceGraph` from `1.1.0-beta.3` to version `1.1.0-beta.4`.
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support. AOT will enable shipping Azure MCP Server as self-contained native executable.
+  - Azure.Core: `1.46.2` → `1.47.1`
+  - Azure.ResourceManager: `1.13.1` → `1.13.2`
+  - Azure.ResourceManager.ApplicationInsights: `1.0.1` → `1.1.0-beta.1`
+  - Azure.ResourceManager.AppConfiguration: `1.4.0` → `1.4.1`
+  - Azure.ResourceManager.Authorization: `1.1.4` → `1.1.5`
+  - Azure.ResourceManager.ContainerService: `1.2.3` → `1.2.5`
+  - Azure.ResourceManager.Kusto: `1.6.0` → `1.6.1`
+  - Azure.ResourceManager.CognitiveServices: `1.4.0` → `1.5.1`
+  - Azure.ResourceManager.Redis: `1.5.0` → `1.5.1`
+  - Azure.ResourceManager.RedisEnterprise: `1.1.0` → `1.2.1`
+  - Azure.ResourceManager.LoadTesting: `1.1.1` → `1.1.2`
+  - Azure.ResourceManager.Sql: `1.3.0` → `1.4.0-beta.3`
+  - Azure.ResourceManager.Datadog: `1.0.0-beta.5` → `1.0.0-beta.6`
+  - Azure.ResourceManager.CosmosDB: `1.3.2` → `1.4.0-beta.13`
+  - Azure.ResourceManager.OperationalInsights: `1.3.0` → `1.3.1`
+  - Azure.ResourceManager.Search: `1.2.3` → `1.3.0`
+  - Azure.ResourceManager.Storage: `1.4.2` → `1.4.4`
+  - Azure.ResourceManager.Grafana: `1.1.1` → `1.2.0-beta.2`
+  - Azure.ResourceManager.ResourceGraph: `1.1.0-beta.3` → `1.1.0-beta.4`
 
 ## 0.5.2 (2025-07-31)
 
