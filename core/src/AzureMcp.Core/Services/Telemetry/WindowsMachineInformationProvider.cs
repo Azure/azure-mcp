@@ -55,7 +55,7 @@ internal class WindowsMachineInformationProvider(ILogger<WindowsMachineInformati
     private static bool TryGetRegistryValue(string registryRoot, string keyName, out string value)
     {
         using var registry = RegistryKey.OpenBaseKey(Hive, RegistryView.Registry64);
-        using var key = registry.OpenSubKey(registryRoot);
+        using var key = registry.OpenSubKey(registryRoot, writable: false);
 
         if (key == null)
         {
@@ -73,13 +73,14 @@ internal class WindowsMachineInformationProvider(ILogger<WindowsMachineInformati
         }
 
         value = string.Empty;
-        return true;
+        return false;
     }
 
-    private static bool TrySetRegistryValue(string registryRoot, string keyName, string value)
+    private static bool TrySetRegistryValue(string keyPath, string keyName, string value)
     {
-        using var registry = RegistryKey.OpenBaseKey(Hive, RegistryView.Registry64);
-        using var key = registry.OpenSubKey(registryRoot);
+        using var keyRoot = RegistryKey.OpenBaseKey(Hive, RegistryView.Registry64);
+        using var key = keyRoot.OpenSubKey(keyPath, writable: true)
+            ?? keyRoot.CreateSubKey(keyPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
 
         if (key == null)
         {
