@@ -15,6 +15,7 @@ public class MySqlService : BaseAzureService, IMySqlService
     private readonly IResourceGroupService _resourceGroupService;
     private string? _cachedEntraIdAccessToken;
     private DateTime _tokenExpiryTime;
+    private readonly object _tokenLock = new object();
 
     public MySqlService(IResourceGroupService resourceGroupService)
     {
