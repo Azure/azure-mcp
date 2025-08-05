@@ -17,7 +17,6 @@ public abstract class BaseServerCommand<
 {
     private readonly Option<string> _serverOption = MySqlOptionDefinitions.Server;
 
-    public override string Name => "server";
 
     public override string Description =>
         "Retrieves information about a MySQL server.";
