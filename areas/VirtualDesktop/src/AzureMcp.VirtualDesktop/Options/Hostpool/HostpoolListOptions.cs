@@ -3,9 +3,6 @@
 
 using AzureMcp.Core.Options;
 
-namespace AzureMcp.Areas.VirtualDesktop.Options.Hostpool
-{
-    public class HostpoolListOptions : SubscriptionOptions
-    {
-    }
-}
+namespace AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
+
+public class HostpoolListOptions : SubscriptionOptions;

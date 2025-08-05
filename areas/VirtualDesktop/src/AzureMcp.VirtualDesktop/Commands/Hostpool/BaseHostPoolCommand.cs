@@ -41,11 +41,11 @@ public abstract class BaseHostPoolCommand<
         var hostPoolName = commandResult.GetValueForOption(_hostPoolOption);
         var hostPoolResourceId = commandResult.GetValueForOption(_hostPoolResourceIdOption);
 
-        // Validate that either hostpool-name or hostpool-resource-id is provided, but not both
+        // Validate that either hostpool or hostpool-resource-id is provided, but not both
         if (string.IsNullOrEmpty(hostPoolName) && string.IsNullOrEmpty(hostPoolResourceId))
         {
             result.IsValid = false;
-            result.ErrorMessage = "Either --hostpool-name or --hostpool-resource-id must be provided.";
+            result.ErrorMessage = "Either --hostpool or --hostpool-resource-id must be provided.";
             if (commandResponse != null)
             {
                 commandResponse.Status = 400;
@@ -57,7 +57,7 @@ public abstract class BaseHostPoolCommand<
         if (!string.IsNullOrEmpty(hostPoolName) && !string.IsNullOrEmpty(hostPoolResourceId))
         {
             result.IsValid = false;
-            result.ErrorMessage = "Cannot specify both --hostpool-name and --hostpool-resource-id. Use only one.";
+            result.ErrorMessage = "Cannot specify both --hostpool and --hostpool-resource-id. Use only one.";
             if (commandResponse != null)
             {
                 commandResponse.Status = 400;

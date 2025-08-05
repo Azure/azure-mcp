@@ -198,7 +198,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                 new()
                 {
                     { "subscription", Settings.SubscriptionId },
-                    { "hostpool-name", firstHostpool }
+                    { "hostpool", firstHostpool }
                 });
 
             JsonElement? sessionHosts = (result != null) ? result.AssertProperty("sessionHosts") : null;
@@ -246,7 +246,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "hostpool-name", firstHostpool }
+                    { "hostpool", firstHostpool }
                 });
 
             JsonElement? sessionHosts = (result != null) ? result.AssertProperty("sessionHosts") : null;
@@ -295,7 +295,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                 new()
                 {
                     { "subscription", Settings.SubscriptionId },
-                    { "hostpool-name", firstHostpool }
+                    { "hostpool", firstHostpool }
                 });
 
             JsonElement? sessionHosts = (sessionHostsResult != null) ? sessionHostsResult.AssertProperty("sessionHosts") : null;
@@ -308,8 +308,8 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                     new()
                     {
                         { "subscription", Settings.SubscriptionId },
-                        { "hostpool-name", firstHostpool },
-                        { "sessionhost-name", firstSessionHost }
+                        { "hostpool", firstHostpool },
+                        { "sessionhost", firstSessionHost }
                     });
 
                 JsonElement? userSessions = (result != null) ? result.AssertProperty("userSessions") : null;
@@ -366,7 +366,7 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "hostpool-name", firstHostpool }
+                    { "hostpool", firstHostpool }
                 });
 
             JsonElement? sessionHosts = (sessionHostsResult != null) ? sessionHostsResult.AssertProperty("sessionHosts") : null;
@@ -379,8 +379,8 @@ public class VirtualDesktopCommandTests(LiveTestFixture liveTestFixture, ITestOu
                     new()
                     {
                         { "subscription", Settings.SubscriptionName },
-                        { "hostpool-name", firstHostpool },
-                        { "sessionhost-name", firstSessionHost }
+                        { "hostpool", firstHostpool },
+                        { "sessionhost", firstSessionHost }
                     });
 
                 JsonElement? userSessions = (result != null) ? result.AssertProperty("userSessions") : null;

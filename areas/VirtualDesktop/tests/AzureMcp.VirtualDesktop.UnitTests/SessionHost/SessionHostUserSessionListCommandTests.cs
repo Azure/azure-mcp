@@ -52,16 +52,16 @@ public class SessionHostUserSessionListCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost", true)]
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant", true)]
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --resource-group test-rg", true)]
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --resource-group test-rg --tenant test-tenant", true)]
-    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost", true)]
-    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant", true)]
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool", false)] // Missing sessionhost-name
-    [InlineData("--subscription test-sub --sessionhost-name test-sessionhost", false)] // Missing both hostpool parameters
-    [InlineData("--subscription test-sub --hostpool-name test-hostpool --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost-name test-sessionhost", false)] // Both hostpool parameters
-    [InlineData("--hostpool-name test-hostpool --sessionhost-name test-sessionhost", false)] // Missing subscription
+    [InlineData("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost", true)]
+    [InlineData("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost --resource-group test-rg", true)]
+    [InlineData("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost --resource-group test-rg --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost test-sessionhost", true)]
+    [InlineData("--subscription test-sub --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost test-sessionhost --tenant test-tenant", true)]
+    [InlineData("--subscription test-sub --hostpool test-hostpool", false)] // Missing sessionhost
+    [InlineData("--subscription test-sub --sessionhost test-sessionhost", false)] // Missing both hostpool parameters
+    [InlineData("--subscription test-sub --hostpool test-hostpool --hostpool-resource-id /subscriptions/test-sub/resourceGroups/rg/providers/Microsoft.DesktopVirtualization/hostPools/test-hostpool --sessionhost test-sessionhost", false)] // Both hostpool parameters
+    [InlineData("--hostpool test-hostpool --sessionhost test-sessionhost", false)] // Missing subscription
     [InlineData("", false)] // Missing all required parameters
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -121,7 +121,7 @@ public class SessionHostUserSessionListCommandTests
         {
             Assert.Equal(400, response.Status);
             Assert.True(response.Message?.ToLower().Contains("required") == true ||
-                       response.Message?.Contains("hostpool-name") == true ||
+                       response.Message?.Contains("hostpool") == true ||
                        response.Message?.Contains("hostpool-resource-id") == true);
         }
     }
@@ -160,7 +160,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -204,7 +204,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 
-        var parseResult = _parser.Parse($"--subscription test-sub --hostpool-resource-id {resourceId} --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse($"--subscription test-sub --hostpool-resource-id {resourceId} --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -255,7 +255,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --resource-group test-rg");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost --resource-group test-rg");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -310,7 +310,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -341,7 +341,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Exception("Test error"));
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -373,7 +373,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -405,7 +405,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -449,7 +449,7 @@ public class SessionHostUserSessionListCommandTests
             Arg.Any<RetryPolicyOptions?>())
             .Returns(userSessions.AsReadOnly());
 
-        var parseResult = _parser.Parse("--subscription test-sub --hostpool-name test-hostpool --sessionhost-name test-sessionhost --tenant test-tenant");
+        var parseResult = _parser.Parse("--subscription test-sub --hostpool test-hostpool --sessionhost test-sessionhost --tenant test-tenant");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);

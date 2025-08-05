@@ -799,13 +799,13 @@ azmcp virtualdesktop hostpool list --subscription <subscription> \
 
 # List session hosts in a host pool
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
                                                 [--resource-group <resource-group>]
 
 # List user sessions on a session host
 azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subscription> \
-                                                [--hostpool-name <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
-                                                --sessionhost-name <sessionhost-name> \
+                                                [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                --sessionhost <sessionhost-name> \
                                                 [--resource-group <resource-group>]
 ```
 
@@ -832,11 +832,11 @@ azmcp virtualdesktop hostpool list --subscription <subscription> \
 ```bash
 # Standard usage - enumerates all host pools in subscription
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                --hostpool-name <hostpool-name>
+                                                --hostpool <hostpool-name>
 
 # Optimized usage - direct resource group access
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                --hostpool-name <hostpool-name> \
+                                                --hostpool <hostpool-name> \
                                                 --resource-group <resource-group>
 
 # Alternative with resource ID (no resource group needed)

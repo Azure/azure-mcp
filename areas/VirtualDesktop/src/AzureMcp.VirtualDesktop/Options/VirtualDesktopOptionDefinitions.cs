@@ -5,9 +5,9 @@ namespace AzureMcp.Areas.VirtualDesktop.Options;
 
 public static class VirtualDesktopOptionDefinitions
 {
-    public const string HostPoolName = "hostpool-name";
+    public const string HostPoolName = "hostpool";
     public const string HostPoolResourceId = "hostpool-resource-id";
-    public const string SessionHostName = "sessionhost-name";
+    public const string SessionHostName = "sessionhost";
     public const string ResourceGroupName = "resource-group";
 
     public static readonly Option<string> HostPool = new(

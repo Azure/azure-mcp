@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.Core.Options;
 
 namespace AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
+
 public class BaseHostPoolOptions : SubscriptionOptions
 {
     [JsonPropertyName(VirtualDesktopOptionDefinitions.HostPoolName)]

@@ -49,15 +49,15 @@ public class SessionHostListCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub123 --hostpool-name pool1", true)]
-    [InlineData("--subscription sub123 --hostpool-name pool1 --tenant tenant1", true)]
-    [InlineData("--subscription sub123 --hostpool-name pool1 --resource-group rg1", true)]
-    [InlineData("--subscription sub123 --hostpool-name pool1 --resource-group rg1 --tenant tenant1", true)]
+    [InlineData("--subscription sub123 --hostpool pool1", true)]
+    [InlineData("--subscription sub123 --hostpool pool1 --tenant tenant1", true)]
+    [InlineData("--subscription sub123 --hostpool pool1 --resource-group rg1", true)]
+    [InlineData("--subscription sub123 --hostpool pool1 --resource-group rg1 --tenant tenant1", true)]
     [InlineData("--subscription sub123 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1", true)]
     [InlineData("--subscription sub123 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1 --tenant tenant1", true)]
-    [InlineData("--subscription sub123", false)] // Missing both hostpool-name and hostpool-resource-id
-    [InlineData("--subscription sub123 --hostpool-name pool1 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1", false)] // Both provided
-    [InlineData("--hostpool-name pool1", false)] // Missing subscription
+    [InlineData("--subscription sub123", false)] // Missing both hostpool and hostpool-resource-id
+    [InlineData("--subscription sub123 --hostpool pool1 --hostpool-resource-id /subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.DesktopVirtualization/hostPools/pool1", false)] // Both provided
+    [InlineData("--hostpool pool1", false)] // Missing subscription
     [InlineData("", false)] // Missing both
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -109,7 +109,7 @@ public class SessionHostListCommandTests
         else
         {
             Assert.True(response.Message.ToLower().Contains("required") ||
-                       response.Message.Contains("hostpool-name") ||
+                       response.Message.Contains("hostpool") ||
                        response.Message.Contains("hostpool-resource-id"));
         }
     }
@@ -131,7 +131,7 @@ public class SessionHostListCommandTests
             .Returns(expectedSessionHosts);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1");
+        var parseResult = _parser.Parse("--subscription sub123 --hostpool pool1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -194,7 +194,7 @@ public class SessionHostListCommandTests
     public async Task ExecuteAsync_WithResourceGroup_CallsServiceCorrectly()
     {
         // First test: Can we parse the command line correctly?
-        var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1 --resource-group rg1");
+        var parseResult = _parser.Parse("--subscription sub123 --hostpool pool1 --resource-group rg1");
 
         // Check for parse errors
         if (parseResult.Errors.Any())
@@ -265,7 +265,7 @@ public class SessionHostListCommandTests
             .Returns(new List<SessionHostModel>());
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1");
+        var parseResult = _parser.Parse("--subscription sub123 --hostpool pool1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -295,7 +295,7 @@ public class SessionHostListCommandTests
             .Returns(Task.FromException<IReadOnlyList<SessionHostModel>>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _parser.Parse("--subscription sub123 --hostpool-name pool1");
+        var parseResult = _parser.Parse("--subscription sub123 --hostpool pool1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -308,7 +308,7 @@ public class SessionHostListCommandTests
 
     [Theory]
     [InlineData("--subscription")]
-    [InlineData("--hostpool-name")]
+    [InlineData("--hostpool")]
     [InlineData("--invalid-option")]
     public async Task ExecuteAsync_WithInvalidArgs_ReturnsBadRequest(string invalidArgs)
     {
