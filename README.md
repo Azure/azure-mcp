@@ -212,8 +212,14 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Show database details and properties
 * List the details and properties of all databases
-* List SQL server firewall rules
-* List elastic pools and their configurations
+
+### 🗄️ Azure SQL Elastic Pool
+
+* List elastic pools in SQL servers
+
+### 🗄️ Azure SQL Server
+
+* List Microsoft Entra ID administrators for SQL servers
 
 ### 💾 Azure Storage
 

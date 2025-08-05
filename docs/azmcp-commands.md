@@ -807,6 +807,7 @@ azmcp azureterraformbestpractices get
 ```
 
 ### Azure Virtual Desktop Operations
+
 ```bash
 # List Azure Virtual Desktop host pools in a subscription
 azmcp virtualdesktop hostpool list --subscription <subscription> \
@@ -814,14 +815,14 @@ azmcp virtualdesktop hostpool list --subscription <subscription> \
 
 # List session hosts in a host pool
 azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
-                                                [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
-                                                [--resource-group <resource-group>]
+                                               [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                               [--resource-group <resource-group>]
 
 # List user sessions on a session host
 azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subscription> \
-                                                [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
-                                                --sessionhost <sessionhost-name> \
-                                                [--resource-group <resource-group>]
+                                                           [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                           --sessionhost <sessionhost-name> \
+                                                           [--resource-group <resource-group>]
 ```
 
 #### Resource Group Optimization
