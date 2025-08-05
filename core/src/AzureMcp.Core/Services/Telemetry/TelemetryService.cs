@@ -32,7 +32,7 @@ internal class TelemetryService : ITelemetryService
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);
         _informationProvider = informationProvider;
 
-        InitializeTagList().Start();
+        Task.Factory.StartNew(InitializeTagList);
     }
 
     public ValueTask<Activity?> StartActivity(string activityId) => StartActivity(activityId, null);
