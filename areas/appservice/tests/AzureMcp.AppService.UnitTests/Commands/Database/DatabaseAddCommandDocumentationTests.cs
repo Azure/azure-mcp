@@ -79,14 +79,14 @@ public class DatabaseAddCommandDocumentationTests
         Assert.Contains(options, o => o.Name == "--database-type");
         Assert.Contains(options, o => o.Name == "--database-server");
         Assert.Contains(options, o => o.Name == "--database-name");
-        
+
         // Optional App Service specific option
         Assert.Contains(options, o => o.Name == "--connection-string");
-        
+
         // Required base options (from BaseAppServiceCommand)
         Assert.Contains(options, o => o.Name == "--subscription");
         Assert.Contains(options, o => o.Name == "--resource-group");
-        
+
         // Optional base options
         Assert.Contains(options, o => o.Name == "--tenant");
         Assert.Contains(options, o => o.Name == "--retry-max-retries");
@@ -144,7 +144,7 @@ public class DatabaseAddCommandDocumentationTests
     {
         // This test ensures that the supported database types in the service
         // match what should be documented
-        
+
         // Arrange
         var supportedTypes = new[] { "sqlserver", "mysql", "postgresql", "cosmosdb" };
 
@@ -157,10 +157,10 @@ public class DatabaseAddCommandDocumentationTests
     {
         // This test validates the command path for documentation purposes
         // Command should be accessible as: azmcp appservice database add
-        
+
         // Arrange
         var command = new DatabaseAddCommand(_logger);
-        
+
         // Act & Assert
         // The command name "add" should be in the "database" group under "appservice"
         Assert.Equal("add", command.Name);
@@ -180,12 +180,12 @@ public class DatabaseAddCommandDocumentationTests
 
         // Assert - All options should have descriptions for documentation
         Assert.True(optionsWithDescriptions.Count > 0, "Command options should have descriptions");
-        
+
         // Check specific critical options have descriptions
         var appNameOption = systemCommand.Options.FirstOrDefault(o => o.Name == "--app-name");
         Assert.NotNull(appNameOption);
         Assert.False(string.IsNullOrEmpty(appNameOption.Description));
-        
+
         var databaseTypeOption = systemCommand.Options.FirstOrDefault(o => o.Name == "--database-type");
         Assert.NotNull(databaseTypeOption);
         Assert.False(string.IsNullOrEmpty(databaseTypeOption.Description));

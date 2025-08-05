@@ -1,22 +1,22 @@
 # Azure MCP CLI Command Reference
 
 > [!IMPORTANT]
-> The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
+> The Azure MCP Server has two modes: MCP Server mode and CLI mode. When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`. Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
 
 ## Global Options
 
 The following options are available for all commands:
 
-| Option | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `--subscription` | No | Environment variable `AZURE_SUBSCRIPTION_ID` | Azure subscription ID for target resources |
-| `--tenant-id` | No | - | Azure tenant ID for authentication |
-| `--auth-method` | No | 'credential' | Authentication method ('credential', 'key', 'connectionString') |
-| `--retry-max-retries` | No | 3 | Maximum retry attempts for failed operations |
-| `--retry-delay` | No | 2 | Delay between retry attempts (seconds) |
-| `--retry-max-delay` | No | 10 | Maximum delay between retries (seconds) |
-| `--retry-mode` | No | 'exponential' | Retry strategy ('fixed' or 'exponential') |
-| `--retry-network-timeout` | No | 100 | Network operation timeout (seconds) |
+| Option                    | Required | Default                                      | Description                                                     |
+| ------------------------- | -------- | -------------------------------------------- | --------------------------------------------------------------- |
+| `--subscription`          | No       | Environment variable `AZURE_SUBSCRIPTION_ID` | Azure subscription ID for target resources                      |
+| `--tenant-id`             | No       | -                                            | Azure tenant ID for authentication                              |
+| `--auth-method`           | No       | 'credential'                                 | Authentication method ('credential', 'key', 'connectionString') |
+| `--retry-max-retries`     | No       | 3                                            | Maximum retry attempts for failed operations                    |
+| `--retry-delay`           | No       | 2                                            | Delay between retry attempts (seconds)                          |
+| `--retry-max-delay`       | No       | 10                                           | Maximum delay between retries (seconds)                         |
+| `--retry-mode`            | No       | 'exponential'                                | Retry strategy ('fixed' or 'exponential')                       |
+| `--retry-network-timeout` | No       | 100                                          | Network operation timeout (seconds)                             |
 
 ## Available Commands
 
@@ -112,10 +112,10 @@ azmcp server start \
 
 > **Note:**
 >
-> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
-> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
-> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
-> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+> -   For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
+> -   The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
+> -   Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
+> -   The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
 
 ### Azure AI Foundry Operations
 
@@ -259,20 +259,22 @@ azmcp appservice database add --subscription "my-subscription" \
 ```
 
 **Database Types Supported:**
-- `SqlServer` - Azure SQL Database
-- `MySQL` - Azure Database for MySQL
-- `PostgreSQL` - Azure Database for PostgreSQL  
-- `CosmosDB` - Azure Cosmos DB
+
+-   `SqlServer` - Azure SQL Database
+-   `MySQL` - Azure Database for MySQL
+-   `PostgreSQL` - Azure Database for PostgreSQL
+-   `CosmosDB` - Azure Cosmos DB
 
 **Parameters:**
-- `--subscription`: Azure subscription ID (required)
-- `--resource-group`: Resource group containing the App Service (required)
-- `--app-name`: Name of the App Service web app (required)
-- `--database-type`: Type of database - SqlServer, MySQL, PostgreSQL, or CosmosDB (required)
-- `--database-server`: Database server name or endpoint (required)
-- `--database-name`: Name of the database (required)
-- `--connection-string`: Custom connection string (optional - auto-generated if not provided)
-- `--tenant`: Azure tenant ID for authentication (optional)
+
+-   `--subscription`: Azure subscription ID (required)
+-   `--resource-group`: Resource group containing the App Service (required)
+-   `--app-name`: Name of the App Service web app (required)
+-   `--database-type`: Type of database - SqlServer, MySQL, PostgreSQL, or CosmosDB (required)
+-   `--database-server`: Database server name or endpoint (required)
+-   `--database-name`: Name of the database (required)
+-   `--connection-string`: Custom connection string (optional - auto-generated if not provided)
+-   `--tenant`: Azure tenant ID for authentication (optional)
 
 ### Azure CLI Operations
 
@@ -1027,8 +1029,8 @@ azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subsc
 
 The Virtual Desktop commands support an optional `--resource-group` parameter that provides significant performance improvements when specified:
 
-- **Without `--resource-group`**: Commands enumerate through all resources in the subscription
-- **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
+-   **Without `--resource-group`**: Commands enumerate through all resources in the subscription
+-   **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
 
 **Host Pool List Usage:**
 
@@ -1100,11 +1102,11 @@ All responses follow a consistent JSON format:
 
 ```json
 {
-  "status": "200|403|500, etc",
-  "message": "",
-  "options": [],
-  "results": [],
-  "duration": 123
+    "status": "200|403|500, etc",
+    "message": "",
+    "options": [],
+    "results": [],
+    "duration": 123
 }
 ```
 
@@ -1112,5 +1114,5 @@ All responses follow a consistent JSON format:
 
 The CLI returns structured JSON responses for errors, including:
 
-- Service availability issues
-- Authentication errors
+-   Service availability issues
+-   Authentication errors
