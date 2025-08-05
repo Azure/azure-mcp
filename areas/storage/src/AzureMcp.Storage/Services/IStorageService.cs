@@ -28,12 +28,22 @@ public interface IStorageService
     Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
+        bool recursive,
         string subscriptionId,
+        string? filterPath = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
     Task<DataLakePathInfo> CreateDirectory(
         string accountName,
         string directoryPath,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+    Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
+        string accountName,
+        string containerName,
+        string tier,
+        string[] blobNames,
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);

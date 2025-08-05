@@ -6,6 +6,7 @@ using AzureMcp.Aks.Models;
 using AzureMcp.Aks.Options;
 using AzureMcp.Aks.Options.Cluster;
 using AzureMcp.Aks.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +30,8 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseA
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -44,7 +47,6 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseA
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

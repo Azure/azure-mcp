@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.LoadTesting.Models.LoadTest;
 using AzureMcp.LoadTesting.Options.LoadTest;
@@ -27,6 +28,9 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
         and scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.
         """;
     public override string Title => _commandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -52,10 +56,6 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
         return options;
     }
 
-    [McpServerTool(
-    Destructive = false,
-    ReadOnly = true,
-    Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -5,6 +5,7 @@ using AzureMcp.Aks.Commands;
 using AzureMcp.Aks.Models;
 using AzureMcp.Aks.Options.Cluster;
 using AzureMcp.Aks.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +26,8 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

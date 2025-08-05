@@ -26,11 +26,13 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         fields, analyzers, suggesters, scoring profiles, and other settings.
 
         Required arguments:
-        - service-name: The name of the Azure AI Search service
-        - index-name: The name of the search index to retrieve
+        - service: The name of the Azure AI Search service
+        - index: The name of the search index to retrieve
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -47,7 +49,6 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Options.ElasticPool;
@@ -28,10 +29,8 @@ public sealed class ElasticPoolListCommand(ILogger<ElasticPoolListCommand> logge
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

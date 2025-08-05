@@ -2,23 +2,24 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Models;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Topic;
 using AzureMcp.ServiceBus.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.ServiceBus.Commands.Topic;
 
-public sealed class SubscriptionDetailsCommand : SubscriptionCommand<SubscriptionDetailsOptions>
+public sealed class SubscriptionDetailsCommand(ILogger<SubscriptionDetailsCommand> logger) : SubscriptionCommand<SubscriptionDetailsOptions>
 {
     private const string CommandTitle = "Get Service Bus Topic Subscription Details";
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
     private readonly Option<string> _topicOption = ServiceBusOptionDefinitions.Topic;
     private readonly Option<string> _subscriptionNameOption = ServiceBusOptionDefinitions.Subscription;
-
+    private readonly ILogger<SubscriptionDetailsCommand> _logger = logger;
     public override string Name => "details";
 
     public override string Description =>
@@ -27,11 +28,13 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
 
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - topic-name: Topic name containing the subscription
+        - topic: Topic name containing the subscription
         - subscription-name: Name of the subscription to get details for
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -52,7 +55,6 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -80,6 +82,7 @@ public sealed class SubscriptionDetailsCommand : SubscriptionCommand<Subscriptio
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error getting Service Bus subscription details");
             HandleException(context, ex);
         }
 

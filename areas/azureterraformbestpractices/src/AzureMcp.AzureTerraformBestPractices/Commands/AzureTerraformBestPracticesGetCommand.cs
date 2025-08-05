@@ -32,7 +32,8 @@ public sealed class AzureTerraformBestPracticesGetCommand(ILogger<AzureTerraform
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var bestPractices = GetBestPracticesText();

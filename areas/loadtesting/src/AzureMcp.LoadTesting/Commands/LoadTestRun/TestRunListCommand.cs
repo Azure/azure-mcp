@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.LoadTesting.Models.LoadTestRun;
 using AzureMcp.LoadTesting.Options.LoadTestRun;
@@ -22,6 +23,9 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
         trends, compare results across multiple runs, and analyze testing patterns over time.
         """;
     public override string Title => _commandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -35,10 +39,6 @@ public sealed class TestRunListCommand(ILogger<TestRunListCommand> logger)
         return options;
     }
 
-    [McpServerTool(
-    Destructive = false,
-    ReadOnly = true,
-    Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

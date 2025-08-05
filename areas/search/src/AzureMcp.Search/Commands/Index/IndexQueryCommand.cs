@@ -24,12 +24,14 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         Query an Azure AI Search index. Returns search results matching the specified query.
 
         Required arguments:
-        - service-name: The name of the Azure AI Search service
-        - index-name: The name of the search index to query
+        - service: The name of the Azure AI Search service
+        - index: The name of the search index to query
         - query: The search text to query with
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -48,7 +50,6 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

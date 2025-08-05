@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options;
@@ -19,6 +20,8 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
     public override string Description => "Retrieves the schema of a specified table in a PostgreSQL database.";
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -32,7 +35,6 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         try

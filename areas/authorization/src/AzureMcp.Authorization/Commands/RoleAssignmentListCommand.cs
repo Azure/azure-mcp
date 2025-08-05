@@ -5,6 +5,7 @@ using AzureMcp.Authorization.Commands;
 using AzureMcp.Authorization.Models;
 using AzureMcp.Authorization.Options;
 using AzureMcp.Authorization.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Telemetry;
@@ -27,6 +28,8 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
 
     public override string Title => _commandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     private readonly Option<string> _scopeOption = OptionDefinitions.Authorization.Scope;
 
     protected override void RegisterOptions(Command command)
@@ -42,7 +45,6 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
         return args;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

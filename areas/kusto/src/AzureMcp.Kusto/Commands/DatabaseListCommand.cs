@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
@@ -19,13 +20,14 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
     public override string Description =>
         """
         List all databases in a Kusto cluster.
-        Requires `cluster-uri` ( or `subscription` and `cluster-name`).
+        Requires `cluster-uri` ( or `subscription` and `cluster`).
         Result is a list of database names, returned as a JSON array.
         """;
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

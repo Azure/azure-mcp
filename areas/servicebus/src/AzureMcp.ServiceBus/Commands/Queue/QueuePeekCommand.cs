@@ -2,22 +2,23 @@
 // Licensed under the MIT License.
 
 using Azure.Messaging.ServiceBus;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Queue;
 using AzureMcp.ServiceBus.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.ServiceBus.Commands.Queue;
 
-public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
+public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : SubscriptionCommand<QueuePeekOptions>
 {
     private const string CommandTitle = "Peek Messages from Service Bus Queue";
     private readonly Option<string> _queueOption = ServiceBusOptionDefinitions.Queue;
     private readonly Option<int> _maxMessagesOption = ServiceBusOptionDefinitions.MaxMessages;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
-
+    private readonly ILogger<QueuePeekCommand> _logger = logger;
     public override string Name => "peek";
 
     public override string Description =>
@@ -34,6 +35,8 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -53,7 +56,6 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -83,6 +85,7 @@ public sealed class QueuePeekCommand : SubscriptionCommand<QueuePeekOptions>
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error peeking messages from Service Bus queue");
             HandleException(context, ex);
         }
 

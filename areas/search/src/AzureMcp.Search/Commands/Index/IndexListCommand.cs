@@ -22,10 +22,12 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         List all indexes in an Azure AI Search service.
 
         Required arguments:
-        - service-name
+        - service
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -40,7 +42,6 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

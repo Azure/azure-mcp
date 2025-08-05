@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
@@ -19,12 +20,13 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
     public override string Description =>
         """
         Get the schema of a specific table in an Kusto database.
-        Requires `cluster-uri` ( or `subscription` and `cluster-name`), `database-name` and `table`.
+        Requires `cluster-uri` ( or `subscription` and `cluster`), `database` and `table`.
         """;
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

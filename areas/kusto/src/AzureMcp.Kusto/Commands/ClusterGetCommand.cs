@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
@@ -18,13 +19,14 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
 
     public override string Description =>
         """
-        Get details for a specific Kusto cluster. Requires `subscription` and `cluster-name`.
+        Get details for a specific Kusto cluster. Requires `subscription` and `cluster`.
         The response includes the `clusterUri` property for use in subsequent commands.
         """;
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

@@ -18,7 +18,7 @@ public sealed class ExtensionSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var extension = new CommandGroup("extension", "Extension commands for additional functionality");
+        var extension = new CommandGroup("extension", "Extension commands for additional Azure tooling functionality. Includes operations for executing Azure CLI (az), Azure Developer CLI (azd), and Azure Quick Review (azqr) commands directly from the MCP server to extend capabilities beyond native Azure service operations.");
         rootGroup.AddSubGroup(extension);
 
         extension.AddCommand("az", new AzCommand(loggerFactory.CreateLogger<AzCommand>()));

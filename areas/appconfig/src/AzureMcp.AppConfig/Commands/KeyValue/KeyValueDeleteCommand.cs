@@ -4,6 +4,7 @@
 using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Options.KeyValue;
 using AzureMcp.AppConfig.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +26,8 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

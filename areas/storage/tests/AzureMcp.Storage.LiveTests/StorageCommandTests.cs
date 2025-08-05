@@ -85,8 +85,8 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 });
 
             var actual = result.AssertProperty("blobs");
@@ -103,7 +103,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 { "retry-max-retries", 0 }
                 });
 
@@ -121,7 +121,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -138,7 +138,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -157,7 +157,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantName },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -173,8 +173,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" }
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" }
                 });
 
             var actual = result.AssertProperty("details");
@@ -189,8 +189,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 { "auth-method", "key" }
                 });
 
@@ -206,8 +206,25 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "file-system-name", "testfilesystem" }
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" }
+                });
+
+            var actual = result.AssertProperty("paths");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+        }
+
+        [Fact]
+        public async Task Should_list_datalake_filesystem_paths_recursively()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_file-system_list-paths",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" },
+                { "recursive", true }
                 });
 
             var actual = result.AssertProperty("paths");
@@ -224,7 +241,7 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
+                    { "account", Settings.ResourceBaseName },
                     { "directory-path", directoryPath }
                 });
 
@@ -236,6 +253,35 @@ namespace AzureMcp.Storage.LiveTests
 
             Assert.Equal(directoryPath, name);
             Assert.Equal("directory", type);
+        }
+
+        [Fact]
+        public async Task Should_set_blob_tier_batch()
+        {
+            // This test assumes the test storage account has the "bar" container with some test blobs
+            // We'll set tier to Cool for multiple blobs
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_batch_set-tier",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "container", "bar" },
+                    { "tier", "Cool" },
+                    { "blob-names", "blob1.txt blob2.txt" }
+                });
+
+            var successfulBlobs = result.AssertProperty("successfulBlobs");
+            var failedBlobs = result.AssertProperty("failedBlobs");
+
+            Assert.Equal(JsonValueKind.Array, successfulBlobs.ValueKind);
+            Assert.Equal(JsonValueKind.Array, failedBlobs.ValueKind);
+
+            // At least one of the blobs should succeed if they exist, or all should be in failed if they don't exist
+            var successCount = successfulBlobs.GetArrayLength();
+            var failedCount = failedBlobs.GetArrayLength();
+
+            Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
         }
     }
 }

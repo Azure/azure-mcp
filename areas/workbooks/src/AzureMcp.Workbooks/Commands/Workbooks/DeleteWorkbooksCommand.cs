@@ -29,6 +29,8 @@ public sealed class DeleteWorkbooksCommand(ILogger<DeleteWorkbooksCommand> logge
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -42,7 +44,6 @@ public sealed class DeleteWorkbooksCommand(ILogger<DeleteWorkbooksCommand> logge
         return options;
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

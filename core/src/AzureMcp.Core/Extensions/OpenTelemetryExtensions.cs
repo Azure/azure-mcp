@@ -39,11 +39,14 @@ public static class OpenTelemetryExtensions
 
                 if (options.IsTelemetryEnabled)
                 {
-                    var address = NetworkInterface.GetAllNetworkInterfaces().Where(x => x.OperationalStatus == OperationalStatus.Up)
+                    var address = NetworkInterface.GetAllNetworkInterfaces()
+                        .Where(x => x.OperationalStatus == OperationalStatus.Up && x.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                         .Select(x => x.GetPhysicalAddress().ToString())
-                        .FirstOrDefault(string.Empty);
+                        .FirstOrDefault(x => !string.IsNullOrEmpty(x));
 
-                    options.MacAddressHash = Sha256Helper.GetHashedValue(address);
+                    options.MacAddressHash = address != null
+                        ? Sha256Helper.GetHashedValue(address)
+                        : "N/A";
                 }
             });
 

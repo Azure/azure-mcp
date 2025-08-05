@@ -73,7 +73,7 @@ public class MetricsQueryCommandTests
         var description = _command.Description;
 
         // Assert
-        Assert.Contains("resource-name", description);
+        Assert.Contains("resource", description);
         Assert.Contains("metric-names", description);
         Assert.Contains("start-time", description);
         Assert.Contains("end-time", description);
@@ -98,10 +98,9 @@ public class MetricsQueryCommandTests
         var options = command.Options.Select(o => o.Name).ToList();
 
         // Base options from BaseMetricsCommand
-        Assert.Contains("subscription", options);
         Assert.Contains("resource-group", options);
         Assert.Contains("resource-type", options);
-        Assert.Contains("resource-name", options);
+        Assert.Contains("resource", options);
 
         // MetricsQueryCommand specific options
         Assert.Contains("metric-names", options);
@@ -115,8 +114,7 @@ public class MetricsQueryCommandTests
 
         // Verify required options are marked as required
         var requiredOptions = command.Options.Where(o => o.IsRequired).Select(o => o.Name).ToList();
-        Assert.Contains("subscription", requiredOptions);
-        Assert.Contains("resource-name", requiredOptions);
+        Assert.Contains("resource", requiredOptions);
         Assert.Contains("metric-names", requiredOptions);
     }
 
@@ -128,7 +126,7 @@ public class MetricsQueryCommandTests
     public async Task ExecuteAsync_BindsAllOptionsCorrectly()
     {
         // Arrange
-        var args = "--subscription sub1 --resource-group rg1 --resource-type Microsoft.Storage/storageAccounts --resource-name sa1 " +
+        var args = "--subscription sub1 --resource-group rg1 --resource-type Microsoft.Storage/storageAccounts --resource sa1 " +
                    "--metric-names CPU,Memory --start-time 2023-01-01T00:00:00Z --end-time 2023-01-02T00:00:00Z " +
                    "--interval PT1M --aggregation Average --filter \"dimension eq 'value'\" --metric-namespace Microsoft.Storage " +
                    "--max-buckets 100";
@@ -176,7 +174,7 @@ public class MetricsQueryCommandTests
     public async Task ExecuteAsync_HandlesOptionalParameters()
     {
         // Arrange
-        var args = "--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines";
+        var args = "--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines";
 
         _service.QueryMetricsAsync(
             Arg.Any<string>(),
@@ -231,7 +229,7 @@ public class MetricsQueryCommandTests
     public async Task Validate_MetricNames_ValidatesCorrectly(string metricNames, bool shouldBeValid)
     {
         // Arrange
-        var args = $"--subscription sub1 --resource-name sa1 --metric-namespace microsoft.compute/virtualmachines --metric-names \"{metricNames}\"";
+        var args = $"--subscription sub1 --resource sa1 --metric-namespace microsoft.compute/virtualmachines --metric-names \"{metricNames}\"";
         var parseResult = _command.GetCommand().Parse(args);
         var commandResult = parseResult.CommandResult;
 
@@ -258,10 +256,10 @@ public class MetricsQueryCommandTests
     #region ExecuteAsync Tests - Success Scenarios
 
     [Theory]
-    [InlineData("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines")]
-    [InlineData("--subscription sub1 --resource-group rg1 --resource-type Microsoft.Storage/storageAccounts --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines")]
-    [InlineData("--subscription sub1 --resource-name sa1 --metric-names CPU,Memory --metric-namespace microsoft.compute/virtualmachines")]
-    [InlineData("--subscription sub1 --resource-name sa1 --metric-namespace microsoft.compute/virtualmachines --metric-names CPU --start-time 2023-01-01T00:00:00Z --end-time 2023-01-02T00:00:00Z")]
+    [InlineData("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines")]
+    [InlineData("--subscription sub1 --resource-group rg1 --resource-type Microsoft.Storage/storageAccounts --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines")]
+    [InlineData("--subscription sub1 --resource sa1 --metric-names CPU,Memory --metric-namespace microsoft.compute/virtualmachines")]
+    [InlineData("--subscription sub1 --resource sa1 --metric-namespace microsoft.compute/virtualmachines --metric-names CPU --start-time 2023-01-01T00:00:00Z --end-time 2023-01-02T00:00:00Z")]
     public async Task ExecuteAsync_ValidInput_ReturnsSuccess(string args)
     {
         // Arrange
@@ -343,7 +341,7 @@ public class MetricsQueryCommandTests
             .Returns(new List<MetricResult>());
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -376,7 +374,7 @@ public class MetricsQueryCommandTests
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(
             "--subscription sub1 --resource-group rg1 --resource-type Microsoft.Storage/storageAccounts --metric-namespace microsoft.compute/virtualmachines " +
-            "--resource-name sa1 --metric-names CPU,Memory --start-time 2023-01-01T00:00:00Z " +
+            "--resource sa1 --metric-names CPU,Memory --start-time 2023-01-01T00:00:00Z " +
             "--end-time 2023-01-02T00:00:00Z --interval PT1M --aggregation Average");
 
         // Act
@@ -404,8 +402,8 @@ public class MetricsQueryCommandTests
     #region ExecuteAsync Tests - Validation Failures
 
     [Theory]
-    [InlineData("--subscription sub1 --metric-names CPU")] // Missing resource-name
-    [InlineData("--subscription sub1 --resource-name sa1")] // Missing metric-names
+    [InlineData("--subscription sub1 --metric-names CPU")] // Missing resource
+    [InlineData("--subscription sub1 --resource sa1")] // Missing metric-names
     public async Task ExecuteAsync_InvalidInput_ReturnsBadRequest(string args)
     {
         // Arrange
@@ -466,7 +464,7 @@ public class MetricsQueryCommandTests
             .Returns(resultsWithTooManyBuckets);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -520,7 +518,7 @@ public class MetricsQueryCommandTests
             .Returns(resultsWithTooManyBuckets);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names Memory --max-buckets 25 --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names Memory --max-buckets 25 --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -597,7 +595,7 @@ public class MetricsQueryCommandTests
             .Returns(results);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names TestMetric --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names TestMetric --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -648,7 +646,7 @@ public class MetricsQueryCommandTests
             .Returns(resultsWithinLimit);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -699,7 +697,7 @@ public class MetricsQueryCommandTests
             .Returns(resultsWithTooManyBuckets);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         await _command.ExecuteAsync(context, parseResult);
@@ -739,7 +737,7 @@ public class MetricsQueryCommandTests
             .Do(x => throw expectedException);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -772,7 +770,7 @@ public class MetricsQueryCommandTests
             .Do(x => throw expectedException);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         await _command.ExecuteAsync(context, parseResult);
@@ -839,7 +837,7 @@ public class MetricsQueryCommandTests
             .Returns(results);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU,Memory --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU,Memory --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -891,7 +889,7 @@ public class MetricsQueryCommandTests
             .Returns(results);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -943,7 +941,7 @@ public class MetricsQueryCommandTests
             .Returns(results);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -974,7 +972,7 @@ public class MetricsQueryCommandTests
             .Returns(Task.FromResult((List<MetricResult>)null!));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource-name sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
+        var parseResult = _command.GetCommand().Parse("--subscription sub1 --resource sa1 --metric-names CPU --metric-namespace microsoft.compute/virtualmachines");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);

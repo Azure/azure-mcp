@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Marketplace.Models;
@@ -25,37 +26,19 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
     private readonly Option<string> _planIdOption = OptionDefinitions.Marketplace.PlanId;
     private readonly Option<string> _skuIdOption = OptionDefinitions.Marketplace.SkuId;
     private readonly Option<bool> _includeServiceInstructionTemplatesOption = OptionDefinitions.Marketplace.IncludeServiceInstructionTemplates;
-    private readonly Option<string> _partnerTenantIdOption = OptionDefinitions.Marketplace.PartnerTenantId;
     private readonly Option<string> _pricingAudienceOption = OptionDefinitions.Marketplace.PricingAudience;
 
     public override string Name => "get";
 
     public override string Description =>
-        $"""
+        """
         Retrieves a single private product (offer) for a given subscription from Azure Marketplace.
         Returns detailed information about the specified marketplace product including plans, pricing, and metadata.
-
-        Required options:
-        - --{OptionDefinitions.Common.SubscriptionName}
-        - --{OptionDefinitions.Marketplace.ProductIdName}
-
-        Optional filtering options:
-        - --{OptionDefinitions.Marketplace.LanguageName}
-        - --{OptionDefinitions.Marketplace.MarketName}
-        - --{OptionDefinitions.Marketplace.PlanIdName}
-        - --{OptionDefinitions.Marketplace.SkuIdName}
-
-        Optional inclusion options:
-        - --{OptionDefinitions.Marketplace.IncludeStopSoldPlansName}
-        - --{OptionDefinitions.Marketplace.IncludeServiceInstructionTemplatesName}
-        - --{OptionDefinitions.Marketplace.LookupOfferInTenantLevelName}
-
-        Optional header options:
-        - --{OptionDefinitions.Marketplace.PartnerTenantIdName}
-        - --{OptionDefinitions.Marketplace.PricingAudienceName}
         """;
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -68,7 +51,6 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         command.AddOption(_planIdOption);
         command.AddOption(_skuIdOption);
         command.AddOption(_includeServiceInstructionTemplatesOption);
-        command.AddOption(_partnerTenantIdOption);
         command.AddOption(_pricingAudienceOption);
     }
 
@@ -83,15 +65,10 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
         options.PlanId = parseResult.GetValueForOption(_planIdOption);
         options.SkuId = parseResult.GetValueForOption(_skuIdOption);
         options.IncludeServiceInstructionTemplates = parseResult.GetValueForOption(_includeServiceInstructionTemplatesOption);
-        options.PartnerTenantId = parseResult.GetValueForOption(_partnerTenantIdOption);
         options.PricingAudience = parseResult.GetValueForOption(_pricingAudienceOption);
         return options;
     }
 
-    [McpServerTool(
-        Destructive = false,
-        ReadOnly = true,
-        Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -118,7 +95,6 @@ public sealed class ProductGetCommand(ILogger<ProductGetCommand> logger) : Subsc
                 options.PlanId,
                 options.SkuId,
                 options.IncludeServiceInstructionTemplates,
-                options.PartnerTenantId,
                 options.PricingAudience,
                 options.Tenant,
                 options.RetryPolicy);

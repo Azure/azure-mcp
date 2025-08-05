@@ -3,7 +3,6 @@
 
 using Azure.Core;
 using AzureMcp.Core.Options;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Options;

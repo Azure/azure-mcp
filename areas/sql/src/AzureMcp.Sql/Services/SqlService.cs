@@ -74,6 +74,66 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
         }
     }
 
+    public async Task<List<SqlDatabase>> ListDatabasesAsync(
+        string serverName,
+        string resourceGroup,
+        string subscription,
+        RetryPolicyOptions? retryPolicy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken);
+
+            var sqlServerResource = await resourceGroupResource.Value
+                .GetSqlServers()
+                .GetAsync(serverName);
+
+            var databases = new List<SqlDatabase>();
+
+            await foreach (var databaseResource in sqlServerResource.Value.GetSqlDatabases().GetAllAsync())
+            {
+                var database = databaseResource.Data;
+
+                databases.Add(new SqlDatabase(
+                    Name: database.Name,
+                    Id: database.Id.ToString(),
+                    Type: database.ResourceType.ToString(),
+                    Location: database.Location.ToString(),
+                    Sku: database.Sku != null ? new DatabaseSku(
+                        Name: database.Sku.Name,
+                        Tier: database.Sku.Tier,
+                        Capacity: database.Sku.Capacity,
+                        Family: database.Sku.Family,
+                        Size: database.Sku.Size
+                    ) : null,
+                    Status: database.Status?.ToString(),
+                    Collation: database.Collation,
+                    CreationDate: database.CreatedOn,
+                    MaxSizeBytes: database.MaxSizeBytes,
+                    ServiceLevelObjective: database.CurrentServiceObjectiveName,
+                    Edition: database.CurrentSku?.Name,
+                    ElasticPoolName: database.ElasticPoolId?.ToString().Split('/').LastOrDefault(),
+                    EarliestRestoreDate: database.EarliestRestoreOn,
+                    ReadScale: database.ReadScale?.ToString(),
+                    ZoneRedundant: database.IsZoneRedundant
+                ));
+            }
+
+            return databases;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error listing SQL databases. Server: {Server}, ResourceGroup: {ResourceGroup}, Subscription: {Subscription}",
+                serverName, resourceGroup, subscription);
+            throw;
+        }
+    }
+
     public async Task<List<SqlServerEntraAdministrator>> GetEntraAdministratorsAsync(
         string serverName,
         string resourceGroup,

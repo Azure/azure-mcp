@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.KeyVault.Commands;
@@ -22,6 +23,8 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
     public override string Name => "create";
 
     public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
 
     public override string Description =>
         """
@@ -46,7 +49,6 @@ public sealed class SecretCreateCommand(ILogger<SecretCreateCommand> logger) : S
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

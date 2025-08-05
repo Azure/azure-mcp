@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Sockets;
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
 using AzureMcp.Core.Areas.Server.Models;
-using AzureMcp.Tests;
 using ModelContextProtocol.Client;
 using Xunit;
 

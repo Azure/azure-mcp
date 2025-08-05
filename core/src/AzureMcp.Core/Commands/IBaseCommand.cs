@@ -27,6 +27,12 @@ public interface IBaseCommand
     string Title { get; }
 
     /// <summary>
+    /// Gets metadata about an MCP tool describing its behavioral characteristics.
+    /// This metadata helps MCP clients understand how the tool operates and its potential effects.
+    /// </summary>
+    ToolMetadata Metadata { get; }
+
+    /// <summary>
     /// Gets the command definition
     /// </summary>
     Command GetCommand();

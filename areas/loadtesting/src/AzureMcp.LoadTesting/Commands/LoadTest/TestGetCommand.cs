@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.LoadTesting.Models.LoadTest;
 using AzureMcp.LoadTesting.Options.LoadTest;
@@ -21,6 +22,9 @@ public sealed class TestGetCommand(ILogger<TestGetCommand> logger)
         This command retrieves the details of a specific load test configuration, including its parameters and settings. Based on this we can see what all parameters were set for the test configuration.
         """;
     public override string Title => _commandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -34,10 +38,6 @@ public sealed class TestGetCommand(ILogger<TestGetCommand> logger)
         return options;
     }
 
-    [McpServerTool(
-    Destructive = false,
-    ReadOnly = true,
-    Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

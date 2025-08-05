@@ -5,6 +5,7 @@ using AzureMcp.BicepSchema.Commands;
 using AzureMcp.BicepSchema.Options;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
+using AzureMcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -31,6 +32,8 @@ namespace AzureMcp.BicepSchema.Commands
 
         public override string Title => CommandTitle;
 
+        public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
         private static readonly Lazy<IServiceProvider> s_serviceProvider;
 
         static BicepSchemaGetCommand()
@@ -43,7 +46,6 @@ namespace AzureMcp.BicepSchema.Commands
             });
         }
 
-        [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
         public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
         {
             BicepSchemaOptions options = BindOptions(parseResult);
@@ -53,19 +55,24 @@ namespace AzureMcp.BicepSchema.Commands
                 {
                     return Task.FromResult(context.Response);
                 }
-                var bicepSchemaService = context.GetService<IBicepSchemaService>() ?? throw new InvalidOperationException("Bicep schema service is not available.");
-                var resourceTypeDefinitions = bicepSchemaService.GetResourceTypeDefinitions(
-                    s_serviceProvider.Value,
-                    options.ResourceType!);
 
                 TypesDefinitionResult result = SchemaGenerator.GetResourceTypeDefinitions(s_serviceProvider.Value, options.ResourceType!);
                 List<ComplexType> response = SchemaGenerator.GetResponse(result);
 
-                context.Response.Results = response is not null ?
-                    ResponseResult.Create(
+                if (response is not null)
+                {
+                    // Only log the resource type if we are able to get the schema from it.
+                    // There is a slight chance that the LLM hallucinates the resource type
+                    // parameter with value containing data that we shouldn't log.
+                    context.Activity?.SetTag("resourceType", options.ResourceType);
+                    context.Response.Results = ResponseResult.Create(
                         new BicepSchemaGetCommandResult(response),
-                        BicepSchemaJsonContext.Default.BicepSchemaGetCommandResult) :
-                     null;
+                        BicepSchemaJsonContext.Default.BicepSchemaGetCommandResult);
+                }
+                else
+                {
+                    context.Response.Results = null;
+                }
             }
             catch (Exception ex)
             {

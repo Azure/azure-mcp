@@ -33,7 +33,6 @@ public class MarketplaceService(ITenantService tenantService)
     /// <param name="planId">Filter by plan ID.</param>
     /// <param name="skuId">Filter by SKU ID.</param>
     /// <param name="includeServiceInstructionTemplates">Include service instruction templates.</param>
-    /// <param name="partnerTenantId">Partner tenant ID.</param>
     /// <param name="pricingAudience">Pricing audience.</param>
     /// <param name="tenant">Optional. The Azure tenant ID for authentication.</param>
     /// <param name="retryPolicy">Optional. Policy parameters for retrying failed requests.</param>
@@ -50,7 +49,6 @@ public class MarketplaceService(ITenantService tenantService)
         string? planId = null,
         string? skuId = null,
         bool? includeServiceInstructionTemplates = null,
-        string? partnerTenantId = null,
         string? pricingAudience = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
@@ -60,8 +58,7 @@ public class MarketplaceService(ITenantService tenantService)
         string productUrl = BuildProductUrl(subscription, productId, includeStopSoldPlans, language, market,
             lookupOfferInTenantLevel, planId, skuId, includeServiceInstructionTemplates);
 
-        return await GetMarketplaceResponseAsync(productUrl, partnerTenantId,
-            pricingAudience, tenant, retryPolicy);
+        return await GetMarketplaceResponseAsync(productUrl, pricingAudience, tenant, retryPolicy);
     }
 
     private static string BuildProductUrl(
@@ -105,8 +102,7 @@ public class MarketplaceService(ITenantService tenantService)
         return $"{ManagementApiBaseUrl}/subscriptions/{subscription}/providers/Microsoft.Marketplace/products/{productId}?{queryString}";
     }
 
-    private async Task<ProductDetails> GetMarketplaceResponseAsync(string url, string? partnerTenantId,
-        string? pricingAudience, string? tenant, RetryPolicyOptions? retryPolicy = null)
+    private async Task<ProductDetails> GetMarketplaceResponseAsync(string url, string? pricingAudience, string? tenant, RetryPolicyOptions? retryPolicy = null)
     {
         // Use Azure Core pipeline approach consistently
         var clientOptions = AddDefaultPolicies(new MarketplaceClientOptions());
@@ -132,9 +128,6 @@ public class MarketplaceService(ITenantService tenantService)
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
 
         // Add optional headers as specified in the API
-        if (!string.IsNullOrEmpty(partnerTenantId))
-            request.Headers.Add("PartnerTenantId", partnerTenantId);
-
         if (!string.IsNullOrEmpty(pricingAudience))
             request.Headers.Add("PricingAudience", pricingAudience);
 

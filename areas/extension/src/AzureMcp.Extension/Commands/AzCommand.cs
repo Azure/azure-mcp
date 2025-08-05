@@ -46,6 +46,8 @@ Your job is to answer questions about an Azure environment by executing Azure CL
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -157,7 +159,6 @@ Your job is to answer questions about an Azure environment by executing Azure CL
         }
     }
 
-    [McpServerTool(Destructive = true, ReadOnly = false, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

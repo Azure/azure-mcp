@@ -45,7 +45,7 @@ This keeps all code, options, models, and tests for an area together. See `areas
    - Classes are always sealed unless explicitly intended for inheritance
    - Commands inheriting from SubscriptionCommand must handle subscription parameters
    - Service-specific base commands should add service-wide options
-   - Commands are marked with [McpServerTool] attribute to define their characteristics
+   - Commands return `ToolMetadata` property to define their behavioral characteristics
 
 3. **Command Pattern**
    Commands follow the Model-Context-Protocol (MCP) pattern with this naming convention:
@@ -183,6 +183,7 @@ IMPORTANT:
   - **CRITICAL**: Always use `subscription` (never `subscriptionId`) for subscription parameters - this allows the parameter to accept both subscription IDs and subscription names, which are resolved internally by `ISubscriptionService.GetSubscription()`
   - Use `resourceGroup` instead of `resourceGroupName`
   - Use singular nouns for resource names (e.g., `server` not `serverName`)
+  - **Remove unnecessary "-name" suffixes**: Use `--account` instead of `--account-name`, `--container` instead of `--container-name`, etc. Only keep "-name" when it provides necessary disambiguation (e.g., `--subscription-name` to distinguish from global `--subscription`)
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
@@ -210,6 +211,12 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
 
     public override string Title => CommandTitle;
 
+    public override ToolMetadata Metadata => new()
+    {
+        Destructive = false,    // Set to true for commands that modify resources
+        ReadOnly = true         // Set to false for commands that modify resources  
+    };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -223,10 +230,6 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
         return options;
     }
 
-    [McpServerTool(
-        Destructive = false,     // Set to true for commands that modify resources
-        ReadOnly = true,        // Set to false for commands that modify resources
-        Title = CommandTitle)]  // Display name shown in UI
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
@@ -967,6 +970,7 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - List all required options
    - Describe return format
    - Include examples in description
+   - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
 5. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
@@ -1139,6 +1143,7 @@ Before submitting:
 - [ ] RBAC permissions configured for test application in Bicep template
 - [ ] Live tests use deployed resources via `Settings.ResourceBaseName` pattern
 - [ ] Resource outputs defined in Bicep template for `test-resources-post.ps1` script consumption
+- [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
 
 ### Documentation Requirements
 
@@ -1157,6 +1162,10 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+- **IMPORTANT**: Maintain alphabetical sorting in e2eTestPrompts.md:
+  - Service sections must be in alphabetical order by service name
+  - Tool Names within each table must be sorted alphabetically
+  - When adding new tools, insert them in the correct alphabetical position to maintain sort order
 
 **README.md Table Formatting Standards**:
 - Badge text must use the pattern `Install_{namespace}` (e.g., `Install_storage`, `Install_cosmos`)

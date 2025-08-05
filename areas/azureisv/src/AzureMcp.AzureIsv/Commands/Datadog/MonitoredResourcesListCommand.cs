@@ -5,6 +5,7 @@ using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.AzureIsv.Options;
 using AzureMcp.AzureIsv.Options.Datadog;
 using AzureMcp.AzureIsv.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,8 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
 
     public override string Title => _commandTitle;
 
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
@@ -44,7 +47,6 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = _commandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
