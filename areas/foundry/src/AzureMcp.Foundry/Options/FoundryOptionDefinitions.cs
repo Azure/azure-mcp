@@ -9,9 +9,9 @@ public static class FoundryOptionDefinitions
     public const string SearchForFreePlayground = "search-for-free-playground";
     public const string PublisherName = "publisher";
     public const string LicenseName = "license";
-    public const string OptionalModelName = "model";
+    public const string OptionalModelName = "model-name";
     public const string DeploymentName = "deployment";
-    public const string ModelName = "model";
+    public const string ModelName = "model-name";
     public const string ModelFormat = "model-format";
     public const string AzureAiServicesName = "azure-ai-services";
     public const string ModelVersion = "model-version";

@@ -124,7 +124,7 @@ azmcp server start \
 azmcp foundry models deploy --subscription <subscription> \
                             --resource-group <resource-group> \
                             --deployment <deployment> \
-                            --model <model> \
+                            --model-name <model> \
                             --model-format <model-format> \
                             --azure-ai-services <azure-ai-services> \
                             [--model-version <model-version>] \
@@ -141,7 +141,7 @@ azmcp foundry models deployments list --endpoint <endpoint>
 azmcp foundry models list [--search-for-free-playground <search-for-free-playground>] \
                           [--publisher <publisher>] \
                           [--license <license>] \
-                          [--model <model>]
+                          [--model-name <model>]
 ```
 
 ### Azure AI Search Operations
@@ -568,7 +568,7 @@ azmcp monitor workspace log query --subscription <subscription> \
 # Get the health of an entity
 azmcp monitor healthmodels entity gethealth --subscription <subscription> \
                                             --resource-group <resource-group> \
-                                            --model <health-model-name> \
+                                            --health-model <health-model-name> \
                                             --entity <entity-id>
 ```
 

@@ -55,7 +55,7 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
             new()
             {
                 { "deployment", deploymentName },
-                { "model", "gpt-4o" },
+                { "model-name", "gpt-4o" },
                 { "model-format", "OpenAI"},
                 { "azure-ai-services", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName },

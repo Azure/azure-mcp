@@ -21,8 +21,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - **Postgres**: `--user-name` → `--user`
   - **ServiceBus**: `--queue-name` → `--queue`, `--topic-name` → `--topic`
   - **Storage**: `--account-name` → `--account`, `--container-name` → `--container`, `--table-name` → `--table`, `--file-system-name` → `--file-system`, `--tier-name` → `--tier`
-  - **Monitor**: `--table-name` → `--table`, `--model-name` → `--model`, `--resource-name` → `--resource`
-  - **Foundry**: `--deployment-name` → `--deployment`, `--model-name` → `--model`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
+  - **Monitor**: `--table-name` → `--table`, `--model` → `--health-model`, `--resource-name` → `--resource`
+  - **Foundry**: `--deployment-name` → `--deployment`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
 
 ### Bugs Fixed
 

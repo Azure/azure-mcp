@@ -13,7 +13,7 @@ public static class MonitorOptionDefinitions
     public const string HoursName = "hours";
     public const string LimitName = "limit";
     public const string EntityName = "entity";
-    public const string HealthModelName = "model";
+    public const string HealthModelName = "health-model";
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",
@@ -77,7 +77,7 @@ public static class MonitorOptionDefinitions
         public const string SearchStringName = "search-string";
 
         public const string EntityName = "entity";
-        public const string HealthModelName = "model";
+        public const string HealthModelName = "health-model";
         public const string MaxBucketsName = "max-buckets";
 
         // Metrics options
