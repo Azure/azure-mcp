@@ -158,6 +158,7 @@
                 "testrg",
                 "testserver",
                 "testsub",
+                "testfilesystem",
                 "toplevel",
                 "uploadsummary",
                 "vectorizable",
