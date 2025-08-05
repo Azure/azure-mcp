@@ -106,6 +106,8 @@
                 "globaltool",
                 "glsl",
                 "Groq",
+                "HKCU",
+                "HKEY_CURRENT_USER",
                 "hotmail",
                 "Intune",
                 "kcsb",
