@@ -295,7 +295,7 @@ namespace AzureMcp.Storage.LiveTests
                     { "subscription", Settings.SubscriptionId },
                     { "account", Settings.ResourceBaseName },
                     { "queue", "testqueue" },
-                    { "message-content", "Test message from integration test" }
+                    { "message", "Test message from integration test" }
                 });
 
             // Assert

@@ -770,21 +770,21 @@ azmcp storage datalake directory create --subscription <subscription> \
 
 # List paths in a Data Lake file system
 azmcp storage datalake file-system list-paths --subscription <subscription> \
-                                              --account-name <account> \
-                                              --file-system-name <file-system> \
+                                              --account <account> \
+                                              --file-system <file-system> \
                                               [--filter-path <filter-path>] \
                                               [--recursive]
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
-                                        --account-name <account-name> \
+                                        --account <account-name> \
                                         --directory-path <directory-path>
 
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
-                                 --account-name <account-name> \
-                                 --queue-name <queue-name> \
-                                 --message-content "<message-content>" \
+                                 --account <account-name> \
+                                 --queue <queue-name> \
+                                 --message "<message-content>" \
                                  [--time-to-live-in-seconds <seconds>] \
                                  [--visibility-timeout-in-seconds <seconds>]
 

@@ -8,11 +8,11 @@ public static class StorageOptionDefinitions
     public const string AccountName = "account";
     public const string ContainerName = "container";
     public const string TableName = "table";
+    public const string FileSystemName = "file-system";
     public const string QueueName = "queue";
     public const string MessageContent = "message";
     public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
     public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
-    public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier";
     public const string BlobNamesParam = "blob-names";
