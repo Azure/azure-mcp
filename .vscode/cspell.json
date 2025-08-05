@@ -187,6 +187,7 @@
         "azureterraformbestpractices",
         "azuresdk",
         "azuretools",
+        "azurewebsites",
         "codegen",
         "codeium",
         "cslschema",
