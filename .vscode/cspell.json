@@ -198,6 +198,8 @@
         "codesign",
         "CODEOWNERS",
         "containerapps",
+        "CONTENTAZUREFILECONNECTIONSTRING",
+        "CONTENTSHARE",
         "cvzf",
         "dataplane",
         "datalake",
