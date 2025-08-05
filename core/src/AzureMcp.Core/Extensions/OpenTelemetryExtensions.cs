@@ -53,8 +53,7 @@ public static class OpenTelemetryExtensions
         }
         else
         {
-            throw new InvalidOperationException("OS Platform does not match implemented ones. OS: "
-                + RuntimeInformation.OSDescription);
+            services.AddSingleton<IMachineInformationProvider, DefaultMachineInformationProvider>();
         }
 
         EnableAzureMonitor(services);
