@@ -11,7 +11,7 @@
     and optionally runs tests if they exist.
 
 .EXAMPLE
-    .\Build-PromptConfidenceScore.ps1
+    .\Run-ToolDescriptionConfidenceScore.ps1
     Builds the application with default settings
 #>
 
@@ -26,26 +26,37 @@ try {
 
     # Restore dependencies
     Write-Host "Restoring dependencies..." -ForegroundColor Yellow
+
     & dotnet restore
+
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to restore dependencies"
     }
 
     # Build the application
     Write-Host "Building application..." -ForegroundColor Yellow
+
     & dotnet build --configuration Release
+
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build application"
     }
 
     Write-Host "Build completed successfully!" -ForegroundColor Green
-    Write-Host "Run with: dotnet run" -ForegroundColor Cyan
+
+    # Run the application
+    Write-Host "Running with: dotnet run" -ForegroundColor Cyan
+
+    & dotnet run
 
     # Optional: Run tests if they exist
     $testFiles = Get-ChildItem -Path . -Filter "*Test*" -ErrorAction SilentlyContinue
+
     if ($testFiles) {
         Write-Host "Running tests..." -ForegroundColor Yellow
+
         & dotnet test
+
         if ($LASTEXITCODE -ne 0) {
             throw "Tests failed"
         }
@@ -53,5 +64,6 @@ try {
 }
 catch {
     Write-Error "Build failed: $_"
+
     exit 1
 }

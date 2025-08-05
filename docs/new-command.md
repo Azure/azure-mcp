@@ -971,73 +971,74 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Include examples in description
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
-5. **Tool Description Quality Validation**:
-   - Test your command descriptions for quality using the validation tool before submitting:
+5. Tool Description Quality Validation:
+    - Test your command descriptions for quality using the validation tool before submitting:
 
-    - **Single prompt validation** (test one description against one prompt):
+      - **Single prompt validation** (test one description against one prompt):
 
-     ```bash
-     cd eng/tools/PromptConfidenceScore
-     dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
-     ```
+        ```bash
+        cd eng/tools/PromptConfidenceScore
+        dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
+        ```
 
-   - **Multiple prompt validation** (test one description against multiple prompts):
+      - **Multiple prompt validation** (test one description against multiple prompts):
 
-     ```bash
-     dotnet run -- --validate \
-       --tool-description "Lists all storage accounts in a subscription" \
-       --prompt "show me my storage accounts" \
-       --prompt "list storage accounts" \
-       --prompt "what storage do I have"
-     ```
+          ```bash
+          dotnet run -- --validate \
+          --tool-description "Lists all storage accounts in a subscription" \
+          --prompt "show me my storage accounts" \
+          --prompt "list storage accounts" \
+          --prompt "what storage do I have"
+          ```
 
-   - **Custom tools and prompts files** (use your own files for comprehensive testing):
+      - **Custom tools and prompts files** (use your own files for comprehensive testing):
 
-     ```bash
-     # Prompts:
-     # Use markdown format (same as e2eTests/e2eTestPrompts.md):
-     dotnet run -- --prompts-file my-prompts.md
-     
-     # Use JSON format:
-     dotnet run -- --prompts-file my-prompts.json
-     
-     # Tools:
-     # Use JSON format (same as eng/tools/PromptConfidenceScore/tools.json):
-     dotnet run -- --tools-file my-tools.json
+          ```bash
+          # Prompts:
+          # Use markdown format (same as e2eTests/e2eTestPrompts.md):
+          dotnet run -- --prompts-file my-prompts.md
 
-     # Combine both:
-     # Use custom tools and prompts files together:
-     dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
-     ```
+          # Use JSON format:
+          dotnet run -- --prompts-file my-prompts.json
 
-   - **Quality assessment guidelines**:
-     - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)
-     - Test with multiple different prompts that users might use
-     - Consider common synonyms and alternative phrasings in your descriptions
-     - If validation shows POOR results, refine your description and test again
+          # Tools:
+          # Use JSON format (same as eng/tools/PromptConfidenceScore/tools.json):
+          dotnet run -- --tools-file my-tools.json
 
-   - **Custom prompts file formats**:
-     - **Markdown format** (recommended): Use same table format as `e2eTests/e2eTestPrompts.md`:
+          # Combine both:
+          # Use custom tools and prompts files together:
+          dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
+          ```
 
-       ```markdown
-       | Tool Name | Test Prompt |
-       |:----------|:----------|
-       | azmcp-your-command | Your test prompt |
-       | azmcp-your-command | Another test prompt |
-       ```
+    - Quality assessment guidelines:
 
-     - **JSON format**: Tool name as key, array of prompts as value:
+      - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)
+      - Test with multiple different prompts that users might use
+      - Consider common synonyms and alternative phrasings in your descriptions
+      - If validation shows POOR results or a confidence score of < 0.4, refine your description and test again
 
-       ```json
-       {
-         "azmcp-your-command": [
-           "Your test prompt",
-           "Another test prompt"
-         ]
-       }
-       ```
+    - Custom prompts file formats:
+      - **Markdown format**: Use same table format as `e2eTests/e2eTestPrompts.md`:
 
-    - **Custom tools file format**:
+        ```markdown
+        | Tool Name | Test Prompt |
+        |:----------|:----------|
+        | azmcp-your-command | Your test prompt |
+        | azmcp-your-command | Another test prompt |
+        ```
+
+      - **JSON format**: Tool name as key, array of prompts as value:
+
+        ```json
+        {
+            "azmcp-your-command": [
+            "Your test prompt",
+            "Another test prompt"
+            ]
+        }
+        ```
+
+    - Custom tools file format:
       - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/PromptConfidenceScore/tools.json`.
 
 6. Live Test Infrastructure:

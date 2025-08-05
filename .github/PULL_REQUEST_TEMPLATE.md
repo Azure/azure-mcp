@@ -15,10 +15,11 @@
     - [ ] Added comprehensive tests for new/modified functionality
     - [ ] Updated `CHANGELOG.md` for product changes (`features, bug fixes, UI/UX, updated dependencies`)
     - [ ] Spelling check passes: `.\eng\common\spelling\Invoke-Cspell.ps1`
-- [ ] For MCP tool changes, updated:
+- [ ] For MCP tool changes:
     - [ ] Updated `README.md` documentation
     - [ ] Updated command list in `/docs/azmcp-commands.md`
     - [ ] Updated test prompts in `/e2eTests/e2eTestPrompts.md`
+    - [ ] For new or modified tool descriptions, ran the `eng/tools/ToolDescriptionConfidenceScore` tool and obtained a result >= 0.4
 - [ ] 👉 For Community (non-Azure team member) PRs:
     - [ ] **Security review**: Reviewed code for security vulnerabilities, malicious code, or suspicious activities before running tests (`crypto mining, spam, data exfiltration, etc.`)
     - [ ] **Manual tests run**: added comment `/azp run azure - mcp` to run *Live Test Pipeline*

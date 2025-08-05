@@ -23,7 +23,7 @@ param(
 
 Push-Location $RepoRoot
 try {
-    $toolSelectionPath = "eng/tools/PromptConfidenceScore"
+    $toolSelectionPath = "eng/tools/ToolDescriptionConfidenceScore"
     
     if (-not (Test-Path $toolSelectionPath)) {
         Write-Host "⏭️  Tool selection test not found at $toolSelectionPath - skipping"
@@ -37,7 +37,7 @@ try {
         $hasMarkdownPrompts = Test-Path "../../../e2eTests/e2eTestPrompts.md"
         
         # Check if we have fallback test data files
-        $hasToolsData = Test-Path "list-tools.json"
+        $hasToolsData = Test-Path "tools.json"
         $hasPromptsData = Test-Path "prompts.json"
         $hasApiKey = -not [string]::IsNullOrEmpty($env:TEXT_EMBEDDING_API_KEY) -or (Test-Path "api-key.txt")
         $hasEndpoint = -not [string]::IsNullOrEmpty($env:AOAI_ENDPOINT)
