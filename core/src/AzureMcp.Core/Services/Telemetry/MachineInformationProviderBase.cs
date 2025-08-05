@@ -46,7 +46,7 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Windows: Unable to calculate MAC address hash.");
+                _logger.LogError(ex, "Unable to calculate MAC address hash.");
                 return NotAvailable;
             }
         });
