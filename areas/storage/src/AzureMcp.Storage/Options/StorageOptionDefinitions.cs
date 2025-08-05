@@ -12,6 +12,8 @@ public static class StorageOptionDefinitions
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier-name";
     public const string BlobNamesParam = "blob-names";
+    public const string FilterPathName = "filter-path";
+    public const string RecursiveName = "recursive";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -68,5 +70,22 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true,
         AllowMultipleArgumentsPerToken = true
+    };
+
+    public static readonly Option<string> FilterPath = new(
+        $"--{FilterPathName}",
+        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> Recursive = new(
+        $"--{RecursiveName}",
+        () => false,
+        "Flag to indicate whether the command will operate recursively on all subdirectories."
+    )
+    {
+        IsRequired = false
     };
 }

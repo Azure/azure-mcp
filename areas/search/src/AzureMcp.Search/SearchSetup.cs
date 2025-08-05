@@ -20,7 +20,7 @@ public class SearchSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var search = new CommandGroup("search", "Search operations - Commands for managing and listing Azure AI Search services.");
+        var search = new CommandGroup("search", "Search operations - Commands for managing Azure AI Search services and indexes. Includes operations for listing search services, managing search indexes, querying indexed data, and describing index schemas and configurations.");
         rootGroup.AddSubGroup(search);
 
         var service = new CommandGroup("service", "Azure AI Search service operations - Commands for listing and managing search services in your Azure subscription.");
