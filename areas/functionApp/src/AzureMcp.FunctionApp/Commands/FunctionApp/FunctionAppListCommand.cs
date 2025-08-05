@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Extensions.Logging;
 using Azure;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.FunctionApp.Models;
 using AzureMcp.FunctionApp.Options;
 using AzureMcp.FunctionApp.Services;
-using AzureMcp.FunctionApp.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.FunctionApp.Commands.FunctionApp;
 

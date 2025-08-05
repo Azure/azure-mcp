@@ -9,7 +9,7 @@ public class FunctionAppModel
     public string? Name { get; set; }
 
     /// <summary> ID of the Azure subscription containing the function app resource. </summary>
-    public string? SubscriptionId {get; set; }
+    public string? SubscriptionId { get; set; }
 
     /// <summary> Name of the resource group containing the function app resource. </summary>
     public string? ResourceGroupName { get; set; }

@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.FunctionApp.Models;
 using AzureMcp.FunctionApp.Commands.FunctionApp;
+using AzureMcp.FunctionApp.Models;
 
 namespace AzureMcp.FunctionApp.Commands;
 

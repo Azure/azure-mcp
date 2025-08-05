@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.AppService;
+using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
-using AzureMcp.Core.Options;
 using AzureMcp.FunctionApp.Models;
 
 namespace AzureMcp.FunctionApp.Services;

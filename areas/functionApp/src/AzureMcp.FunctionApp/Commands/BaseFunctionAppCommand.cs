@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Logging;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.FunctionApp.Options;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.FunctionApp.Commands;
 
