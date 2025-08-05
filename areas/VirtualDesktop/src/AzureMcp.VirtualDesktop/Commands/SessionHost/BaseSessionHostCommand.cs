@@ -21,9 +21,7 @@ public abstract class BaseSessionHostCommand
     protected override SessionHostUserSessionListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-
         options.SessionHostName = parseResult.GetValueForOption(_sessionHostOption);
-
         return options;
     }
 }
