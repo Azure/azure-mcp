@@ -15,7 +15,7 @@ public class TelemetryServiceTests
 {
     private readonly IOptions<AzureMcpServerConfiguration> _mockOptions;
     private readonly AzureMcpServerConfiguration _configuration;
-    private readonly MachineInformationProviderBase _mockInformationProvider;
+    private readonly IMachineInformationProvider _mockInformationProvider;
 
     public TelemetryServiceTests()
     {
@@ -29,8 +29,9 @@ public class TelemetryServiceTests
         _mockOptions = Substitute.For<IOptions<AzureMcpServerConfiguration>>();
         _mockOptions.Value.Returns(_configuration);
 
-        var logger = Substitute.For<ILogger<MockMachineInformationProvider>>();
-        _mockInformationProvider = new MockMachineInformationProvider(logger);
+        _mockInformationProvider = Substitute.For<IMachineInformationProvider>();
+        _mockInformationProvider.GetMacAddressHash().Returns(Task.FromResult("test-hash"));
+        _mockInformationProvider.GetOrCreateDeviceId().Returns(Task.FromResult<string?>("test-device-id"));
     }
 
     [Fact]
@@ -124,19 +125,6 @@ public class TelemetryServiceTests
         if (activity != null)
         {
             activity.Dispose();
-        }
-    }
-
-    internal class MockMachineInformationProvider : MachineInformationProviderBase
-    {
-        public MockMachineInformationProvider(ILogger<MachineInformationProviderBase> logger)
-            : base(logger)
-        {
-        }
-
-        public override Task<string?> GetOrCreateDeviceId()
-        {
-            throw new NotImplementedException();
         }
     }
 }
