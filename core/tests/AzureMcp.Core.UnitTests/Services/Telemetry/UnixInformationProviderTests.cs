@@ -1,4 +1,7 @@
-﻿using AzureMcp.Core.Services.Telemetry;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
