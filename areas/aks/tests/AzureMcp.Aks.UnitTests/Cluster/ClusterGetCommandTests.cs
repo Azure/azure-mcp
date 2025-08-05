@@ -48,10 +48,10 @@ public class ClusterGetCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub1 --resource-group rg1 --cluster-name cluster1", true)]
-    [InlineData("--subscription sub1 --cluster-name cluster1", false)]  // Missing resource-group
-    [InlineData("--subscription sub1 --resource-group rg1", false)]     // Missing cluster-name
-    [InlineData("--resource-group rg1 --cluster-name cluster1", false)] // Missing subscription
+    [InlineData("--subscription sub1 --resource-group rg1 --cluster cluster1", true)]
+    [InlineData("--subscription sub1 --cluster cluster1", false)]  // Missing resource-group
+    [InlineData("--subscription sub1 --resource-group rg1", false)]     // Missing cluster
+    [InlineData("--resource-group rg1 --cluster cluster1", false)] // Missing subscription
     [InlineData("", false)]                                              // Missing all required options
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -110,7 +110,7 @@ public class ClusterGetCommandTests
         _aksService.GetCluster("test-subscription", "test-cluster", "test-rg", null, Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(expectedCluster);
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster-name", "test-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "test-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -128,7 +128,7 @@ public class ClusterGetCommandTests
         _aksService.GetCluster("test-subscription", "nonexistent-cluster", "test-rg", null, Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns((AzureMcp.Aks.Models.Cluster?)null);
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster-name", "nonexistent-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "nonexistent-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -146,7 +146,7 @@ public class ClusterGetCommandTests
         _aksService.GetCluster(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(Task.FromException<AzureMcp.Aks.Models.Cluster?>(new Exception("Test error")));
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster-name", "test-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "test-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -165,7 +165,7 @@ public class ClusterGetCommandTests
         _aksService.GetCluster(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(Task.FromException<AzureMcp.Aks.Models.Cluster?>(notFoundException));
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster-name", "test-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "test-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -183,7 +183,7 @@ public class ClusterGetCommandTests
         _aksService.GetCluster(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(Task.FromException<AzureMcp.Aks.Models.Cluster?>(forbiddenException));
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster-name", "test-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "test-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
