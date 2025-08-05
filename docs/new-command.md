@@ -73,6 +73,14 @@ This keeps all code, options, models, and tests for an area together. See `areas
    - ✅ Good:`new CommandGroup("entra-admin", "Entra admin operations")`
    - ❌ Bad: `new CommandGroup("entra_admin", "Entra admin operations")`
 
+   **AVOID ANTI-PATTERNS**: When designing commands, avoid mixing resource names with operations in a single command. Instead, use proper command group hierarchy:
+   - ✅ Good: `azmcp postgres server param set` (command groups: server → param, operation: set)
+   - ❌ Bad: `azmcp postgres server setparam` (mixed operation `setparam` at same level as resource operations)
+   - ✅ Good: `azmcp storage container permission set` 
+   - ❌ Bad: `azmcp storage container setpermission`
+
+   This pattern improves discoverability, maintains consistency, and allows for better grouping of related operations.
+
 ### Required Files
 
 A complete command requires:

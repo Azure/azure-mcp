@@ -346,12 +346,12 @@ azmcp postgres server param --subscription <subscription> \
                             --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server setparam --subscription <subscription> \
-                               --resource-group <resource-group> \
-                               --user <user> \
-                               --server <server> \
-                               --param <parameter> \
-                               --value <value>
+azmcp postgres server param set --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter> \
+                                --value <value>
 ```
 
 ### Azure Developer CLI Operations

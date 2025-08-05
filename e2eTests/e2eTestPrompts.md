@@ -88,7 +88,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-postgres-server-list | Show me my PostgreSQL servers |
 | azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
 | azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
-| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server \<server> |
+| azmcp-postgres-server-param-set | Enable replication for my PostgreSQL server \<server> |
 | azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
 | azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
 | azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Postgres.Options.Server;
 
-public class SetParamOptions : BasePostgresOptions
+public class ParamSetOptions : BasePostgresOptions
 {
     [JsonPropertyName(PostgresOptionDefinitions.ParamName)]
     public string? Param { get; set; }

@@ -295,6 +295,7 @@
         "servicebus",
         "sessionhost",
         "setparam",
+        "setpermission",
         "skillset",
         "staticwebapp",
         "syslib",
