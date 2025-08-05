@@ -6,27 +6,26 @@ using Azure.Core;
 using Azure.ResourceManager.MySql.FlexibleServers;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
+using AzureMcp.MySql.Json;
 using MySqlConnector;
 
 namespace AzureMcp.MySql.Services;
 
-public class MySqlService : BaseAzureService, IMySqlService
+public class MySqlService(IResourceGroupService resourceGroupService) : BaseAzureService, IMySqlService
 {
-    private readonly IResourceGroupService _resourceGroupService;
+    private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
     private string? _cachedEntraIdAccessToken;
     private DateTime _tokenExpiryTime;
     private readonly object _tokenLock = new object();
 
-    public MySqlService(IResourceGroupService resourceGroupService)
-    {
-        _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
-    }
-
     private async Task<string> GetEntraIdAccessTokenAsync()
     {
-        if (_cachedEntraIdAccessToken != null && DateTime.UtcNow < _tokenExpiryTime)
+        lock (_tokenLock)
         {
-            return _cachedEntraIdAccessToken;
+            if (_cachedEntraIdAccessToken != null && DateTime.UtcNow < _tokenExpiryTime)
+            {
+                return _cachedEntraIdAccessToken;
+            }
         }
 
         var tokenRequestContext = new TokenRequestContext(new[] { "https://ossrdbms-aad.database.windows.net/.default" });
@@ -34,8 +33,12 @@ public class MySqlService : BaseAzureService, IMySqlService
         var accessToken = await tokenCredential
             .GetTokenAsync(tokenRequestContext, CancellationToken.None)
             .ConfigureAwait(false);
-        _cachedEntraIdAccessToken = accessToken.Token;
-        _tokenExpiryTime = accessToken.ExpiresOn.UtcDateTime.AddSeconds(-60); // Subtract 60 seconds as a buffer.
+
+        lock (_tokenLock)
+        {
+            _cachedEntraIdAccessToken = accessToken.Token;
+            _tokenExpiryTime = accessToken.ExpiresOn.UtcDateTime.AddSeconds(-60); // Subtract 60 seconds as a buffer.
+        }
 
         return _cachedEntraIdAccessToken;
     }
@@ -49,11 +52,16 @@ public class MySqlService : BaseAzureService, IMySqlService
         return server;
     }
 
-    public async Task<List<string>> ListDatabasesAsync(string subscriptionId, string resourceGroup, string user, string server)
+    private async Task<string> BuildConnectionStringAsync(string server, string user, string database)
     {
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
-        var connectionString = $"Server={host};Database=mysql;User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
+        return $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
+    }
+
+    public async Task<List<string>> ListDatabasesAsync(string subscriptionId, string resourceGroup, string user, string server)
+    {
+        var connectionString = await BuildConnectionStringAsync(server, user, "mysql");
 
         await using var resource = await MySqlResource.CreateAsync(connectionString);
         var query = "SHOW DATABASES;";
@@ -74,9 +82,7 @@ public class MySqlService : BaseAzureService, IMySqlService
 
     public async Task<List<string>> ExecuteQueryAsync(string subscriptionId, string resourceGroup, string user, string server, string database, string query)
     {
-        var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
-        var host = NormalizeServerName(server);
-        var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
+        var connectionString = await BuildConnectionStringAsync(server, user, database);
 
         await using var resource = await MySqlResource.CreateAsync(connectionString);
         await using var command = new MySqlCommand(query, resource.Connection);
@@ -102,9 +108,7 @@ public class MySqlService : BaseAzureService, IMySqlService
 
     public async Task<List<string>> GetTableSchemaAsync(string subscriptionId, string resourceGroup, string user, string server, string database, string table)
     {
-        var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
-        var host = NormalizeServerName(server);
-        var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
+        var connectionString = await BuildConnectionStringAsync(server, user, database);
 
         await using var resource = await MySqlResource.CreateAsync(connectionString);
         var query = "SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = @table;";
@@ -136,15 +140,7 @@ public class MySqlService : BaseAzureService, IMySqlService
 
     public async Task<List<string>> GetTablesAsync(string subscriptionId, string resourceGroup, string user, string server, string database)
     {
-        var rg = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroup);
-        if (rg == null)
-        {
-            throw new Exception($"Resource group '{resourceGroup}' not found.");
-        }
-        var mysqlServer = await rg.GetMySqlFlexibleServerAsync(server);
-        var host = mysqlServer.Value.Data.FullyQualifiedDomainName;
-        var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
-        var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
+        var connectionString = await BuildConnectionStringAsync(server, user, database);
 
         await using var resource = await MySqlResource.CreateAsync(connectionString);
         var query = "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();";
@@ -168,14 +164,17 @@ public class MySqlService : BaseAzureService, IMySqlService
         }
         var mysqlServer = await rg.GetMySqlFlexibleServerAsync(server);
         var mysqlServerData = mysqlServer.Value.Data;
-        var result = $"Server Name: {mysqlServerData.Name}\n" +
-                 $"Location: {mysqlServerData.Location}\n" +
-                 $"Version: {mysqlServerData.Version}\n" +
-                 $"SKU: {mysqlServerData.Sku?.Name}\n" +
-                 $"Storage Size (GB): {mysqlServerData.Storage?.StorageSizeInGB}\n" +
-                 $"Backup Retention Days: {mysqlServerData.Backup?.BackupRetentionDays}\n" +
-                 $"Geo-Redundant Backup: {mysqlServerData.Backup?.GeoRedundantBackup}";
-        return result;
+        var config = new ServerConfigResult
+        {
+            ServerName = mysqlServerData.Name,
+            Location = mysqlServerData.Location.ToString(),
+            Version = mysqlServerData.Version?.ToString(),
+            SKU = mysqlServerData.Sku?.Name,
+            StorageSizeGB = mysqlServerData.Storage?.StorageSizeInGB,
+            BackupRetentionDays = mysqlServerData.Backup?.BackupRetentionDays,
+            GeoRedundantBackup = mysqlServerData.Backup?.GeoRedundantBackup?.ToString()
+        };
+        return System.Text.Json.JsonSerializer.Serialize(config, MySqlJsonContext.Default.ServerConfigResult);
     }
 
     public async Task<string> GetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param)
@@ -237,5 +236,16 @@ public class MySqlService : BaseAzureService, IMySqlService
         {
             Connection = connection;
         }
+    }
+
+    public class ServerConfigResult
+    {
+        public string? ServerName { get; set; }
+        public string? Location { get; set; }
+        public string? Version { get; set; }
+        public string? SKU { get; set; }
+        public int? StorageSizeGB { get; set; }
+        public int? BackupRetentionDays { get; set; }
+        public string? GeoRedundantBackup { get; set; }
     }
 }

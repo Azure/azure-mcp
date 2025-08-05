@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.MySql.Commands.Database;
 using AzureMcp.MySql.Commands.Server;
 using AzureMcp.MySql.Commands.Table;
+using AzureMcp.MySql.Services;
 
 namespace AzureMcp.MySql.Json;
 
@@ -16,6 +17,7 @@ namespace AzureMcp.MySql.Json;
 [JsonSerializable(typeof(ServerListCommand.ServerListCommandResult))]
 [JsonSerializable(typeof(TableSchemaCommand.TableSchemaCommandResult))]
 [JsonSerializable(typeof(TableListCommand.TableListCommandResult))]
+[JsonSerializable(typeof(MySqlService.ServerConfigResult))]
 
 internal sealed partial class MySqlJsonContext : JsonSerializerContext
 {
