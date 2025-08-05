@@ -27,7 +27,7 @@ public sealed class ResourceLogQueryCommandTests
 
     private const string _knownSubscription = "knownSubscription";
     private const string _knownResourceId = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/storage1";
-    private const string _knownTableName = "StorageEvents";
+    private const string _knownTable = "StorageEvents";
     private const string _knownQuery = "| limit 10";
     private const string _knownTenant = "knownTenant";
     private const string _knownHours = "24";
@@ -48,9 +48,9 @@ public sealed class ResourceLogQueryCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery}", true)]
-    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table-name {_knownTableName} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
-    [InlineData($"--subscription {_knownSubscription} --table-name {_knownTableName} --query {_knownQuery}", false)] // missing resource-id
+    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table {_knownTable} --query {_knownQuery}", true)]
+    [InlineData($"--subscription {_knownSubscription} --resource-id {_knownResourceId} --table {_knownTable} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
+    [InlineData($"--subscription {_knownSubscription} --table {_knownTable} --query {_knownQuery}", false)] // missing resource-id
     [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
@@ -67,7 +67,7 @@ public sealed class ResourceLogQueryCommandTests
                 _knownSubscription,
                 _knownResourceId,
                 _knownQuery,
-                _knownTableName,
+                _knownTable,
                 Arg.Any<int?>(),
                 Arg.Any<int?>(),
                 Arg.Any<string>(),
@@ -105,7 +105,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(),
             Arg.Any<int?>(),
             Arg.Any<string>(),
@@ -115,7 +115,7 @@ public sealed class ResourceLogQueryCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--resource-id", _knownResourceId,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
@@ -131,7 +131,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(),
             Arg.Any<int?>(),
             Arg.Any<string>(),
@@ -147,7 +147,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
             _knownTenant,
@@ -157,7 +157,7 @@ public sealed class ResourceLogQueryCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--resource-id", _knownResourceId,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery,
             "--hours", _knownHours,
             "--limit", _knownLimit,
@@ -173,7 +173,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
             _knownTenant,
@@ -189,7 +189,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(),
             Arg.Any<int?>(),
             Arg.Any<string>(),
@@ -199,7 +199,7 @@ public sealed class ResourceLogQueryCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--resource-id", _knownResourceId,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
@@ -212,7 +212,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(), // Default hours
             Arg.Any<int?>(), // Default limit
             Arg.Any<string>(),
@@ -227,7 +227,7 @@ public sealed class ResourceLogQueryCommandTests
             _knownSubscription,
             _knownResourceId,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(),
             Arg.Any<int?>(),
             Arg.Any<string>(),
@@ -237,7 +237,7 @@ public sealed class ResourceLogQueryCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--resource-id", _knownResourceId,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
@@ -272,7 +272,7 @@ public sealed class ResourceLogQueryCommandTests
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
             "--resource-id", complexResourceId,
-            "--table-name", table,
+            "--table", table,
             "--query", query
         ]);
 

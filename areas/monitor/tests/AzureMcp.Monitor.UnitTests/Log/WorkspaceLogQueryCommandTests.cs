@@ -28,7 +28,7 @@ public sealed class WorkspaceLogQueryCommandTests
     private const string _knownSubscription = "knownSubscription";
     private const string _knownWorkspace = "knownWorkspace";
     private const string _knownResourceGroup = "knownResourceGroup";
-    private const string _knownTableName = "knownTableName";
+    private const string _knownTable = "knownTable";
     private const string _knownTenant = "knownTenant";
     private const string _knownHours = "24";
     private const string _knownLimit = "100";
@@ -49,9 +49,9 @@ public sealed class WorkspaceLogQueryCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --table-name {_knownTableName} --query {_knownQuery}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --table-name {_knownTableName} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --table-name {_knownTableName} --query {_knownQuery}", false)] // missing resource-group
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --table {_knownTable} --query {_knownQuery}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --table {_knownTable} --query {_knownQuery} --hours {_knownHours} --limit {_knownLimit}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --table {_knownTable} --query {_knownQuery}", false)] // missing resource-group
     [InlineData($"--subscription {_knownSubscription}", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
@@ -117,7 +117,7 @@ public sealed class WorkspaceLogQueryCommandTests
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroup,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
@@ -149,7 +149,7 @@ public sealed class WorkspaceLogQueryCommandTests
             _knownSubscription,
             _knownWorkspace,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
             _knownTenant,
@@ -160,7 +160,7 @@ public sealed class WorkspaceLogQueryCommandTests
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroup,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery,
             "--hours", _knownHours,
             "--limit", _knownLimit,
@@ -176,7 +176,7 @@ public sealed class WorkspaceLogQueryCommandTests
             _knownSubscription,
             _knownWorkspace,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             int.Parse(_knownHours),
             int.Parse(_knownLimit),
             _knownTenant,
@@ -203,7 +203,7 @@ public sealed class WorkspaceLogQueryCommandTests
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroup,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
@@ -216,7 +216,7 @@ public sealed class WorkspaceLogQueryCommandTests
             _knownSubscription,
             _knownWorkspace,
             _knownQuery,
-            _knownTableName,
+            _knownTable,
             Arg.Any<int?>(), // Default hours
             Arg.Any<int?>(), // Default limit
             Arg.Any<string>(),
@@ -242,7 +242,7 @@ public sealed class WorkspaceLogQueryCommandTests
             "--subscription", _knownSubscription,
             "--workspace", _knownWorkspace,
             "--resource-group", _knownResourceGroup,
-            "--table-name", _knownTableName,
+            "--table", _knownTable,
             "--query", _knownQuery
         ]);
 
