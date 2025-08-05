@@ -292,8 +292,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
-                    { "share-name", "testshare" },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
                     { "directory-path", "/" }
                 });
 
@@ -310,8 +310,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
-                    { "share-name", "testshare" },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
                     { "directory-path", "/" },
                     { "prefix", "NoSuchPrefix" }
                 });
