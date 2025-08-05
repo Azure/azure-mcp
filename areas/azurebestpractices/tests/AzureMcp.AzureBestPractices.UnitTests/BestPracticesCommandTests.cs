@@ -168,27 +168,49 @@ public class BestPracticesCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_GeneralWithAllAction_ReturnsBadRequest()
+    public async Task ExecuteAsync_GeneralWithAllAction_ReturnsAzureBestPractices()
     {
         var args = _parser.Parse(["--resource", "general", "--action", "all"]);
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(400, response.Status);
-        Assert.Contains("The 'general' or 'azurefunctions' resource doesn't support 'all' action", response.Message);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<string[]>(json);
+
+        Assert.NotNull(result);
+        // Should contain content from both code-generation and deployment files
+        Assert.Contains("Implement retry logic with exponential backoff for transient failures", result[0]);
+        Assert.Contains("Managed Identity (Azure-hosted)", result[0]);
+        Assert.Contains("Your IaC files must include:", result[0]);
+        Assert.Contains("Quality requirements for IaC files:", result[0]);
     }
 
     [Fact]
-    public async Task ExecuteAsync_AzureFunctionsWithAllAction_ReturnsBadRequest()
+    public async Task ExecuteAsync_AzureFunctionsWithAllAction_ReturnsAzureBestPractices()
     {
         var args = _parser.Parse(["--resource", "azurefunctions", "--action", "all"]);
         var response = await _command.ExecuteAsync(_context, args);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(400, response.Status);
-        Assert.Contains("The 'general' or 'azurefunctions' resource doesn't support 'all' action", response.Message);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<string[]>(json);
+
+        Assert.NotNull(result);
+        // Should contain content from both code-generation and deployment files
+        Assert.Contains("Use the latest programming models (v4 for JavaScript, v2 for Python)", result[0]);
+        Assert.Contains("Azure Functions Core Tools for creating Function Apps", result[0]);
+        Assert.Contains("flex consumption plan", result[0]);
+        Assert.Contains("Always use Linux OS for Python", result[0]);
+        Assert.Contains("Function authentication", result[0]);
+        Assert.Contains("Application Insights", result[0]);
     }
 
     [Fact]

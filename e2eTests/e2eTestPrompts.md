@@ -159,8 +159,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
 | azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure Functions best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
 
 ## Azure MCP Tools
