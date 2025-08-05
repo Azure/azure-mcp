@@ -22,7 +22,7 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
         """
         List paths in a Data Lake file system. This command retrieves and displays paths (files and directories)
         available in the specified Data Lake file system within the storage account. Results include path names, 
-        types (file or directory), and metadata, returned as a JSON array. Requires account-name and file-system-name.
+        types (file or directory), and metadata, returned as a JSON array. Requires account and file-system.
         Optional filter-path can be used to filter results and recursive to include all subdirectories.
         """;
 

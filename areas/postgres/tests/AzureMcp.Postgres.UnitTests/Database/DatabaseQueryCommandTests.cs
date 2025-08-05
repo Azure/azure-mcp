@@ -46,7 +46,7 @@ public class DatabaseQueryCommandTests
             .Returns(expectedResults);
 
         var command = new DatabaseQueryCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server1", "--database", "db123", "--query", "SELECT * FROM test;"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1", "--database", "db123", "--query", "SELECT * FROM test;"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -70,7 +70,7 @@ public class DatabaseQueryCommandTests
 
         var command = new DatabaseQueryCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server1", "--database", "db123", "--query", "SELECT * FROM test;"]);
+        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1", "--database", "db123", "--query", "SELECT * FROM test;"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -82,7 +82,7 @@ public class DatabaseQueryCommandTests
     [Theory]
     [InlineData("--subscription")]
     [InlineData("--resource-group")]
-    [InlineData("--user-name")]
+    [InlineData("--user")]
     [InlineData("--server")]
     [InlineData("--database")]
     [InlineData("--query")]
@@ -93,7 +93,7 @@ public class DatabaseQueryCommandTests
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
             missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
-            missingParameter == "--user-name" ? "" : "--user-name", "user1",
+            missingParameter == "--user" ? "" : "--user", "user1",
             missingParameter == "--server" ? "" : "--server", "server123",
             missingParameter == "--database" ? "" : "--database", "db123",
             missingParameter == "--query" ? "" : "--query", "SELECT * FROM test;"

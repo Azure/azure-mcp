@@ -45,7 +45,7 @@ public class KeyValueLockCommandTests
         // Arrange
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key"
         ]);
 
@@ -78,7 +78,7 @@ public class KeyValueLockCommandTests
         // Arrange
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--label", "prod"
         ]);
@@ -122,7 +122,7 @@ public class KeyValueLockCommandTests
 
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key"
         ]);
 
@@ -137,7 +137,7 @@ public class KeyValueLockCommandTests
     [Theory]
     [InlineData("")]
     [InlineData("--subscription sub123")]
-    [InlineData("--subscription sub123 --account-name account1")]
+    [InlineData("--subscription sub123 --account account1")]
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(string args)
     {
         // Arrange

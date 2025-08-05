@@ -45,7 +45,7 @@ public class KeyValueSetCommandTests
         // Arrange
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--value", "my-value"
         ]);
@@ -83,7 +83,7 @@ public class KeyValueSetCommandTests
         // Arrange
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--value", "my-value",
             "--label", "prod"
@@ -123,7 +123,7 @@ public class KeyValueSetCommandTests
         // Arrange
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--value", "my-value",
             "--content-type", "application/json",
@@ -179,7 +179,7 @@ public class KeyValueSetCommandTests
 
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--value", "my-value"
         ]);
@@ -195,8 +195,8 @@ public class KeyValueSetCommandTests
     [Theory]
     [InlineData("")]
     [InlineData("--subscription sub123")]
-    [InlineData("--subscription sub123 --account-name account1")]
-    [InlineData("--subscription sub123 --account-name account1 --key my-key")]
+    [InlineData("--subscription sub123 --account account1")]
+    [InlineData("--subscription sub123 --account account1 --key my-key")]
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(string args)
     {
         // Arrange

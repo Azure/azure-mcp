@@ -66,7 +66,7 @@ public class MetricsDefinitionsCommandTests
         Assert.Contains("List available metric definitions", description);
         Assert.Contains("Required options:", description);
         Assert.Contains("Optional options:", description);
-        Assert.Contains("resource-name", description);
+        Assert.Contains("resource", description);
         Assert.Contains("metric-namespace", description);
         Assert.Contains("search-string", description);
         Assert.Contains("limit", description);
@@ -82,7 +82,7 @@ public class MetricsDefinitionsCommandTests
 
         Assert.Contains("subscription", optionNames);
         Assert.Contains("resource-type", optionNames);
-        Assert.Contains("resource-name", optionNames);
+        Assert.Contains("resource", optionNames);
         Assert.Contains("metric-namespace", optionNames);
         Assert.Contains("search-string", optionNames);
         Assert.Contains("limit", optionNames);
@@ -96,9 +96,9 @@ public class MetricsDefinitionsCommandTests
     #region Validation Tests
 
     [Theory]
-    [InlineData("--resource-name test --subscription sub1", true)]
+    [InlineData("--resource test --subscription sub1", true)]
     [InlineData("--subscription sub1", false)]
-    [InlineData("--resource-name test", false)]
+    [InlineData("--resource test", false)]
     [InlineData("", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -182,7 +182,7 @@ public class MetricsDefinitionsCommandTests
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(
-            "--resource-name test --subscription sub1 --resource-type Microsoft.Storage/storageAccounts --metric-namespace Microsoft.Storage/storageAccounts --tenant tenant1");
+            "--resource test --subscription sub1 --resource-type Microsoft.Storage/storageAccounts --metric-namespace Microsoft.Storage/storageAccounts --tenant tenant1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -227,7 +227,7 @@ public class MetricsDefinitionsCommandTests
             });
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1 --search-string cpu");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1 --search-string cpu");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -276,7 +276,7 @@ public class MetricsDefinitionsCommandTests
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(
-            "--resource-name test --subscription sub1 --resource-type Microsoft.Storage/storageAccounts --metric-namespace Microsoft.Storage/storageAccounts --search-string memory --tenant tenant1 --limit 20");
+            "--resource test --subscription sub1 --resource-type Microsoft.Storage/storageAccounts --metric-namespace Microsoft.Storage/storageAccounts --search-string memory --tenant tenant1 --limit 20");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -316,7 +316,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(Task.FromException<List<MetricDefinition>>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -344,7 +344,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(Task.FromException<List<MetricDefinition>>(exception));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1 --resource-group rg1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1 --resource-group rg1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -403,7 +403,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(metricDefinitions);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -430,7 +430,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(new List<MetricDefinition>());
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -456,7 +456,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(Task.FromResult<List<MetricDefinition>>(null!));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -488,7 +488,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(metricDefinitions);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -521,7 +521,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(metricDefinitions);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1 --limit 5");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1 --limit 5");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -554,7 +554,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(metricDefinitions);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1 --limit 8");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1 --limit 8");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -587,7 +587,7 @@ public class MetricsDefinitionsCommandTests
             .Returns(metricDefinitions);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--resource-name test --subscription sub1 --limit 10");
+        var parseResult = _command.GetCommand().Parse("--resource test --subscription sub1 --limit 10");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -633,7 +633,7 @@ public class MetricsDefinitionsCommandTests
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(
-            "--subscription test-subscription --resource-type Microsoft.Compute/virtualMachines --resource-name test-vm --metric-namespace Microsoft.Compute/virtualMachines --search-string performance --tenant test-tenant --limit 25");
+            "--subscription test-subscription --resource-type Microsoft.Compute/virtualMachines --resource test-vm --metric-namespace Microsoft.Compute/virtualMachines --search-string performance --tenant test-tenant --limit 25");
 
         // Act
         var response = await _command.ExecuteAsync(context, parseResult);

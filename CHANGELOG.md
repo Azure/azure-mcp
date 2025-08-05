@@ -12,6 +12,18 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Breaking Changes
 
+- **Parameter Name Changes**: Removed unnecessary "-name" suffixes from command parameters across 25+ parameters in 12+ Azure service areas to improve consistency and usability. Users will need to update their command-line usage and scripts. [[#853](https://github.com/Azure/azure-mcp/pull/853)]
+  - **AppConfig**: `--account-name` → `--account`
+  - **Search**: `--service-name` → `--service`, `--index-name` → `--index`
+  - **Cosmos**: `--account-name` → `--account`, `--database-name` → `--database`, `--container-name` → `--container`
+  - **Kusto**: `--cluster-name` → `--cluster`, `--database-name` → `--database`, `--table-name` → `--table`
+  - **AKS**: `--cluster-name` → `--cluster`
+  - **Postgres**: `--user-name` → `--user`
+  - **ServiceBus**: `--queue-name` → `--queue`, `--topic-name` → `--topic`
+  - **Storage**: `--account-name` → `--account`, `--container-name` → `--container`, `--table-name` → `--table`, `--file-system-name` → `--file-system`, `--tier-name` → `--tier`
+  - **Monitor**: `--table-name` → `--table`, `--model` → `--health-model`, `--resource-name` → `--resource`
+  - **Foundry**: `--deployment-name` → `--deployment`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
+
 ### Bugs Fixed
 
 ### Other Changes

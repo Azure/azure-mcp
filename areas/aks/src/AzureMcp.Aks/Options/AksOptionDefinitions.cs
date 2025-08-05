@@ -5,7 +5,7 @@ namespace AzureMcp.Aks.Options;
 
 public static class AksOptionDefinitions
 {
-    public const string ClusterName = "cluster-name";
+    public const string ClusterName = "cluster";
 
     public static readonly Option<string> Cluster = new(
         $"--{ClusterName}",
