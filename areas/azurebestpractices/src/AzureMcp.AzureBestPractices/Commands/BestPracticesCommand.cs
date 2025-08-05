@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using System.Text;
 using AzureMcp.AzureBestPractices.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Helpers;
@@ -119,6 +120,11 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
     private string GetBestPracticesText(string resourceFileName)
     {
+        if (string.IsNullOrEmpty(resourceFileName))
+        {
+            throw new ArgumentException("Resource file name cannot be null or empty.", nameof(resourceFileName));
+        }
+
         if (!s_bestPracticesCache.TryGetValue(resourceFileName, out string? bestPractices))
         {
             bestPractices = LoadBestPracticesText(resourceFileName);
@@ -135,16 +141,26 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         if (resourceFileName.Contains(','))
         {
             var fileNames = resourceFileName.Split(',');
-            var combinedContent = new List<string>();
+            var combinedContent = new StringBuilder();
 
             foreach (var fileName in fileNames)
             {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+                }
+
                 string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, fileName.Trim());
                 string content = EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
-                combinedContent.Add(content);
+                
+                if (combinedContent.Length > 0)
+                {
+                    combinedContent.Append("\n\n");
+                }
+                combinedContent.Append(content);
             }
 
-            return string.Join("\n\n", combinedContent);
+            return combinedContent.ToString();
         }
         else
         {
