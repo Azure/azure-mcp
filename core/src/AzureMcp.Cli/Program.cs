@@ -85,7 +85,6 @@ internal class Program
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
-            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
         };
@@ -98,6 +97,7 @@ internal class Program
             new AzureMcp.Monitor.MonitorSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Search.SearchSetup(),
+            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
         ]);
 #endif
 

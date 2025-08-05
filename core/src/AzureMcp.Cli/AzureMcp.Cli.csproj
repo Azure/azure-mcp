@@ -69,12 +69,13 @@
     <ProjectReference Include="..\..\..\areas\workbooks\src\AzureMcp.Workbooks\AzureMcp.Workbooks.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(BuildNative)' != 'true'">
-    <!-- Projects with Non-AOT compatible dependencies -->
+    <!-- Projects with Non-(native)AOT compatible dependencies -->
     <ProjectReference Include="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
     <ProjectReference Include="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
     <ProjectReference Include="..\..\..\areas\monitor\src\AzureMcp.Monitor\AzureMcp.Monitor.csproj" />
     <ProjectReference Include="..\..\..\areas\postgres\src\AzureMcp.Postgres\AzureMcp.Postgres.csproj" />
     <ProjectReference Include="..\..\..\areas\search\src\AzureMcp.Search\AzureMcp.Search.csproj" />
+    <ProjectReference Include="..\..\..\areas\virtualdesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj" />
     <!-- We need a package reference for Cosmos so we have a path to the native assets for exclusion later -->
     <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" />
   </ItemGroup>
