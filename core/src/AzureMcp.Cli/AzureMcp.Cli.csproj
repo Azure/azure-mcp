@@ -20,11 +20,12 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
-  <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
   </PropertyGroup>
 
   <!-- AOT native build flags -->
-  <PropertyGroup Condition="'$(PublishAotModule)' == 'true'">
+  <PropertyGroup Condition="'$(BuildNative)' == 'true'">
+    <IsAotCompatible>true</IsAotCompatible>
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
@@ -67,7 +68,7 @@
     <ProjectReference Include="..\..\..\areas\storage\src\AzureMcp.Storage\AzureMcp.Storage.csproj" />
     <ProjectReference Include="..\..\..\areas\workbooks\src\AzureMcp.Workbooks\AzureMcp.Workbooks.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(PublishAotModule)' != 'true'">
+  <ItemGroup Condition="'$(BuildNative)' != 'true'">
     <!-- Projects with Non-AOT compatible dependencies -->
     <ProjectReference Include="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
     <ProjectReference Include="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
@@ -85,7 +86,7 @@
   </ItemGroup>
 
   <!-- Remove Cosmos native files from the build output directory if Microsoft.Azure.Cosmos was included) -->
-  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(PublishAotModule)' != 'true'">
+  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(BuildNative)' != 'true'">
     <ItemGroup>
       <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::new('%(FullPath)').Contains('$(PkgMicrosoft_Azure_Cosmos)'))" />
     </ItemGroup>

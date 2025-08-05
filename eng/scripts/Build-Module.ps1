@@ -9,7 +9,7 @@ param(
     [switch] $ReadyToRun,
     [switch] $Trimmed,
     [switch] $DebugBuild,
-    [switch] $PublishAotModule,
+    [switch] $BuildNative,
     [Parameter(Mandatory=$true, ParameterSetName='Named')]
     [ValidateSet('windows','linux','macOS')]
     [string] $OperatingSystem,
@@ -77,7 +77,7 @@ try {
     $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
 
-    if($SelfContained -or $PublishAotModule) {
+    if($SelfContained -or $BuildNative) {
         $command += " --self-contained"
     }
 
@@ -89,8 +89,8 @@ try {
         $command += " /p:PublishTrimmed=true"
     }
 
-    if($PublishAotModule) {
-        $command += " /p:PublishAotModule=true"
+    if($BuildNative) {
+        $command += " /p:BuildNative=true"
     }
 
     Invoke-LoggedCommand $command -GroupOutput

@@ -9,7 +9,7 @@ param(
     [switch] $AllPlatforms,
     [switch] $VerifyNpx,
     [switch] $DebugBuild,
-    [switch] $PublishAotModule
+    [switch] $BuildNative
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -31,7 +31,7 @@ function Build($os, $arch) {
         -Trimmed:$Trimmed `
         -OutputPath $packagesPath `
         -DebugBuild:$DebugBuild `
-        -PublishAotModule:$PublishAotModule
+        -BuildNative:$BuildNative
 }
 
 Remove-Item -Path $packagesPath -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
