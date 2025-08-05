@@ -28,26 +28,6 @@
   - **Storage**: `--account-name` → `--account`, `--container-name` → `--container`, `--table-name` → `--table`, `--file-system-name` → `--file-system`, `--tier-name` → `--tier`
   - **Monitor**: `--table-name` → `--table`, `--model` → `--health-model`, `--resource-name` → `--resource`
   - **Foundry**: `--deployment-name` → `--deployment`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
-- **Dependency updates**: Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support. AOT will enable shipping Azure MCP Server as self-contained native executable.
-  - Azure.Core: `1.46.2` → `1.47.1`
-  - Azure.ResourceManager: `1.13.1` → `1.13.2`
-  - Azure.ResourceManager.ApplicationInsights: `1.0.1` → `1.1.0-beta.1`
-  - Azure.ResourceManager.AppConfiguration: `1.4.0` → `1.4.1`
-  - Azure.ResourceManager.Authorization: `1.1.4` → `1.1.5`
-  - Azure.ResourceManager.ContainerService: `1.2.3` → `1.2.5`
-  - Azure.ResourceManager.Kusto: `1.6.0` → `1.6.1`
-  - Azure.ResourceManager.CognitiveServices: `1.4.0` → `1.5.1`
-  - Azure.ResourceManager.Redis: `1.5.0` → `1.5.1`
-  - Azure.ResourceManager.RedisEnterprise: `1.1.0` → `1.2.1`
-  - Azure.ResourceManager.LoadTesting: `1.1.1` → `1.1.2`
-  - Azure.ResourceManager.Sql: `1.3.0` → `1.4.0-beta.3`
-  - Azure.ResourceManager.Datadog: `1.0.0-beta.5` → `1.0.0-beta.6`
-  - Azure.ResourceManager.CosmosDB: `1.3.2` → `1.4.0-beta.13`
-  - Azure.ResourceManager.OperationalInsights: `1.3.0` → `1.3.1`
-  - Azure.ResourceManager.Search: `1.2.3` → `1.3.0`
-  - Azure.ResourceManager.Storage: `1.4.2` → `1.4.4`
-  - Azure.ResourceManager.Grafana: `1.1.1` → `1.2.0-beta.2`
-  - Azure.ResourceManager.ResourceGraph: `1.1.0-beta.3` → `1.1.0-beta.4`
 
 ### Fixed
 
