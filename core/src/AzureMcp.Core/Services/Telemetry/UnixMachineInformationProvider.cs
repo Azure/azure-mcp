@@ -66,11 +66,7 @@ internal abstract class UnixMachineInformationProvider(ILogger<UnixMachineInform
 
         try
         {
-            // Create the directory if it doesn't exist.
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            Directory.CreateDirectory(directoryPath);
         }
         catch (Exception ex)
         {
