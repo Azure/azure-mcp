@@ -135,7 +135,7 @@ public class KeyValueDeleteCommandTests
 
     [Theory]
     [InlineData("--account", "account1", "--key", "my-key")] // Missing subscription
-    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name
+    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account
     [InlineData("--subscription", "sub123", "--account", "account1")] // Missing key
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {

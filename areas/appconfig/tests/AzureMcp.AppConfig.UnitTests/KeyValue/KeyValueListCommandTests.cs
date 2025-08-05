@@ -181,7 +181,7 @@ public class KeyValueListCommandTests
 
     [Theory]
     [InlineData("--account", "account1")] // Missing subscription
-    [InlineData("--subscription", "sub123")] // Missing account-name
+    [InlineData("--subscription", "sub123")] // Missing account
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {
         // Arrange

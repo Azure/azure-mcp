@@ -28,7 +28,7 @@ public sealed class QueueDetailsCommand(ILogger<QueueDetailsCommand> logger) : S
 
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - queue-name: Queue name to get details and runtime information for.
+        - queue: Queue name to get details and runtime information for.
         """;
 
     public override string Title => CommandTitle;

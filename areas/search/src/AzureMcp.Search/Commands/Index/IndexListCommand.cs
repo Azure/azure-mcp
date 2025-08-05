@@ -22,7 +22,7 @@ public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalC
         List all indexes in an Azure AI Search service.
 
         Required arguments:
-        - service-name
+        - service
         """;
 
     public override string Title => CommandTitle;
