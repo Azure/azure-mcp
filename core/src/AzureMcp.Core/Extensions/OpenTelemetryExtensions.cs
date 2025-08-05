@@ -1,11 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using AzureMcp.Core.Configuration;
-using AzureMcp.Core.Helpers;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +38,24 @@ public static class OpenTelemetryExtensions
             });
 
         services.AddSingleton<ITelemetryService, TelemetryService>();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.AddSingleton<IMachineInformationProvider, WindowsInformationProvider>();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            services.AddSingleton<IMachineInformationProvider, MacOsInformationProvider>();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            services.AddSingleton<IMachineInformationProvider, LinuxMachineInformationProvider>();
+        }
+        else
+        {
+            throw new InvalidOperationException("OS Platform does not match implemented ones. OS: "
+                + RuntimeInformation.OSDescription);
+        }
 
         EnableAzureMonitor(services);
     }
