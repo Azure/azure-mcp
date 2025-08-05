@@ -6,7 +6,7 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.MySql.Commands.Database;
+using AzureMcp.MySql.Commands.Server;
 using AzureMcp.MySql.Services;
 using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,18 +15,18 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.MySql.UnitTests.Database;
+namespace AzureMcp.MySql.UnitTests.Server;
 
-public class DatabaseListCommandTests
+public class ServerConfigCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMySqlService _mysqlService;
-    private readonly ILogger<DatabaseListCommand> _logger;
+    private readonly ILogger<ServerConfigCommand> _logger;
 
-    public DatabaseListCommandTests()
+    public ServerConfigCommandTests()
     {
         _mysqlService = Substitute.For<IMySqlService>();
-        _logger = Substitute.For<ILogger<DatabaseListCommand>>();
+        _logger = Substitute.For<ILogger<ServerConfigCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_mysqlService);
@@ -35,17 +35,27 @@ public class DatabaseListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsDatabases_WhenSuccessful()
+    public async Task ExecuteAsync_ReturnsConfiguration_WhenSuccessful()
     {
-        var expectedDatabases = new List<string> { "db1", "db2", "db3" };
-        _mysqlService.ListDatabasesAsync("sub123", "rg1", "user1", "server1").Returns(expectedDatabases);
+        var expectedConfig = JsonSerializer.Serialize(new
+        {
+            ServerName = "test-server",
+            Location = "East US",
+            Version = "8.0.21",
+            SKU = "Standard_B1ms",
+            StorageSizeGB = 20,
+            BackupRetentionDays = 7,
+            GeoRedundantBackup = "Disabled"
+        }, new JsonSerializerOptions { WriteIndented = true });
 
-        var command = new DatabaseListCommand(_logger);
+        _mysqlService.GetServerConfigAsync("sub123", "rg1", "user1", "test-server").Returns(expectedConfig);
+
+        var command = new ServerConfigCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--user", "user1",
-            "--server", "server1"
+            "--username", "user1",
+            "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -57,44 +67,23 @@ public class DatabaseListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<DatabaseListResult>(json);
+        var result = JsonSerializer.Deserialize<ServerConfigResult>(json);
         Assert.NotNull(result);
-        Assert.Equal(expectedDatabases, result.Databases);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ReturnsMessage_WhenNoDatabasesExist()
-    {
-        _mysqlService.ListDatabasesAsync("sub123", "rg1", "user1", "server1").Returns([]);
-
-        var command = new DatabaseListCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", "sub123",
-            "--resource-group", "rg1",
-            "--user", "user1",
-            "--server", "server1"
-        ]);
-        var context = new CommandContext(_serviceProvider);
-
-        var response = await command.ExecuteAsync(context, args);
-
-        Assert.NotNull(response);
-        Assert.Equal(200, response.Status);
-        Assert.Null(response.Results);
+        Assert.Equal(expectedConfig, result.Configuration);
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsError_WhenServiceThrows()
     {
-        _mysqlService.ListDatabasesAsync("sub123", "rg1", "user1", "server1")
+        _mysqlService.GetServerConfigAsync("sub123", "rg1", "user1", "test-server")
             .ThrowsAsync(new UnauthorizedAccessException("Access denied"));
 
-        var command = new DatabaseListCommand(_logger);
+        var command = new ServerConfigCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--user", "user1",
-            "--server", "server1"
+            "--username", "user1",
+            "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -108,18 +97,18 @@ public class DatabaseListCommandTests
     [Fact]
     public void Metadata_IsConfiguredCorrectly()
     {
-        var command = new DatabaseListCommand(_logger);
+        var command = new ServerConfigCommand(_logger);
         
-        Assert.Equal("list", command.Name);
-        Assert.Equal("Lists all databases in the MySQL server.", command.Description);
-        Assert.Equal("List MySQL Databases", command.Title);
+        Assert.Equal("config", command.Name);
+        Assert.Equal("Gets the configuration of a MySQL server.", command.Description);
+        Assert.Equal("Get MySQL Server Configuration", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);
     }
 
-    private class DatabaseListResult
+    private class ServerConfigResult
     {
-        [JsonPropertyName("Databases")]
-        public List<string> Databases { get; set; } = new List<string>();
+        [JsonPropertyName("Configuration")]
+        public string Configuration { get; set; } = string.Empty;
     }
 }

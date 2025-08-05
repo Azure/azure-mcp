@@ -7,7 +7,7 @@ namespace AzureMcp.MySql.Options;
 
 public static class MySqlOptionDefinitions
 {
-    public const string UserName = "user-name";
+    public const string UserName = "user";
     public const string ServerName = "server";
     public const string DatabaseName = "database";
     public const string TableName = "table";

@@ -17,16 +17,16 @@ using Xunit;
 
 namespace AzureMcp.MySql.UnitTests.Server;
 
-public class ServerListCommandTests
+public class ServerParamCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMySqlService _mysqlService;
-    private readonly ILogger<ServerListCommand> _logger;
+    private readonly ILogger<ServerParamCommand> _logger;
 
-    public ServerListCommandTests()
+    public ServerParamCommandTests()
     {
         _mysqlService = Substitute.For<IMySqlService>();
-        _logger = Substitute.For<ILogger<ServerListCommand>>();
+        _logger = Substitute.For<ILogger<ServerParamCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_mysqlService);
@@ -35,16 +35,18 @@ public class ServerListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsServers_WhenSuccessful()
+    public async Task ExecuteAsync_ReturnsParameter_WhenSuccessful()
     {
-        var expectedServers = new List<string> { "mysql-server-1", "mysql-server-2", "mysql-server-3" };
-        _mysqlService.ListServersAsync("sub123", "rg1", "user1").Returns(expectedServers);
+        var expectedValue = "ON";
+        _mysqlService.GetServerParameterAsync("sub123", "rg1", "user1", "test-server", "max_connections").Returns(expectedValue);
 
-        var command = new ServerListCommand(_logger);
+        var command = new ServerParamCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--user", "user1"
+            "--username", "user1",
+            "--server", "test-server",
+            "--param", "max_connections"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -56,22 +58,25 @@ public class ServerListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<ServerListResult>(json);
+        var result = JsonSerializer.Deserialize<ServerParamResult>(json);
         Assert.NotNull(result);
-        Assert.Equal(expectedServers, result.Servers);
+        Assert.Equal("max_connections", result.Parameter);
+        Assert.Equal(expectedValue, result.Value);
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsError_WhenServiceThrows()
     {
-        _mysqlService.ListServersAsync("sub123", "rg1", "user1")
-            .ThrowsAsync(new UnauthorizedAccessException("Access denied"));
+        _mysqlService.GetServerParameterAsync("sub123", "rg1", "user1", "test-server", "invalid_param")
+            .ThrowsAsync(new Exception("Parameter 'invalid_param' not found."));
 
-        var command = new ServerListCommand(_logger);
+        var command = new ServerParamCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
-            "--user", "user1"
+            "--username", "user1",
+            "--server", "test-server",
+            "--param", "invalid_param"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -79,24 +84,27 @@ public class ServerListCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
-        Assert.Contains("Access denied", response.Message);
+        Assert.Contains("Parameter 'invalid_param' not found", response.Message);
     }
 
     [Fact]
     public void Metadata_IsConfiguredCorrectly()
     {
-        var command = new ServerListCommand(_logger);
+        var command = new ServerParamCommand(_logger);
         
-        Assert.Equal("list", command.Name);
-        Assert.Equal("Lists all MySQL servers in the resource group.", command.Description);
-        Assert.Equal("List MySQL Servers", command.Title);
+        Assert.Equal("param", command.Name);
+        Assert.Equal("Gets a specific parameter of a MySQL server.", command.Description);
+        Assert.Equal("Get MySQL Server Parameter", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);
     }
 
-    private class ServerListResult
+    private class ServerParamResult
     {
-        [JsonPropertyName("Servers")]
-        public List<string> Servers { get; set; } = new List<string>();
+        [JsonPropertyName("Parameter")]
+        public string Parameter { get; set; } = string.Empty;
+
+        [JsonPropertyName("Value")]
+        public string Value { get; set; } = string.Empty;
     }
 }

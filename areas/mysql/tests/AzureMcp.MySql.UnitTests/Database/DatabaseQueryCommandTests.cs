@@ -44,7 +44,7 @@ public class DatabaseQueryCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123", 
             "--resource-group", "rg1", 
-            "--user-name", "user1", 
+            "--user", "user1", 
             "--server", "server1", 
             "--database", "db1", 
             "--query", "SELECT * FROM users"
@@ -72,7 +72,7 @@ public class DatabaseQueryCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", "sub123", 
             "--resource-group", "rg1", 
-            "--user-name", "user1", 
+            "--user", "user1", 
             "--server", "server1", 
             "--database", "db1", 
             "--query", "INVALID SQL"

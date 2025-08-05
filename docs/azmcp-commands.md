@@ -362,13 +362,13 @@ azmcp postgres server setparam --subscription <subscription> \
 # List all databases in a MySQL server
 azmcp mysql database list --subscription <subscription> \
                           --resource-group <resource-group> \
-                          --user-name <user> \
+                          --user <user> \
                           --server <server>
 
 # Execute a query on a MySQL database
 azmcp mysql database query --subscription <subscription> \
                            --resource-group <resource-group> \
-                           --user-name <user> \
+                           --user <user> \
                            --server <server> \
                            --database <database> \
                            --query <query>
@@ -380,14 +380,14 @@ azmcp mysql database query --subscription <subscription> \
 # List all tables in a MySQL database
 azmcp mysql table list --subscription <subscription> \
                        --resource-group <resource-group> \
-                       --user-name <user> \
+                       --user <user> \
                        --server <server> \
                        --database <database>
 
 # Get the schema of a specific table in a MySQL database
 azmcp mysql table schema --subscription <subscription> \
                          --resource-group <resource-group> \
-                         --user-name <user> \
+                         --user <user> \
                          --server <server> \
                          --database <database> \
                          --table <table>
@@ -399,25 +399,25 @@ azmcp mysql table schema --subscription <subscription> \
 # Retrieve the configuration of a MySQL server
 azmcp mysql server config --subscription <subscription> \
                           --resource-group <resource-group> \
-                          --user-name <user> \
+                          --user <user> \
                           --server <server>
 
 # List all MySQL servers in a subscription & resource group
 azmcp mysql server list --subscription <subscription> \
                         --resource-group <resource-group> \
-                        --user-name <user>
+                        --user <user>
 
 # Retrieve a specific parameter of a MySQL server
 azmcp mysql server param --subscription <subscription> \
                          --resource-group <resource-group> \
-                         --user-name <user> \
+                         --user <user> \
                          --server <server> \
                          --param <parameter>
 
 # Set a specific parameter of a MySQL server to a specific value
 azmcp mysql server setparam --subscription <subscription> \
                             --resource-group <resource-group> \
-                            --user-name <user> \
+                            --user <user> \
                             --server <server> \
                             --param <parameter> \
                             --value <value>
