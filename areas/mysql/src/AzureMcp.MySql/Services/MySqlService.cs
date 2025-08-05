@@ -74,11 +74,6 @@ public class MySqlService : BaseAzureService, IMySqlService
 
     public async Task<List<string>> ExecuteQueryAsync(string subscriptionId, string resourceGroup, string user, string server, string database, string query)
     {
-        // Only allow SELECT statements for safety
-        if (string.IsNullOrWhiteSpace(query) || !query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException("Only SELECT statements are allowed.", nameof(query));
-        }
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var host = NormalizeServerName(server);
         var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
