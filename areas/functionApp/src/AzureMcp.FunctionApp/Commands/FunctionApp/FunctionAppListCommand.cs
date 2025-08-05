@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure;
-using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.FunctionApp.Models;
 using AzureMcp.FunctionApp.Options;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace AzureMcp.FunctionApp.Commands.FunctionApp;
 
 public sealed class FunctionAppListCommand(ILogger<FunctionAppListCommand> logger)
-    : SubscriptionCommand<FunctionAppListOptions>()
+    : BaseFunctionAppCommand<FunctionAppListOptions>()
 {
     private const string CommandTitle = "List Azure Function Apps";
     private readonly ILogger<FunctionAppListCommand> _logger = logger;
@@ -27,7 +27,8 @@ public sealed class FunctionAppListCommand(ILogger<FunctionAppListCommand> logge
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
