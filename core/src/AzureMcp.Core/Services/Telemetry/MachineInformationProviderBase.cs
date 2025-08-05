@@ -64,7 +64,7 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
             .FirstOrDefault(x => !string.IsNullOrEmpty(x));
     }
 
-   /// <summary>
+    /// <summary>
     /// Generates a new device identifier.  Conditions that have to be met are:
     /// <list type="bullet">
     /// <item>Randomly generated UUID/GUID</item>
@@ -74,7 +74,6 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
     /// </summary>
     /// <returns>The generated device identifier.</returns>
     protected string GenerateDeviceId() => Guid.NewGuid().ToString("D").ToLowerInvariant();
-
     /// <summary>
     /// Generates a SHA-256 of the given value.
     /// </summary>
