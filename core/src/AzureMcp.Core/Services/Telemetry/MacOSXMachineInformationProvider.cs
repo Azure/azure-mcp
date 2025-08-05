@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 namespace AzureMcp.Core.Services.Telemetry;
 
 [SupportedOSPlatform("osx")]
-internal class MacOsInformationProvider(ILogger<MacOsInformationProvider> logger)
-    : UnixInformationProvider(logger)
+internal class MacOSXMachineInformationProvider(ILogger<MacOSXMachineInformationProvider> logger)
+    : UnixMachineInformationProvider(logger)
 {
     /// <summary>
     /// Retrieves the storage path for application data on macOS.

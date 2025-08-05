@@ -6,10 +6,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Core.Services.Telemetry;
 
-internal abstract class UnixInformationProvider(ILogger<UnixInformationProvider> logger)
+internal abstract class UnixMachineInformationProvider(ILogger<UnixMachineInformationProvider> logger)
     : MachineInformationProviderBase(logger)
 {
-    private readonly ILogger<UnixInformationProvider> _logger = logger;
+    private readonly ILogger<UnixMachineInformationProvider> _logger = logger;
 
     /// <summary>
     /// Gets the root folder to cache information to.

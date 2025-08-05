@@ -12,12 +12,12 @@ public class UnixInformationProviderTests
     private static readonly DirectoryInfo ExpectedCacheDirectory = new DirectoryInfo(Path.Join(TestStorageDirectory.ToString(), "Microsoft", "DeveloperTools"));
     private static readonly string ExpectedCachePath = ExpectedCacheDirectory.ToString();
 
-    private readonly ILogger<UnixInformationProvider> _logger;
+    private readonly ILogger<UnixMachineInformationProvider> _logger;
     private readonly TestUnixInformationProvider _provider;
 
     public UnixInformationProviderTests()
     {
-        _logger = Substitute.For<ILogger<UnixInformationProvider>>();
+        _logger = Substitute.For<ILogger<UnixMachineInformationProvider>>();
         _provider = new TestUnixInformationProvider(_logger, TestStorageDirectory.ToString());
     }
 
@@ -144,7 +144,7 @@ public class UnixInformationProviderTests
     }
 
     private class NoOpUnixInformationProvider(string? readStorageResult, bool writeValueResult)
-        : UnixInformationProvider(new NoOpLogger())
+        : UnixMachineInformationProvider(new NoOpLogger())
     {
         private readonly string? _readStorageResult = readStorageResult;
         private readonly bool _writeValueResult = writeValueResult;
@@ -175,9 +175,9 @@ public class UnixInformationProviderTests
         }
     }
 
-    private class TestUnixInformationProvider(ILogger<UnixInformationProvider> logger,
+    private class TestUnixInformationProvider(ILogger<UnixMachineInformationProvider> logger,
         string? storagePath, bool throwOnGetStoragePath = false, string? deviceId = null)
-        : UnixInformationProvider(logger)
+        : UnixMachineInformationProvider(logger)
     {
         private readonly string? _storagePath = storagePath;
         private readonly string? _deviceId = deviceId;

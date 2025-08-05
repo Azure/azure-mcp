@@ -8,7 +8,7 @@ namespace AzureMcp.Core.Services.Telemetry;
 
 [SupportedOSPlatform("linux")]
 
-internal class LinuxMachineInformationProvider : UnixInformationProvider
+internal class LinuxMachineInformationProvider : UnixMachineInformationProvider
 {
     private const string PrimaryPathEnvVar = "XDG_CACHE_HOME";
     private const string SecondaryPathEnvVar = "HOME";

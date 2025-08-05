@@ -1,11 +1,14 @@
-﻿using System.Runtime.Versioning;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Runtime.Versioning;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace AzureMcp.Core.Services.Telemetry;
 
 [SupportedOSPlatform("windows")]
-internal class WindowsInformationProvider(ILogger<WindowsInformationProvider> logger)
+internal class WindowsMachineInformationProvider(ILogger<WindowsMachineInformationProvider> logger)
     : MachineInformationProviderBase(logger)
 {
     // Construct the parts necessary to cache the ids in the registry.
@@ -13,7 +16,7 @@ internal class WindowsInformationProvider(ILogger<WindowsInformationProvider> lo
     private const RegistryHive Hive = RegistryHive.CurrentUser;
     private const string RegistryPathRoot = $"SOFTWARE\\{MicrosoftDirectory}\\{DeveloperToolsDirectory}";
 
-    private readonly ILogger<WindowsInformationProvider> _logger = logger;
+    private readonly ILogger<WindowsMachineInformationProvider> _logger = logger;
 
     public override Task<string?> GetOrCreateDeviceId()
     {

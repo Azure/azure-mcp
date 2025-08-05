@@ -41,11 +41,11 @@ public static class OpenTelemetryExtensions
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            services.AddSingleton<IMachineInformationProvider, WindowsInformationProvider>();
+            services.AddSingleton<IMachineInformationProvider, WindowsMachineInformationProvider>();
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            services.AddSingleton<IMachineInformationProvider, MacOsInformationProvider>();
+            services.AddSingleton<IMachineInformationProvider, MacOSXMachineInformationProvider>();
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
