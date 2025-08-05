@@ -54,7 +54,7 @@ public class TableListCommandTests
                 .Returns(expectedTables);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);
@@ -82,7 +82,7 @@ public class TableListCommandTests
             .Returns([]);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);
@@ -106,7 +106,7 @@ public class TableListCommandTests
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _command.GetCommand().Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);

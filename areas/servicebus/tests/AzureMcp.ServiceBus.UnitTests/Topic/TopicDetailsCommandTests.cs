@@ -69,7 +69,7 @@ public class TopicDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).Returns(expectedDetails);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic-name", TopicName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic", TopicName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -104,7 +104,7 @@ public class TopicDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(serviceBusException);
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic-name", TopicName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic", TopicName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -127,7 +127,7 @@ public class TopicDetailsCommandTests
             Arg.Any<RetryPolicyOptions>()
         ).ThrowsAsync(new Exception(expectedError));
 
-        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic-name", TopicName]);
+        var args = _parser.Parse(["--subscription", SubscriptionId, "--namespace", NamespaceName, "--topic", TopicName]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -139,10 +139,10 @@ public class TopicDetailsCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --topic-name testTopic", true)]
-    [InlineData("--namespace test.servicebus.windows.net --topic-name testTopic", false)]  // Missing subscription
-    [InlineData("--subscription sub123 --topic-name testTopic", false)]   // Missing namespace
-    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net", false)] // Missing topic-name
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net --topic testTopic", true)]
+    [InlineData("--namespace test.servicebus.windows.net --topic testTopic", false)]  // Missing subscription
+    [InlineData("--subscription sub123 --topic testTopic", false)]   // Missing namespace
+    [InlineData("--subscription sub123 --namespace test.servicebus.windows.net", false)] // Missing topic
     [InlineData("", false)]  // Missing all required options
     public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
     {

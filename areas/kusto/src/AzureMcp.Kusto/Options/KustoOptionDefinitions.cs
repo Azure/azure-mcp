@@ -5,10 +5,10 @@ namespace AzureMcp.Kusto.Options;
 
 public static class KustoOptionDefinitions
 {
-    public const string ClusterName = "cluster-name";
+    public const string ClusterName = "cluster";
     public const string ClusterUriName = "cluster-uri";
-    public const string DatabaseName = "database-name";
-    public const string TableName = "table-name";
+    public const string DatabaseName = "database";
+    public const string TableName = "table";
     public const string LimitName = "limit";
     public const string QueryText = "query";
 

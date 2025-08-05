@@ -58,7 +58,7 @@ public class KeyValueListCommandTests
           Arg.Any<RetryPolicyOptions>())
           .Returns(expectedSettings);
 
-        var args = _parser.Parse(["--subscription", "sub123", "--account-name", "account1"]);
+        var args = _parser.Parse(["--subscription", "sub123", "--account", "account1"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -96,7 +96,7 @@ public class KeyValueListCommandTests
           Arg.Any<RetryPolicyOptions>())
           .Returns(expectedSettings);
 
-        var args = _parser.Parse(["--subscription", "sub123", "--account-name", "account1", "--key", "key1"]);
+        var args = _parser.Parse(["--subscription", "sub123", "--account", "account1", "--key", "key1"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -135,7 +135,7 @@ public class KeyValueListCommandTests
           Arg.Any<RetryPolicyOptions>())
           .Returns(expectedSettings);
 
-        var args = _parser.Parse(["--subscription", "sub123", "--account-name", "account1", "--label", "prod"]);
+        var args = _parser.Parse(["--subscription", "sub123", "--account", "account1", "--label", "prod"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -169,7 +169,7 @@ public class KeyValueListCommandTests
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Service error"));
 
-        var args = _parser.Parse(["--subscription", "sub123", "--account-name", "account1"]);
+        var args = _parser.Parse(["--subscription", "sub123", "--account", "account1"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -180,8 +180,8 @@ public class KeyValueListCommandTests
     }
 
     [Theory]
-    [InlineData("--account-name", "account1")] // Missing subscription
-    [InlineData("--subscription", "sub123")] // Missing account-name
+    [InlineData("--account", "account1")] // Missing subscription
+    [InlineData("--subscription", "sub123")] // Missing account
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {
         // Arrange
