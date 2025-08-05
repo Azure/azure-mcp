@@ -15,7 +15,7 @@ internal abstract class UnixInformationProvider(ILogger<UnixInformationProvider>
     /// Gets the root folder to cache information to.
     /// </summary>
     /// <exception cref="InvalidOperationException">If there is no folder to persist data in.</exception>
-    protected abstract string GetStoragePath();
+    public abstract string GetStoragePath();
 
     public override async Task<string?> GetOrCreateDeviceId()
     {
@@ -56,7 +56,7 @@ internal abstract class UnixInformationProvider(ILogger<UnixInformationProvider>
     /// <param name="value">The value to write in the file.</param>
     /// <returns>True, if the value was successfully written.</returns>
     /// 
-    protected async Task<bool> WriteValueToDisk(string directoryPath, string fileName, string? value)
+    public async virtual Task<bool> WriteValueToDisk(string directoryPath, string fileName, string? value)
     {
         // If the value is not set, return immediately.
         if (string.IsNullOrWhiteSpace(value))
@@ -98,7 +98,7 @@ internal abstract class UnixInformationProvider(ILogger<UnixInformationProvider>
     /// Try and read the value from disk. If <paramref name="value"/> is null or empty, this method will return false.
     /// </summary>
     /// <returns>Returns a value if the value could be written on disk. Otherwise, false.</returns>
-    protected async Task<string?> ReadValueFromDisk(string directoryPath, string fileName)
+    public async virtual Task<string?> ReadValueFromDisk(string directoryPath, string fileName)
     {
         var path = Path.Combine(directoryPath, fileName);
 

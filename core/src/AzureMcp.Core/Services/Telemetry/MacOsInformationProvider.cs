@@ -22,7 +22,7 @@ internal class MacOsInformationProvider(ILogger<MacOsInformationProvider> logger
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown if the user's profile directory and the "HOME"
     /// environment variable are both unavailable or invalid.</exception>
-    protected override string GetStoragePath()
+    public override string GetStoragePath()
     {
         var userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 

@@ -26,7 +26,7 @@ internal class LinuxMachineInformationProvider : UnixInformationProvider
     /// Gets the base folder for the cache to be stored.
     /// The final path should be $HOME\.cache\Microsoft\DeveloperTools.
     /// </summary>
-    protected override string GetStoragePath()
+    public override string GetStoragePath()
     {
         var userDir = Environment.GetEnvironmentVariable(PrimaryPathEnvVar);
 
