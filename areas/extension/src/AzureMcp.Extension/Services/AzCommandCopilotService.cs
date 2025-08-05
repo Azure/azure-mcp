@@ -37,7 +37,7 @@ public sealed class AzCommandCopilotService : IAzCommandCopilotService
         };
         var credential = new CustomChainedCredential();
         var token = await credential.GetTokenAsync(
-            new Azure.Core.TokenRequestContext(["https://management.core.windows.net/.default"]),
+            new Azure.Core.TokenRequestContext(["todo_define_scope"]),
             cancellationToken
         );
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUri);
