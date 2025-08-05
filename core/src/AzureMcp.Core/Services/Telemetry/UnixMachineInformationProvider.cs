@@ -114,7 +114,7 @@ internal abstract class UnixMachineInformationProvider(ILogger<UnixMachineInform
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to write read value from {FullPath}", path);
+            _logger.LogError(ex, "Unable to read value from {FullPath}", path);
             return null;
         }
     }

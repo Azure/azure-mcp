@@ -17,7 +17,7 @@ internal class TelemetryService : ITelemetryService
     private readonly bool _isEnabled;
     private readonly List<KeyValuePair<string, object?>> _tagsList;
     private readonly IMachineInformationProvider _informationProvider;
-    private TaskCompletionSource _isInitialized = new TaskCompletionSource();
+    private readonly TaskCompletionSource _isInitialized = new TaskCompletionSource();
 
     internal ActivitySource Parent { get; }
 

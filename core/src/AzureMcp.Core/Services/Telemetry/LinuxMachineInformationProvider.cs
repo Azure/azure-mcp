@@ -8,19 +8,11 @@ namespace AzureMcp.Core.Services.Telemetry;
 
 [SupportedOSPlatform("linux")]
 
-internal class LinuxMachineInformationProvider : UnixMachineInformationProvider
+internal class LinuxMachineInformationProvider(ILogger<LinuxMachineInformationProvider> logger) : UnixMachineInformationProvider(logger)
 {
     private const string PrimaryPathEnvVar = "XDG_CACHE_HOME";
     private const string SecondaryPathEnvVar = "HOME";
     private const string SecondaryPathSubDirectory = ".cache";
-
-    private readonly ILogger<LinuxMachineInformationProvider> _logger;
-
-    public LinuxMachineInformationProvider(ILogger<LinuxMachineInformationProvider> logger)
-        : base(logger)
-    {
-        _logger = logger;
-    }
 
     /// <summary>
     /// Gets the base folder for the cache to be stored.
