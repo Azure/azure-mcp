@@ -1,0 +1,36 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
+using AzureMcp.Core.Commands;
+using AzureMcp.MySql.Options;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.MySql.Commands;
+
+public abstract class BaseDatabaseCommand<
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BaseMySqlCommand<TOptions>> logger)
+    : BaseServerCommand<TOptions>(logger) where TOptions : BaseMySqlOptions, new()
+{
+    private readonly Option<string> _databaseOption = MySqlOptionDefinitions.Database;
+
+    public override string Name => "database";
+
+    public override string Description =>
+        "Retrieves information about a MySQL database.";
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_databaseOption);
+    }
+
+    protected override TOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.Database = parseResult.GetValueForOption(_databaseOption);
+        return options;
+    }
+}
