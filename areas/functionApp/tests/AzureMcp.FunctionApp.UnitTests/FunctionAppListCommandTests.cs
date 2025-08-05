@@ -87,8 +87,8 @@ public sealed class FunctionAppListCommandTests
         // Arrange
         var expectedFunctionApps = new List<FunctionAppModel>
         {
-            new() { Name = "functionApp1", SubscriptionId = "sub123", Location = "eastus", AppServicePlanName = "plan1", Status = "Running", DefaultHostName = "functionapp1.azurewebsites.net" },
-            new() { Name = "functionApp2", SubscriptionId = "sub123", Location = "westus", AppServicePlanName = "plan2", Status = "Stopped", DefaultHostName = "functionapp2.azurewebsites.net" }
+            new() { Name = "functionApp1", SubscriptionId = "sub123", ResourceGroupName = "rg1", Location = "eastus", AppServicePlanName = "plan1", Status = "Running", DefaultHostName = "functionapp1.azurewebsites.net" },
+            new() { Name = "functionApp2", SubscriptionId = "sub123", ResourceGroupName = "rg2", Location = "westus", AppServicePlanName = "plan2", Status = "Stopped", DefaultHostName = "functionapp2.azurewebsites.net" }
         };
         _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedFunctionApps);
@@ -114,6 +114,7 @@ public sealed class FunctionAppListCommandTests
         Assert.Equal(expectedFunctionApps.Count, result.Results.Count);
         Assert.Equal(expectedFunctionApps[0].Name, result.Results[0].Name);
         Assert.Equal(expectedFunctionApps[0].SubscriptionId, result.Results[0].SubscriptionId);
+        Assert.Equal(expectedFunctionApps[0].ResourceGroupName, result.Results[0].ResourceGroupName);
         Assert.Equal(expectedFunctionApps[0].AppServicePlanName, result.Results[0].AppServicePlanName);
         Assert.Equal(expectedFunctionApps[0].Location, result.Results[0].Location);
         Assert.Equal(expectedFunctionApps[0].Status, result.Results[0].Status);
