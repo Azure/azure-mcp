@@ -12,7 +12,7 @@ internal class WindowsMachineInformationProvider(ILogger<WindowsMachineInformati
     : MachineInformationProviderBase(logger)
 {
     // Construct the parts necessary to cache the ids in the registry.
-    // The final path is HKCU/SOFTWARE/Microsoft/DeveloperTools
+    // The final path is HKEY_CURRENT_USER/SOFTWARE/Microsoft/DeveloperTools
     private const RegistryHive Hive = RegistryHive.CurrentUser;
     private const string RegistryPathRoot = $"SOFTWARE\\{MicrosoftDirectory}\\{DeveloperToolsDirectory}";
 

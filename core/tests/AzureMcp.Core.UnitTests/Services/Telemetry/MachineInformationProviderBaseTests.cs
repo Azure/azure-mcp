@@ -81,7 +81,7 @@ public class MachineInformationProviderBaseTests
         // Should be lowercase
         Assert.Equal(result.ToLowerInvariant(), result);
 
-        // Should be parseable as a GUID
+        // Should be parsable as a GUID
         Assert.True(Guid.TryParse(result, out _));
     }
 

@@ -74,6 +74,7 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
     /// </summary>
     /// <returns>The generated device identifier.</returns>
     protected string GenerateDeviceId() => Guid.NewGuid().ToString("D").ToLowerInvariant();
+
     /// <summary>
     /// Generates a SHA-256 of the given value.
     /// </summary>
