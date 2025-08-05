@@ -8,14 +8,16 @@ public static class StorageOptionDefinitions
     public const string AccountName = "account-name";
     public const string ContainerName = "container-name";
     public const string TableName = "table-name";
-    public const string QueueName = "queue-name";
-    public const string MessageContent = "message-content";
+    public const string QueueName = "queue";
+    public const string MessageContent = "message";
     public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
     public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier-name";
     public const string BlobNamesParam = "blob-names";
+    public const string FilterPathName = "filter-path";
+    public const string RecursiveName = "recursive";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -74,6 +76,23 @@ public static class StorageOptionDefinitions
         AllowMultipleArgumentsPerToken = true
     };
 
+    public static readonly Option<string> FilterPath = new(
+        $"--{FilterPathName}",
+        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> Recursive = new(
+        $"--{RecursiveName}",
+        () => false,
+        "Flag to indicate whether the command will operate recursively on all subdirectories."
+    )
+    {
+        IsRequired = false
+    };
+
     public static readonly Option<string> Queue = new(
         $"--{QueueName}",
         "The name of the queue to access within the storage account."
@@ -92,17 +111,16 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<int?> TimeToLiveInSecondsOption = new(
         $"--{TimeToLiveInSeconds}",
-        "The time-to-live for the message in seconds. If not specified, the message will use the queue's default TTL. Set to -1 for messages that never expire."
-    )
+        "The time-to-live for the message in seconds. If not specified, the message will use the queue's default TTL. Set to -1 for messages that never expire.")
     {
         IsRequired = false
     };
 
     public static readonly Option<int?> VisibilityTimeoutInSecondsOption = new(
         $"--{VisibilityTimeoutInSeconds}",
-        "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible)."
-    )
+        "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible).")
     {
         IsRequired = false
     };
+    
 }

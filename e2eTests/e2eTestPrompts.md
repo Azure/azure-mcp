@@ -292,6 +292,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
 | azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
 | azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
 | azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
