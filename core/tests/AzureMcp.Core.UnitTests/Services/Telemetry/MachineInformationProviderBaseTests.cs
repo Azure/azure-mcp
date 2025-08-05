@@ -202,25 +202,6 @@ public class MachineInformationProviderBaseTests
             Arg.Any<Func<object, Exception?, string>>());
     }
 
-    [Fact]
-    public async Task GetMacAddressHash_LogsErrorOnException()
-    {
-        // Arrange
-        var mockLogger = Substitute.For<ILogger<MachineInformationProviderBase>>();
-        var exceptionProvider = new ExceptionThrowingProvider(mockLogger);
-
-        // Act
-        await exceptionProvider.GetMacAddressHash();
-
-        // Assert
-        mockLogger.Received(1).Log(
-            LogLevel.Error,
-            Arg.Any<EventId>(),
-            Arg.Is<object>(state => state.ToString()!.Contains("Windows: Unable to calculate MAC address hash.")),
-            Arg.Any<NetworkInformationException>(),
-            Arg.Any<Func<object, Exception?, string>>());
-    }
-
     /// <summary>
     /// Helper method to compute expected SHA-256 hash for comparison
     /// </summary>

@@ -7,22 +7,25 @@ namespace AzureMcp.Core.UnitTests.Services.Telemetry;
 
 public class UnixInformationProviderTests
 {
+    private static readonly DirectoryInfo TestStorageDirectory = new DirectoryInfo(Path.DirectorySeparatorChar + Path.Join("test", "storage"));
+    private static readonly string TestStoragePath = TestStorageDirectory.ToString();
+    private static readonly DirectoryInfo ExpectedCacheDirectory = new DirectoryInfo(Path.Join(TestStorageDirectory.ToString(), "Microsoft", "DeveloperTools"));
+    private static readonly string ExpectedCachePath = ExpectedCacheDirectory.ToString();
+
     private readonly ILogger<UnixInformationProvider> _logger;
     private readonly TestUnixInformationProvider _provider;
-    private const string TestStoragePath = "/test/storage";
-    private const string ExpectedCachePath = "/test/storage/Microsoft/DeveloperTools";
 
     public UnixInformationProviderTests()
     {
         _logger = Substitute.For<ILogger<UnixInformationProvider>>();
-        _provider = new TestUnixInformationProvider(_logger, TestStoragePath);
+        _provider = new TestUnixInformationProvider(_logger, TestStorageDirectory.ToString());
     }
 
     [Fact]
     public async Task GetOrCreateDeviceId_WhenStoragePathThrows_ReturnsNull()
     {
         // Arrange
-        var provider = new TestUnixInformationProvider(_logger, throwOnGetStoragePath: true);
+        var provider = new TestUnixInformationProvider(_logger, storagePath: TestStorageDirectory.ToString(), throwOnGetStoragePath: true);
 
         // Act
         var result = await provider.GetOrCreateDeviceId();
@@ -37,47 +40,46 @@ public class UnixInformationProviderTests
         // Arrange
         const string existingDeviceId = "existing-device-id";
 
-        // Mock the file system to return an existing device ID
-        var provider = Substitute.ForPartsOf<TestUnixInformationProvider>(_logger, TestStoragePath, false);
-        provider.ReadValueFromDisk(ExpectedCachePath, Arg.Any<string>())
-               .Returns(existingDeviceId);
+        var provider = new NoOpUnixInformationProvider(existingDeviceId, true);
 
         // Act
         var result = await provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.Equal(existingDeviceId, result);
-        await provider.Received(1).ReadValueFromDisk(ExpectedCachePath, Arg.Any<string>());
+
+        Assert.Equal(ExpectedCachePath, provider.ReadDirectoryPath);
+
+        // Should not have written anything to disk if device id exists.
+        Assert.Null(provider.WriteDirectoryPath);
+        Assert.Null(provider.WriteFileName);
     }
 
     [Fact]
     public async Task GetOrCreateDeviceId_WhenNoExistingDeviceId_CreatesNewDeviceId()
     {
         // Arrange
-        var provider = Substitute.ForPartsOf<TestUnixInformationProvider>(_logger, TestStoragePath, false);
-        provider.ReadValueFromDisk(ExpectedCachePath, Arg.Any<string>())
-               .Returns((string?)null);
-        provider.WriteValueToDisk(ExpectedCachePath, Arg.Any<string>(), Arg.Any<string>())
-               .Returns(true);
+        var provider = new NoOpUnixInformationProvider(null, true);
 
         // Act
         var result = await provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.NotNull(result);
-        await provider.Received(1).ReadValueFromDisk(ExpectedCachePath, Arg.Any<string>());
-        await provider.Received(1).WriteValueToDisk(ExpectedCachePath, Arg.Any<string>(), Arg.Any<string>());
+
+        string? read = provider.ReadDirectoryPath != null ? new DirectoryInfo(provider.ReadDirectoryPath).ToString() : null;
+        string? write = provider.WriteDirectoryPath != null ? new DirectoryInfo(provider.WriteDirectoryPath).ToString() : null;
+        Assert.Equal(ExpectedCacheDirectory.ToString(), read);
+        Assert.Equal(ExpectedCacheDirectory.ToString(), write);
+
+        Assert.NotNull(provider.WriteValue);
     }
 
     [Fact]
     public async Task GetOrCreateDeviceId_WhenWriteValueToDiskFails_ReturnsNull()
     {
         // Arrange
-        var provider = Substitute.ForPartsOf<TestUnixInformationProvider>(_logger, TestStoragePath, false);
-        provider.ReadValueFromDisk(ExpectedCachePath, Arg.Any<string>())
-               .Returns((string?)null);
-        provider.WriteValueToDisk(ExpectedCachePath, Arg.Any<string>(), Arg.Any<string>())
-               .Returns(false);
+        var provider = new NoOpUnixInformationProvider(null, false);
 
         // Act
         var result = await provider.GetOrCreateDeviceId();
@@ -100,23 +102,6 @@ public class UnixInformationProviderTests
     }
 
     [Fact]
-    public async Task WriteValueToDisk_WhenDirectoryCreationFails_ReturnsFalse()
-    {
-        // Arrange
-        // This test requires mocking the file system, which is more complex with static methods
-        // In a real scenario, you'd want to use System.IO.Abstractions for better testability
-        var provider = new TestUnixInformationProvider(_logger, TestStoragePath);
-
-        // Act & Assert
-        // Note: This test is limited by the static nature of Directory and File operations
-        // In production code, consider using IFileSystem from System.IO.Abstractions
-        var result = await provider.WriteValueToDisk("/invalid/path/that/cannot/be/created", "test.txt", "value");
-
-        // The actual result depends on the file system permissions
-        // In most test environments, this should work, but we're testing the error handling path
-    }
-
-    [Fact]
     public async Task ReadValueFromDisk_WhenFileDoesNotExist_ReturnsNull()
     {
         // Act
@@ -130,7 +115,7 @@ public class UnixInformationProviderTests
     public void Constructor_WithValidLogger_DoesNotThrow()
     {
         // Act & Assert
-        var exception = Record.Exception(() => new TestUnixInformationProvider(_logger));
+        var exception = Record.Exception(() => new TestUnixInformationProvider(_logger, TestStoragePath));
         Assert.Null(exception);
     }
 
@@ -138,28 +123,87 @@ public class UnixInformationProviderTests
     public void GetStoragePath_WhenImplementationThrows_PropagatesException()
     {
         // Arrange
-        var provider = new TestUnixInformationProvider(_logger, throwOnGetStoragePath: true);
+        var provider = new TestUnixInformationProvider(_logger, TestStoragePath, throwOnGetStoragePath: true);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => provider.GetTestStoragePath());
     }
-}
 
-internal class TestUnixInformationProvider(ILogger<UnixInformationProvider> logger,
-    string? storagePath = "/test/storage", bool throwOnGetStoragePath = false)
-    : UnixInformationProvider(logger)
-{
-    private readonly string? _storagePath = storagePath;
-    private readonly bool _throwOnGetStoragePath = throwOnGetStoragePath;
-
-    public string GetTestStoragePath() => GetStoragePath();
-
-    public override string GetStoragePath()
+    private class NoOpLogger : ILogger<NoOpUnixInformationProvider>
     {
-        if (_throwOnGetStoragePath)
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
-            throw new InvalidOperationException("No storage path available");
+            return null;
         }
-        return _storagePath ?? throw new InvalidOperationException("Storage path not set");
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+        }
+    }
+
+    private class NoOpUnixInformationProvider(string? readStorageResult, bool writeValueResult)
+        : UnixInformationProvider(new NoOpLogger())
+    {
+        private readonly string? _readStorageResult = readStorageResult;
+        private readonly bool _writeValueResult = writeValueResult;
+
+        public override string GetStoragePath() => TestStoragePath;
+
+        public string? ReadDirectoryPath { get; private set; }
+        public string? ReadFileName { get; private set; }
+
+        public string? WriteDirectoryPath { get; private set; }
+        public string? WriteFileName { get; private set; }
+        public string? WriteValue { get; private set; }
+
+        public override Task<string?> ReadValueFromDisk(string directoryPath, string fileName)
+        {
+            ReadDirectoryPath = directoryPath;
+            ReadFileName = fileName;
+            return Task.FromResult(_readStorageResult);
+        }
+
+        public override Task<bool> WriteValueToDisk(string directoryPath, string fileName, string? value)
+        {
+            WriteDirectoryPath = directoryPath;
+            WriteFileName = fileName;
+            WriteValue = value;
+
+            return Task.FromResult(_writeValueResult);
+        }
+    }
+
+    private class TestUnixInformationProvider(ILogger<UnixInformationProvider> logger,
+        string? storagePath, bool throwOnGetStoragePath = false, string? deviceId = null)
+        : UnixInformationProvider(logger)
+    {
+        private readonly string? _storagePath = storagePath;
+        private readonly string? _deviceId = deviceId;
+        private readonly bool _throwOnGetStoragePath = throwOnGetStoragePath;
+
+        public string GetTestStoragePath() => GetStoragePath();
+
+        public override Task<string?> GetOrCreateDeviceId()
+        {
+            if (string.IsNullOrEmpty(_deviceId))
+            {
+                return base.GetOrCreateDeviceId();
+            }
+            else
+            {
+                return Task.FromResult<string?>(_deviceId);
+            }
+        }
+
+        public override string GetStoragePath()
+        {
+            if (_throwOnGetStoragePath)
+            {
+                throw new InvalidOperationException("No storage path available");
+            }
+            return _storagePath ?? throw new InvalidOperationException("Storage path not set");
+        }
     }
 }
