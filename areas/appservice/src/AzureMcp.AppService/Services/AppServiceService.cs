@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.AppService.Models;
+using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using Microsoft.Extensions.Logging;
-using AzureMcp.Core.Options;
-using AzureMcp.AppService.Models;
 
 namespace AzureMcp.AppService.Services;
 
