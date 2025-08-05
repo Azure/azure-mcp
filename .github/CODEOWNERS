@@ -77,6 +77,12 @@
 # ServiceLabel: %area-Foundry
 # ServiceOwners:                      @jayzzh @xiangyan99
 
+# PRLabel: %area-FunctionApp
+/src/Areas/FunctionApp/               @colbytimm @Azure/azure-mcp
+
+# ServiceLabel: %area-FunctionApp
+# ServiceOwners:                      @colbytimm
+
 # PRLabel: %area-Grafana
 /src/Areas/Grafana/                   @weng5e @xiangyan99 @Azure/azure-mcp
 
