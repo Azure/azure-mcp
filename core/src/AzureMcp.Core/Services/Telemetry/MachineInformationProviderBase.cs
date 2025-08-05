@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace AzureMcp.Core.Services.Telemetry;
 
 internal abstract class MachineInformationProviderBase(ILogger<MachineInformationProviderBase> logger)
+    : IMachineInformationProvider
 {
     protected const string MicrosoftDirectory = "Microsoft";
     protected const string DeveloperToolsDirectory = "DeveloperTools";
@@ -24,13 +25,12 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
     private readonly ILogger<MachineInformationProviderBase> _logger = logger;
 
     /// <summary>
-    /// Gets existing or creates the device id.  In case the cached id cannot be retrieved, or the
-    /// newly generated id cannot be cached, a value of null is returned.
+    /// <inheritdoc/>
     /// </summary>
     public abstract Task<string?> GetOrCreateDeviceId();
 
     /// <summary>
-    /// Gets a hash of the MAC address.
+    /// <inheritdoc/>
     /// </summary>
     public virtual Task<string> GetMacAddressHash()
     {
@@ -64,7 +64,7 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
             .FirstOrDefault(x => !string.IsNullOrEmpty(x));
     }
 
-    /// <summary>
+   /// <summary>
     /// Generates a new device identifier.  Conditions that have to be met are:
     /// <list type="bullet">
     /// <item>Randomly generated UUID/GUID</item>
