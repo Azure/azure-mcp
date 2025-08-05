@@ -1,0 +1,127 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Net;
+using Microsoft.Extensions.Options;
+
+namespace AzureMcp.Core.Services.Http;
+
+/// <summary>
+/// Implementation of IHttpClientService that provides configured HttpClient instances with proxy support.
+/// </summary>
+public sealed class HttpClientService : IHttpClientService, IDisposable
+{
+    private readonly HttpClientOptions _options;
+    private readonly Lazy<HttpClient> _defaultClient;
+    private bool _disposed;
+
+    public HttpClientService(IOptions<HttpClientOptions> options)
+    {
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _defaultClient = new Lazy<HttpClient>(() => CreateClientInternal());
+    }
+
+    /// <inheritdoc />
+    public HttpClient DefaultClient => _defaultClient.Value;
+
+    /// <inheritdoc />
+    public HttpClient CreateClient(Uri? baseAddress = null)
+    {
+        ObjectDisposedException.ThrowIfDisposed(_disposed, this);
+        
+        var client = CreateClientInternal();
+        if (baseAddress != null)
+        {
+            client.BaseAddress = baseAddress;
+        }
+        return client;
+    }
+
+    /// <inheritdoc />
+    public HttpClient CreateClient(Uri? baseAddress, Action<HttpClient> configureClient)
+    {
+        ArgumentNullException.ThrowIfNull(configureClient);
+        
+        var client = CreateClient(baseAddress);
+        configureClient(client);
+        return client;
+    }
+
+    private HttpClient CreateClientInternal()
+    {
+        var handler = CreateHttpClientHandler();
+        var client = new HttpClient(handler);
+        
+        // Apply default configuration
+        client.Timeout = _options.DefaultTimeout;
+        
+        if (!string.IsNullOrEmpty(_options.DefaultUserAgent))
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.DefaultUserAgent);
+        }
+        
+        return client;
+    }
+
+    private HttpClientHandler CreateHttpClientHandler()
+    {
+        var handler = new HttpClientHandler();
+        
+        // Configure proxy settings
+        var proxy = CreateProxy();
+        if (proxy != null)
+        {
+            handler.Proxy = proxy;
+            handler.UseProxy = true;
+        }
+        
+        return handler;
+    }
+
+    private WebProxy? CreateProxy()
+    {
+        // Determine proxy address based on priority: ALL_PROXY, HTTP_PROXY/HTTPS_PROXY
+        string? proxyAddress = _options.AllProxy ?? _options.HttpProxy;
+        
+        if (string.IsNullOrEmpty(proxyAddress))
+        {
+            return null;
+        }
+
+        if (!Uri.TryCreate(proxyAddress, UriKind.Absolute, out var proxyUri))
+        {
+            return null;
+        }
+
+        var proxy = new WebProxy(proxyUri);
+        
+        // Configure bypass list from NO_PROXY
+        if (!string.IsNullOrEmpty(_options.NoProxy))
+        {
+            var bypassList = _options.NoProxy
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+                
+            if (bypassList.Length > 0)
+            {
+                proxy.BypassList = bypassList;
+            }
+        }
+        
+        return proxy;
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            if (_defaultClient.IsValueCreated)
+            {
+                _defaultClient.Value.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+}

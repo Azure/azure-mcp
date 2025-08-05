@@ -7,6 +7,7 @@ using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
+using AzureMcp.Core.Services.Http;
 using AzureMcp.Kusto.Commands;
 
 namespace AzureMcp.Kusto.Services;
@@ -15,10 +16,12 @@ namespace AzureMcp.Kusto.Services;
 public sealed class KustoService(
     ISubscriptionService subscriptionService,
     ITenantService tenantService,
-    ICacheService cacheService) : BaseAzureService(tenantService), IKustoService
+    ICacheService cacheService,
+    IHttpClientService httpClientService) : BaseAzureService(tenantService), IKustoService
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private readonly IHttpClientService _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
 
     private const string CacheGroup = "kusto";
     private const string KustoClustersCacheKey = "clusters";
@@ -285,7 +288,7 @@ public sealed class KustoService(
         if (kustoClient == null)
         {
             var tokenCredential = await GetCredential(tenant);
-            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent);
+            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent, _httpClientService);
             await _cacheService.SetAsync(CacheGroup, providerCacheKey, kustoClient, s_providerCacheDuration);
         }
 
@@ -299,7 +302,7 @@ public sealed class KustoService(
         if (kustoClient == null)
         {
             var tokenCredential = await GetCredential(tenant);
-            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent);
+            kustoClient = new KustoClient(clusterUri, tokenCredential, UserAgent, _httpClientService);
             await _cacheService.SetAsync(CacheGroup, providerCacheKey, kustoClient, s_providerCacheDuration);
         }
 
