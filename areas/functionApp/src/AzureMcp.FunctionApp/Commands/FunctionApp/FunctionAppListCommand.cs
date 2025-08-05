@@ -22,7 +22,7 @@ public sealed class FunctionAppListCommand(ILogger<FunctionAppListCommand> logge
     public override string Description =>
         """
         Lists all Azure Function Apps in a subscription.
-        Returns a list of function app details including name, location, status, and app service plan.
+        Returns a list of function app details including name, location, status, and app service plan name.
         """;
 
     public override string Title => CommandTitle;

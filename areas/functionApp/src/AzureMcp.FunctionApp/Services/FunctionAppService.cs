@@ -30,12 +30,10 @@ public sealed class FunctionAppService(
     {
         ValidateRequiredParameters(subscriptionId);
 
-        // Create cache key
         var cacheKey = string.IsNullOrEmpty(tenant)
             ? $"{FunctionAppsCacheKey}_{subscriptionId}"
             : $"{FunctionAppsCacheKey}_{subscriptionId}_{tenant}";
 
-        // Try to get from cache first
         var cachedResults = await _cacheService.GetAsync<List<FunctionAppModel>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
@@ -55,7 +53,6 @@ public sealed class FunctionAppService(
                 }
             }
 
-            // Cache the results
             await _cacheService.SetAsync(CacheGroup, cacheKey, functionApps, s_cacheDuration);
         }
         catch (Exception ex)

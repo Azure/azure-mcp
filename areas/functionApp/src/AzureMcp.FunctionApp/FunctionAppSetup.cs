@@ -19,11 +19,9 @@ public class FunctionAppSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        // Create Function App command group
         var functionApp = new CommandGroup("functionapp", "Function App operations");
         rootGroup.AddSubGroup(functionApp);
 
-        // Register Function App commands
         functionApp.AddCommand("list", new FunctionAppListCommand(
             loggerFactory.CreateLogger<FunctionAppListCommand>()));
     }

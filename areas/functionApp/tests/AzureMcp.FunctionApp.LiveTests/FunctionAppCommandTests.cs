@@ -26,15 +26,12 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
         var functionApps = result.AssertProperty("results");
         Assert.Equal(JsonValueKind.Array, functionApps.ValueKind);
 
-        // Verify we have at least two function apps in the test environment
         Assert.True(functionApps.GetArrayLength() >= 2, "Expected at least two Function Apps in the test environment");
 
-        // Check each function app is an object with expected properties
         foreach (var functionApp in functionApps.EnumerateArray())
         {
             Assert.Equal(JsonValueKind.Object, functionApp.ValueKind);
 
-            // Verify required properties exist
             Assert.True(functionApp.TryGetProperty("name", out var nameProperty));
             Assert.False(string.IsNullOrEmpty(nameProperty.GetString()));
 
@@ -44,7 +41,6 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             Assert.True(functionApp.TryGetProperty("appServicePlanName", out var aspProperty));
             Assert.False(string.IsNullOrEmpty(aspProperty.GetString()));
 
-            // Verify optional but commonly present properties
             if (functionApp.TryGetProperty("location", out var locationProperty))
             {
                 Assert.False(string.IsNullOrEmpty(locationProperty.GetString()));
@@ -67,7 +63,6 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
                 { "subscription", "" }
             });
 
-        // Should return validation error response with no results
         Assert.False(result.HasValue);
     }
 
@@ -81,7 +76,6 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
                 { "subscription", "invalid-subscription" }
             });
 
-        // Should return runtime error response with error details in results
         Assert.True(result.HasValue);
         var errorDetails = result.Value;
         Assert.True(errorDetails.TryGetProperty("message", out _));
@@ -96,7 +90,6 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             "azmcp_functionapp_list",
             new Dictionary<string, object?>());
 
-        // Should return error response for missing subscription (no results)
         Assert.False(result.HasValue);
     }
 }
