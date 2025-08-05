@@ -16,8 +16,6 @@ public abstract class BaseDatabaseCommand<
 {
     private readonly Option<string> _databaseOption = MySqlOptionDefinitions.Database;
 
-    public override string Name => "database";
-
     public override string Description =>
         "Retrieves information about a MySQL database.";
 
