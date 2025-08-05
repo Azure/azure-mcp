@@ -10,13 +10,10 @@ public static class StorageOptionDefinitions
     public const string TableName = "table-name";
     public const string FileSystemName = "file-system-name";
     public const string DirectoryPathName = "directory-path";
-<<<<<<< HEAD
-    public const string FilterPathName = "filter-path";
-    public const string RecursiveName = "recursive";
-=======
     public const string TierName = "tier-name";
     public const string BlobNamesParam = "blob-names";
->>>>>>> d6b4f3203cc29d5c4b2bbbd98bd4fea583c36a4a
+    public const string FilterPathName = "filter-path";
+    public const string RecursiveName = "recursive";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -58,23 +55,6 @@ public static class StorageOptionDefinitions
         IsRequired = true
     };
 
-<<<<<<< HEAD
-    public static readonly Option<string> FilterPath = new(
-        $"--{FilterPathName}",
-        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
-    )
-    {
-        IsRequired = false
-    };
-
-    public static readonly Option<bool> Recursive = new(
-        $"--{RecursiveName}",
-        () => false,
-        "Flag to indicate whether the command will operate recursively on all subdirectories."
-    )
-    {
-        IsRequired = false
-=======
     public static readonly Option<string> Tier = new(
         $"--{TierName}",
         "The access tier to set for the blobs. Valid values include Hot, Cool, Archive, and others depending on the storage account type. See Azure documentation for the complete list of supported access tiers."
@@ -90,6 +70,22 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true,
         AllowMultipleArgumentsPerToken = true
->>>>>>> d6b4f3203cc29d5c4b2bbbd98bd4fea583c36a4a
+    };
+
+    public static readonly Option<string> FilterPath = new(
+        $"--{FilterPathName}",
+        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> Recursive = new(
+        $"--{RecursiveName}",
+        () => false,
+        "Flag to indicate whether the command will operate recursively on all subdirectories."
+    )
+    {
+        IsRequired = false
     };
 }
