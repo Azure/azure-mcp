@@ -106,8 +106,9 @@ public class MySqlService : BaseAzureService, IMySqlService
         var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
 
         await using var resource = await MySqlResource.CreateAsync(connectionString);
-        var query = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = '{table}';";
+        var query = "SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = @table;";
         await using var command = new MySqlCommand(query, resource.Connection);
+        command.Parameters.AddWithValue("@table", table);
         await using var reader = await command.ExecuteReaderAsync();
         var schema = new List<string>();
         while (await reader.ReadAsync())
