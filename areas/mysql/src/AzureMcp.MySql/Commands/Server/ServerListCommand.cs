@@ -52,5 +52,5 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseM
         return context.Response;
     }
 
-public record ServerListCommandResult(List<string> Servers);
+    public record ServerListCommandResult(List<string> Servers);
 }

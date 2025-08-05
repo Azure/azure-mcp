@@ -149,7 +149,7 @@ public class MySqlService : BaseAzureService, IMySqlService
         var host = mysqlServer.Value.Data.FullyQualifiedDomainName;
         var entraIdAccessToken = await GetEntraIdAccessTokenAsync();
         var connectionString = $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
-        
+
         await using var resource = await MySqlResource.CreateAsync(connectionString);
         var query = "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();";
         await using var command = new MySqlCommand(query, resource.Connection);
@@ -159,7 +159,7 @@ public class MySqlService : BaseAzureService, IMySqlService
         {
             tables.Add(reader.GetString(0));
         }
-        
+
         return tables;
     }
 
@@ -207,7 +207,7 @@ public class MySqlService : BaseAzureService, IMySqlService
             throw new Exception($"Resource group '{resourceGroup}' not found.");
         }
         var mysqlServer = await rg.GetMySqlFlexibleServerAsync(server);
-        
+
         var configuration = await mysqlServer.Value.GetMySqlFlexibleServerConfigurationAsync(param);
         if (configuration?.Value?.Data == null)
         {
@@ -216,7 +216,7 @@ public class MySqlService : BaseAzureService, IMySqlService
 
         var configData = configuration.Value.Data;
         configData.Value = value;
-        
+
         var updateOperation = await mysqlServer.Value.GetMySqlFlexibleServerConfigurations().CreateOrUpdateAsync(WaitUntil.Completed, param, configData);
         return updateOperation.Value.Data.Value;
     }

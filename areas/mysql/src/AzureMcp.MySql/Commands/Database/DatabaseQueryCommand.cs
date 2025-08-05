@@ -68,5 +68,5 @@ public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) :
         return context.Response;
     }
 
-public record DatabaseQueryCommandResult(List<string> Results);
+    public record DatabaseQueryCommandResult(List<string> Results);
 }

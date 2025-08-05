@@ -52,5 +52,5 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
         return context.Response;
     }
 
-public record DatabaseListCommandResult(List<string> Databases);
+    public record DatabaseListCommandResult(List<string> Databases);
 }

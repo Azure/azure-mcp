@@ -68,5 +68,5 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
         return context.Response;
     }
 
-public record TableSchemaCommandResult(List<string> Schema);
+    public record TableSchemaCommandResult(List<string> Schema);
 }

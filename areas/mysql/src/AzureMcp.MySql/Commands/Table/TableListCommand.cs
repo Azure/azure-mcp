@@ -52,5 +52,5 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
         return context.Response;
     }
 
-public record TableListCommandResult(List<string> Tables);
+    public record TableListCommandResult(List<string> Tables);
 }
