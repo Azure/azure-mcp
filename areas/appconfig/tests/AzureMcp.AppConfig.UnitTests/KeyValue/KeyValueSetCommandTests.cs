@@ -62,7 +62,9 @@ public class KeyValueSetCommandTests
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
-            null);
+            null,
+            Arg.Any<string>(),
+            Arg.Any<string[]>());
 
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetCommandResult>(json, new JsonSerializerOptions
@@ -99,7 +101,9 @@ public class KeyValueSetCommandTests
             "sub123",
             null,
             Arg.Any<RetryPolicyOptions>(),
-            "prod");
+            "prod",
+            Arg.Any<string>(),
+            Arg.Any<string[]>());
 
         var json = JsonSerializer.Serialize(response.Results);
         var result = JsonSerializer.Deserialize<KeyValueSetCommandResult>(json, new JsonSerializerOptions
@@ -114,6 +118,50 @@ public class KeyValueSetCommandTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_SetsKeyValueWithContentTypeAndTagsProvided()
+    {
+        // Arrange
+        var args = _parser.Parse([
+            "--subscription", "sub123",
+            "--account-name", "account1",
+            "--key", "my-key",
+            "--value", "my-value",
+            "--content-type", "application/json",
+            "--tags", "environment=prod", "team=backend"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        await _appConfigService.Received(1).SetKeyValue(
+            "account1",
+            "my-key",
+            "my-value",
+            "sub123",
+            null,
+            Arg.Any<RetryPolicyOptions>(),
+            null,
+            "application/json",
+            Arg.Is<string[]>(tags => tags.Contains("environment=prod") && tags.Contains("team=backend")));
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<KeyValueSetCommandResult>(json, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
+        Assert.NotNull(result);
+        Assert.Equal("my-key", result.Key);
+        Assert.Equal("my-value", result.Value);
+        Assert.Equal("application/json", result.ContentType);
+        Assert.NotNull(result.Tags);
+        Assert.Contains("environment=prod", result.Tags);
+        Assert.Contains("team=backend", result.Tags);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_Returns500_WhenServiceThrowsException()
     {
         // Arrange
@@ -124,7 +172,9 @@ public class KeyValueSetCommandTests
             Arg.Any<string>(),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>(),
-            Arg.Any<string>())
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<string[]>())
             .ThrowsAsync(new Exception("Failed to set key-value"));
 
         var args = _parser.Parse([

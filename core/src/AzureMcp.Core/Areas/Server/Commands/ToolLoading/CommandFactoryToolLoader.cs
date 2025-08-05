@@ -172,30 +172,8 @@ public sealed class CommandFactoryToolLoader(
         {
             foreach (var option in options)
             {
-                if (option.ValueType.ToJsonType() == "array")
-                {
-                    // "array" is returned when the type is Array or IEnumerable
-                    var itemType = option.ValueType.IsArray
-                        ? option.ValueType.GetElementType().ToJsonType()
-                        : option.ValueType.GetGenericArguments().FirstOrDefault().ToJsonType();
-                    schema.Properties.Add(option.Name, new ToolPropertySchema
-                    {
-                        Type = "array",
-                        Description = option.Description,
-                        Items = new ToolPropertySchema
-                        {
-                            Type = itemType
-                        }
-                    });
-                }
-                else
-                {
-                    schema.Properties.Add(option.Name, new ToolPropertySchema
-                    {
-                        Type = option.ValueType.ToJsonType(),
-                        Description = option.Description,
-                    });
-                }
+                // Use the CreatePropertySchema method to properly handle array types with items
+                schema.Properties.Add(option.Name, TypeToJsonTypeMapper.CreatePropertySchema(option.ValueType, option.Description));
             }
 
             schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();

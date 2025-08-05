@@ -325,4 +325,197 @@ public class AppConfigCommandTests : CommandTestsBase,
         var keyProperty = result.AssertProperty("key");
         Assert.Equal(key, keyProperty.GetString());
     }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_and_get_appconfig_kv_with_content_type()
+    {
+        // arrange
+        const string key = "config-with-content-type";
+        const string value = @"{""property"":""value""}";
+        const string contentType = "application/json";
+
+        // act - set key-value with content type
+        var setResult = await CallToolAsync(
+            "azmcp_appconfig_kv_set",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "account-name", _accountName },
+                { "key", key },
+                { "value", value },
+                { "content-type", contentType }
+            });
+
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
+
+        var contentTypeRead = setResult.AssertProperty("contentType");
+        Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
+        Assert.Equal(contentType, contentTypeRead.GetString());
+
+        // act - get the key-value to verify content type was stored
+        var getResult = await CallToolAsync(
+            "azmcp_appconfig_kv_show",
+            new()
+            {
+                { "subscription", _subscriptionId },
+                { "account-name", _accountName },
+                { "key", key }
+            });
+
+        // assert - verify the get result
+        var setting = getResult.AssertProperty("setting");
+        Assert.Equal(JsonValueKind.Object, setting.ValueKind);
+
+        valueRead = setting.AssertProperty("value");
+        Assert.Equal(JsonValueKind.String, valueRead.ValueKind);
+        Assert.Equal(value, valueRead.GetString());
+
+        contentTypeRead = setting.AssertProperty("contentType");
+        Assert.Equal(JsonValueKind.String, contentTypeRead.ValueKind);
+        Assert.Equal(contentType, contentTypeRead.GetString());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_and_get_content_type_directly_using_service()
+    {
+        // arrange
+        const string key = "service-content-type-test";
+        const string value = @"{""name"":""testValue"",""enabled"":true}";
+        const string contentType = "application/json; charset=utf-8";
+
+        // act - set key-value with content type
+        await _appConfigService.SetKeyValue(
+           _accountName,
+           key,
+           value,
+           _subscriptionId,
+           contentType: contentType);
+
+        // act - get key-value to verify content type was preserved
+        var setting = await _appConfigService.GetKeyValue(
+            _accountName,
+            key,
+            _subscriptionId);
+
+        // assert - verify content type was properly set and retrieved
+        Assert.Equal(key, setting.Key);
+        Assert.Equal(value, setting.Value);
+        Assert.Equal(contentType, setting.ContentType);
+
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_kv_with_single_tag()
+    {
+        // arrange
+        const string key = "tag-test-single";
+        const string value = "tag-test-value";
+        const string tagKey = "environment";
+        const string tagValue = "production";
+
+        // act - set key-value with a single tag
+        var setResult = await CallToolAsync(
+            "azmcp_appconfig_kv_set",
+            new()
+            {
+                    { "subscription", _subscriptionId },
+                    { "account-name", _accountName },
+                    { "key", key },
+                    { "value", value },
+                    { "tags", $"{tagKey}={tagValue}" }
+            });
+
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
+
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+        Assert.Single(tagsRead.EnumerateArray());
+        Assert.Equal($"{tagKey}={tagValue}", tagsRead.EnumerateArray().First().GetString());
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_kv_with_multiple_tags()
+    {
+        // arrange
+        const string key = "tag-test-multiple";
+        const string value = "tag-test-value-multiple";
+        var tags = new string[] { "environment=staging", "version=1.0.0", "region=westus2" };
+
+        // act - set key-value with multiple tags
+        var setResult = await CallToolAsync(
+            "azmcp_appconfig_kv_set",
+            new()
+            {
+                    { "subscription", _subscriptionId },
+                    { "account-name", _accountName },
+                    { "key", key },
+                    { "value", value },
+                    { "tags", tags }
+            });
+
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
+
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+
+        var tagArray = tagsRead.EnumerateArray().ToArray();
+        Assert.Equal(tags.Length, tagArray.Length);
+
+        foreach (var tag in tags)
+        {
+            Assert.Contains(tagArray, t => t.GetString() == tag);
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_set_kv_with_tags_containing_spaces()
+    {
+        // arrange
+        const string key = "tag-test-spaces";
+        const string value = "tag-test-value-spaces";
+        var tags = new string[]
+        {
+            "complex key=complex value with spaces",
+            "deployment environment=Production US West",
+            "created by=Azure MCP Test"
+        };
+
+        // act - set key-value with tags containing spaces
+        var setResult = await CallToolAsync(
+            "azmcp_appconfig_kv_set",
+            new()
+            {
+                    { "subscription", _subscriptionId },
+                    { "account-name", _accountName },
+                    { "key", key },
+                    { "value", value },
+                    { "tags", tags }
+            });
+
+        // assert - verify the set result
+        var valueRead = setResult.AssertProperty("value");
+        Assert.Equal(value, valueRead.GetString());
+
+        var tagsRead = setResult.AssertProperty("tags");
+        Assert.Equal(JsonValueKind.Array, tagsRead.ValueKind);
+
+        var tagArray = tagsRead.EnumerateArray().ToArray();
+        Assert.Equal(3, tagArray.Length);
+
+        foreach (var tag in tags)
+        {
+            Assert.Contains(tagArray, t => t.GetString() == tag);
+        }
+    }
 }

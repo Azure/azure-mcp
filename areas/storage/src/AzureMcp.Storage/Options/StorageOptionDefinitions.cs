@@ -12,7 +12,9 @@ public static class StorageOptionDefinitions
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier-name";
     public const string BlobNamesParam = "blob-names";
-    public const string ShareName = "share-name";
+    public const string FilterPathName = "filter-path";
+    public const string RecursiveName = "recursive";
+    public const string ShareName = "share";
     public const string PrefixName = "prefix";
 
     public static readonly Option<string> Account = new(
@@ -72,6 +74,23 @@ public static class StorageOptionDefinitions
         AllowMultipleArgumentsPerToken = true
     };
 
+    public static readonly Option<string> FilterPath = new(
+        $"--{FilterPathName}",
+        "The prefix to filter paths in the Data Lake. Only paths that start with this prefix will be listed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> Recursive = new(
+        $"--{RecursiveName}",
+        () => false,
+        "Flag to indicate whether the command will operate recursively on all subdirectories."
+    )
+    {
+        IsRequired = false
+    };
+
     public static readonly Option<string> Share = new(
         $"--{ShareName}",
         "The name of the file share to access within the storage account."
@@ -82,8 +101,7 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<string> Prefix = new(
         $"--{PrefixName}",
-        "Optional prefix to filter results. Only items that start with this prefix will be returned."
-    )
+        "Optional prefix to filter results. Only items that start with this prefix will be returned.")
     {
         IsRequired = false
     };
