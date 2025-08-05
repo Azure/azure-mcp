@@ -5,21 +5,21 @@ using Azure.Messaging.ServiceBus;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.ServiceBus.Commands;
 using AzureMcp.ServiceBus.Options;
 using AzureMcp.ServiceBus.Options.Topic;
 using AzureMcp.ServiceBus.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.ServiceBus.Commands.Topic;
 
-public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPeekOptions>
+public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> logger) : SubscriptionCommand<SubscriptionPeekOptions>
 {
     private const string CommandTitle = "Peek Messages from Service Bus Topic Subscription";
     private readonly Option<string> _topicOption = ServiceBusOptionDefinitions.Topic;
     private readonly Option<string> _subscriptionNameOption = ServiceBusOptionDefinitions.Subscription;
     private readonly Option<int> _maxMessagesOption = ServiceBusOptionDefinitions.MaxMessages;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
-
+    private readonly ILogger<SubscriptionPeekCommand> _logger = logger;
     public override string Name => "peek";
 
     public override string Description =>
@@ -89,6 +89,7 @@ public sealed class SubscriptionPeekCommand : SubscriptionCommand<SubscriptionPe
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error peeking messages from Service Bus topic subscription");
             HandleException(context, ex);
         }
 

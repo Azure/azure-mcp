@@ -19,7 +19,9 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     private const string CosmosBaseUri = "https://{0}.documents.azure.com:443/";
     private const string CacheGroup = "cosmos";
     private const string CosmosClientsCacheKeyPrefix = "clients_";
-    private static readonly TimeSpan s_cacheDurationClients = TimeSpan.FromMinutes(15);
+    private const string CosmosDatabasesCacheKeyPrefix = "databases_";
+    private const string CosmosContainersCacheKeyPrefix = "containers_";
+    private static readonly TimeSpan s_cacheDurationResources = TimeSpan.FromMinutes(15);
     private bool _disposed;
 
     private async Task<CosmosDBAccountResource> GetCosmosAccountAsync(
@@ -113,7 +115,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         ValidateRequiredParameters(accountName, subscriptionId);
 
         var key = CosmosClientsCacheKeyPrefix + accountName;
-        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(CacheGroup, key, s_cacheDurationClients);
+        var cosmosClient = await _cacheService.GetAsync<CosmosClient>(CacheGroup, key, s_cacheDurationResources);
         if (cosmosClient != null)
             return cosmosClient;
 
@@ -127,7 +129,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                 tenant,
                 retryPolicy);
 
-            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationClients);
+            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationResources);
             return cosmosClient;
         }
         catch (Exception ex) when (
@@ -142,7 +144,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
                 tenant,
                 retryPolicy);
 
-            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationClients);
+            await _cacheService.SetAsync(CacheGroup, key, cosmosClient, s_cacheDurationResources);
             return cosmosClient;
         }
 
@@ -182,6 +184,14 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
     {
         ValidateRequiredParameters(accountName, subscriptionId);
 
+        var cacheKey = CosmosDatabasesCacheKeyPrefix + accountName;
+
+        var cachedDatabases = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDurationResources);
+        if (cachedDatabases != null)
+        {
+            return cachedDatabases;
+        }
+
         var client = await GetCosmosClientAsync(accountName, subscriptionId, authMethod, tenant, retryPolicy);
         var databases = new List<string>();
 
@@ -199,6 +209,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             throw new Exception($"Error listing databases: {ex.Message}", ex);
         }
 
+        await _cacheService.SetAsync(CacheGroup, cacheKey, databases, s_cacheDurationResources);
         return databases;
     }
 
@@ -211,6 +222,14 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(accountName, databaseName, subscriptionId);
+
+        var cacheKey = CosmosContainersCacheKeyPrefix + accountName + "_" + databaseName;
+
+        var cachedContainers = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDurationResources);
+        if (cachedContainers != null)
+        {
+            return cachedContainers;
+        }
 
         var client = await GetCosmosClientAsync(accountName, subscriptionId, authMethod, tenant, retryPolicy);
         var containers = new List<string>();
@@ -230,6 +249,7 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
             throw new Exception($"Error listing containers: {ex.Message}", ex);
         }
 
+        await _cacheService.SetAsync(CacheGroup, cacheKey, containers, s_cacheDurationResources);
         return containers;
     }
 

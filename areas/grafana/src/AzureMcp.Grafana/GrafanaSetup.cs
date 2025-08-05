@@ -19,7 +19,7 @@ public class GrafanaSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var grafana = new CommandGroup("grafana", "Grafana workspace operations - Commands for managing and accessing Azure Managed Grafana resources.");
+        var grafana = new CommandGroup("grafana", "Grafana workspace operations - Commands for managing and accessing Azure Managed Grafana resources and monitoring dashboards. Includes operations for listing Grafana workspaces and managing data visualization and monitoring capabilities.");
         rootGroup.AddSubGroup(grafana);
 
         grafana.AddCommand("list", new WorkspaceListCommand(loggerFactory.CreateLogger<WorkspaceListCommand>()));
