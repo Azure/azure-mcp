@@ -153,6 +153,7 @@
                 "testareas",
                 "testcontainer",
                 "testdb",
+                "testfilesystem",
                 "testpool",
                 "testproxy",
                 "testrg",

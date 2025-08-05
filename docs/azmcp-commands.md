@@ -770,8 +770,10 @@ azmcp storage datalake directory create --subscription <subscription> \
 
 # List paths in a Data Lake file system
 azmcp storage datalake file-system list-paths --subscription <subscription> \
-                                              --account <account> \
-                                              --file-system <file-system>
+                                              --account-name <account> \
+                                              --file-system-name <file-system> \
+                                              [--filter-path <filter-path>] \
+                                              [--recursive]
 
 # List tables in a Storage account
 azmcp storage table list --subscription <subscription> \
