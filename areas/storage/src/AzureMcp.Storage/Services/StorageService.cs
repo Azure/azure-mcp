@@ -29,14 +29,16 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private const string StorageAccountsCacheKey = "accounts";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<string>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
-        // Create cache key
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        
+        // Create cache key using the resolved subscription ID for consistency
         var cacheKey = string.IsNullOrEmpty(tenant)
-            ? $"{StorageAccountsCacheKey}_{subscriptionId}"
-            : $"{StorageAccountsCacheKey}_{subscriptionId}_{tenant}";
+            ? $"{StorageAccountsCacheKey}_{subscriptionResource.Data.SubscriptionId}"
+            : $"{StorageAccountsCacheKey}_{subscriptionResource.Data.SubscriptionId}_{tenant}";
 
         // Try to get from cache first
         var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
@@ -45,11 +47,10 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             return cachedAccounts;
         }
 
-        var subscription = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
         var accounts = new List<string>();
         try
         {
-            await foreach (var account in subscription.GetStorageAccountsAsync())
+            await foreach (var account in subscriptionResource.GetStorageAccountsAsync())
             {
                 if (account?.Data?.Name != null)
                 {
