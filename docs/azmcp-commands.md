@@ -339,11 +339,11 @@ azmcp postgres server list --subscription <subscription> \
                            --user <user>
 
 # Retrieve a specific parameter of a PostgreSQL server
-azmcp postgres server param --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --param <parameter>
+azmcp postgres server param get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
 azmcp postgres server param set --subscription <subscription> \
