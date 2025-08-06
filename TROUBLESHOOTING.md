@@ -65,10 +65,10 @@ Yes, you can enable multiple MCP servers that only load the services you need. I
 
 The Azure MCP Server can run in multiple modes. Review your MCP configuration to ensure it matches your expectations:
 
-- `azmcp server start` - Launches an MCP server with all tools enabled
+- `azmcp server start` - Launches an MCP server with namespace-level tools (default since v0.5.0)
+- `azmcp server start --mode all` - Launches an MCP server with all individual tools enabled (pre-v0.5.0 behavior)
 - `azmcp server start --namespace <service-name>` - Launches an MCP server with tools for the specified service (e.g., `storage`, `keyvault`)
 - `azmcp server start --mode single` - Launches an MCP server with a single `azure` tool that performs internal dynamic proxy and tool selection
-- `azmcp server start --mode namespace` - Launches an MCP server with a tool registered for each Azure service/namespace.
 
 ### VS Code Permission Dialog for Language Model Calls
 

@@ -21,6 +21,9 @@ The Azure MCP Server implements the [MCP specification](https://modelcontextprot
 1. We're building this in the open. Your feedback is much appreciated, and will help us shape the future of the Azure MCP server
     - 👉 [Open an issue in the public repository](https://github.com/Azure/azure-mcp/issues/new/choose)
 
+> [!IMPORTANT]
+> **Default Behavior Change (v0.5.0)**: The default `azmcp server start` command now exposes namespace-level tools (~25 tools) instead of individual tools (~128 tools). This change helps prevent VS Code from hitting the 128 tool limit. To restore the previous behavior with all individual tools, use `azmcp server start --mode all`. For more details on server modes, see the [command reference](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md#server-operations).
+
 
 ## ✨ What can you do with the Azure MCP Server?
 
@@ -331,14 +334,18 @@ Optionally, use `--env` or `--volume` to pass authentication values.
 You can easily configure your MCP client to use the Azure MCP Server. Have your client run the following command and access it via standard IO.
 
 ```bash
+# Default mode (namespace-level tools)
 npx -y @azure/mcp@latest server start
+
+# Or expose all individual tools
+npx -y @azure/mcp@latest server start --mode all
 ```
 
 ### 🔧 Manual Install Steps (Optional)
 
 For a step-by-step installation, follow these instructions:
 
-1. Add `.vscode/mcp.json`:
+1. **Default Configuration** - Add `.vscode/mcp.json` for namespace-level tools (recommended):
 
     ```json
     {
@@ -356,9 +363,27 @@ For a step-by-step installation, follow these instructions:
     }
     ```
 
-    You can optionally set the `--namespace <namespace>` flag to install tools for the specified Azure product or service.
+2. **Individual Tools Configuration** - Add `.vscode/mcp.json` to expose all tools individually:
 
-1. Add `.vscode/mcp.json`:
+    ```json
+    {
+      "servers": {
+        "Azure MCP Server": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@azure/mcp@latest",
+            "server",
+            "start",
+            "--mode",
+            "all"
+          ]
+        }
+      }
+    }
+    ```
+
+3. **Namespace Filtering** - Add `.vscode/mcp.json` for specific Azure services:
 
     ```json
     {
@@ -371,7 +396,7 @@ For a step-by-step installation, follow these instructions:
             "server",
             "start",
             "--namespace",
-            "bestpractices" // Any of the available MCP servers can be referenced here.
+            "bestpractices"
           ]
         }
       }
