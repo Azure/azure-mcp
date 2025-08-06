@@ -775,11 +775,6 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               [--filter-path <filter-path>] \
                                               [--recursive]
 
-# Create a directory in DataLake using a specific path
-azmcp storage datalake directory create --subscription <subscription> \
-                                        --account <account-name> \
-                                        --directory-path <directory-path>
-
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \
                               --account <account-name> \
