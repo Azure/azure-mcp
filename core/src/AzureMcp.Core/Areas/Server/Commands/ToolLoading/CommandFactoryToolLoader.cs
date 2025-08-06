@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Commands;
 using Microsoft.Extensions.Logging;
@@ -84,7 +85,7 @@ public sealed class CommandFactoryToolLoader(
                 IsError = true,
             };
         }
-        var commandContext = new CommandContext(_serviceProvider);
+        var commandContext = new CommandContext(_serviceProvider, Activity.Current);
 
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
