@@ -12,6 +12,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Updated the root Storage `CommandGroup` description to improve their usage by Agents. [#879](https://github.com/Azure/azure-mcp/pull/879)
+
 ## 0.5.3 (2025-08-05)
 
 ### Features Added
