@@ -73,6 +73,8 @@ public sealed class McpRuntime : IMcpRuntime
             };
         }
 
+        activity?.AddTag(TagName.ToolName, request.Params.Name);
+
         CallToolResult callTool;
         try
         {
@@ -119,8 +121,21 @@ public sealed class McpRuntime : IMcpRuntime
     /// <returns>A result containing the list of available tools.</returns>
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = await _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
-        return await _toolLoader.ListToolsHandler(request!, cancellationToken);
+        using var activity = await _telemetry.StartActivity(ActivityName.ListToolsHandler, request?.Server?.ClientInfo);
+
+        try
+        {
+            var result = await _toolLoader.ListToolsHandler(request!, cancellationToken);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling list tools handler")
+                ?.SetTag(TagName.ErrorDetails, ex.Message);
+            throw;
+        }
     }
 
     /// <summary>

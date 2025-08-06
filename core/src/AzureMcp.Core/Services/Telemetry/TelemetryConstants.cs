@@ -25,6 +25,7 @@ internal static class TelemetryConstants
     internal class ActivityName
     {
         public const string CommandExecuted = "CommandExecuted";
+        public const string ListToolsHandler = "ListToolsHandler";
         public const string ToolExecuted = "ToolExecuted";
     }
 }
