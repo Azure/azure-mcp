@@ -29,6 +29,7 @@
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
+    <SelfContained>true</SelfContained>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
     <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>

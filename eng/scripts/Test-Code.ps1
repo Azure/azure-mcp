@@ -8,7 +8,8 @@ param(
     [ValidateSet('Live', 'Unit', 'All')]
     [string] $TestType = 'Unit',
     [switch] $CollectCoverage,
-    [switch] $OpenReport
+    [switch] $OpenReport,
+    [switch] $BuildNative
 )
 
 $ErrorActionPreference = 'Stop'
@@ -30,6 +31,71 @@ if (!$TestResultsPath) {
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
 $testProjects = @()
+
+function BuildNativeBinaryAndPrepareTests {
+    param(
+        [string[]]$areas = @()
+    )
+
+    # Native AOT compilation only occurs during 'dotnet publish', not 'dotnet build'
+    $nativeBinaryPath = PublishNativeBinary
+
+    Write-Host "Building test project(s)"
+    Invoke-LoggedCommand `
+        -Command "dotnet build" `
+        -AllowedExitCodes @(0)
+
+    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -areas $areas
+}
+
+
+function PublishNativeBinary {
+    $runtimeId = [System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier
+    Write-Host "Publishing AzureMcp as native binary for $runtimeId"
+
+    $cliProjectDir = "$RepoRoot/core/src/AzureMcp.Cli"
+
+    Invoke-LoggedCommand `
+        -Command "dotnet publish '$cliProjectDir/AzureMcp.Cli.csproj' -c Release -r $runtimeId /p:BuildNative=true" `
+        -AllowedExitCodes @(0) | Out-Null
+
+    $exeName = if ($runtimeId.StartsWith('win-')) { "azmcp.exe" } else { "azmcp" }
+    $nativeExePath = "$cliProjectDir/bin/Release/net9.0/$runtimeId/publish/$exeName"
+
+    if (-not (Test-Path $nativeExePath)) {
+        Write-Error "Native binary not found at $nativeExePath"
+        exit 1
+    }
+
+    return $nativeExePath
+}
+
+function CopyNativeBinaryToTestDirs {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$nativeBinaryPath,
+        [string[]]$areas = @()
+    )
+    Write-Host "Copying native AzureMcp to test directories"
+
+    if (!$areas) {
+        $testDirectories = Get-ChildItem -Path $RepoRoot -Recurse -Filter "*.LiveTests" -Directory
+    } else {
+        $testDirectories = @()
+        foreach ($area in $areas) {
+            $areaPath = $area -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$($area.ToLower())/tests"
+            if (Test-Path $areaPath) {
+                $areaTestDirectories = Get-ChildItem -Path $areaPath -Recurse -Filter "*.LiveTests" -Directory
+                $testDirectories += $areaTestDirectories
+            }
+        }
+    }
+
+    foreach ($testDir in $testDirectories) {
+        $targetDirectory = "$($testDir.FullName)/bin/Debug/net9.0"
+        Copy-Item $nativeBinaryPath $targetDirectory -Force
+    }
+}
 
 function AddTestProjects($path) {
     if($TestType -in @('Live', 'All')) {
@@ -65,6 +131,10 @@ try {
     dotnet new sln -n "Tests" | Out-Null
     dotnet sln add $testProjects --in-root
 
+    if ($BuildNative) {
+        BuildNativeBinaryAndPrepareTests -areas $Areas
+    }
+
     if($debugLogs) {
         Write-Host "`n`n"
         # dump all environment variables
@@ -93,9 +163,15 @@ try {
     $resultsArg = "--results-directory '$TestResultsPath'"
     $loggerArg = "--logger 'trx'"
 
-    Invoke-LoggedCommand `
-        -Command "dotnet test $coverageArg $resultsArg $loggerArg" `
-        -AllowedExitCodes @(0, 1)
+    if ($BuildNative) {
+        Invoke-LoggedCommand `
+            -Command "dotnet test $coverageArg $resultsArg $loggerArg --no-build" `
+            -AllowedExitCodes @(0, 1)
+    } else {
+        Invoke-LoggedCommand `
+            -Command "dotnet test $coverageArg $resultsArg $loggerArg" `
+            -AllowedExitCodes @(0, 1)
+    }
 }
 finally {
     Pop-Location
