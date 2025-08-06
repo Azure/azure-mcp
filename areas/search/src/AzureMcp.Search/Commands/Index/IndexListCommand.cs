@@ -12,7 +12,7 @@ namespace AzureMcp.Search.Commands.Index;
 
 public sealed class IndexListCommand(ILogger<IndexListCommand> logger) : GlobalCommand<IndexListOptions>()
 {
-    private const string CommandTitle = "List Azure AI Search Indexes";
+    private const string CommandTitle = "List Azure AI Search (formerly known as \"Azure Cognitive Search\") Indexes";
     private readonly ILogger<IndexListCommand> _logger = logger;
     private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
     public override string Name => "list";
