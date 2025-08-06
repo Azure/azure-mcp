@@ -30,18 +30,15 @@ public class StorageSetup : IAreaSetup
         var storage = new CommandGroup("storage",
             """
             Storage operations - Commands for managing and accessing Azure Storage accounts and their data services 
-            including Storage Blobs, Storage DataLake, Storage Shares, Storage Tables, and Storage Queues for scalable 
-            cloud storage solutions. Use this tool when you need to list storage accounts, work with blob containers 
-            and objects, access file shares, manage table storage for NoSQL data, handle queue storage for messaging. 
-            This tool supports unstructured data storage, backup scenarios, and large-scale data operations. Do not 
-            use this tool for database operations, structured relational data, real-time analytics, or Azure 
-            SQL/Cosmos DB operations - this tool focuses on object storage, file storage, and simple NoSQL table 
-            storage scenarios. This tool is a hierarchical MCP command router where sub-commands are routed to MCP 
-            servers that require specific fields inside the "parameters" object. To invoke a command, set "command" 
-            and wrap its arguments in "parameters". Set "learn=true" to discover available sub-commands for different 
-            Azure Storage service operations including blobs, datalake, shares, tables, and queues. Note that this 
-            tool requires appropriate Storage account permissions and will only access storage resources accessible to 
-            the authenticated user.
+            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use 
+            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares, 
+            querying table storage, handle queue messages. This tool focuses on object storage, file storage, 
+            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router 
+            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object. 
+            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover 
+            available sub-commands for different Azure Storage service operations including blobs, datalake, shares, 
+            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only 
+            access storage resources accessible to the authenticated user.
             """);
         rootGroup.AddSubGroup(storage);
 
