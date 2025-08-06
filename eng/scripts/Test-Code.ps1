@@ -9,7 +9,7 @@ param(
     [string] $TestType = 'Unit',
     [switch] $CollectCoverage,
     [switch] $OpenReport,
-    [switch] $BuildNative
+    [switch] $UseNative
 )
 
 $ErrorActionPreference = 'Stop'
@@ -131,7 +131,7 @@ try {
     dotnet new sln -n "Tests" | Out-Null
     dotnet sln add $testProjects --in-root
 
-    if ($BuildNative) {
+    if ($UseNative) {
         BuildNativeBinaryAndPrepareTests -areas $Areas
     }
 
@@ -163,7 +163,7 @@ try {
     $resultsArg = "--results-directory '$TestResultsPath'"
     $loggerArg = "--logger 'trx'"
 
-    if ($BuildNative) {
+    if ($UseNative) {
         Invoke-LoggedCommand `
             -Command "dotnet test $coverageArg $resultsArg $loggerArg --no-build" `
             -AllowedExitCodes @(0, 1)
