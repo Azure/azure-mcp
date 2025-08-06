@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Server;
 
-public sealed class ParamSetCommand(ILogger<ParamSetCommand> logger) : BaseServerCommand<ParamSetOptions>(logger)
+public sealed class ServerParamSetCommand(ILogger<ServerParamSetCommand> logger) : BaseServerCommand<ServerParamSetOptions>(logger)
 {
     private const string CommandTitle = "Set PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = PostgresOptionDefinitions.Param;
@@ -32,7 +32,7 @@ public sealed class ParamSetCommand(ILogger<ParamSetCommand> logger) : BaseServe
         command.AddOption(_valueOption);
     }
 
-    protected override ParamSetOptions BindOptions(ParseResult parseResult)
+    protected override ServerParamSetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
@@ -57,8 +57,8 @@ public sealed class ParamSetCommand(ILogger<ParamSetCommand> logger) : BaseServe
             var result = await pgService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);
             context.Response.Results = !string.IsNullOrEmpty(result) ?
                 ResponseResult.Create(
-                    new ParamSetCommandResult(result, options.Param!, options.Value!),
-                    PostgresJsonContext.Default.ParamSetCommandResult) :
+                    new ServerParamSetCommandResult(result, options.Param!, options.Value!),
+                    PostgresJsonContext.Default.ServerParamSetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -69,5 +69,5 @@ public sealed class ParamSetCommand(ILogger<ParamSetCommand> logger) : BaseServe
         return context.Response;
     }
 
-    internal record ParamSetCommandResult(string Message, string Parameter, string Value);
+    internal record ServerParamSetCommandResult(string Message, string Parameter, string Value);
 }

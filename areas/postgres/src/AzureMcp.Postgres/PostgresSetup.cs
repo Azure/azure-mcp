@@ -42,6 +42,6 @@ public class PostgresSetup : IAreaSetup
 
         var param = new CommandGroup("param", "PostgreSQL server parameter operations");
         server.AddSubGroup(param);
-        param.AddCommand("set", new ParamSetCommand(loggerFactory.CreateLogger<ParamSetCommand>()));
+        param.AddCommand("set", new ServerParamSetCommand(loggerFactory.CreateLogger<ServerParamSetCommand>()));
     }
 }

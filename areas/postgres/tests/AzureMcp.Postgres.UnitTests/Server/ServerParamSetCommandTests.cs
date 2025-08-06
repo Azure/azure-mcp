@@ -16,16 +16,16 @@ using Xunit;
 
 namespace AzureMcp.Postgres.UnitTests.Server;
 
-public class ParamSetCommandTests
+public class ServerParamSetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IPostgresService _postgresService;
-    private readonly ILogger<ParamSetCommand> _logger;
+    private readonly ILogger<ServerParamSetCommand> _logger;
 
-    public ParamSetCommandTests()
+    public ServerParamSetCommandTests()
     {
         _postgresService = Substitute.For<IPostgresService>();
-        _logger = Substitute.For<ILogger<ParamSetCommand>>();
+        _logger = Substitute.For<ILogger<ServerParamSetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_postgresService);
@@ -39,7 +39,7 @@ public class ParamSetCommandTests
         var expectedMessage = "Parameter 'param123' updated successfully to 'value123'.";
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns(expectedMessage);
 
-        var command = new ParamSetCommand(_logger);
+        var command = new ServerParamSetCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
@@ -50,7 +50,7 @@ public class ParamSetCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<ParamSetResult>(json);
+        var result = JsonSerializer.Deserialize<ServerParamSetResult>(json);
 
         Assert.NotNull(result);
         Assert.Equal(expectedMessage, result.Message);
@@ -62,7 +62,7 @@ public class ParamSetCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenParamDoesNotExist()
     {
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns("");
-        var command = new ParamSetCommand(_logger);
+        var command = new ServerParamSetCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
@@ -82,7 +82,7 @@ public class ParamSetCommandTests
     [InlineData("--value")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
-        var command = new ParamSetCommand(_logger);
+        var command = new ServerParamSetCommand(_logger);
         var args = command.GetCommand().Parse(new string[]
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
@@ -107,7 +107,7 @@ public class ParamSetCommandTests
         var expectedMessage = "Parameter updated successfully.";
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "max_connections", "200").Returns(expectedMessage);
 
-        var command = new ParamSetCommand(_logger);
+        var command = new ServerParamSetCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "max_connections", "--value", "200"]);
         var context = new CommandContext(_serviceProvider);
 
@@ -116,7 +116,7 @@ public class ParamSetCommandTests
         await _postgresService.Received(1).SetServerParameterAsync("sub123", "rg1", "user1", "server123", "max_connections", "200");
     }
 
-    private class ParamSetResult
+    private class ServerParamSetResult
     {
         [JsonPropertyName("Message")]
         public string Message { get; set; } = string.Empty;
