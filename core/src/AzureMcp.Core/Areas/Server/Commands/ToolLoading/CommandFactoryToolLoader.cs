@@ -65,7 +65,7 @@ public sealed class CommandFactoryToolLoader(
     /// <returns>The result of the tool call operation.</returns>
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
+        using var activity = await _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
 
         if (request.Params == null)
         {

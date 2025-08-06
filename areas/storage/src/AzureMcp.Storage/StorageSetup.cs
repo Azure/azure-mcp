@@ -9,6 +9,7 @@ using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Storage.Commands.Share.File;
 using AzureMcp.Storage.Commands.Queue.Message;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
@@ -68,6 +69,14 @@ public class StorageSetup : IAreaSetup
         var queueMessage = new CommandGroup("message", "Storage queue message operations - Commands for sending and managing messages in Azure Storage queues.");
         queues.AddSubGroup(queueMessage);
 
+        // Create file shares subgroup under storage
+        var shares = new CommandGroup("share", "File share operations - Commands for managing Azure Storage file shares and their contents.");
+        storage.AddSubGroup(shares);
+
+        // Create file subgroup under shares
+        var shareFiles = new CommandGroup("file", "File share file operations - Commands for managing files and directories within Azure Storage file shares.");
+        shares.AddSubGroup(shareFiles);
+
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(
             loggerFactory.CreateLogger<AccountListCommand>()));
@@ -90,7 +99,11 @@ public class StorageSetup : IAreaSetup
         directory.AddCommand("create", new DirectoryCreateCommand(
             loggerFactory.CreateLogger<DirectoryCreateCommand>()));
 
+
         queueMessage.AddCommand("send", new QueueMessageSendCommand(
             loggerFactory.CreateLogger<QueueMessageSendCommand>()));
+
+        shareFiles.AddCommand("list", new FileListCommand(
+            loggerFactory.CreateLogger<FileListCommand>()));
     }
 }

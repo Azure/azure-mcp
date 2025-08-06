@@ -285,6 +285,43 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_list_files_in_share_directory()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" }
+                });
+
+            var files = result.AssertProperty("files");
+            Assert.Equal(JsonValueKind.Array, files.ValueKind);
+            Assert.NotEmpty(files.EnumerateArray());
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory_with_prefix()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" },
+                    { "prefix", "NoSuchPrefix" }
+                });
+
+            // When using a prefix that does not match any files, we should still return a valid response
+            // with no result.
+            Assert.Null(result);
+        }
+        
+        [Fact]
         public async Task Should_SendQueueMessage_Successfully()
         {
             // Arrange

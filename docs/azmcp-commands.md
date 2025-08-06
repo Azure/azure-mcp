@@ -780,6 +780,13 @@ azmcp storage datalake directory create --subscription <subscription> \
                                         --account <account-name> \
                                         --directory-path <directory-path>
 
+# List files and directories in a File Share directory
+azmcp storage share file list --subscription <subscription> \
+                              --account <account-name> \
+                              --share <share-name> \
+                              --directory-path <directory-path> \
+                              [--prefix <prefix>]
+
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
                                  --account <account-name> \
@@ -805,6 +812,60 @@ azmcp subscription list [--tenant-id <tenant-id>]
 ```bash
 # Get secure, production-grade Azure Terraform best practices for effective code generation and command execution.
 azmcp azureterraformbestpractices get
+```
+
+### Azure Virtual Desktop Operations
+
+```bash
+# List Azure Virtual Desktop host pools in a subscription
+azmcp virtualdesktop hostpool list --subscription <subscription> \
+                                   [--resource-group <resource-group>]
+
+# List session hosts in a host pool
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                               [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                               [--resource-group <resource-group>]
+
+# List user sessions on a session host
+azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subscription> \
+                                                           [--hostpool <hostpool-name> | --hostpool-resource-id <hostpool-resource-id>] \
+                                                           --sessionhost <sessionhost-name> \
+                                                           [--resource-group <resource-group>]
+```
+
+#### Resource Group Optimization
+
+The Virtual Desktop commands support an optional `--resource-group` parameter that provides significant performance improvements when specified:
+
+- **Without `--resource-group`**: Commands enumerate through all resources in the subscription
+- **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
+
+**Host Pool List Usage:**
+
+```bash
+# Standard usage - enumerates all host pools in subscription
+azmcp virtualdesktop hostpool list --subscription <subscription>
+
+# Optimized usage - lists host pools in specific resource group only
+azmcp virtualdesktop hostpool list --subscription <subscription> \
+                                   --resource-group <resource-group>
+```
+
+**Session Host Usage patterns:**
+
+```bash
+# Standard usage - enumerates all host pools in subscription
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool <hostpool-name>
+
+# Optimized usage - direct resource group access
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool <hostpool-name> \
+                                                --resource-group <resource-group>
+
+# Alternative with resource ID (no resource group needed)
+azmcp virtualdesktop hostpool sessionhost list --subscription <subscription> \
+                                                --hostpool-resource-id /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.DesktopVirtualization/hostPools/<pool>
 ```
 
 ### Azure Workbooks Operations

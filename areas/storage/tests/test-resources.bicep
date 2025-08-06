@@ -46,6 +46,28 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource bazTable 'tables' = { name: 'baz' }
   }
 
+  resource fileServices 'fileServices' = {
+    name: 'default'
+    resource testShare 'shares' = { 
+      name: 'testshare'
+      properties: {
+        shareQuota: 1024
+      }
+    }
+    resource fooShare 'shares' = { 
+      name: 'foo'
+      properties: {
+        shareQuota: 1024
+      }
+    }
+    resource barShare 'shares' = { 
+      name: 'bar'
+      properties: {
+        shareQuota: 1024
+      }
+    }
+  }
+
   resource queueServices 'queueServices' = {
     name: 'default'
     resource testQueue 'queues' = { 
@@ -60,6 +82,14 @@ resource blobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@
   // Read, write, and delete Azure Storage containers and blobs
   // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage
   name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+}
+
+resource fileContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Storage File Data Privileged Contributor role.
+  // Read, write, and delete Azure Storage files and directories
+  // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage
+  name: '69566ab7-960f-475b-8e7c-b3118f30c6bd'
 }
 
 resource queueDataContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
@@ -77,6 +107,16 @@ resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
     principalId: testApplicationOid
     roleDefinitionId: blobContributorRoleDefinition.id
     description: 'Blob Contributor for testApplicationOid'
+  }
+}
+
+resource appFileRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =  {
+  name: guid(fileContributorRoleDefinition.id, testApplicationOid, storageAccount.id)
+  scope: storageAccount
+  properties:{
+    principalId: testApplicationOid
+    roleDefinitionId: fileContributorRoleDefinition.id
+    description: 'File Share Contributor for testApplicationOid'
   }
 }
 

@@ -10,6 +10,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.Shares;
+using Azure.Storage.Files.Shares.Models;
 using Azure.Storage.Queues;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
@@ -315,6 +317,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
+    private async Task<ShareServiceClient> CreateShareServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.file.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
+        options.ShareTokenIntent = ShareTokenIntent.Backup; // Set the intent for file backup, needed for Manged Identity
+        return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
     private async Task<QueueServiceClient> CreateQueueServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         var uri = $"https://{accountName}.queue.core.windows.net";
@@ -485,6 +495,44 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
+    public async Task<List<FileShareItemInfo>> ListFilesAndDirectories(
+        string accountName,
+        string shareName,
+        string directoryPath,
+        string? prefix,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, shareName, directoryPath, subscriptionId);
+
+        var shareServiceClient = await CreateShareServiceClient(accountName, tenant, retryPolicy);
+
+        try
+        {
+            var shareClient = shareServiceClient.GetShareClient(shareName);
+            var directoryClient = shareClient.GetDirectoryClient(directoryPath);
+
+            var items = new List<FileShareItemInfo>();
+
+            await foreach (var item in directoryClient.GetFilesAndDirectoriesAsync(prefix: prefix))
+            {
+                items.Add(new FileShareItemInfo(
+                    item.Name,
+                    item.IsDirectory,
+                    item.FileSize,
+                    item.Properties.LastModified,
+                    item.Properties.ETag.ToString()));
+            }
+
+            return items;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error listing files and directories: {ex.Message}", ex);
+        }
+    }
+
     public async Task<QueueMessageSendResult> SendQueueMessage(
         string accountName,
         string queueName,
@@ -495,12 +543,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
+        ValidateRequiredParameters(accountName, queueName, messageContent, subscriptionId);
+
+        // Create queue service client
+        var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
+        var queueClient = queueServiceClient.GetQueueClient(queueName);
+        
         try
         {
-            // Create queue service client
-            var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
-            var queueClient = queueServiceClient.GetQueueClient(queueName);
-
             // Send message with optional parameters
             TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
             TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null;

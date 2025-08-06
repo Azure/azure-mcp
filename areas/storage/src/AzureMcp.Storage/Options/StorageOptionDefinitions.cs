@@ -9,15 +9,17 @@ public static class StorageOptionDefinitions
     public const string ContainerName = "container";
     public const string TableName = "table";
     public const string FileSystemName = "file-system";
-    public const string QueueName = "queue";
-    public const string MessageContent = "message";
-    public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
-    public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier";
     public const string BlobNamesParam = "blob-names";
     public const string FilterPathName = "filter-path";
     public const string RecursiveName = "recursive";
+    public const string ShareName = "share";
+    public const string PrefixName = "prefix";
+    public const string QueueName = "queue";
+    public const string MessageContent = "message";
+    public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
+    public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -93,6 +95,22 @@ public static class StorageOptionDefinitions
         IsRequired = false
     };
 
+    public static readonly Option<string> Share = new(
+        $"--{ShareName}",
+        "The name of the file share to access within the storage account."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> Prefix = new(
+        $"--{PrefixName}",
+        "Optional prefix to filter results. Only items that start with this prefix will be returned."
+    )
+    {
+        IsRequired = false
+    };
+
     public static readonly Option<string> Queue = new(
         $"--{QueueName}",
         "The name of the queue to access within the storage account."
@@ -118,7 +136,8 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<int?> VisibilityTimeoutInSecondsOption = new(
         $"--{VisibilityTimeoutInSeconds}",
-        "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible).")
+        "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible)."
+    )
     {
         IsRequired = false
     };

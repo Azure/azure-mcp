@@ -4,7 +4,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Monitor.Models;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Monitor.UnitTests.Models;
