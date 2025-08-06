@@ -12,6 +12,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Docs fix: remove duplicate Storage datalake command
+
 ## 0.5.3 (2025-08-05)
 
 ### Features Added
