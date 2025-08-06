@@ -9,7 +9,7 @@ param(
     [string] $TestType = 'Unit',
     [switch] $CollectCoverage,
     [switch] $OpenReport,
-    [switch] $UseNative
+    [switch] $TestNativeBuild
 )
 
 $ErrorActionPreference = 'Stop'
@@ -48,7 +48,6 @@ function BuildNativeBinaryAndPrepareTests {
     CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -areas $areas
 }
 
-
 function PublishNativeBinary {
     $runtimeId = [System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier
     Write-Host "Publishing AzureMcp as native binary for $runtimeId"
@@ -83,7 +82,8 @@ function CopyNativeBinaryToTestDirs {
     } else {
         $testDirectories = @()
         foreach ($area in $areas) {
-            $areaPath = $area -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$($area.ToLower())/tests"
+            $areaName = $area.ToLower()
+            $areaPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
             if (Test-Path $areaPath) {
                 $areaTestDirectories = Get-ChildItem -Path $areaPath -Recurse -Filter "*.LiveTests" -Directory
                 $testDirectories += $areaTestDirectories
@@ -110,7 +110,8 @@ if (!$Areas) {
     AddTestProjects $RepoRoot
 } else {
     foreach ($area in $Areas) {
-        $areaPath = $area -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$($area.ToLower())/tests"
+        $areaName = $area.ToLower()
+        $areaPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
         if (Test-Path $areaPath) {
             AddTestProjects $areaPath
         } else {
@@ -131,7 +132,7 @@ try {
     dotnet new sln -n "Tests" | Out-Null
     dotnet sln add $testProjects --in-root
 
-    if ($UseNative) {
+    if ($TestNativeBuild) {
         BuildNativeBinaryAndPrepareTests -areas $Areas
     }
 
@@ -163,15 +164,14 @@ try {
     $resultsArg = "--results-directory '$TestResultsPath'"
     $loggerArg = "--logger 'trx'"
 
-    if ($UseNative) {
-        Invoke-LoggedCommand `
-            -Command "dotnet test $coverageArg $resultsArg $loggerArg --no-build" `
-            -AllowedExitCodes @(0, 1)
-    } else {
-        Invoke-LoggedCommand `
-            -Command "dotnet test $coverageArg $resultsArg $loggerArg" `
-            -AllowedExitCodes @(0, 1)
+    $command = "dotnet test $coverageArg $resultsArg $loggerArg"
+    if ($TestNativeBuild) {
+        $command += " --no-build"
     }
+
+    Invoke-LoggedCommand `
+        -Command $command `
+        -AllowedExitCodes @(0, 1)
 }
 finally {
     Pop-Location

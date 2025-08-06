@@ -4,6 +4,7 @@
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
     <AssemblyTitle>Azure MCP Server</AssemblyTitle>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- Publishing settings -->
     <IsAotCompatible>true</IsAotCompatible>
     <PublishSingleFile>false</PublishSingleFile>
@@ -30,7 +31,6 @@
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <SelfContained>true</SelfContained>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
     <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
   </PropertyGroup>
