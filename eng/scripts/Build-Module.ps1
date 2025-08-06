@@ -77,7 +77,7 @@ try {
     $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
 
-    if($SelfContained -or $BuildNative) {
+    if($SelfContained) {
         $command += " --self-contained"
     }
 
