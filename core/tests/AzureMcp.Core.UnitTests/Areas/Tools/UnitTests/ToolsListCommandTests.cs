@@ -272,7 +272,7 @@ public class ToolsListCommandTests
         Assert.Contains(result, cmd => cmd.Command == "azmcp appconfig account list");
 
         // Verify that each command has proper structure
-        foreach (var cmd in result.Take(3))
+        foreach (var cmd in result.Take(4))
         {
             Assert.NotEmpty(cmd.Name);
             Assert.NotEmpty(cmd.Description);
