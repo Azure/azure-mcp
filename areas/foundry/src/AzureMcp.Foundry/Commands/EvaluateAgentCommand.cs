@@ -10,7 +10,6 @@ namespace AzureMcp.Foundry.Commands;
 public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
 {
     private const string CommandTitle = "Evaluate Agent";
-    private readonly Option<string> _agentIdOption = FoundryOptionDefinitions.AgentIdOption;
     private readonly Option<string> _queryOption = FoundryOptionDefinitions.QueryOption;
     private readonly Option<string> _evaluatorNameOption = FoundryOptionDefinitions.EvaluatorNameOption;
     private readonly Option<string> _responseOption = FoundryOptionDefinitions.ResponseOption;
@@ -41,7 +40,6 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_agentIdOption);
         command.AddOption(_queryOption);
         command.AddOption(_evaluatorNameOption);
         command.AddOption(_responseOption);
@@ -53,7 +51,6 @@ public sealed class EvaluateAgentCommand : GlobalCommand<EvaluateAgentOptions>
     protected override EvaluateAgentOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.AgentId = parseResult.GetValueForOption(_agentIdOption);
         options.Query = parseResult.GetValueForOption(_queryOption);
         options.EvaluatorName = parseResult.GetValueForOption(_evaluatorNameOption);
         options.Response = parseResult.GetValueForOption(_responseOption);

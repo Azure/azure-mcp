@@ -8,8 +8,6 @@ namespace AzureMcp.Foundry.Options;
 
 public class EvaluateAgentOptions : GlobalOptions
 {
-    [JsonPropertyName(FoundryOptionDefinitions.AgentId)]
-    public string? AgentId { get; set; }
 
     [JsonPropertyName(FoundryOptionDefinitions.Query)]
     public string? Query { get; set; }
@@ -28,9 +26,6 @@ public class EvaluateAgentOptions : GlobalOptions
 
     [JsonPropertyName(FoundryOptionDefinitions.Response)]
     public string? Response { get; set; }
-
-    [JsonPropertyName(FoundryOptionDefinitions.ToolCalls)]
-    public string? ToolCalls { get; set; }
 
     [JsonPropertyName(FoundryOptionDefinitions.ToolDefinitions)]
     public string? ToolDefinitions { get; set; }
