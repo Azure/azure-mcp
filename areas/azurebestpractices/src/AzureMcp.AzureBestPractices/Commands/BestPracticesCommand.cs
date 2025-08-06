@@ -152,7 +152,7 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
                 string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, fileName.Trim());
                 string content = EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
-                
+
                 if (combinedContent.Length > 0)
                 {
                     combinedContent.Append("\n\n");
