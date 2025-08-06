@@ -320,7 +320,7 @@ namespace AzureMcp.Storage.LiveTests
             // with no result.
             Assert.Null(result);
         }
-        
+
         [Fact]
         public async Task Should_SendQueueMessage_Successfully()
         {

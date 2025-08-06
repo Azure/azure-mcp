@@ -74,7 +74,7 @@ public interface IStorageService
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
-        
+
     Task<QueueMessageSendResult> SendQueueMessage(
         string accountName,
         string queueName,

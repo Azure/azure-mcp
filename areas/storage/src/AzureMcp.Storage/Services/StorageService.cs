@@ -548,7 +548,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         // Create queue service client
         var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
         var queueClient = queueServiceClient.GetQueueClient(queueName);
-        
+
         try
         {
             // Send message with optional parameters
