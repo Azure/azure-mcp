@@ -100,6 +100,37 @@ A complete command requires:
    - Bicep template: `/areas/{area-name}/tests/test-resources.bicep`
    - Optional post-deployment script: `/areas/{area-name}/tests/test-resources-post.ps1`
 
+### File and Class Naming Convention
+
+**IMPORTANT**: All command files and classes must follow the **ObjectVerb** naming pattern for consistency and discoverability:
+
+**Pattern**: `{Resource}{SubResource}{Operation}Command`
+
+**Examples**:
+- ✅ `ServerListCommand` (Resource: Server, Operation: List)
+- ✅ `ServerConfigGetCommand` (Resource: Server, SubResource: Config, Operation: Get)
+- ✅ `ServerParamSetCommand` (Resource: Server, SubResource: Param, Operation: Set)
+- ✅ `TableSchemaGetCommand` (Resource: Table, SubResource: Schema, Operation: Get)
+- ✅ `DatabaseListCommand` (Resource: Database, Operation: List)
+
+**Anti-patterns to avoid**:
+- ❌ `GetConfigCommand` (missing resource prefix)
+- ❌ `GetParamCommand` (missing resource prefix)
+- ❌ `GetSchemaCommand` (missing resource prefix)
+
+**Apply this pattern to**:
+- Command class names: `ServerConfigGetCommand`, `ServerParamSetCommand`
+- Options class names: `ServerConfigGetOptions`, `ServerParamSetOptions`
+- Test class names: `ServerConfigGetCommandTests`, `ServerParamSetCommandTests`
+- File names: `ServerConfigGetCommand.cs`, `ServerParamSetOptions.cs`
+
+This convention ensures:
+- Clear identification of the resource being operated on
+- Logical grouping of related operations
+- Consistent file organization and naming
+- Better IDE intellisense and code navigation
+- Easier maintenance and discovery
+
 **IMPORTANT**: If implementing a new area, you must also ensure:
 - The Azure Resource Manager package is added to `Directory.Packages.props` first
 - Models, base commands, and option definitions follow the established patterns

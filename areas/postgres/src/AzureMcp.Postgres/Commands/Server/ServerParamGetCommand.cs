@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Server;
 
-public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServerCommand<GetParamOptions>(logger)
+public sealed class ServerParamGetCommand(ILogger<ServerParamGetCommand> logger) : BaseServerCommand<ServerParamGetOptions>(logger)
 {
     private const string CommandTitle = "Get PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = PostgresOptionDefinitions.Param;
@@ -30,7 +30,7 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
         command.AddOption(_paramOption);
     }
 
-    protected override GetParamOptions BindOptions(ParseResult parseResult)
+    protected override ServerParamGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
@@ -54,8 +54,8 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
             var parameterValue = await pgService.GetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!);
             context.Response.Results = parameterValue?.Length > 0 ?
                 ResponseResult.Create(
-                    new GetParamCommandResult(parameterValue),
-                    PostgresJsonContext.Default.GetParamCommandResult) :
+                    new ServerParamGetCommandResult(parameterValue),
+                    PostgresJsonContext.Default.ServerParamGetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -66,5 +66,5 @@ public sealed class GetParamCommand(ILogger<GetParamCommand> logger) : BaseServe
         return context.Response;
     }
 
-    internal record GetParamCommandResult(string ParameterValue);
+    internal record ServerParamGetCommandResult(string ParameterValue);
 }

@@ -32,13 +32,13 @@ public class PostgresSetup : IAreaSetup
         var table = new CommandGroup("table", "PostgreSQL table operations");
         pg.AddSubGroup(table);
         table.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
-        table.AddCommand("schema", new GetSchemaCommand(loggerFactory.CreateLogger<GetSchemaCommand>()));
+        table.AddCommand("schema", new TableSchemaGetCommand(loggerFactory.CreateLogger<TableSchemaGetCommand>()));
 
         var server = new CommandGroup("server", "PostgreSQL server operations");
         pg.AddSubGroup(server);
         server.AddCommand("list", new ServerListCommand(loggerFactory.CreateLogger<ServerListCommand>()));
-        server.AddCommand("config", new GetConfigCommand(loggerFactory.CreateLogger<GetConfigCommand>()));
-        server.AddCommand("param", new GetParamCommand(loggerFactory.CreateLogger<GetParamCommand>()));
+        server.AddCommand("config", new ServerConfigGetCommand(loggerFactory.CreateLogger<ServerConfigGetCommand>()));
+        server.AddCommand("param", new ServerParamGetCommand(loggerFactory.CreateLogger<ServerParamGetCommand>()));
         
         var param = new CommandGroup("param", "PostgreSQL server parameter operations");
         server.AddSubGroup(param);
