@@ -1,0 +1,236 @@
+{
+    "azmcp-bestpractices-get": [
+        "Fetch the latest Azure best practices",
+        "Fetch the latest Azure best practices and generate code sample to get a secret from Azure Key Vault"
+    ],
+    "azmcp-subscription-list": [
+        "List all subscriptions for my account",
+        "What subscriptions do I have?",
+        "Show me my subscriptions",
+        "What is my current subscription?"
+    ],
+    "azmcp-group-list": [
+        "List all resource groups in my subscription",
+        "Show me the resource groups in my subscription",
+        "Show me my resource groups"
+    ],
+    "azmcp-appconfig-account-list": [
+        "List all App Configuration stores in my subscription",
+        "Show me the App Configuration stores in my subscription",
+        "Show me my App Configuration stores"
+    ],
+    "azmcp-appconfig-kv-delete": [
+        "Delete the key <key_name> in App Configuration store <app_config_store_name>"
+    ],
+    "azmcp-appconfig-kv-list": [
+        "List all key-value settings in App Configuration store <app_config_store_name>",
+        "Show me the key-value settings in App Configuration store <app_config_store_name>"
+    ],
+    "azmcp-appconfig-kv-lock": [
+        "Lock the key <key_name> in App Configuration store <app_config_store_name>"
+    ],
+    "azmcp-appconfig-kv-set": [
+        "Set the key <key_name> in App Configuration store <app_config_store_name> to <value>"
+    ],
+    "azmcp-appconfig-kv-show": [
+        "Show the content for the key <key_name> in App Configuration store <app_config_store_name>"
+    ],
+    "azmcp-appconfig-kv-unlock": [
+        "Unlock the key <key_name> in App Configuration store <app_config_store_name>"
+    ],
+    "azmcp-extension-az": [
+        "Create a Storage account with name <storage_account_name>",
+        "Show me the details of the storage account <account_name>",
+        "List all virtual machines in my subscription"
+    ],
+    "azmcp-cosmos-account-list": [
+        "List all cosmosdb accounts in my subscription",
+        "Show me the cosmosdb accounts in my subscription",
+        "Show me my cosmosdb accounts"
+    ],
+    "azmcp-cosmos-database-container-item-query": [
+        "Show me the items that contain the word <search_term> in the container <container_name> in the database <database_name> for the cosmosdb account <account_name>"
+    ],
+    "azmcp-cosmos-database-container-list": [
+        "List all the containers in the database <database_name> for the cosmosdb account <account_name>",
+        "Show me the containers in the database <database_name> for the cosmosdb account <account_name>"
+    ],
+    "azmcp-cosmos-database-list": [
+        "List all the databases in the cosmosdb account <account_name>",
+        "Show me the databases in the cosmosdb account <account_name>"
+    ],
+    "azmcp-kusto-cluster-get": [
+        "Show me the details of the Data Explorer cluster <cluster_name>"
+    ],
+    "azmcp-kusto-cluster-list": [
+        "List all Data Explorer clusters in my subscription",
+        "Show me the Data Explorer clusters in my subscription",
+        "Show me my Data Explorer clusters"
+    ],
+    "azmcp-kusto-database-list": [
+        "List all databases in the Data Explorer cluster <cluster_name>",
+        "Show me the databases in the Data Explorer cluster <cluster_name>"
+    ],
+    "azmcp-kusto-query": [
+        "Show me all items that contain the word <search_term> in the Data Explorer table <table_name> in cluster <cluster_name>"
+    ],
+    "azmcp-kusto-sample": [
+        "Show me a data sample from the Data Explorer table <table_name> in cluster <cluster_name>"
+    ],
+    "azmcp-kusto-table-list": [
+        "List all tables in the Data Explorer database <database_name> in cluster <cluster_name>",
+        "Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name>"
+    ],
+    "azmcp-kusto-table-schema": [
+        "Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name>"
+    ],
+    "azmcp-keyvault-key-create": [
+        "Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name>"
+    ],
+    "azmcp-keyvault-key-get": [
+        "Show me the details of key <key_name> in the key vault <key_vault_account_name>"
+    ],
+    "azmcp-keyvault-key-list": [
+        "List all keys in the key vault <key_vault_account_name>",
+        "Show me the keys in the key vault <key_vault_account_name>"
+    ],
+    "azmcp-keyvault-secret-get": [
+        "Show me the details about the secret <secret_name> in the key vault <key_vault_account_name>"
+    ],
+    "azmcp-monitor-healthmodels-entity-gethealth": [
+        "Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name>"
+    ],
+    "azmcp-monitor-log-query": [
+        "Show me the logs for the past hour in the Log Analytics workspace <workspace_name>"
+    ],
+    "azmcp-monitor-metrics-definitions": [
+        "What metric definitions are available for the Application Insights resource <resource_name>",
+        "Show me all available metrics and their definitions for storage account <account_name>",
+        "Get metric definitions for <resource_type> <resource_name> from the namespace"
+    ],
+    "azmcp-monitor-metrics-query": [
+        "Query the <metric_name> metric for <resource_type> <resource_name> for the last <time_period>",
+        "What's the request per second rate for my Application Insights resource <resource_name> over the last <time_period>",
+        "Investigate error rates and failed requests for Application Insights resource <resource_name> for the last <time_period>",
+        "Analyze the performance trends and response times for Application Insights resource <resource_name> over the last <time_period>",
+        "Check the availability metrics for my Application Insights resource <resource_name> for the last <time_period>",
+        "Get the <aggregation_type> <metric_name> metric for <resource_type> <resource_name> over the last <time_period> with intervals"
+    ],
+    "azmcp-monitor-table-list": [
+        "List all tables in the Log Analytics workspace <workspace_name>",
+        "Show me the tables in the Log Analytics workspace <workspace_name>"
+    ],
+    "azmcp-monitor-table-type-list": [
+        "List all available table types in the Log Analytics workspace <workspace_name>",
+        "Show me the available table types in the Log Analytics workspace <workspace_name>"
+    ],
+    "azmcp-monitor-workspace-list": [
+        "List all Log Analytics workspaces in my subscription",
+        "Show me the Log Analytics workspaces in my subscription",
+        "Show me my Log Analytics workspaces"
+    ],
+    "azmcp-datadog-monitoredresources-list": [
+        "List all monitored resources in the Datadog resource <resource_name>",
+        "Show me the monitored resources in the Datadog resource <resource_name>"
+    ],
+    "azmcp-postgres-database-list": [
+        "List all PostgreSQL databases in server <server>",
+        "Show me the PostgreSQL databases in server <server>"
+    ],
+    "azmcp-postgres-database-query": [
+        "Show me all items that contain the word <search_term> in the PostgreSQL database <database> in server <server>"
+    ],
+    "azmcp-postgres-server-config": [
+        "Show me the configuration of PostgreSQL server <server>"
+    ],
+    "azmcp-postgres-server-list": [
+        "List all PostgreSQL servers in my subscription",
+        "Show me the PostgreSQL servers in my subscription",
+        "Show me my PostgreSQL servers"
+    ],
+    "azmcp-postgres-server-param": [
+        "Show me if the parameter my PostgreSQL server <server> has replication enabled"
+    ],
+    "azmcp-postgres-server-setparam": [
+        "Enable replication for my PostgreSQL server <server>"
+    ],
+    "azmcp-postgres-table-list": [
+        "List all tables in the PostgreSQL database <database> in server <server>",
+        "Show me the tables in the PostgreSQL database <database> in server <server>"
+    ],
+    "azmcp-postgres-table-schema": [
+        "Show me the schema of table <table> in the PostgreSQL database <database> in server <server>"
+    ],
+    "azmcp-redis-cluster-database-list": [
+        "List all databases in the Redis Cluster <cluster_name>",
+        "Show me the databases in the Redis Cluster <cluster_name>"
+    ],
+    "azmcp-redis-cluster-list": [
+        "List all Redis Clusters in my subscription",
+        "Show me the Redis Clusters in my subscription",
+        "Show me my Redis Clusters"
+    ],
+    "azmcp-redis-cache-list": [
+        "List all Redis Caches in my subscription",
+        "Show me the Redis Caches in my subscription",
+        "Show me my Redis Caches"
+    ],
+    "azmcp-redis-cache-list-accesspolicy": [
+        "List all access policies in the Redis Cache <cache_name>",
+        "Show me the access policies in the Redis Cache <cache_name>"
+    ],
+    "azmcp-role-assignment-list": [
+        "List all available role assignments in my subscription",
+        "Show me the available role assignments in my subscription"
+    ],
+    "azmcp-search-index-describe": [
+        "Show me the details of the index <index-name> in Cognitive Search service <service-name>"
+    ],
+    "azmcp-search-index-list": [
+        "List all indexes in the Cognitive Search service <service-name>",
+        "Show me the indexes in the Cognitive Search service <service-name>"
+    ],
+    "azmcp-search-index-query": [
+        "Search for instances of <search_term> in the index <index-name> in Cognitive Search service <service-name>"
+    ],
+    "azmcp-search-list": [
+        "List all Cognitive Search services in my subscription",
+        "Show me the Cognitive Search services in my subscription",
+        "Show me my Cognitive Search services"
+    ],
+    "azmcp-servicebus-queue-details": [
+        "Show me the details of service bus <service_bus_name> queue <queue_name>"
+    ],
+    "azmcp-servicebus-queue-peek": [
+        "Show me the latest message in service bus <service_bus_name> queue <queue_name>"
+    ],
+    "azmcp-servicebus-topic-details": [
+        "Show me the details of service bus <service_bus_name> topic <topic_name>"
+    ],
+    "azmcp-servicebus-topic-subscription-details": [
+        "Show me the details of service bus <service_bus_name> subscription <subscription_name>"
+    ],
+    "azmcp-servicebus-topic-subscription-peek": [
+        "Show me the latest message in service bus <service_bus_name> subscription <subscription_name> for the topic <topic_name>"
+    ],
+    "azmcp-storage-account-list": [
+        "List all storage accounts in my subscription",
+        "Show me the storage accounts in my subscription",
+        "Show me my storage accounts"
+    ],
+    "azmcp-storage-blob-container-list": [
+        "List all blob containers in the storage account <account_name>",
+        "Show me the blob containers in the storage account <account_name>"
+    ],
+    "azmcp-storage-blob-container-details": [
+        "Show me the properties of the storage container files in the storage account <account_name>"
+    ],
+    "azmcp-storage-blob-list": [
+        "List all blobs in the blob container <container_name> in the storage account <account_name>",
+        "Show me the blobs in the blob container <container_name> in the storage account <account_name>"
+    ],
+    "azmcp-storage-table-list": [
+        "List all tables in the storage account <account_name>",
+        "Show me the tables in the storage account <account_name>"
+    ]
+}
