@@ -319,12 +319,12 @@ All interface methods should follow consistent formatting with proper line break
 ```csharp
 // Correct formatting - parameters aligned with line breaks
 Task<List<string>> GetStorageAccounts(
-    string subscriptionId,
+    string subscription,
     string? tenant = null,
     RetryPolicyOptions? retryPolicy = null);
 
 // Incorrect formatting - all parameters on single line
-Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+Task<List<string>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
 ```
 
 **Formatting Rules:**
