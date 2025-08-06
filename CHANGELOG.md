@@ -12,6 +12,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Updated the descriptions of Azure AI Search `CommandGroup`s to improve their usage by Agents. [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+
 ## 0.5.3 (2025-08-05)
 
 ### Features Added
