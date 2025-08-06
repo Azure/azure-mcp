@@ -3,9 +3,9 @@
 
 using System.CommandLine.Parsing;
 using System.Runtime.InteropServices;
-using AzureMcp.Extension.Commands;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Services.ProcessExecution;
+using AzureMcp.Extension.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
