@@ -34,7 +34,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         ValidateRequiredParameters(subscription);
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-        
+
         // Create cache key using the resolved subscription ID for consistency
         var cacheKey = string.IsNullOrEmpty(tenant)
             ? $"{StorageAccountsCacheKey}_{subscriptionResource.Data.SubscriptionId}"
