@@ -21,7 +21,7 @@ public class ToolsListCommandTests
     private const int SuccessStatusCode = 200;
     private const int ErrorStatusCode = 500;
     private const int MinimumExpectedCommands = 3;
-    
+
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ToolsListCommand> _logger;
     private readonly CommandContext _context;
@@ -32,10 +32,10 @@ public class ToolsListCommandTests
     {
         var collection = new ServiceCollection();
         collection.AddLogging();
-        
+
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory();
         collection.AddSingleton(commandFactory);
-        
+
         _serviceProvider = collection.BuildServiceProvider();
         _context = new(_serviceProvider);
         _logger = Substitute.For<ILogger<ToolsListCommand>>();
@@ -80,9 +80,9 @@ public class ToolsListCommandTests
             Assert.False(string.IsNullOrWhiteSpace(command.Name), "Command name should not be empty");
             Assert.False(string.IsNullOrWhiteSpace(command.Description), "Command description should not be empty");
             Assert.False(string.IsNullOrWhiteSpace(command.Command), "Command path should not be empty");
-        
+
             Assert.StartsWith("azmcp ", command.Command);
-        
+
             if (command.Options != null && command.Options.Count > 0)
             {
                 foreach (var option in command.Options)
@@ -93,7 +93,7 @@ public class ToolsListCommandTests
             }
         }
     }
-    
+
     /// <summary>
     /// Verifies that JSON serialization and deserialization works correctly
     /// and preserves data integrity during round-trip operations.
@@ -112,12 +112,10 @@ public class ToolsListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        Assert.False(string.IsNullOrWhiteSpace(json));
-        
-        // Ensure JSON is valid and can be deserialized
+
         var result = DeserializeResults(response.Results);
         Assert.NotNull(result);
-        
+
         // Verify JSON round-trip preserves all data
         var reserializedJson = JsonSerializer.Serialize(result);
         Assert.Equal(json, reserializedJson);
@@ -147,7 +145,7 @@ public class ToolsListCommandTests
         Assert.DoesNotContain(result, cmd => cmd.Name == "list" && cmd.Command.Contains("tool"));
 
         Assert.Contains(result, cmd => !string.IsNullOrEmpty(cmd.Name));
-        
+
     }
 
     /// <summary>
@@ -170,7 +168,7 @@ public class ToolsListCommandTests
         var result = DeserializeResults(response.Results);
 
         Assert.NotNull(result);
-        
+
         var commandWithOptions = result.FirstOrDefault(cmd => cmd.Options?.Count > 0);
         Assert.NotNull(commandWithOptions);
         Assert.NotNull(commandWithOptions.Options);
@@ -212,7 +210,7 @@ public class ToolsListCommandTests
         var faultyServiceProvider = Substitute.For<IServiceProvider>();
         faultyServiceProvider.GetService(typeof(CommandFactory))
             .Returns(x => throw new InvalidOperationException("Corrupted command factory"));
-        
+
         var faultyContext = new CommandContext(faultyServiceProvider);
         var args = _parser.Parse([]);
 
@@ -248,26 +246,31 @@ public class ToolsListCommandTests
         Assert.NotEmpty(result);
 
         Assert.True(result.Count >= MinimumExpectedCommands, $"Expected at least {MinimumExpectedCommands} commands, got {result.Count}");
-        
+
         var allCommands = result.Select(cmd => cmd.Command).ToList();
-        
+
         // Should have subscription commands (commands include 'azmcp' prefix)
         var subscriptionCommands = result.Where(cmd => cmd.Command.Contains("subscription")).ToList();
         Assert.True(subscriptionCommands.Count > 0, $"Expected subscription commands. All commands: {string.Join(", ", allCommands)}");
-        
+
         // Should have keyvault commands  
         var keyVaultCommands = result.Where(cmd => cmd.Command.Contains("keyvault")).ToList();
         Assert.True(keyVaultCommands.Count > 0, $"Expected keyvault commands. All commands: {string.Join(", ", allCommands)}");
-        
+
         // Should have storage commands
         var storageCommands = result.Where(cmd => cmd.Command.Contains("storage")).ToList();
         Assert.True(storageCommands.Count > 0, $"Expected storage commands. All commands: {string.Join(", ", allCommands)}");
-        
+
+        // Should have appconfig commands  
+        var appConfigCommands = result.Where(cmd => cmd.Command.Contains("appconfig")).ToList();
+        Assert.True(appConfigCommands.Count > 0, $"Expected appconfig commands. All commands: {string.Join(", ", allCommands)}");
+
         // Verify specific known commands exist
         Assert.Contains(result, cmd => cmd.Command == "azmcp subscription list");
         Assert.Contains(result, cmd => cmd.Command == "azmcp keyvault key list");
         Assert.Contains(result, cmd => cmd.Command == "azmcp storage account list");
-        
+        Assert.Contains(result, cmd => cmd.Command == "azmcp appconfig account list");
+
         // Verify that each command has proper structure
         foreach (var cmd in result.Take(3))
         {
@@ -297,13 +300,13 @@ public class ToolsListCommandTests
         var result = DeserializeResults(response.Results);
 
         Assert.NotNull(result);
-        
+
         foreach (var command in result)
         {
             // Command paths should not start or end with spaces
             Assert.False(command.Command.StartsWith(' '), $"Command '{command.Command}' should not start with space");
             Assert.False(command.Command.EndsWith(' '), $"Command '{command.Command}' should not end with space");
-            
+
             // Command paths should not have double spaces
             Assert.DoesNotContain("  ", command.Command);
         }
@@ -317,19 +320,23 @@ public class ToolsListCommandTests
     public async Task ExecuteAsync_WithEmptyCommandFactory_ReturnsEmptyResults()
     {
         // Arrange
-        var collection = new ServiceCollection();
-        collection.AddLogging();
-        
-        // Create an empty command factory with minimal dependencies
-        var serviceProvider = collection.BuildServiceProvider();
-        var logger = serviceProvider.GetRequiredService<ILogger<CommandFactory>>();
+        var emptyCollection = new ServiceCollection();
+        emptyCollection.AddLogging();
+
+        // Create empty command factory with minimal dependencies
+        var tempServiceProvider = emptyCollection.BuildServiceProvider();
+        var logger = tempServiceProvider.GetRequiredService<ILogger<CommandFactory>>();
         var telemetryService = Substitute.For<ITelemetryService>();
         var emptyAreaSetups = Array.Empty<IAreaSetup>();
-        
-        var emptyCommandFactory = new CommandFactory(serviceProvider, emptyAreaSetups, telemetryService, logger);
-        collection.AddSingleton(emptyCommandFactory);
-        
-        var emptyServiceProvider = collection.BuildServiceProvider();
+
+        // Create a NEW service collection just for the empty command factory
+        var finalCollection = new ServiceCollection();
+        finalCollection.AddLogging();
+
+        var emptyCommandFactory = new CommandFactory(tempServiceProvider, emptyAreaSetups, telemetryService, logger);
+        finalCollection.AddSingleton(emptyCommandFactory);
+
+        var emptyServiceProvider = finalCollection.BuildServiceProvider();
         var emptyContext = new CommandContext(emptyServiceProvider);
         var args = _parser.Parse([]);
 
@@ -339,9 +346,9 @@ public class ToolsListCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(SuccessStatusCode, response.Status);
-        
+
         var result = DeserializeResults(response.Results!);
-        
+
         Assert.NotNull(result);
         Assert.Empty(result); // Should be empty when no commands are available
     }
