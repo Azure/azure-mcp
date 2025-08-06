@@ -73,7 +73,42 @@ public sealed class McpRuntime : IMcpRuntime
             };
         }
 
-        return await _toolLoader.CallToolHandler(request!, cancellationToken);
+        CallToolResult callTool;
+        try
+        {
+            callTool = await _toolLoader.CallToolHandler(request!, cancellationToken);
+
+            var isSuccessful = !callTool.IsError.HasValue || !callTool.IsError.Value;
+            if (isSuccessful)
+            {
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                return callTool;
+            }
+
+            activity?.SetStatus(ActivityStatusCode.Error);
+
+            // In the error case, try to get some details about the error.
+            // Typically all the error information is stored in the first
+            // content block and is of type TextContentBlock.
+            var textContent = callTool.Content
+                .Where(x => x is TextContentBlock)
+                .Cast<TextContentBlock>()
+                .FirstOrDefault();
+
+            if (textContent != default)
+            {
+                activity?.SetTag(TagName.ErrorDetails, textContent.Text);
+            }
+
+            return callTool;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling tool handler")
+                ?.AddTag(TagName.ErrorDetails, ex.Message);
+
+            throw;
+        }
     }
 
     /// <summary>
