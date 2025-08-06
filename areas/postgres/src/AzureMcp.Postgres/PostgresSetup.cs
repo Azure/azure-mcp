@@ -32,7 +32,7 @@ public class PostgresSetup : IAreaSetup
         var table = new CommandGroup("table", "PostgreSQL table operations");
         pg.AddSubGroup(table);
         table.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
-        
+
         var schema = new CommandGroup("schema", "PostgreSQL table schema operations");
         table.AddSubGroup(schema);
         schema.AddCommand("get", new TableSchemaGetCommand(loggerFactory.CreateLogger<TableSchemaGetCommand>()));
@@ -40,7 +40,7 @@ public class PostgresSetup : IAreaSetup
         var server = new CommandGroup("server", "PostgreSQL server operations");
         pg.AddSubGroup(server);
         server.AddCommand("list", new ServerListCommand(loggerFactory.CreateLogger<ServerListCommand>()));
-        
+
         var config = new CommandGroup("config", "PostgreSQL server configuration operations");
         server.AddSubGroup(config);
         config.AddCommand("get", new ServerConfigGetCommand(loggerFactory.CreateLogger<ServerConfigGetCommand>()));
