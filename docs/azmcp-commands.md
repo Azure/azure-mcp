@@ -523,7 +523,7 @@ azmcp bestpractices get --resource <resource> --action <action>
 
 ```bash
 # List all available tools in the Azure MCP server
-azmcp tool list
+azmcp tools list
 ```
 
 ### Azure Monitor Operations
