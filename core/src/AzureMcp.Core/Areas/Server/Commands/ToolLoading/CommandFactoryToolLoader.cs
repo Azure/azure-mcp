@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Text.Json.Serialization.Metadata;
 using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Areas.Server.Options;
@@ -64,7 +65,7 @@ public sealed class CommandFactoryToolLoader(
     /// <returns>The result of the tool call operation.</returns>
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
+        using var activity = await _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
 
         if (request.Params == null)
         {
@@ -171,11 +172,8 @@ public sealed class CommandFactoryToolLoader(
         {
             foreach (var option in options)
             {
-                schema.Properties.Add(option.Name, new ToolPropertySchema
-                {
-                    Type = option.ValueType.ToJsonType(),
-                    Description = option.Description,
-                });
+                // Use the CreatePropertySchema method to properly handle array types with items
+                schema.Properties.Add(option.Name, TypeToJsonTypeMapper.CreatePropertySchema(option.ValueType, option.Description));
             }
 
             schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();

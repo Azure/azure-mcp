@@ -63,7 +63,6 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         // If no exception is thrown, the ping was successful.
     }
 
-
     [Fact]
     public async Task Should_Error_When_Resources_List_Not_Supported()
     {

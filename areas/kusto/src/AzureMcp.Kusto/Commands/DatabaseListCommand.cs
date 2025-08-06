@@ -20,7 +20,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
     public override string Description =>
         """
         List all databases in a Kusto cluster.
-        Requires `cluster-uri` ( or `subscription` and `cluster-name`).
+        Requires `cluster-uri` ( or `subscription` and `cluster`).
         Result is a list of database names, returned as a JSON array.
         """;
 
