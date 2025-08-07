@@ -165,13 +165,13 @@ function CreateTestSolution {
 $testsRootDirs = GetTestsRootDirs -areas $Areas
 
 if (!$testsRootDirs) {
-    return
+    exit 1
 }
 
 $solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
 
 if (!$solutionPath) {
-    return
+    exit 1
 }
 
 Push-Location $workPath
