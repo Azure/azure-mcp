@@ -34,6 +34,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Other Changes
 
 - Added caching for Cosmos DB databases and containers. [[813](https://github.com/Azure/azure-mcp/pull/813)]
+- Refactored PostgreSQL commands to follow ObjectVerb naming pattern, fix command hierarchy, and ensure all commands end with verbs. This improves consistency and discoverability across all postgres commands. [[#865](https://github.com/Azure/azure-mcp/issues/865)]
 
 #### Dependency Updates
 
