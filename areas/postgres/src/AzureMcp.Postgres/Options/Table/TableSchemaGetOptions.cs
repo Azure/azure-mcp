@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Postgres.Options.Table;
 
-public class GetSchemaOptions : BasePostgresOptions
+public class TableSchemaGetOptions : BasePostgresOptions
 {
     [JsonPropertyName(PostgresOptionDefinitions.TableName)]
     public string? Table { get; set; }

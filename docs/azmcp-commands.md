@@ -316,22 +316,22 @@ azmcp postgres table list --subscription <subscription> \
                           --database <database>
 
 # Get the schema of a specific table in a PostgreSQL database
-azmcp postgres table schema --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --database <database> \
-                            --table <table>
+azmcp postgres table schema get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --database <database> \
+                                --table <table>
 ```
 
 #### Server Commands
 
 ```bash
 # Retrieve the configuration of a PostgreSQL server
-azmcp postgres server config --subscription <subscription> \
-                             --resource-group <resource-group> \
-                             --user <user> \
-                             --server <server>
+azmcp postgres server config get --subscription <subscription> \
+                                 --resource-group <resource-group> \
+                                 --user <user> \
+                                 --server <server>
 
 # List all PostgreSQL servers in a subscription & resource group
 azmcp postgres server list --subscription <subscription> \
@@ -339,19 +339,19 @@ azmcp postgres server list --subscription <subscription> \
                            --user <user>
 
 # Retrieve a specific parameter of a PostgreSQL server
-azmcp postgres server param --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --param <parameter>
+azmcp postgres server param get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server setparam --subscription <subscription> \
-                               --resource-group <resource-group> \
-                               --user <user> \
-                               --server <server> \
-                               --param <parameter> \
-                               --value <value>
+azmcp postgres server param set --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter> \
+                                --value <value>
 ```
 
 ### Azure Developer CLI Operations

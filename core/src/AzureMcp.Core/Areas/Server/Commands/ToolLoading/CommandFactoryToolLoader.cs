@@ -2,17 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using System.Text.Json.Serialization.Metadata;
-using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
-using AzureMcp.Core.Areas.Server.Options;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
-using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 
@@ -24,13 +18,10 @@ public sealed class CommandFactoryToolLoader(
     IServiceProvider serviceProvider,
     CommandFactory commandFactory,
     IOptions<ToolLoaderOptions> options,
-    ITelemetryService telemetry,
     ILogger<CommandFactoryToolLoader> logger) : IToolLoader
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    private readonly CommandFactory _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     private readonly IOptions<ToolLoaderOptions> _options = options;
-    private readonly ITelemetryService _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
     private IReadOnlyDictionary<string, IBaseCommand> _toolCommands =
         (options.Value.Namespace == null || options.Value.Namespace.Length == 0)
             ? commandFactory.AllCommands
@@ -65,16 +56,12 @@ public sealed class CommandFactoryToolLoader(
     /// <returns>The result of the tool call operation.</returns>
     public async ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = await _telemetry.StartActivity(ActivityName.ToolExecuted, request.Server.ClientInfo);
-
         if (request.Params == null)
         {
             var content = new TextContentBlock
             {
                 Text = "Cannot call tools with null parameters.",
             };
-
-            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
 
             return new CallToolResult
             {
@@ -84,8 +71,6 @@ public sealed class CommandFactoryToolLoader(
         }
 
         var toolName = request.Params.Name;
-        activity?.AddTag(TagName.ToolName, toolName);
-
         var command = _toolCommands.GetValueOrDefault(toolName);
         if (command == null)
         {
@@ -94,15 +79,13 @@ public sealed class CommandFactoryToolLoader(
                 Text = $"Could not find command: {request.Params.Name}",
             };
 
-            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, content.Text);
-
             return new CallToolResult
             {
                 Content = [content],
                 IsError = true,
             };
         }
-        var commandContext = new CommandContext(_serviceProvider);
+        var commandContext = new CommandContext(_serviceProvider, Activity.Current);
 
         var realCommand = command.GetCommand();
         var commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
@@ -128,7 +111,6 @@ public sealed class CommandFactoryToolLoader(
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred running '{Tool}'. ", realCommand.Name);
-            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
 
             throw;
         }

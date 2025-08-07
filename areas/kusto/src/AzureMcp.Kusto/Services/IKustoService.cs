@@ -9,12 +9,12 @@ namespace AzureMcp.Kusto.Services;
 public interface IKustoService
 {
     Task<List<string>> ListClusters(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<KustoClusterResourceProxy?> GetCluster(
-        string subscriptionId,
+        string subscription,
         string clusterName,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
@@ -26,7 +26,7 @@ public interface IKustoService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListDatabases(
-        string subscriptionId,
+        string subscription,
         string clusterName,
         string? tenant = null,
         AuthMethod? authMethod = AuthMethod.Credential,

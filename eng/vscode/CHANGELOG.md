@@ -1,6 +1,15 @@
 
 # Release History
 
+## 0.5.4 - Unreleased
+
+### Added
+
+### Changed
+- Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
+
+### Fixed
+
 ## 0.5.3 - 2025-08-05
 
 ### Added

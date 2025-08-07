@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 return [
                     new vscode.McpStdioServerDefinition(
-                        'azure-mcp-server-ext',
+                        'Azure MCP',
                         binPath,
                         args,
                         env

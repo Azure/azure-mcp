@@ -34,6 +34,14 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
 
     private static readonly string s_bestPracticesText = LoadBestPracticesText();
 
+    /// <summary>
+    /// Clears the cached Azure CLI path. Used for testing purposes.
+    /// </summary>
+    internal static void ClearCachedAzdPath()
+    {
+        _cachedAzdPath = null;
+    }
+
     private static string LoadBestPracticesText()
     {
         Assembly assembly = typeof(AzdCommand).Assembly;
@@ -188,7 +196,7 @@ public sealed class AzdCommand(ILogger<AzdCommand> logger, int processTimeoutSec
         return context.Response;
     }
 
-    private static string? FindAzdCliPath()
+    internal static string? FindAzdCliPath()
     {
         // Return cached path if available and still exists
         if (!string.IsNullOrEmpty(_cachedAzdPath) && File.Exists(_cachedAzdPath))

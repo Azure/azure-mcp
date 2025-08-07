@@ -3,4 +3,4 @@
 
 namespace AzureMcp.Postgres.Options.Server;
 
-public class GetConfigOptions : BasePostgresOptions;
+public class ServerConfigGetOptions : BasePostgresOptions;
