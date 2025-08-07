@@ -40,11 +40,11 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
                 { "cluster-name", Settings.ResourceBaseName }
                 });
             var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            
+
             // Create HttpClientService for KustoClient
             var httpClientOptions = new HttpClientOptions();
             var httpClientService = new HttpClientService(Microsoft.Extensions.Options.Options.Create(httpClientOptions));
-            
+
             var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua", httpClientService);
             var resp = await kustoClient.ExecuteControlCommandAsync(
                 TestDatabaseName,
