@@ -33,6 +33,7 @@ jobs:
       BinaryPath: $(Build.ArtifactStagingDirectory)/signed
       BinaryPattern: |
         win-*/**/azmcp.dll
+        win-*/**/azmcp.exe
         win-*/**/AzureMcp*.dll
 
   - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
