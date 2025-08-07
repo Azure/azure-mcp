@@ -15,6 +15,3 @@ node_modules/
 .env
 .env.local
 .env.*.local
-
-# Temporary installation scripts
-dotnet-install.sh
