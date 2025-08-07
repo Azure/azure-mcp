@@ -105,6 +105,7 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrEmpty(s))
+                .Select(ConvertGlobToRegex)
                 .ToArray();
 
             if (bypassList.Length > 0)
@@ -114,6 +115,42 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
         }
 
         return proxy;
+    }
+
+    /// <summary>
+    /// Converts a glob-style pattern (e.g., "*.local") to a regex pattern for WebProxy.BypassList
+    /// </summary>
+    private static string ConvertGlobToRegex(string globPattern)
+    {
+        if (string.IsNullOrEmpty(globPattern))
+        {
+            return string.Empty;
+        }
+
+        // Escape regex special characters except * and ?
+        var escaped = globPattern
+            .Replace("\\", "\\\\")
+            .Replace(".", "\\.")
+            .Replace("+", "\\+")
+            .Replace("$", "\\$")
+            .Replace("^", "\\^")
+            .Replace("{", "\\{")
+            .Replace("}", "\\}")
+            .Replace("[", "\\[")
+            .Replace("]", "\\]")
+            .Replace("(", "\\(")
+            .Replace(")", "\\)")
+            .Replace("|", "\\|");
+
+        // Convert glob wildcards to regex
+        // * means "match any number of characters"
+        // ? means "match any single character"
+        var regex = escaped
+            .Replace("*", ".*")
+            .Replace("?", ".");
+
+        // Anchor the pattern to match the entire string
+        return $"^{regex}$";
     }
 
     public void Dispose()
