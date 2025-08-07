@@ -106,6 +106,35 @@ extends:
             parameters:
               DependsOn: SignAndPack
               VsixTarget: ${{ vsixtarget }}
+        - job: Verify_Signing
+          displayName: "Verify Signing"
+          dependsOn: SignAndPack
+          pool:
+            name: $(WINDOWSPOOL) # Signing verification must happen on windows
+            image: $(WINDOWSVMIMAGE)
+            os: windows
+          variables:
+          - template: /eng/pipelines/templates/variables/image.yml
+          - template: /eng/pipelines/templates/variables/globals.yml
+          steps:
+          - checkout: none
+          - pwsh: |
+              Write-Host "Verifying binary signing for win-x64 and win-arm64 binaries..."
+              $allSigned = $true
+              $signedBinaries = Get-ChildItem -Path '$(Build.ArtifactStagingDirectory)/signed/win-*/*.*'
+              foreach ($binary in $signedBinaries) {
+                  if ((Get-AuthenticodeSignature -FilePath $binary.FullName).Status -ne 'Valid') {
+                      Write-Host "Binary $($binary.FullName) is NOT signed correctly."
+                      $allSigned = $false
+                  }
+                  else {
+                      Write-Host "Binary $($binary.FullName) is signed correctly."
+                  }
+              }
+              if (-not $allSigned) {
+                  Write-Error "One or more binaries are not signed correctly."
+              }
+            displayName: "Verify Binary Signing"
 
       - ${{ if eq(parameters.ReleaseRun, 'true') }}:
         - stage: Release
