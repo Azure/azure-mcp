@@ -8,7 +8,8 @@ param(
     [switch] $NoUsePaths,
     [switch] $AllPlatforms,
     [switch] $VerifyNpx,
-    [switch] $DebugBuild
+    [switch] $DebugBuild,
+    [switch] $BuildNative
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -29,7 +30,8 @@ function Build($os, $arch) {
         -SelfContained:(!$NoSelfContained) `
         -Trimmed:$Trimmed `
         -OutputPath $packagesPath `
-        -DebugBuild:$DebugBuild
+        -DebugBuild:$DebugBuild `
+        -BuildNative:$BuildNative
 }
 
 Remove-Item -Path $packagesPath -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue

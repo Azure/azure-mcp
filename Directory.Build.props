@@ -8,5 +8,9 @@
     <IsPackable>False</IsPackable>
     <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
     <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
+    <BuildNative Condition="'$(BuildNative)' == ''">false</BuildNative>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BuildNative)' == 'true'">
+    <DefineConstants>$(DefineConstants);AOT_COMPATIBLE_ONLY</DefineConstants>
   </PropertyGroup>
 </Project>

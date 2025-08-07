@@ -73,7 +73,44 @@ public sealed class McpRuntime : IMcpRuntime
             };
         }
 
-        return await _toolLoader.CallToolHandler(request!, cancellationToken);
+        activity?.AddTag(TagName.ToolName, request.Params.Name);
+
+        CallToolResult callTool;
+        try
+        {
+            callTool = await _toolLoader.CallToolHandler(request!, cancellationToken);
+
+            var isSuccessful = !callTool.IsError.HasValue || !callTool.IsError.Value;
+            if (isSuccessful)
+            {
+                activity?.SetStatus(ActivityStatusCode.Ok);
+                return callTool;
+            }
+
+            activity?.SetStatus(ActivityStatusCode.Error);
+
+            // In the error case, try to get some details about the error.
+            // Typically all the error information is stored in the first
+            // content block and is of type TextContentBlock.
+            var textContent = callTool.Content
+                .Where(x => x is TextContentBlock)
+                .Cast<TextContentBlock>()
+                .FirstOrDefault();
+
+            if (textContent != default)
+            {
+                activity?.SetTag(TagName.ErrorDetails, textContent.Text);
+            }
+
+            return callTool;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling tool handler")
+                ?.AddTag(TagName.ErrorDetails, ex.Message);
+
+            throw;
+        }
     }
 
     /// <summary>
@@ -84,8 +121,21 @@ public sealed class McpRuntime : IMcpRuntime
     /// <returns>A result containing the list of available tools.</returns>
     public async ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
     {
-        using var activity = await _telemetry.StartActivity(nameof(ListToolsHandler), request?.Server?.ClientInfo);
-        return await _toolLoader.ListToolsHandler(request!, cancellationToken);
+        using var activity = await _telemetry.StartActivity(ActivityName.ListToolsHandler, request?.Server?.ClientInfo);
+
+        try
+        {
+            var result = await _toolLoader.ListToolsHandler(request!, cancellationToken);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling list tools handler")
+                ?.SetTag(TagName.ErrorDetails, ex.Message);
+            throw;
+        }
     }
 
     /// <summary>

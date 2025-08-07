@@ -4,6 +4,7 @@
     <CliName>azmcp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
     <AssemblyTitle>Azure MCP Server</AssemblyTitle>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- Publishing settings -->
     <IsAotCompatible>true</IsAotCompatible>
     <PublishSingleFile>false</PublishSingleFile>
@@ -13,16 +14,25 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-  <!-- AOT compilation flags -->
+
+  <!-- Enable Trim and AOT Analyzers -->
   <PropertyGroup>
-    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-    
-  <!-- Enable Analyzers -->
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+  </PropertyGroup>
+
+  <!-- AOT native build flags -->
+  <PropertyGroup Condition="'$(BuildNative)' == 'true'">
+    <IsAotCompatible>true</IsAotCompatible>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <SelfContained>true</SelfContained>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
   </PropertyGroup>
 
   <!-- Debug configuration -->

@@ -12,7 +12,7 @@ namespace AzureMcp.Search.Commands.Service;
 
 public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : SubscriptionCommand<ServiceListOptions>()
 {
-    private const string CommandTitle = "List Azure AI Search Services";
+    private const string CommandTitle = "List Azure AI Search (formerly known as \"Azure Cognitive Search\") Services";
     private readonly ILogger<ServiceListCommand> _logger = logger;
 
     public override string Name => "list";

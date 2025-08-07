@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Server;
 
-public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseServerCommand<GetConfigOptions>(logger)
+public sealed class ServerConfigGetCommand(ILogger<ServerConfigGetCommand> logger) : BaseServerCommand<ServerConfigGetOptions>(logger)
 {
     private const string CommandTitle = "Get PostgreSQL Server Configuration";
     public override string Name => "config";
@@ -37,8 +37,8 @@ public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseSer
             var config = await pgService.GetServerConfigAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);
             context.Response.Results = config?.Length > 0 ?
                 ResponseResult.Create(
-                    new GetConfigCommandResult(config),
-                    PostgresJsonContext.Default.GetConfigCommandResult) :
+                    new ServerConfigGetCommandResult(config),
+                    PostgresJsonContext.Default.ServerConfigGetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -48,5 +48,5 @@ public sealed class GetConfigCommand(ILogger<GetConfigCommand> logger) : BaseSer
         }
         return context.Response;
     }
-    internal record GetConfigCommandResult(string Configuration);
+    internal record ServerConfigGetCommandResult(string Configuration);
 }
