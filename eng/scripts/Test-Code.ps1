@@ -101,14 +101,10 @@ function CopyNativeBinaryToTestDirs {
     )
     Write-Host "Copying native AzureMcp to test directories"
 
-    $testProjectDirs = @()
-    foreach ($testsRootDir in $testsRootDirs) {
-        $areaTestProjectDirs = Get-ChildItem -Path $testsRootDir -Recurse -Filter "*.LiveTests" -Directory
-        $testProjectDirs += $areaTestProjectDirs
-    }
-
-    foreach ($testDir in $testProjectDirs) {
-        $targetDirectory = "$($testDir.FullName)/bin/Debug/net9.0"
+    $testsRootDirs | ForEach-Object {
+        Get-ChildItem -Path $_ -Recurse -Filter "*.LiveTests" -Directory
+    } | ForEach-Object {
+        $targetDirectory = "$($_.FullName)/bin/Debug/net9.0"
         Copy-Item $nativeBinaryPath $targetDirectory -Force
     }
 }
