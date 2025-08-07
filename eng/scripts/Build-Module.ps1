@@ -9,6 +9,7 @@ param(
     [switch] $ReadyToRun,
     [switch] $Trimmed,
     [switch] $DebugBuild,
+    [switch] $BuildNative,
     [Parameter(Mandatory=$true, ParameterSetName='Named')]
     [ValidateSet('windows','linux','macOS')]
     [string] $OperatingSystem,
@@ -86,6 +87,10 @@ try {
 
     if($Trimmed) {
         $command += " /p:PublishTrimmed=true"
+    }
+
+    if($BuildNative) {
+        $command += " /p:BuildNative=true"
     }
 
     Invoke-LoggedCommand $command -GroupOutput

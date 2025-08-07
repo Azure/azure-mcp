@@ -5,8 +5,11 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Postgres.Options.Server;
 
-public class GetParamOptions : BasePostgresOptions
+public class ServerParamSetOptions : BasePostgresOptions
 {
     [JsonPropertyName(PostgresOptionDefinitions.ParamName)]
     public string? Param { get; set; }
+
+    [JsonPropertyName(PostgresOptionDefinitions.ValueName)]
+    public string? Value { get; set; }
 }

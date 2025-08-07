@@ -103,12 +103,12 @@ public class AccessPolicyListCommandTests
     {
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
         _redisService.ListAccessPolicyAssignmentsAsync(
-            cacheName: "cache1",
-            resourceGroupName: "rg1",
-            subscriptionId: "sub123",
-            tenant: Arg.Any<string>(),
-            authMethod: Arg.Any<AuthMethod>(),
-            retryPolicy: Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
+            "cache1",
+            "rg1",
+            "sub123",
+            Arg.Any<string>(),
+            Arg.Any<AuthMethod>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
         var command = new AccessPolicyListCommand(_logger);

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Table;
 
-public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDatabaseCommand<GetSchemaOptions>(logger)
+public sealed class TableSchemaGetCommand(ILogger<TableSchemaGetCommand> logger) : BaseDatabaseCommand<TableSchemaGetOptions>(logger)
 {
     private const string CommandTitle = "Get PostgreSQL Table Schema";
     private readonly Option<string> _tableOption = PostgresOptionDefinitions.Table;
@@ -28,7 +28,7 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         command.AddOption(_tableOption);
     }
 
-    protected override GetSchemaOptions BindOptions(ParseResult parseResult)
+    protected override TableSchemaGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Table = parseResult.GetValueForOption(_tableOption);
@@ -52,8 +52,8 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
             List<string> schema = await pgService.GetTableSchemaAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!, options.Table!);
             context.Response.Results = schema?.Count > 0 ?
                 ResponseResult.Create(
-                    new GetSchemaCommandResult(schema),
-                    PostgresJsonContext.Default.GetSchemaCommandResult) :
+                    new TableSchemaGetCommandResult(schema),
+                    PostgresJsonContext.Default.TableSchemaGetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -65,5 +65,5 @@ public sealed class GetSchemaCommand(ILogger<GetSchemaCommand> logger) : BaseDat
         return context.Response;
     }
 
-    internal record GetSchemaCommandResult(List<string> Schema);
+    internal record TableSchemaGetCommandResult(List<string> Schema);
 }

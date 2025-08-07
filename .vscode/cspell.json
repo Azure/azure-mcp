@@ -25,7 +25,8 @@
         "**/bin/**",
         "**/.work/**",
         "**/.dist/**",
-        "**/eng/vscode/NOTICE.txt"
+        "**/eng/vscode/NOTICE.txt",
+        "!**/.devcontainer/**"
     ],
     "dictionaryDefinitions": [
         {
@@ -181,6 +182,7 @@
         "ADMINPROVIDER",
         "alcoop",
         "Apim",
+        "AOAI",
         "appconfig",
         "Autorenewable",
         "azext",
@@ -199,7 +201,9 @@
         "azuretools",
         "codegen",
         "codeium",
+        "Codespace",
         "cslschema",
+        "csdevkit",
         "bdylan",
         "bestpractices",
         "bicepschema",
@@ -215,7 +219,10 @@
         "datalake",
         "datasource",
         "datasources",
+        "deallocate",
+        "devcontainers",
         "Distributedtask",
+        "dotnettools",
         "DEBUGTELEMETRY",
         "dotenv",
         "drawcord",
@@ -298,6 +305,7 @@
         "servicebus",
         "sessionhost",
         "setparam",
+        "setpermission",
         "skillset",
         "staticwebapp",
         "syslib",

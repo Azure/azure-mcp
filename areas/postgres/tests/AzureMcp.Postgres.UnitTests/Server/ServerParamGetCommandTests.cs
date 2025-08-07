@@ -16,16 +16,16 @@ using Xunit;
 
 namespace AzureMcp.Postgres.UnitTests.Server;
 
-public class GetConfigCommandTests
+public class ServerParamGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IPostgresService _postgresService;
-    private readonly ILogger<GetConfigCommand> _logger;
+    private readonly ILogger<ServerParamGetCommand> _logger;
 
-    public GetConfigCommandTests()
+    public ServerParamGetCommandTests()
     {
         _postgresService = Substitute.For<IPostgresService>();
-        _logger = Substitute.For<ILogger<GetConfigCommand>>();
+        _logger = Substitute.For<ILogger<ServerParamGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_postgresService);
@@ -34,34 +34,34 @@ public class GetConfigCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsConfig_WhenConfigExists()
+    public async Task ExecuteAsync_ReturnsParamValue_WhenParamExists()
     {
-        var expectedConfig = "config123";
-        _postgresService.GetServerConfigAsync("sub123", "rg1", "user1", "server123").Returns(expectedConfig);
+        var expectedValue = "value123";
+        _postgresService.GetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123").Returns(expectedValue);
 
-        var command = new GetConfigCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123"]);
+        var command = new ServerParamGetCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123"]);
         var context = new CommandContext(_serviceProvider);
-
         var response = await command.ExecuteAsync(context, args);
 
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
         Assert.Equal("Success", response.Message);
         Assert.NotNull(response.Results);
+
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<GetConfigResult>(json);
+        var result = JsonSerializer.Deserialize<GetParamResult>(json);
+
         Assert.NotNull(result);
-        Assert.Equal(expectedConfig, result.Config);
+        Assert.Equal(expectedValue, result.Param);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNull_WhenConfigDoesNotExist()
+    public async Task ExecuteAsync_ReturnsNull_WhenParamDoesNotExist()
     {
-        _postgresService.GetServerConfigAsync("sub123", "rg1", "user1", "server123").Returns("");
-
-        var command = new GetConfigCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123"]);
+        _postgresService.GetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123").Returns("");
+        var command = new ServerParamGetCommand(_logger);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -76,15 +76,17 @@ public class GetConfigCommandTests
     [InlineData("--resource-group")]
     [InlineData("--user")]
     [InlineData("--server")]
+    [InlineData("--param")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
-        var command = new GetConfigCommand(_logger);
+        var command = new ServerParamGetCommand(_logger);
         var args = command.GetCommand().Parse(new string[]
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
             missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
             missingParameter == "--user" ? "" : "--user", "user1",
-            missingParameter == "--server" ? "" : "--server", "server123"
+            missingParameter == "--server" ? "" : "--server", "server123",
+            missingParameter == "--param" ? "" : "--param", "param123"
         });
 
         var context = new CommandContext(_serviceProvider);
@@ -95,9 +97,9 @@ public class GetConfigCommandTests
         Assert.Equal($"Missing Required options: {missingParameter}", response.Message);
     }
 
-    private class GetConfigResult
+    private class GetParamResult
     {
-        [JsonPropertyName("Configuration")]
-        public string Config { get; set; } = string.Empty;
+        [JsonPropertyName("ParameterValue")]
+        public string Param { get; set; } = string.Empty;
     }
 }
