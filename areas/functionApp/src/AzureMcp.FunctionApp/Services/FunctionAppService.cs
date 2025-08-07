@@ -20,19 +20,18 @@ public sealed class FunctionAppService(
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
 
     private const string CacheGroup = "functionapp";
-    private const string FunctionAppsCacheKey = "functionapps";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
     public async Task<List<FunctionAppModel>?> ListFunctionApps(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
         var cacheKey = string.IsNullOrEmpty(tenant)
-            ? $"{FunctionAppsCacheKey}_{subscriptionId}"
-            : $"{FunctionAppsCacheKey}_{subscriptionId}_{tenant}";
+            ? subscription
+            : $"{subscription}_{tenant}";
 
         var cachedResults = await _cacheService.GetAsync<List<FunctionAppModel>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
@@ -40,7 +39,7 @@ public sealed class FunctionAppService(
             return cachedResults;
         }
 
-        var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var functionApps = new List<FunctionAppModel>();
 
         try
