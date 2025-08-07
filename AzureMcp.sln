@@ -291,11 +291,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3F159DE4-143
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{775A7320-3D27-4FF2-B0F1-1078A6221B7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop", "areas\VirtualDesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj", "{7DA56A1F-EA8A-C768-9777-F26EDCA059B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop", "areas\virtualdesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj", "{7DA56A1F-EA8A-C768-9777-F26EDCA059B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop.LiveTests", "areas\VirtualDesktop\tests\AzureMcp.VirtualDesktop.LiveTests\AzureMcp.VirtualDesktop.LiveTests.csproj", "{D76F2E37-887E-9ADA-30A2-8969EB68DD76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop.LiveTests", "areas\virtualdesktop\tests\AzureMcp.VirtualDesktop.LiveTests\AzureMcp.VirtualDesktop.LiveTests.csproj", "{D76F2E37-887E-9ADA-30A2-8969EB68DD76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop.UnitTests", "areas\VirtualDesktop\tests\AzureMcp.VirtualDesktop.UnitTests\AzureMcp.VirtualDesktop.UnitTests.csproj", "{F32955FF-3A13-2433-ECF7-EE5DB43F4631}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.VirtualDesktop.UnitTests", "areas\virtualdesktop\tests\AzureMcp.VirtualDesktop.UnitTests\AzureMcp.VirtualDesktop.UnitTests.csproj", "{F32955FF-3A13-2433-ECF7-EE5DB43F4631}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,9 +10,13 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Fixed `ToolExecuted` telemetry activity being created twice. [[#741](https://github.com/Azure/azure-mcp/pull/741)]
+
 ### Other Changes
 
 - Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
+- Updated the descriptions of Azure AI Search `CommandGroup`s to improve their usage by Agents. [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+- Updated the root Storage `CommandGroup` description to improve their usage by Agents. [#879](https://github.com/Azure/azure-mcp/pull/879)
 
 ## 0.5.3 (2025-08-05)
 
