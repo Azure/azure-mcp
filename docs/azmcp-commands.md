@@ -365,7 +365,7 @@ azmcp mysql database list --subscription <subscription> \
                           --user <user> \
                           --server <server>
 
-# Execute a query on a MySQL database
+# Executes SQL queries against a MySQL database to search, retrieve, filter data. Supports SELECT queries to find items containing specific search terms, pattern matching, data filtering.
 azmcp mysql database query --subscription <subscription> \
                            --resource-group <resource-group> \
                            --user <user> \
