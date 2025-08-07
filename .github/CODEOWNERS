@@ -116,6 +116,13 @@
 # ServiceOwners:                       @smritiy @srnagar @jongio
 
 
+# PRLabel: %area-MySQL
+/areas/mysql/                          @ramnov @Azure/azure-mcp
+
+# ServiceLabel: %area-MySQL
+# ServiceOwners:                       @ramnov
+
+
 # PRLabel: %area-Postgres
 /src/Areas/Postgres/                   @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
 
