@@ -123,33 +123,41 @@ function CreateTestSolution {
         [string]$testType
     )
 
-    $testProjects = @()
-    foreach ($testsRootDir in $testsRootDirs) {
-        if($testType -in @('Live', 'All')) {
-            $testProjects += Get-ChildItem $testsRootDir -Recurse -File -Filter "*.LiveTests.csproj"
-        }
-        if($testType -in @('Unit', 'All')) {
-            $testProjects += Get-ChildItem $testsRootDir -Recurse -File -Filter "*.UnitTests.csproj"
+    $testPatterns = switch ($testType) {
+        'Live' { @('*.LiveTests.csproj') }
+        'Unit' { @('*.UnitTests.csproj') }
+        'All'  { @('*.LiveTests.csproj', '*.UnitTests.csproj') }
+        default {
+            Write-Error "Invalid test type specified: '$testType'. Valid options are 'Live', 'Unit', or 'All'."
+            return $null
         }
     }
 
+    $testProjects = @($testsRootDirs | ForEach-Object {
+        $testsRootDir = $_
+        $testPatterns | ForEach-Object {
+            Get-ChildItem $testsRootDir -Recurse -File -Filter $_
+        }
+    })
+
     if($testProjects.Count -eq 0) {
         Write-Error "No test projects found in the specified areas for test type '$testType'."
-        return $false
+        return $null
     }
 
     # Create solution and add projects
     Write-Host "Creating temporary solution file..."
+
     Push-Location $workPath
     try {
         dotnet new sln -n "Tests" | Out-Null
-        dotnet sln add $testProjects --in-root
+        dotnet sln add $testProjects --in-root | Out-Null
     }
     finally {
         Pop-Location
     }
 
-    return $true
+    return "$workPath/Tests.sln"
 }
 
 # main
@@ -160,9 +168,9 @@ if (!$testsRootDirs) {
     return
 }
 
-$success = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
+$solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
 
-if (!$success) {
+if (!$solutionPath) {
     return
 }
 
