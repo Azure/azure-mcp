@@ -18,7 +18,7 @@ namespace AzureMcp.Areas.Startups.Services
 {
     public sealed class StartupsService(ISubscriptionService subscriptionService, ITenantService tenantService) : BaseAzureService(tenantService), IStartupsService
     {
-        private const string PREFERRED_REGION = "eastus";
+        private const string PREFERRED_REGION = "westus";
         private readonly ISubscriptionService _subscriptionService = subscriptionService;
 
         // Guidance command
@@ -74,7 +74,7 @@ namespace AzureMcp.Areas.Startups.Services
             }
 
             // Get subscription and resource group
-            var credential = GetCredential(tenantId);
+            // var credential = GetCredential(tenantId);
 
             var armClient = await CreateArmClientAsync(tenantId, retryPolicy);
             var subscriptionResource = armClient.GetSubscriptionResource(SubscriptionResource.CreateResourceIdentifier(subscription));
