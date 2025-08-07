@@ -6,7 +6,7 @@ Easily bring the power of Model Context Protocol (MCP) to your Azure projects in
 - [Overview](#overview)
 - [Getting Started](#getting-started)
 - [What can you do with the Azure MCP Server?](#what-can-you-do-with-the-azure-mcp-server)
-- [Complete List of Supported Azure Services](#️complete-list-of-supported-azure-services)
+- [Complete List of Supported Azure Services](#complete-list-of-supported-azure-services)
 - [Feedback & Support](#feedback--support)
 - [Contributing](#contributing)
 - [License](#license)
