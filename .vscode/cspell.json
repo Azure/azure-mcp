@@ -25,7 +25,8 @@
         "**/bin/**",
         "**/.work/**",
         "**/.dist/**",
-        "**/eng/vscode/NOTICE.txt"
+        "**/eng/vscode/NOTICE.txt",
+        "!**/.devcontainer/**"
     ],
     "dictionaryDefinitions": [
         {
@@ -202,6 +203,7 @@
         "codeium",
         "Codespace",
         "cslschema",
+        "csdevkit",
         "bdylan",
         "bestpractices",
         "bicepschema",
@@ -220,6 +222,7 @@
         "deallocate",
         "devcontainers",
         "Distributedtask",
+        "dotnettools",
         "DEBUGTELEMETRY",
         "dotenv",
         "drawcord",
