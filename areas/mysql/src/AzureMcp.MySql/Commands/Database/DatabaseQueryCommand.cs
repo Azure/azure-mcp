@@ -21,7 +21,7 @@ public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) :
 
     public override string Name => "query";
 
-    public override string Description => "Executes a query against a MySQL database.";
+    public override string Description => "Executes SQL queries against a MySQL database to search, retrieve, filter, and manipulate data. Supports SELECT queries to find items containing specific search terms, pattern matching, data filtering, as well as INSERT, UPDATE, DELETE operations and stored procedure execution.";
 
     public override string Title => CommandTitle;
 
