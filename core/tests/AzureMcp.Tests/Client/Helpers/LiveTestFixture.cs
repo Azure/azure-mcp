@@ -28,20 +28,19 @@ public class LiveTestFixture : LiveTestSettingsFixture
         string testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         string executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath, "azmcp.exe") : Path.Combine(testAssemblyPath, "azmcp");
 
-        // Use custom arguments if provided, otherwise default to ["server", "start"]
+        // Use custom arguments if provided, otherwise default to ["server", "start", "--mode", "all"]
         var arguments = _customArguments ?? ["server", "start", "--mode", "all"];
 
         StdioClientTransportOptions transportOptions = new()
         {
             Name = "Test Server",
-            Command = executablePath,
-            Arguments = arguments
+            Command = "npx",
+            Arguments = ["-y", executablePath, .. arguments],
         };
 
         if (!string.IsNullOrEmpty(Settings.TestPackage))
         {
             Environment.CurrentDirectory = Settings.SettingsDirectory;
-            transportOptions.Command = "npx";
             transportOptions.Arguments = ["-y", Settings.TestPackage, .. arguments];
         }
 
