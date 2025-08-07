@@ -9,19 +9,19 @@ namespace AzureMcp.AppConfig.Services;
 public interface IAppConfigService
 {
     Task<List<AppConfigurationAccount>> GetAppConfigAccounts(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
     Task<List<KeyValueSetting>> ListKeyValues(
         string accountName,
-        string subscriptionId,
+        string subscription,
         string? key = null, string? label = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
     Task<KeyValueSetting> GetKeyValue(
         string accountName,
         string key,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null,
         string? label = null,
@@ -29,14 +29,14 @@ public interface IAppConfigService
     Task LockKeyValue(
         string accountName,
         string key,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null,
         string? label = null);
     Task UnlockKeyValue(
         string accountName,
         string key,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null,
         string? label = null);
@@ -44,7 +44,7 @@ public interface IAppConfigService
         string accountName,
         string key,
         string value,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null,
         string? label = null,
@@ -53,7 +53,7 @@ public interface IAppConfigService
     Task DeleteKeyValue(
         string accountName,
         string key,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null,
         string? label = null);

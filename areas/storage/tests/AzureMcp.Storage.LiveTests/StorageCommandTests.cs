@@ -85,8 +85,8 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 });
 
             var actual = result.AssertProperty("blobs");
@@ -103,7 +103,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 { "retry-max-retries", 0 }
                 });
 
@@ -121,7 +121,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -138,7 +138,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -157,7 +157,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantName },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -173,8 +173,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" }
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" }
                 });
 
             var actual = result.AssertProperty("details");
@@ -189,8 +189,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 { "auth-method", "key" }
                 });
 
@@ -206,8 +206,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "file-system-name", "testfilesystem" }
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" }
                 });
 
             var actual = result.AssertProperty("paths");
@@ -222,8 +222,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "file-system-name", "testfilesystem" },
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" },
                 { "recursive", true }
                 });
 
@@ -241,7 +241,7 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
+                    { "account", Settings.ResourceBaseName },
                     { "directory-path", directoryPath }
                 });
 
@@ -265,9 +265,9 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
-                    { "container-name", "bar" },
-                    { "tier-name", "Cool" },
+                    { "account", Settings.ResourceBaseName },
+                    { "container", "bar" },
+                    { "tier", "Cool" },
                     { "blob-names", "blob1.txt blob2.txt" }
                 });
 
@@ -282,6 +282,43 @@ namespace AzureMcp.Storage.LiveTests
             var failedCount = failedBlobs.GetArrayLength();
 
             Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" }
+                });
+
+            var files = result.AssertProperty("files");
+            Assert.Equal(JsonValueKind.Array, files.ValueKind);
+            Assert.NotEmpty(files.EnumerateArray());
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory_with_prefix()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" },
+                    { "prefix", "NoSuchPrefix" }
+                });
+
+            // When using a prefix that does not match any files, we should still return a valid response
+            // with no result.
+            Assert.Null(result);
         }
     }
 }

@@ -23,7 +23,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName }
+                { "account", Settings.ResourceBaseName }
             });
 
         var databasesArray = result.AssertProperty("databases");
@@ -39,8 +39,8 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName },
-                { "database-name", "ToDoList" }
+                { "account", Settings.ResourceBaseName },
+                { "database", "ToDoList" }
             });
 
         var containersArray = result.AssertProperty("containers");
@@ -56,8 +56,8 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName },
-                { "database-name", "ToDoList" }
+                { "account", Settings.ResourceBaseName },
+                { "database", "ToDoList" }
             });
 
         var containersArray = result.AssertProperty("containers");
@@ -73,9 +73,9 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName },
-                { "database-name", "ToDoList" },
-                { "container-name", "Items" }
+                { "account", Settings.ResourceBaseName },
+                { "database", "ToDoList" },
+                { "container", "Items" }
             });
 
         var itemsArray = result.AssertProperty("items");
@@ -106,7 +106,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName }
+                { "account", Settings.ResourceBaseName }
             }
         );
         var databases = dbResult.AssertProperty("databases");
@@ -128,8 +128,8 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName },
-                { "database-name", dbName! }
+                { "account", Settings.ResourceBaseName },
+                { "database", dbName! }
             });
         var containers = containerResult.AssertProperty("containers");
         Assert.Equal(JsonValueKind.Array, containers.ValueKind);
@@ -150,9 +150,9 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName },
-                { "database-name", dbName! },
-                { "container-name", containerName! }
+                { "account", Settings.ResourceBaseName },
+                { "database", dbName! },
+                { "container", containerName! }
             });
         var items = itemResult.AssertProperty("items");
         Assert.Equal(JsonValueKind.Array, items.ValueKind);
@@ -167,7 +167,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "account-name", Settings.ResourceBaseName }
+                { "account", Settings.ResourceBaseName }
             }
         );
         var databases = dbResult.AssertProperty("databases");
@@ -185,7 +185,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 
             var containerResult = await CallToolAsync(
                 "azmcp_cosmos_database_container_list",
-                new() { { "subscription", Settings.SubscriptionId }, { "account-name", Settings.ResourceBaseName! }, { "database-name", dbName! } });
+                new() { { "subscription", Settings.SubscriptionId }, { "account", Settings.ResourceBaseName! }, { "database", dbName! } });
             var containers = containerResult.AssertProperty("containers");
             Assert.Equal(JsonValueKind.Array, containers.ValueKind);
             var contEnum = containers.EnumerateArray();
@@ -200,7 +200,7 @@ public class CosmosCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 
                 var itemResult = await CallToolAsync(
                     "azmcp_cosmos_database_container_item_query",
-                    new() { { "subscription", Settings.SubscriptionId }, { "account-name", Settings.ResourceBaseName! }, { "database-name", dbName! }, { "container-name", containerName! } });
+                    new() { { "subscription", Settings.SubscriptionId }, { "account", Settings.ResourceBaseName! }, { "database", dbName! }, { "container", containerName! } });
                 var items = itemResult.AssertProperty("items");
                 Assert.Equal(JsonValueKind.Array, items.ValueKind);
             }

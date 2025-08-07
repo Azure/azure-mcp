@@ -5,15 +5,17 @@ namespace AzureMcp.Storage.Options;
 
 public static class StorageOptionDefinitions
 {
-    public const string AccountName = "account-name";
-    public const string ContainerName = "container-name";
-    public const string TableName = "table-name";
-    public const string FileSystemName = "file-system-name";
+    public const string AccountName = "account";
+    public const string ContainerName = "container";
+    public const string TableName = "table";
+    public const string FileSystemName = "file-system";
     public const string DirectoryPathName = "directory-path";
-    public const string TierName = "tier-name";
+    public const string TierName = "tier";
     public const string BlobNamesParam = "blob-names";
     public const string FilterPathName = "filter-path";
     public const string RecursiveName = "recursive";
+    public const string ShareName = "share";
+    public const string PrefixName = "prefix";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -85,6 +87,21 @@ public static class StorageOptionDefinitions
         () => false,
         "Flag to indicate whether the command will operate recursively on all subdirectories."
     )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> Share = new(
+        $"--{ShareName}",
+        "The name of the file share to access within the storage account."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> Prefix = new(
+        $"--{PrefixName}",
+        "Optional prefix to filter results. Only items that start with this prefix will be returned.")
     {
         IsRequired = false
     };

@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>0.5.3</Version>
+    <Version>0.5.4</Version>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -8,5 +8,9 @@
     <IsPackable>False</IsPackable>
     <!-- Suppress SYSLIB0020 for generated System.Text.Json code that uses obsolete IgnoreNullValues -->
     <NoWarn>$(NoWarn);SYSLIB0020</NoWarn>
+    <BuildNative Condition="'$(BuildNative)' == ''">false</BuildNative>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BuildNative)' == 'true'">
+    <DefineConstants>$(DefineConstants);AOT_COMPATIBLE_ONLY</DefineConstants>
   </PropertyGroup>
 </Project>

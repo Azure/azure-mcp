@@ -11,7 +11,7 @@ namespace AzureMcp.Search.Commands.Index;
 
 public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : GlobalCommand<IndexQueryOptions>()
 {
-    private const string CommandTitle = "Query Azure AI Search Index";
+    private const string CommandTitle = "Query Azure AI Search (formerly known as \"Azure Cognitive Search\") Index";
     private readonly ILogger<IndexQueryCommand> _logger = logger;
     private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
     private readonly Option<string> _indexOption = SearchOptionDefinitions.Index;
@@ -24,8 +24,8 @@ public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : Globa
         Query an Azure AI Search index. Returns search results matching the specified query.
 
         Required arguments:
-        - service-name: The name of the Azure AI Search service
-        - index-name: The name of the search index to query
+        - service: The name of the Azure AI Search service
+        - index: The name of the search index to query
         - query: The search text to query with
         """;
 

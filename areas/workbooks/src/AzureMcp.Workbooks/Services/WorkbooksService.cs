@@ -21,12 +21,16 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
     private readonly ILogger<WorkbooksService> _logger = logger;
     private readonly ITenantService _tenantService = tenantService;
 
-    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscriptionId, string resourceGroupName, WorkbookFilters? filters = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
+    public async Task<List<WorkbookInfo>> ListWorkbooks(string subscription, string resourceGroupName, WorkbookFilters? filters = null, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName);
+        ValidateRequiredParameters(subscription, resourceGroupName);
 
         try
         {
+            // Resolve subscription to get the actual subscription ID for the query
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+            var subscriptionId = subscriptionResource.Data.SubscriptionId;
+
             var armClient = await CreateArmClientAsync(tenant, retryPolicy);
 
             var tenants = await _tenantService.GetTenants();
@@ -74,7 +78,7 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to list workbooks in resource group '{ResourceGroup}' for subscription '{Subscription}'", resourceGroupName, subscriptionId);
+            _logger.LogError(ex, "Failed to list workbooks in resource group '{ResourceGroup}' for subscription '{Subscription}'", resourceGroupName, subscription);
             throw new Exception($"Failed to list workbooks: {ex.Message}", ex);
         }
     }
@@ -200,19 +204,19 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
         }
     }
 
-    public async Task<WorkbookInfo?> CreateWorkbook(string subscriptionId, string resourceGroupName, string displayName, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
+    public async Task<WorkbookInfo?> CreateWorkbook(string subscription, string resourceGroupName, string displayName, string serializedData, string sourceId, RetryPolicyOptions? retryPolicy = null, string? tenant = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, displayName, serializedData, sourceId);
+        ValidateRequiredParameters(subscription, resourceGroupName, displayName, serializedData, sourceId);
 
         try
         {
             // Get the subscription resource
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscription}' not found");
             // Get the resource group
             var resourceGroupResource = await subscriptionResource.GetResourceGroups().GetAsync(resourceGroupName);
             if (resourceGroupResource?.Value == null)
             {
-                throw new Exception($"Resource group '{resourceGroupName}' not found in subscription '{subscriptionId}'");
+                throw new Exception($"Resource group '{resourceGroupName}' not found in subscription '{subscription}'");
             }
 
             // Create the workbook data
@@ -314,13 +318,13 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
     /// <summary>
     /// Builds a KQL query for retrieving workbooks with optional filters.
     /// </summary>
-    private static string BuildWorkbooksQuery(string subscriptionId, string resourceGroupName, WorkbookFilters? filters)
+    private static string BuildWorkbooksQuery(string subscriptionIdentifier, string resourceGroupName, WorkbookFilters? filters)
     {
         var queryText = $@"
             resources
             | where type == 'microsoft.insights/workbooks'
             | where resourceGroup =~ '{resourceGroupName}'
-            | where subscriptionId =~ '{subscriptionId}'";
+            | where subscriptionId =~ '{subscriptionIdentifier}'";
 
         // Add optional filters if provided
         if (filters?.HasFilters == true)

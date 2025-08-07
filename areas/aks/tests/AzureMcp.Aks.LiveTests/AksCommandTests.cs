@@ -125,7 +125,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", resourceGroupName },
-                { "cluster-name", clusterName }
+                { "cluster", clusterName }
             });
 
         var cluster = getResult.AssertProperty("cluster");
@@ -152,7 +152,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", "nonexistent-rg" },
-                { "cluster-name", "nonexistent-cluster" }
+                { "cluster", "nonexistent-cluster" }
             });
 
         // Should return runtime error response with error details
@@ -166,7 +166,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
     [Fact]
     public async Task Should_validate_required_parameters_for_get_command()
     {
-        // Test missing cluster-name
+        // Test missing cluster
         var result1 = await CallToolAsync(
             "azmcp_aks_cluster_get",
             new()
@@ -182,7 +182,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "cluster-name", "test-cluster" }
+                { "cluster", "test-cluster" }
             });
         Assert.False(result2.HasValue);
 
@@ -192,7 +192,7 @@ public sealed class AksCommandTests(LiveTestFixture liveTestFixture, ITestOutput
             new()
             {
                 { "resource-group", "test-rg" },
-                { "cluster-name", "test-cluster" }
+                { "cluster", "test-cluster" }
             });
         Assert.False(result3.HasValue);
     }
