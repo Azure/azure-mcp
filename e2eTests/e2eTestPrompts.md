@@ -286,6 +286,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
+| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
 | azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
 | azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
 | azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |

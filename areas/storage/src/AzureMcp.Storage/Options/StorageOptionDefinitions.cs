@@ -16,6 +16,10 @@ public static class StorageOptionDefinitions
     public const string RecursiveName = "recursive";
     public const string ShareName = "share";
     public const string PrefixName = "prefix";
+    public const string QueueName = "queue";
+    public const string MessageContent = "message";
+    public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
+    public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -101,7 +105,39 @@ public static class StorageOptionDefinitions
 
     public static readonly Option<string> Prefix = new(
         $"--{PrefixName}",
-        "Optional prefix to filter results. Only items that start with this prefix will be returned.")
+        "Optional prefix to filter results. Only items that start with this prefix will be returned."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> Queue = new(
+        $"--{QueueName}",
+        "The name of the queue to access within the storage account."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> MessageContentOption = new(
+        $"--{MessageContent}",
+        "The content of the message to send to the queue."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<int?> TimeToLiveInSecondsOption = new(
+        $"--{TimeToLiveInSeconds}",
+        "The time-to-live for the message in seconds. If not specified, the message will use the queue's default TTL. Set to -1 for messages that never expire.")
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<int?> VisibilityTimeoutInSecondsOption = new(
+        $"--{VisibilityTimeoutInSeconds}",
+        "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible)."
+    )
     {
         IsRequired = false
     };

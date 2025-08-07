@@ -320,5 +320,59 @@ namespace AzureMcp.Storage.LiveTests
             // with no result.
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_Successfully()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message from integration test" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            // Check message properties
+            Assert.True(message.TryGetProperty("messageId", out _));
+            Assert.True(message.TryGetProperty("insertionTime", out _));
+            Assert.True(message.TryGetProperty("expirationTime", out _));
+            Assert.True(message.TryGetProperty("popReceipt", out _));
+            Assert.True(message.TryGetProperty("nextVisibleTime", out _));
+            Assert.True(message.TryGetProperty("messageContent", out _));
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message from integration test", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_WithOptionalParameters()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message with TTL" },
+                    { "time-to-live-in-seconds", "3600" },
+                    { "visibility-timeout-in-seconds", "30" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message with TTL", messageContent);
+        }
     }
 }

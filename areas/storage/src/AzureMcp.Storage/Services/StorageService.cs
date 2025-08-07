@@ -12,6 +12,7 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.Shares;
 using Azure.Storage.Files.Shares.Models;
+using Azure.Storage.Queues;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -324,6 +325,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
+    private async Task<QueueServiceClient> CreateQueueServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.queue.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new QueueClientOptions()), retryPolicy);
+        return new QueueServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
@@ -522,6 +530,46 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error listing files and directories: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<QueueMessageSendResult> SendQueueMessage(
+        string accountName,
+        string queueName,
+        string messageContent,
+        int? timeToLiveInSeconds,
+        int? visibilityTimeoutInSeconds,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, queueName, messageContent, subscriptionId);
+
+        // Create queue service client
+        var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
+        var queueClient = queueServiceClient.GetQueueClient(queueName);
+
+        try
+        {
+            // Send message with optional parameters
+            TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
+            TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null;
+
+            var response = await queueClient.SendMessageAsync(messageContent, visibilityTimeout, timeToLive);
+
+            return new QueueMessageSendResult
+            {
+                MessageId = response.Value.MessageId,
+                InsertionTime = response.Value.InsertionTime,
+                ExpirationTime = response.Value.ExpirationTime,
+                PopReceipt = response.Value.PopReceipt,
+                NextVisibleTime = response.Value.TimeNextVisible,
+                MessageContent = messageContent
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error sending queue message: {ex.Message}", ex);
         }
     }
 }

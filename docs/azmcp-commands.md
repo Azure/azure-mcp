@@ -787,6 +787,14 @@ azmcp storage share file list --subscription <subscription> \
                               --directory-path <directory-path> \
                               [--prefix <prefix>]
 
+# Send a message to a Storage queue
+azmcp storage queue message send --subscription <subscription> \
+                                 --account <account-name> \
+                                 --queue <queue-name> \
+                                 --message "<message-content>" \
+                                 [--time-to-live-in-seconds <seconds>] \
+                                 [--visibility-timeout-in-seconds <seconds>]
+
 # List tables in a Storage account
 azmcp storage table list --subscription <subscription> \
                          --account <account>

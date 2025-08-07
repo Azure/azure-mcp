@@ -18,6 +18,7 @@
     <PackageReference Include="Azure.Storage.Blobs.Batch" />
     <PackageReference Include="Azure.Storage.Files.DataLake" />
     <PackageReference Include="Azure.Storage.Files.Shares" />
+    <PackageReference Include="Azure.Storage.Queues" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />

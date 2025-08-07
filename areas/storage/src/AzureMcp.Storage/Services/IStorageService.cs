@@ -9,11 +9,13 @@ namespace AzureMcp.Storage.Services;
 
 public interface IStorageService
 {
-    Task<List<string>> GetStorageAccounts(string subscriptionId,
+    Task<List<string>> GetStorageAccounts(
+        string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<List<string>> ListContainers(string accountName,
+    Task<List<string>> ListContainers(
+        string accountName,
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
@@ -69,6 +71,16 @@ public interface IStorageService
         string shareName,
         string directoryPath,
         string? prefix,
+        string subscriptionId,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    Task<QueueMessageSendResult> SendQueueMessage(
+        string accountName,
+        string queueName,
+        string messageContent,
+        int? timeToLiveInSeconds,
+        int? visibilityTimeoutInSeconds,
         string subscriptionId,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
