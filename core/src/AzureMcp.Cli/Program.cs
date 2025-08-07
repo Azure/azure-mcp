@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Diagnostics;
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
@@ -82,6 +83,7 @@ internal class Program
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
         ];
@@ -95,7 +97,7 @@ internal class Program
 
         builder.AddMiddleware(async (context, next) =>
         {
-            var commandContext = new CommandContext(serviceProvider);
+            var commandContext = new CommandContext(serviceProvider, Activity.Current);
             var command = context.ParseResult.CommandResult.Command;
             if (command.Handler is IBaseCommand baseCommand)
             {

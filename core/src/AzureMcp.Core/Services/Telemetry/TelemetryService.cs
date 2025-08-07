@@ -16,30 +16,35 @@ internal class TelemetryService : ITelemetryService
 {
     private readonly bool _isEnabled;
     private readonly List<KeyValuePair<string, object?>> _tagsList;
+    private readonly IMachineInformationProvider _informationProvider;
+    private readonly TaskCompletionSource _isInitialized = new TaskCompletionSource();
 
     internal ActivitySource Parent { get; }
 
-    public TelemetryService(IOptions<AzureMcpServerConfiguration> options)
+    public TelemetryService(IMachineInformationProvider informationProvider, IOptions<AzureMcpServerConfiguration> options)
     {
         _isEnabled = options.Value.IsTelemetryEnabled;
-
         _tagsList = new List<KeyValuePair<string, object?>>()
         {
             new(TagName.AzureMcpVersion, options.Value.Version),
-            new(TagName.MacAddressHash, options.Value.MacAddressHash)
         };
 
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);
+        _informationProvider = informationProvider;
+
+        Task.Factory.StartNew(InitializeTagList);
     }
 
-    public Activity? StartActivity(string activityId) => StartActivity(activityId, null);
+    public ValueTask<Activity?> StartActivity(string activityId) => StartActivity(activityId, null);
 
-    public Activity? StartActivity(string activityId, Implementation? clientInfo)
+    public async ValueTask<Activity?> StartActivity(string activityId, Implementation? clientInfo)
     {
         if (!_isEnabled)
         {
             return null;
         }
+
+        await _isInitialized.Task;
 
         var activity = Parent.StartActivity(activityId);
 
@@ -63,5 +68,23 @@ internal class TelemetryService : ITelemetryService
 
     public void Dispose()
     {
+    }
+
+    private async Task InitializeTagList()
+    {
+        try
+        {
+            var macAddressHash = await _informationProvider.GetMacAddressHash();
+            var deviceId = await _informationProvider.GetOrCreateDeviceId();
+
+            _tagsList.Add(new(TagName.MacAddressHash, macAddressHash));
+            _tagsList.Add(new(TagName.DevDeviceId, deviceId));
+
+            _isInitialized.SetResult();
+        }
+        catch (Exception ex)
+        {
+            _isInitialized.SetException(ex);
+        }
     }
 }

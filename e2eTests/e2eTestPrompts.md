@@ -20,9 +20,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-search-index-list | List all indexes in the Cognitive Search service \<service-name> |
 | azmcp-search-index-list | Show me the indexes in the Cognitive Search service \<service-name> |
 | azmcp-search-index-query | Search for instances of \<search_term> in the index \<index-name> in Cognitive Search service \<service-name> |
-| azmcp-search-list | List all Cognitive Search services in my subscription |
-| azmcp-search-list | Show me the Cognitive Search services in my subscription |
-| azmcp-search-list | Show me my Cognitive Search services |
+| azmcp-search-service-list | List all Cognitive Search services in my subscription |
+| azmcp-search-service-list | Show me the Cognitive Search services in my subscription |
+| azmcp-search-service-list | Show me my Cognitive Search services |
 
 ## Azure App Configuration
 
@@ -171,13 +171,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
 
-## Azure MCP Tools
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-tool-list | List all available tools in the Azure MCP server |
-| azmcp-tool-list | Show me the available tools in the Azure MCP server |
-
 ## Azure Monitor
 
 | Tool Name | Test Prompt |
@@ -228,11 +221,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-redis-cache-accesspolicy-list | List all access policies in the Redis Cache <cache_name> |
+| azmcp-redis-cache-accesspolicy-list | Show me the access policies in the Redis Cache <cache_name> |
 | azmcp-redis-cache-list | List all Redis Caches in my subscription |
 | azmcp-redis-cache-list | Show me my Redis Caches |
 | azmcp-redis-cache-list | Show me the Redis Caches in my subscription |
-| azmcp-redis-cache-list-accesspolicy | List all access policies in the Redis Cache <cache_name> |
-| azmcp-redis-cache-list-accesspolicy | Show me the access policies in the Redis Cache <cache_name> |
 | azmcp-redis-cluster-database-list | List all databases in the Redis Cluster <cluster_name> |
 | azmcp-redis-cluster-database-list | Show me the databases in the Redis Cluster <cluster_name> |
 | azmcp-redis-cluster-list | List all Redis Clusters in my subscription |
@@ -276,12 +269,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
-| azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
-| azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 | azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-server-firewall-rule-list | List all firewall rules for SQL server <server_name> |
+| azmcp-sql-server-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
+| azmcp-sql-server-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 
 ## Azure Storage
 
@@ -301,6 +294,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
+| azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
+| azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
+| azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 
@@ -320,6 +316,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
 
+## Azure Virtual Desktop
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-virtualdesktop-hostpool-list | List all host pools in my subscription |
+| azmcp-virtualdesktop-hostpool-sessionhost-list | List all session hosts in host pool <hostpool_name> |
+| azmcp-virtualdesktop-hostpool-sessionhost-usersession-list | List all user sessions on session host <sessionhost_name> in host pool <hostpool_name> |
+
 ## Azure Workbooks
 
 | Tool Name | Test Prompt |
@@ -337,3 +341,4 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+

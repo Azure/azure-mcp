@@ -187,7 +187,7 @@ IMPORTANT:
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
-### 2. Command Class
+### 3. Command Class
 
 ```csharp
 public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Command> logger)
@@ -294,7 +294,45 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     internal record {Resource}{Operation}CommandResult(List<ResultType> Results);
 }
 
-### 3. Base Service Command Classes
+### 4. Service Interface and Implementation
+
+Each area has its own service interface that defines the methods that commands will call. The interface will have an implementation that contains the actual logic.
+
+```csharp
+public interface I<Area>Service
+{
+    ...
+}
+```
+
+```csharp
+public class <Area>Service(ISubscriptionService subscriptionService, ITenantService tenantService, ICacheService cacheService) : BaseAzureService(tenantService), I<Area>Service
+{
+   ...
+}
+```
+
+### Method Signature Consistency
+
+All interface methods should follow consistent formatting with proper line breaks and parameter alignment:
+
+```csharp
+// Correct formatting - parameters aligned with line breaks
+Task<List<string>> GetStorageAccounts(
+    string subscriptionId,
+    string? tenant = null,
+    RetryPolicyOptions? retryPolicy = null);
+
+// Incorrect formatting - all parameters on single line
+Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+```
+
+**Formatting Rules:**
+- Parameters indented and aligned
+- Add blank lines between method declarations for visual separation
+- Maintain consistent indentation across all methods in the interface
+
+### 5. Base Service Command Classes
 
 Each area has its own hierarchy of base command classes that inherit from `GlobalCommand` or `SubscriptionCommand`. Service classes that work with Azure resources should inject `ISubscriptionService` for subscription resolution. For example:
 
@@ -367,7 +405,7 @@ public class {Area}Service(ISubscriptionService subscriptionService, ITenantServ
 }
 ```
 
-### 4. Unit Tests
+### 6. Unit Tests
 
 Unit tests follow a standardized pattern that tests initialization, validation, and execution:
 
@@ -453,7 +491,7 @@ public class {Resource}{Operation}CommandTests
 }
 ```
 
-### 5. Integration Tests
+### 7. Integration Tests
 
 Integration tests inherit from `CommandTestsBase` and use test fixtures:
 
@@ -503,7 +541,7 @@ public class {Area}CommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
 }
 ```
 
-### 6. Command Registration
+### 8. Command Registration
 
 ```csharp
 private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
@@ -527,7 +565,7 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 - ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`, `"entra-admin"`
 - ❌ Bad: `"entra_admin"`, `"resource_group"`, `"storage_account"`
 
-### 7. Area registration
+### 8. Area registration
 ```csharp
     private static IAreaSetup[] RegisterAreas()
     {
@@ -972,7 +1010,77 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Include examples in description
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
-5. Live Test Infrastructure:
+5. Tool Description Quality Validation:
+    - Test your command descriptions for quality using the validation tool before submitting:
+
+      - **Single prompt validation** (test one description against one prompt):
+
+        ```bash
+        cd eng/tools/ToolDescriptionConfidenceScore
+        dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
+        ```
+
+      - **Multiple prompt validation** (test one description against multiple prompts):
+
+        ```bash
+        dotnet run -- --validate \
+        --tool-description "Lists all storage accounts in a subscription" \
+        --prompt "show me my storage accounts" \
+        --prompt "list storage accounts" \
+        --prompt "what storage do I have"
+        ```
+
+      - **Custom tools and prompts files** (use your own files for comprehensive testing):
+
+        ```bash
+        # Prompts:
+        # Use markdown format (same as e2eTests/e2eTestPrompts.md):
+        dotnet run -- --prompts-file my-prompts.md
+
+        # Use JSON format:
+        dotnet run -- --prompts-file my-prompts.json
+
+        # Tools:
+        # Use JSON format (same as eng/tools/ToolDescriptionConfidenceScore/tools.json):
+        dotnet run -- --tools-file my-tools.json
+
+        # Combine both:
+        # Use custom tools and prompts files together:
+        dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
+        ```
+
+    - Quality assessment guidelines:
+
+      - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)
+      - Test with multiple different prompts that users might use
+      - Consider common synonyms and alternative phrasings in your descriptions
+      - If validation shows POOR results or a confidence score of < 0.4, refine your description and test again
+
+    - Custom prompts file formats:
+      - **Markdown format**: Use same table format as `e2eTests/e2eTestPrompts.md`:
+
+        ```markdown
+        | Tool Name | Test Prompt |
+        |:----------|:----------|
+        | azmcp-your-command | Your test prompt |
+        | azmcp-your-command | Another test prompt |
+        ```
+
+      - **JSON format**: Tool name as key, array of prompts as value:
+
+        ```json
+        {
+            "azmcp-your-command": [
+            "Your test prompt",
+            "Another test prompt"
+            ]
+        }
+        ```
+
+    - Custom tools file format:
+      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionConfidenceScore/tools.json`.
+
+6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
    - Follow naming conventions: `baseName` (most common) or `{baseName}-{area}` if needed
    - Include proper RBAC assignments for test application
