@@ -64,6 +64,12 @@ public sealed class GenerateArchitectureDiagramCommand(ILogger<GenerateArchitect
                 throw new ArgumentException($"Invalid JSON format: {ex.Message}", nameof(rawMcpToolInput), ex);
             }
 
+            context.Activity?.SetTag("Command", "architecture-diagram-generate")
+                .SetTag("CustomerChannel", "azmcp")
+                .SetTag("ServiceCount", appTopology.Services.Length)
+                .SetTag("TargetService", string.Join(", ", appTopology.Services.Select(s => s.AzureComputeHost)))
+                .SetTag("BackingServices", string.Join(", ", appTopology.Services.SelectMany(s => s.Dependencies).Select(d => d.ServiceType)));
+
             _logger.LogInformation("Successfully parsed app topology with {ServiceCount} services", appTopology.Services.Length);
 
             if (appTopology.Services.Length == 0)

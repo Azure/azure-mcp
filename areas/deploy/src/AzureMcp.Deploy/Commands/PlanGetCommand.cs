@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Deploy.Options;
 using AzureMcp.Deploy.Services.Util;
 using Microsoft.Extensions.Logging;
@@ -20,6 +22,8 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
     private readonly Option<string> _deploymentTargetServiceOption = DeployOptionDefinitions.PlanGet.TargetAppService;
     private readonly Option<string> _provisioningToolOption = DeployOptionDefinitions.PlanGet.ProvisioningTool;
     private readonly Option<string> _azdIacOptionsOption = DeployOptionDefinitions.PlanGet.AzdIacOptions;
+    private readonly Option<string> _backingServicesOption = DeployOptionDefinitions.PlanGet.BackingServices;
+    private readonly Option<int> _serviceCountOption = DeployOptionDefinitions.PlanGet.ServiceCount;
 
     public override string Name => "plan-get";
 
@@ -39,6 +43,8 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
         command.AddOption(_deploymentTargetServiceOption);
         command.AddOption(_provisioningToolOption);
         command.AddOption(_azdIacOptionsOption);
+        command.AddOption(_backingServicesOption);
+        command.AddOption(_serviceCountOption);
     }
 
     private PlanGetOptions BindOptions(ParseResult parseResult)
@@ -49,7 +55,9 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
             ProjectName = parseResult.GetValueForOption(_projectNameOption) ?? string.Empty,
             TargetAppService = parseResult.GetValueForOption(_deploymentTargetServiceOption) ?? string.Empty,
             ProvisioningTool = parseResult.GetValueForOption(_provisioningToolOption) ?? string.Empty,
-            AzdIacOptions = parseResult.GetValueForOption(_azdIacOptionsOption) ?? string.Empty
+            AzdIacOptions = parseResult.GetValueForOption(_azdIacOptionsOption) ?? string.Empty,
+            BackingServices = parseResult.GetValueForOption(_backingServicesOption) ?? string.Empty,
+            ServiceCount = parseResult.GetValueForOption(_serviceCountOption)
         };
     }
 
@@ -64,6 +72,14 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
                 return Task.FromResult(context.Response);
             }
 
+            context.Activity?.SetTag("Command", "plan-get")
+                    .SetTag("CustomerChannel", "azmcp")
+                    .SetTag("TargetService", options.TargetAppService)
+                    .SetTag("ProvisioningTool", options.ProvisioningTool)
+                    .SetTag("IacType", options.AzdIacOptions ?? string.Empty)
+                    .SetTag("BackingServices", options.BackingServices ?? string.Empty)
+                    .SetTag("ServiceCount", options.ServiceCount);
+            
             var planTemplate = DeploymentPlanTemplateUtil.GetPlanTemplate(options.ProjectName, options.TargetAppService, options.ProvisioningTool, options.AzdIacOptions);
 
             context.Response.Message = planTemplate;

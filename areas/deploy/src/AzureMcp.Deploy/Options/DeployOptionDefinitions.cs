@@ -103,6 +103,8 @@ public static class DeployOptionDefinitions
         public const string TargetAppServiceName = "target-app-service";
         public const string ProvisioningToolName = "provisioning-tool";
         public const string AzdIacOptionsName = "azd-iac-options";
+        public const string BackingServicesName = "backing-services";
+        public const string ServiceCountName = "service-count";
 
         public static readonly Option<string> WorkspaceFolder = new(
             $"--{WorkspaceFolderName}",
@@ -139,6 +141,22 @@ public static class DeployOptionDefinitions
         public static readonly Option<string> AzdIacOptions = new(
             $"--{AzdIacOptionsName}",
             "The Infrastructure as Code option for azd. Valid values: bicep, terraform. Leave empty if Deployment tool is AzCli."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> BackingServices = new(
+            $"--{BackingServicesName}",
+            "A comma-separated list of backing Azure services to include in the deployment plan. For example: 'azurecosmosdb', 'azuresqldatabase', 'azurestorageaccount', etc.."
+        )
+        {
+            IsRequired = false
+        }; 
+
+        public static readonly Option<int> ServiceCount = new(
+            $"--{ServiceCountName}",
+            "The number of compute services that the project contains, i.e. the number of the host target app services to deploy. Default to 1."
         )
         {
             IsRequired = false

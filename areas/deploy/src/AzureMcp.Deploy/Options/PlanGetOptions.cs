@@ -21,4 +21,10 @@ public sealed class PlanGetOptions
 
     [JsonPropertyName("azdIacOptions")]
     public string? AzdIacOptions { get; set; } = string.Empty;
+
+    [JsonPropertyName("backingServices")]
+    public string BackingServices { get; set; } = string.Empty;
+
+    [JsonPropertyName("serviceCount")]
+    public int ServiceCount { get; set; } = 0;
 }

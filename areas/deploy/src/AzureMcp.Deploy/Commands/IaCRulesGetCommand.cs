@@ -57,6 +57,12 @@ public sealed class IaCRulesGetCommand(ILogger<IaCRulesGetCommand> logger)
                 return Task.FromResult(context.Response);
             }
 
+            context.Activity?.SetTag("Command", "iac-rules-get")
+                .SetTag("CustomerChannel", "azmcp")
+                .SetTag("DeploymentTool", options.DeploymentTool)
+                .SetTag("IacType", options.IacType)
+                .SetTag("ResourceTypes", options.ResourceTypes);
+
             var resourceTypes = options.ResourceTypes.Split(',')
                 .Select(rt => rt.Trim())
                 .Where(rt => !string.IsNullOrWhiteSpace(rt))
