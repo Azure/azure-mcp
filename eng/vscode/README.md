@@ -2,9 +2,54 @@
 
 Easily bring the power of Model Context Protocol (MCP) to your Azure projects in VS Code.
 
+## Table of Contents
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+- [✨ What can you do with the Azure MCP Server?](#-what-can-you-do-with-the-azure-mcp-server)
+- [🛠️ Complete List of Supported Azure Services](#️-complete-list-of-supported-azure-services)
+- [Feedback & Support](#feedback--support)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Overview
 
 **Azure MCP Server** adds smart, context-aware AI tools right inside VS Code to help you work more efficiently with Azure resources. The Azure MCP Server supercharges your agents with Azure context across **28 different Azure services**.
+
+## Getting Started
+
+Follow these simple steps to start using Azure MCP in VS Code:
+
+1. **Install the Extension**
+   - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
+
+
+2. **Start the MCP Server**
+   - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+   - Run `MCP: List Servers`
+
+   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
+
+   - Select `Azure MCP Server ext`, then click **Start Server**
+
+   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
+   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+
+3. **Check That It's Running**
+   - Go to the **Output** tab in VS Code.
+   - Look for log messages confirming the server started successfully.
+
+   ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
+
+4. **(Optional) Enable Specific Azure Services**
+   - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
+
+     ```json
+     "azureMcp.enabledServices": ["storage", "keyvault"]
+     ```
+
+   - Then restart the MCP Server (repeat Step 2).
+
+You’re all set! Azure MCP Server is now ready to help you work smarter with Azure resources in VS Code.
 
 ## ✨ What can you do with the Azure MCP Server?
 
@@ -81,42 +126,6 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 🏗️ **Bicep** - Azure resource templates
 
 For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
-
-## Getting Started
-
-Follow these simple steps to start using Azure MCP in VS Code:
-
-1. **Install the Extension**
-   - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
-
-
-2. **Start the MCP Server**
-   - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-   - Run `MCP: List Servers`
-
-   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
-
-   - Select `Azure MCP Server ext`, then click **Start Server**
-
-   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
-   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
-
-3. **Check That It's Running**
-   - Go to the **Output** tab in VS Code.
-   - Look for log messages confirming the server started successfully.
-
-   ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
-
-4. **(Optional) Enable Specific Azure Services**
-   - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
-
-     ```json
-     "azureMcp.enabledServices": ["storage", "keyvault"]
-     ```
-
-   - Then restart the MCP Server (repeat Step 2).
-
-You’re all set! Azure MCP Server is now ready to help you work smarter with Azure resources in VS Code.
 
 ## Feedback & Support
 
