@@ -14,14 +14,14 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.MySql.Commands.Table;
 
-public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : BaseDatabaseCommand<TableSchemaOptions>(logger)
+public sealed class TableSchemaGetCommand(ILogger<TableSchemaGetCommand> logger) : BaseDatabaseCommand<TableSchemaGetOptions>(logger)
 {
     private const string CommandTitle = "Get MySQL Table Schema";
     private readonly Option<string> _tableOption = MySqlOptionDefinitions.Table;
 
     public override string Name => "schema";
 
-    public override string Description => "Gets the schema of a MySQL table.";
+    public override string Description => "Retrieves the schema of a specified table in a MySQL database.";
 
     public override string Title => CommandTitle;
 
@@ -33,7 +33,7 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
         command.AddOption(_tableOption);
     }
 
-    protected override TableSchemaOptions BindOptions(ParseResult parseResult)
+    protected override TableSchemaGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Table = parseResult.GetValueForOption(_tableOption);
@@ -56,17 +56,17 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
             List<string> schema = await mysqlService.GetTableSchemaAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!, options.Table!);
             context.Response.Results = schema?.Count > 0 ?
                 ResponseResult.Create(
-                    new TableSchemaCommandResult(schema),
-                    MySqlJsonContext.Default.TableSchemaCommandResult) :
+                    new TableSchemaGetCommandResult(schema),
+                    MySqlJsonContext.Default.TableSchemaGetCommandResult) :
                 null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred getting table schema.");
+            _logger.LogError(ex, "An exception occurred retrieving table schema.");
             HandleException(context, ex);
         }
         return context.Response;
     }
 
-    public record TableSchemaCommandResult(List<string> Schema);
+    public record TableSchemaGetCommandResult(List<string> Schema);
 }

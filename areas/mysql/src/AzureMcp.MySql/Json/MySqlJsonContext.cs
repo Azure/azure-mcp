@@ -11,13 +11,13 @@ namespace AzureMcp.MySql.Json;
 
 [JsonSerializable(typeof(DatabaseListCommand.DatabaseListCommandResult))]
 [JsonSerializable(typeof(DatabaseQueryCommand.DatabaseQueryCommandResult))]
-[JsonSerializable(typeof(ServerConfigCommand.ServerConfigCommandResult))]
-[JsonSerializable(typeof(ServerParamCommand.ServerParamCommandResult))]
-[JsonSerializable(typeof(ServerSetParamCommand.ServerSetParamCommandResult))]
+[JsonSerializable(typeof(ServerConfigGetCommand.ServerConfigGetCommandResult))]
+[JsonSerializable(typeof(ServerParamGetCommand.ServerParamGetCommandResult))]
+[JsonSerializable(typeof(ServerParamSetCommand.ServerParamSetCommandResult))]
 [JsonSerializable(typeof(ServerListCommand.ServerListCommandResult))]
-[JsonSerializable(typeof(TableSchemaCommand.TableSchemaCommandResult))]
+[JsonSerializable(typeof(TableSchemaGetCommand.TableSchemaGetCommandResult))]
 [JsonSerializable(typeof(TableListCommand.TableListCommandResult))]
-[JsonSerializable(typeof(MySqlService.ServerConfigResult))]
+[JsonSerializable(typeof(MySqlService.ServerConfigGetResult))]
 
 internal sealed partial class MySqlJsonContext : JsonSerializerContext
 {

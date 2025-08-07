@@ -14,13 +14,13 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.MySql.Commands.Server;
 
-public sealed class ServerSetParamCommand(ILogger<ServerSetParamCommand> logger) : BaseServerCommand<ServerSetParamOptions>(logger)
+public sealed class ServerParamSetCommand(ILogger<ServerParamSetCommand> logger) : BaseServerCommand<ServerParamSetOptions>(logger)
 {
     private const string CommandTitle = "Set MySQL Server Parameter";
     private readonly Option<string> _paramOption = MySqlOptionDefinitions.Param;
     private readonly Option<string> _valueOption = MySqlOptionDefinitions.Value;
 
-    public override string Name => "setparam";
+    public override string Name => "set";
 
     public override string Description => "Sets a specific parameter of a MySQL server.";
 
@@ -35,7 +35,7 @@ public sealed class ServerSetParamCommand(ILogger<ServerSetParamCommand> logger)
         command.AddOption(_valueOption);
     }
 
-    protected override ServerSetParamOptions BindOptions(ParseResult parseResult)
+    protected override ServerParamSetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
@@ -59,8 +59,8 @@ public sealed class ServerSetParamCommand(ILogger<ServerSetParamCommand> logger)
             string result = await mysqlService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);
             context.Response.Results = !string.IsNullOrEmpty(result) ?
                 ResponseResult.Create(
-                    new ServerSetParamCommandResult(options.Param!, result),
-                    MySqlJsonContext.Default.ServerSetParamCommandResult) :
+                    new ServerParamSetCommandResult(options.Param!, result),
+                    MySqlJsonContext.Default.ServerParamSetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -71,5 +71,5 @@ public sealed class ServerSetParamCommand(ILogger<ServerSetParamCommand> logger)
         return context.Response;
     }
 
-    internal record ServerSetParamCommandResult(string Parameter, string Value);
+    internal record ServerParamSetCommandResult(string Parameter, string Value);
 }

@@ -12,13 +12,13 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.MySql.Commands.Server;
 
-public sealed class ServerConfigCommand(ILogger<ServerConfigCommand> logger) : BaseServerCommand<ServerConfigOptions>(logger)
+public sealed class ServerConfigGetCommand(ILogger<ServerConfigGetCommand> logger) : BaseServerCommand<ServerConfigGetOptions>(logger)
 {
     private const string CommandTitle = "Get MySQL Server Configuration";
 
     public override string Name => "config";
 
-    public override string Description => "Gets the configuration of a MySQL server.";
+    public override string Description => "Retrieve the configuration of a MySQL server.";
 
     public override string Title => CommandTitle;
 
@@ -40,8 +40,8 @@ public sealed class ServerConfigCommand(ILogger<ServerConfigCommand> logger) : B
             string config = await mysqlService.GetServerConfigAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);
             context.Response.Results = !string.IsNullOrEmpty(config) ?
                 ResponseResult.Create(
-                    new ServerConfigCommandResult(config),
-                    MySqlJsonContext.Default.ServerConfigCommandResult) :
+                    new ServerConfigGetCommandResult(config),
+                    MySqlJsonContext.Default.ServerConfigGetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -52,5 +52,5 @@ public sealed class ServerConfigCommand(ILogger<ServerConfigCommand> logger) : B
         return context.Response;
     }
 
-    internal record ServerConfigCommandResult(string Configuration);
+    internal record ServerConfigGetCommandResult(string Configuration);
 }

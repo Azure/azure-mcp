@@ -32,13 +32,22 @@ public class MySqlSetup : IAreaSetup
         var table = new CommandGroup("table", "MySQL table operations");
         mysql.AddSubGroup(table);
         table.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
-        table.AddCommand("schema", new TableSchemaCommand(loggerFactory.CreateLogger<TableSchemaCommand>()));
+
+        var schema = new CommandGroup("schema", "MySQL table schema operations");
+        table.AddSubGroup(schema);
+        schema.AddCommand("get", new TableSchemaGetCommand(loggerFactory.CreateLogger<TableSchemaGetCommand>()));
 
         var server = new CommandGroup("server", "MySQL server operations");
         mysql.AddSubGroup(server);
         server.AddCommand("list", new ServerListCommand(loggerFactory.CreateLogger<ServerListCommand>()));
-        server.AddCommand("config", new ServerConfigCommand(loggerFactory.CreateLogger<ServerConfigCommand>()));
-        server.AddCommand("param", new ServerParamCommand(loggerFactory.CreateLogger<ServerParamCommand>()));
-        server.AddCommand("setparam", new ServerSetParamCommand(loggerFactory.CreateLogger<ServerSetParamCommand>()));
+
+        var config = new CommandGroup("config", "MySQL server configuration operations");
+        server.AddSubGroup(config);
+        config.AddCommand("get", new ServerConfigGetCommand(loggerFactory.CreateLogger<ServerConfigGetCommand>()));
+
+        var param = new CommandGroup("param", "MySQL server parameter operations");
+        server.AddSubGroup(param);
+        param.AddCommand("get", new ServerParamGetCommand(loggerFactory.CreateLogger<ServerParamGetCommand>()));
+        param.AddCommand("set", new ServerParamSetCommand(loggerFactory.CreateLogger<ServerParamSetCommand>()));
     }
 }

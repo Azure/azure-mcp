@@ -164,7 +164,7 @@ public class MySqlService(IResourceGroupService resourceGroupService) : BaseAzur
         }
         var mysqlServer = await rg.GetMySqlFlexibleServerAsync(server);
         var mysqlServerData = mysqlServer.Value.Data;
-        var config = new ServerConfigResult
+        var config = new ServerConfigGetResult
         {
             ServerName = mysqlServerData.Name,
             Location = mysqlServerData.Location.ToString(),
@@ -174,7 +174,7 @@ public class MySqlService(IResourceGroupService resourceGroupService) : BaseAzur
             BackupRetentionDays = mysqlServerData.Backup?.BackupRetentionDays,
             GeoRedundantBackup = mysqlServerData.Backup?.GeoRedundantBackup?.ToString()
         };
-        return System.Text.Json.JsonSerializer.Serialize(config, MySqlJsonContext.Default.ServerConfigResult);
+        return System.Text.Json.JsonSerializer.Serialize(config, MySqlJsonContext.Default.ServerConfigGetResult);
     }
 
     public async Task<string> GetServerParameterAsync(string subscriptionId, string resourceGroup, string user, string server, string param)
@@ -238,7 +238,7 @@ public class MySqlService(IResourceGroupService resourceGroupService) : BaseAzur
         }
     }
 
-    public class ServerConfigResult
+    public class ServerConfigGetResult
     {
         public string? ServerName { get; set; }
         public string? Location { get; set; }

@@ -385,22 +385,22 @@ azmcp mysql table list --subscription <subscription> \
                        --database <database>
 
 # Get the schema of a specific table in a MySQL database
-azmcp mysql table schema --subscription <subscription> \
-                         --resource-group <resource-group> \
-                         --user <user> \
-                         --server <server> \
-                         --database <database> \
-                         --table <table>
+azmcp mysql table schema get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --database <database> \
+                             --table <table>
 ```
 
 #### Server Commands
 
 ```bash
 # Retrieve the configuration of a MySQL server
-azmcp mysql server config --subscription <subscription> \
-                          --resource-group <resource-group> \
-                          --user <user> \
-                          --server <server>
+azmcp mysql server config get --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server>
 
 # List all MySQL servers in a subscription & resource group
 azmcp mysql server list --subscription <subscription> \
@@ -408,19 +408,19 @@ azmcp mysql server list --subscription <subscription> \
                         --user <user>
 
 # Retrieve a specific parameter of a MySQL server
-azmcp mysql server param --subscription <subscription> \
-                         --resource-group <resource-group> \
-                         --user <user> \
-                         --server <server> \
-                         --param <parameter>
+azmcp mysql server param get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter>
 
 # Set a specific parameter of a MySQL server to a specific value
-azmcp mysql server setparam --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --param <parameter> \
-                            --value <value>
+azmcp mysql server param set --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter> \
+                             --value <value>
 ```
 
 ### Azure Developer CLI Operations

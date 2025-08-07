@@ -14,14 +14,14 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.MySql.Commands.Server;
 
-public sealed class ServerParamCommand(ILogger<ServerParamCommand> logger) : BaseServerCommand<ServerParamOptions>(logger)
+public sealed class ServerParamGetCommand(ILogger<ServerParamGetCommand> logger) : BaseServerCommand<ServerParamGetOptions>(logger)
 {
     private const string CommandTitle = "Get MySQL Server Parameter";
     private readonly Option<string> _paramOption = MySqlOptionDefinitions.Param;
 
     public override string Name => "param";
 
-    public override string Description => "Gets a specific parameter of a MySQL server.";
+    public override string Description => "Retrieves a specific parameter of a MySQL server.";
 
     public override string Title => CommandTitle;
 
@@ -33,7 +33,7 @@ public sealed class ServerParamCommand(ILogger<ServerParamCommand> logger) : Bas
         command.AddOption(_paramOption);
     }
 
-    protected override ServerParamOptions BindOptions(ParseResult parseResult)
+    protected override ServerParamGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
@@ -56,17 +56,17 @@ public sealed class ServerParamCommand(ILogger<ServerParamCommand> logger) : Bas
             string paramValue = await mysqlService.GetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!);
             context.Response.Results = !string.IsNullOrEmpty(paramValue) ?
                 ResponseResult.Create(
-                    new ServerParamCommandResult(options.Param!, paramValue),
-                    MySqlJsonContext.Default.ServerParamCommandResult) :
+                    new ServerParamGetCommandResult(options.Param!, paramValue),
+                    MySqlJsonContext.Default.ServerParamGetCommandResult) :
                 null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred getting server parameter.");
+            _logger.LogError(ex, "An exception occurred retrieving server parameter.");
             HandleException(context, ex);
         }
         return context.Response;
     }
 
-    internal record ServerParamCommandResult(string Parameter, string Value);
+    internal record ServerParamGetCommandResult(string Parameter, string Value);
 }

@@ -17,16 +17,16 @@ using Xunit;
 
 namespace AzureMcp.MySql.UnitTests.Server;
 
-public class ServerSetParamCommandTests
+public class ServerConfigGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMySqlService _mysqlService;
-    private readonly ILogger<ServerSetParamCommand> _logger;
+    private readonly ILogger<ServerConfigGetCommand> _logger;
 
-    public ServerSetParamCommandTests()
+    public ServerConfigGetCommandTests()
     {
         _mysqlService = Substitute.For<IMySqlService>();
-        _logger = Substitute.For<ILogger<ServerSetParamCommand>>();
+        _logger = Substitute.For<ILogger<ServerConfigGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_mysqlService);
@@ -35,19 +35,27 @@ public class ServerSetParamCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_SetsParameter_WhenSuccessful()
+    public async Task ExecuteAsync_ReturnsConfiguration_WhenSuccessful()
     {
-        var newValue = "100";
-        _mysqlService.SetServerParameterAsync("sub123", "rg1", "user1", "test-server", "max_connections", newValue).Returns(newValue);
+        var expectedConfig = JsonSerializer.Serialize(new
+        {
+            ServerName = "test-server",
+            Location = "East US",
+            Version = "8.0.21",
+            SKU = "Standard_B1ms",
+            StorageSizeGB = 20,
+            BackupRetentionDays = 7,
+            GeoRedundantBackup = "Disabled"
+        }, new JsonSerializerOptions { WriteIndented = true });
 
-        var command = new ServerSetParamCommand(_logger);
+        _mysqlService.GetServerConfigAsync("sub123", "rg1", "user1", "test-server").Returns(expectedConfig);
+
+        var command = new ServerConfigGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
             "--user", "user1",
-            "--server", "test-server",
-            "--param", "max_connections",
-            "--value", newValue
+            "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -59,26 +67,23 @@ public class ServerSetParamCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<ServerSetParamResult>(json);
+        var result = JsonSerializer.Deserialize<ServerConfigGetCommand.ServerConfigGetCommandResult>(json);
         Assert.NotNull(result);
-        Assert.Equal("max_connections", result.Parameter);
-        Assert.Equal(newValue, result.Value);
+        Assert.Equal(expectedConfig, result.Configuration);
     }
 
     [Fact]
     public async Task ExecuteAsync_ReturnsError_WhenServiceThrows()
     {
-        _mysqlService.SetServerParameterAsync("sub123", "rg1", "user1", "test-server", "invalid_param", "100")
-            .ThrowsAsync(new Exception("Parameter 'invalid_param' not found."));
+        _mysqlService.GetServerConfigAsync("sub123", "rg1", "user1", "test-server")
+            .ThrowsAsync(new UnauthorizedAccessException("Access denied"));
 
-        var command = new ServerSetParamCommand(_logger);
+        var command = new ServerConfigGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
             "--user", "user1",
-            "--server", "test-server",
-            "--param", "invalid_param",
-            "--value", "100"
+            "--server", "test-server"
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -86,27 +91,24 @@ public class ServerSetParamCommandTests
 
         Assert.NotNull(response);
         Assert.Equal(500, response.Status);
-        Assert.Contains("Parameter 'invalid_param' not found", response.Message);
+        Assert.Contains("Access denied", response.Message);
     }
 
     [Fact]
     public void Metadata_IsConfiguredCorrectly()
     {
-        var command = new ServerSetParamCommand(_logger);
+        var command = new ServerConfigGetCommand(_logger);
         
-        Assert.Equal("setparam", command.Name);
-        Assert.Equal("Sets a specific parameter of a MySQL server.", command.Description);
-        Assert.Equal("Set MySQL Server Parameter", command.Title);
-        Assert.True(command.Metadata.Destructive);
-        Assert.False(command.Metadata.ReadOnly);
+        Assert.Equal("config", command.Name);
+        Assert.Equal("Retrieve the configuration of a MySQL server.", command.Description);
+        Assert.Equal("Get MySQL Server Configuration", command.Title);
+        Assert.False(command.Metadata.Destructive);
+        Assert.True(command.Metadata.ReadOnly);
     }
 
-    private class ServerSetParamResult
+    private class ServerConfigResult
     {
-        [JsonPropertyName("Parameter")]
-        public string Parameter { get; set; } = string.Empty;
-
-        [JsonPropertyName("Value")]
-        public string Value { get; set; } = string.Empty;
+        [JsonPropertyName("Configuration")]
+        public string Configuration { get; set; } = string.Empty;
     }
 }

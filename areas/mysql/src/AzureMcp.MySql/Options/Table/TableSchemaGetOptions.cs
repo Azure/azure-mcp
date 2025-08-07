@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.MySql.Options.Table;
 
-public class TableSchemaOptions : BaseMySqlOptions
+public class TableSchemaGetOptions : BaseMySqlOptions
 {
     [JsonPropertyName(MySqlOptionDefinitions.TableName)]
     public string? Table { get; set; }

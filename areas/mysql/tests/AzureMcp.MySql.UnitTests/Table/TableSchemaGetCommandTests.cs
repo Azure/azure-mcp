@@ -17,16 +17,16 @@ using Xunit;
 
 namespace AzureMcp.MySql.UnitTests.Table;
 
-public class TableSchemaCommandTests
+public class TableSchemaGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMySqlService _mysqlService;
-    private readonly ILogger<TableSchemaCommand> _logger;
+    private readonly ILogger<TableSchemaGetCommand> _logger;
 
-    public TableSchemaCommandTests()
+    public TableSchemaGetCommandTests()
     {
         _mysqlService = Substitute.For<IMySqlService>();
-        _logger = Substitute.For<ILogger<TableSchemaCommand>>();
+        _logger = Substitute.For<ILogger<TableSchemaGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_mysqlService);
@@ -40,7 +40,7 @@ public class TableSchemaCommandTests
         var expectedSchema = new List<string> { "id INT PRIMARY KEY", "name VARCHAR(100) NOT NULL", "email VARCHAR(255)" };
         _mysqlService.GetTableSchemaAsync("sub123", "rg1", "user1", "server1", "db1", "users").Returns(expectedSchema);
 
-        var command = new TableSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
@@ -58,7 +58,7 @@ public class TableSchemaCommandTests
         Assert.NotNull(response.Results);
         
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<TableSchemaResult>(json);
+        var result = JsonSerializer.Deserialize<TableSchemaGetResult>(json);
         Assert.NotNull(result);
         Assert.Equal(expectedSchema, result.Schema);
     }
@@ -68,7 +68,7 @@ public class TableSchemaCommandTests
     {
         _mysqlService.GetTableSchemaAsync("sub123", "rg1", "user1", "server1", "db1", "nonexistent").ThrowsAsync(new ArgumentException("Table not found"));
 
-        var command = new TableSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         var args = command.GetCommand().Parse([
             "--subscription", "sub123",
             "--resource-group", "rg1",
@@ -89,16 +89,16 @@ public class TableSchemaCommandTests
     [Fact]
     public void Metadata_IsConfiguredCorrectly()
     {
-        var command = new TableSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         
         Assert.Equal("schema", command.Name);
-        Assert.Equal("Gets the schema of a MySQL table.", command.Description);
+        Assert.Equal("Retrieves the schema of a specified table in a MySQL database.", command.Description);
         Assert.Equal("Get MySQL Table Schema", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);
     }
 
-    private class TableSchemaResult
+    private class TableSchemaGetResult
     {
         [JsonPropertyName("Schema")]
         public List<string> Schema { get; set; } = new List<string>();

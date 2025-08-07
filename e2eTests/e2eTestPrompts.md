@@ -100,15 +100,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-mysql-database-list | List all MySQL databases in server \<server> |
 | azmcp-mysql-database-list | Show me the MySQL databases in server \<server> |
 | azmcp-mysql-database-query | Show me all items that contain the word \<search_term> in the MySQL database \<database> in server \<server> |
-| azmcp-mysql-server-config | Show me the configuration of MySQL server \<server> |
+| azmcp-mysql-server-config-get | Show me the configuration of MySQL server \<server> |
 | azmcp-mysql-server-list | List all MySQL servers in my subscription |
 | azmcp-mysql-server-list | Show me my MySQL servers |
 | azmcp-mysql-server-list | Show me the MySQL servers in my subscription |
-| azmcp-mysql-server-param | Show me the value of connection timeout in seconds in my MySQL server \<server>  |
-| azmcp-mysql-server-setparam | Set connection timeout to 20 seconds for my MySQL server \<server> |
+| azmcp-mysql-server-param-get | Show me the value of connection timeout in seconds in my MySQL server \<server>  |
+| azmcp-mysql-server-param-set | Set connection timeout to 20 seconds for my MySQL server \<server> |
 | azmcp-mysql-table-list | List all tables in the MySQL database \<database> in server \<server> |
 | azmcp-mysql-table-list | Show me the tables in the MySQL database \<database> in server \<server> |
-| azmcp-mysql-table-schema | Show me the schema of table \<table> in the MySQL database \<database> in server \<server> |
+| azmcp-mysql-table-schema-get | Show me the schema of table \<table> in the MySQL database \<database> in server \<server> |
 
 ## Azure Developer CLI
 

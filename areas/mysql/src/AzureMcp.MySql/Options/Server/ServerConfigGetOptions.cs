@@ -3,4 +3,4 @@
 
 namespace AzureMcp.MySql.Options.Server;
 
-public class ServerConfigOptions : BaseMySqlOptions;
+public class ServerConfigGetOptions : BaseMySqlOptions;

@@ -5,8 +5,11 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.MySql.Options.Server;
 
-public class ServerParamOptions : BaseMySqlOptions
+public class ServerParamSetOptions : BaseMySqlOptions
 {
     [JsonPropertyName(MySqlOptionDefinitions.ParamName)]
     public string? Param { get; set; }
+
+    [JsonPropertyName(MySqlOptionDefinitions.ValueName)]
+    public string? Value { get; set; }
 }
