@@ -20,7 +20,7 @@ public class ServiceBusSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus resources including queues, topics, and subscriptions. Includes operations for managing message queues, topic subscriptions, and retrieving details about Service Bus entities.");
+        var serviceBus = new CommandGroup("servicebus", "Service Bus operations - Commands for managing Azure Service Bus messaging infrastructure including queues, topics, and subscriptions for reliable asynchronous communication and enterprise application integration. Use this tool when you need to manage message queues for point-to-point communication, configure topics and subscriptions for publish-subscribe messaging patterns, monitor message processing, or set up enterprise messaging scenarios for decoupled application architectures. This tool supports reliable messaging, dead letter handling, and enterprise integration patterns. Do not use this tool for real-time communication, direct API calls, database operations, or simple HTTP-based messaging - Service Bus is designed for asynchronous, reliable messaging between distributed applications and services.");
         rootGroup.AddSubGroup(serviceBus);
 
         var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
