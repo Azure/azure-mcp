@@ -5,8 +5,8 @@ Easily bring the power of Model Context Protocol (MCP) to your Azure projects in
 ## Table of Contents
 - [Overview](#overview)
 - [Getting Started](#getting-started)
-- [✨ What can you do with the Azure MCP Server?](#-what-can-you-do-with-the-azure-mcp-server)
-- [🛠️ Complete List of Supported Azure Services](#️-complete-list-of-supported-azure-services)
+- [What can you do with the Azure MCP Server?](#what-can-you-do-with-the-azure-mcp-server)
+- [Complete List of Supported Azure Services](#️complete-list-of-supported-azure-services)
 - [Feedback & Support](#feedback--support)
 - [Contributing](#contributing)
 - [License](#license)
@@ -29,7 +29,7 @@ Follow these simple steps to start using Azure MCP in VS Code:
 
    ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
 
-   - Select `Azure MCP Server ext`, then click **Start Server**
+   - Select `Azure MCP`, then click **Start Server**
 
    ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
    ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
@@ -51,7 +51,7 @@ Follow these simple steps to start using Azure MCP in VS Code:
 
 You’re all set! Azure MCP Server is now ready to help you work smarter with Azure resources in VS Code.
 
-## ✨ What can you do with the Azure MCP Server?
+## What can you do with the Azure MCP Server?
 
 Here are some cool prompts you can try across our supported Azure services:
 
@@ -90,7 +90,7 @@ Here are some cool prompts you can try across our supported Azure services:
 
 **And 20+ more Azure services!** For the complete list of supported services and sample prompts, see our [full documentation](https://github.com/Azure/azure-mcp/blob/main/README.md#-what-can-you-do-with-the-azure-mcp-server).
 
-## 🛠️ Complete List of Supported Azure Services
+## Complete List of Supported Azure Services
 
 The Azure MCP Server provides tools for interacting with **28 Azure service areas**:
 
