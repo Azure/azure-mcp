@@ -1299,6 +1299,7 @@ Before submitting:
 - [ ] **CHANGELOG.md**: Add entry under "Unreleased" section describing the new command(s)
 - [ ] **docs/azmcp-commands.md**: Add command documentation with description, syntax, parameters, and examples
 - [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s) in the appropriate area section
+- [ ] **eng/vscode/README.md**: Update the VSIX README with new service area (if applicable) and add sample prompts to showcase new command capabilities
 - [ ] **e2eTests/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
 
 **Documentation Standards**:
@@ -1309,6 +1310,7 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+- **eng/vscode/README.md Updates**: When adding new services or commands, update the VSIX README to maintain accurate service coverage and compelling sample prompts for marketplace visibility
 - **IMPORTANT**: Maintain alphabetical sorting in e2eTestPrompts.md:
   - Service sections must be in alphabetical order by service name
   - Tool Names within each table must be sorted alphabetically

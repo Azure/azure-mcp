@@ -6,17 +6,18 @@ using Azure.Core;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Core.Services.Http;
 
 namespace AzureMcp.Monitor.Services;
 
-public class MonitorHealthModelService(ITenantService tenantService)
+public class MonitorHealthModelService(ITenantService tenantService, IHttpClientService httpClientService)
     : BaseAzureService(tenantService), IMonitorHealthModelService
 {
     private const int TokenExpirationBuffer = 300;
     private const string ManagementApiBaseUrl = "https://management.azure.com";
     private const string HealthModelsDataApiScope = "https://data.healthmodels.azure.com";
     private const string ApiVersion = "2023-10-01-preview";
-    private static readonly HttpClient s_sharedHttpClient = new HttpClient();
+    private readonly IHttpClientService _httpClientService = httpClientService;
 
     private string? _cachedDataplaneAccessToken;
     private string? _cachedControlPlaneAccessToken;
@@ -60,7 +61,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", dataplaneToken);
 
-        HttpResponseMessage healthResponse = await s_sharedHttpClient.SendAsync(request);
+        HttpResponseMessage healthResponse = await _httpClientService.DefaultClient.SendAsync(request);
         healthResponse.EnsureSuccessStatusCode();
 
         string healthResponseString = await healthResponse.Content.ReadAsStringAsync();
@@ -75,7 +76,7 @@ public class MonitorHealthModelService(ITenantService tenantService)
         using var request = new HttpRequestMessage(HttpMethod.Get, healthModelUrl);
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-        HttpResponseMessage response = await s_sharedHttpClient.SendAsync(request);
+        HttpResponseMessage response = await _httpClientService.DefaultClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
 

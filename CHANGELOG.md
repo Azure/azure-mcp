@@ -18,6 +18,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
 - Updated the descriptions of Azure AI Search `CommandGroup`s to improve their usage by Agents. [[#874](https://github.com/Azure/azure-mcp/pull/874)]
 - Updated the root Storage `CommandGroup` description to improve their usage by Agents. [#879](https://github.com/Azure/azure-mcp/pull/879)
+- Docs fix: remove duplicate Storage datalake command
 
 ## 0.5.3 (2025-08-05)
 
@@ -52,6 +53,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Implemented centralized HttpClient service with proxy support for better resource management and enterprise compatibility. [[#857](https://github.com/Azure/azure-mcp/pull/857)]
 - Added caching for Cosmos DB databases and containers. [[813](https://github.com/Azure/azure-mcp/pull/813)]
 - Refactored PostgreSQL commands to follow ObjectVerb naming pattern, fix command hierarchy, and ensure all commands end with verbs. This improves consistency and discoverability across all postgres commands. [[#865](https://github.com/Azure/azure-mcp/issues/865)] [[#866](https://github.com/Azure/azure-mcp/pull/866)]
 
