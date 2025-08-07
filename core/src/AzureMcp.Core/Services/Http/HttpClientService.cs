@@ -27,7 +27,10 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
     /// <inheritdoc />
     public HttpClient CreateClient(Uri? baseAddress = null)
     {
-        ObjectDisposedException.ThrowIfDisposed(_disposed, this);
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(HttpClientService));
+        }
 
         var client = CreateClientInternal();
         if (baseAddress != null)

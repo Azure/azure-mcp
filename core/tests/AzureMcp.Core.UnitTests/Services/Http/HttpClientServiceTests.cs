@@ -26,7 +26,7 @@ public class HttpClientServiceTests
             DefaultTimeout = TimeSpan.FromSeconds(30),
             DefaultUserAgent = "TestAgent"
         };
-        var optionsWrapper = Options.Create(options);
+        var optionsWrapper = Microsoft.Extensions.Options.Options.Create(options);
         using var service = new HttpClientService(optionsWrapper);
 
         // Act
@@ -43,7 +43,7 @@ public class HttpClientServiceTests
     {
         // Arrange
         var options = new HttpClientOptions();
-        var optionsWrapper = Options.Create(options);
+        var optionsWrapper = Microsoft.Extensions.Options.Options.Create(options);
         using var service = new HttpClientService(optionsWrapper);
         var baseAddress = new Uri("https://example.com");
 
@@ -60,7 +60,7 @@ public class HttpClientServiceTests
     {
         // Arrange
         var options = new HttpClientOptions();
-        var optionsWrapper = Options.Create(options);
+        var optionsWrapper = Microsoft.Extensions.Options.Options.Create(options);
         using var service = new HttpClientService(optionsWrapper);
         var baseAddress = new Uri("https://example.com");
 
@@ -85,7 +85,7 @@ public class HttpClientServiceTests
             AllProxy = "http://proxy.example.com:8080",
             NoProxy = "localhost,127.0.0.1"
         };
-        var optionsWrapper = Options.Create(options);
+        var optionsWrapper = Microsoft.Extensions.Options.Options.Create(options);
         using var service = new HttpClientService(optionsWrapper);
 
         // Act
@@ -102,7 +102,7 @@ public class HttpClientServiceTests
     {
         // Arrange
         var options = new HttpClientOptions();
-        var optionsWrapper = Options.Create(options);
+        var optionsWrapper = Microsoft.Extensions.Options.Options.Create(options);
         var service = new HttpClientService(optionsWrapper);
         var client = service.DefaultClient; // Force creation
 
