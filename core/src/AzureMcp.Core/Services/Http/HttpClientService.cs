@@ -83,8 +83,8 @@ public sealed class HttpClientService : IHttpClientService, IDisposable
 
     private WebProxy? CreateProxy()
     {
-        // Determine proxy address based on priority: ALL_PROXY, HTTP_PROXY/HTTPS_PROXY
-        string? proxyAddress = _options.AllProxy ?? _options.HttpProxy;
+        // Determine proxy address based on priority: ALL_PROXY, HTTPS_PROXY, HTTP_PROXY
+        string? proxyAddress = _options.AllProxy ?? _options.HttpsProxy ?? _options.HttpProxy;
 
         if (string.IsNullOrEmpty(proxyAddress))
         {

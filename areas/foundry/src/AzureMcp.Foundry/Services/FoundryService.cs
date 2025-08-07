@@ -10,13 +10,14 @@ using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Http;
 using AzureMcp.Foundry.Commands;
 using AzureMcp.Foundry.Models;
 
 namespace AzureMcp.Foundry.Services;
 
-public class FoundryService(IHttpClientService httpClientService) : BaseAzureService, IFoundryService
+public class FoundryService(IHttpClientService httpClientService, ITenantService? tenantService = null) : BaseAzureService(tenantService), IFoundryService
 {
     private readonly IHttpClientService _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
     public async Task<List<ModelInformation>> ListModels(

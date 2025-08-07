@@ -11,6 +11,7 @@ using AzureMcp.Tests.Client.Helpers;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
 using Xunit;
+using MsOptions = Microsoft.Extensions.Options.Options;
 
 namespace AzureMcp.Kusto.LiveTests;
 
@@ -43,7 +44,7 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
 
             // Create HttpClientService for KustoClient
             var httpClientOptions = new HttpClientOptions();
-            var httpClientService = new HttpClientService(Microsoft.Extensions.Options.Options.Create(httpClientOptions));
+            var httpClientService = new HttpClientService(MsOptions.Create(httpClientOptions));
 
             var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua", httpClientService);
             var resp = await kustoClient.ExecuteControlCommandAsync(

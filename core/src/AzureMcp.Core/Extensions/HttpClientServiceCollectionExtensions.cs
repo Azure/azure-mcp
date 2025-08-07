@@ -18,6 +18,7 @@ public static class HttpClientServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddHttpClientServices(this IServiceCollection services)
     {
+        ArgumentNullException.ThrowIfNull(services);
         return services.AddHttpClientServices(_ => { });
     }
 
