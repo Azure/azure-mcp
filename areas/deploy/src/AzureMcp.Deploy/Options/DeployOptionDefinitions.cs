@@ -105,6 +105,7 @@ public static class DeployOptionDefinitions
         public const string AzdIacOptionsName = "azd-iac-options";
         public const string BackingServicesName = "backing-services";
         public const string ServiceCountName = "service-count";
+        public const string LanguagesName = "languages";
 
         public static readonly Option<string> WorkspaceFolder = new(
             $"--{WorkspaceFolderName}",
@@ -152,11 +153,19 @@ public static class DeployOptionDefinitions
         )
         {
             IsRequired = false
-        }; 
+        };
 
         public static readonly Option<int> ServiceCount = new(
             $"--{ServiceCountName}",
             "The number of compute services that the project contains, i.e. the number of the host target app services to deploy. Default to 1."
+        )
+        {
+            IsRequired = false
+        };
+        
+        public static readonly Option<string> Languages = new(
+            $"--{LanguagesName}",
+            "A comma-separated list of the programming languages used in the project."
         )
         {
             IsRequired = false

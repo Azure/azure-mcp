@@ -26,5 +26,8 @@ public sealed class PlanGetOptions
     public string BackingServices { get; set; } = string.Empty;
 
     [JsonPropertyName("serviceCount")]
-    public int ServiceCount { get; set; } = 0;
+    public int ServiceCount { get; set; } = 1;
+
+    [JsonPropertyName("languages")]
+    public string Languages { get; set; } = string.Empty;
 }

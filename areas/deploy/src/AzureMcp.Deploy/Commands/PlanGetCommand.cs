@@ -24,6 +24,7 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
     private readonly Option<string> _azdIacOptionsOption = DeployOptionDefinitions.PlanGet.AzdIacOptions;
     private readonly Option<string> _backingServicesOption = DeployOptionDefinitions.PlanGet.BackingServices;
     private readonly Option<int> _serviceCountOption = DeployOptionDefinitions.PlanGet.ServiceCount;
+    private readonly Option<string> _languagesOption = DeployOptionDefinitions.PlanGet.Languages;
 
     public override string Name => "plan-get";
 
@@ -45,6 +46,7 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
         command.AddOption(_azdIacOptionsOption);
         command.AddOption(_backingServicesOption);
         command.AddOption(_serviceCountOption);
+        command.AddOption(_languagesOption);
     }
 
     private PlanGetOptions BindOptions(ParseResult parseResult)
@@ -57,7 +59,8 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
             ProvisioningTool = parseResult.GetValueForOption(_provisioningToolOption) ?? string.Empty,
             AzdIacOptions = parseResult.GetValueForOption(_azdIacOptionsOption) ?? string.Empty,
             BackingServices = parseResult.GetValueForOption(_backingServicesOption) ?? string.Empty,
-            ServiceCount = parseResult.GetValueForOption(_serviceCountOption)
+            ServiceCount = parseResult.GetValueForOption(_serviceCountOption),
+            Languages = parseResult.GetValueForOption(_languagesOption) ?? string.Empty
         };
     }
 
@@ -72,13 +75,13 @@ public sealed class PlanGetCommand(ILogger<PlanGetCommand> logger)
                 return Task.FromResult(context.Response);
             }
 
-            context.Activity?.SetTag("Command", "plan-get")
-                    .SetTag("CustomerChannel", "azmcp")
+            context.Activity?
                     .SetTag("TargetService", options.TargetAppService)
                     .SetTag("ProvisioningTool", options.ProvisioningTool)
                     .SetTag("IacType", options.AzdIacOptions ?? string.Empty)
                     .SetTag("BackingServices", options.BackingServices ?? string.Empty)
-                    .SetTag("ServiceCount", options.ServiceCount);
+                    .SetTag("ServiceCount", options.ServiceCount)
+                    .SetTag("Languages", options.Languages ?? string.Empty);
             
             var planTemplate = DeploymentPlanTemplateUtil.GetPlanTemplate(options.ProjectName, options.TargetAppService, options.ProvisioningTool, options.AzdIacOptions);
 
