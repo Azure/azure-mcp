@@ -257,6 +257,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Get the Bicep schema for specific Azure resource types
 
+### 🏗️ Cloud Architect
+
+* Design Azure cloud architectures through guided questions
+
 Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/areas/extension/src/AzureMcp.Extension/Resources/azd-best-practices.txt).
 
 </details>

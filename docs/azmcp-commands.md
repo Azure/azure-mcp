@@ -891,6 +891,26 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Cloud Architect
+
+```bash
+# Design Azure cloud architectures through guided questions
+azmcp cloudarchitect design [--question <question>] \
+                           [--question-number <question-number>] \
+                           [--total-questions <total-questions>] \
+                           [--answer <answer>] \
+                           [--next-question-needed <true/false>] \
+                           [--confidence-score <confidence-score>] \
+                           [--architecture-component <architecture-component>]
+
+# Example:
+# Start an interactive architecture design session
+azmcp cloudarchitect design --question "What type of application are you building?" \
+                           --question-number 1 \
+                           --total-questions 5 \
+                           --confidence-score 0.1
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:
@@ -911,3 +931,4 @@ The CLI returns structured JSON responses for errors, including:
 
 - Service availability issues
 - Authentication errors
+

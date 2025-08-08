@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added new command for designing Azure Cloud Architecture through guided questions. [[#890]https://github.com/Azure/azure-mcp/pull/890]
+
 ### Breaking Changes
 
 - Storage: `azmcp-storage-account-list` now returns account metadata objects instead of plain strings. Each item includes:

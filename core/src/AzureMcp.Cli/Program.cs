@@ -67,6 +67,7 @@ internal class Program
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
+            new AzureMcp.CloudArchitect.CloudArchitectSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),

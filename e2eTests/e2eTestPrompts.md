@@ -336,3 +336,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
 
+## Cloud Architect
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-cloudarchitect-design | Please help me design an architecture for a large-scale file upload, storage, and retrieval service |
+| azmcp-cloudarchitect-design | Help me create a cloud service that will serve as ATM for users |
+| azmcp-cloudarchitect-design | I want to design a cloud app for ordering groceries |
