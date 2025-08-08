@@ -21,13 +21,13 @@ public sealed class TestRunUpdateCommand(ILogger<TestRunUpdateCommand> logger)
     public override string Name => "update";
     public override string Description =>
         $"""
-        Updates the metadata and display properties of a completed or in-progress load test run execution. 
-        This command allows you to modify descriptive information for better organization, documentation, 
+        Updates the metadata and display properties of a completed or in-progress load test run execution.
+        This command allows you to modify descriptive information for better organization, documentation,
         and identification of test runs without affecting the actual test execution or results.
         """;
     public override string Title => _commandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
