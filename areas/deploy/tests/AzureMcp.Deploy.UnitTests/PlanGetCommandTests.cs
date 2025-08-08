@@ -40,7 +40,10 @@ public class PlanGetCommandTests
             "--project-name", "django",
             "--target-app-service", "ContainerApp",
             "--provisioning-tool", "AZD",
-            "--azd-iac-options", "bicep"
+            "--azd-iac-options", "bicep",
+            "--service-count", "2",
+            "--languages", "python, python",
+            "--backing-services", "azurestorage, azurecosmosdb"
         ]);
 
         // act
@@ -62,8 +65,11 @@ public class PlanGetCommandTests
             "--workspace-folder", "C:/test",
             "--project-name", "myapp",
             "--target-app-service", "WebApp",
-            "--provisioning-tool", "azd"
+            "--provisioning-tool", "azd",
             // No azd-iac-options provided - should default to "bicep"
+            "--service-count", "1",
+            "--languages", "csharp",
+            "--backing-services", "azurestorage, azurecosmosdb"
         ]);
 
         // act
@@ -85,7 +91,10 @@ public class PlanGetCommandTests
             "--workspace-folder", "C:/k8s-project",
             "--project-name", "k8s-app",
             "--target-app-service", "AKS",
-            "--provisioning-tool", "azcli"
+            "--provisioning-tool", "azcli",
+            "--service-count", "3",
+            "--languages", "go, python, javascript",
+            "--backing-services", "azurestorage, azurecosmosdb"
         ]);
 
         // act
@@ -107,7 +116,10 @@ public class PlanGetCommandTests
             "--workspace-folder", "C:/",
             "--project-name", "default-app",
             "--target-app-service", "unknown-service", // This should default to Container Apps
-            "--provisioning-tool", "AZD"
+            "--provisioning-tool", "AZD",
+            "--service-count", "1",
+            "--languages", "csharp",
+            "--backing-services", "azurestorage, azurecosmosdb"
         ]);
         // act
         var result = await _command.ExecuteAsync(_context, args);

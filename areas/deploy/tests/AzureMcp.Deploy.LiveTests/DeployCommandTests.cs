@@ -34,7 +34,10 @@ public class DeployCommandTests : CommandTestsBase,
                 { "project-name", "django" },
                 { "target-app-service", "ContainerApp" },
                 { "provisioning-tool", "AZD" },
-                { "azd-iac-options", "bicep" }
+                { "azd-iac-options", "bicep" },
+                { "service-count", 2 },
+                { "languages", "python, python" },
+                { "backing-services", "azurestorage, azurecosmosdb" }
             });
         // assert
         Assert.StartsWith("# Azure Deployment Plan for django Project", result);
