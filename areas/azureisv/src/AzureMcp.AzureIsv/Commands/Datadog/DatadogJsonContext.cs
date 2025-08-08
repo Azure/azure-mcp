@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.AzureIsv.Commands.Datadog;
 
 namespace AzureMcp.AzureIsv.Commands.Datadog;
 

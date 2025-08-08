@@ -3,10 +3,8 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.Tests;
 using AzureMcp.Workbooks.Commands.Workbooks;
 using AzureMcp.Workbooks.Models;
 using AzureMcp.Workbooks.Services;

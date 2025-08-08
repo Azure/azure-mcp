@@ -9,7 +9,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

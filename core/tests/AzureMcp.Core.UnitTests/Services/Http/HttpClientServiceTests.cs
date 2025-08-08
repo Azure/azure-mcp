@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Net;
 using AzureMcp.Core.Services.Http;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Services.Http;

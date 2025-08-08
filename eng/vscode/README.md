@@ -64,6 +64,10 @@ Here are some cool prompts you can try across our supported Azure services:
 * "List my App Configuration stores"
 * "Show my key-value pairs in App Config"
 
+### 📦 Azure Container Registry (ACR)
+* "List all my Azure Container Registries"
+* "Show me my container registries in the 'myproject' resource group"
+
 ### ☸️ Azure Kubernetes Service (AKS)
 * "List my AKS clusters in my subscription"
 * "Show me all my Azure Kubernetes Service clusters"
@@ -99,7 +103,8 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - ⚙️ **Azure App Configuration** - Configuration management
 - 🛡️ **Azure Best Practices** - Secure, production-grade guidance
 - 🖥️ **Azure CLI Extension** - Direct Azure CLI command execution
-- 📊 **Azure Cosmos DB** - NoSQL database operations
+- 📦 **Azure Container Registry (ACR)** - Container registry management
+- �📊 **Azure Cosmos DB** - NoSQL database operations
 - 🧮 **Azure Data Explorer** - Analytics queries and KQL
 - 🐘 **Azure Database for PostgreSQL** - PostgreSQL database management
 - 🛠️ **Azure Developer CLI (azd)** - Template and deployment management

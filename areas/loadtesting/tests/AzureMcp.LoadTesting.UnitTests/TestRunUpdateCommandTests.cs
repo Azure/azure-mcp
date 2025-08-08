@@ -2,13 +2,11 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using System.Text.Json;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.LoadTesting.Commands.LoadTestRun;
 using AzureMcp.LoadTesting.Models.LoadTestRun;
 using AzureMcp.LoadTesting.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Azure.Core;
-using AzureMcp.Core.Areas.Server.Options;
 
 namespace AzureMcp.Core.Models.Option;
 

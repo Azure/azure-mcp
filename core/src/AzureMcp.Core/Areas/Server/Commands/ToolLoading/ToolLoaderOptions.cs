@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Core.Areas.Server.Options;
-
 namespace AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 
 /// <summary>

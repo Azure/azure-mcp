@@ -7,7 +7,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Foundry.Commands;
 using AzureMcp.Foundry.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

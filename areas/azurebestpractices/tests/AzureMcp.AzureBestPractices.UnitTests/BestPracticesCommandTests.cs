@@ -5,7 +5,6 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using AzureMcp.AzureBestPractices.Commands;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

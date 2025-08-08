@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Options.TableType;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;

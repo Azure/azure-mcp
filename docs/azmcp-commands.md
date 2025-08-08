@@ -478,6 +478,17 @@ azmcp loadtesting testrun update --subscription <subscription> \
                                  --description <description>
 ```
 
+### Azure Container Registry (ACR) Operations
+
+```bash
+# List Azure Container Registries in a subscription
+azmcp acr registry list --subscription <subscription>
+
+# List Azure Container Registries in a specific resource group
+azmcp acr registry list --subscription <subscription> \
+                        --resource-group <resource-group>
+```
+
 ### Azure Managed Grafana Operations
 
 ```bash

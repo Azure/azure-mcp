@@ -8,7 +8,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.LoadTesting.Commands.LoadTestRun;
 using AzureMcp.LoadTesting.Models.LoadTestRun;
 using AzureMcp.LoadTesting.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

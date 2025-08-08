@@ -42,6 +42,13 @@
 # ServiceOwners:                       @shenmuxiaosen @avanigupta
 
 
+# PRLabel: %area-ACR
+/areas/acr/                            @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-ACR
+# ServiceOwners:                       @jongio
+
+
 # PRLabel: %area-BestPractices
 /areas/azurebestpractices/             @g2vinay @conniey @Azure/azure-mcp
 

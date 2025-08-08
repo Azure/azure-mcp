@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
 using AzureMcp.Kusto.Services;
 using Microsoft.Extensions.Logging;
@@ -34,7 +33,7 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
     public override string Description =>
         """
         Execute a KQL against items in a Kusto cluster.
-        Requires `cluster-uri` (or `cluster` and `subscription`), `database`, and `query`. 
+        Requires `cluster-uri` (or `cluster` and `subscription`), `database`, and `query`.
         Results are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.
         """;
 

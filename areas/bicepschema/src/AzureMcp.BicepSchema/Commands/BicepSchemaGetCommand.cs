@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.BicepSchema.Commands;
 using AzureMcp.BicepSchema.Options;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
@@ -20,7 +19,7 @@ namespace AzureMcp.BicepSchema.Commands
 
         public override string Description =>
        """
-       
+
         Provides the Bicep schema for the most recent apiVersion of an Azure resource. Do not call this command for Terraform IaC generation.
         If you are asked to create or modify resources in a Bicep ARM template, call this function multiple times,
         once for every resource type you are adding, even if you already have information about Bicep resources from other sources.

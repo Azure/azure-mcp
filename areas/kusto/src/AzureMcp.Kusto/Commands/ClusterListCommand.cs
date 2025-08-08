@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
 using AzureMcp.Kusto.Services;
 using Microsoft.Extensions.Logging;

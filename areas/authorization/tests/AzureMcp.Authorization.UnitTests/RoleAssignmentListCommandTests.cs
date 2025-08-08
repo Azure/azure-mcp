@@ -10,7 +10,6 @@ using AzureMcp.Authorization.Models;
 using AzureMcp.Authorization.Services;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

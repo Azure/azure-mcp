@@ -9,7 +9,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Redis.Commands.ManagedRedis;
 using AzureMcp.Redis.Models.ManagedRedis;
 using AzureMcp.Redis.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
