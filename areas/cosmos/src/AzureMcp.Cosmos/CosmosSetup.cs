@@ -20,7 +20,7 @@ public class CosmosSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Cosmos command group
-        var cosmos = new CommandGroup("cosmos", "Cosmos DB operations - Commands for managing and querying Azure Cosmos DB resources. Includes operations for databases, containers, and document queries.");
+        var cosmos = new CommandGroup("cosmos", "Cosmos DB operations - Commands for managing and querying Azure Cosmos DB databases, containers, and documents across different API models including SQL API and MongoDB API. Use this tool when you need to list Cosmos DB accounts, create or manage databases and containers, execute SQL queries against documents, or retrieve database/container metadata and configurations. This tool supports operations for NoSQL document databases and is ideal for document storage and retrieval scenarios. Do not use this tool for relational database operations, Azure SQL Database management, or complex transaction processing - this tool focuses on Cosmos DB's NoSQL document and key-value operations.");
         rootGroup.AddSubGroup(cosmos);
 
         // Create Cosmos subgroups
