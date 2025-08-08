@@ -22,6 +22,8 @@
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <!-- Suppress IL3000 warning in Microsoft.Identity.Client.NativeInterop -->
+    <NoWarn>$(NoWarn);IL3000</NoWarn>
   </PropertyGroup>
 
   <!-- AOT native build flags -->
@@ -55,6 +57,18 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <!-- Remove non-AOT safe projects and packages when building native -->
+  <!-- https://github.com/Azure/azure-mcp-pr/issues/318 -->
+  <ItemGroup Condition="'$(BuildNative)' == 'true'">
+    <ProjectReference Remove="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
+    <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
+    <ProjectReference Remove="..\..\..\areas\monitor\src\AzureMcp.Monitor\AzureMcp.Monitor.csproj" />
+    <ProjectReference Remove="..\..\..\areas\postgres\src\AzureMcp.Postgres\AzureMcp.Postgres.csproj" />
+    <ProjectReference Remove="..\..\..\areas\search\src\AzureMcp.Search\AzureMcp.Search.csproj" />
+    <ProjectReference Remove="..\..\..\areas\virtualdesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj" />
+    <PackageReference Remove="Microsoft.Azure.Cosmos" />
   </ItemGroup>
 
   <!-- Remove Cosmos native files from the build output directory -->
