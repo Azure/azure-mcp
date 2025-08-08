@@ -81,7 +81,7 @@
 /areas/functionapp/                   @jongio @Azure/azure-mcp
 
 # ServiceLabel: %area-FunctionApp
-# ServiceOwners:                      @colbytimm
+# ServiceOwners:                      @jongio
 
 # PRLabel: %area-Grafana
 /src/Areas/Grafana/                   @weng5e @xiangyan99 @Azure/azure-mcp
