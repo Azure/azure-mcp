@@ -32,7 +32,7 @@ public class ResourceTypeEntity : ComplexType
     }
 
     [JsonPropertyName("scopeType")]
-    public string ScopeType { get; init; } = "Unknown";
+    public string? ScopeType { get; init; } = "Unknown";
 
     [JsonPropertyName("readOnlyScopes")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
