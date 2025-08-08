@@ -30,6 +30,38 @@ if (!$TestResultsPath) {
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
+# Gets a pattern that can match path to 'area' projects those are excluded using BuildNative condition.
+function Get-NativeExcludedAreasPattern {
+    $areaPathPattern = 'areas[/\\]([^/\\]+)[/\\]src'
+    $ProjectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+
+    if (!(Test-Path $ProjectFile)) {
+        Write-Error "$ProjectFile not found"
+        exit 1
+    }
+
+    [xml]$xml = Get-Content $ProjectFile
+    $buildNativeGroup = $xml.Project.ItemGroup | Where-Object { $_.Condition -eq "'`$(BuildNative)' == 'true'" }
+
+    if (!$buildNativeGroup) {
+        Write-Warning "No ItemGroup with BuildNative condition found"
+        return $null
+    }
+
+    $excludedAreas = @()
+    foreach ($ref in $buildNativeGroup.ProjectReference) {
+        if ($ref.Remove -match $areaPathPattern) {
+            $excludedAreas += $matches[1].ToLower()
+        }
+    }
+
+    if ($excludedAreas.Count -eq 0) {
+        return $null
+    }
+
+    return "areas[/\\]($($excludedAreas -join '|'))[/\\]tests"
+}
+
 # Identifies the root directories to be recursively scanned for tests in the specified areas.
 function GetTestsRootDirs {
     param(
@@ -58,7 +90,8 @@ function GetTestsRootDirs {
 function BuildNativeBinaryAndPrepareTests {
     param(
         [Parameter(Mandatory=$true)]
-        [string[]]$testsRootDirs
+        [string[]]$testsRootDirs,
+        [string]$areasExcludePattern
     )
 
     # Native AOT compilation only occurs during 'dotnet publish', not 'dotnet build'
@@ -69,7 +102,7 @@ function BuildNativeBinaryAndPrepareTests {
         -Command "dotnet build" `
         -AllowedExitCodes @(0)
 
-    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -testsRootDirs $testsRootDirs
+    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -testsRootDirs $testsRootDirs -areasExcludePattern $areasExcludePattern
 }
 
 function PublishNativeBinary {
@@ -97,12 +130,20 @@ function CopyNativeBinaryToTestDirs {
     param(
         [Parameter(Mandatory=$true)]
         [string]$nativeBinaryPath,
-        [string[]]$testsRootDirs
+        [string[]]$testsRootDirs,
+        [string]$areasExcludePattern
     )
     Write-Host "Copying native AzureMcp to test directories"
 
     $testsRootDirs | ForEach-Object {
         Get-ChildItem -Path $_ -Recurse -Filter "*.LiveTests" -Directory
+    } | Where-Object {
+        if ($areasExcludePattern) {
+            # Filter out test directories for the areas matching the excluded areas pattern
+            $_.FullName.Replace('\', '/') -notmatch $areasExcludePattern
+        } else {
+            $true
+        }
     } | ForEach-Object {
         $targetDirectory = "$($_.FullName)/bin/Debug/net9.0"
         Copy-Item $nativeBinaryPath $targetDirectory -Force
@@ -116,7 +157,8 @@ function CreateTestSolution {
         [Parameter(Mandatory=$true)]
         [string[]]$testsRootDirs,
         [Parameter(Mandatory=$true)]
-        [string]$testType
+        [string]$testType,
+        [string]$areasExcludePattern
     )
 
     $testPatterns = switch ($testType) {
@@ -135,6 +177,13 @@ function CreateTestSolution {
             Get-ChildItem $testsRootDir -Recurse -File -Filter $_
         }
     })
+
+    if ($areasExcludePattern) {
+        # Filter out test projects from the areas matching the excluded areas pattern
+        $testProjects = @($testProjects | Where-Object {
+            $_.FullName.Replace('\', '/') -notmatch $areasExcludePattern
+        })
+    }
 
     if($testProjects.Count -eq 0) {
         Write-Error "No test projects found in the specified areas for test type '$testType'."
@@ -164,7 +213,9 @@ if (!$testsRootDirs) {
     exit 1
 }
 
-$solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
+$areasToExcludePattern = if ($TestNativeBuild) { Get-NativeExcludedAreasPattern } else { $null }
+
+$solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType -areasExcludePattern $areasToExcludePattern
 
 if (!$solutionPath) {
     exit 1
@@ -173,7 +224,7 @@ if (!$solutionPath) {
 Push-Location $workPath
 try {
     if ($TestNativeBuild) {
-        BuildNativeBinaryAndPrepareTests -testsRootDirs $testsRootDirs
+        BuildNativeBinaryAndPrepareTests -testsRootDirs $testsRootDirs -areasExcludePattern $areasToExcludePattern
     }
 
     if($debugLogs) {
