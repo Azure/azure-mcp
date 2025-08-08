@@ -12,6 +12,8 @@ param(
     [switch] $BuildNative
 )
 
+$ErrorActionPreference = 'Stop'
+
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $root = $RepoRoot.Path.Replace('\', '/')
 

@@ -18,6 +18,8 @@ param(
     [string] $Architecture
 )
 
+$ErrorActionPreference = 'Stop'
+
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
