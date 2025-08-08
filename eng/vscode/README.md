@@ -128,7 +128,7 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 
 ## Documentation
 
-- See our [official documentation on learn.microsoft.com](https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/) to learn how to use the Azure MCP Server to interact with Azure resources through natural language commands from AI agents and other types of clients.
+- See our [official documentation on learn.microsoft.com](https://learn.microsoft.com/azure/developer/azure-mcp-server/) to learn how to use the Azure MCP Server to interact with Azure resources through natural language commands from AI agents and other types of clients.
 - For additional command documentation and examples, see our [GitHub repository section on Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
 
 
