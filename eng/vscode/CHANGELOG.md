@@ -1,14 +1,19 @@
 
 # Release History
 
-## 0.5.4 - Unreleased
-
-### Added
+## 0.5.4 - 2025-08-07
 
 ### Changed
+
 - Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
+- Updated the description of the following `CommandGroup`s to improve their tool usage by Agents:
+  - Azure AI Search [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+  - Storage [#879](https://github.com/Azure/azure-mcp/pull/879)
 
 ### Fixed
+
+- Fixed subscription parameter handling across all Azure MCP service methods to consistently use `subscription` instead of `subscriptionId`, enabling proper support for both subscription IDs and subscription names. [[#877](https://github.com/Azure/azure-mcp/issues/877)]
+- Fixed `ToolExecuted` telemetry activity being created twice. [[#741](https://github.com/Azure/azure-mcp/pull/741)]
 
 ## 0.5.3 - 2025-08-05
 
