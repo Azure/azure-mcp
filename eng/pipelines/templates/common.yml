@@ -136,6 +136,7 @@ extends:
               }
               if (-not $allSigned) {
                   Write-Error "One or more binaries are not signed correctly."
+                  exit 1
               }
             displayName: "Verify Binary Signing"
 
