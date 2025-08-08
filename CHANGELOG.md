@@ -251,7 +251,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
-- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
+- Updated the descriptions of the following tools to improve their usage by Agents: [[#492](https://github.com/Azure/azure-mcp/pull/492)]
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
   - `azmcp-kusto-database-list`
