@@ -65,7 +65,7 @@ jobs:
     displayName: "Publish Results"
     condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
     inputs:
-      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults'/*.trx"
+      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/*.trx"
       testRunTitle: "unit-${{ parameters.OSName }}-$(Architecture)"
       testResultsFormat: "VSTest"
       mergeTestResults: true
