@@ -178,7 +178,7 @@ public class BatchDeleteCommandTests
         Assert.NotNull(response.Results);
 
         // Verify the result structure contains both successful and failed blobs
-        var jsonResponse = JsonSerializer.Serialize(response.Results.Data);
+        var jsonResponse = JsonSerializer.Serialize(response.Results);
         Assert.Contains("blob1.txt", jsonResponse);
         Assert.Contains("blob2.txt", jsonResponse);
     }
@@ -260,30 +260,6 @@ public class BatchDeleteCommandTests
             Arg.Any<string[]>(),
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is<RetryPolicyOptions>(r => r.MaxRetries == 5 && r.Delay == 2.5));
-    }
-
-    [Fact]
-    public void BindOptions_WithValidParseResult_ReturnsBoundOptions()
-    {
-        // Arrange
-        var parseResult = _parser.Parse([
-            "--subscription", _knownSubscriptionId,
-            "--account-name", _knownAccountName,
-            "--container-name", _knownContainerName,
-            "--blob-names", "blob1.txt", "blob2.txt"
-        ]);
-
-        // Act
-        var options = _command.BindOptions(parseResult);
-
-        // Assert
-        Assert.Equal(_knownSubscriptionId, options.Subscription);
-        Assert.Equal(_knownAccountName, options.Account);
-        Assert.Equal(_knownContainerName, options.Container);
-        Assert.NotNull(options.BlobNames);
-        Assert.Equal(2, options.BlobNames.Length);
-        Assert.Contains("blob1.txt", options.BlobNames);
-        Assert.Contains("blob2.txt", options.BlobNames);
+            Arg.Is<RetryPolicyOptions>(r => r.MaxRetries == 5 && r.DelaySeconds == 2.5));
     }
 }

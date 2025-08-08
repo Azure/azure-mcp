@@ -68,9 +68,8 @@ public sealed class BatchDeleteCommand(ILogger<BatchDeleteCommand> logger) : Bas
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(
-                new BatchDeleteCommandResult(result.SuccessfulBlobs, result.FailedBlobs),
-                null); // TODO: Add to StorageJsonContext when build completes
+            var deleteCommandResult = new BatchDeleteCommandResult(result.SuccessfulBlobs, result.FailedBlobs);
+            context.Response.Results = ResponseResult.Create(deleteCommandResult, StorageJsonContext.Default.BatchDeleteCommandResult);
         }
         catch (Exception ex)
         {
