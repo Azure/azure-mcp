@@ -67,24 +67,26 @@ internal class Program
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
             new AzureMcp.Marketplace.MarketplaceSetup(),
-            new AzureMcp.Monitor.MonitorSetup(),
-            new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
-            new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
-            new AzureMcp.BicepSchema.BicepSchemaSetup(),
-            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
+#if !BUILD_NATIVE
+            new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.Cosmos.CosmosSetup(),
+            new AzureMcp.Monitor.MonitorSetup(),
+            new AzureMcp.Postgres.PostgresSetup(),
+            new AzureMcp.Search.SearchSetup(),
+            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
+#endif
         ];
     }
 
