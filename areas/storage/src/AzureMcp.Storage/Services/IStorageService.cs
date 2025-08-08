@@ -64,6 +64,14 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> DeleteBlobsBatch(
+        string accountName,
+        string containerName,
+        string[] blobNames,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<List<FileShareItemInfo>> ListFilesAndDirectories(
         string accountName,
         string shareName,

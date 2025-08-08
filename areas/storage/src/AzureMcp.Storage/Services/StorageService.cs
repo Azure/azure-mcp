@@ -497,6 +497,75 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
+    public async Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> DeleteBlobsBatch(
+        string accountName,
+        string containerName,
+        string[] blobNames,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, subscription);
+
+        if (blobNames == null || blobNames.Length == 0)
+        {
+            throw new ArgumentException("At least one blob name must be provided.", nameof(blobNames));
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var batchClient = blobServiceClient.GetBlobBatchClient();
+
+        try
+        {
+            // Use Azure.Storage.Blobs.Batch for true batch operations
+            var batch = batchClient.CreateBatch();
+
+            // Add all blob delete operations to the batch
+            var batchOperations = new List<(string blobName, Response batchOperationResponse)>();
+            foreach (var blobName in blobNames)
+            {
+                var blobClient = containerClient.GetBlobClient(blobName);
+                var batchOperationResponse = batch.DeleteBlob(blobClient.Uri);
+                batchOperations.Add((blobName, batchOperationResponse));
+            }
+
+            // Submit the batch operation
+            var batchResponse = await batchClient.SubmitBatchAsync(batch);
+
+            // Process results
+            var successfulBlobs = new List<string>();
+            var failedBlobs = new List<string>();
+
+            for (int i = 0; i < batchOperations.Count; i++)
+            {
+                var (blobName, batchOperationResponse) = batchOperations[i];
+                try
+                {
+                    // Check if the individual operation succeeded
+                    if (batchOperationResponse.Status >= 200 && batchOperationResponse.Status < 300)
+                    {
+                        successfulBlobs.Add(blobName);
+                    }
+                    else
+                    {
+                        failedBlobs.Add($"{blobName}: HTTP {batchOperationResponse.Status}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failedBlobs.Add($"{blobName}: {ex.Message}");
+                }
+            }
+
+            return (successfulBlobs, failedBlobs);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error deleting blobs batch: {ex.Message}", ex);
+        }
+    }
+
     public async Task<List<FileShareItemInfo>> ListFilesAndDirectories(
         string accountName,
         string shareName,

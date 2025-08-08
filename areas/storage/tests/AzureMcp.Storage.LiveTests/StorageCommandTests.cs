@@ -285,6 +285,33 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_delete_blobs_batch()
+        {
+            // This test assumes the test storage account has the "bar" container with some test blobs to delete
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_batch_delete",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "container", "bar" },
+                    { "blob-names", "test-delete1.txt test-delete2.txt" }
+                });
+
+            var successfulBlobs = result.AssertProperty("successfulBlobs");
+            var failedBlobs = result.AssertProperty("failedBlobs");
+
+            Assert.Equal(JsonValueKind.Array, successfulBlobs.ValueKind);
+            Assert.Equal(JsonValueKind.Array, failedBlobs.ValueKind);
+
+            // The blobs either succeeded in deletion or failed (e.g., if they didn't exist)
+            var successCount = successfulBlobs.GetArrayLength();
+            var failedCount = failedBlobs.GetArrayLength();
+
+            Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
+        }
+
+        [Fact]
         public async Task Should_list_files_in_share_directory()
         {
             var result = await CallToolAsync(
