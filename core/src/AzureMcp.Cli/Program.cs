@@ -83,6 +83,7 @@ internal class Program
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Monitor.MonitorSetup(),
+            new AzureMcp.MySql.MySqlSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Search.SearchSetup(),
             new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),

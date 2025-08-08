@@ -17,6 +17,12 @@
 
 ### Other Changes
 
+## 0.5.5 (Unreleased)
+
+### Features Added
+
+- Added support for Azure MySQL. [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+
 ## 0.5.4 (2025-08-07)
 
 ### Bugs Fixed
