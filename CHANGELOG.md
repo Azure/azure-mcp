@@ -4,6 +4,8 @@
 
 ### Features Added
 
+- Added support for `SecretHint`. [[#889](https://github.com/Azure/azure-mcp/pull/889)]
+
 ### Breaking Changes
 
 - Storage: `azmcp-storage-account-list` now returns account metadata objects instead of plain strings. Each item includes:

@@ -25,7 +25,7 @@ public sealed class ToolMetadata
     public bool Destructive { get; init; } = true;
 
     /// <summary>
-    /// Gets or sets whether calling the tool repeatedly with the same arguments 
+    /// Gets or sets whether calling the tool repeatedly with the same arguments
     /// will have no additional effect on its environment.
     /// </summary>
     /// <remarks>
@@ -69,6 +69,25 @@ public sealed class ToolMetadata
     /// </para>
     /// </remarks>
     public bool ReadOnly { get; init; } = false;
+
+    /// <summary>
+    /// Gets or sets whether this tool handles or returns secret or sensitive information.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If <see langword="true"/>, the tool may handle or return sensitive information such as
+    /// credentials, API keys, connection strings, or other confidential data.
+    /// If <see langword="false"/>, the tool does not handle or return sensitive information.
+    /// </para>
+    /// <para>
+    /// This property helps MCP clients understand whether special handling or masking
+    /// may be required for the tool's inputs or outputs.
+    /// </para>
+    /// <para>
+    /// The default is <see langword="false"/>.
+    /// </para>
+    /// </remarks>
+    public bool Secret { get; init; } = false;
 
     /// <summary>
     /// Creates a new instance of <see cref="ToolMetadata"/> with default values.
