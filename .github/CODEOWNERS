@@ -78,7 +78,7 @@
 # ServiceOwners:                      @jayzzh @xiangyan99
 
 # PRLabel: %area-FunctionApp
-/areas/functionapp/                  @jongio @Azure/azure-mcp
+/areas/functionapp/                   @jongio @Azure/azure-mcp
 
 # ServiceLabel: %area-FunctionApp
 # ServiceOwners:                      @colbytimm
