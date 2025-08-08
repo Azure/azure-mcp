@@ -29,7 +29,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private const string StorageAccountsCacheKey = "accounts";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<List<string>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<StorageAccountInfo>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription);
 
@@ -41,21 +41,30 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             : $"{StorageAccountsCacheKey}_{subscriptionResource.Data.SubscriptionId}_{tenant}";
 
         // Try to get from cache first
-        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
+        var cachedAccounts = await _cacheService.GetAsync<List<StorageAccountInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedAccounts != null)
         {
             return cachedAccounts;
         }
 
-        var accounts = new List<string>();
+        var accounts = new List<StorageAccountInfo>();
         try
         {
             await foreach (var account in subscriptionResource.GetStorageAccountsAsync())
             {
-                if (account?.Data?.Name != null)
-                {
-                    accounts.Add(account.Data.Name);
-                }
+                var data = account?.Data;
+                if (data?.Name == null)
+                    continue;
+
+                accounts.Add(new StorageAccountInfo(
+                    data.Name,
+                    data.Location.ToString(),
+                    data.Kind?.ToString(),
+                    data.Sku?.Name.ToString(),
+                    data.Sku?.Tier.ToString(),
+                    data.IsHnsEnabled,
+                    data.AllowBlobPublicAccess,
+                    data.EnableHttpsTrafficOnly));
             }
 
             // Cache the results

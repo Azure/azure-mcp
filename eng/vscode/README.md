@@ -7,6 +7,7 @@ Easily bring the power of Model Context Protocol (MCP) to your Azure projects in
 - [Getting Started](#getting-started)
 - [What can you do with the Azure MCP Server?](#what-can-you-do-with-the-azure-mcp-server)
 - [Complete List of Supported Azure Services](#complete-list-of-supported-azure-services)
+- [Documentation](#documentation)
 - [Feedback & Support](#feedback--support)
 - [Contributing](#contributing)
 - [License](#license)
@@ -125,12 +126,17 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 📊 **Azure Workbooks** - Custom visualizations
 - 🏗️ **Bicep** - Azure resource templates
 
-For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
+## Documentation
+
+- See our [official documentation on learn.microsoft.com](https://learn.microsoft.com/azure/developer/azure-mcp-server/) to learn how to use the Azure MCP Server to interact with Azure resources through natural language commands from AI agents and other types of clients.
+- For additional command documentation and examples, see our [GitHub repository section on Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
+
 
 ## Feedback & Support
 
-Have questions, feedback, or feature requests?
-Open an issue on our [GitHub repository](https://github.com/Azure/azure-mcp/issues) — we’d love to hear from you!
+- Check the [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) to diagnose and resolve common issues with the Azure MCP Server.
+- We're building this in the open. Your feedback is much appreciated, and will help us shape the future of the Azure MCP server.
+    - 👉 Open an issue in the public [GitHub repository](https://github.com/Azure/azure-mcp/issues) — we’d love to hear from you!
 
 ## Contributing
 
