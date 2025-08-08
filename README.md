@@ -101,10 +101,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🖥️ Azure CLI Extension
 
-* Execute Azure CLI commands directly
-* Support for all Azure CLI functionality
-* JSON output formatting
-* Cross-platform compatibility
+* Generate Azure CLI commands from natural language intent
 
 ### 📊 Azure Cosmos DB (NoSQL Databases)
 
