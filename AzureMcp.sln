@@ -283,7 +283,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.Core.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.Tests", "core\tests\AzureMcp.Tests\AzureMcp.Tests.csproj", "{527FE0F6-40AE-4E71-A483-0F0A2368F2A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp", "areas\functionApp\src\AzureMcp.FunctionApp\AzureMcp.FunctionApp.csproj", "{E6E10688-A3CD-4C33-8E13-E0E905329272}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp", "areas\functionapp\src\AzureMcp.FunctionApp\AzureMcp.FunctionApp.csproj", "{E6E10688-A3CD-4C33-8E13-E0E905329272}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "functionapp", "functionapp", "{3310D97C-93BE-4434-BED7-81EB639B3141}"
 EndProject
@@ -291,9 +291,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4A85B59D-280
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C1C50B06-1175-49A1-81C6-59842EEFC51B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.LiveTests", "areas\functionApp\tests\AzureMcp.FunctionApp.LiveTests\AzureMcp.FunctionApp.LiveTests.csproj", "{59A3843F-39AD-45C9-90A6-EBD40D644451}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.LiveTests", "areas\functionapp\tests\AzureMcp.FunctionApp.LiveTests\AzureMcp.FunctionApp.LiveTests.csproj", "{59A3843F-39AD-45C9-90A6-EBD40D644451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.UnitTests", "areas\functionApp\tests\AzureMcp.FunctionApp.UnitTests\AzureMcp.FunctionApp.UnitTests.csproj", "{5918EA72-9701-4223-B7BB-C64EB81B6351}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.UnitTests", "areas\functionapp\tests\AzureMcp.FunctionApp.UnitTests\AzureMcp.FunctionApp.UnitTests.csproj", "{5918EA72-9701-4223-B7BB-C64EB81B6351}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AppConfig.UnitTests", "areas\appconfig\tests\AzureMcp.AppConfig.UnitTests\AzureMcp.AppConfig.UnitTests.csproj", "{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}"
 EndProject
