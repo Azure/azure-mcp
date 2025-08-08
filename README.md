@@ -139,6 +139,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List Azure Foundry models
 * Deploy foundry models
 * List foundry model deployments
+  
+### ☁️ Azure Function App
+
+* List Azure Function Apps
 
 ### 🚀 Azure Managed Grafana
 

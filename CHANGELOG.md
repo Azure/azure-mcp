@@ -17,6 +17,18 @@
 
 ### Other Changes
 
+## 0.5.5 (Unreleased)
+
+### Features Added
+
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
 ## 0.5.4 (2025-08-07)
 
 ### Bugs Fixed
