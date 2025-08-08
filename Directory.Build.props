@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>0.5.1</Version>
+    <Version>0.5.1-preview.1</Version>
     <!-- When this changes, the .NET runtime installation
          at https://github.com/Azure/azure-mcp/blob/e98c1919a25cc1e4e9325446d0ff7aec098fca67/eng/pipelines/templates/jobs/build.yml#L39
          may need to be updated. -->

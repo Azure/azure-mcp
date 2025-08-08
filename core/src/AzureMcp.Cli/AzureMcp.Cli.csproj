@@ -33,6 +33,7 @@
          Already fixed in p7. -->
     <PackageType Condition="'$(RuntimeIdentifier)' == ''">McpServer</PackageType>
     <PackageId>Azure.Mcp</PackageId>
+    <PackageId Condition="'$(OSArch)' != ''">Azure.Mcp-$(OSArch)</PackageId>
     <PackageReadmeFile Condition="'$(RuntimeIdentifier)' == ''">README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>azure;mcp;</PackageTags>
@@ -54,15 +55,15 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AzureMcp.Core\AzureMcp.Core.csproj" />
-    <ProjectReference Include="..\..\..\areas\*\src\**\AzureMcp.*.csproj" />
+    <ProjectReference Include="..\AzureMcp.Core\AzureMcp.Core.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\..\..\areas\*\src\**\AzureMcp.*.csproj" PrivateAssets="all"/>
   </ItemGroup>
   <ItemGroup>
     <!-- We need a package reference for Cosmos so we have a path to the native assets for exclusion later -->
-    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="ModelContextProtocol" />
-    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" PrivateAssets="all"/>
+    <PackageReference Include="ModelContextProtocol" PrivateAssets="all"/>
+    <PackageReference Include="System.CommandLine" PrivateAssets="all"/>
   </ItemGroup>
   <!-- These items only need to be in the top-level wrapper tool package -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == ''">

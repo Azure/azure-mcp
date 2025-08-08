@@ -70,27 +70,28 @@ try {
         Remove-Item -Path $outputDirNuget -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
         New-Item -Path $outputDirNuget -ItemType Directory -Force | Out-Null
         
-        $packCommand = "dotnet pack '$projectFile' --output '$outputDirNuget' /p:Version=$Version /p:Configuration=$configuration"
+        $packCommand = "dotnet pack '$projectFile' --output '$outputDirNuget' /p:ToolType=aot /p:Version=$Version /p:Configuration=$configuration"
 
         Invoke-LoggedCommand $packCommand -GroupOutput
     }
     else {
-        $outputDirNpm = "$OutputPath/npm"
-        $outputDirNuget = "$OutputPath/nuget"
+        $outputDirNpm = Join-Path $OutputPath "npm"
+        $outputDirDist = Join-Path $outputDirNpm "dist"
+        $outputDirNuget = Join-Path $OutputPath "nuget"
         Write-Host "Building version $Version, $os-$arch in $outputDirNpm" -ForegroundColor Green
 
         # Clear and recreate the package output directory
         Remove-Item -Path $outputDirNpm -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
         Remove-Item -Path $outputDirNuget -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
-        New-Item -Path "$outputDirNpm/dist" -ItemType Directory -Force | Out-Null
+        New-Item -Path $outputDirDist -ItemType Directory -Force | Out-Null
         New-Item -Path $outputDirNuget -ItemType Directory -Force | Out-Null
 
         # Copy the platform package files to the output directory
         Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDirNpm -Force
 
         $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
-        $publishCommand = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDirNpm/dist' /p:Version=$Version /p:Configuration=$configuration"
-        $packCommand = "dotnet pack '$projectFile' --runtime '$os-$arch' --output '$outputDirNuget' /p:Version=$Version /p:Configuration=$configuration"
+        $publishCommand = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDirDist' /p:Version=$Version /p:Configuration=$configuration"
+        $packCommand = "dotnet pack '$projectFile' --runtime '$os-$arch' --output '$outputDirNuget' /p:OSArch='$os-$arch' /p:ToolType=aot /p:Version=$Version /p:Configuration=$configuration"
 
         if($SelfContained) {
             $publishCommand += " --self-contained"
@@ -105,6 +106,21 @@ try {
         }
 
         Invoke-LoggedCommand $publishCommand -GroupOutput
+
+        # Update csproj to insert published dlls in to the project before packing
+        $dllFiles = Get-ChildItem -Path $outputDirDist -Filter *.dll | Where-Object { $_.Name -ne "azmcp.dll" }
+        $framework = Select-String -Path (Join-Path $RepoRoot "Directory.Build.props") -Pattern '<TargetFramework>(.+)</TargetFramework>' | ForEach-Object {
+            $_.Matches[0].Groups[1].Value
+        }
+        $itemGroupXml = "<ItemGroup>`n"
+        foreach ($dll in $dllFiles) {
+            $relativePath = $dll.FullName.Replace($RepoRoot + "/", "")
+            $itemGroupXml += "  <None Include=""$relativePath"" Pack=""true"" PackagePath=""lib\$framework"" />`n"
+        }
+        $itemGroupXml += "</ItemGroup>"
+        $csprojContent = Get-Content $projectFile
+        $csprojContent = $csprojContent -replace '</Project>', "$itemGroupXml`n</Project>"
+        Set-Content -Path $projectFile -Value $csprojContent
         Invoke-LoggedCommand $packCommand -GroupOutput
 
         $package = Get-Content "$outputDirNpm/package.json" -Raw
