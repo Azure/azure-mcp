@@ -12,6 +12,7 @@ using AzureMcp.Core.Options;
 using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Protocol;
 using NSubstitute;
 using Xunit;
 
@@ -100,17 +101,17 @@ public class ClusterGetCommandTests
         var expectedCluster = new AzureMcp.Aks.Models.Cluster
         {
             Name = "test-cluster",
-            SubscriptionId = "test-subscription",
+            SubscriptionId = "test-subs",
             ResourceGroupName = "test-rg",
             Location = "East US",
             KubernetesVersion = "1.28.0",
             ProvisioningState = "Succeeded"
         };
 
-        _aksService.GetCluster("test-subscription", "test-cluster", "test-rg", null, Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
+        _aksService.GetCluster("test-subs", "test-cluster", "test-rg", null, Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions>())
             .Returns(expectedCluster);
 
-        var parseResult = _parser.Parse(["--subscription", "test-subscription", "--resource-group", "test-rg", "--cluster", "test-cluster"]);
+        var parseResult = _parser.Parse(["--subscription", "test-subs", "--resource-group", "test-rg", "--cluster-name", "test-cluster"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -134,9 +135,9 @@ public class ClusterGetCommandTests
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.Equal(200, response.Status);
-        Assert.Null(response.Results);
-        Assert.Equal("Success", response.Message);
+        Assert.Equal(404, response.Status);
+        Assert.True(response.Results != null);
+        Assert.Contains("AKS cluster 'nonexistent-cluster' not found in resource group 'test-rg' for subscription", response.Message);
     }
 
     [Fact]

@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Aks.Commands;
-using AzureMcp.Aks.Models;
+using Azure;
 using AzureMcp.Aks.Options;
 using AzureMcp.Aks.Options.Cluster;
 using AzureMcp.Aks.Services;
@@ -68,10 +67,16 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseA
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = cluster is null ?
-                null : ResponseResult.Create(
-                    new ClusterGetCommandResult(cluster),
-                    AksJsonContext.Default.ClusterGetCommandResult);
+            if (cluster is null)
+            {
+                Handle404Exception(context, $"AKS cluster '{options.ClusterName}' not found in resource group '{options.ResourceGroup}' for subscription '{options.Subscription}'.");
+            }
+            else
+            {
+                context.Response.Results = ResponseResult.Create(
+                        new ClusterGetCommandResult(cluster),
+                        AksJsonContext.Default.ClusterGetCommandResult);
+            }
         }
         catch (Exception ex)
         {

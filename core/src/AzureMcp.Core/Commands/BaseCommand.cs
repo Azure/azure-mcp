@@ -45,6 +45,21 @@ public abstract class BaseCommand : IBaseCommand
         response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.ExceptionResult);
     }
 
+    protected virtual void Handle404Exception(CommandContext context, string message)
+    {
+        context.Activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, message);
+
+        var response = context.Response;
+        var result = new ExceptionResult(
+            Message: message,
+            StackTrace: null,
+            Type: nameof(Exception));
+
+        response.Status = 404;
+        response.Message = message;
+        response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.ExceptionResult);
+    }
+
     internal record ExceptionResult(
         string Message,
         string? StackTrace,
