@@ -57,8 +57,7 @@ public sealed class IaCRulesGetCommand(ILogger<IaCRulesGetCommand> logger)
                 return Task.FromResult(context.Response);
             }
 
-            context.Activity?.SetTag("Command", "iac-rules-get")
-                .SetTag("CustomerChannel", "azmcp")
+            context.Activity?
                 .SetTag("DeploymentTool", options.DeploymentTool)
                 .SetTag("IacType", options.IacType)
                 .SetTag("ResourceTypes", options.ResourceTypes);
