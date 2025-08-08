@@ -11,12 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Postgres.Commands.Server;
 
-public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServerCommand<SetParamOptions>(logger)
+public sealed class ServerParamSetCommand(ILogger<ServerParamSetCommand> logger) : BaseServerCommand<ServerParamSetOptions>(logger)
 {
     private const string CommandTitle = "Set PostgreSQL Server Parameter";
     private readonly Option<string> _paramOption = PostgresOptionDefinitions.Param;
     private readonly Option<string> _valueOption = PostgresOptionDefinitions.Value;
-    public override string Name => "setparam";
+    public override string Name => "set";
 
     public override string Description =>
         "Sets a specific parameter of a PostgreSQL server to a certain value.";
@@ -32,7 +32,7 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
         command.AddOption(_valueOption);
     }
 
-    protected override SetParamOptions BindOptions(ParseResult parseResult)
+    protected override ServerParamSetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Param = parseResult.GetValueForOption(_paramOption);
@@ -57,8 +57,8 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
             var result = await pgService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);
             context.Response.Results = !string.IsNullOrEmpty(result) ?
                 ResponseResult.Create(
-                    new SetParamCommandResult(result, options.Param!, options.Value!),
-                    PostgresJsonContext.Default.SetParamCommandResult) :
+                    new ServerParamSetCommandResult(result, options.Param!, options.Value!),
+                    PostgresJsonContext.Default.ServerParamSetCommandResult) :
                 null;
         }
         catch (Exception ex)
@@ -69,5 +69,5 @@ public sealed class SetParamCommand(ILogger<SetParamCommand> logger) : BaseServe
         return context.Response;
     }
 
-    internal record SetParamCommandResult(string Message, string Parameter, string Value);
+    internal record ServerParamSetCommandResult(string Message, string Parameter, string Value);
 }

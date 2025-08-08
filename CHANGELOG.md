@@ -2,7 +2,7 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
-## 0.5.4 (Unreleased)
+## 0.5.5 (Unreleased)
 
 ### Features Added
 
@@ -12,9 +12,21 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+### Other Changes
+
+## 0.5.4 (2025-08-07)
+
+### Bugs Fixed
+
+- Fixed subscription parameter handling across all Azure MCP service methods to consistently use `subscription` instead of `subscriptionId`, enabling proper support for both subscription IDs and subscription names. [[#877](https://github.com/Azure/azure-mcp/issues/877)]
 - Fixed `ToolExecuted` telemetry activity being created twice. [[#741](https://github.com/Azure/azure-mcp/pull/741)]
 
 ### Other Changes
+
+- Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
+- Updated the description of the following `CommandGroup`s to improve their tool usage by Agents:
+  - Azure AI Search [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+  - Storage [#879](https://github.com/Azure/azure-mcp/pull/879)
 
 ## 0.5.3 (2025-08-05)
 
@@ -49,7 +61,9 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Implemented centralized HttpClient service with proxy support for better resource management and enterprise compatibility. [[#857](https://github.com/Azure/azure-mcp/pull/857)]
 - Added caching for Cosmos DB databases and containers. [[813](https://github.com/Azure/azure-mcp/pull/813)]
+- Refactored PostgreSQL commands to follow ObjectVerb naming pattern, fix command hierarchy, and ensure all commands end with verbs. This improves consistency and discoverability across all postgres commands. [[#865](https://github.com/Azure/azure-mcp/issues/865)] [[#866](https://github.com/Azure/azure-mcp/pull/866)]
 
 #### Dependency Updates
 

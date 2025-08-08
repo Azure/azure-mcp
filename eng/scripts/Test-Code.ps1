@@ -30,11 +30,35 @@ if (!$TestResultsPath) {
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
-$testProjects = @()
+# Identifies the root directories to be recursively scanned for tests in the specified areas.
+function GetTestsRootDirs {
+    param(
+        [string[]]$areas
+    )
+
+    if (!$areas) {
+        # Indicates that the scan for tests should start from the repository root, i.e., include all tests.
+        return @($RepoRoot)
+    }
+
+    $testsRootDirs = @()
+    foreach ($area in $areas) {
+        $areaName = $area.ToLower()
+        $testsPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
+        if (Test-Path $testsPath) {
+            $testsRootDirs += $testsPath
+        } else {
+            Write-Error "Tests path '$testsPath' does not exist."
+            return $null
+        }
+    }
+    return $testsRootDirs
+}
 
 function BuildNativeBinaryAndPrepareTests {
     param(
-        [string[]]$areas = @()
+        [Parameter(Mandatory=$true)]
+        [string[]]$testsRootDirs
     )
 
     # Native AOT compilation only occurs during 'dotnet publish', not 'dotnet build'
@@ -45,7 +69,7 @@ function BuildNativeBinaryAndPrepareTests {
         -Command "dotnet build" `
         -AllowedExitCodes @(0)
 
-    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -areas $areas
+    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -testsRootDirs $testsRootDirs
 }
 
 function PublishNativeBinary {
@@ -73,67 +97,83 @@ function CopyNativeBinaryToTestDirs {
     param(
         [Parameter(Mandatory=$true)]
         [string]$nativeBinaryPath,
-        [string[]]$areas = @()
+        [string[]]$testsRootDirs
     )
     Write-Host "Copying native AzureMcp to test directories"
 
-    if (!$areas) {
-        $testDirectories = Get-ChildItem -Path $RepoRoot -Recurse -Filter "*.LiveTests" -Directory
-    } else {
-        $testDirectories = @()
-        foreach ($area in $areas) {
-            $areaName = $area.ToLower()
-            $areaPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
-            if (Test-Path $areaPath) {
-                $areaTestDirectories = Get-ChildItem -Path $areaPath -Recurse -Filter "*.LiveTests" -Directory
-                $testDirectories += $areaTestDirectories
-            }
-        }
-    }
-
-    foreach ($testDir in $testDirectories) {
-        $targetDirectory = "$($testDir.FullName)/bin/Debug/net9.0"
+    $testsRootDirs | ForEach-Object {
+        Get-ChildItem -Path $_ -Recurse -Filter "*.LiveTests" -Directory
+    } | ForEach-Object {
+        $targetDirectory = "$($_.FullName)/bin/Debug/net9.0"
         Copy-Item $nativeBinaryPath $targetDirectory -Force
     }
 }
 
-function AddTestProjects($path) {
-    if($TestType -in @('Live', 'All')) {
-        $script:testProjects += Get-ChildItem $path -Recurse -File -Filter "*.LiveTests.csproj"
-    }
-    if($TestType -in @('Unit', 'All')) {
-        $script:testProjects += Get-ChildItem $path -Recurse -File -Filter "*.UnitTests.csproj"
-    }
-}
+function CreateTestSolution {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$workPath,
+        [Parameter(Mandatory=$true)]
+        [string[]]$testsRootDirs,
+        [Parameter(Mandatory=$true)]
+        [string]$testType
+    )
 
-if (!$Areas) {
-    AddTestProjects $RepoRoot
-} else {
-    foreach ($area in $Areas) {
-        $areaName = $area.ToLower()
-        $areaPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
-        if (Test-Path $areaPath) {
-            AddTestProjects $areaPath
-        } else {
-            Write-Error "Area path '$areaPath' does not exist."
-            return
+    $testPatterns = switch ($testType) {
+        'Live' { @('*.LiveTests.csproj') }
+        'Unit' { @('*.UnitTests.csproj') }
+        'All'  { @('*.LiveTests.csproj', '*.UnitTests.csproj') }
+        default {
+            Write-Error "Invalid test type specified: '$testType'. Valid options are 'Live', 'Unit', or 'All'."
+            return $null
         }
     }
+
+    $testProjects = @($testsRootDirs | ForEach-Object {
+        $testsRootDir = $_
+        $testPatterns | ForEach-Object {
+            Get-ChildItem $testsRootDir -Recurse -File -Filter $_
+        }
+    })
+
+    if($testProjects.Count -eq 0) {
+        Write-Error "No test projects found in the specified areas for test type '$testType'."
+        return $null
+    }
+
+    # Create solution and add projects
+    Write-Host "Creating temporary solution file..."
+
+    Push-Location $workPath
+    try {
+        dotnet new sln -n "Tests" | Out-Null
+        dotnet sln add $testProjects --in-root | Out-Null
+    }
+    finally {
+        Pop-Location
+    }
+
+    return "$workPath/Tests.sln"
 }
 
-if($testProjects.Count -eq 0) {
-    Write-Error "No test projects found in the specified areas for test type '$TestType'."
-    return
+# main
+
+$testsRootDirs = GetTestsRootDirs -areas $Areas
+
+if (!$testsRootDirs) {
+    exit 1
+}
+
+$solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
+
+if (!$solutionPath) {
+    exit 1
 }
 
 Push-Location $workPath
 try {
-    Write-Host "Creating temporary solution file..."
-    dotnet new sln -n "Tests" | Out-Null
-    dotnet sln add $testProjects --in-root
-
     if ($TestNativeBuild) {
-        BuildNativeBinaryAndPrepareTests -areas $Areas
+        BuildNativeBinaryAndPrepareTests -testsRootDirs $testsRootDirs
     }
 
     if($debugLogs) {

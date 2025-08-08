@@ -25,7 +25,8 @@
         "**/bin/**",
         "**/.work/**",
         "**/.dist/**",
-        "**/eng/vscode/NOTICE.txt"
+        "**/eng/vscode/NOTICE.txt",
+        "!**/.devcontainer/**"
     ],
     "dictionaryDefinitions": [
         {
@@ -201,7 +202,9 @@
         "azurewebsites",
         "codegen",
         "codeium",
+        "Codespace",
         "cslschema",
+        "csdevkit",
         "bdylan",
         "bestpractices",
         "bicepschema",
@@ -220,7 +223,9 @@
         "datasource",
         "datasources",
         "deallocate",
+        "devcontainers",
         "Distributedtask",
+        "dotnettools",
         "DEBUGTELEMETRY",
         "dotenv",
         "drawcord",
@@ -306,6 +311,7 @@
         "servicebus",
         "sessionhost",
         "setparam",
+        "setpermission",
         "skillset",
         "staticwebapp",
         "syslib",
