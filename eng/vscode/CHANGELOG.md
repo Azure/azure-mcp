@@ -6,8 +6,9 @@
 ### Changed
 
 - Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
-- Updated the descriptions of Azure AI Search `CommandGroup`s to improve their usage by Agents. [[#874](https://github.com/Azure/azure-mcp/pull/874)]
-- Updated the root Storage `CommandGroup` description to improve their usage by Agents. [#879](https://github.com/Azure/azure-mcp/pull/879)
+- Updated the description of the following `CommandGroup`s to improve their tool usage by Agents:
+  - Azure AI Search [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+  - Storage [#879](https://github.com/Azure/azure-mcp/pull/879)
 
 ### Fixed
 
