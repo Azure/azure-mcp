@@ -60,7 +60,7 @@
 /areas/extension/                      @wbreza @jongio @Azure/azure-mcp
 
 # ServiceLabel: %area-Azd
-# ServiceOwners:                        @wbreza @jongio
+# ServiceOwners:                       @wbreza @jongio
 
 
 # PRLabel: %area-ARM
@@ -73,13 +73,13 @@
 /areas/foundry/                        @jayzzh @xiangyan99 @Azure/azure-mcp
 
 # ServiceLabel: %area-Foundry
-# ServiceOwners:                      @jayzzh @xiangyan99
+# ServiceOwners:                       @jayzzh @xiangyan99
 
 # PRLabel: %area-Grafana
 /areas/grafana/                        @weng5e @xiangyan99 @Azure/azure-mcp
 
 # ServiceLabel: %area-Grafana
-# ServiceOwners:                      @weng5e @xiangyan99
+# ServiceOwners:                       @weng5e @xiangyan99
 
 # PRLabel: %area-KeyVault
 /areas/keyvault/                       @vcolin7 @JonathanCrd @Azure/azure-mcp
@@ -153,7 +153,7 @@
 # ServiceOwners:                       @vurhanau
 
 # PRLabel: %area-LoadTesting
-/areas/loadtesting/                      @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
+/areas/loadtesting/                    @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp
 
 # ServiceLabel: %area-LoadTesting
 # ServiceOwners:                       @nishtha489 @knarayanana @krchanda @johnsta
