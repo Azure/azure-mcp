@@ -76,6 +76,17 @@ jobs:
     inputs:
       summaryFileLocation: $(CoverageFile)
 
+  - task: Powershell@2
+    displayName: "(Native AOT) Build module"
+    condition: and(succeeded(), ne(variables['NoPackagesChanged'],'true'), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'x64'))
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Build-Module.ps1
+      arguments: >
+        -OutputPath '$(Build.ArtifactStagingDirectory)'
+        -Version '$(Version)'
+        -BuildNative
+
   # --- VS Code Extension Packaging Steps ---
   - task: NodeTool@0
     displayName: "Use Node.js 20.x"

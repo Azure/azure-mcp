@@ -24,7 +24,8 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
 $npmPackagePath = "$RepoRoot/eng/npm/platform"
-$projectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+$projectDir = "$RepoRoot/core/src/AzureMcp.Cli"
+$projectFile = "$projectDir/AzureMcp.Cli.csproj"
 
 if(!$Version) {
     $Version = & "$PSScriptRoot/Get-Version.ps1"
@@ -65,9 +66,12 @@ try {
         default { $node_os = $os; $extension = '' }
     }
 
-
     $outputDir = "$OutputPath/$os-$arch"
     Write-Host "Building version $Version, $os-$arch in $outputDir" -ForegroundColor Green
+
+    # Clean up any previous azmcp build artifacts
+    Remove-Item -Path "$projectDir/bin" -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+    Remove-Item -Path "$projectDir/obj" -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
 
     # Clear and recreate the package output directory
     Remove-Item -Path $outputDir -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
