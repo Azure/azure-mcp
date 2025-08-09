@@ -24,7 +24,8 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
 $npmPackagePath = "$RepoRoot/eng/npm/platform"
-$projectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+$projectDir = "$RepoRoot/core/src/AzureMcp.Cli"
+$projectFile = "$projectDir/AzureMcp.Cli.csproj"
 
 if(!$Version) {
     $Version = & "$PSScriptRoot/Get-Version.ps1"
@@ -33,6 +34,9 @@ if(!$Version) {
 if (!$OutputPath) {
     $OutputPath = "$RepoRoot/.work"
 }
+
+Remove-Item -Path "$projectDir/bin" -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
+Remove-Item -Path "$projectDir/obj" -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
 
 Push-Location $RepoRoot
 try {
