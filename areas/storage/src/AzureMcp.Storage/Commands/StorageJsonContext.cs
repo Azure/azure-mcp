@@ -15,6 +15,7 @@ namespace AzureMcp.Storage.Commands;
 
 [JsonSerializable(typeof(BlobListCommand.BlobListCommandResult))]
 [JsonSerializable(typeof(BatchSetTierCommand.BatchSetTierCommandResult))]
+[JsonSerializable(typeof(BatchDeleteCommand.BatchDeleteCommandResult))]
 [JsonSerializable(typeof(AccountListCommand.AccountListCommandResult), TypeInfoPropertyName = "AccountListCommandResult")]
 [JsonSerializable(typeof(TableListCommand.TableListCommandResult))]
 [JsonSerializable(typeof(ContainerListCommand.ContainerListCommandResult))]
