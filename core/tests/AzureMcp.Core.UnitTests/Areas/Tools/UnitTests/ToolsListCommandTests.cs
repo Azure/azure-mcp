@@ -117,8 +117,8 @@ public class ToolsListCommandTests
         Assert.NotNull(result);
 
         // Verify JSON round-trip preserves all data
-        var reserializedJson = JsonSerializer.Serialize(result);
-        Assert.Equal(json, reserializedJson);
+        var serializedJson = JsonSerializer.Serialize(result);
+        Assert.Equal(json, serializedJson);
     }
 
     /// <summary>
