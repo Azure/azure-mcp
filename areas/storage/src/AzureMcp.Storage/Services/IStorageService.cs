@@ -48,6 +48,14 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<BlobProperties> GetBlobDetails(
+        string accountName,
+        string containerName,
+        string blobName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,

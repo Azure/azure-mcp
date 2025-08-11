@@ -766,6 +766,12 @@ azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
 
+# Get detailed properties of a blob
+azmcp storage blob details --subscription <subscription> \
+                           --account <account> \
+                           --container <container> \
+                           --blob <blob-name>
+
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> \
                                      --account <account> \

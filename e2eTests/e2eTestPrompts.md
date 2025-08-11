@@ -282,6 +282,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
 | azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
+| azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
+| azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |

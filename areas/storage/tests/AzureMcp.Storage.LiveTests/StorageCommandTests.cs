@@ -95,6 +95,34 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_get_blob_details()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantId },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
+                { "blob", "README.md" },
+                });
+
+            var details = result.AssertProperty("details");
+            Assert.Equal(JsonValueKind.Object, details.ValueKind);
+
+            // Verify the blob has basic properties
+            var contentLength = details.GetProperty("contentLength");
+            Assert.True(contentLength.GetInt64() > 0);
+
+            var contentType = details.GetProperty("contentType");
+            Assert.NotNull(contentType.GetString());
+
+            var lastModified = details.GetProperty("lastModified");
+            Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
+        }
+
+        [Fact]
         public async Task Should_list_containers()
         {
             var result = await CallToolAsync(
