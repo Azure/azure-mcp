@@ -23,7 +23,7 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
     private readonly object _tokenLock = new object();
 
     // Static arrays for security validation - initialized once per class
-    private static readonly string[] DangerousKeywords = 
+    private static readonly string[] DangerousKeywords =
     [
         // Data manipulation that could be harmful
         "DROP", "DELETE", "TRUNCATE", "ALTER", "CREATE", "INSERT", "UPDATE",
@@ -55,7 +55,7 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
         "SET GLOBAL", "SET SESSION", "SET SQL_MODE"
     ];
 
-    private static readonly string[] ObfuscationFunctions = 
+    private static readonly string[] ObfuscationFunctions =
     [
         "CHAR(", "CHR(", "ASCII(", "ORD(", "HEX(", "UNHEX(", "CONV(",
         "CONVERT(", "CAST(", "BINARY(", "CONCAT_WS(", "MAKE_SET(",
