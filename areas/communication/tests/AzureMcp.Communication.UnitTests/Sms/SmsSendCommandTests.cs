@@ -1,75 +1,73 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Tests.Integration;
-using System.Text.Json;
+using System.CommandLine.Parsing;
+using AzureMcp.Communication;
+using AzureMcp.Core.Models.Command;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace AzureMcp.Communication.LiveTests;
+namespace AzureMcp.Communication.UnitTests.Sms;
 
 [Trait("Area", "Communication")]
-[Trait("Category", "Live")]
-public class CommunicationCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
-    : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
+[Trait("Category", "Unit")]
+public class SmsSendCommandTests
 {
     [Fact]
-    public async Task Should_SendSms_WithValidParameters()
+    public void Constructor_ShouldInitializeCorrectly()
     {
-        Skip.If(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING")),
-            "Communication Services connection string not available for live testing");
+        // Arrange
+        var logger = Substitute.For<ILogger<SmsSendCommand>>();
 
-        var connectionString = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING");
-        var fromPhone = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_FROM_PHONE");
-        var toPhone = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_TO_PHONE");
+        // Act
+        var command = new SmsSendCommand(logger);
 
-        Skip.If(string.IsNullOrEmpty(fromPhone), "From phone number not configured for live testing");
-        Skip.If(string.IsNullOrEmpty(toPhone), "To phone number not configured for live testing");
+        // Assert
+        Assert.NotNull(command);
+        Assert.Equal("azmcp_communication_sms_send", command.Name);
+        Assert.NotEmpty(command.Description);
+        Assert.NotEmpty(command.Title);
+    }
 
-        var result = await CallToolAsync(
-            "azmcp_communication_sms_send",
-            new()
-            {
-                { "connection-string", connectionString },
-                { "from", fromPhone },
-                { "to", new[] { toPhone } },
-                { "message", "Test SMS from Azure MCP Live Test" },
-                { "enable-delivery-report", true },
-                { "tag", "live-test" }
-            });
+    [Fact]
+    public void Command_ShouldHaveRequiredOptions()
+    {
+        // Arrange
+        var logger = Substitute.For<ILogger<SmsSendCommand>>();
+        var command = new SmsSendCommand(logger);
 
-        Assert.Equal(200, result.GetProperty("status").GetInt32());
+        // Act
+        var cmd = command.GetCommand();
 
-        var resultsProperty = result.AssertProperty("results");
-        Assert.Equal(JsonValueKind.Array, resultsProperty.ValueKind);
-
-        foreach (var smsResult in resultsProperty.EnumerateArray())
-        {
-            Assert.True(smsResult.TryGetProperty("messageId", out _));
-            Assert.True(smsResult.TryGetProperty("successful", out _));
-            Assert.True(smsResult.TryGetProperty("httpStatusCode", out _));
-            Assert.True(smsResult.TryGetProperty("to", out _));
-        }
+        // Assert
+        Assert.NotNull(cmd);
+        Assert.Contains(cmd.Options, o => o.Name == "connection-string");
+        Assert.Contains(cmd.Options, o => o.Name == "from");
+        Assert.Contains(cmd.Options, o => o.Name == "to");
+        Assert.Contains(cmd.Options, o => o.Name == "message");
     }
 
     [Theory]
-    [InlineData("--invalid-connection-string test")]
-    [InlineData("--connection-string")]
-    [InlineData("--connection-string cs --from")]
-    [InlineData("--connection-string cs --from +1234567890")]
-    [InlineData("--connection-string cs --from +1234567890 --to +1987654321")]
-    public async Task Should_Return400_WithInvalidInput(string args)
+    [InlineData("connection-string", true)]
+    [InlineData("from", true)]
+    [InlineData("to", true)]
+    [InlineData("message", true)]
+    [InlineData("enable-delivery-report", false)]
+    [InlineData("tag", false)]
+    public void RequiredOptions_ShouldBeMarkedCorrectly(string optionName, bool expectedRequired)
     {
-        var result = await CallToolAsync(
-            "azmcp_communication_sms_send",
-            new()
-            {
-                { "args", args }
-            });
+        // Arrange
+        var logger = Substitute.For<ILogger<SmsSendCommand>>();
+        var command = new SmsSendCommand(logger);
 
-        Assert.NotEqual(200, result.GetProperty("status").GetInt32());
-        var message = result.GetProperty("message").GetString()!;
-        Assert.True(message.Contains("required", StringComparison.OrdinalIgnoreCase) ||
-                   message.Contains("validation", StringComparison.OrdinalIgnoreCase));
+        // Act
+        var cmd = command.GetCommand();
+        var option = cmd.Options.FirstOrDefault(o => o.Name == optionName);
+
+        // Assert
+        Assert.NotNull(option);
+        Assert.Equal(expectedRequired, option.IsRequired);
     }
 }
