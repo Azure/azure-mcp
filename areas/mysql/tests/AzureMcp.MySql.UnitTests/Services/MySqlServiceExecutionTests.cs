@@ -126,7 +126,7 @@ public class MySqlServiceExecutionTests
             validateMethod.Invoke(null, new object[] { query }));
         
         Assert.IsType<InvalidOperationException>(exception.InnerException);
-        Assert.Contains("Multiple SQL statements are not allowed", exception.InnerException!.Message);
+        Assert.Contains("Query contains dangerous patterns that could indicate SQL injection attempts", exception.InnerException!.Message);
     }
 
     [Theory]

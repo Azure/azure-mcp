@@ -92,7 +92,7 @@ public class DatabaseQueryCommandTests
         var command = new DatabaseQueryCommand(_logger);
         
         Assert.Equal("query", command.Name);
-        Assert.Equal("Executes SQL queries against a MySQL database to search, retrieve, filter, and manipulate data. Supports SELECT queries to find items containing specific search terms, pattern matching, data filtering, as well as INSERT, UPDATE, DELETE operations and stored procedure execution.", command.Description);
+        Assert.Equal("Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.", command.Description);
         Assert.Equal("Query MySQL Database", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);

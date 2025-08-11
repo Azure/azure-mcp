@@ -191,6 +191,22 @@ public class MySqlServiceQueryValidationTests
     }
 
     [Theory]
+    [InlineData("SELECT * FROM users; SELECT * FROM products")]  // Multiple SELECT statements
+    [InlineData("SELECT id FROM users; SELECT name FROM products")]  // Multiple SELECT with different columns
+    [InlineData("SELECT COUNT(*) FROM users; SELECT MAX(price) FROM products")]  // Multiple SELECT with functions
+    public async Task ExecuteQueryAsync_WithMultipleSelectStatements_ShouldThrowInvalidOperationException(string query)
+    {
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _mysqlService.ExecuteQueryAsync("sub", "rg", "user", "server", "db", query));
+        
+        // Should throw because multiple statements are not allowed even if they're all SELECT
+        Assert.True(
+            exception.Message.Contains("dangerous patterns") || 
+            exception.Message.Contains("Multiple SQL statements"),
+            $"Expected error message to contain multiple statements validation error, but got: {exception.Message}");
+    }
+
+    [Theory]
     [InlineData("SELECT CHAR(65,66,67) FROM users")]  // CHAR function for obfuscation
     [InlineData("SELECT ASCII('A') FROM users")]  // ASCII function
     [InlineData("SELECT HEX('abc') FROM users")]  // HEX function
