@@ -108,9 +108,9 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             // Set default values
-            var storageKind = string.IsNullOrEmpty(kind) ? StorageKind.StorageV2 : Enum.Parse<StorageKind>(kind, true);
-            var storageSku = new StorageSku(string.IsNullOrEmpty(sku) ? StorageSkuName.StandardLrs : Enum.Parse<StorageSkuName>(sku, true));
-            var defaultAccessTier = string.IsNullOrEmpty(accessTier) ? StorageAccountAccessTier.Hot : Enum.Parse<StorageAccountAccessTier>(accessTier, true);
+            var storageKind = string.IsNullOrEmpty(kind) ? StorageKind.StorageV2 : ParseStorageKind(kind);
+            var storageSku = new StorageSku(string.IsNullOrEmpty(sku) ? StorageSkuName.StandardLrs : ParseStorageSkuName(sku));
+            var defaultAccessTier = string.IsNullOrEmpty(accessTier) ? StorageAccountAccessTier.Hot : ParseAccessTier(accessTier);
 
             var createOptions = new StorageAccountCreateOrUpdateContent(
                 storageSku,
@@ -648,5 +648,47 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         {
             throw new Exception($"Error sending queue message: {ex.Message}", ex);
         }
+    }
+
+    private static StorageKind ParseStorageKind(string kind)
+    {
+        return kind?.ToLowerInvariant() switch
+        {
+            "storage" => StorageKind.Storage,
+            "storagev2" => StorageKind.StorageV2,
+            "blobstorage" => StorageKind.BlobStorage,
+            "filestorage" => StorageKind.FileStorage,
+            "blockstorage" => StorageKind.BlockBlobStorage,
+            _ => throw new ArgumentException($"Invalid storage kind '{kind}'. Valid values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage")
+        };
+    }
+
+    private static StorageSkuName ParseStorageSkuName(string sku)
+    {
+        return sku?.ToUpperInvariant() switch
+        {
+            "STANDARD_LRS" => StorageSkuName.StandardLrs,
+            "STANDARD_GRS" => StorageSkuName.StandardGrs,
+            "STANDARD_RAGRS" => StorageSkuName.StandardRagrs,
+            "STANDARD_ZRS" => StorageSkuName.StandardZrs,
+            "PREMIUM_LRS" => StorageSkuName.PremiumLrs,
+            "PREMIUM_ZRS" => StorageSkuName.PremiumZrs,
+            "STANDARD_GZRS" => StorageSkuName.StandardGzrs,
+            "STANDARD_RAGZRS" => StorageSkuName.StandardRagzrs,
+            _ => throw new ArgumentException($"Invalid storage SKU '{sku}'. Valid values are: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS, Standard_GZRS, Standard_RAGZRS")
+        };
+    }
+
+    private static StorageAccountAccessTier? ParseAccessTier(string? accessTier)
+    {
+        if (string.IsNullOrEmpty(accessTier))
+            return null;
+
+        return accessTier.ToLowerInvariant() switch
+        {
+            "hot" => StorageAccountAccessTier.Hot,
+            "cool" => StorageAccountAccessTier.Cool,
+            _ => throw new ArgumentException($"Invalid access tier '{accessTier}'. Valid values are: Hot, Cool")
+        };
     }
 }
