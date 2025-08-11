@@ -68,8 +68,8 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
 
             context.Activity?
                 .SetTag("ServiceCount", appTopology.Services.Length)
-                .SetTag("TargetService", string.Join(", ", appTopology.Services.Select(s => s.AzureComputeHost)))
-                .SetTag("BackingServices", string.Join(", ", appTopology.Services.SelectMany(s => s.Dependencies).Select(d => d.ServiceType)));
+                .SetTag("ComputeHostResources", string.Join(", ", appTopology.Services.Select(s => s.AzureComputeHost)))
+                .SetTag("BackingServiceResources", string.Join(", ", appTopology.Services.SelectMany(s => s.Dependencies).Select(d => d.ServiceType)));
 
             _logger.LogInformation("Successfully parsed app topology with {ServiceCount} services", appTopology.Services.Length);
 
@@ -87,6 +87,8 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
                 throw new InvalidOperationException("Failed to generate architecture diagram. The chart content is empty.");
             }
             var encodedDiagram = EncodeMermaid.GetEncodedMermaidChart(chart).Replace("+", "-").Replace("/", "_"); // replace '+' with '-' and "/" with "_" for URL safety and consistency with mermaid.live URL encoding
+
+            context.Activity?.SetTag("MermaidDiagram", encodedDiagram);
 
             var mermaidUrl = $"https://mermaid.live/view#pako:{encodedDiagram}";
             _logger.LogInformation("Generated architecture diagram successfully. Mermaid URL: {MermaidUrl}", mermaidUrl);

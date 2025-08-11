@@ -77,10 +77,11 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
             }
 
             context.Activity?
-                    .SetTag("TargetService", options.TargetAppService)
-                    .SetTag("ProvisioningTool", options.ProvisioningTool)
+                    .SetTag("ProjectName", options.ProjectName)
+                    .SetTag("ComputeHostResources", options.TargetAppService)
+                    .SetTag("DeploymentTool", options.ProvisioningTool)
                     .SetTag("IacType", options.AzdIacOptions ?? string.Empty)
-                    .SetTag("BackingServices", options.BackingServices ?? string.Empty)
+                    .SetTag("BackingServiceResources", options.BackingServices ?? string.Empty)
                     .SetTag("ServiceCount", options.ServiceCount)
                     .SetTag("Languages", options.Languages ?? string.Empty);
             
