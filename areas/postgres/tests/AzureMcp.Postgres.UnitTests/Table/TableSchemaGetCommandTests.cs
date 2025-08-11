@@ -16,16 +16,16 @@ using Xunit;
 
 namespace AzureMcp.Postgres.UnitTests.Table;
 
-public class GetSchemaCommandTests
+public class TableSchemaGetCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IPostgresService _postgresService;
-    private readonly ILogger<GetSchemaCommand> _logger;
+    private readonly ILogger<TableSchemaGetCommand> _logger;
 
-    public GetSchemaCommandTests()
+    public TableSchemaGetCommandTests()
     {
         _postgresService = Substitute.For<IPostgresService>();
-        _logger = Substitute.For<ILogger<GetSchemaCommand>>();
+        _logger = Substitute.For<ILogger<TableSchemaGetCommand>>();
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_postgresService);
@@ -39,7 +39,7 @@ public class GetSchemaCommandTests
         var expectedSchema = new List<string>(["CREATE TABLE test (id INT);"]);
         _postgresService.GetTableSchemaAsync("sub123", "rg1", "user1", "server1", "db123", "table123").Returns(expectedSchema);
 
-        var command = new GetSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1", "--database", "db123", "--table", "table123"]);
         var context = new CommandContext(_serviceProvider);
 
@@ -58,7 +58,7 @@ public class GetSchemaCommandTests
     {
         _postgresService.GetTableSchemaAsync("sub123", "rg1", "user1", "server1", "db123", "table123").Returns([]);
 
-        var command = new GetSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server1", "--database", "db123", "--table", "table123"]);
         var context = new CommandContext(_serviceProvider);
 
@@ -79,7 +79,7 @@ public class GetSchemaCommandTests
     [InlineData("--table")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
-        var command = new GetSchemaCommand(_logger);
+        var command = new TableSchemaGetCommand(_logger);
         var args = command.GetCommand().Parse(new string[]
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",

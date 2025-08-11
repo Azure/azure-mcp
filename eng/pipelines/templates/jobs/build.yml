@@ -58,13 +58,14 @@ jobs:
       filePath:  $(Build.SourcesDirectory)/eng/scripts/Test-Code.ps1
       arguments: >
         -CollectCoverage:$${{ eq(parameters.OSName, 'linux') }}
+        -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults'
       workingDirectory: $(Build.SourcesDirectory)
 
   - task: PublishTestResults@2
     displayName: "Publish Results"
     condition: and(succeededOrFailed(), eq(variables['RunTests'], 'true'))
     inputs:
-      testResultsFiles: "$(Build.SourcesDirectory)/.work/testResults/*.trx"
+      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/*.trx"
       testRunTitle: "unit-${{ parameters.OSName }}-$(Architecture)"
       testResultsFormat: "VSTest"
       mergeTestResults: true

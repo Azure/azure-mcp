@@ -10,11 +10,11 @@ namespace AzureMcp.Postgres.Commands;
 
 [JsonSerializable(typeof(DatabaseListCommand.DatabaseListCommandResult))]
 [JsonSerializable(typeof(DatabaseQueryCommand.DatabaseQueryCommandResult))]
-[JsonSerializable(typeof(GetConfigCommand.GetConfigCommandResult))]
-[JsonSerializable(typeof(GetParamCommand.GetParamCommandResult))]
-[JsonSerializable(typeof(SetParamCommand.SetParamCommandResult))]
+[JsonSerializable(typeof(ServerConfigGetCommand.ServerConfigGetCommandResult))]
+[JsonSerializable(typeof(ServerParamGetCommand.ServerParamGetCommandResult))]
+[JsonSerializable(typeof(ServerParamSetCommand.ServerParamSetCommandResult))]
 [JsonSerializable(typeof(ServerListCommand.ServerListCommandResult))]
-[JsonSerializable(typeof(GetSchemaCommand.GetSchemaCommandResult))]
+[JsonSerializable(typeof(TableSchemaGetCommand.TableSchemaGetCommandResult))]
 [JsonSerializable(typeof(TableListCommand.TableListCommandResult))]
 
 internal sealed partial class PostgresJsonContext : JsonSerializerContext

@@ -9,20 +9,20 @@ namespace AzureMcp.Storage.Services;
 
 public interface IStorageService
 {
-    Task<List<string>> GetStorageAccounts(
-        string subscriptionId,
+    Task<List<StorageAccountInfo>> GetStorageAccounts(
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListContainers(
         string accountName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListTables(
         string accountName,
-        string subscriptionId,
+        string subscription,
         AuthMethod authMethod = AuthMethod.Credential,
         string? connectionString = null,
         string? tenant = null,
@@ -30,14 +30,14 @@ public interface IStorageService
 
     Task<List<string>> ListBlobs(string accountName,
         string containerName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
@@ -45,7 +45,7 @@ public interface IStorageService
         string accountName,
         string fileSystemName,
         bool recursive,
-        string subscriptionId,
+        string subscription,
         string? filterPath = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
@@ -53,7 +53,7 @@ public interface IStorageService
     Task<DataLakePathInfo> CreateDirectory(
         string accountName,
         string directoryPath,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
@@ -62,7 +62,7 @@ public interface IStorageService
         string containerName,
         string tier,
         string[] blobNames,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
@@ -71,7 +71,7 @@ public interface IStorageService
         string shareName,
         string directoryPath,
         string? prefix,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 

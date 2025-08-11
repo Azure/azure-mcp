@@ -9,6 +9,7 @@ param(
     [switch] $ReadyToRun,
     [switch] $Trimmed,
     [switch] $DebugBuild,
+    [switch] $BuildNative,
     [Parameter(Mandatory=$true, ParameterSetName='Named')]
     [ValidateSet('windows','linux','macOS')]
     [string] $OperatingSystem,
@@ -16,6 +17,8 @@ param(
     [ValidateSet('x64','arm64')]
     [string] $Architecture
 )
+
+$ErrorActionPreference = 'Stop'
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
@@ -86,6 +89,10 @@ try {
 
     if($Trimmed) {
         $command += " /p:PublishTrimmed=true"
+    }
+
+    if($BuildNative) {
+        $command += " /p:BuildNative=true"
     }
 
     Invoke-LoggedCommand $command -GroupOutput

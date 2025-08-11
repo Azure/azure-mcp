@@ -73,6 +73,14 @@ This keeps all code, options, models, and tests for an area together. See `areas
    - ✅ Good:`new CommandGroup("entra-admin", "Entra admin operations")`
    - ❌ Bad: `new CommandGroup("entra_admin", "Entra admin operations")`
 
+   **AVOID ANTI-PATTERNS**: When designing commands, avoid mixing resource names with operations in a single command. Instead, use proper command group hierarchy:
+   - ✅ Good: `azmcp postgres server param set` (command groups: server → param, operation: set)
+   - ❌ Bad: `azmcp postgres server setparam` (mixed operation `setparam` at same level as resource operations)
+   - ✅ Good: `azmcp storage container permission set` 
+   - ❌ Bad: `azmcp storage container setpermission`
+
+   This pattern improves discoverability, maintains consistency, and allows for better grouping of related operations.
+
 ### Required Files
 
 A complete command requires:
@@ -91,6 +99,37 @@ A complete command requires:
 10. **Live test infrastructure** (if needed):
    - Bicep template: `/areas/{area-name}/tests/test-resources.bicep`
    - Optional post-deployment script: `/areas/{area-name}/tests/test-resources-post.ps1`
+
+### File and Class Naming Convention
+
+**IMPORTANT**: All command files and classes must follow the **ObjectVerb** naming pattern for consistency and discoverability:
+
+**Pattern**: `{Resource}{SubResource}{Operation}Command`
+
+**Examples**:
+- ✅ `ServerListCommand` (Resource: Server, Operation: List)
+- ✅ `ServerConfigGetCommand` (Resource: Server, SubResource: Config, Operation: Get)
+- ✅ `ServerParamSetCommand` (Resource: Server, SubResource: Param, Operation: Set)
+- ✅ `TableSchemaGetCommand` (Resource: Table, SubResource: Schema, Operation: Get)
+- ✅ `DatabaseListCommand` (Resource: Database, Operation: List)
+
+**Anti-patterns to avoid**:
+- ❌ `GetConfigCommand` (missing resource prefix)
+- ❌ `GetParamCommand` (missing resource prefix)
+- ❌ `GetSchemaCommand` (missing resource prefix)
+
+**Apply this pattern to**:
+- Command class names: `ServerConfigGetCommand`, `ServerParamSetCommand`
+- Options class names: `ServerConfigGetOptions`, `ServerParamSetOptions`
+- Test class names: `ServerConfigGetCommandTests`, `ServerParamSetCommandTests`
+- File names: `ServerConfigGetCommand.cs`, `ServerParamSetOptions.cs`
+
+This convention ensures:
+- Clear identification of the resource being operated on
+- Logical grouping of related operations
+- Consistent file organization and naming
+- Better IDE intellisense and code navigation
+- Easier maintenance and discovery
 
 **IMPORTANT**: If implementing a new area, you must also ensure:
 - The Azure Resource Manager package is added to `Directory.Packages.props` first
@@ -319,12 +358,12 @@ All interface methods should follow consistent formatting with proper line break
 ```csharp
 // Correct formatting - parameters aligned with line breaks
 Task<List<string>> GetStorageAccounts(
-    string subscriptionId,
+    string subscription,
     string? tenant = null,
     RetryPolicyOptions? retryPolicy = null);
 
 // Incorrect formatting - all parameters on single line
-Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+Task<List<string>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
 ```
 
 **Formatting Rules:**
@@ -1010,7 +1049,77 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Include examples in description
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
-5. Live Test Infrastructure:
+5. Tool Description Quality Validation:
+    - Test your command descriptions for quality using the validation tool before submitting:
+
+      - **Single prompt validation** (test one description against one prompt):
+
+        ```bash
+        cd eng/tools/ToolDescriptionConfidenceScore
+        dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
+        ```
+
+      - **Multiple prompt validation** (test one description against multiple prompts):
+
+        ```bash
+        dotnet run -- --validate \
+        --tool-description "Lists all storage accounts in a subscription" \
+        --prompt "show me my storage accounts" \
+        --prompt "list storage accounts" \
+        --prompt "what storage do I have"
+        ```
+
+      - **Custom tools and prompts files** (use your own files for comprehensive testing):
+
+        ```bash
+        # Prompts:
+        # Use markdown format (same as e2eTests/e2eTestPrompts.md):
+        dotnet run -- --prompts-file my-prompts.md
+
+        # Use JSON format:
+        dotnet run -- --prompts-file my-prompts.json
+
+        # Tools:
+        # Use JSON format (same as eng/tools/ToolDescriptionConfidenceScore/tools.json):
+        dotnet run -- --tools-file my-tools.json
+
+        # Combine both:
+        # Use custom tools and prompts files together:
+        dotnet run -- --tools-file my-tools.json --prompts-file my-prompts.md
+        ```
+
+    - Quality assessment guidelines:
+
+      - Aim for your description to rank in the top 3 results (GOOD or EXCELLENT rating)
+      - Test with multiple different prompts that users might use
+      - Consider common synonyms and alternative phrasings in your descriptions
+      - If validation shows POOR results or a confidence score of < 0.4, refine your description and test again
+
+    - Custom prompts file formats:
+      - **Markdown format**: Use same table format as `e2eTests/e2eTestPrompts.md`:
+
+        ```markdown
+        | Tool Name | Test Prompt |
+        |:----------|:----------|
+        | azmcp-your-command | Your test prompt |
+        | azmcp-your-command | Another test prompt |
+        ```
+
+      - **JSON format**: Tool name as key, array of prompts as value:
+
+        ```json
+        {
+            "azmcp-your-command": [
+            "Your test prompt",
+            "Another test prompt"
+            ]
+        }
+        ```
+
+    - Custom tools file format:
+      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionConfidenceScore/tools.json`.
+
+6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
    - Follow naming conventions: `baseName` (most common) or `{baseName}-{area}` if needed
    - Include proper RBAC assignments for test application
@@ -1190,6 +1299,7 @@ Before submitting:
 - [ ] **CHANGELOG.md**: Add entry under "Unreleased" section describing the new command(s)
 - [ ] **docs/azmcp-commands.md**: Add command documentation with description, syntax, parameters, and examples
 - [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s) in the appropriate area section
+- [ ] **eng/vscode/README.md**: Update the VSIX README with new service area (if applicable) and add sample prompts to showcase new command capabilities
 - [ ] **e2eTests/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
 
 **Documentation Standards**:
@@ -1200,6 +1310,7 @@ Before submitting:
 - Include parameter descriptions and required vs optional indicators in azmcp-commands.md
 - Keep CHANGELOG.md entries concise but descriptive of the capability added
 - Add test prompts to e2eTestPrompts.md following the established naming convention and provide multiple prompt variations
+- **eng/vscode/README.md Updates**: When adding new services or commands, update the VSIX README to maintain accurate service coverage and compelling sample prompts for marketplace visibility
 - **IMPORTANT**: Maintain alphabetical sorting in e2eTestPrompts.md:
   - Service sections must be in alphabetical order by service name
   - Tool Names within each table must be sorted alphabetically

@@ -11,7 +11,7 @@ namespace AzureMcp.Search.Commands.Index;
 
 public sealed class IndexQueryCommand(ILogger<IndexQueryCommand> logger) : GlobalCommand<IndexQueryOptions>()
 {
-    private const string CommandTitle = "Query Azure AI Search Index";
+    private const string CommandTitle = "Query Azure AI Search (formerly known as \"Azure Cognitive Search\") Index";
     private readonly ILogger<IndexQueryCommand> _logger = logger;
     private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
     private readonly Option<string> _indexOption = SearchOptionDefinitions.Index;

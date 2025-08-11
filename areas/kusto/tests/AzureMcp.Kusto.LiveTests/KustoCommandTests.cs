@@ -3,12 +3,15 @@
 
 using System.Text.Json;
 using Azure.Identity;
+using AzureMcp.Core.Services.Http;
 using AzureMcp.Kusto.Services;
 using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
 using Xunit;
+using MsOptions = Microsoft.Extensions.Options.Options;
 
 namespace AzureMcp.Kusto.LiveTests;
 
@@ -38,7 +41,12 @@ public class KustoCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelpe
                 { "cluster", Settings.ResourceBaseName }
                 });
             var clusterUri = clusterInfo.AssertProperty("cluster").AssertProperty("clusterUri").GetString();
-            var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua");
+
+            // Create HttpClientService for KustoClient
+            var httpClientOptions = new HttpClientOptions();
+            var httpClientService = new HttpClientService(MsOptions.Create(httpClientOptions));
+
+            var kustoClient = new KustoClient(clusterUri ?? string.Empty, credentials, "ua", httpClientService);
             var resp = await kustoClient.ExecuteControlCommandAsync(
                 TestDatabaseName,
                 ".set-or-replace ToDoList <| datatable (Title: string, IsCompleted: bool) [' Hello World!', false]",

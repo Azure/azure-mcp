@@ -7,6 +7,7 @@ using AzureMcp.Core.Areas.Server.Commands.Runtime;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Extensions;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,9 @@ public static class AzureMcpServiceCollectionExtensions
     /// <returns>The service collection with MCP server services added.</returns>
     public static IServiceCollection AddAzureMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
     {
+        // Register HTTP client services
+        services.AddHttpClientServices();
+
         // Register options for service start
         services.AddSingleton(serviceStartOptions);
         services.AddSingleton(Options.Create(serviceStartOptions));
