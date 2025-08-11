@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.RegularExpressions;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager.MySql.FlexibleServers;
@@ -62,6 +63,139 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
         return $"Server={host};Database={database};User ID={user};Password={entraIdAccessToken};SSL Mode=Required;";
     }
 
+    private static void ValidateQuerySafety(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            throw new ArgumentException("Query cannot be null or empty.", nameof(query));
+        }
+
+        // Prevent DoS attacks by limiting query length
+        if (query.Length > 10000)
+        {
+            throw new InvalidOperationException("Query length exceeds the maximum allowed limit of 10,000 characters to prevent potential DoS attacks.");
+        }
+
+        // Clean the query: remove comments, normalize whitespace, and trim
+        var cleanedQuery = query;
+
+        // Remove line comments (-- comment)
+        cleanedQuery = Regex.Replace(cleanedQuery, @"--.*?$", "", RegexOptions.Multiline);
+
+        // Remove hash comments (# comment)
+        cleanedQuery = Regex.Replace(cleanedQuery, @"#.*?$", "", RegexOptions.Multiline);
+
+        // Remove block comments (/* comment */)
+        cleanedQuery = Regex.Replace(cleanedQuery, @"/\*.*?\*/", "", RegexOptions.Singleline);
+
+        // Normalize whitespace: replace multiple whitespace characters with single space
+        cleanedQuery = Regex.Replace(cleanedQuery, @"\s+", " ", RegexOptions.Multiline);
+
+        // Trim the result
+        cleanedQuery = cleanedQuery.Trim();
+
+        // Ensure the cleaned query is not empty
+        if (string.IsNullOrWhiteSpace(cleanedQuery))
+        {
+            throw new ArgumentException("Query cannot be empty after removing comments and whitespace.", nameof(query));
+        }
+
+        // Check for multiple SQL statements (semicolons that are not in comments)
+        var semicolonCount = cleanedQuery.Split(';').Length - 1;
+        if (semicolonCount > 1)
+        {
+            throw new InvalidOperationException("Multiple SQL statements are not allowed. Use only a single SELECT statement.");
+        }
+
+        // Regex pattern to detect common SQL injection techniques (comments are already removed)
+        var dangerPattern = new Regex(
+            @"(;|\b(union\s+select|drop\s+table|insert\s+into|update\s+|delete\s+from|or\s+1=1)\b)",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled
+        );
+
+        // Check for common SQL injection patterns using regex
+        if (dangerPattern.IsMatch(cleanedQuery))
+        {
+            throw new InvalidOperationException("Query contains dangerous patterns that could indicate SQL injection attempts and is not allowed for security reasons.");
+        }
+
+        // List of dangerous SQL keywords that should be blocked
+        var dangerousKeywords = new[]
+        {
+            // Data manipulation that could be harmful
+            "DROP", "DELETE", "TRUNCATE", "ALTER", "CREATE", "INSERT", "UPDATE",
+            // Administrative operations
+            "GRANT", "REVOKE", "SET", "RESET", "KILL", "SHUTDOWN", "RESTART",
+            // Information disclosure
+            "SHOW MASTER", "SHOW SLAVE", "SHOW BINARY", "SHOW BINLOG",
+            // System operations
+            "LOAD DATA", "OUTFILE", "DUMPFILE", "LOAD_FILE", "INTO OUTFILE",
+            // User/privilege management
+            "CREATE USER", "DROP USER", "ALTER USER", "RENAME USER",
+            // Database structure changes
+            "CREATE DATABASE", "DROP DATABASE", "CREATE SCHEMA", "DROP SCHEMA",
+            // Stored procedures and functions
+            "CREATE PROCEDURE", "DROP PROCEDURE", "CREATE FUNCTION", "DROP FUNCTION",
+            // Triggers and events
+            "CREATE TRIGGER", "DROP TRIGGER", "CREATE EVENT", "DROP EVENT",
+            // Views that could modify data
+            "CREATE VIEW", "DROP VIEW",
+            // Index operations
+            "CREATE INDEX", "DROP INDEX",
+            // Table operations
+            "CREATE TABLE", "DROP TABLE", "RENAME TABLE",
+            // Lock operations
+            "LOCK TABLES", "UNLOCK TABLES",
+            // Transaction control in unsafe contexts
+            "START TRANSACTION", "BEGIN", "COMMIT", "ROLLBACK",
+            // System variables
+            "SET GLOBAL", "SET SESSION", "SET SQL_MODE"
+        };
+
+        var queryUpper = cleanedQuery.ToUpperInvariant();
+
+        foreach (var keyword in dangerousKeywords)
+        {
+            if (queryUpper.Contains(keyword))
+            {
+                throw new InvalidOperationException($"Query contains dangerous keyword '{keyword}' which is not allowed for security reasons.");
+            }
+        }
+
+        // Check for character conversion functions that may be used for obfuscation
+        var obfuscationFunctions = new[]
+        {
+            "CHAR(", "CHR(", "ASCII(", "ORD(", "HEX(", "UNHEX(", "CONV(",
+            "CONVERT(", "CAST(", "BINARY(", "CONCAT_WS(", "MAKE_SET(",
+            "ELT(", "FIELD(", "FIND_IN_SET(", "EXPORT_SET(", "LOAD_FILE(",
+            "FROM_BASE64(", "TO_BASE64(", "COMPRESS(", "UNCOMPRESS(",
+            "AES_ENCRYPT(", "AES_DECRYPT(", "DES_ENCRYPT(", "DES_DECRYPT(",
+            "ENCODE(", "DECODE(", "PASSWORD(", "OLD_PASSWORD("
+        };
+
+        foreach (var func in obfuscationFunctions)
+        {
+            if (queryUpper.Contains(func))
+            {
+                throw new InvalidOperationException($"Character conversion and obfuscation functions like '{func.TrimEnd('(')}' are not allowed for security reasons.");
+            }
+        }
+
+        // Additional validation: Only allow SELECT statements
+        var trimmedQuery = queryUpper.Trim();
+        var allowedStartPatterns = new[]
+        {
+            "SELECT"
+        };
+
+        bool isAllowed = allowedStartPatterns.Any(pattern => trimmedQuery.StartsWith(pattern));
+
+        if (!isAllowed)
+        {
+            throw new InvalidOperationException("Only SELECT statements are allowed for security reasons.");
+        }
+    }
+
     public async Task<List<string>> ListDatabasesAsync(string subscriptionId, string resourceGroup, string user, string server)
     {
         try
@@ -97,6 +231,8 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
     {
         try
         {
+            ValidateQuerySafety(query);
+
             var connectionString = await BuildConnectionStringAsync(server, user, database);
 
             await using var resource = await MySqlResource.CreateAsync(connectionString);
@@ -109,7 +245,11 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
                                    .Select(reader.GetName)
                                    .ToArray();
             rows.Add(string.Join(", ", columnNames));
-            while (await reader.ReadAsync())
+
+            var rowCount = 0;
+            const int maxRows = 10000;
+
+            while (await reader.ReadAsync() && rowCount < maxRows)
             {
                 var row = new List<string>();
                 for (int i = 0; i < reader.FieldCount; i++)
@@ -117,7 +257,14 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
                     row.Add(reader[i]?.ToString() ?? "NULL");
                 }
                 rows.Add(string.Join(", ", row));
+                rowCount++;
             }
+
+            if (rowCount >= maxRows)
+            {
+                rows.Add($"... (output limited to {maxRows} rows for security and performance reasons)");
+            }
+
             return rows;
         }
         catch (Exception ex)

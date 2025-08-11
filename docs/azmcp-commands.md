@@ -365,7 +365,7 @@ azmcp mysql database list --subscription <subscription> \
                           --user <user> \
                           --server <server>
 
-# Executes a query against a MySQL database
+# Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
 azmcp mysql database query --subscription <subscription> \
                            --resource-group <resource-group> \
                            --user <user> \
