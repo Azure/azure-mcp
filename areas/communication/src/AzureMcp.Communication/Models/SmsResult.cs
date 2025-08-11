@@ -21,7 +21,4 @@ public class SmsResult
 
     [JsonPropertyName("errorMessage")]
     public string? ErrorMessage { get; set; }
-
-    [JsonPropertyName("repeatabilityResult")]
-    public string? RepeatabilityResult { get; set; }
 }

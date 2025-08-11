@@ -7,6 +7,7 @@ using AzureMcp.Communication.Models;
 using AzureMcp.Communication.Options;
 using AzureMcp.Communication.Options.Sms;
 using AzureMcp.Communication.Services;
+using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.Logging;
 
@@ -108,7 +109,7 @@ public sealed class SmsSendCommand(ILogger<SmsSendCommand> logger) : BaseCommuni
             // Log error with all relevant context
             _logger.LogError(ex,
                 "Error sending SMS. From: {From}, To: {To}, Message Length: {MessageLength}, Options: {@Options}",
-                options.From, options.To != null ? string.Join(",", options.To) : "null", 
+                options.From, options.To != null ? string.Join(",", options.To) : "null",
                 options.Message?.Length ?? 0, options);
             HandleException(context, ex);
         }

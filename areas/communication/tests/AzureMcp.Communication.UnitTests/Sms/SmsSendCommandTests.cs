@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using AzureMcp.Communication;
+using AzureMcp.Communication.Commands.Sms;
+using AzureMcp.Communication.Options.Sms;
+using AzureMcp.Communication.Services;
 using AzureMcp.Core.Models.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,7 +28,7 @@ public class SmsSendCommandTests
 
         // Assert
         Assert.NotNull(command);
-        Assert.Equal("azmcp_communication_sms_send", command.Name);
+        Assert.Equal("send", command.Name);
         Assert.NotEmpty(command.Description);
         Assert.NotEmpty(command.Title);
     }

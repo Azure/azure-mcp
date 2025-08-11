@@ -27,7 +27,7 @@ public class CommunicationService(ILogger<CommunicationService> logger) : ICommu
         try
         {
             var smsClient = new SmsClient(connectionString);
-            
+
             var sendOptions = new SmsSendOptions(enableDeliveryReport)
             {
                 Tag = tag
@@ -50,8 +50,7 @@ public class CommunicationService(ILogger<CommunicationService> logger) : ICommu
                     To = result.To,
                     Successful = result.Successful,
                     HttpStatusCode = result.HttpStatusCode,
-                    ErrorMessage = result.ErrorMessage,
-                    RepeatabilityResult = result.RepeatabilityResult?.ToString()
+                    ErrorMessage = result.ErrorMessage
                 });
 
                 _logger.LogInformation("SMS to {To}: Success={Success}, MessageId={MessageId}, Status={Status}",
