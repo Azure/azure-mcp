@@ -4,6 +4,7 @@
 
 ### Features Added
 
+- Added support for `SecretHint`. [[#889](https://github.com/Azure/azure-mcp/pull/889)]
 - Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
 
 ### Breaking Changes
