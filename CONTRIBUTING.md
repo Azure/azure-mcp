@@ -105,7 +105,7 @@ The project is organized as follows:
 
 > **⚠️ Important: Submit One Tool Per Pull Request**
 > 
-> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach:
+> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach results in:
 > 
 > - **Faster reviews**: Single tools are easier and quicker to review
 > - **Better feedback**: More focused discussions on individual tool implementation  
