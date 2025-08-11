@@ -21,7 +21,7 @@ public class PostgresSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var pg = new CommandGroup("postgres", "PostgreSQL operations - Commands for listing and managing Azure Database for PostgreSQL - Flexible server.");
+        var pg = new CommandGroup("postgres", "PostgreSQL operations - Commands for managing Azure Database for PostgreSQL Flexible Server resources. Includes operations for listing servers and databases, executing SQL queries, managing table schemas, and configuring server parameters.");
         rootGroup.AddSubGroup(pg);
 
         var database = new CommandGroup("database", "PostgreSQL database operations");
@@ -32,13 +32,22 @@ public class PostgresSetup : IAreaSetup
         var table = new CommandGroup("table", "PostgreSQL table operations");
         pg.AddSubGroup(table);
         table.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
-        table.AddCommand("schema", new GetSchemaCommand(loggerFactory.CreateLogger<GetSchemaCommand>()));
+
+        var schema = new CommandGroup("schema", "PostgreSQL table schema operations");
+        table.AddSubGroup(schema);
+        schema.AddCommand("get", new TableSchemaGetCommand(loggerFactory.CreateLogger<TableSchemaGetCommand>()));
 
         var server = new CommandGroup("server", "PostgreSQL server operations");
         pg.AddSubGroup(server);
         server.AddCommand("list", new ServerListCommand(loggerFactory.CreateLogger<ServerListCommand>()));
-        server.AddCommand("config", new GetConfigCommand(loggerFactory.CreateLogger<GetConfigCommand>()));
-        server.AddCommand("param", new GetParamCommand(loggerFactory.CreateLogger<GetParamCommand>()));
-        server.AddCommand("setparam", new SetParamCommand(loggerFactory.CreateLogger<SetParamCommand>()));
+
+        var config = new CommandGroup("config", "PostgreSQL server configuration operations");
+        server.AddSubGroup(config);
+        config.AddCommand("get", new ServerConfigGetCommand(loggerFactory.CreateLogger<ServerConfigGetCommand>()));
+
+        var param = new CommandGroup("param", "PostgreSQL server parameter operations");
+        server.AddSubGroup(param);
+        param.AddCommand("get", new ServerParamGetCommand(loggerFactory.CreateLogger<ServerParamGetCommand>()));
+        param.AddCommand("set", new ServerParamSetCommand(loggerFactory.CreateLogger<ServerParamSetCommand>()));
     }
 }

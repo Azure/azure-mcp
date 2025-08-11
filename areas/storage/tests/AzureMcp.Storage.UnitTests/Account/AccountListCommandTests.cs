@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
@@ -44,10 +45,14 @@ public class AccountListCommandTests
     {
         // Arrange
         var subscriptionId = "sub123";
-        var expectedAccounts = new List<string> { "account1", "account2" };
+        var expectedAccounts = new List<Storage.Models.StorageAccountInfo>
+        {
+            new("account1", "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true),
+            new("account2", "westus", "StorageV2", "Standard_GRS", "Standard", false, false, true)
+        };
 
         _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(expectedAccounts);
+            .Returns(Task.FromResult(expectedAccounts));
 
         var args = _parser.Parse(["--subscription", subscriptionId]);
 
@@ -62,7 +67,9 @@ public class AccountListCommandTests
         var result = JsonSerializer.Deserialize<AccountListResult>(json);
 
         Assert.NotNull(result);
-        Assert.Equal(expectedAccounts, result.Accounts);
+        Assert.NotNull(result!.Accounts);
+        Assert.Equal(expectedAccounts.Count, result.Accounts!.Count);
+        Assert.Equal(expectedAccounts.Select(a => a.Name), result.Accounts.Select(a => a.Name));
     }
 
     [Fact]
@@ -72,7 +79,7 @@ public class AccountListCommandTests
         var subscriptionId = "sub123";
 
         _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns([]);
+            .Returns(Task.FromResult(new List<Storage.Models.StorageAccountInfo>()));
 
         var args = _parser.Parse(["--subscription", subscriptionId]);
 
@@ -108,6 +115,6 @@ public class AccountListCommandTests
     private class AccountListResult
     {
         [JsonPropertyName("accounts")]
-        public List<string> Accounts { get; set; } = [];
+        public List<Storage.Models.StorageAccountInfo>? Accounts { get; set; }
     }
 }

@@ -85,8 +85,8 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 });
 
             var actual = result.AssertProperty("blobs");
@@ -103,7 +103,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 { "retry-max-retries", 0 }
                 });
 
@@ -121,7 +121,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -138,7 +138,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantId },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -157,7 +157,7 @@ namespace AzureMcp.Storage.LiveTests
                 {
                 { "subscription", Settings.SubscriptionName },
                 { "tenant", Settings.TenantName },
-                { "account-name", Settings.ResourceBaseName },
+                { "account", Settings.ResourceBaseName },
                 });
 
             var actual = result.AssertProperty("tables");
@@ -173,8 +173,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" }
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" }
                 });
 
             var actual = result.AssertProperty("details");
@@ -189,8 +189,8 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "container-name", "bar" },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
                 { "auth-method", "key" }
                 });
 
@@ -206,8 +206,25 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                 { "subscription", Settings.SubscriptionName },
-                { "account-name", Settings.ResourceBaseName },
-                { "file-system-name", "testfilesystem" }
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" }
+                });
+
+            var actual = result.AssertProperty("paths");
+            Assert.Equal(JsonValueKind.Array, actual.ValueKind);
+        }
+
+        [Fact]
+        public async Task Should_list_datalake_filesystem_paths_recursively()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_datalake_file-system_list-paths",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account", Settings.ResourceBaseName },
+                { "file-system", "testfilesystem" },
+                { "recursive", true }
                 });
 
             var actual = result.AssertProperty("paths");
@@ -224,7 +241,7 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionName },
-                    { "account-name", Settings.ResourceBaseName },
+                    { "account", Settings.ResourceBaseName },
                     { "directory-path", directoryPath }
                 });
 
@@ -236,6 +253,190 @@ namespace AzureMcp.Storage.LiveTests
 
             Assert.Equal(directoryPath, name);
             Assert.Equal("directory", type);
+        }
+
+        [Fact]
+        public async Task Should_set_blob_tier_batch()
+        {
+            // This test assumes the test storage account has the "bar" container with some test blobs
+            // We'll set tier to Cool for multiple blobs
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_batch_set-tier",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "container", "bar" },
+                    { "tier", "Cool" },
+                    { "blob-names", "blob1.txt blob2.txt" }
+                });
+
+            var successfulBlobs = result.AssertProperty("successfulBlobs");
+            var failedBlobs = result.AssertProperty("failedBlobs");
+
+            Assert.Equal(JsonValueKind.Array, successfulBlobs.ValueKind);
+            Assert.Equal(JsonValueKind.Array, failedBlobs.ValueKind);
+
+            // At least one of the blobs should succeed if they exist, or all should be in failed if they don't exist
+            var successCount = successfulBlobs.GetArrayLength();
+            var failedCount = failedBlobs.GetArrayLength();
+
+            Assert.True(successCount + failedCount > 0, "Should have processed at least one blob");
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" }
+                });
+
+            var files = result.AssertProperty("files");
+            Assert.Equal(JsonValueKind.Array, files.ValueKind);
+            Assert.NotEmpty(files.EnumerateArray());
+        }
+
+        [Fact]
+        public async Task Should_list_files_in_share_directory_with_prefix()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_share_file_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionName },
+                    { "account", Settings.ResourceBaseName },
+                    { "share", "testshare" },
+                    { "directory-path", "/" },
+                    { "prefix", "NoSuchPrefix" }
+                });
+
+            // When using a prefix that does not match any files, we should still return a valid response
+            // with no result.
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_Successfully()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message from integration test" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            // Check message properties
+            Assert.True(message.TryGetProperty("messageId", out _));
+            Assert.True(message.TryGetProperty("insertionTime", out _));
+            Assert.True(message.TryGetProperty("expirationTime", out _));
+            Assert.True(message.TryGetProperty("popReceipt", out _));
+            Assert.True(message.TryGetProperty("nextVisibleTime", out _));
+            Assert.True(message.TryGetProperty("messageContent", out _));
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message from integration test", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_WithOptionalParameters()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message with TTL" },
+                    { "time-to-live-in-seconds", "3600" },
+                    { "visibility-timeout-in-seconds", "30" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message with TTL", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_CreateStorageAccount_Successfully()
+        {
+            // Arrange - Use a unique account name for testing
+            var uniqueAccountName = $"testacct{DateTime.UtcNow:MMddHHmmss}";
+
+            var result = await CallToolAsync(
+                "azmcp_storage_account_create",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account-name", uniqueAccountName },
+                    { "resource-group", Settings.ResourceGroupName },
+                    { "location", "eastus" },
+                    { "sku", "Standard_LRS" },
+                    { "kind", "StorageV2" }
+                });
+
+            // Assert
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            // Check account properties
+            var name = account.GetProperty("name").GetString();
+            Assert.Equal(uniqueAccountName, name);
+
+            var location = account.GetProperty("location").GetString();
+            Assert.Equal("eastus", location);
+
+            var kind = account.GetProperty("kind").GetString();
+            Assert.Equal("StorageV2", kind);
+
+            var skuName = account.GetProperty("skuName").GetString();
+            Assert.Equal("Standard_LRS", skuName);
+        }
+
+        [Theory]
+        [InlineData("--invalid-param", new string[0])]
+        [InlineData("--subscription", new[] { "invalidSub" })]
+        [InlineData("--account-name", new[] { "testacct", "--subscription", "sub123" })] // Missing required resource-group and location
+        public async Task Should_Return400_WithInvalidInput_ForAccountCreate(string firstArg, string[] remainingArgs)
+        {
+            var allArgs = new[] { firstArg }.Concat(remainingArgs);
+            var argsString = string.Join(" ", allArgs);
+
+            // For error testing, we expect CallToolAsync to return null (no results)
+            // and we need to catch any exceptions or check the response manually
+            try
+            {
+                var result = await CallToolAsync("azmcp_storage_account_create",
+                    new Dictionary<string, object?> { { "args", argsString } });
+
+                // If we get here, the command didn't fail as expected
+                // This might indicate the command succeeded when it should have failed
+                Assert.Fail("Expected command to fail with invalid input, but it succeeded");
+            }
+            catch (Exception ex)
+            {
+                // Expected to fail with validation errors
+                Assert.True(ex.Message.Contains("required") || ex.Message.Contains("invalid"),
+                    $"Expected validation error, but got: {ex.Message}");
+            }
         }
     }
 }

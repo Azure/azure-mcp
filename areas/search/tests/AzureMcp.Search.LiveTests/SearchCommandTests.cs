@@ -52,7 +52,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             "azmcp_search_index_list",
             new()
             {
-                { "service-name", Settings.ResourceBaseName }
+                { "service", Settings.ResourceBaseName }
             });
 
         var indexes = result.AssertProperty("indexes");
@@ -66,8 +66,8 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             "azmcp_search_index_describe",
             new()
             {
-                { "service-name", Settings.ResourceBaseName },
-                { "index-name", IndexName }
+                { "service", Settings.ResourceBaseName },
+                { "index", IndexName }
             });
 
         var index = result.AssertProperty("index");
@@ -84,8 +84,8 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             "azmcp_search_index_query",
             new()
             {
-                { "service-name", Settings.ResourceBaseName },
-                { "index-name", IndexName },
+                { "service", Settings.ResourceBaseName },
+                { "index", IndexName },
                 { "query", "*" }
             });
 
@@ -102,7 +102,7 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "service-name", Settings.ResourceBaseName },
+                { "service", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName }
             });
 
@@ -118,9 +118,9 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "service-name", Settings.ResourceBaseName },
+                { "service", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName },
-                { "index-name", "products" }
+                { "index", "products" }
             });
 
         var index = result.AssertProperty("index");
@@ -135,9 +135,9 @@ public class SearchCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelp
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "service-name", Settings.ResourceBaseName },
+                { "service", Settings.ResourceBaseName },
                 { "resource-group", Settings.ResourceGroupName },
-                { "index-name", "products" },
+                { "index", "products" },
                 { "query", "*" }
             });
 
