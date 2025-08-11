@@ -11,7 +11,7 @@ namespace AzureMcp.Storage.Commands.Blob;
 
 public abstract class BaseBlobCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
-    : BaseContainerCommand<TOptions> where TOptions : BlobDetailsOptions, new()
+    : BaseContainerCommand<TOptions> where TOptions : BaseBlobOptions, new()
 {
     protected readonly Option<string> _blobOption = StorageOptionDefinitions.Blob;
 
