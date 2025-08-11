@@ -22,6 +22,49 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
     private DateTime _tokenExpiryTime;
     private readonly object _tokenLock = new object();
 
+    // Static arrays for security validation - initialized once per class
+    private static readonly string[] DangerousKeywords = 
+    [
+        // Data manipulation that could be harmful
+        "DROP", "DELETE", "TRUNCATE", "ALTER", "CREATE", "INSERT", "UPDATE",
+        // Administrative operations
+        "GRANT", "REVOKE", "SET", "RESET", "KILL", "SHUTDOWN", "RESTART",
+        // Information disclosure
+        "SHOW MASTER", "SHOW SLAVE", "SHOW BINARY", "SHOW BINLOG",
+        // System operations
+        "LOAD DATA", "OUTFILE", "DUMPFILE", "LOAD_FILE", "INTO OUTFILE",
+        // User/privilege management
+        "CREATE USER", "DROP USER", "ALTER USER", "RENAME USER",
+        // Database structure changes
+        "CREATE DATABASE", "DROP DATABASE", "CREATE SCHEMA", "DROP SCHEMA",
+        // Stored procedures and functions
+        "CREATE PROCEDURE", "DROP PROCEDURE", "CREATE FUNCTION", "DROP FUNCTION",
+        // Triggers and events
+        "CREATE TRIGGER", "DROP TRIGGER", "CREATE EVENT", "DROP EVENT",
+        // Views that could modify data
+        "CREATE VIEW", "DROP VIEW",
+        // Index operations
+        "CREATE INDEX", "DROP INDEX",
+        // Table operations
+        "CREATE TABLE", "DROP TABLE", "RENAME TABLE",
+        // Lock operations
+        "LOCK TABLES", "UNLOCK TABLES",
+        // Transaction control in unsafe contexts
+        "START TRANSACTION", "BEGIN", "COMMIT", "ROLLBACK",
+        // System variables
+        "SET GLOBAL", "SET SESSION", "SET SQL_MODE"
+    ];
+
+    private static readonly string[] ObfuscationFunctions = 
+    [
+        "CHAR(", "CHR(", "ASCII(", "ORD(", "HEX(", "UNHEX(", "CONV(",
+        "CONVERT(", "CAST(", "BINARY(", "CONCAT_WS(", "MAKE_SET(",
+        "ELT(", "FIELD(", "FIND_IN_SET(", "EXPORT_SET(", "LOAD_FILE(",
+        "FROM_BASE64(", "TO_BASE64(", "COMPRESS(", "UNCOMPRESS(",
+        "AES_ENCRYPT(", "AES_DECRYPT(", "DES_ENCRYPT(", "DES_DECRYPT(",
+        "ENCODE(", "DECODE(", "PASSWORD(", "OLD_PASSWORD("
+    ];
+
     private async Task<string> GetEntraIdAccessTokenAsync()
     {
         lock (_tokenLock)
@@ -120,41 +163,9 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
         }
 
         // List of dangerous SQL keywords that should be blocked
-        var dangerousKeywords = new[]
-        {
-            // Data manipulation that could be harmful
-            "DROP", "DELETE", "TRUNCATE", "ALTER", "CREATE", "INSERT", "UPDATE",
-            // Administrative operations
-            "GRANT", "REVOKE", "SET", "RESET", "KILL", "SHUTDOWN", "RESTART",
-            // Information disclosure
-            "SHOW MASTER", "SHOW SLAVE", "SHOW BINARY", "SHOW BINLOG",
-            // System operations
-            "LOAD DATA", "OUTFILE", "DUMPFILE", "LOAD_FILE", "INTO OUTFILE",
-            // User/privilege management
-            "CREATE USER", "DROP USER", "ALTER USER", "RENAME USER",
-            // Database structure changes
-            "CREATE DATABASE", "DROP DATABASE", "CREATE SCHEMA", "DROP SCHEMA",
-            // Stored procedures and functions
-            "CREATE PROCEDURE", "DROP PROCEDURE", "CREATE FUNCTION", "DROP FUNCTION",
-            // Triggers and events
-            "CREATE TRIGGER", "DROP TRIGGER", "CREATE EVENT", "DROP EVENT",
-            // Views that could modify data
-            "CREATE VIEW", "DROP VIEW",
-            // Index operations
-            "CREATE INDEX", "DROP INDEX",
-            // Table operations
-            "CREATE TABLE", "DROP TABLE", "RENAME TABLE",
-            // Lock operations
-            "LOCK TABLES", "UNLOCK TABLES",
-            // Transaction control in unsafe contexts
-            "START TRANSACTION", "BEGIN", "COMMIT", "ROLLBACK",
-            // System variables
-            "SET GLOBAL", "SET SESSION", "SET SQL_MODE"
-        };
-
         var queryUpper = cleanedQuery.ToUpperInvariant();
 
-        foreach (var keyword in dangerousKeywords)
+        foreach (var keyword in DangerousKeywords)
         {
             if (queryUpper.Contains(keyword))
             {
@@ -163,17 +174,7 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
         }
 
         // Check for character conversion functions that may be used for obfuscation
-        var obfuscationFunctions = new[]
-        {
-            "CHAR(", "CHR(", "ASCII(", "ORD(", "HEX(", "UNHEX(", "CONV(",
-            "CONVERT(", "CAST(", "BINARY(", "CONCAT_WS(", "MAKE_SET(",
-            "ELT(", "FIELD(", "FIND_IN_SET(", "EXPORT_SET(", "LOAD_FILE(",
-            "FROM_BASE64(", "TO_BASE64(", "COMPRESS(", "UNCOMPRESS(",
-            "AES_ENCRYPT(", "AES_DECRYPT(", "DES_ENCRYPT(", "DES_DECRYPT(",
-            "ENCODE(", "DECODE(", "PASSWORD(", "OLD_PASSWORD("
-        };
-
-        foreach (var func in obfuscationFunctions)
+        foreach (var func in ObfuscationFunctions)
         {
             if (queryUpper.Contains(func))
             {

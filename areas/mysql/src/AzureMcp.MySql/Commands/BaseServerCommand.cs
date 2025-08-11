@@ -12,7 +12,7 @@ namespace AzureMcp.MySql.Commands;
 
 public abstract class BaseServerCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BaseMySqlCommand<TOptions>> logger)
-    : BaseMySqlCommand<TOptions>(logger) where TOptions : BaseMySqlOptions, new()
+    : BaseMySqlCommand<TOptions>(logger) where TOptions : MySqlServerOptions, new()
 {
     private readonly Option<string> _serverOption = MySqlOptionDefinitions.Server;
 

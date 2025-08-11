@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.MySql.Options;
 
 namespace AzureMcp.MySql.Options.Server;
 
-public class ServerParamSetOptions : BaseMySqlOptions
+public class ServerParamSetOptions : MySqlServerOptions
 {
     [JsonPropertyName(MySqlOptionDefinitions.ParamName)]
     public string? Param { get; set; }
