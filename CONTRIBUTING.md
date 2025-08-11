@@ -103,6 +103,21 @@ The project is organized as follows:
 
 ### Adding a New Command
 
+> **⚠️ Important: Submit One Tool Per Pull Request**
+> 
+> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach:
+> 
+> - **Faster reviews**: Single tools are easier and quicker to review
+> - **Better feedback**: More focused discussions on individual tool implementation  
+> - **Easier iteration**: Smaller changes mean faster iteration cycles
+> - **Incremental progress**: Get your first tool merged to establish baseline, then build upon it
+> 
+> If you're planning to contribute multiple tools, please:
+> 1. Start with your most important or representative tool
+> 2. Submit it as a separate PR to establish the code patterns
+> 3. Use that baseline to inform your subsequent tool submissions
+> 4. Submit each additional tool as its own PR for better reviewability
+
 1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
 2. **Set up development environment**:
