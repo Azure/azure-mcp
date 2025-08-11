@@ -33,7 +33,7 @@ public static class MySqlOptionDefinitions
 
     public static readonly Option<string> Database = new(
         $"--{DatabaseName}",
-        "The MySQL database to be access."
+        "The MySQL database to be accessed."
     )
     {
         IsRequired = true
@@ -41,7 +41,7 @@ public static class MySqlOptionDefinitions
 
     public static readonly Option<string> Table = new(
         $"--{TableName}",
-        "The MySQL table to be access."
+        "The MySQL table to be accessed."
     )
     {
         IsRequired = true
