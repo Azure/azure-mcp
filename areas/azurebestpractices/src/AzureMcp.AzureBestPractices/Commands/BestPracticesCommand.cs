@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using System.Text;
 using AzureMcp.AzureBestPractices.Options;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Helpers;
@@ -87,11 +88,6 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
             validationResult.IsValid = false;
             validationResult.ErrorMessage = "Invalid action. Must be 'all', 'code-generation' or 'deployment'.";
         }
-        else if ((resource == "general" || resource == "azurefunctions") && action == "all")
-        {
-            validationResult.IsValid = false;
-            validationResult.ErrorMessage = "The 'general' or 'azurefunctions' resource doesn't support 'all' action.";
-        }
         else if (resource == "static-web-app" && action != "all")
         {
             validationResult.IsValid = false;
@@ -113,8 +109,10 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
         {
             ("general", "code-generation") => "azure-general-codegen-best-practices.txt",
             ("general", "deployment") => "azure-general-deployment-best-practices.txt",
+            ("general", "all") => "azure-general-codegen-best-practices.txt,azure-general-deployment-best-practices.txt",
             ("azurefunctions", "code-generation") => "azure-functions-codegen-best-practices.txt",
             ("azurefunctions", "deployment") => "azure-functions-deployment-best-practices.txt",
+            ("azurefunctions", "all") => "azure-functions-codegen-best-practices.txt,azure-functions-deployment-best-practices.txt",
             ("static-web-app", "all") => "azure-swa-best-practices.txt",
             _ => throw new ArgumentException($"Invalid combination of resource '{resource}' and action '{action}'")
         };
@@ -122,6 +120,11 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
     private string GetBestPracticesText(string resourceFileName)
     {
+        if (string.IsNullOrEmpty(resourceFileName))
+        {
+            throw new ArgumentException("Resource file name cannot be null or empty.", nameof(resourceFileName));
+        }
+
         if (!s_bestPracticesCache.TryGetValue(resourceFileName, out string? bestPractices))
         {
             bestPractices = LoadBestPracticesText(resourceFileName);
@@ -133,7 +136,36 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
     private string LoadBestPracticesText(string resourceFileName)
     {
         Assembly assembly = typeof(BestPracticesCommand).Assembly;
-        string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, resourceFileName);
-        return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
+
+        // Handle multiple files separated by comma
+        if (resourceFileName.Contains(','))
+        {
+            var fileNames = resourceFileName.Split(',');
+            var combinedContent = new StringBuilder();
+
+            foreach (var fileName in fileNames)
+            {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+                }
+
+                string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, fileName.Trim());
+                string content = EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
+
+                if (combinedContent.Length > 0)
+                {
+                    combinedContent.Append("\n\n");
+                }
+                combinedContent.Append(content);
+            }
+
+            return combinedContent.ToString();
+        }
+        else
+        {
+            string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(assembly, resourceFileName);
+            return EmbeddedResourceHelper.ReadEmbeddedResource(assembly, resourceName);
+        }
     }
 }

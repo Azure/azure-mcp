@@ -11,6 +11,6 @@
     <BuildNative Condition="'$(BuildNative)' == ''">false</BuildNative>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BuildNative)' == 'true'">
-    <DefineConstants>$(DefineConstants);AOT_COMPATIBLE_ONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);BUILD_NATIVE</DefineConstants>
   </PropertyGroup>
 </Project>

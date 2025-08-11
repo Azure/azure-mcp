@@ -30,21 +30,67 @@ if (!$TestResultsPath) {
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
+function Get-Areas {
+    param(
+        [string[]]$areas
+    )
+
+    if ($areas) {
+        return $areas | ForEach-Object { $_.ToLower() }
+    }
+
+    # Find all areas
+    $discoveredAreas = @('core')
+    $areasDir = "$RepoRoot/areas"
+    if (Test-Path $areasDir) {
+        Get-ChildItem -Path $areasDir -Directory | ForEach-Object {
+            $areaTestsPath = "$($_.FullName)/tests"
+            if (Test-Path $areaTestsPath) {
+                $discoveredAreas += $_.Name.ToLower()
+            }
+        }
+    }
+    return $discoveredAreas
+}
+
+# Gets all area projects those are excluded using BuildNative condition.
+function Get-NativeExcludedAreas {
+    $areaPathPattern = 'areas[/\\]([^/\\]+)[/\\]src'
+    $ProjectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+
+    if (!(Test-Path $ProjectFile)) {
+        Write-Error "$ProjectFile not found"
+        exit 1
+    }
+
+    [xml]$xml = Get-Content $ProjectFile
+    $buildNativeGroup = $xml.Project.ItemGroup | Where-Object { $_.Condition -eq "'`$(BuildNative)' == 'true'" }
+
+    if (!$buildNativeGroup) {
+        Write-Warning "No ItemGroup with BuildNative condition found"
+        return @()
+    }
+
+    $excludedAreas = @()
+    foreach ($ref in $buildNativeGroup.ProjectReference) {
+        if ($ref.Remove -match $areaPathPattern) {
+            $excludedAreas += $matches[1].ToLower()
+        }
+    }
+
+    return $excludedAreas
+}
+
+
 # Identifies the root directories to be recursively scanned for tests in the specified areas.
 function GetTestsRootDirs {
     param(
         [string[]]$areas
     )
 
-    if (!$areas) {
-        # Indicates that the scan for tests should start from the repository root, i.e., include all tests.
-        return @($RepoRoot)
-    }
-
     $testsRootDirs = @()
     foreach ($area in $areas) {
-        $areaName = $area.ToLower()
-        $testsPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
+        $testsPath = $area -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$area/tests"
         if (Test-Path $testsPath) {
             $testsRootDirs += $testsPath
         } else {
@@ -158,7 +204,25 @@ function CreateTestSolution {
 
 # main
 
-$testsRootDirs = GetTestsRootDirs -areas $Areas
+$areas = Get-Areas -areas $Areas
+
+if ($TestNativeBuild) {
+    $excludedAreas = Get-NativeExcludedAreas
+    $nonNativeAreas = @($areas | Where-Object { $_ -in $excludedAreas })
+    $areas = @($areas | Where-Object { $_ -notin $excludedAreas })
+    
+    if ($areas.Count -eq 0) {
+        Write-Warning "All the specified area(s) [$($nonNativeAreas -join ', ')] are native incompatible, specify areas that support native builds or run without -TestNativeBuild."
+        exit 0
+    }
+    
+    if ($nonNativeAreas.Count -gt 0) {
+        Write-Warning "The following native incompatible areas will be excluded from native tests:"
+        Write-Warning "  $($nonNativeAreas -join ', ')"
+    }
+}
+
+$testsRootDirs = GetTestsRootDirs -areas $areas
 
 if (!$testsRootDirs) {
     exit 1

@@ -67,6 +67,7 @@
                 "assemblyfilters",
                 "authkey",
                 "autoscale",
+                "authenticode",
                 "azurecr",
                 "azuresdkimages",
                 "backoff",

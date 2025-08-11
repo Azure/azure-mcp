@@ -159,8 +159,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
 | azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Fetch the latest Azure Functions best practices|
 | azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
 
 ## Azure Monitor
@@ -272,9 +274,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-storage-account-list | List all storage accounts in my subscription |
-| azmcp-storage-account-list | Show me my storage accounts |
-| azmcp-storage-account-list | Show me the storage accounts in my subscription |
+| azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
+| azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
+| azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
 | azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |

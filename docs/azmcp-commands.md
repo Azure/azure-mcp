@@ -899,7 +899,7 @@ azmcp quota usage check --subscription <subscription> \
                          --resource-types <resource-types>
 
 # Get the available regions for the resources types
-azmcp quota quota region availability list --subscription <subscription> \
+azmcp quota region availability list --subscription <subscription> \
                                   --resource-types <resource-types> \
                                   [--cognitive-service-model-name <cognitive-service-model-name>] \
                                   [--cognitive-service-model-version <cognitive-service-model-version>] \

@@ -6,11 +6,29 @@
 
 ### Breaking Changes
 
+- Storage: `azmcp-storage-account-list` now returns account metadata objects instead of plain strings. Each item includes:
+  `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`.
+  If you parsed an array of strings before, update your scripts to read the `name` property. The underlying
+  IStorageService `GetStorageAccounts` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`.
+
 ### Bugs Fixed
+
+- Fixed best practice tool invocation failure when passing "all" action with "general" or "azurefunctions" resources, by adding that support. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
 
 ### Other Changes
 
 ## 0.5.4 (2025-08-07)
+
+### Features Added
+
+- Added support for the following Azure Deploy operations and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
+  - `azmcp-deploy-app-logs-get` - Get logs from Azure applications deployed using azd.
+  - `azmcp-deploy-iac-rules-get` - Get Infrastructure as Code rules.
+  - `azmcp-deploy-pipeline-guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
+  - `azmcp-deploy-plan-get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
+  - `azmcp-deploy-architecture-diagram-generate` - Generate Azure service architecture diagrams based on application topology.
+  - `azmcp-quota-region-availability-list` - List available Azure regions for specific resource types.
+  - `azmcp-quota-usage-check` - Check Azure resource usage and quota information for specific resource types and regions.
 
 ### Bugs Fixed
 
@@ -20,9 +38,9 @@
 ### Other Changes
 
 - Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
-- Updated the description of the following `CommandGroup`s to improve their tool usage by Agents:
+- Updated the  following `CommandGroup` descriptions to improve their tool usage by Agents:
   - Azure AI Search [[#874](https://github.com/Azure/azure-mcp/pull/874)]
-  - Storage [#879](https://github.com/Azure/azure-mcp/pull/879)
+  - Storage [[#879](https://github.com/Azure/azure-mcp/pull/879)]
 
 ## 0.5.3 (2025-08-05)
 
@@ -58,7 +76,7 @@
 ### Other Changes
 
 - Implemented centralized HttpClient service with proxy support for better resource management and enterprise compatibility. [[#857](https://github.com/Azure/azure-mcp/pull/857)]
-- Added caching for Cosmos DB databases and containers. [[813](https://github.com/Azure/azure-mcp/pull/813)]
+- Added caching for Cosmos DB databases and containers. [[#813](https://github.com/Azure/azure-mcp/pull/813)]
 - Refactored PostgreSQL commands to follow ObjectVerb naming pattern, fix command hierarchy, and ensure all commands end with verbs. This improves consistency and discoverability across all postgres commands. [[#865](https://github.com/Azure/azure-mcp/issues/865)] [[#866](https://github.com/Azure/azure-mcp/pull/866)]
 
 #### Dependency Updates
@@ -259,7 +277,7 @@
 
 ### Other Changes
 
-- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
+- Updated the descriptions of the following tools to improve their usage by Agents: [[#492](https://github.com/Azure/azure-mcp/pull/492)]
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
   - `azmcp-kusto-database-list`

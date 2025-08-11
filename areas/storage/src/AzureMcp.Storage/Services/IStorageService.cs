@@ -9,7 +9,7 @@ namespace AzureMcp.Storage.Services;
 
 public interface IStorageService
 {
-    Task<List<string>> GetStorageAccounts(string subscription,
+    Task<List<StorageAccountInfo>> GetStorageAccounts(string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
