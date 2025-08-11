@@ -12,6 +12,7 @@ public static class StorageOptionDefinitions
     public const string FileSystemName = "file-system";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier";
+    public const string BlobName = "blob";
     public const string BlobNamesParam = "blob-names";
     public const string FilterPathName = "filter-path";
     public const string RecursiveName = "recursive";
@@ -151,6 +152,14 @@ public static class StorageOptionDefinitions
     {
         IsRequired = true,
         AllowMultipleArgumentsPerToken = true
+    };
+
+    public static readonly Option<string> Blob = new(
+        $"--{BlobName}",
+        "The name of the blob to access within the container. This should be the full path within the container (e.g., 'file.txt' or 'folder/file.txt')."
+    )
+    {
+        IsRequired = true
     };
 
     public static readonly Option<string> FilterPath = new(

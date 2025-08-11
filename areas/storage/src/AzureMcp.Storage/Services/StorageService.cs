@@ -284,6 +284,31 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return blobs;
     }
 
+    public async Task<BlobProperties> GetBlobDetails(
+        string accountName,
+        string containerName,
+        string blobName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, blobName, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        try
+        {
+            var properties = await blobClient.GetPropertiesAsync();
+            return properties.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting blob details: {ex.Message}", ex);
+        }
+    }
+
     public async Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
