@@ -19,7 +19,7 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
 
     public override string Description =>
         """
-        Get details for a specific Kusto cluster. Requires `subscription` and `cluster-name`.
+        Get details for a specific Kusto cluster. Requires `subscription` and `cluster`.
         The response includes the `clusterUri` property for use in subsequent commands.
         """;
 

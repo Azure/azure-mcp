@@ -188,7 +188,7 @@ public static class IaCRulesTemplateUtil
 
         if (deploymentTool == DeploymentTool.Azd)
         {
-            tools.Add("azd (azd --version)");
+            tools.Add("azd (azd version)");
         }
 
         if (resourceTypes.Contains(AzureServiceNames.AzureContainerApp))

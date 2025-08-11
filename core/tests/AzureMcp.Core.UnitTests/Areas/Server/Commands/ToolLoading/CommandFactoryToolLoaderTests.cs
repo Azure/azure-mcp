@@ -19,11 +19,10 @@ public class CommandFactoryToolLoaderTests
         var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         var commandFactory = CommandFactoryHelpers.CreateCommandFactory(serviceProvider);
-        var telemetryService = new CommandFactoryHelpers.NoOpTelemetryService();
         var logger = loggerFactory.CreateLogger<CommandFactoryToolLoader>();
         var toolLoaderOptions = Microsoft.Extensions.Options.Options.Create(options ?? new ToolLoaderOptions());
 
-        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, toolLoaderOptions, telemetryService, logger);
+        var toolLoader = new CommandFactoryToolLoader(serviceProvider, commandFactory, toolLoaderOptions, logger);
         return (toolLoader, commandFactory);
     }
 

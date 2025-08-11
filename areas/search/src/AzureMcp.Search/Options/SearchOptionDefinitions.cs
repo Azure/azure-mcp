@@ -5,8 +5,8 @@ namespace AzureMcp.Search.Options;
 
 public static class SearchOptionDefinitions
 {
-    public const string ServiceName = "service-name";
-    public const string IndexName = "index-name";
+    public const string ServiceName = "service";
+    public const string IndexName = "index";
     public const string QueryName = "query";
 
     public static readonly Option<string> Service = new(

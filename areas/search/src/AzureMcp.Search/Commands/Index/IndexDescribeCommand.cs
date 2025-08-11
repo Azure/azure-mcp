@@ -13,7 +13,7 @@ namespace AzureMcp.Search.Commands.Index;
 
 public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) : GlobalCommand<IndexDescribeOptions>()
 {
-    private const string CommandTitle = "Get Azure AI Search Index Details";
+    private const string CommandTitle = "Get Azure AI Search (formerly known as \"Azure Cognitive Search\") Index Details";
     private readonly ILogger<IndexDescribeCommand> _logger = logger;
     private readonly Option<string> _serviceOption = SearchOptionDefinitions.Service;
     private readonly Option<string> _indexOption = SearchOptionDefinitions.Index;
@@ -26,8 +26,8 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         fields, analyzers, suggesters, scoring profiles, and other settings.
 
         Required arguments:
-        - service-name: The name of the Azure AI Search service
-        - index-name: The name of the search index to retrieve
+        - service: The name of the Azure AI Search service
+        - index: The name of the search index to retrieve
         """;
 
     public override string Title => CommandTitle;

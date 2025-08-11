@@ -20,8 +20,9 @@ public interface IToolLoader : IAsyncDisposable
     ValueTask<ListToolsResult> ListToolsHandler(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Handles requests to call a specific tool with the provided parameters.
-    /// </summary>
+    /// Handles requests to call a specific tool with the provided parameters.  If an error occurs while calling the
+    /// tool, loaders should return a <see cref="TextContentBlock"/> where the contents are details of the exception.
+    ///
     /// <param name="request">The request context containing the tool name and parameters.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>

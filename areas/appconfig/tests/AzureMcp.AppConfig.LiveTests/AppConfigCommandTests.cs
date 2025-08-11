@@ -70,7 +70,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName }
+                { "account", _accountName }
             });
 
         // assert
@@ -101,7 +101,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "label", label }
             });
@@ -141,7 +141,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "label", label }
             });
@@ -174,7 +174,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key }
             });
 
@@ -208,7 +208,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "label", "staging" }
             });
@@ -249,7 +249,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key }
             });
 
@@ -279,7 +279,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "label", label }
             });
@@ -305,7 +305,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "value", value }
             });
@@ -318,7 +318,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key }
             });
 
@@ -341,7 +341,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key },
                 { "value", value },
                 { "content-type", contentType }
@@ -361,7 +361,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                 { "subscription", _subscriptionId },
-                { "account-name", _accountName },
+                { "account", _accountName },
                 { "key", key }
             });
 
@@ -424,7 +424,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                     { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
+                    { "account", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tags", $"{tagKey}={tagValue}" }
@@ -455,7 +455,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                     { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
+                    { "account", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tags", tags }
@@ -497,7 +497,7 @@ public class AppConfigCommandTests : CommandTestsBase,
             new()
             {
                     { "subscription", _subscriptionId },
-                    { "account-name", _accountName },
+                    { "account", _accountName },
                     { "key", key },
                     { "value", value },
                     { "tags", tags }

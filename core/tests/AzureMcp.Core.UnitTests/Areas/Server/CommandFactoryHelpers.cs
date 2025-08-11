@@ -42,18 +42,18 @@ internal class CommandFactoryHelpers
 
     public class NoOpTelemetryService : ITelemetryService
     {
+        public ValueTask<Activity?> StartActivity(string activityName)
+        {
+            return ValueTask.FromResult<Activity?>(null);
+        }
+
+        public ValueTask<Activity?> StartActivity(string activityName, Implementation? clientInfo)
+        {
+            return ValueTask.FromResult<Activity?>(null);
+        }
+
         public void Dispose()
         {
-        }
-
-        public Activity? StartActivity(string activityName)
-        {
-            return null;
-        }
-
-        public Activity? StartActivity(string activityName, Implementation? clientInfo)
-        {
-            return null;
         }
     }
 }

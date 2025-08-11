@@ -27,7 +27,7 @@ public class DeployCommandTests : CommandTestsBase,
     {
         // act
         var result = await CallToolMessageAsync(
-            "azmcp_deploy_plan-get",
+            "azmcp_deploy_plan_get",
             new()
             {
                 { "workspace-folder", "C:/" },
@@ -56,7 +56,7 @@ public class DeployCommandTests : CommandTestsBase,
 
         // act
         var result = await CallToolMessageAsync(
-            "azmcp_deploy_iac-rules-get",
+            "azmcp_deploy_iac_rules_get",
             new()
             {
                 { "deployment-tool", "azd" },
@@ -72,7 +72,7 @@ public class DeployCommandTests : CommandTestsBase,
     {
         // act
         var result = await CallToolMessageAsync(
-            "azmcp_deploy_iac-rules-get",
+            "azmcp_deploy_iac_rules_get",
             new()
             {
                 { "deployment-tool", "azd" },
@@ -89,7 +89,7 @@ public class DeployCommandTests : CommandTestsBase,
     {
         // act
         var result = await CallToolMessageAsync(
-            "azmcp_deploy_cicd-pipeline-guidance-get",
+            "azmcp_deploy_pipeline_guidance_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -105,7 +105,7 @@ public class DeployCommandTests : CommandTestsBase,
     {
         // act
         var result = await CallToolMessageAsync(
-            "azmcp_deploy_cicd-pipeline-guidance-get",
+            "azmcp_deploy_pipeline_guidance_get",
             new()
             {
                 { "subscription", _subscriptionId },
@@ -125,7 +125,7 @@ public class DeployCommandTests : CommandTestsBase,
     // {
     //     // act
     //     var result = await CallToolMessageAsync(
-    //         "azmcp_deploy_azd-app-log-get",
+    //         "azmcp_deploy_app_logs_get",
     //         new()
     //         {
     //             { "subscription", _subscriptionId },

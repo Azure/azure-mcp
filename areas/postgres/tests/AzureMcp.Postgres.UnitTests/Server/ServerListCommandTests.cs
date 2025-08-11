@@ -40,7 +40,7 @@ public class ServerListCommandTests
         var expectedServers = new List<string> { "server1", "server2" };
         _postgresService.ListServersAsync("sub123", "rg1", "user1").Returns(expectedServers);
         var command = new ServerListCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -62,7 +62,7 @@ public class ServerListCommandTests
 
         var command = new ServerListCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1"]);
+        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -79,7 +79,7 @@ public class ServerListCommandTests
 
         var command = new ServerListCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1"]);
+        var args = parser.Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1"]);
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -92,7 +92,7 @@ public class ServerListCommandTests
     [Theory]
     [InlineData("--subscription")]
     [InlineData("--resource-group")]
-    [InlineData("--user-name")]
+    [InlineData("--user")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
         var command = new ServerListCommand(_logger);
@@ -100,7 +100,7 @@ public class ServerListCommandTests
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
             missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
-            missingParameter == "--user-name" ? "" : "--user-name", "user1",
+            missingParameter == "--user" ? "" : "--user", "user1",
         });
 
         var context = new CommandContext(_serviceProvider);

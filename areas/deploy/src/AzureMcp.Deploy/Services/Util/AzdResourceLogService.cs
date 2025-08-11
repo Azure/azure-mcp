@@ -73,7 +73,6 @@ public static class AzdResourceLogService
 
         var yamlContent = File.ReadAllText(azureYamlPath);
 
-        // Use AOT-safe manual YAML parsing
         using var stringReader = new StringReader(yamlContent);
         var parser = new YamlDotNet.Core.Parser(stringReader);
 
@@ -84,31 +83,24 @@ public static class AzdResourceLogService
     {
         var result = new Dictionary<string, Service>();
 
-        // Skip StreamStart
         parser.Consume<StreamStart>();
 
-        // Skip DocumentStart
         parser.Consume<DocumentStart>();
 
-        // Start reading the root mapping
         parser.Consume<MappingStart>();
 
         while (parser.Accept<MappingEnd>(out _) == false)
         {
-            // Read key
             var key = parser.Consume<Scalar>().Value;
 
             if (key == "services")
             {
-                // Found services section
                 parser.Consume<MappingStart>();
 
                 while (parser.Accept<MappingEnd>(out _) == false)
                 {
-                    // Service name
                     var serviceName = parser.Consume<Scalar>().Value;
 
-                    // Service properties
                     parser.Consume<MappingStart>();
 
                     string? host = null;
@@ -134,7 +126,6 @@ public static class AzdResourceLogService
                         }
                     }
 
-                    // Consume the MappingEnd for this service
                     parser.Consume<MappingEnd>();
 
                     result[serviceName] = new Service(
@@ -144,12 +135,10 @@ public static class AzdResourceLogService
                     );
                 }
 
-                // Consume the MappingEnd for services
                 parser.Consume<MappingEnd>();
             }
             else
             {
-                // Skip other top-level properties
                 SkipValue(parser);
             }
         }
@@ -173,8 +162,8 @@ public static class AzdResourceLogService
             parser.Consume<MappingStart>();
             while (!parser.Accept<MappingEnd>(out _))
             {
-                SkipValue(parser); // Skip key
-                SkipValue(parser); // Skip value
+                SkipValue(parser);
+                SkipValue(parser);
             }
             parser.Consume<MappingEnd>();
         }

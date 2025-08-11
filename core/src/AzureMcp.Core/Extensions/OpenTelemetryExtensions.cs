@@ -1,11 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using AzureMcp.Core.Configuration;
-using AzureMcp.Core.Helpers;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,21 +35,26 @@ public static class OpenTelemetryExtensions
 
                 options.IsTelemetryEnabled = string.IsNullOrEmpty(collectTelemetry)
                     || (bool.TryParse(collectTelemetry, out var shouldCollect) && shouldCollect);
-
-                if (options.IsTelemetryEnabled)
-                {
-                    var address = NetworkInterface.GetAllNetworkInterfaces()
-                        .Where(x => x.OperationalStatus == OperationalStatus.Up && x.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                        .Select(x => x.GetPhysicalAddress().ToString())
-                        .FirstOrDefault(x => !string.IsNullOrEmpty(x));
-
-                    options.MacAddressHash = address != null
-                        ? Sha256Helper.GetHashedValue(address)
-                        : "N/A";
-                }
             });
 
         services.AddSingleton<ITelemetryService, TelemetryService>();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.AddSingleton<IMachineInformationProvider, WindowsMachineInformationProvider>();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            services.AddSingleton<IMachineInformationProvider, MacOSXMachineInformationProvider>();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            services.AddSingleton<IMachineInformationProvider, LinuxMachineInformationProvider>();
+        }
+        else
+        {
+            services.AddSingleton<IMachineInformationProvider, DefaultMachineInformationProvider>();
+        }
 
         EnableAzureMonitor(services);
     }

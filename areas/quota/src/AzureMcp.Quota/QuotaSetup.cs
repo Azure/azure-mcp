@@ -3,7 +3,8 @@
 
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
-using AzureMcp.Quota.Commands;
+using AzureMcp.Quota.Commands.Region;
+using AzureMcp.Quota.Commands.Usage;
 using AzureMcp.Quota.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,10 +20,19 @@ public sealed class QuotaSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var quota = new CommandGroup("quota", "Quota commands for getting available region for Azure resources or getting usage for Azure resource per region");
+        var quota = new CommandGroup("quota", "Quota commands for Azure resource quota checking and usage analysis");
         rootGroup.AddSubGroup(quota);
 
-        quota.AddCommand("usage-get", new UsageCheckCommand(loggerFactory.CreateLogger<UsageCheckCommand>()));
-        quota.AddCommand("available-region-list", new RegionCheckCommand(loggerFactory.CreateLogger<RegionCheckCommand>()));
+        // Resource usage and quota operations
+        var usageGroup = new CommandGroup("usage", "Resource usage and quota operations");
+        usageGroup.AddCommand("check", new CheckCommand(loggerFactory.CreateLogger<CheckCommand>()));
+        quota.AddSubGroup(usageGroup);
+
+        // Region availability operations
+        var regionGroup = new CommandGroup("region", "Region availability operations");
+        var availabilityGroup = new CommandGroup("availability", "Region availability information");
+        availabilityGroup.AddCommand("list", new AvailabilityListCommand(loggerFactory.CreateLogger<AvailabilityListCommand>()));
+        regionGroup.AddSubGroup(availabilityGroup);
+        quota.AddSubGroup(regionGroup);
     }
 }

@@ -28,7 +28,7 @@ public sealed class SubscriptionDetailsCommand(ILogger<SubscriptionDetailsComman
 
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - topic-name: Topic name containing the subscription
+        - topic: Topic name containing the subscription
         - subscription-name: Name of the subscription to get details for
         """;
 

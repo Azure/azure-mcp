@@ -28,7 +28,7 @@ public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : S
 
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - topic-name: Topic name to get information about.
+        - topic: Topic name to get information about.
         """;
 
     public override string Title => CommandTitle;

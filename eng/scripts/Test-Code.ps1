@@ -8,7 +8,8 @@ param(
     [ValidateSet('Live', 'Unit', 'All')]
     [string] $TestType = 'Unit',
     [switch] $CollectCoverage,
-    [switch] $OpenReport
+    [switch] $OpenReport,
+    [switch] $TestNativeBuild
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,41 +30,151 @@ if (!$TestResultsPath) {
 # Clean previous results
 Remove-Item -Recurse -Force $TestResultsPath -ErrorAction SilentlyContinue
 
-$testProjects = @()
+# Identifies the root directories to be recursively scanned for tests in the specified areas.
+function GetTestsRootDirs {
+    param(
+        [string[]]$areas
+    )
 
-function AddTestProjects($path) {
-    if($TestType -in @('Live', 'All')) {
-        $script:testProjects += Get-ChildItem $path -Recurse -File -Filter "*.LiveTests.csproj"
+    if (!$areas) {
+        # Indicates that the scan for tests should start from the repository root, i.e., include all tests.
+        return @($RepoRoot)
     }
-    if($TestType -in @('Unit', 'All')) {
-        $script:testProjects += Get-ChildItem $path -Recurse -File -Filter "*.UnitTests.csproj"
-    }
-}
 
-if (!$Areas) {
-    AddTestProjects $RepoRoot
-} else {
-    foreach ($area in $Areas) {
-        $areaPath = $area -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$($area.ToLower())/tests"
-        if (Test-Path $areaPath) {
-            AddTestProjects $areaPath
+    $testsRootDirs = @()
+    foreach ($area in $areas) {
+        $areaName = $area.ToLower()
+        $testsPath = $areaName -eq 'core' ? "$RepoRoot/core/tests" : "$RepoRoot/areas/$areaName/tests"
+        if (Test-Path $testsPath) {
+            $testsRootDirs += $testsPath
         } else {
-            Write-Error "Area path '$areaPath' does not exist."
-            return
+            Write-Error "Tests path '$testsPath' does not exist."
+            return $null
         }
     }
+    return $testsRootDirs
 }
 
-if($testProjects.Count -eq 0) {
-    Write-Error "No test projects found in the specified areas for test type '$TestType'."
-    return
+function BuildNativeBinaryAndPrepareTests {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string[]]$testsRootDirs
+    )
+
+    # Native AOT compilation only occurs during 'dotnet publish', not 'dotnet build'
+    $nativeBinaryPath = PublishNativeBinary
+
+    Write-Host "Building test project(s)"
+    Invoke-LoggedCommand `
+        -Command "dotnet build" `
+        -AllowedExitCodes @(0)
+
+    CopyNativeBinaryToTestDirs -nativeBinaryPath $nativeBinaryPath -testsRootDirs $testsRootDirs
+}
+
+function PublishNativeBinary {
+    $runtimeId = [System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier
+    Write-Host "Publishing AzureMcp as native binary for $runtimeId"
+
+    $cliProjectDir = "$RepoRoot/core/src/AzureMcp.Cli"
+
+    Invoke-LoggedCommand `
+        -Command "dotnet publish '$cliProjectDir/AzureMcp.Cli.csproj' -c Release -r $runtimeId /p:BuildNative=true" `
+        -AllowedExitCodes @(0) | Out-Null
+
+    $exeName = if ($runtimeId.StartsWith('win-')) { "azmcp.exe" } else { "azmcp" }
+    $nativeExePath = "$cliProjectDir/bin/Release/net9.0/$runtimeId/publish/$exeName"
+
+    if (-not (Test-Path $nativeExePath)) {
+        Write-Error "Native binary not found at $nativeExePath"
+        exit 1
+    }
+
+    return $nativeExePath
+}
+
+function CopyNativeBinaryToTestDirs {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$nativeBinaryPath,
+        [string[]]$testsRootDirs
+    )
+    Write-Host "Copying native AzureMcp to test directories"
+
+    $testsRootDirs | ForEach-Object {
+        Get-ChildItem -Path $_ -Recurse -Filter "*.LiveTests" -Directory
+    } | ForEach-Object {
+        $targetDirectory = "$($_.FullName)/bin/Debug/net9.0"
+        Copy-Item $nativeBinaryPath $targetDirectory -Force
+    }
+}
+
+function CreateTestSolution {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$workPath,
+        [Parameter(Mandatory=$true)]
+        [string[]]$testsRootDirs,
+        [Parameter(Mandatory=$true)]
+        [string]$testType
+    )
+
+    $testPatterns = switch ($testType) {
+        'Live' { @('*.LiveTests.csproj') }
+        'Unit' { @('*.UnitTests.csproj') }
+        'All'  { @('*.LiveTests.csproj', '*.UnitTests.csproj') }
+        default {
+            Write-Error "Invalid test type specified: '$testType'. Valid options are 'Live', 'Unit', or 'All'."
+            return $null
+        }
+    }
+
+    $testProjects = @($testsRootDirs | ForEach-Object {
+        $testsRootDir = $_
+        $testPatterns | ForEach-Object {
+            Get-ChildItem $testsRootDir -Recurse -File -Filter $_
+        }
+    })
+
+    if($testProjects.Count -eq 0) {
+        Write-Error "No test projects found in the specified areas for test type '$testType'."
+        return $null
+    }
+
+    # Create solution and add projects
+    Write-Host "Creating temporary solution file..."
+
+    Push-Location $workPath
+    try {
+        dotnet new sln -n "Tests" | Out-Null
+        dotnet sln add $testProjects --in-root | Out-Null
+    }
+    finally {
+        Pop-Location
+    }
+
+    return "$workPath/Tests.sln"
+}
+
+# main
+
+$testsRootDirs = GetTestsRootDirs -areas $Areas
+
+if (!$testsRootDirs) {
+    exit 1
+}
+
+$solutionPath = CreateTestSolution -workPath $workPath -testsRootDirs $testsRootDirs -testType $TestType
+
+if (!$solutionPath) {
+    exit 1
 }
 
 Push-Location $workPath
 try {
-    Write-Host "Creating temporary solution file..."
-    dotnet new sln -n "Tests" | Out-Null
-    dotnet sln add $testProjects --in-root
+    if ($TestNativeBuild) {
+        BuildNativeBinaryAndPrepareTests -testsRootDirs $testsRootDirs
+    }
 
     if($debugLogs) {
         Write-Host "`n`n"
@@ -93,8 +204,13 @@ try {
     $resultsArg = "--results-directory '$TestResultsPath'"
     $loggerArg = "--logger 'trx'"
 
+    $command = "dotnet test $coverageArg $resultsArg $loggerArg"
+    if ($TestNativeBuild) {
+        $command += " --no-build"
+    }
+
     Invoke-LoggedCommand `
-        -Command "dotnet test $coverageArg $resultsArg $loggerArg" `
+        -Command $command `
         -AllowedExitCodes @(0, 1)
 }
 finally {

@@ -9,40 +9,67 @@ namespace AzureMcp.Storage.Services;
 
 public interface IStorageService
 {
-    Task<List<string>> GetStorageAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
-    Task<List<string>> ListContainers(string accountName, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+    Task<List<string>> GetStorageAccounts(string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    Task<List<string>> ListContainers(string accountName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<List<string>> ListTables(
         string accountName,
-        string subscriptionId,
+        string subscription,
         AuthMethod authMethod = AuthMethod.Credential,
         string? connectionString = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
-    Task<List<string>> ListBlobs(string accountName, string containerName, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null);
+
+    Task<List<string>> ListBlobs(string accountName,
+        string containerName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
     Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
-        string subscriptionId,
+        bool recursive,
+        string subscription,
+        string? filterPath = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
     Task<DataLakePathInfo> CreateDirectory(
         string accountName,
         string directoryPath,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
     Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
         string accountName,
         string containerName,
         string tier,
         string[] blobNames,
-        string subscriptionId,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    Task<List<FileShareItemInfo>> ListFilesAndDirectories(
+        string accountName,
+        string shareName,
+        string directoryPath,
+        string? prefix,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 }

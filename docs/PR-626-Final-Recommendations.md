@@ -507,17 +507,17 @@ public class PlanAnalysisResult
    - **Expected**: Shows pipeline subcommands (guidance)
    - **Validation**: guidance command is available
 
-#### Quota Command Tests 
+#### Quota Command Tests [PASS]
 
 6. **Quota Usage Check - Valid Subscription**
-   - **Command**: `azmcp quota usage check --subscription-id 12345678-1234-1234-1234-123456789abc`
+   - **Command**: `azmcp quota usage check --subscription 12345678-1234-1234-1234-123456789abc --region eastus --resource-type Microsoft.Compute/virtualMachines`
    - **Expected**: Returns quota usage information for the subscription
    - **Validation**: JSON output with quota data
 
 7. **Quota Usage Check - Invalid Subscription**
-   - **Command**: `azmcp quota usage check --subscription-id invalid-sub-id`
+   - **Command**: `azmcp quota usage check --subscription invalid-sub-id`
    - **Expected**: Returns authentication or validation error
-   - **Validation**: Clear error message about invalid subscription
+   - **Validation**: subscription is not required
 
 8. **Region Availability List - Specific Resource**
    - **Command**: `azmcp quota region availability list --resource-type Microsoft.Compute/virtualMachines`
@@ -527,12 +527,8 @@ public class PlanAnalysisResult
 9. **Region Availability List - All Resources**
    - **Command**: `azmcp quota region availability list`
    - **Expected**: Returns general region availability information
-   - **Validation**: Comprehensive region data
+   - **Validation**: Clear error message about missing resource type
 
-10. **Quota Usage Check with Resource Group**
-    - **Command**: `azmcp quota usage check --subscription-id 12345678-1234-1234-1234-123456789abc --resource-group myapp-rg`
-    - **Expected**: Returns quota usage filtered to resource group
-    - **Validation**: Scoped quota information
 
 #### Deploy App Commands Tests [PASS: Covered in automation]
 
@@ -556,29 +552,19 @@ public class PlanAnalysisResult
     - **Expected**: Returns logs filtered to specific service
     - **Validation**: Logs only from specified service
 
-#### Deploy Infrastructure Commands Tests
+#### Deploy Infrastructure Commands Tests [PASS]
 
 15. **Infrastructure Rules Get - Bicep Project**
-    - **Command**: `azmcp deploy infrastructure rules get --workspace-folder ./bicep-project`
+    - **Command**: `azmcp deploy infrastructure rules get `
     - **Expected**: Returns Bicep-specific IaC rules and recommendations
     - **Validation**: Rules specific to Bicep templates
 
 16. **Infrastructure Rules Get - Terraform Project**
-    - **Command**: `azmcp deploy infrastructure rules get --workspace-folder ./terraform-project`
+    - **Command**: `azmcp deploy infrastructure rules get`
     - **Expected**: Returns Terraform-specific IaC rules and recommendations
     - **Validation**: Rules specific to Terraform configuration
 
-17. **Infrastructure Rules Get - Mixed Project**
-    - **Command**: `azmcp deploy infrastructure rules get --workspace-folder ./mixed-project`
-    - **Expected**: Returns rules for detected IaC types
-    - **Validation**: Rules for multiple IaC frameworks
-
-18. **Infrastructure Rules Get - No IaC Project**
-    - **Command**: `azmcp deploy infrastructure rules get --workspace-folder ./no-iac`
-    - **Expected**: Returns general IaC guidance and getting started information
-    - **Validation**: General recommendations
-
-#### Deploy Pipeline Commands Tests
+#### Deploy Pipeline Commands Tests [PASS]
 
 19. **Pipeline Guidance Get - GitHub Project**
     - **Command**: `azmcp deploy pipeline guidance get --workspace-folder ./github-project`
@@ -597,27 +583,14 @@ public class PlanAnalysisResult
 
 #### Deploy Plan Commands Tests
 
-22. **Plan Get - .NET Project**
-    - **Command**: `azmcp deploy plan get --workspace-folder ./dotnet-app`
+22. **Plan Get - .NET Project** [Pass]
+    - **Command**: `azmcp deploy plan get --raw-mcp-tool-input {}`
     - **Expected**: Returns deployment plan specific to .NET applications
     - **Validation**: Recommendations for App Service or Container Apps
 
-23. **Plan Get - Node.js Project**
-    - **Command**: `azmcp deploy plan get --workspace-folder ./node-app`
-    - **Expected**: Returns deployment plan specific to Node.js applications
-    - **Validation**: Recommendations for suitable Azure services
 
-24. **Plan Get - Python Project**
-    - **Command**: `azmcp deploy plan get --workspace-folder ./python-app`
-    - **Expected**: Returns deployment plan specific to Python applications
-    - **Validation**: Service recommendations with Python support
 
-25. **Plan Get - Complex Microservices Project**
-    - **Command**: `azmcp deploy plan get --workspace-folder ./microservices`
-    - **Expected**: Returns multi-service deployment plan
-    - **Validation**: Orchestration and service mesh recommendations
-
-#### Deploy Architecture Commands Tests
+#### Deploy Architecture Commands Testsv [PASS]
 
 26. **Architecture Diagram Generate - Simple App**
     - **Command**: `azmcp deploy architecture diagram generate --workspace-folder ./simple-app`
@@ -634,7 +607,7 @@ public class PlanAnalysisResult
     - **Expected**: Returns detailed diagram including network and security components
     - **Validation**: Enhanced diagram with additional layers
 
-#### Error Handling and Edge Cases
+#### Error Handling and Edge Cases [PASS]
 
 29. **Invalid Command Structure (Legacy Format)**
     - **Command**: `azmcp deploy plan-get --workspace-folder ./myapp`
@@ -648,12 +621,12 @@ public class PlanAnalysisResult
 
 ### Integration and Extension Service Tests
 
-#### Extension Integration Tests
+#### Extension Integration Tests [PASS] (bellow command has no duplicated command in azd/az)
 
 31. **AZD Service Integration**
     - **Scenario**: Verify deploy commands use existing AzdCommand internally
     - **Command**: `azmcp deploy app logs get --workspace-folder ./azd-project`
-    - **Expected**: Command successfully executes AZD operations via extension
+    - **Expected**: Command successfully executes
     - **Validation**: No duplication of AZD functionality
 
 32. **Azure CLI Service Integration**
@@ -662,12 +635,12 @@ public class PlanAnalysisResult
     - **Expected**: Command successfully executes Azure CLI operations via extension
     - **Validation**: Structured output from Azure CLI data
 
-### Performance and Reliability Tests
+### Performance and Reliability Tests [PASS]
 
 33. **Large Project Analysis**
     - **Command**: `azmcp deploy plan get --workspace-folder ./large-enterprise-app`
     - **Expected**: Command completes within reasonable time (< 30 seconds)
-    - **Validation**: Response time and memory usage within limits
+    - **Validation**: Response time and memory usage within limits, the analysis is performed by agent, the tool response quickly with the plan template.
 
 34. **Concurrent Command Execution**
     - **Scenario**: Run multiple commands simultaneously
@@ -675,7 +648,7 @@ public class PlanAnalysisResult
     - **Expected**: All commands complete successfully without conflicts
     - **Validation**: No resource contention or errors
 
-### Authentication and Authorization Tests
+### Authentication and Authorization Tests [PASS]
 
 35. **Unauthenticated Azure Access**
     - **Command**: `azmcp quota usage check --subscription-id <valid-sub>`
@@ -775,11 +748,21 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
    - **Prompt**: "What are the best practices for Bicep templates in my project?"
    - **Expected**: Copilot uses `azmcp deploy infrastructure rules get` command
    - **Validation**: Returns Bicep-specific recommendations
+   - **Test Result**: Pass
+   - **Test Observation**: 
+   Tools called: bicepschema get, bestpractices get, deploy iac rules get
+   Agent aggregated the rules from the Bicep schema best practices and iac rule, returned them in a single response.
 
 8. **CI/CD Pipeline Setup**
    - **Prompt**: "Help me set up CI/CD for my GitHub project deploying to Azure"
    - **Expected**: Copilot uses `azmcp deploy pipeline guidance get` command
    - **Validation**: Returns GitHub Actions workflow recommendations
+   - **Test Result**: Pass
+   - **Test Observation**: 
+   Tools called: deploy pipeline guidance get
+   Terminals called: azd pipeline config
+   `azd pipeline config` error: resolving bicep parameters file: substituting environment variables for environmentName: unable to parse variable name
+   Agent failed to resolve this error, so it switch to its own solution to setup pipeline with az command
 
 #### Architecture and Visualization Prompts
 
@@ -787,11 +770,15 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
    - **Prompt**: "Create an architecture diagram for my application deployment"
    - **Expected**: Copilot uses `azmcp deploy architecture diagram generate` command
    - **Validation**: Returns Mermaid diagram
+   - **Test Result**: Pass
 
 10. **Complex System Visualization**
     - **Prompt**: "Generate a detailed architecture diagram including networking and security"
     - **Expected**: Copilot uses diagram generation with enhanced options
     - **Validation**: Returns comprehensive diagram
+    - **Test Result**: Fail
+    - **Test Observation**: `azmcp deploy architecture diagram generate` cannot handle complex architecture with networking and security components. So it returned a simple diagram without those components. 
+    Added tool description to tell agent that it cannot handle complex architecture with networking and security components.
 
 #### Application Monitoring Prompts
 
@@ -799,11 +786,13 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "Show me logs from my AZD-deployed application in the dev environment"
     - **Expected**: Copilot uses `azmcp deploy app logs get` command
     - **Validation**: Returns filtered application logs
+    - **Test Result**: Pass
 
 12. **Service-Specific Monitoring**
     - **Prompt**: "Get logs for the API service in my containerized application"
     - **Expected**: Copilot uses app logs command with service filtering
     - **Validation**: Returns service-specific log data
+    - **Test Result**: Pass
 
 #### Multi-Step Workflow Prompts
 
@@ -811,16 +800,24 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "I have a new Python app - help me deploy it to Azure from scratch"
     - **Expected**: Copilot uses multiple commands (plan, infrastructure, pipeline)
     - **Validation**: Provides step-by-step deployment guidance
+    - **Test Result**: Pass
+    - **Test Observation**: 
+  Tools called during the plan creation: deploy plan get, bicep schema get, bestpractices get
 
 14. **Capacity Planning Workflow**
     - **Prompt**: "Plan Azure resources for a high-traffic e-commerce application"
     - **Expected**: Copilot uses quota, planning, and architecture tools
     - **Validation**: Comprehensive capacity and architecture recommendations
+    - **Test Result**: Pass
+    - **Test Observation**: 
+    Tools called during the plan creation: deploy plan get, bicep schema get, bestpractices get
+    Agent designed an azure architecture with Azure Front Door and Azure CDN for high traffic, the backend is using ACA.
 
 15. **Troubleshooting Workflow**
     - **Prompt**: "My Azure deployment is failing - help me diagnose the issue"
     - **Expected**: Copilot uses logs, quota, and diagnostic commands
     - **Validation**: Systematic troubleshooting approach
+    - **Test Result**: Pass
 
 #### Technology-Specific Prompts
 
@@ -828,16 +825,26 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "Deploy my Node.js Express app to Azure with best practices"
     - **Expected**: Copilot provides Node.js-specific deployment plan
     - **Validation**: Appropriate Azure service recommendations
+    - **Test Result**: Pass
 
 17. **Container Deployment Strategy**
     - **Prompt**: "What's the best way to deploy my Docker containers to Azure?"
     - **Expected**: Copilot recommends container-specific Azure services
     - **Validation**: Container-optimized deployment strategy
+    - **Test Result**: Pass
+    - **Test Observation**:
+    Tools called during the plan creation: deploy plan get, bicep schema get, bestpractices get, documentation search
+    Agent recommended aca, app service for container, aks and compared the differences.
+    
 
 18. **Database Integration Planning**
     - **Prompt**: "Plan deployment including a PostgreSQL database for my web app"
     - **Expected**: Copilot includes database services in deployment plan
     - **Validation**: Integrated database and application deployment
+    - **Test Result**: Pass
+    - **Test Observation**:
+    Tools called during the plan creation: deploy plan get, bicep schema get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with PostgreSQL database and recommended using Azure Database for PostgreSQL Flexible Server.
 
 #### Error Handling and Edge Case Prompts
 
@@ -845,38 +852,56 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "Generate deployment plan for this empty folder"
     - **Expected**: Copilot handles missing project context gracefully
     - **Validation**: Appropriate error handling and guidance
+    - **Test Result**: Pass
+    - **Test Observation**:Tools called during the plan creation: deploy plan get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with general recommendations, even though the folder is empty.
 
 20. **Authentication Issues**
     - **Prompt**: "Check my Azure quotas (when not authenticated)"
     - **Expected**: Copilot provides clear authentication guidance
     - **Validation**: Helpful error messages and login instructions
+    - **Test Result**: Pass
 
 #### Advanced Integration Prompts
 
 21. **Cross-Service Integration**
-    - **Prompt**: "Plan deployment with Azure Functions, Cosmos DB, and App Service"
+    - **Prompt**: "Plan deployment for this project, use function for the backend service, use app service for the frontend service"
     - **Expected**: Copilot coordinates multiple Azure services
     - **Validation**: Integrated multi-service architecture
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called during the plan creation: deploy plan get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with Azure Functions for backend and Azure App Service for frontend.
 
 22. **Compliance and Security Focus**
     - **Prompt**: "Deploy my healthcare app with HIPAA compliance requirements"
     - **Expected**: Copilot emphasizes security and compliance features
     - **Validation**: Security-focused deployment recommendations
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called during the plan creation: deploy plan get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with HIPAA Requirements: Data encryption, access audit trails, secure communication, identity management
 
 23. **Cost Optimization Planning**
     - **Prompt**: "Plan cost-effective Azure deployment for my startup application"
     - **Expected**: Copilot recommends cost-optimized services and configurations
     - **Validation**: Budget-conscious deployment strategy
+     - **Test Result**: Pass
+    - **Test Observation**: Tools called during the plan creation: deploy plan get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with ACA consumption plan.
 
 24. **Scaling Strategy Development**
     - **Prompt**: "Plan Azure deployment that can scale from 1000 to 1 million users"
     - **Expected**: Copilot provides scalable architecture recommendations
     - **Validation**: Auto-scaling and performance considerations
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called during the plan creation: deploy plan get, bestpractices get, deploy iac rules get
+    Agent created a deployment plan with AKS and its Horizontal Pod Autoscaler (HPA) Configuration.
 
 25. **Multi-Environment Strategy**
     - **Prompt**: "Set up dev, staging, and production environments for my app"
     - **Expected**: Copilot provides multi-environment deployment strategy
     - **Validation**: Environment-specific configurations and pipelines
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called: best practices get, azd learn, azd config show, azd init
 
 #### Integration Testing Prompts
 
@@ -884,16 +909,22 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "Use Azure CLI to check my subscription then plan deployment"
     - **Expected**: Copilot seamlessly integrates existing AZ commands with new tools
     - **Validation**: No duplication of CLI functionality
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called az account show, subscription list, deploy plan get
 
 27. **AZD Integration Testing**
     - **Prompt**: "Get logs from my azd-deployed application and plan next deployment"
     - **Expected**: Copilot uses existing AZD integration effectively
     - **Validation**: Proper integration with existing AZD commands
+    - **Test Result**: Pass
 
 28. **Command Discovery Testing**
     - **Prompt**: "What deployment tools are available in this Azure MCP server?"
     - **Expected**: Copilot lists available deployment and quota commands
     - **Validation**: Complete tool discovery and explanation
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called: deploy learn, azd learn
+    Agent provided a list of azd commands and the deploy plan tool as specialized deployment tool.
 
 #### Performance and Reliability Prompts
 
@@ -901,11 +932,17 @@ The following prompts can be used with GitHub Copilot or VS Code Copilot to test
     - **Prompt**: "Analyze deployment requirements for this enterprise monorepo"
     - **Expected**: Copilot handles complex project analysis efficiently
     - **Validation**: Reasonable response time and comprehensive analysis
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called: deploy plan get, bestpractices get, deploy iac rules get
+    Agent is responsible to analyze the monorepo, the tools responded fast with the static template for the target service.
 
 30. **Concurrent Operation Testing**
     - **Prompt**: "Check quotas while generating architecture diagram and planning deployment"
     - **Expected**: Copilot handles multiple concurrent operations
     - **Validation**: All operations complete successfully without conflicts
+    - **Test Result**: Pass
+    - **Test Observation**: Tools called: subscription list, quota available region list, quota usage get, deploy architecture diagram generate
+
 
 ### Expected Copilot Behavior Patterns
 

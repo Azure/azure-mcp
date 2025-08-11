@@ -63,7 +63,7 @@ public class DirectoryCreateCommandTests
             Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--directory-path", _knownDirectoryPath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -99,7 +99,7 @@ public class DirectoryCreateCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--directory-path", _knownDirectoryPath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -115,9 +115,9 @@ public class DirectoryCreateCommandTests
 
     [Theory]
     [InlineData("--directory-path filesystem123/data/logs --subscription sub123", false)] // Missing account
-    [InlineData("--account-name account123 --subscription sub123", false)] // Missing directory-path
-    [InlineData("--account-name account123 --directory-path filesystem123/data/logs", false)] // Missing subscription
-    [InlineData("--account-name account123 --directory-path filesystem123/data/logs --subscription sub123", true)] // Valid
+    [InlineData("--account account123 --subscription sub123", false)] // Missing directory-path
+    [InlineData("--account account123 --directory-path filesystem123/data/logs", false)] // Missing subscription
+    [InlineData("--account account123 --directory-path filesystem123/data/logs --subscription sub123", true)] // Valid
     public async Task ExecuteAsync_ValidatesRequiredParameters(string args, bool shouldSucceed)
     {
         // Arrange

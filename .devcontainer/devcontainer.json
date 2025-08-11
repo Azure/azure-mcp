@@ -1,0 +1,41 @@
+{
+    "name": "Azure MCP Codespace",
+    "features": {
+        "ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "9.0.300"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        },
+        "ghcr.io/devcontainers/features/azure-cli:1": {},
+        "ghcr.io/devcontainers/features/powershell:1": {},
+        "ghcr.io/azure/azure-dev/azd:0": {}
+    },
+    "hostRequirements": {
+        "cpus": 4,
+        "memory": "8gb",
+        "storage": "32gb"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+                "ms-vscode.powershell",
+                "ms-azuretools.vscode-azurecli",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "ms-azuretools.vscode-azure-github-copilot",
+                "dbaeumer.vscode-eslint",
+                "streetsidesoftware.code-spell-checker",
+                "ms-vscode.test-adapter-converter"
+            ],
+            "settings": {
+                "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+                "dotnet.server.useOmnisharp": false,
+                "powershell.codeFormatting.preset": "OTBS"
+            }
+        }
+    },
+    "postCreateCommand": "dotnet --version && az --version && azd version && pwsh --version && npm --version"
+}

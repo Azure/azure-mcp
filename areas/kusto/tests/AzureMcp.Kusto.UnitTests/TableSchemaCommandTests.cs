@@ -34,8 +34,8 @@ public sealed class TableSchemaCommandTests
 
     public static IEnumerable<object[]> TableSchemaArgumentMatrix()
     {
-        yield return new object[] { "--subscription sub1 --cluster-name mycluster --database-name db1 --table-name table1", false };
-        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database-name db1 --table-name table1", true };
+        yield return new object[] { "--subscription sub1 --cluster mycluster --database db1 --table table1", false };
+        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database db1 --table table1", true };
     }
 
     [Theory]
