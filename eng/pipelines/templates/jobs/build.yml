@@ -85,6 +85,7 @@ jobs:
       arguments: >
         -OutputPath '$(Agent.TempDirectory)/native-build'
         -Version '$(Version)'
+        -CleanBuild
         -BuildNative
 
   # --- VS Code Extension Packaging Steps ---
