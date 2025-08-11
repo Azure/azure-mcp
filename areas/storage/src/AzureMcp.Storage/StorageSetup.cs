@@ -9,6 +9,7 @@ using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Storage.Commands.Queue.Message;
 using AzureMcp.Storage.Commands.Share.File;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
@@ -29,15 +30,15 @@ public class StorageSetup : IAreaSetup
         // Create Storage command group
         var storage = new CommandGroup("storage",
             """
-            Storage operations - Commands for managing and accessing Azure Storage accounts and their data services 
-            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use 
-            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares, 
-            querying table storage, handle queue messages. This tool focuses on object storage, file storage, 
-            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router 
-            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object. 
-            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover 
-            available sub-commands for different Azure Storage service operations including blobs, datalake, shares, 
-            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only 
+            Storage operations - Commands for managing and accessing Azure Storage accounts and their data services
+            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use
+            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares,
+            querying table storage, handle queue messages. This tool focuses on object storage, file storage,
+            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router
+            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object.
+            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover
+            available sub-commands for different Azure Storage service operations including blobs, datalake, shares,
+            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only
             access storage resources accessible to the authenticated user.
             """);
         rootGroup.AddSubGroup(storage);
@@ -72,6 +73,14 @@ public class StorageSetup : IAreaSetup
         var directory = new CommandGroup("directory", "Data Lake directory operations - Commands for managing directories in Azure Data Lake Storage Gen2.");
         dataLake.AddSubGroup(directory);
 
+        // Create Queue subgroup under storage
+        var queues = new CommandGroup("queue", "Storage queue operations - Commands for managing Azure Storage queues and queue messages.");
+        storage.AddSubGroup(queues);
+
+        // Create message subgroup under queue
+        var queueMessage = new CommandGroup("message", "Storage queue message operations - Commands for sending and managing messages in Azure Storage queues.");
+        queues.AddSubGroup(queueMessage);
+
         // Create file shares subgroup under storage
         var shares = new CommandGroup("share", "File share operations - Commands for managing Azure Storage file shares and their contents.");
         storage.AddSubGroup(shares);
@@ -82,6 +91,7 @@ public class StorageSetup : IAreaSetup
 
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(loggerFactory.CreateLogger<AccountListCommand>()));
+        storageAccount.AddCommand("create", new AccountCreateCommand(loggerFactory.CreateLogger<AccountCreateCommand>()));
 
         tables.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
 
@@ -95,6 +105,8 @@ public class StorageSetup : IAreaSetup
         fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
 
         directory.AddCommand("create", new DirectoryCreateCommand(loggerFactory.CreateLogger<DirectoryCreateCommand>()));
+
+        queueMessage.AddCommand("send", new QueueMessageSendCommand(loggerFactory.CreateLogger<QueueMessageSendCommand>()));
 
         shareFiles.AddCommand("list", new FileListCommand(loggerFactory.CreateLogger<FileListCommand>()));
     }

@@ -291,6 +291,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-storage-account-create | Create a new storage account called testaccount123 in East US region |
+| azmcp-storage-account-create | Create a storage account with premium performance and LRS replication |
+| azmcp-storage-account-create | Create a new storage account with Data Lake Storage Gen2 enabled |
 | azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
 | azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
 | azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
@@ -305,6 +308,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
+| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
 | azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
 | azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
 | azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |

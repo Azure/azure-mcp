@@ -320,5 +320,123 @@ namespace AzureMcp.Storage.LiveTests
             // with no result.
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_Successfully()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message from integration test" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            // Check message properties
+            Assert.True(message.TryGetProperty("messageId", out _));
+            Assert.True(message.TryGetProperty("insertionTime", out _));
+            Assert.True(message.TryGetProperty("expirationTime", out _));
+            Assert.True(message.TryGetProperty("popReceipt", out _));
+            Assert.True(message.TryGetProperty("nextVisibleTime", out _));
+            Assert.True(message.TryGetProperty("messageContent", out _));
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message from integration test", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_WithOptionalParameters()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message with TTL" },
+                    { "time-to-live-in-seconds", "3600" },
+                    { "visibility-timeout-in-seconds", "30" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message with TTL", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_CreateStorageAccount_Successfully()
+        {
+            // Arrange - Use a unique account name for testing
+            var uniqueAccountName = $"testacct{DateTime.UtcNow:MMddHHmmss}";
+
+            var result = await CallToolAsync(
+                "azmcp_storage_account_create",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account-name", uniqueAccountName },
+                    { "resource-group", Settings.ResourceGroupName },
+                    { "location", "eastus" },
+                    { "sku", "Standard_LRS" },
+                    { "kind", "StorageV2" }
+                });
+
+            // Assert
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            // Check account properties
+            var name = account.GetProperty("name").GetString();
+            Assert.Equal(uniqueAccountName, name);
+
+            var location = account.GetProperty("location").GetString();
+            Assert.Equal("eastus", location);
+
+            var kind = account.GetProperty("kind").GetString();
+            Assert.Equal("StorageV2", kind);
+
+            var skuName = account.GetProperty("skuName").GetString();
+            Assert.Equal("Standard_LRS", skuName);
+        }
+
+        [Theory]
+        [InlineData("--invalid-param", new string[0])]
+        [InlineData("--subscription", new[] { "invalidSub" })]
+        [InlineData("--account-name", new[] { "testacct", "--subscription", "sub123" })] // Missing required resource-group and location
+        public async Task Should_Return400_WithInvalidInput_ForAccountCreate(string firstArg, string[] remainingArgs)
+        {
+            var allArgs = new[] { firstArg }.Concat(remainingArgs);
+            var argsString = string.Join(" ", allArgs);
+
+            // For error testing, we expect CallToolAsync to return null (no results)
+            // and we need to catch any exceptions or check the response manually
+            try
+            {
+                var result = await CallToolAsync("azmcp_storage_account_create",
+                    new Dictionary<string, object?> { { "args", argsString } });
+
+                // If we get here, the command didn't fail as expected
+                // This might indicate the command succeeded when it should have failed
+                Assert.Fail("Expected command to fail with invalid input, but it succeeded");
+            }
+            catch (Exception ex)
+            {
+                // Expected to fail with validation errors
+                Assert.True(ex.Message.Contains("required") || ex.Message.Contains("invalid"),
+                    $"Expected validation error, but got: {ex.Message}");
+            }
+        }
     }
 }
