@@ -549,11 +549,11 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         string messageContent,
         int? timeToLiveInSeconds,
         int? visibilityTimeoutInSeconds,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, queueName, messageContent, subscriptionId);
+        ValidateRequiredParameters(accountName, queueName, messageContent, subscription);
 
         // Create queue service client
         var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);

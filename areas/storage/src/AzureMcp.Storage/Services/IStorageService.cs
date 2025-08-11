@@ -81,7 +81,7 @@ public interface IStorageService
         string messageContent,
         int? timeToLiveInSeconds,
         int? visibilityTimeoutInSeconds,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 }
