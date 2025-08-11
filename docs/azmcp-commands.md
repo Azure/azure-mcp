@@ -742,6 +742,18 @@ azmcp sql server entra-admin list --subscription <subscription> \
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
 
+# Create a new Storage account with custom configuration
+azmcp storage account create --subscription <subscription> \
+                             --account-name <unique-account-name> \
+                             --resource-group <resource-group> \
+                             --location <location> \
+                             --sku <sku> \
+                             --kind <kind> \
+                             --access-tier <access-tier> \
+                             --enable-https-traffic-only true \
+                             --allow-blob-public-access false \
+                             --enable-hierarchical-namespace false
+
 # Set access tier for multiple blobs in a batch operation
 azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \

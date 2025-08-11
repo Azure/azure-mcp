@@ -14,6 +14,20 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<StorageAccountInfo> CreateStorageAccount(
+        string accountName,
+        string resourceGroup,
+        string location,
+        string subscription,
+        string? sku = null,
+        string? kind = null,
+        string? accessTier = null,
+        bool? enableHttpsTrafficOnly = null,
+        bool? allowBlobPublicAccess = null,
+        bool? enableHierarchicalNamespace = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<List<string>> ListContainers(
         string accountName,
         string subscription,
