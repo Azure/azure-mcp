@@ -113,10 +113,8 @@ The project is organized as follows:
 > - **Incremental progress**: Get your first tool merged to establish baseline, then build upon it
 > 
 > If you're planning to contribute multiple tools, please:
-> 1. Start with your most important or representative tool
-> 2. Submit it as a separate PR to establish the code patterns
-> 3. Use that baseline to inform your subsequent tool submissions
-> 4. Submit each additional tool as its own PR for better reviewability
+> 1. Submit your most important or representative tool as your first PR to establish the code patterns.
+> 2. Use that baseline to inform your subsequent tool PRs.
 
 1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
