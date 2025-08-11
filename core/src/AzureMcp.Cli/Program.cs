@@ -79,6 +79,8 @@ internal class Program
             new AzureMcp.Workbooks.WorkbooksSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
+            new AzureMcp.Deploy.DeploySetup(),
+            new AzureMcp.Quota.QuotaSetup(),
 #if !BUILD_NATIVE
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),

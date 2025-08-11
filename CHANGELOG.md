@@ -19,6 +19,17 @@
 
 ## 0.5.4 (2025-08-07)
 
+### Features Added
+
+- Added support for the following Azure Deploy operations and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
+  - `azmcp-deploy-app-logs-get` - Get logs from Azure applications deployed using azd.
+  - `azmcp-deploy-iac-rules-get` - Get Infrastructure as Code rules.
+  - `azmcp-deploy-pipeline-guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
+  - `azmcp-deploy-plan-get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
+  - `azmcp-deploy-architecture-diagram-generate` - Generate Azure service architecture diagrams based on application topology.
+  - `azmcp-quota-region-availability-list` - List available Azure regions for specific resource types.
+  - `azmcp-quota-usage-check` - Check Azure resource usage and quota information for specific resource types and regions.
+
 ### Bugs Fixed
 
 - Fixed subscription parameter handling across all Azure MCP service methods to consistently use `subscription` instead of `subscriptionId`, enabling proper support for both subscription IDs and subscription names. [[#877](https://github.com/Azure/azure-mcp/issues/877)]
