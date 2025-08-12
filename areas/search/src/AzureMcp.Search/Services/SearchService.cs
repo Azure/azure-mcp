@@ -11,6 +11,7 @@ using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Caching;
+using AzureMcp.Search.Commands;
 using AzureMcp.Search.Models;
 using static AzureMcp.Search.Commands.Index.IndexDescribeCommand;
 
@@ -131,7 +132,7 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
             var vectorizableFields = FindVectorizableFields(indexDefinition.Value, vectorFields);
             ConfigureSearchOptions(searchText, options, indexDefinition.Value, vectorFields);
 
-            var searchResponse = await client.SearchAsync<JsonElement>(searchText, options);
+            var searchResponse = await client.SearchAsync(searchText, SearchJsonContext.Default.JsonElement, options);
 
             return await ProcessSearchResults(searchResponse);
         }
