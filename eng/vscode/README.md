@@ -33,7 +33,7 @@ Follow these simple steps to start using Azure MCP in VS Code:
       3. Select **newAndOutdated** to automatically start MCP servers without manual refresh.
       4. You can also set this from the **refresh icon tooltip** in the Chat view, which also shows which servers will auto-start.
 
-         ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Tooltip.png)
+         ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ToolTip.png)
 
    #### **Manual Start (if autostart is off)**
       1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).

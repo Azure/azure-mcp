@@ -627,12 +627,12 @@ To export telemetry to Azure Monitor, set the `APPLICATIONINSIGHTS_CONNECTION_ST
 #### Bring your own language model key
 
 [Bring your own language model key](https://code.visualstudio.com/docs/copilot/language-models#_bring-your-own-language-model-key)
-If you already have an API key for a language model provider, you can use their models in chat in VS Code, in addition to the built-in models that Copilot provides. You can use models from the following providers: Anthropic, Azure, Google Gemini, Groq, Ollama, OpenAI, and OpenRouter.
+An existing API key from a language model provider can be used to access that provider’s models in VS Code chat, in addition to the built-in models available through Copilot. Supported providers include Anthropic, Azure, Google Gemini, Groq, Ollama, OpenAI, and OpenRouter.
 
 
 ### Locating MCP Server Binaries in VS Code
 
-The Azure MCP Server extension installs its platform-specific binaries in your user profile directory under:
+The Azure MCP Server extension installs its platform-specific binaries in the user profile directory under:
 
 ```
 <User-Profile-Dir>/.vscode/extensions/ms-azuretools.vscode-azure-mcp-server-<version>-<platform>/server
