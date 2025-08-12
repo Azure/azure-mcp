@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Tests.Integration;
 using System.Text.Json;
+using AzureMcp.Tests;
+using AzureMcp.Tests.Client;
+using AzureMcp.Tests.Client.Helpers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AzureMcp.Communication.LiveTests;
 
@@ -16,15 +17,15 @@ public class CommunicationCommandTests(LiveTestFixture liveTestFixture, ITestOut
     [Fact]
     public async Task Should_SendSms_WithValidParameters()
     {
-        Skip.If(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING")),
+        Assert.SkipWhen(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING")),
             "Communication Services connection string not available for live testing");
 
         var connectionString = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING");
         var fromPhone = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_FROM_PHONE");
         var toPhone = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_TO_PHONE");
 
-        Skip.If(string.IsNullOrEmpty(fromPhone), "From phone number not configured for live testing");
-        Skip.If(string.IsNullOrEmpty(toPhone), "To phone number not configured for live testing");
+        Assert.SkipWhen(string.IsNullOrEmpty(fromPhone), "From phone number not configured for live testing");
+        Assert.SkipWhen(string.IsNullOrEmpty(toPhone), "To phone number not configured for live testing");
 
         var result = await CallToolAsync(
             "azmcp_communication_sms_send",
