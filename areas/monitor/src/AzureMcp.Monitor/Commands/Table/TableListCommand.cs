@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;
@@ -46,8 +45,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var monitorService = context.GetService<IMonitorService>();
             var tables = await monitorService.ListTables(

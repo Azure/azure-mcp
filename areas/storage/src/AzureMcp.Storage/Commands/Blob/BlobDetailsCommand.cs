@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;
 using AzureMcp.Storage.Services;
@@ -41,8 +39,6 @@ public sealed class BlobDetailsCommand(ILogger<BlobDetailsCommand> logger) : Bas
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var details = await storageService.GetBlobDetails(

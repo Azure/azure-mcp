@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Workbooks.Options;
 
 namespace AzureMcp.Workbooks.Options.Workbook;
 

@@ -16,6 +16,28 @@ All new Azure services and their commands should use the Area pattern:
 
 This keeps all code, options, models, and tests for an area together. See `areas/storage` for a reference implementation.
 
+## ⚠️ Test Infrastructure Requirements
+
+**CRITICAL DECISION POINT**: Does your command interact with Azure resources?
+
+### **Azure Service Commands (REQUIRES Test Infrastructure)**
+If your command interacts with Azure resources (storage accounts, databases, VMs, etc.):
+- ✅ **MUST create** `areas/{area-name}/tests/test-resources.bicep`
+- ✅ **MUST create** `areas/{area-name}/tests/test-resources-post.ps1` (required even if basic template)
+- ✅ **MUST include** RBAC role assignments for test application
+- ✅ **MUST validate** with `az bicep build --file areas/{area-name}/tests/test-resources.bicep`
+- ✅ **MUST test deployment** with `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name}`
+
+### **Non-Azure Commands (No Test Infrastructure Needed)**
+If your command is a wrapper/utility (CLI tools, best practices, documentation):
+- ❌ **Skip** Bicep template creation
+- ❌ **Skip** live test infrastructure
+- ✅ **Focus on** unit tests and mock-based testing
+
+**Examples of each type**:
+- **Azure Service Commands**: ACR Registry List, SQL Database Show, Storage Account List
+- **Non-Azure Commands**: Azure CLI wrapper, Best Practices guidance, Documentation tools
+
 ## Command Architecture
 
 ### Command Design Principles
@@ -76,7 +98,7 @@ This keeps all code, options, models, and tests for an area together. See `areas
    **AVOID ANTI-PATTERNS**: When designing commands, avoid mixing resource names with operations in a single command. Instead, use proper command group hierarchy:
    - ✅ Good: `azmcp postgres server param set` (command groups: server → param, operation: set)
    - ❌ Bad: `azmcp postgres server setparam` (mixed operation `setparam` at same level as resource operations)
-   - ✅ Good: `azmcp storage container permission set` 
+   - ✅ Good: `azmcp storage container permission set`
    - ❌ Bad: `azmcp storage container setpermission`
 
    This pattern improves discoverability, maintains consistency, and allows for better grouping of related operations.
@@ -96,9 +118,9 @@ A complete command requires:
 7. Integration test: `areas/{area-name}/tests/AzureMcp.{AreaName}.LiveTests/{AreaName}CommandTests.cs`
 8. Command registration in RegisterCommands(): `areas/{area-name}/src/AzureMcp.{AreaName}/{AreaName}Setup.cs`
 9. Area registration in RegisterAreas(): `core/src/AzureMcp.Cli/Program.cs`
-10. **Live test infrastructure** (if needed):
+10. **Live test infrastructure** (for Azure service commands):
    - Bicep template: `/areas/{area-name}/tests/test-resources.bicep`
-   - Optional post-deployment script: `/areas/{area-name}/tests/test-resources-post.ps1`
+   - Post-deployment script: `/areas/{area-name}/tests/test-resources-post.ps1` (required, even if basic template)
 
 ### File and Class Naming Convention
 
@@ -139,6 +161,8 @@ This convention ensures:
 - **Live test infrastructure**: Add Bicep template to `/areas/{area-name}/tests`
 - **Test resource deployment**: Ensure resources are properly configured with RBAC for test application
 - **Resource naming**: Follow consistent naming patterns - many services use just `baseName`, while others may need suffixes for disambiguation (e.g., `{baseName}-suffix`)
+- **Solution file integration**: Add new projects to `AzureMcp.sln` with proper GUID generation to avoid conflicts
+- **Program.cs registration**: Register the new area in `Program.cs` `RegisterAreas()` method in alphabetical order
 
 ## Implementation Guidelines
 
@@ -151,6 +175,8 @@ When creating commands that interact with Azure services, you'll need to:
   - Example: `<PackageVersion Include="Azure.ResourceManager.Sql" Version="1.3.0" />`
 - Add the package reference in `AzureMcp.{AreaName}.csproj`
   - Example: `<PackageReference Include="Azure.ResourceManager.Sql" />`
+- **Version Consistency**: Ensure the package version in `Directory.Packages.props` matches across all projects
+- **Build Order**: Add the package to `Directory.Packages.props` first, then reference it in project files to avoid build errors
 
 **Subscription Resolution:**
 - Always use `ISubscriptionService.GetSubscription()` to resolve subscription ID or name
@@ -226,6 +252,42 @@ IMPORTANT:
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
+### Optional Resource Group Pattern
+
+**For commands that need optional resource group filtering (e.g., list commands that can filter by resource group):**
+
+1. **Create a custom optional resource group option** in your area's OptionDefinitions:
+
+```csharp
+// In {Area}OptionDefinitions.cs
+public static readonly Option<string> OptionalResourceGroup = new(
+    $"--{OptionDefinitions.Common.ResourceGroupName}",
+    "The name of the Azure resource group. This is a logical container for Azure resources."
+)
+{
+    IsRequired = false  // ← Key difference from OptionDefinitions.Common.ResourceGroup
+};
+```
+
+2. **Override the base _resourceGroupOption field** in your command:
+
+```csharp
+// In your command class
+private readonly new Option<string> _resourceGroupOption = {Area}OptionDefinitions.OptionalResourceGroup;
+```
+
+3. **Examples from existing codebase:**
+   - **Extension Area**: `ExtensionOptionDefinitions.Azqr.OptionalResourceGroup` (for azqr command)
+   - **Monitor Area**: `MonitorOptionDefinitions.Metrics.OptionalResourceGroup` (for metrics commands)
+   - **ACR Area**: `AcrOptionDefinitions.OptionalResourceGroup` (for registry list command)
+
+**❌ Common Mistake**: Using `OptionDefinitions.Common.ResourceGroup` which has `IsRequired = true`
+**✅ Correct Pattern**: Create area-specific optional resource group option with `IsRequired = false`
+
+This allows commands to work both ways:
+- `azmcp {area} {resource} {operation} --subscription <sub>` (all resources in subscription)
+- `azmcp {area} {resource} {operation} --subscription <sub> --resource-group <rg>` (filtered by resource group)
+
 ### 3. Command Class
 
 ```csharp
@@ -253,7 +315,7 @@ public sealed class {Resource}{Operation}Command(ILogger<{Resource}{Operation}Co
     public override ToolMetadata Metadata => new()
     {
         Destructive = false,    // Set to true for commands that modify resources
-        ReadOnly = true         // Set to false for commands that modify resources  
+        ReadOnly = true         // Set to false for commands that modify resources
     };
 
     protected override void RegisterOptions(Command command)
@@ -595,7 +657,7 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
         "{Resource} operations");
     service.AddSubGroup(resource);
 
-    resource.AddCommand("operation", new {Area}.{Resource}{Operation}Command(
+    resource.AddCommand("{operation}", new {Resource}{Operation}Command(
         loggerFactory.CreateLogger<{Resource}{Operation}Command>()));
 }
 ```
@@ -604,71 +666,86 @@ private void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFacto
 - ✅ Good: `"entraadmin"`, `"resourcegroup"`, `"storageaccount"`, `"entra-admin"`
 - ❌ Bad: `"entra_admin"`, `"resource_group"`, `"storage_account"`
 
-### 8. Area registration
+### 9. Area Registration
 ```csharp
     private static IAreaSetup[] RegisterAreas()
     {
         return [
-            new AzureMcp.AppConfig.AppConfigSetup(),
+            // Register core areas
+            new AzureMcp.AzureBestPractices.AzureBestPracticesSetup(),
+            new AzureMcp.Extension.ExtensionSetup(),
+
+            // Register Azure service areas
             new AzureMcp.{Area}.{Area}Setup(),
             new AzureMcp.Storage.StorageSetup(),
         ];
     }
 ```
 
-The area list in should `RegisterAreas()` should stay sorted alphabetically.
+The area list in `RegisterAreas()` should stay sorted alphabetically.
 
 ## Error Handling
 
 Commands in Azure MCP follow a standardized error handling approach using the base `HandleException` method inherited from `BaseCommand`. Here are the key aspects:
 
 ### 1. Status Code Mapping
-The base implementation handles common status codes:
+The base implementation returns 500 for all exceptions by default:
 ```csharp
-protected virtual int GetStatusCode(Exception ex) => ex switch
+protected virtual int GetStatusCode(Exception ex) => 500;
+```
+
+Commands should override this to provide appropriate status codes:
+```csharp
+protected override int GetStatusCode(Exception ex) => ex switch
 {
-    // Common error response codes
-    AuthenticationFailedException => 401,   // Unauthorized
-    RequestFailedException rfEx => rfEx.Status,  // Service-reported status
-    HttpRequestException => 503,   // Service unavailable
+    Azure.RequestFailedException reqEx => reqEx.Status,  // Use Azure-reported status
+    Azure.Identity.AuthenticationFailedException => 401,   // Unauthorized
     ValidationException => 400,    // Bad request
-    _ => 500  // Unknown errors
+    _ => base.GetStatusCode(ex) // Fall back to 500
 };
 ```
 
 ### 2. Error Message Formatting
-Error messages should be user-actionable and help debug issues:
+The base implementation returns the exception message:
 ```csharp
-protected virtual string GetErrorMessage(Exception ex) => ex switch
+protected virtual string GetErrorMessage(Exception ex) => ex.Message;
+```
+
+Commands should override this to provide user-actionable messages:
+```csharp
+protected override string GetErrorMessage(Exception ex) => ex switch
 {
-    AuthenticationFailedException authEx =>
+    Azure.Identity.AuthenticationFailedException authEx =>
         $"Authentication failed. Please run 'az login' to sign in. Details: {authEx.Message}",
-    RequestFailedException rfEx => rfEx.Message,
-    HttpRequestException httpEx =>
-        $"Service unavailable or connectivity issues. Details: {httpEx.Message}",
-    _ => ex.Message
+    Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
+        "Resource not found. Verify the resource name and that you have access.",
+    Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
+        $"Access denied. Ensure you have appropriate RBAC permissions. Details: {reqEx.Message}",
+    Azure.RequestFailedException reqEx => reqEx.Message,
+    _ => base.GetErrorMessage(ex)
 };
 ```
 
 ### 3. Response Format
-The base `HandleException` combines status, message and details:
+The base `HandleException` method in BaseCommand handles the response formatting:
 ```csharp
 protected virtual void HandleException(CommandContext context, Exception ex)
 {
-    // Create a strongly typed exception result
+    context.Activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, ex.Message);
+
+    var response = context.Response;
     var result = new ExceptionResult(
         Message: ex.Message,
         StackTrace: ex.StackTrace,
         Type: ex.GetType().Name);
 
     response.Status = GetStatusCode(ex);
-    // Add link to troubleshooting guide
-    response.Message = GetErrorMessage(ex) +
-        ". To mitigate this issue, please refer to the troubleshooting guidelines at https://aka.ms/azmcp/troubleshooting.";
-    response.Results = ResponseResult.Create(
-        result, JsonSourceGenerationContext.Default.ExceptionResult);
+    response.Message = GetErrorMessage(ex) + ". To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
+    response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.ExceptionResult);
 }
 ```
+
+Commands should call `HandleException(context, ex)` in their catch blocks.
 
 ### 4. Service-Specific Errors
 Commands should override error handlers to add service-specific mappings:
@@ -692,7 +769,7 @@ catch (Exception ex)
     _logger.LogError(ex,
         "Error in {Operation}. Resource: {Resource}, Options: {@Options}",
         Name, resourceId, options);
-    HandleException(context.Response, ex);
+    HandleException(context, ex);
 }
 ```
 
@@ -775,7 +852,7 @@ dotnet test --verbosity normal
 ```
 
 ### Integration Tests
-Areas requiring test resource deployment should add a bicep template, `tests/test-resources.bicep`,  to their area directory. If additional logic needs to be performed after resource deployment, but before any live tests are run, add a `test-resources-post.ps1` in the same directory. See `/areas/storage/tests/test-resources.bicep` and `/areas/storage/tests/test-resources-post.ps1` for canonical examples.
+Azure service commands requiring test resource deployment must add a bicep template, `tests/test-resources.bicep`, to their area directory. Additionally, all Azure service commands must include a `test-resources-post.ps1` file in the same directory, even if it contains only the basic template without custom logic. See `/areas/storage/tests/test-resources.bicep` and `/areas/storage/tests/test-resources-post.ps1` for canonical examples.
 
 #### Live Test Resource Infrastructure
 
@@ -863,9 +940,9 @@ output testResourceName string = serviceResource::testResource.name
 - Ensure names are unique within resource group scope
 - Check existing `test-resources.bicep` files for consistent patterns
 
-**2. Optional: Post-Deployment Script (`/area/{area-name}/tests/test-resources-post.ps1`)**
+**2. Required: Post-Deployment Script (`/areas/{area-name}/tests/test-resources-post.ps1`)**
 
-Create if additional setup is needed after resource deployment:
+All Azure service commands must include this script, even if it contains only the basic template. Create with the standard template and add custom setup logic if needed:
 
 ```powershell
 #!/usr/bin/env pwsh
@@ -1018,6 +1095,234 @@ public class MyCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper o
 
 Failure to call `base.Dispose()` will prevent request and response data from `CallCommand` from being written to failing test results.
 
+## Code Quality and Unused Using Statements
+
+### Preventing Unused Using Statements
+
+Unused using statements are a common issue that clutters code and can lead to unnecessary dependencies. Here are strategies to prevent and detect them:
+
+#### 1. **Use Minimal Using Statements When Creating Files**
+
+When creating new C# files, start with only the using statements you actually need:
+
+```csharp
+// Start minimal - only add what you actually use
+using AzureMcp.Core.Commands;
+using Microsoft.Extensions.Logging;
+
+// Add more using statements as you implement the code
+// Don't copy-paste using blocks from other files
+```
+
+#### 2. **Leverage ImplicitUsings**
+
+The project already has `<ImplicitUsings>enable</ImplicitUsings>` in `Directory.Build.props`, which automatically includes common using statements for .NET 9:
+
+**Implicit Using Statements (automatically included):**
+- `using System;`
+- `using System.Collections.Generic;`
+- `using System.IO;`
+- `using System.Linq;`
+- `using System.Net.Http;`
+- `using System.Threading;`
+- `using System.Threading.Tasks;`
+
+**Don't manually add these - they're already included!**
+
+#### 3. **Detection and Cleanup Commands**
+
+Use these commands to detect and remove unused using statements:
+
+```powershell
+# Format specific area files (recommended during development)
+dotnet format --include="areas/{area-name}/**/*.cs" --verbosity normal
+
+# Format entire solution (use sparingly - takes longer)
+dotnet format ./AzureMcp.sln --verbosity normal
+
+# Check for analyzer warnings including unused usings
+dotnet build --verbosity normal | Select-String "warning"
+```
+
+#### 4. **Common Unused Using Patterns to Avoid**
+
+❌ **Don't copy using blocks from other files:**
+```csharp
+// Copied from another file but not all are needed
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using AzureMcp.Acr.Commands;         // ← May not be needed
+using AzureMcp.Acr.Options;          // ← May not be needed
+using AzureMcp.Acr.Options.Registry; // ← May not be needed
+using AzureMcp.Acr.Services;
+// ... 15 more using statements
+```
+
+✅ **Start minimal and add as needed:**
+```csharp
+// Only what's actually used in this file
+using AzureMcp.Acr.Services;
+using Microsoft.Extensions.Logging;
+```
+
+✅ **Add using statements for better readability:**
+```csharp
+using Azure.ResourceManager.ContainerRegistry.Models;
+
+// Clean and readable - even if used only once
+public ContainerRegistryResource Resource { get; set; }
+
+// This is much better than:
+// public Azure.ResourceManager.ContainerRegistry.Models.ContainerRegistryResource Resource { get; set; }
+```
+
+#### 6. **Integration with Build Process**
+
+The project checklist already includes cleaning up unused using statements:
+
+- [ ] **Remove unnecessary using statements from all C# files** (use IDE cleanup or `dotnet format`)
+
+**Make this part of your development workflow:**
+1. Write code with minimal using statements
+2. Add using statements only as you need them
+3. Run `dotnet format --include="areas/{area-name}/**/*.cs"` before committing
+4. Use IDE features to clean up automatically
+
+### Build Verification and AOT Compatibility
+
+After implementing your commands, verify that your implementation works correctly with both regular builds and AOT (Ahead-of-Time) compilation:
+
+**1. Regular Build Verification:**
+```powershell
+# Build the solution
+dotnet build
+
+# Run specific tests
+dotnet test --filter "FullyQualifiedName~YourCommandTests"
+```
+
+**2. AOT Compilation Verification:**
+
+AOT (Ahead-of-Time) compilation is required for all new areas to ensure compatibility with native builds:
+
+```powershell
+# Test AOT compatibility - this is REQUIRED for all new areas
+./eng/scripts/Build-Local.ps1 -BuildNative
+```
+
+**Expected Outcome**: If your area is properly implemented, the build should succeed. However, if AOT compilation fails (which is very likely for new areas), follow these steps:
+
+**3. AOT Compilation Issue Resolution:**
+
+When AOT compilation fails for your new area, you need to exclude it from native builds:
+
+**Step 1: Move area setup under BuildNative condition in Program.cs**
+```csharp
+// Find your area setup call in Program.cs
+// Move it inside the #if !BUILD_NATIVE block
+
+#if !BUILD_NATIVE
+    // ... other area setups ...
+    builder.Services.Add{YourArea}Setup();  // ← Move this line here
+#endif
+```
+
+**Step 2: Add ProjectReference-Remove condition in AzureMcp.Cli.csproj**
+```xml
+<!-- Add this to core/src/AzureMcp.Cli/AzureMcp.Cli.csproj -->
+<ItemGroup Condition="'$(BuildNative)' == 'true'">
+  <ProjectReference Remove="..\..\areas\{area-name}\src\AzureMcp.{AreaName}\AzureMcp.{AreaName}.csproj" />
+</ItemGroup>
+```
+
+**Step 3: Verify the fix**
+```powershell
+# Test that AOT compilation now succeeds
+./eng/scripts/Build-Local.ps1 -BuildNative
+
+# Verify regular build still works
+dotnet build
+```
+
+**Why AOT Compilation Often Fails:**
+- Azure SDK libraries may not be fully AOT-compatible
+- Reflection-based operations in service implementations
+- Third-party dependencies that don't support AOT
+- Dynamic JSON serialization without source generators
+
+**Important**: This is a common and expected issue for new Azure service areas. The exclusion pattern is the standard solution and doesn't impact regular builds or functionality.
+
+## Common Implementation Issues and Solutions
+
+### Service Method Design
+
+**Issue: Inconsistent method signatures across services**
+- **Solution**: Follow established patterns for method signatures with proper parameter alignment
+- **Pattern**:
+```csharp
+// Correct - parameters aligned with line breaks
+Task<List<ResourceModel>> GetResources(
+    string subscription,
+    string? resourceGroup = null,
+    string? tenant = null,
+    RetryPolicyOptions? retryPolicy = null);
+```
+
+**Issue: Wrong subscription resolution pattern**
+- **Solution**: Always use `ISubscriptionService.GetSubscription()` instead of manual ARM client creation
+- **Pattern**:
+```csharp
+// Correct pattern
+var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+```
+
+### Command Option Patterns
+
+**Issue: Using required ResourceGroup for optional filtering**
+- **Problem**: Commands use `OptionDefinitions.Common.ResourceGroup` (required) when they should support optional resource group filtering
+- **Solution**: Create area-specific optional resource group option
+- **Pattern**:
+```csharp
+// In OptionDefinitions
+public static readonly Option<string> OptionalResourceGroup = new(
+    $"--{OptionDefinitions.Common.ResourceGroupName}",
+    "The name of the Azure resource group."
+)
+{
+    IsRequired = false
+};
+
+// In Command class
+private readonly new Option<string> _resourceGroupOption = {Area}OptionDefinitions.OptionalResourceGroup;
+```
+
+### Error Handling Patterns
+
+**Issue: Generic error handling without service-specific context**
+- **Solution**: Override base error handling methods for better user experience
+- **Pattern**:
+```csharp
+protected override string GetErrorMessage(Exception ex) => ex switch
+{
+    Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
+        "Resource not found. Verify the resource exists and you have access.",
+    Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
+        $"Authorization failed. Details: {reqEx.Message}",
+    _ => base.GetErrorMessage(ex)
+};
+```
+
+**Issue: Missing HandleException call**
+- **Solution**: Always call `HandleException(context, ex)` in command catch blocks
+- **Pattern**:
+```csharp
+catch (Exception ex)
+{
+    _logger.LogError(ex, "Error in {Operation}", Name);
+    HandleException(context, ex);
+}
+```
+
 ## Best Practices
 
 1. Command Structure:
@@ -1131,6 +1436,8 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 
 1. Do not:
    - **CRITICAL**: Use `subscriptionId` as parameter name - Always use `subscription` to support both IDs and names
+   - **CRITICAL**: Use `OptionDefinitions.Common.ResourceGroup` for optional resource group filtering - Create area-specific `OptionalResourceGroup` with `IsRequired = false`
+   - **CRITICAL**: Skip live test infrastructure for Azure service commands - Create `test-resources.bicep` template early in development
    - Redefine base class properties in Options classes
    - Skip base.RegisterOptions() call
    - Skip base.Dispose() call
@@ -1146,11 +1453,13 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
 
 2. Always:
    - Create a static {Area}OptionDefinitions class for the area
+   - **For optional resource group filtering**: Create custom `OptionalResourceGroup` option in area's OptionDefinitions with `IsRequired = false`
+   - **For Azure service commands**: Create test infrastructure (`test-resources.bicep`) before implementing live tests
    - Use OptionDefinitions for options
    - Follow exact file structure
    - Implement all base members
    - Add both unit and integration tests
-   - Register in CommandFactory
+   - Register in area setup RegisterCommands method
    - Handle all error cases
    - Use primary constructors
    - Make command classes sealed
@@ -1159,7 +1468,47 @@ Failure to call `base.Dispose()` will prevent request and response data from `Ca
    - Output resource identifiers from Bicep templates
    - Use concatenated all lowercase names for command groups (no dashes)
 
-## Troubleshooting Common Issues
+### Troubleshooting Common Issues
+
+### Project Setup and Integration Issues
+
+**Issue: Solution file GUID conflicts**
+- **Cause**: Duplicate project GUIDs in the solution file causing build failures
+- **Solution**: Generate unique GUIDs for new projects when adding to `AzureMcp.sln`
+- **Fix**: Use Visual Studio or `dotnet sln add` command to properly add projects with unique GUIDs
+- **Prevention**: Always check for GUID uniqueness when manually editing solution files
+
+**Issue: Missing package references cause compilation errors**
+- **Cause**: Azure Resource Manager package not added to `Directory.Packages.props` before being referenced
+- **Solution**: Add package version to `Directory.Packages.props` first, then reference in project files
+- **Fix**:
+  1. Add `<PackageVersion Include="Azure.ResourceManager.{Service}" Version="{version}" />` to `Directory.Packages.props`
+  2. Add `<PackageReference Include="Azure.ResourceManager.{Service}" />` to project file
+- **Prevention**: Follow the two-step package addition process documented in Implementation Guidelines
+
+**Issue: Missing live test infrastructure for Azure service commands**
+- **Cause**: Forgetting to create `test-resources.bicep` template during development
+- **Solution**: Create Bicep template early in development process, not as an afterthought
+- **Fix**: Create `areas/{area-name}/tests/test-resources.bicep` following established patterns
+- **Prevention**: Check "Test Infrastructure Requirements" section at top of this document before starting implementation
+- **Validation**: Run `az bicep build --file areas/{area-name}/tests/test-resources.bicep` to validate template
+
+**Issue: Pipeline fails with "SelfContainedPostScript is not supported if there is no test-resources-post.ps1"**
+- **Cause**: Missing required `test-resources-post.ps1` file for Azure service commands
+- **Solution**: Create the post-deployment script file, even if it contains only the basic template
+- **Fix**: Create `areas/{area-name}/tests/test-resources-post.ps1` using the standard template from existing areas
+- **Prevention**: All Azure service commands must include this file - it's required by the test infrastructure
+- **Note**: The file is mandatory even if no custom post-deployment logic is needed
+
+**Issue: Test project compilation errors with missing imports**
+- **Cause**: Missing using statements for test frameworks and core libraries
+- **Solution**: Add required imports for test projects:
+  - `using System.Text.Json;` for JSON serialization
+  - `using Xunit;` for test framework
+  - `using NSubstitute;` for mocking
+  - `using AzureMcp.Tests;` for test base classes
+- **Fix**: Review test project template and ensure all necessary imports are included
+- **Prevention**: Use existing test projects as templates for import statements
 
 ### Azure Resource Manager Compilation Errors
 
@@ -1221,6 +1570,36 @@ var subscriptionResource = await _subscriptionService.GetSubscription(subscripti
 - **Solution**:
   - Review deployment logs and error messages
   - Use `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name} -Debug` for verbose deployment logs including resource provider errors.
+
+### Live Test Project Configuration Issues
+
+**Issue: Live tests fail with "MCP server process exited unexpectedly" and "azmcp.exe not found"**
+- **Cause**: Incorrect project configuration in `AzureMcp.{Area}.LiveTests.csproj`
+- **Common Problem**: Referencing the area project (`AzureMcp.{Area}`) instead of the CLI project
+- **Solution**: Live test projects must reference `AzureMcp.Cli.csproj` and include specific project properties
+- **Required Configuration**:
+  ```xml
+  <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>net9.0</TargetFramework>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
+      <IsPackable>false</IsPackable>
+      <IsTestProject>true</IsTestProject>
+      <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\AzureMcp.{Area}\AzureMcp.{Area}.csproj" />
+      <ProjectReference Include="..\..\..\..\core\src\AzureMcp.Cli\AzureMcp.Cli.csproj" />
+    </ItemGroup>
+  </Project>
+  ```
+- **Key Requirements**:
+  - `OutputType=Exe` - Required for live test execution
+  - `IsTestProject=true` - Marks as test project
+  - Reference to `AzureMcp.Cli.csproj` - Provides the executable for MCP server
+  - Reference to area project - Provides the commands to test
 - **Common fixes**:
   - Adjust `@minLength`/`@maxLength` for service naming limits
   - Ensure unique resource names within scope
@@ -1238,9 +1617,32 @@ var subscriptionResource = await _subscriptionService.GetSubscription(subscripti
 
 ### Service Implementation Issues
 
+**Issue: JSON Serialization Context missing new types**
+- **Cause**: New model classes not included in `{Area}JsonContext` causing serialization failures
+- **Solution**: Add all new model types to the JSON serialization context
+- **Fix**: Update `{Area}JsonContext.cs` to include `[JsonSerializable(typeof(NewModelType))]` attributes
+- **Prevention**: Always update JSON context when adding new model classes
+
+**Issue: Area not registered in Program.cs**
+- **Cause**: New area setup not added to `RegisterAreas()` method in `Program.cs`
+- **Solution**: Add area registration to the array in alphabetical order
+- **Fix**: Add `new AzureMcp.{Area}.{Area}Setup(),` to the `RegisterAreas()` return array
+- **Prevention**: Follow the complete area setup checklist including Program.cs registration
+
+**Issue: Using required ResourceGroup option for optional filtering**
+- **Cause**: Using `OptionDefinitions.Common.ResourceGroup` which has `IsRequired = true` for commands that should support optional resource group filtering
+- **Solution**: Create custom optional resource group option in area's OptionDefinitions
+- **Fix**:
+  1. Add `OptionalResourceGroup` option with `IsRequired = false` to `{Area}OptionDefinitions.cs`
+  2. Override base `_resourceGroupOption` field with `new` keyword in command class
+  3. Use the pattern: `private readonly new Option<string> _resourceGroupOption = {Area}OptionDefinitions.OptionalResourceGroup;`
+- **Prevention**: Check if resource group should be optional (e.g., for list commands) and use the optional pattern
+- **Examples**: Extension (AZQR), Monitor (Metrics), and ACR areas all implement this pattern correctly
+
 **Issue: HandleException parameter mismatch**
-- **Cause**: Different base classes have different HandleException signatures
-- **Solution**: Check base class implementation; use `HandleException(context.Response, ex)` not `HandleException(context, ex)`
+- **Cause**: Confusion about the correct HandleException signature
+- **Solution**: Always use `HandleException(context, ex)` - this is the correct signature in BaseCommand
+- **Fix**: The method signature is `HandleException(CommandContext context, Exception ex)`, not `HandleException(context.Response, ex)`
 
 **Issue: Missing AddSubscriptionInformation**
 - **Cause**: Subscription commands need telemetry context
@@ -1259,38 +1661,92 @@ var subscriptionResource = await _subscriptionService.GetSubscription(subscripti
 **Issue: Missing using statements for TrimAnnotations**
 - **Solution**: Add `using AzureMcp.Core.Commands;` for `TrimAnnotations.CommandAnnotations`
 
+### AOT Compilation Issues
+
+**Issue: AOT compilation fails with runtime dependencies**
+- **Cause**: Some Azure SDK packages or dependencies are not AOT (Ahead-of-Time) compilation compatible
+- **Symptoms**: Build errors when running `./eng/scripts/Build-Local.ps1 -BuildNative`
+- **Solution**: Exclude non-AOT safe projects and packages for native builds
+- **Fix Steps**:
+  1. **Move area setup under conditional compilation** in `core/src/AzureMcp.Cli/Program.cs`:
+     ```csharp
+     #if !BUILD_NATIVE
+         new AzureMcp.{Area}.{Area}Setup(),
+     #endif
+     ```
+  2. **Add conditional project exclusion** in `core/src/AzureMcp.Cli/AzureMcp.Cli.csproj`:
+     ```xml
+     <ItemGroup Condition="'$(BuildNative)' == 'true'">
+       <ProjectReference Remove="..\..\..\areas\{area-name}\src\AzureMcp.{Area}\AzureMcp.{Area}.csproj" />
+     </ItemGroup>
+     ```
+  3. **Remove problematic package references** when building native (if applicable):
+     ```xml
+     <ItemGroup Condition="'$(BuildNative)' == 'true'">
+       <PackageReference Remove="ProblematicPackage" />
+     </ItemGroup>
+     ```
+- **Examples**: See Cosmos, Monitor, Postgres, Search, VirtualDesktop, and BicepSchema areas in Program.cs and AzureMcp.Cli.csproj
+- **Prevention**: Test AOT compilation early in development using `./eng/scripts/Build-Local.ps1 -BuildNative`
+- **Note**: Areas excluded from AOT builds are still available in regular builds and deployments
+
 ## Checklist
 
 Before submitting:
 
+### Core Implementation
 - [ ] Options class follows inheritance pattern
 - [ ] Command class implements all required members
 - [ ] Command uses proper OptionDefinitions
 - [ ] Service interface and implementation complete
 - [ ] Unit tests cover all paths
 - [ ] Integration tests added
-- [ ] Registered in CommandFactory
+- [ ] Command registered in area setup RegisterCommands method
 - [ ] Follows file structure exactly
 - [ ] Error handling implemented
 - [ ] Documentation complete
+
+### **CRITICAL: Live Test Infrastructure (Required for Azure Service Commands)**
+
+**⚠️ MANDATORY for any command that interacts with Azure resources:**
+
+- [ ] **Live test infrastructure created** (`test-resources.bicep` template in `areas/{area-name}/tests`)
+- [ ] **Post-deployment script created** (`test-resources-post.ps1` in `areas/{area-name}/tests` - required even if basic template)
+- [ ] **Bicep template validated** with `az bicep build --file areas/{area-name}/tests/test-resources.bicep`
+- [ ] **Live test resource template tested** with `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name}`
+- [ ] **RBAC permissions configured** for test application in Bicep template (use appropriate built-in roles)
+- [ ] **Live test project configuration correct**:
+  - [ ] References `AzureMcp.Cli.csproj` (not just the area project)
+  - [ ] Includes `OutputType=Exe` property
+  - [ ] Includes `IsTestProject=true` property
+- [ ] **Live tests use deployed resources** via `Settings.ResourceBaseName` pattern
+- [ ] **Resource outputs defined** in Bicep template for test consumption
+- [ ] **Cost optimization verified** (use Basic/Standard SKUs, minimal configurations)
+
+**Skip this section ONLY if your command does not interact with Azure resources (e.g., CLI wrappers, best practices tools).**
+
+### Package and Project Setup
+- [ ] Azure Resource Manager package added to both `Directory.Packages.props` and `AzureMcp.{Area}.csproj`
+- [ ] **Package version consistency**: Same version used in both `Directory.Packages.props` and project references
+- [ ] **Solution file integration**: Projects added to `AzureMcp.sln` with unique GUIDs (no GUID conflicts)
+- [ ] **Area registration**: Added to `Program.cs` `RegisterAreas()` method in alphabetical order
+- [ ] JSON serialization context includes all new model types
+
+### Build and Code Quality
 - [ ] No compiler warnings
 - [ ] Tests pass (run specific tests: `dotnet test --filter "FullyQualifiedName~YourCommandTests"`)
 - [ ] Build succeeds with `dotnet build`
 - [ ] Code formatting applied with `dotnet format`
 - [ ] Spelling check passes with `.\eng\common\spelling\Invoke-Cspell.ps1`
-- [ ] **Remove unnecessary using statements from all C# files** (use IDE cleanup or `dotnet format analyzers`)
-- [ ] Azure Resource Manager package added to both `Directory.Packages.props` and `AzureMcp.{Area}.csproj`
+- [ ] **AOT compilation verified** with `./eng/scripts/Build-Local.ps1 -BuildNative`
+- [ ] **Clean up unused using statements**: Run `dotnet format --include="areas/{area-name}/**/*.cs"` to remove unnecessary imports and ensure consistent formatting
+- [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
+
+### Azure SDK Integration
 - [ ] All Azure SDK property names verified and correct
 - [ ] Resource access patterns use collections (e.g., `.GetSqlServers().GetAsync()`)
 - [ ] Subscription resolution uses `ISubscriptionService.GetSubscription()`
 - [ ] Service constructor includes `ISubscriptionService` injection for Azure resources
-- [ ] JSON serialization context includes all new model types
-- [ ] Live test infrastructure created (`test-resources.bicep` template in `areas/{area-name}/tests`)
-- [ ] Live test resource template test with `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name}`
-- [ ] RBAC permissions configured for test application in Bicep template
-- [ ] Live tests use deployed resources via `Settings.ResourceBaseName` pattern
-- [ ] Resource outputs defined in Bicep template for `test-resources-post.ps1` script consumption
-- [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
 
 ### Documentation Requirements
 
@@ -1301,6 +1757,7 @@ Before submitting:
 - [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s) in the appropriate area section
 - [ ] **eng/vscode/README.md**: Update the VSIX README with new service area (if applicable) and add sample prompts to showcase new command capabilities
 - [ ] **e2eTests/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
+- [ ] **.github/CODEOWNERS**: Add new area to CODEOWNERS file for proper ownership and review assignments
 
 **Documentation Standards**:
 - Use consistent command paths in all documentation (e.g., `azmcp sql db show`, not `azmcp sql database show`)
@@ -1315,12 +1772,3 @@ Before submitting:
   - Service sections must be in alphabetical order by service name
   - Tool Names within each table must be sorted alphabetically
   - When adding new tools, insert them in the correct alphabetical position to maintain sort order
-
-**README.md Table Formatting Standards**:
-- Badge text must use the pattern `Install_{namespace}` (e.g., `Install_storage`, `Install_cosmos`)
-- All badge URLs must use stable `vscode.dev` format with proper URL encoding
-- Use blue badge color `#0098FF` consistently across all install buttons
-- Service descriptions should be concise (under 50 characters), action-oriented, and end with a period
-- Follow the pattern: "Manage/Query/Monitor [what] [and/or additional context]."
-- Examples: "Manage storage accounts and blob data.", "Query AI Search services and indexes."
-- Ensure proper URL encoding in badge links (e.g., `Azure%20Foundry` not `Azure%Foundry`)

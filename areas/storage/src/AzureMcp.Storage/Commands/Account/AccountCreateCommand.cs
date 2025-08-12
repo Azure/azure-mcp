@@ -99,8 +99,6 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             // Get the storage service from DI
             var storageService = context.GetService<IStorageService>();
 

@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options;
 using AzureMcp.Postgres.Options.Table;
 using AzureMcp.Postgres.Services;
@@ -45,8 +44,6 @@ public sealed class TableSchemaGetCommand(ILogger<TableSchemaGetCommand> logger)
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> schema = await pgService.GetTableSchemaAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!, options.Table!);
