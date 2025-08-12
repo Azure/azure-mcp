@@ -29,7 +29,7 @@ This section explains the Native AOT checks enforced in the `azmcp` CI and what 
 2. **If violations come from an `Azure.ResourceManager.*` package**
 
    - No action is needed on your side to "fix" those violations, the Azure MCP Server core team will ensure we ship an AOT-fixed version of the `Azure.ResourceManager.*` package(s).
-   - Add the ARM references under the `ItemGroup` with `$(BuildNative)' == 'true'` condition in **AzureMcp.Cli.csproj**, [see](https://github.com/Azure/azure-mcp/blob/1b7006aa72db38ab17614911973b275c0f5dbfe9/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj#L64).
+   - Add the ARM references under the `ItemGroup` with `'$(BuildNative)' == 'true'` condition in **AzureMcp.Cli.csproj**, [see](https://github.com/Azure/azure-mcp/blob/1b7006aa72db38ab17614911973b275c0f5dbfe9/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj#L64).
    - Add the Area setup under a `!BUILD_NATIVE` conditional in **core/src/AzureMcp.Cli/Program.cs**, [see](https://github.com/Azure/azure-mcp/blob/1b7006aa72db38ab17614911973b275c0f5dbfe9/core/src/AzureMcp.Cli/Program.cs#L82).
    - Let reviewers know in the PR description and comment that the dependency is `Azure.ResourceManager.*`.
 
@@ -41,5 +41,5 @@ This section explains the Native AOT checks enforced in the `azmcp` CI and what 
 
 ## Policy & Notes
 
-- Do **not** add any external packages under the `$(BuildNative)' == 'true'` ItemGroup in **AzureMcp.Cli.csproj**. This exception applies **only** to `Azure.ResourceManager.*` packages.
+- Do **not** add any external packages under the `'$(BuildNative)' == 'true'` ItemGroup in **AzureMcp.Cli.csproj**. This exception applies **only** to `Azure.ResourceManager.*` packages.
 - Please call out any `Azure.ResourceManager.*` usage in your PR so reviewers can track it.
