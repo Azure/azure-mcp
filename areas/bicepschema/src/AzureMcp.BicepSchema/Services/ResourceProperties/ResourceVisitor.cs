@@ -7,8 +7,7 @@ using Azure.Bicep.Types.Index;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
 using AzureMcp.BicepSchema.Services.Support;
 
-
-// This is mostly from 
+// This is mostly from
 // https://msazure.visualstudio.com/One/_git/AzureUX-Deployments-Tooling?path=%2FBicepTypesDefinitions%2FResourcePropertiesApp%2FProgram.cs, which
 // is based off of the code in https://github.com/Azure/bicep-types/blob/main/src/bicep-types/src/writers/markdown.ts
 
@@ -239,14 +238,21 @@ public class ResourceVisitor
         switch (typeBase)
         {
             case ResourceType resourceType:
+                /*
+                Disabling warnings to prevent build failing due to obsolete parameter errors
+                Confirmed with Bicep team that we can continue to use obsolete parameters as bicep hasn't fully transitioned to new parameters
+                And when it does transition to new parameters, old parameters will still be translated to new parameters
+                */
+                #pragma warning disable CS0618
                 var rtEntity = new ResourceTypeEntity
-                {
-                    Name = resourceType.Name,
-                    BodyType = WriteComplexType(resourceType.Body.Type),
-                    Flags = resourceType.Flags.ToString(),
-                    ScopeType = resourceType.ScopeType.ToString(),
-                    ReadOnlyScopes = resourceType.ReadOnlyScopes?.ToString()
-                };
+                                {
+                                    Name = resourceType.Name,
+                                    BodyType = WriteComplexType(resourceType.Body.Type),
+                                    Flags = resourceType.Flags.ToString(),
+                                    ScopeType = resourceType.ScopeType.ToString(),
+                                    ReadOnlyScopes = resourceType.ReadOnlyScopes?.ToString()
+                                };
+                #pragma warning restore CS0618
                 return rtEntity;
             case ResourceFunctionType resourceFunctionType:
                 var rftEntity = new ResourceFunctionTypeEntity
