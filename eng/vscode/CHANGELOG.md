@@ -1,6 +1,15 @@
 
 # Release History
 
+## 0.5.5 - Unreleased
+
+### Added
+- - Bundled the **GitHub Copilot for Azure** extension as part of the Azure MCP Server extension pack.
+
+### Changed
+
+### Fixed
+
 ## 0.5.4 - 2025-08-07
 
 ### Changed
