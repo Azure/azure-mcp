@@ -206,6 +206,7 @@
         "azureterraformbestpractices",
         "azuresdk",
         "azuretools",
+        "cloudarchitect",
         "codegen",
         "codeium",
         "Codespace",
