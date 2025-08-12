@@ -44,6 +44,18 @@ public class DiagramGenerateCommandTests
     }
 
     [Fact]
+    public async Task GenerateArchitectureDiagram_InvalidJsonInput()
+    {
+        var command = new DiagramGenerateCommand(_logger);
+        var args = command.GetCommand().Parse(["--raw-mcp-tool-input", "test"]);
+        var context = new CommandContext(_serviceProvider);
+        var response = await command.ExecuteAsync(context, args);
+        Assert.NotNull(response);
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Invalid JSON format", response.Message);
+    }
+
+    [Fact]
     public async Task GenerateArchitectureDiagram_ShouldReturnEncryptedDiagramUrl()
     {
         var command = new DiagramGenerateCommand(_logger);

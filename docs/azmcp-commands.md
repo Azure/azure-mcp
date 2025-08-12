@@ -921,7 +921,7 @@ azmcp deploy iac rules get --deployment-tool <deployment-tool> \
                            --resource-types <resource-types>
 
 # Get the application service log for a specific azd environment
-azmcp deploy app log get --workspace-folder <workspace-folder> \
+azmcp deploy app logs get --workspace-folder <workspace-folder> \
                              --azd-env-name <azd-env-name> \
                              [--limit <limit>]
 

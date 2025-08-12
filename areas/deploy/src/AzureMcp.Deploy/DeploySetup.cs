@@ -32,6 +32,7 @@ public sealed class DeploySetup : IAreaSetup
         rootGroup.AddSubGroup(deploy);
 
         // Application-specific commands
+        // This command will be deprecated when 'azd cli' supports the same functionality
         var appGroup = new CommandGroup("app", "Application-specific deployment tools");
         var logsGroup = new CommandGroup("logs", "Application logs management");
         logsGroup.AddCommand("get", new LogsGetCommand(loggerFactory.CreateLogger<LogsGetCommand>()));

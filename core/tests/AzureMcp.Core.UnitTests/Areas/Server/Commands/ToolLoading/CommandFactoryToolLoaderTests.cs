@@ -305,7 +305,7 @@ public class CommandFactoryToolLoaderTests
         Assert.NotEmpty(result.Tools);
 
         var tool = result.Tools.FirstOrDefault(tool =>
-            tool.Name.Equals("deploy_architecture-diagram-generate", StringComparison.OrdinalIgnoreCase));
+            tool.Name.Equals("deploy_architecture_diagram_generate", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(tool);
         Assert.NotNull(tool.Name);
         Assert.NotNull(tool.Description!);
