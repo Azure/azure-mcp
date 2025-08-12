@@ -35,10 +35,6 @@ Follow these simple steps to start using Azure MCP in VS Code:
 
          ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Tooltip.png)
 
-   #### **Trust Prompt**
-      - The **first time** an MCP server starts after being updated or changed, VS Code will prompt you to **trust** the server.
-      - This trust step is **particularly important** if autostart is enabled, as it prevents unwanted commands from running automatically.
-
    #### **Manual Start (if autostart is off)**
       1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
       2. Run `MCP: List Servers`.
