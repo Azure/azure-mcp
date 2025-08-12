@@ -777,6 +777,12 @@ azmcp storage blob container details --subscription <subscription> \
                                      --account <account> \
                                      --container <container>
 
+# Create a blob container with optional public access
+azmcp storage blob container create --subscription <subscription> \
+                                    --account <account> \
+                                    --container <container> \
+                                    [--blob-container-public-access <blob|container>]
+
 # List containers in a Storage blob service
 azmcp storage blob container list --subscription <subscription> \
                                   --account <account>

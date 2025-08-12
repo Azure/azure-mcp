@@ -102,6 +102,7 @@ public class StorageSetup : IAreaSetup
 
         blobContainer.AddCommand("list", new ContainerListCommand(loggerFactory.CreateLogger<ContainerListCommand>()));
         blobContainer.AddCommand("details", new ContainerDetailsCommand(loggerFactory.CreateLogger<ContainerDetailsCommand>()));
+        blobContainer.AddCommand("create", new ContainerCreateCommand(loggerFactory.CreateLogger<ContainerCreateCommand>()));
 
         fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
 
