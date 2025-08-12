@@ -9,6 +9,7 @@ param(
     [switch] $ReadyToRun,
     [switch] $Trimmed,
     [switch] $DebugBuild,
+    [switch] $CleanBuild,
     [switch] $BuildNative,
     [Parameter(Mandatory=$true, ParameterSetName='Named')]
     [ValidateSet('windows','linux','macOS')]
@@ -24,7 +25,8 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
 $npmPackagePath = "$RepoRoot/eng/npm/platform"
-$projectFile = "$RepoRoot/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj"
+$projectDir = "$RepoRoot/core/src/AzureMcp.Cli"
+$projectFile = "$projectDir/AzureMcp.Cli.csproj"
 
 if(!$Version) {
     $Version = & "$PSScriptRoot/Get-Version.ps1"
@@ -65,9 +67,15 @@ try {
         default { $node_os = $os; $extension = '' }
     }
 
-
     $outputDir = "$OutputPath/$os-$arch"
     Write-Host "Building version $Version, $os-$arch in $outputDir" -ForegroundColor Green
+
+    $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
+
+    if ($CleanBuild) {
+        # Clean up any previous azmcp build artifacts.
+        Invoke-LoggedCommand "dotnet clean '$projectFile' --configuration $configuration" -GroupOutput
+    }
 
     # Clear and recreate the package output directory
     Remove-Item -Path $outputDir -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
@@ -76,7 +84,6 @@ try {
     # Copy the platform package files to the output directory
     Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
 
-    $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
 
     if($SelfContained) {

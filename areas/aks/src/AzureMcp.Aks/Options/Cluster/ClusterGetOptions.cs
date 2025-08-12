@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.Aks.Options;
 
 namespace AzureMcp.Aks.Options.Cluster;
 

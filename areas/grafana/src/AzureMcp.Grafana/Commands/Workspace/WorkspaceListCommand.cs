@@ -4,8 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Grafana.Commands;
-using AzureMcp.Grafana.Models.Workspace;
 using AzureMcp.Grafana.Options.Workspace;
 using AzureMcp.Grafana.Services;
 using Microsoft.Extensions.Logging;

@@ -132,6 +132,8 @@
                 "mycluster",
                 "mycontainer",
                 "mydb",
+                "myproject",
+                "myregistry",
                 "myserver",
                 "mystorageaccount",
                 "mysvc",

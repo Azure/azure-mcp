@@ -39,6 +39,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-appconfig-kv-show | Show the content for the key <key_name> in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-unlock | Unlock the key <key_name> in App Configuration store <app_config_store_name> |
 
+## Azure Container Registry (ACR)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-acr-registry-list | List all Azure Container Registries in my subscription |
+| azmcp-acr-registry-list | Show me my Azure Container Registries |
+| azmcp-acr-registry-list | Show me the container registries in my subscription |
+| azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+
 ## Azure CLI
 
 | Tool Name | Test Prompt |
@@ -157,13 +167,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | Get the latest Azure code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure deployment best practices |
+| azmcp-bestpractices-get | Get the latest Azure best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Get the latest Azure Functions best practices |
+| azmcp-bestpractices-get | Get the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | What are azure function best practices? |
+| azmcp-bestpractices-get | Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm. |
+| azmcp-bestpractices-get | Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm. |
 
 ## Azure Monitor
 
@@ -282,9 +295,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
 | azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the storage container mycontainer in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the container using blob public access in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create a new blob container named documents with container public access in storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
+| azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
+| azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |

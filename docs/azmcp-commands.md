@@ -478,6 +478,17 @@ azmcp loadtesting testrun update --subscription <subscription> \
                                  --description <description>
 ```
 
+### Azure Container Registry (ACR) Operations
+
+```bash
+# List Azure Container Registries in a subscription
+azmcp acr registry list --subscription <subscription>
+
+# List Azure Container Registries in a specific resource group
+azmcp acr registry list --subscription <subscription> \
+                        --resource-group <resource-group>
+```
+
 ### Azure Managed Grafana Operations
 
 ```bash
@@ -766,10 +777,22 @@ azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
 
+# Get detailed properties of a blob
+azmcp storage blob details --subscription <subscription> \
+                           --account <account> \
+                           --container <container> \
+                           --blob <blob-name>
+
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> \
                                      --account <account> \
                                      --container <container>
+
+# Create a blob container with optional public access
+azmcp storage blob container create --subscription <subscription> \
+                                    --account <account> \
+                                    --container <container> \
+                                    [--blob-container-public-access <blob|container>]
 
 # List containers in a Storage blob service
 azmcp storage blob container list --subscription <subscription> \

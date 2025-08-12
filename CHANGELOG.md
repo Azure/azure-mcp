@@ -5,8 +5,11 @@
 ### Features Added
 
 - Added new command for designing Azure Cloud Architecture through guided questions. [[#890]https://github.com/Azure/azure-mcp/pull/890]
+- Added Azure Container Registry (ACR) area with `azmcp acr registry list` command to list container registries in a subscription, with optional resource group filtering. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
 - Added support for creating Azure Storage accounts via the `azmcp-storage-account-create` command. This command enables programmatic creation of storage accounts with configurable SKU, kind, access tier, and security settings including HTTPS-only traffic and Data Lake Storage Gen2 support.
 - Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+- Added support for retrieving Azure Storage blob details via the `azmcp-storage-blob-details` command. This command returns comprehensive blob properties including metadata, content information, access tier, lease status, and other blob-specific configuration details.
+- Added support for creating Azure Storage blob containers via the `azmcp-storage-blob-container-create` command. This command enables creating blob containers with optional public access settings (blob or container level) and returns container metadata including last modified time and ETag.
 
 ### Breaking Changes
 
@@ -18,6 +21,7 @@
 ### Bugs Fixed
 
 - Fixed best practice tool invocation failure when passing "all" action with "general" or "azurefunctions" resources, by adding that support. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Update CREATE and SET operations to destructive = true. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
 
 ### Other Changes
 

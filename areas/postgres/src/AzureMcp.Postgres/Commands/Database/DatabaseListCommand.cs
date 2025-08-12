@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options.Database;
 using AzureMcp.Postgres.Services;
 using Microsoft.Extensions.Logging;

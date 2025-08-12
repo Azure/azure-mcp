@@ -81,6 +81,7 @@ internal class Program
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
 #if !BUILD_NATIVE
+            new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Monitor.MonitorSetup(),

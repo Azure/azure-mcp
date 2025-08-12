@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Redis.Commands;
 using AzureMcp.Redis.Models.CacheForRedis;
 using AzureMcp.Redis.Options.CacheForRedis;
 using AzureMcp.Redis.Services;

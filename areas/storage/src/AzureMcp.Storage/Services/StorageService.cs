@@ -284,6 +284,31 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return blobs;
     }
 
+    public async Task<BlobProperties> GetBlobDetails(
+        string accountName,
+        string containerName,
+        string blobName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, blobName, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        try
+        {
+            var properties = await blobClient.GetPropertiesAsync();
+            return properties.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting blob details: {ex.Message}", ex);
+        }
+    }
+
     public async Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
@@ -304,6 +329,43 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error getting container details: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<BlobContainerProperties> CreateContainer(
+        string accountName,
+        string containerName,
+        string subscription,
+        string? blobContainerPublicAccess = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        try
+        {
+            PublicAccessType publicAccessType = PublicAccessType.None;
+
+            if (!string.IsNullOrEmpty(blobContainerPublicAccess))
+            {
+                publicAccessType = blobContainerPublicAccess.ToLowerInvariant() switch
+                {
+                    "blob" => PublicAccessType.Blob,
+                    "container" => PublicAccessType.BlobContainer,
+                    _ => throw new Exception($"Unknown blob-container-public-access {blobContainerPublicAccess}, only 'blob' or 'container' are allowed.")
+                };
+            }
+
+            await containerClient.CreateAsync(publicAccessType);
+            var properties = await containerClient.GetPropertiesAsync();
+            return properties.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating container: {ex.Message}", ex);
         }
     }
 
