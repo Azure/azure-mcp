@@ -162,7 +162,7 @@ namespace AzureMcp.Storage.LiveTests
                 var lastModified = downloadInfo.GetProperty("lastModified");
                 Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
 
-                var eTag = downloadInfo.GetProperty("eTag");
+                var eTag = downloadInfo.GetProperty("etag");
                 Assert.NotNull(eTag.GetString());
 
                 var wasOverwritten = downloadInfo.GetProperty("wasLocalFileOverwritten");
