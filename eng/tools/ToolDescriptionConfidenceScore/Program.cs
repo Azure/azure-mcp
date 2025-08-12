@@ -228,6 +228,13 @@ class Program
             {
                 // Use default fallback logic
                 toolNameAndPrompts = await LoadPromptsFromMarkdownAsync("../../../e2eTests/e2eTestPrompts.md", isCiMode);
+
+                // Save parsed prompts to prompts.json for future use
+                if (toolNameAndPrompts != null)
+                {
+                    await SavePromptsToJsonAsync(toolNameAndPrompts, "prompts.json");
+                    Console.WriteLine($"💾 Saved prompts to prompts.json");
+                }
             }
 
             if (toolNameAndPrompts == null && isCiMode)
@@ -450,7 +457,7 @@ class Program
             
             // Fix Unicode escaping in the JSON string
             json = json.Replace("\\u0027", "'")
-                      .Replace("\\u0022", "\"")
+                      .Replace("\\u0022", "\\\"")
                       .Replace("\\u003C", "<")
                       .Replace("\\u003E", ">")
                       .Replace("\\u0026", "&");
@@ -518,7 +525,7 @@ class Program
                             prompts[toolName] = new List<string>();
                         }
 
-                        prompts[toolName].Add(prompt);
+                        prompts[toolName].Add(prompt.Replace("\\<", "<"));
                     }
                 }
             }
@@ -551,6 +558,26 @@ class Program
         return prompts ?? throw new InvalidOperationException($"Failed to parse prompts JSON from {filePath}");
     }
 
+    private static async Task SavePromptsToJsonAsync(Dictionary<string, List<string>> prompts, string filePath)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(prompts, SourceGenerationContext.Default.DictionaryStringListString);
+
+            // Fix Unicode escaping in the JSON string
+            json = json.Replace("\\u0027", "'")
+                      .Replace("\\u0022", "\\\"")
+                      .Replace("\\u003C", "<")
+                      .Replace("\\u003E", ">")
+                      .Replace("\\u0026", "&");
+
+            await File.WriteAllTextAsync(filePath, json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️  Warning: Failed to save prompts to {filePath}: {ex.Message}");
+        }
+    }
     private static async Task PopulateDatabaseAsync(VectorDB db, List<Tool> tools, EmbeddingService embeddingService)
     {
         const int threshold = 2;
