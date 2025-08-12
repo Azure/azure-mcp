@@ -78,5 +78,5 @@ public sealed class FunctionAppListCommand(ILogger<FunctionAppListCommand> logge
         _ => base.GetStatusCode(ex)
     };
 
-    internal record FunctionAppListCommandResult(List<FunctionAppModel> Results);
+    internal record FunctionAppListCommandResult(List<FunctionAppInfo> Results);
 }

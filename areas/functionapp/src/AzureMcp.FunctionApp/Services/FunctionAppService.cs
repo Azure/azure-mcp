@@ -22,7 +22,7 @@ public sealed class FunctionAppService(
     private const string CacheGroup = "functionapp";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<List<FunctionAppModel>?> ListFunctionApps(
+    public async Task<List<FunctionAppInfo>?> ListFunctionApps(
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
@@ -33,14 +33,14 @@ public sealed class FunctionAppService(
             ? subscription
             : $"{subscription}_{tenant}";
 
-        var cachedResults = await _cacheService.GetAsync<List<FunctionAppModel>>(CacheGroup, cacheKey, s_cacheDuration);
+        var cachedResults = await _cacheService.GetAsync<List<FunctionAppInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
         }
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-        var functionApps = new List<FunctionAppModel>();
+        var functionApps = new List<FunctionAppInfo>();
 
         try
         {
@@ -67,20 +67,19 @@ public sealed class FunctionAppService(
         return siteData.Kind?.Contains("functionapp", StringComparison.OrdinalIgnoreCase) == true;
     }
 
-    private static FunctionAppModel ConvertToFunctionAppModel(WebSiteResource siteResource)
+    private static FunctionAppInfo ConvertToFunctionAppModel(WebSiteResource siteResource)
     {
         var data = siteResource.Data;
 
-        return new FunctionAppModel
-        {
-            Name = data.Name,
-            SubscriptionId = data.Id.SubscriptionId,
-            ResourceGroupName = siteResource.Id.ResourceGroupName,
-            Location = data.Location.ToString(),
-            AppServicePlanName = data.AppServicePlanId.Name,
-            Status = data.State,
-            DefaultHostName = data.DefaultHostName,
-            Tags = data.Tags?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
-        };
+        return new FunctionAppInfo(
+            data.Name,
+            data.Id.SubscriptionId,
+            siteResource.Id.ResourceGroupName,
+            data.Location.ToString(),
+            data.AppServicePlanId.Name,
+            data.State,
+            data.DefaultHostName,
+            data.Tags?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+        );
     }
 }

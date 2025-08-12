@@ -8,7 +8,7 @@ namespace AzureMcp.FunctionApp.Services;
 
 public interface IFunctionAppService
 {
-    Task<List<FunctionAppModel>?> ListFunctionApps(
+    Task<List<FunctionAppInfo>?> ListFunctionApps(
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);

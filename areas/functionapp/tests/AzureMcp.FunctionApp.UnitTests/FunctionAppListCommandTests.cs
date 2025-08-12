@@ -53,10 +53,10 @@ public sealed class FunctionAppListCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            var testFunctionApps = new List<FunctionAppModel>
+            var testFunctionApps = new List<FunctionAppInfo>
             {
-                new() { Name = "functionApp1", SubscriptionId = "sub123", Location = "eastus", AppServicePlanName = "plan1", Status = "Running", DefaultHostName = "functionapp1.azurewebsites.net" },
-                new() { Name = "functionApp2", SubscriptionId = "sub123", Location = "westus", AppServicePlanName = "plan2", Status = "Stopped", DefaultHostName = "functionapp2.azurewebsites.net" }
+                new("functionApp1", "sub123", null, "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
+                new("functionApp2", "sub123", null, "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
             };
             _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
                 .Returns(testFunctionApps);
@@ -85,10 +85,10 @@ public sealed class FunctionAppListCommandTests
     public async Task ExecuteAsync_ReturnsFunctionAppList()
     {
         // Arrange
-        var expectedFunctionApps = new List<FunctionAppModel>
+        var expectedFunctionApps = new List<FunctionAppInfo>
         {
-            new() { Name = "functionApp1", SubscriptionId = "sub123", ResourceGroupName = "rg1", Location = "eastus", AppServicePlanName = "plan1", Status = "Running", DefaultHostName = "functionapp1.azurewebsites.net" },
-            new() { Name = "functionApp2", SubscriptionId = "sub123", ResourceGroupName = "rg2", Location = "westus", AppServicePlanName = "plan2", Status = "Stopped", DefaultHostName = "functionapp2.azurewebsites.net" }
+            new("functionApp1", "sub123", "rg1", "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
+            new("functionApp2", "sub123", "rg2", "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
         };
         _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedFunctionApps);
@@ -126,7 +126,7 @@ public sealed class FunctionAppListCommandTests
     {
         // Arrange
         _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns(new List<FunctionAppModel>());
+            .Returns(new List<FunctionAppInfo>());
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse("--subscription sub123");
@@ -144,7 +144,7 @@ public sealed class FunctionAppListCommandTests
     {
         // Arrange
         _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns(Task.FromException<List<FunctionAppModel>?>(new Exception("Test error")));
+            .Returns(Task.FromException<List<FunctionAppInfo>?>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse("--subscription sub123");
