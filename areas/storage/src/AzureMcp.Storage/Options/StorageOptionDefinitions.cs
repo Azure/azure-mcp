@@ -6,6 +6,7 @@ namespace AzureMcp.Storage.Options;
 public static class StorageOptionDefinitions
 {
     public const string AccountName = "account";
+    public const string AccountNameCreate = "account-name";
     public const string ContainerName = "container";
     public const string TableName = "table";
     public const string FileSystemName = "file-system";
@@ -20,6 +21,13 @@ public static class StorageOptionDefinitions
     public const string MessageContent = "message";
     public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
     public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
+    public const string LocationName = "location";
+    public const string SkuName = "sku";
+    public const string KindName = "kind";
+    public const string AccessTierName = "access-tier";
+    public const string EnableHttpsTrafficOnlyName = "enable-https-traffic-only";
+    public const string AllowBlobPublicAccessName = "allow-blob-public-access";
+    public const string EnableHierarchicalNamespaceName = "enable-hierarchical-namespace";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -27,6 +35,73 @@ public static class StorageOptionDefinitions
     )
     {
         IsRequired = true
+    };
+
+    public static readonly Option<string> AccountNameForCreate = new(
+        $"--{AccountNameCreate}",
+        "The name of the Azure Storage account to create. Must be globally unique, 3-24 characters, lowercase letters and numbers only."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> Location = new(
+        $"--{LocationName}",
+        "The Azure region where the storage account will be created (e.g., 'eastus', 'westus2')."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> Sku = new(
+        $"--{SkuName}",
+        "The storage account SKU. Valid values: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS, Standard_GZRS, Standard_RAGZRS."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> Kind = new(
+        $"--{KindName}",
+        "The storage account kind. Valid values: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> AccessTier = new(
+        $"--{AccessTierName}",
+        "The default access tier for blob storage. Valid values: Hot, Cool."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> EnableHttpsTrafficOnly = new(
+        $"--{EnableHttpsTrafficOnlyName}",
+        () => true,
+        "Whether to require secure transfer (HTTPS) for the storage account."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> AllowBlobPublicAccess = new(
+        $"--{AllowBlobPublicAccessName}",
+        () => false,
+        "Whether to allow public access to blobs in the storage account."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> EnableHierarchicalNamespace = new(
+        $"--{EnableHierarchicalNamespaceName}",
+        () => false,
+        "Whether to enable hierarchical namespace (Data Lake Storage Gen2) for the storage account."
+    )
+    {
+        IsRequired = false
     };
 
     public static readonly Option<string> Container = new(

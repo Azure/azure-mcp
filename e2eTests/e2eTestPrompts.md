@@ -274,6 +274,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-storage-account-create | Create a new storage account called testaccount123 in East US region |
+| azmcp-storage-account-create | Create a storage account with premium performance and LRS replication |
+| azmcp-storage-account-create | Create a new storage account with Data Lake Storage Gen2 enabled |
 | azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
 | azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
 | azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
