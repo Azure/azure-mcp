@@ -23,17 +23,33 @@ Follow these simple steps to start using Azure MCP in VS Code:
 1. **Install the Extension**
    - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
 
+2. **Start (or Auto-Start) the MCP Server**
 
-2. **Start the MCP Server**
-   - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-   - Run `MCP: List Servers`
+   > **New in VS Code:** You can now configure MCP servers to start automatically using the `chat.mcp.autostart` setting, instead of manually restarting them after configuration changes.
 
-   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
+   #### **Enable Autostart**
+   1. Open **Settings** in VS Code.
+   2. Search for `chat.mcp.autostart`.
+   3. Select **newAndOutdated** to automatically start MCP servers without manual refresh.
+   4. You can also set this from the **refresh icon tooltip** in the Chat view, which also shows which servers will auto-start.
 
-   - Select `Azure MCP`, then click **Start Server**
+   ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Tooltip.png)
 
-   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
-   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+   #### **Trust Prompt**
+   - The **first time** an MCP server starts after being updated or changed, VS Code will prompt you to **trust** the server.
+   - This trust step is **particularly important** if autostart is enabled, as it prevents unwanted commands from running automatically.
+
+   #### **Manual Start (if autostart is off)**
+   1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+   2. Run `MCP: List Servers`.
+
+      ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
+
+   3. Select `Azure MCP Server ext`, then click **Start Server**.
+
+      ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
+      ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+
 
 3. **Check That It's Running**
    - Go to the **Output** tab in VS Code.
