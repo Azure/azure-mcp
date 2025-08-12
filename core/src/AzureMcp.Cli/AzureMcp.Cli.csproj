@@ -66,7 +66,6 @@
     <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
     <ProjectReference Remove="..\..\..\areas\monitor\src\AzureMcp.Monitor\AzureMcp.Monitor.csproj" />
     <ProjectReference Remove="..\..\..\areas\postgres\src\AzureMcp.Postgres\AzureMcp.Postgres.csproj" />
-    <ProjectReference Remove="..\..\..\areas\search\src\AzureMcp.Search\AzureMcp.Search.csproj" />
     <ProjectReference Remove="..\..\..\areas\virtualdesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj" />
     <PackageReference Remove="Microsoft.Azure.Cosmos" />
   </ItemGroup>
