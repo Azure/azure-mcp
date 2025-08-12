@@ -155,7 +155,8 @@ public class BlobDownloadCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var commandResult = JsonSerializer.Deserialize<BlobDownloadCommandResult>(json);
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var commandResult = JsonSerializer.Deserialize<BlobDownloadCommandResult>(json, options);
 
         Assert.NotNull(commandResult);
         Assert.NotNull(commandResult.DownloadInfo);
