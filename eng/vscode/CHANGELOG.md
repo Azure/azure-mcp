@@ -1,14 +1,27 @@
 
 # Release History
 
-## 0.5.5 - Unreleased
+## 0.5.5 - 2025-08-12
 
 ### Added
+
+- Added support for listing Azure Container Registry (ACR) registries in a subscription via the `azmcp-acr-registry-list` command. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
+- Added new Azure Storage commands:
+  - `azmcp-storage-account-create`: Create a new Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-queue-message-send`: Send a message to a Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+  - `azmcp-storage-blob-details`: Get details about a Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
+  - `azmcp-storage-blob-container-create`: Create a new Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
 - Bundled the **GitHub Copilot for Azure** extension as part of the Azure MCP Server extension pack.
 
 ### Changed
 
+- The `azmcp-storage-account-list` command now returns account metadata objects instead of plain strings. Each item includes: `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`. Update scripts to read the `name` property. The underlying `IStorageService.GetStorageAccounts()` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`. [[#904](https://github.com/Azure/azure-mcp/issues/904)]
+- Consolidated "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
+
 ### Fixed
+
+- Fixed best practices tool invocation failure when passing "all" action with "general" or "azurefunctions" resources. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Updated metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
 
 ## 0.5.4 - 2025-08-07
 
