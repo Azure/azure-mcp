@@ -2,6 +2,8 @@
 
 This tool helps you test and validate the descriptions of new Azure MCP Server tools. It checks how well your tool descriptions match real user prompts, ensuring users get the right tool when they ask for something.
 
+The tool returns a confidence score between `0.00` and `1.00` for each tool-prompt combination. The higher the score, the better chance the tool will be selected given a specific prompt. Scores below `0.40` generally indicate low tool selection chances and tool descriptions should be improved.
+
 ## What It Does
 
 - Loads your tool definitions
