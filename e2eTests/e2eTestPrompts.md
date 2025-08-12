@@ -39,6 +39,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-appconfig-kv-show | Show the content for the key <key_name> in App Configuration store <app_config_store_name> |
 | azmcp-appconfig-kv-unlock | Unlock the key <key_name> in App Configuration store <app_config_store_name> |
 
+## Azure CLI
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-extension-az | Create a Storage account with name <storage_account_name> |
+| azmcp-extension-az | List all virtual machines in my subscription |
+| azmcp-extension-az | Show me the details of the storage account <account_name> |
+
 ## Azure Container Registry (ACR)
 
 | Tool Name | Test Prompt |
@@ -48,14 +56,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-acr-registry-list | Show me the container registries in my subscription |
 | azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
 | azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
-
-## Azure CLI
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-extension-az | Create a Storage account with name <storage_account_name> |
-| azmcp-extension-az | List all virtual machines in my subscription |
-| azmcp-extension-az | Show me the details of the storage account <account_name> |
 
 ## Azure Cosmos DB
 

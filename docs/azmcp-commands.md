@@ -227,6 +227,17 @@ azmcp extension az --command "storage account show --name <account> --resource-g
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure Container Registry (ACR) Operations
+
+```bash
+# List Azure Container Registries in a subscription
+azmcp acr registry list --subscription <subscription>
+
+# List Azure Container Registries in a specific resource group
+azmcp acr registry list --subscription <subscription> \
+                        --resource-group <resource-group>
+```
+
 ### Azure Cosmos DB Operations
 
 ```bash
@@ -478,17 +489,6 @@ azmcp loadtesting testrun update --subscription <subscription> \
                                  --description <description>
 ```
 
-### Azure Container Registry (ACR) Operations
-
-```bash
-# List Azure Container Registries in a subscription
-azmcp acr registry list --subscription <subscription>
-
-# List Azure Container Registries in a specific resource group
-azmcp acr registry list --subscription <subscription> \
-                        --resource-group <resource-group>
-```
-
 ### Azure Managed Grafana Operations
 
 ```bash
@@ -692,6 +692,11 @@ azmcp group list --subscription <subscription>
 ### Azure Service Bus Operations
 
 ```bash
+# Returns runtime and details about the Service Bus queue
+azmcp servicebus queue details --subscription <subscription> \
+                               --namespace <service-bus-namespace> \
+                               --queue <queue>
+
 # Gets runtime details a Service Bus topic
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -702,11 +707,6 @@ azmcp servicebus topic subscription details --subscription <subscription> \
                                             --namespace <service-bus-namespace> \
                                             --topic <topic> \
                                             --subscription-name <subscription-name>
-
-# Returns runtime and details about the Service Bus queue
-azmcp servicebus queue details --subscription <subscription> \
-                               --namespace <service-bus-namespace> \
-                               --queue <queue>
 ```
 
 ### Azure SQL Database Operations
@@ -750,9 +750,6 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ### Azure Storage Operations
 
 ```bash
-# List Storage accounts in a subscription
-azmcp storage account list --subscription <subscription>
-
 # Create a new Storage account with custom configuration
 azmcp storage account create --subscription <subscription> \
                              --account-name <unique-account-name> \
@@ -765,6 +762,10 @@ azmcp storage account create --subscription <subscription> \
                              --allow-blob-public-access false \
                              --enable-hierarchical-namespace false
 
+
+# List Storage accounts in a subscription
+azmcp storage account list --subscription <subscription>
+
 # Set access tier for multiple blobs in a batch operation
 azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \
@@ -772,10 +773,20 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --tier <tier> \
                                   --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
 
-# List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> \
-                        --account <account> \
-                        --container <container>
+# Create a blob container with optional public access
+azmcp storage blob container create --subscription <subscription> \
+                                    --account <account> \
+                                    --container <container> \
+                                    [--blob-container-public-access <blob|container>]
+
+# Get detailed properties of a storage container
+azmcp storage blob container details --subscription <subscription> \
+                                     --account <account> \
+                                     --container <container>
+
+# List containers in a Storage blob service
+azmcp storage blob container list --subscription <subscription> \
+                                  --account <account>
 
 # Get detailed properties of a blob
 azmcp storage blob details --subscription <subscription> \
@@ -783,20 +794,10 @@ azmcp storage blob details --subscription <subscription> \
                            --container <container> \
                            --blob <blob-name>
 
-# Get detailed properties of a storage container
-azmcp storage blob container details --subscription <subscription> \
-                                     --account <account> \
-                                     --container <container>
-
-# Create a blob container with optional public access
-azmcp storage blob container create --subscription <subscription> \
-                                    --account <account> \
-                                    --container <container> \
-                                    [--blob-container-public-access <blob|container>]
-
-# List containers in a Storage blob service
-azmcp storage blob container list --subscription <subscription> \
-                                  --account <account>
+# List blobs in a Storage container
+azmcp storage blob list --subscription <subscription> \
+                        --account <account> \
+                        --container <container>
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -810,13 +811,6 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               [--filter-path <filter-path>] \
                                               [--recursive]
 
-# List files and directories in a File Share directory
-azmcp storage share file list --subscription <subscription> \
-                              --account <account-name> \
-                              --share <share-name> \
-                              --directory-path <directory-path> \
-                              [--prefix <prefix>]
-
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
                                  --account <account-name> \
@@ -824,6 +818,13 @@ azmcp storage queue message send --subscription <subscription> \
                                  --message "<message-content>" \
                                  [--time-to-live-in-seconds <seconds>] \
                                  [--visibility-timeout-in-seconds <seconds>]
+
+# List files and directories in a File Share directory
+azmcp storage share file list --subscription <subscription> \
+                              --account <account-name> \
+                              --share <share-name> \
+                              --directory-path <directory-path> \
+                              [--prefix <prefix>]
 
 # List tables in a Storage account
 azmcp storage table list --subscription <subscription> \
