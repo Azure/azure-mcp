@@ -1,26 +1,24 @@
 # Release History
 
-## 0.5.5 (Unreleased)
+## 0.5.5 (2025-08-12)
 
 ### Features Added
 
-- Added Azure Container Registry (ACR) area with `azmcp acr registry list` command to list container registries in a subscription, with optional resource group filtering. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
-- Added support for creating Azure Storage accounts via the `azmcp-storage-account-create` command. This command enables programmatic creation of storage accounts with configurable SKU, kind, access tier, and security settings including HTTPS-only traffic and Data Lake Storage Gen2 support.
-- Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
-- Added support for retrieving Azure Storage blob details via the `azmcp-storage-blob-details` command. This command returns comprehensive blob properties including metadata, content information, access tier, lease status, and other blob-specific configuration details.
-- Added support for creating Azure Storage blob containers via the `azmcp-storage-blob-container-create` command. This command enables creating blob containers with optional public access settings (blob or container level) and returns container metadata including last modified time and ETag.
+- Added support for listing ACR (Azure Container Registry) registries in a subscription via the command `azmcp-acr-registry-list`. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
+- Added the following Azure Storage commands:
+  - `azmcp-storage-account-create`: Create a new Azure Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-queue-message-send`: Send a message to an Azure Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+  - `azmcp-storage-blob-details`: Get details about an Azure Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
+  - `azmcp-storage-blob-container-create`: Create a new Azure Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
 
 ### Breaking Changes
 
-- Storage: `azmcp-storage-account-list` now returns account metadata objects instead of plain strings. Each item includes:
-  `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`.
-  If you parsed an array of strings before, update your scripts to read the `name` property. The underlying
-  IStorageService `GetStorageAccounts` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`.
+- The `azmcp-storage-account-list` command now returns account metadata objects instead of plain strings. Each item includes: `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`. Update scripts to read the `name` property. The underlying `IStorageService.GetStorageAccounts()` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`. [[#904](https://github.com/Azure/azure-mcp/issues/904)]
 
 ### Bugs Fixed
 
-- Fixed best practice tool invocation failure when passing "all" action with "general" or "azurefunctions" resources, by adding that support. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
-- Update CREATE and SET operations to destructive = true. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+- Fixed best practices tool invocation failure when passing "all" action with "general" or "azurefunctions" resources. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Update metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
 
 ### Other Changes
 
