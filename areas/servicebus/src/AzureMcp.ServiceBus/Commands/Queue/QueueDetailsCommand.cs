@@ -61,8 +61,6 @@ public sealed class QueueDetailsCommand(ILogger<QueueDetailsCommand> logger) : S
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetQueueDetails(
                 options.Namespace!,

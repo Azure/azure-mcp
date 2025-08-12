@@ -37,8 +37,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var cosmosService = context.GetService<ICosmosService>();
             var databases = await cosmosService.ListDatabases(
                 options.Account!,

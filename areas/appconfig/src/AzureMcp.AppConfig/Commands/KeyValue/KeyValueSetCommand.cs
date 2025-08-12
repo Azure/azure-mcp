@@ -58,8 +58,6 @@ public sealed class KeyValueSetCommand(ILogger<KeyValueSetCommand> logger) : Bas
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.SetKeyValue(
                 options.Account!,

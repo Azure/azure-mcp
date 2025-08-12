@@ -30,8 +30,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> tables = await pgService.ListTablesAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!);
             context.Response.Results = tables?.Count > 0 ?

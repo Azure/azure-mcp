@@ -55,8 +55,6 @@ public sealed class ItemQueryCommand(ILogger<ItemQueryCommand> logger) : BaseCon
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var cosmosService = context.GetService<ICosmosService>();
             var items = await cosmosService.QueryItems(
                 options.Account!,

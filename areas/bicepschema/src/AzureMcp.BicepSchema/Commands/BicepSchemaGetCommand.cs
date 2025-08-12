@@ -56,8 +56,6 @@ namespace AzureMcp.BicepSchema.Commands
                     return Task.FromResult(context.Response);
                 }
 
-                context.Activity?.WithSubscriptionTag(options);
-
                 TypesDefinitionResult result = SchemaGenerator.GetResourceTypeDefinitions(s_serviceProvider.Value, options.ResourceType!);
                 List<ComplexType> response = SchemaGenerator.GetResponse(result);
 

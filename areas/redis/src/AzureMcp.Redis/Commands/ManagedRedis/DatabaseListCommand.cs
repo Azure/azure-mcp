@@ -40,8 +40,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var databases = await redisService.ListDatabasesAsync(
                 options.Cluster!,

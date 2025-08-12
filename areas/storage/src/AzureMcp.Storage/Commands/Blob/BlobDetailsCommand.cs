@@ -40,8 +40,6 @@ public sealed class BlobDetailsCommand(ILogger<BlobDetailsCommand> logger) : Bas
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var storageService = context.GetService<IStorageService>();
             var details = await storageService.GetBlobDetails(
                 options.Account!,

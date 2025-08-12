@@ -53,8 +53,6 @@ public sealed class SecretListCommand(ILogger<SecretListCommand> logger) : Subsc
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var keyVaultService = context.GetService<IKeyVaultService>();
             var secrets = await keyVaultService.ListSecrets(
                 options.VaultName!,
