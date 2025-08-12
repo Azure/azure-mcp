@@ -25,7 +25,7 @@ Follow these simple steps to start using Azure MCP in VS Code:
 
 2. **Start (or Auto-Start) the MCP Server**
 
-   > **New in VS Code:** You can now configure MCP servers to start automatically using the `chat.mcp.autostart` setting, instead of manually restarting them after configuration changes.
+   > **VS Code (version 1.103 or above):** You can now configure MCP servers to start automatically using the `chat.mcp.autostart` setting, instead of manually restarting them after configuration changes.
 
    #### **Enable Autostart**
       1. Open **Settings** in VS Code.
