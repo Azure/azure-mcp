@@ -23,12 +23,6 @@ public sealed class ContainerCreateCommand(ILogger<ContainerCreateCommand> logge
     public override string Description =>
         """
         Creates a blob container with optional blob public access. Returns the last modified time and the ETag of the blob container as JSON.
-        Requires account and container.
-          Required options:
-        - account: Storage account name
-        - container: Container name
-          Optional options:
-        - blob-container-public-access: Public access level (blob or container)
         """;
 
     public override string Title => CommandTitle;
@@ -89,24 +83,6 @@ public sealed class ContainerCreateCommand(ILogger<ContainerCreateCommand> logge
 
         return context.Response;
     }
-
-    protected override string GetErrorMessage(Exception ex) => ex switch
-    {
-        Azure.RequestFailedException reqEx when reqEx.Status == 409 =>
-            "Container already exists. Use a different container name or check if you have access to the existing container.",
-        Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
-            $"Authorization failed accessing the storage account. Details: {reqEx.Message}",
-        Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
-            "Storage account not found. Verify the account exists and you have access.",
-        Azure.RequestFailedException reqEx => reqEx.Message,
-        _ => base.GetErrorMessage(ex)
-    };
-
-    protected override int GetStatusCode(Exception ex) => ex switch
-    {
-        Azure.RequestFailedException reqEx => reqEx.Status,
-        _ => base.GetStatusCode(ex)
-    };
 
     internal record ContainerCreateResult(
         DateTimeOffset LastModified,
