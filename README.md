@@ -36,6 +36,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "List my App Configuration stores"
 * "Show my key-value pairs in App Config"
 
+### 📦 Azure Container Registry (ACR)
+
+* "List all my Azure Container Registries"
+* "Show me my container registries in the 'myproject' resource group"
+
 ### ☸️ Azure Kubernetes Service (AKS)
 
 * "List my AKS clusters in my subscription"
@@ -105,6 +110,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Execute Azure CLI commands directly
 * Support for all Azure CLI functionality
+
+### 📦 Azure Container Registry (ACR)
+
+* List Azure Container Registries in a subscription
+* Filter container registries by resource group
 * JSON output formatting
 * Cross-platform compatibility
 

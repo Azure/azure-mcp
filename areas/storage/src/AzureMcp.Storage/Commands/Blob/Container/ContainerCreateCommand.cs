@@ -53,8 +53,6 @@ public sealed class ContainerCreateCommand(ILogger<ContainerCreateCommand> logge
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var storageService = context.GetService<IStorageService>();
             var containerProperties = await storageService.CreateContainer(
                 options.Account!,
