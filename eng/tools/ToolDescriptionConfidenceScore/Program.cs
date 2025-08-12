@@ -63,6 +63,10 @@ class Program
                 }
             }
 
+            string exeDir = AppContext.BaseDirectory;
+            string repoRoot = FindRepoRoot(exeDir);
+            string toolDir = Path.GetFullPath(Path.Combine(exeDir, "..", "..", ".."));
+
             // Check if user wants to validate specific tool descriptions
             var validateMode = args.Contains("--validate");
 
@@ -101,12 +105,12 @@ class Program
                     Environment.Exit(1);
                 }
 
-                await RunValidationModeAsync(toolDescription, prompts, isCiMode);
+                await RunValidationModeAsync(toolDir, toolDescription, prompts, isCiMode);
                 return;
             }
 
             // Load environment variables from .env file if it exists
-            await LoadDotEnvFile();
+            await LoadDotEnvFile(toolDir);
 
             // Get configuration values
             var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
@@ -132,7 +136,7 @@ class Program
 
             var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
-            var apiKey = await GetApiKeyAsync(isCiMode);
+            var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping tool selection analysis in CI - API key not available");
@@ -144,10 +148,8 @@ class Program
             // Load tools - use custom JSON file if specified, otherwise try dynamic loading with fallback
             ListToolsResult? listToolsResult = null;
 
-            string exeDir = AppContext.BaseDirectory;
-
             string? customToolsFileResolved = !string.IsNullOrEmpty(customToolsFile) && !Path.IsPathRooted(customToolsFile)
-                ? Path.Combine(exeDir, customToolsFile)
+                ? Path.Combine(toolDir, customToolsFile)
                 : customToolsFile;
 
             if (!string.IsNullOrEmpty(customToolsFileResolved))
@@ -156,12 +158,12 @@ class Program
                 if (listToolsResult == null && !isCiMode)
                 {
                     Console.WriteLine($"⚠️  Failed to load tools from {customToolsFileResolved}, falling back to dynamic loading");
-                    listToolsResult = await LoadToolsDynamicallyAsync(isCiMode);
+                    listToolsResult = await LoadToolsDynamicallyAsync(toolDir, isCiMode);
                 }
             }
             else
             {
-                listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync(Path.Combine(exeDir, "tools.json"), isCiMode);
+                listToolsResult = await LoadToolsDynamicallyAsync(toolDir, isCiMode) ?? await LoadToolsFromJsonAsync(Path.Combine(toolDir, "tools.json"), isCiMode);
             }
 
             if (listToolsResult == null && isCiMode)
@@ -184,7 +186,7 @@ class Program
             var useMarkdown = IsMarkdownOutput();
 
             // Determine output file path
-            var outputFilePath = Path.Combine(exeDir, useMarkdown ? "results.md" : "results.txt");
+            var outputFilePath = Path.Combine(toolDir, useMarkdown ? "results.md" : "results.txt");
 
             // Add console output
             Console.WriteLine("🔍 Running tool selection analysis...");
@@ -225,8 +227,9 @@ class Program
             // Load prompts from custom file, markdown file, or JSON file as fallback
             Dictionary<string, List<string>>? toolNameAndPrompts = null;
 
+
             string? customPromptsFileResolved = !string.IsNullOrEmpty(customPromptsFile) && !Path.IsPathRooted(customPromptsFile)
-                ? Path.Combine(exeDir, customPromptsFile)
+                ? Path.Combine(toolDir, customPromptsFile)
                 : customPromptsFile;
 
             if (!string.IsNullOrEmpty(customPromptsFileResolved))
@@ -250,13 +253,14 @@ class Program
             else
             {
                 // Use default fallback logic
-                var defaultPromptsPath = Path.Combine(exeDir, "..", "..", "..", "e2eTests", "e2eTestPrompts.md");
+
+                var defaultPromptsPath = Path.Combine(repoRoot, "e2eTests", "e2eTestPrompts.md");
                 toolNameAndPrompts = await LoadPromptsFromMarkdownAsync(defaultPromptsPath, isCiMode);
 
                 // Save parsed prompts to prompts.json for future use
                 if (toolNameAndPrompts != null)
                 {
-                    await SavePromptsToJsonAsync(toolNameAndPrompts, Path.Combine(exeDir, "prompts.json"));
+                    await SavePromptsToJsonAsync(toolNameAndPrompts, Path.Combine(toolDir, "prompts.json"));
                     Console.WriteLine($"💾 Saved prompts to prompts.json");
                 }
             }
@@ -315,7 +319,7 @@ class Program
         return args.Contains("--markdown", StringComparer.OrdinalIgnoreCase);
     }
 
-    private static async Task<string?> GetApiKeyAsync(bool isCiMode = false)
+    private static string? GetApiKey(bool isCiMode = false)
     {
         var apiKey = Environment.GetEnvironmentVariable("TEXT_EMBEDDING_API_KEY");
         if (!string.IsNullOrEmpty(apiKey))
@@ -331,10 +335,9 @@ class Program
         throw new InvalidOperationException("API key not found. Please set TEXT_EMBEDDING_API_KEY environment variable.");
     }
 
-    private static async Task LoadDotEnvFile()
+    private static async Task LoadDotEnvFile(string toolDir)
     {
-        var exeDir = AppContext.BaseDirectory;
-        var envFilePath = Path.Combine(exeDir, ".env");
+        var envFilePath = Path.Combine(toolDir, ".env");
         if (!File.Exists(envFilePath))
         {
             Console.WriteLine("No .env file found or error loading it");
@@ -355,13 +358,29 @@ class Program
         }
     }
 
-    private static async Task<ListToolsResult?> LoadToolsDynamicallyAsync(bool isCiMode = false)
+    // Traverse up from a starting directory to find the repo root (containing AzureMcp.sln or .git)
+    private static string FindRepoRoot(string startDir)
+    {
+        var dir = new DirectoryInfo(startDir);
+        while (dir != null)
+        {
+            if (File.Exists(Path.Combine(dir.FullName, "AzureMcp.sln")) ||
+                Directory.Exists(Path.Combine(dir.FullName, ".git")))
+            {
+                return dir.FullName;
+            }
+            dir = dir.Parent;
+        }
+        throw new InvalidOperationException("Could not find repo root (AzureMcp.sln or .git)");
+    }
+
+    private static async Task<ListToolsResult?> LoadToolsDynamicallyAsync(string toolDir, bool isCiMode = false)
     {
         try
         {
             // Try to find the azmcp executable in the CLI folder, relative to the executable location
             var exeDir = AppContext.BaseDirectory;
-            var azMcpPath = Path.GetFullPath(Path.Combine(exeDir, "..", "..", "..", "core", "src", "AzureMcp.Cli", "bin", "Debug", "net9.0"));
+            var azMcpPath = Path.GetFullPath(Path.Combine(FindRepoRoot(exeDir), "core", "src", "AzureMcp.Cli", "bin", "Debug", "net9.0"));
             var executablePath = Path.Combine(azMcpPath, "azmcp.exe");
 
             // Fallback to .dll if .exe doesn't exist
@@ -426,7 +445,7 @@ class Program
             // Save the dynamically loaded tools to tools.json for future use
             if (result != null)
             {
-                await SaveToolsToJsonAsync(result, Path.Combine(exeDir, "tools.json"));
+                await SaveToolsToJsonAsync(result, Path.Combine(toolDir, "tools.json"));
                 Console.WriteLine($"💾 Saved {result.Tools.Count} tools to tools.json");
             }
 
@@ -874,7 +893,7 @@ class Program
         Console.WriteLine("    --prompt \"what storage accounts do I have\"");
     }
 
-    private static async Task RunValidationModeAsync(string toolDescription, List<string> testPrompts, bool isCiMode)
+    private static async Task RunValidationModeAsync(string toolDir, string toolDescription, List<string> testPrompts, bool isCiMode)
     {
         Console.WriteLine("🔧 Tool Description Validation Mode");
         Console.WriteLine($"📋 Tool Description: {toolDescription}");
@@ -889,7 +908,7 @@ class Program
         try
         {
             // Load environment variables from .env file if it exists
-            await LoadDotEnvFile();
+            await LoadDotEnvFile(toolDir);
 
             // Get configuration values
             var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
@@ -918,7 +937,7 @@ class Program
 
             var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
-            var apiKey = await GetApiKeyAsync(isCiMode);
+            var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping validation in CI - API key not available");
@@ -928,7 +947,7 @@ class Program
             var embeddingService = new EmbeddingService(HttpClient, endpoint, apiKey!);
 
             // Load existing tools for comparison
-            var listToolsResult = await LoadToolsDynamicallyAsync(isCiMode) ?? await LoadToolsFromJsonAsync("tools.json", isCiMode);
+            var listToolsResult = await LoadToolsDynamicallyAsync(toolDir, isCiMode) ?? await LoadToolsFromJsonAsync("tools.json", isCiMode);
             if (listToolsResult == null && isCiMode)
             {
                 Console.WriteLine("⏭️  Skipping validation in CI - tools data not available");
