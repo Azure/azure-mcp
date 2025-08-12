@@ -309,6 +309,74 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
+    public async Task<Models.BlobDownloadInfo> DownloadBlob(
+        string accountName,
+        string containerName,
+        string blobName,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, blobName, localFilePath, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        bool wasOverwritten = false;
+
+        try
+        {
+            // Check if local file exists and handle overwrite
+            if (File.Exists(localFilePath))
+            {
+                if (!overwrite)
+                {
+                    throw new InvalidOperationException($"File '{localFilePath}' already exists. Use --overwrite to overwrite the existing file.");
+                }
+                wasOverwritten = true;
+            }
+
+            // Create directory if it doesn't exist
+            var directoryPath = Path.GetDirectoryName(localFilePath);
+            if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Download the blob
+            var response = await blobClient.DownloadContentAsync();
+            using var fileStream = File.OpenWrite(localFilePath);
+            await fileStream.WriteAsync(response.Value.Content.ToMemory());
+            var result = response.Value.Details;
+
+            // Calculate MD5 hash if available
+            string? md5Hash = null;
+            if (result.ContentHash != null && result.ContentHash.Length > 0)
+            {
+                md5Hash = Convert.ToBase64String(result.ContentHash);
+            }
+
+            return new Models.BlobDownloadInfo
+            {
+                BlobName = blobName,
+                ContainerName = containerName,
+                DownloadLocation = localFilePath,
+                BlobSize = result.ContentLength,
+                LastModified = result.LastModified,
+                ETag = result.ETag.ToString(),
+                MD5Hash = md5Hash,
+                WasLocalFileOverwritten = wasOverwritten
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error downloading blob: {ex.Message}", ex);
+        }
+    }
+
     public async Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,

@@ -123,6 +123,200 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_download_blob_to_temp_file()
+        {
+            // Arrange
+            var tempFilePath = Path.Combine(Path.GetTempPath(), $"test-blob-{Guid.NewGuid()}.md");
+
+            try
+            {
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_download",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", "README.md" },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Assert
+                var downloadInfo = result.AssertProperty("downloadInfo");
+                Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
+
+                // Verify download details
+                var blobName = downloadInfo.GetProperty("blobName");
+                Assert.Equal("README.md", blobName.GetString());
+
+                var containerName = downloadInfo.GetProperty("containerName");
+                Assert.Equal("bar", containerName.GetString());
+
+                var downloadLocation = downloadInfo.GetProperty("downloadLocation");
+                Assert.Equal(tempFilePath, downloadLocation.GetString());
+
+                var blobSize = downloadInfo.GetProperty("blobSize");
+                Assert.True(blobSize.GetInt64() > 0);
+
+                var lastModified = downloadInfo.GetProperty("lastModified");
+                Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
+
+                var eTag = downloadInfo.GetProperty("eTag");
+                Assert.NotNull(eTag.GetString());
+
+                var wasOverwritten = downloadInfo.GetProperty("wasLocalFileOverwritten");
+                Assert.False(wasOverwritten.GetBoolean());
+
+                // Verify the file was actually downloaded
+                Assert.True(File.Exists(tempFilePath));
+                Assert.True(new FileInfo(tempFilePath).Length > 0);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Should_download_blob_with_overwrite_option()
+        {
+            // Arrange
+            var tempFilePath = Path.Combine(Path.GetTempPath(), $"test-blob-overwrite-{Guid.NewGuid()}.md");
+
+            try
+            {
+                // Create a dummy file first
+                await File.WriteAllTextAsync(tempFilePath, "This file will be overwritten", TestContext.Current.CancellationToken);
+                Assert.True(File.Exists(tempFilePath));
+
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_download",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", "README.md" },
+                        { "local-file-path", tempFilePath },
+                        { "overwrite", true }
+                    });
+
+                // Assert
+                var downloadInfo = result.AssertProperty("downloadInfo");
+                Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
+
+                var wasOverwritten = downloadInfo.GetProperty("wasLocalFileOverwritten");
+                Assert.True(wasOverwritten.GetBoolean());
+
+                // Verify the file was actually overwritten
+                Assert.True(File.Exists(tempFilePath));
+                var content = await File.ReadAllTextAsync(tempFilePath, TestContext.Current.CancellationToken);
+                Assert.NotEqual("This file will be overwritten", content);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Should_download_blob_to_subdirectory()
+        {
+            // Arrange
+            var tempDir = Path.Combine(Path.GetTempPath(), $"test-blob-dir-{Guid.NewGuid()}");
+            var tempFilePath = Path.Combine(tempDir, "subdir", "downloaded-readme.md");
+
+            try
+            {
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_download",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", "README.md" },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Assert
+                var downloadInfo = result.AssertProperty("downloadInfo");
+                Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
+
+                var downloadLocation = downloadInfo.GetProperty("downloadLocation");
+                Assert.Equal(tempFilePath, downloadLocation.GetString());
+
+                // Verify the directory structure was created and file was downloaded
+                Assert.True(Directory.Exists(tempDir));
+                Assert.True(Directory.Exists(Path.Combine(tempDir, "subdir")));
+                Assert.True(File.Exists(tempFilePath));
+                Assert.True(new FileInfo(tempFilePath).Length > 0);
+            }
+            finally
+            {
+                // Clean up the temporary directory
+                if (Directory.Exists(tempDir))
+                {
+                    Directory.Delete(tempDir, true);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Should_download_blob_with_tenant_name()
+        {
+            Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
+            // Arrange
+            var tempFilePath = Path.Combine(Path.GetTempPath(), $"test-blob-tenant-{Guid.NewGuid()}.md");
+
+            try
+            {
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_download",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantName },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", "README.md" },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Assert
+                var downloadInfo = result.AssertProperty("downloadInfo");
+                Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
+
+                var blobName = downloadInfo.GetProperty("blobName");
+                Assert.Equal("README.md", blobName.GetString());
+
+                // Verify the file was actually downloaded
+                Assert.True(File.Exists(tempFilePath));
+                Assert.True(new FileInfo(tempFilePath).Length > 0);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
         public async Task Should_list_containers()
         {
             var result = await CallToolAsync(

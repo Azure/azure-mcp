@@ -772,6 +772,14 @@ azmcp storage blob details --subscription <subscription> \
                            --container <container> \
                            --blob <blob-name>
 
+# Download a blob to a local file
+azmcp storage blob download --subscription <subscription> \
+                            --account <account> \
+                            --container <container> \
+                            --blob <blob-name> \
+                            --local-file-path <local-file-path> \
+                            [--overwrite]
+
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> \
                                      --account <account> \
