@@ -157,13 +157,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | Get the latest Azure code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure deployment best practices |
+| azmcp-bestpractices-get | Get the latest Azure best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Get the latest Azure Functions best practices |
+| azmcp-bestpractices-get | Get the latest Azure Static Web Apps best practices |
 | azmcp-bestpractices-get | What are azure function best practices? |
 | azmcp-bestpractices-get | Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm. |
 | azmcp-bestpractices-get | Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm. |
