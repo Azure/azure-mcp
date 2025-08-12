@@ -77,13 +77,13 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
             }
 
             context.Activity?
-                    .SetTag("ProjectName", options.ProjectName)
-                    .SetTag("ComputeHostResources", options.TargetAppService)
-                    .SetTag("DeploymentTool", options.ProvisioningTool)
-                    .SetTag("IacType", options.AzdIacOptions ?? string.Empty)
-                    .SetTag("BackingServiceResources", options.BackingServices ?? string.Empty)
-                    .SetTag("ServiceCount", options.ServiceCount)
-                    .SetTag("Languages", options.Languages ?? string.Empty);
+                    .AddTag("ProjectName", options.ProjectName)
+                    .AddTag("ComputeHostResources", options.TargetAppService)
+                    .AddTag("DeploymentTool", options.ProvisioningTool)
+                    .AddTag("IacType", options.AzdIacOptions ?? string.Empty)
+                    .AddTag("BackingServiceResources", options.BackingServices ?? string.Empty)
+                    .AddTag("ServiceCount", options.ServiceCount)
+                    .AddTag("Languages", options.Languages ?? string.Empty);
             
             var planTemplate = DeploymentPlanTemplateUtil.GetPlanTemplate(options.ProjectName, options.TargetAppService, options.ProvisioningTool, options.AzdIacOptions);
 

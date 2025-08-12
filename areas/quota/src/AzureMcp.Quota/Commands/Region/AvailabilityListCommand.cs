@@ -63,6 +63,7 @@ public sealed class AvailabilityListCommand(ILogger<AvailabilityListCommand> log
             }
 
             context.Activity?.WithSubscriptionTag(options);
+            context.Activity?.AddTag("ResourceTypes", options.ResourceTypes);
 
             var resourceTypes = options.ResourceTypes.Split(',')
                 .Select(rt => rt.Trim())

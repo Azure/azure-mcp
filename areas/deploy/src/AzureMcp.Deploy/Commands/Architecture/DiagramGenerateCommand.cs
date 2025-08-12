@@ -67,9 +67,9 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
             }
 
             context.Activity?
-                .SetTag("ServiceCount", appTopology.Services.Length)
-                .SetTag("ComputeHostResources", string.Join(", ", appTopology.Services.Select(s => s.AzureComputeHost)))
-                .SetTag("BackingServiceResources", string.Join(", ", appTopology.Services.SelectMany(s => s.Dependencies).Select(d => d.ServiceType)));
+                .AddTag("ServiceCount", appTopology.Services.Length)
+                .AddTag("ComputeHostResources", string.Join(", ", appTopology.Services.Select(s => s.AzureComputeHost)))
+                .AddTag("BackingServiceResources", string.Join(", ", appTopology.Services.SelectMany(s => s.Dependencies).Select(d => d.ServiceType)));
 
             _logger.LogInformation("Successfully parsed app topology with {ServiceCount} services", appTopology.Services.Length);
 
@@ -88,7 +88,7 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
             }
             var encodedDiagram = EncodeMermaid.GetEncodedMermaidChart(chart).Replace("+", "-").Replace("/", "_"); // replace '+' with '-' and "/" with "_" for URL safety and consistency with mermaid.live URL encoding
 
-            context.Activity?.SetTag("MermaidDiagram", encodedDiagram);
+            context.Activity?.AddTag("MermaidDiagram", chart);
 
             var mermaidUrl = $"https://mermaid.live/view#pako:{encodedDiagram}";
             _logger.LogInformation("Generated architecture diagram successfully. Mermaid URL: {MermaidUrl}", mermaidUrl);
