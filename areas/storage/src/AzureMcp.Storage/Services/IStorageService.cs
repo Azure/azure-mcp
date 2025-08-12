@@ -56,6 +56,16 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<Models.BlobDownloadInfo> DownloadBlob(
+        string accountName,
+        string containerName,
+        string blobName,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,

@@ -303,6 +303,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
 | azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
 | azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
+| azmcp-storage-blob-download | Download blob <blob_name> from container <container_name> in storage account <account_name> to my local file system |
+| azmcp-storage-blob-download | Download the blob <blob_name> from container <container_name> in storage account <account_name> to the file /tmp/downloaded-file.txt |
+| azmcp-storage-blob-download | Download blob <blob_name> from container <container_name> in storage account <account_name> and overwrite the existing local file |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
