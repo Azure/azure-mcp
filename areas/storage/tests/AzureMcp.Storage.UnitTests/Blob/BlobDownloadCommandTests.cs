@@ -56,17 +56,15 @@ public class BlobDownloadCommandTests
     public async Task ExecuteAsync_ReturnsDownloadResult()
     {
         // Arrange
-        var expectedResult = new BlobDownloadInfo
-        {
-            BlobName = _knownBlobName,
-            ContainerName = _knownContainerName,
-            DownloadLocation = _knownLocalFilePath,
-            BlobSize = 1024,
-            LastModified = DateTimeOffset.UtcNow,
-            ETag = "\"0x8D123456789ABCD\"",
-            MD5Hash = "abc123def456",
-            WasLocalFileOverwritten = false
-        };
+        var expectedResult = new BlobDownloadInfo(
+            _knownBlobName,
+            _knownContainerName,
+            _knownLocalFilePath,
+            1024,
+            DateTimeOffset.UtcNow,
+            "\"0x8D123456789ABCD\"",
+            "abc123def456",
+            false);
 
         _storageService.DownloadBlob(
             Arg.Is(_knownAccountName),
@@ -96,14 +94,14 @@ public class BlobDownloadCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        
+
         // Try to see what we get with JsonSerializerOptions using CamelCase
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         var commandResult = JsonSerializer.Deserialize<BlobDownloadCommandResult>(json, options);
 
         Assert.NotNull(commandResult);
         Assert.NotNull(commandResult.DownloadInfo);
-        
+
         var result = commandResult.DownloadInfo;
         Assert.Equal(_knownBlobName, result.BlobName);
         Assert.Equal(_knownContainerName, result.ContainerName);
@@ -118,17 +116,15 @@ public class BlobDownloadCommandTests
     public async Task ExecuteAsync_WithOverwrite_ReturnsCorrectResult()
     {
         // Arrange
-        var expectedResult = new BlobDownloadInfo
-        {
-            BlobName = _knownBlobName,
-            ContainerName = _knownContainerName,
-            DownloadLocation = _knownLocalFilePath,
-            BlobSize = 1024,
-            LastModified = DateTimeOffset.UtcNow,
-            ETag = "\"0x8D123456789ABCD\"",
-            MD5Hash = "abc123def456",
-            WasLocalFileOverwritten = true
-        };
+        var expectedResult = new BlobDownloadInfo(
+            _knownBlobName,
+            _knownContainerName,
+            _knownLocalFilePath,
+            1024,
+            DateTimeOffset.UtcNow,
+            "\"0x8D123456789ABCD\"",
+            "abc123def456",
+            true);
 
         _storageService.DownloadBlob(
             Arg.Any<string>(),
@@ -177,17 +173,15 @@ public class BlobDownloadCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            var expectedResult = new BlobDownloadInfo
-            {
-                BlobName = "blob",
-                ContainerName = "container",
-                DownloadLocation = "/path/to/file",
-                BlobSize = 1024,
-                LastModified = DateTimeOffset.UtcNow,
-                ETag = "\"0x8D123456789ABCD\"",
-                MD5Hash = "abc123def456",
-                WasLocalFileOverwritten = false
-            };
+            var expectedResult = new BlobDownloadInfo(
+                "blob",
+                "container",
+                "/path/to/file",
+                1024,
+                DateTimeOffset.UtcNow,
+                "\"0x8D123456789ABCD\"",
+                "abc123def456",
+                false);
 
             _storageService.DownloadBlob(
                 Arg.Any<string>(),

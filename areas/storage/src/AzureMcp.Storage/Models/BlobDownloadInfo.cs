@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace AzureMcp.Storage.Models;
 
-public class BlobDownloadInfo
-{
-    public string BlobName { get; set; } = string.Empty;
-    public string ContainerName { get; set; } = string.Empty;
-    public string DownloadLocation { get; set; } = string.Empty;
-    public long BlobSize { get; set; }
-    public DateTimeOffset LastModified { get; set; }
-    public string ETag { get; set; } = string.Empty;
-    public string? MD5Hash { get; set; }
-    public bool WasLocalFileOverwritten { get; set; }
-}
+public record BlobDownloadInfo(
+    [property: JsonPropertyName("blobName")] string BlobName,
+    [property: JsonPropertyName("containerName")] string ContainerName,
+    [property: JsonPropertyName("downloadLocation")] string DownloadLocation,
+    [property: JsonPropertyName("blobSize")] long BlobSize,
+    [property: JsonPropertyName("lastModified")] DateTimeOffset LastModified,
+    [property: JsonPropertyName("etag")] string ETag,
+    [property: JsonPropertyName("md5Hash")] string? MD5Hash,
+    [property: JsonPropertyName("wasLocalFileOverwritten")] bool WasLocalFileOverwritten);

@@ -359,17 +359,15 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
                 md5Hash = Convert.ToBase64String(result.ContentHash);
             }
 
-            return new Models.BlobDownloadInfo
-            {
-                BlobName = blobName,
-                ContainerName = containerName,
-                DownloadLocation = localFilePath,
-                BlobSize = result.ContentLength,
-                LastModified = result.LastModified,
-                ETag = result.ETag.ToString(),
-                MD5Hash = md5Hash,
-                WasLocalFileOverwritten = wasOverwritten
-            };
+            return new Models.BlobDownloadInfo(
+                blobName,
+                containerName,
+                localFilePath,
+                result.ContentLength,
+                result.LastModified,
+                result.ETag.ToString(),
+                md5Hash,
+                wasOverwritten);
         }
         catch (Exception ex)
         {
