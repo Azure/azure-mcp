@@ -20,7 +20,7 @@ namespace AzureMcp.BicepSchema.Commands
 
         public override string Description =>
        """
-       
+
         Provides the Bicep schema for the most recent apiVersion of an Azure resource. Do not call this command for Terraform IaC generation.
         If you are asked to create or modify resources in a Bicep ARM template, call this function multiple times,
         once for every resource type you are adding, even if you already have information about Bicep resources from other sources.
@@ -64,7 +64,7 @@ namespace AzureMcp.BicepSchema.Commands
                     // Only log the resource type if we are able to get the schema from it.
                     // There is a slight chance that the LLM hallucinates the resource type
                     // parameter with value containing data that we shouldn't log.
-                    context.Activity?.SetTag("resourceType", options.ResourceType);
+                    context.Activity?.AddTag("resourceType", options.ResourceType);
                     context.Response.Results = ResponseResult.Create(
                         new BicepSchemaGetCommandResult(response),
                         BicepSchemaJsonContext.Default.BicepSchemaGetCommandResult);
