@@ -8,7 +8,7 @@ To maintain this compatibility, all code contributions and package dependencies 
 
 This section explains the Native AOT checks enforced in the `azmcp` CI and what partners need to do when a check fails.
 
-## Overview
+### Overview
 
 - When you open a PR, the CI pull request pipeline runs a **Native AOT compile** across all supported OS and architecture combinations.
 - You can find this CI stage under the name **"(Native AOT) Build module"**.
@@ -16,7 +16,7 @@ This section explains the Native AOT checks enforced in the `azmcp` CI and what 
   - Code you added to **azmcp**, or
   - A new package reference you introduced.
 
-## What to do if it fails
+### What to do if it fails
 
 1. **Run the build locally**
 
@@ -39,7 +39,22 @@ This section explains the Native AOT checks enforced in the `azmcp` CI and what 
    - If not, look for an **alternative AOT-friendly** package that provides similar functionality.
    - If no AOT-safe option exists, we **cannot** merge your feature into `azmcp` with that package reference.
 
-## Policy & Notes
+4. **If violations come from a library you own**
+
+   - See the [Making Your Library AOT Compatible](#making-your-library-aot-compatible) section.
+
+### Policy & Notes
 
 - Do **not** add any external packages under the `'$(BuildNative)' == 'true'` ItemGroup in **AzureMcp.Cli.csproj**. This exception applies **only** to `Azure.ResourceManager.*` packages.
 - Please call out any `Azure.ResourceManager.*` usage in your PR so reviewers can track it.
+
+## Making Your Library AOT Compatible
+
+To make your library AOT compatible, review the comprehensive guide: [Creating AOT Compatible Libraries](https://devblogs.microsoft.com/dotnet/creating-aot-compatible-libraries/)
+
+   Key practices include:
+   - Add `IsAotCompatible=true` to library's project file
+   - Avoid reflection-based APIs
+   - Use source generators instead of runtime code generation  
+   - Mark AOT-incompatible APIs with `RequiresUnreferencedCode` or `RequiresDynamicCode` attributes
+   - Test your library with AOT compilation
