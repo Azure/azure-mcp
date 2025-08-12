@@ -1,0 +1,49 @@
+# Tool Description Evaluation – Quickstart Guide
+
+This tool helps you test and validate the descriptions of new Azure MCP Server tools. It checks how well your tool descriptions match real user prompts, ensuring users get the right tool when they ask for something.
+
+## What It Does
+
+- Loads your tool definitions
+- Loads test prompts
+- Uses Azure OpenAI embeddings to compare prompts and tool descriptions
+- Scores how well each description matches each prompt
+- Reports which tools are most likely to be selected for each prompt
+
+## How To Use
+
+### Requirements
+
+- An Azure OpenAI deployment of the text embedding model `text-embedding-3-large`
+
+### Minimal Setup
+
+Set your Azure OpenAI endpoint and API key as environment variables:
+
+```bash
+export AOAI_ENDPOINT="https://<your-resource>.openai.azure.com"
+export TEXT_EMBEDDING_API_KEY="your_api_key_here"
+```
+
+Or copy `.env.example` to `.env` and fill in your credentials.
+
+### Typical Workflow
+
+1. Add or update a tool description in the project
+2. Add test prompts for your tool to `/e2eTests/e2eTestPrompts.md`
+3. Run the analyzer using PowerShell
+
+    ```pwsh
+    ./Run-ToolDescriptionConfidenceScore.ps1
+    ```
+
+5. Check if your tool ranks in the top 3 for the prompts (ideally #1) and with a score of at least `0.4`
+6. Refine the description if needed and try again
+
+## Why Use This Tool?
+
+- Quickly validate new tool descriptions
+- Ensure users get the right tool for their requests
+- No need to learn all options—just run and review results
+
+For more details and usage options, see the full [README](eng/tools/ToolDescriptionConfidenceScore/README.md).
