@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Options;
 using AzureMcp.AppConfig.Options.KeyValue;
 using AzureMcp.AppConfig.Services;

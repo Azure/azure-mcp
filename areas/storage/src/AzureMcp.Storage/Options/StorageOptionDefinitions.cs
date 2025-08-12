@@ -28,6 +28,7 @@ public static class StorageOptionDefinitions
     public const string AccessTierName = "access-tier";
     public const string EnableHttpsTrafficOnlyName = "enable-https-traffic-only";
     public const string AllowBlobPublicAccessName = "allow-blob-public-access";
+    public const string BlobContainerPublicAccessName = "blob-container-public-access";
     public const string EnableHierarchicalNamespaceName = "enable-hierarchical-namespace";
 
     public static readonly Option<string> Account = new(
@@ -100,6 +101,14 @@ public static class StorageOptionDefinitions
         $"--{EnableHierarchicalNamespaceName}",
         () => false,
         "Whether to enable hierarchical namespace (Data Lake Storage Gen2) for the storage account."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> BlobContainerPublicAccess = new(
+        $"--{BlobContainerPublicAccessName}",
+        "The public access level for the blob container. Valid values: blob (allows public read access to blobs), container (allows public read access to both blobs and container metadata). If not specified, the container will be private."
     )
     {
         IsRequired = false

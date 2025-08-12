@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;

@@ -7,7 +7,6 @@ using System.Text.Json.Serialization;
 using AzureMcp.BicepSchema.Commands;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

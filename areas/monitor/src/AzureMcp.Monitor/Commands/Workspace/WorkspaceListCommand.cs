@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Models;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Services;

@@ -6,15 +6,12 @@ using System.CommandLine.Parsing;
 using System.Text.Json;
 using AzureMcp.Aks.Commands;
 using AzureMcp.Aks.Commands.Cluster;
-using AzureMcp.Aks.Models;
 using AzureMcp.Aks.Services;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.Aks.UnitTests.Cluster;
