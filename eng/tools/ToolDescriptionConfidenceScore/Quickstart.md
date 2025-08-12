@@ -37,8 +37,8 @@ Or copy `.env.example` to `.env` and fill in your credentials.
     ./Run-ToolDescriptionConfidenceScore.ps1
     ```
 
-5. Check if your tool ranks in the top 3 for the prompts (ideally #1) and with a score of at least `0.4`
-6. Refine the description if needed and try again
+4. Check if your tool ranks in the top 3 for the prompts (ideally #1) and with a score of at least `0.4`
+5. Refine the description if needed and try again
 
 ## Why Use This Tool?
 
@@ -46,4 +46,4 @@ Or copy `.env.example` to `.env` and fill in your credentials.
 - Ensure users get the right tool for their requests
 - No need to learn all options—just run and review results
 
-For more details and usage options, see the full [README](eng/tools/ToolDescriptionConfidenceScore/README.md).
+For more details and usage options, see the full [README](README.md).
