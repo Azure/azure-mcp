@@ -63,6 +63,14 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<BlobContainerProperties> CreateContainer(
+        string accountName,
+        string containerName,
+        string subscription,
+        string? blobContainerPublicAccess = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<List<DataLakePathInfo>> ListDataLakePaths(
         string accountName,
         string fileSystemName,
