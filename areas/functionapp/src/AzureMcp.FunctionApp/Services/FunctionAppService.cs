@@ -73,7 +73,6 @@ public sealed class FunctionAppService(
 
         return new FunctionAppInfo(
             data.Name,
-            data.Id.SubscriptionId,
             siteResource.Id.ResourceGroupName,
             data.Location.ToString(),
             data.AppServicePlanId.Name,

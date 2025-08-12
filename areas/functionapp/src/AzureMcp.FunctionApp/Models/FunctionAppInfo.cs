@@ -8,7 +8,6 @@ namespace AzureMcp.FunctionApp.Models;
 /// </summary>
 public record FunctionAppInfo(
     string? Name,
-    string? SubscriptionId,
     string? ResourceGroupName,
     string? Location,
     string? AppServicePlanName,

@@ -55,8 +55,8 @@ public sealed class FunctionAppListCommandTests
         {
             var testFunctionApps = new List<FunctionAppInfo>
             {
-                new("functionApp1", "sub123", null, "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
-                new("functionApp2", "sub123", null, "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
+                new("functionApp1", null, "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
+                new("functionApp2", null, "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
             };
             _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
                 .Returns(testFunctionApps);
@@ -87,8 +87,8 @@ public sealed class FunctionAppListCommandTests
         // Arrange
         var expectedFunctionApps = new List<FunctionAppInfo>
         {
-            new("functionApp1", "sub123", "rg1", "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
-            new("functionApp2", "sub123", "rg2", "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
+            new("functionApp1", "rg1", "eastus", "plan1", "Running", "functionapp1.azurewebsites.net", null),
+            new("functionApp2", "rg2", "westus", "plan2", "Stopped", "functionapp2.azurewebsites.net", null)
         };
         _functionAppService.ListFunctionApps(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedFunctionApps);
@@ -113,7 +113,6 @@ public sealed class FunctionAppListCommandTests
         Assert.NotNull(result);
         Assert.Equal(expectedFunctionApps.Count, result.Results.Count);
         Assert.Equal(expectedFunctionApps[0].Name, result.Results[0].Name);
-        Assert.Equal(expectedFunctionApps[0].SubscriptionId, result.Results[0].SubscriptionId);
         Assert.Equal(expectedFunctionApps[0].ResourceGroupName, result.Results[0].ResourceGroupName);
         Assert.Equal(expectedFunctionApps[0].AppServicePlanName, result.Results[0].AppServicePlanName);
         Assert.Equal(expectedFunctionApps[0].Location, result.Results[0].Location);
