@@ -24,7 +24,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
 - [Development Environment](#development-environment)
   - [Development in VS Code](#development-in-vs-code)
-  - [Locating MCP Server Binaries in VS Code](locating-mcp-server-binaries-in-vs-code)
+  - [Locating MCP Server Binaries in VS Code](#locating-mcp-server-binaries-in-vs-code)
 
 ## Common Issues
 

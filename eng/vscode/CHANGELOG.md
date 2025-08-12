@@ -4,7 +4,7 @@
 ## 0.5.5 - Unreleased
 
 ### Added
-- - Bundled the **GitHub Copilot for Azure** extension as part of the Azure MCP Server extension pack.
+- Bundled the **GitHub Copilot for Azure** extension as part of the Azure MCP Server extension pack.
 
 ### Changed
 
