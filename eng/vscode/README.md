@@ -28,36 +28,35 @@ Follow these simple steps to start using Azure MCP in VS Code:
    > **New in VS Code:** You can now configure MCP servers to start automatically using the `chat.mcp.autostart` setting, instead of manually restarting them after configuration changes.
 
    #### **Enable Autostart**
-   1. Open **Settings** in VS Code.
-   2. Search for `chat.mcp.autostart`.
-   3. Select **newAndOutdated** to automatically start MCP servers without manual refresh.
-   4. You can also set this from the **refresh icon tooltip** in the Chat view, which also shows which servers will auto-start.
+      1. Open **Settings** in VS Code.
+      2. Search for `chat.mcp.autostart`.
+      3. Select **newAndOutdated** to automatically start MCP servers without manual refresh.
+      4. You can also set this from the **refresh icon tooltip** in the Chat view, which also shows which servers will auto-start.
 
-   ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Tooltip.png)
+         ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Tooltip.png)
 
    #### **Trust Prompt**
-   - The **first time** an MCP server starts after being updated or changed, VS Code will prompt you to **trust** the server.
-   - This trust step is **particularly important** if autostart is enabled, as it prevents unwanted commands from running automatically.
+      - The **first time** an MCP server starts after being updated or changed, VS Code will prompt you to **trust** the server.
+      - This trust step is **particularly important** if autostart is enabled, as it prevents unwanted commands from running automatically.
 
    #### **Manual Start (if autostart is off)**
-   1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
-   2. Run `MCP: List Servers`.
+      1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+      2. Run `MCP: List Servers`.
 
-      ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
+         ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
 
-   3. Select `Azure MCP Server ext`, then click **Start Server**.
+      3. Select `Azure MCP Server ext`, then click **Start Server**.
 
-      ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
-      ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+         ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
+         ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
 
+      4. **Check That It's Running**
+         - Go to the **Output** tab in VS Code.
+         - Look for log messages confirming the server started successfully.
 
-3. **Check That It's Running**
-   - Go to the **Output** tab in VS Code.
-   - Look for log messages confirming the server started successfully.
+         ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
 
-   ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
-
-4. **(Optional) Enable Specific Azure Services**
+3. **(Optional) Enable Specific Azure Services**
    - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
 
      ```json
