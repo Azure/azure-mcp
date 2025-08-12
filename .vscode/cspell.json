@@ -117,6 +117,8 @@
                 "hotmail",
                 "Intune",
                 "kcsb",
+                "kubelet",
+                "kubenet",
                 "LASTEXITCODE",
                 "locproj",
                 "logissue",
