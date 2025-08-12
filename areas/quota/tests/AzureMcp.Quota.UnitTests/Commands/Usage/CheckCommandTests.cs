@@ -270,4 +270,146 @@ public sealed class CheckCommandTests
         Assert.Equal(200, result.Status);
         Assert.Null(result.Results); // Should be null when no quotas are found
     }
+
+    [Fact]
+    public async Task Should_handle_whitespace_only_resource_types()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var region = "eastus";
+        var resourceTypes = "     ";
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--region", region,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(400, result.Status);
+    }
+
+    [Fact]
+    public async Task Should_handle_mixed_casing_resource_types()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var region = "eastus";
+        var resourceTypes = "MICROSOFT.APP, microsoft.storage/storageaccounts, Microsoft.Compute/VirtualMachines";
+
+        var expectedQuotaInfo = new Dictionary<string, List<UsageInfo>>
+        {
+            { "MICROSOFT.APP", new List<UsageInfo> { new("ContainerApps", 100, 5, "Count") } },
+            { "microsoft.storage/storageaccounts", new List<UsageInfo> { new("StorageAccounts", 250, 15, "Count") } },
+            { "Microsoft.Compute/VirtualMachines", new List<UsageInfo> { new("VMs", 50, 10, "Count") } }
+        };
+
+        _quotaService.GetAzureQuotaAsync(
+                Arg.Is<List<string>>(list =>
+                    list.Count == 3 &&
+                    list.Contains("MICROSOFT.APP") &&
+                    list.Contains("microsoft.storage/storageaccounts") &&
+                    list.Contains("Microsoft.Compute/VirtualMachines")),
+                subscriptionId,
+                region)
+            .Returns(expectedQuotaInfo);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--region", region,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+        Assert.NotNull(result.Results);
+
+        // Verify the service was called with the correct casing preserved
+        await _quotaService.Received(1).GetAzureQuotaAsync(
+            Arg.Is<List<string>>(list =>
+                list.Count == 3 &&
+                list.Contains("MICROSOFT.APP") &&
+                list.Contains("microsoft.storage/storageaccounts") &&
+                list.Contains("Microsoft.Compute/VirtualMachines")),
+            subscriptionId,
+            region);
+    }
+
+    [Fact]
+    public async Task Should_handle_very_long_resource_types_list()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var region = "eastus";
+
+        // Create a very long list of resource types
+        var resourceTypesList = new List<string>();
+        for (int i = 1; i <= 50; i++)
+        {
+            resourceTypesList.Add($"Microsoft.TestProvider{i}/resourceType{i}");
+        }
+        var resourceTypes = string.Join(", ", resourceTypesList);
+
+        var expectedQuotaInfo = new Dictionary<string, List<UsageInfo>>();
+        foreach (var resourceType in resourceTypesList)
+        {
+            expectedQuotaInfo.Add(resourceType, new List<UsageInfo>
+            {
+                new($"Resource{resourceType.Split('/')[1]}", 100, 10, "Count")
+            });
+        }
+
+        _quotaService.GetAzureQuotaAsync(
+                Arg.Is<List<string>>(list => list.Count == 50),
+                subscriptionId,
+                region)
+            .Returns(expectedQuotaInfo);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--region", region,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+        Assert.NotNull(result.Results);
+
+        // Verify the service was called with all 50 resource types
+        await _quotaService.Received(1).GetAzureQuotaAsync(
+            Arg.Is<List<string>>(list => list.Count == 50),
+            subscriptionId,
+            region);
+
+        // Verify the response contains all expected resource types
+        var json = JsonSerializer.Serialize(result.Results);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<CheckCommand.UsageCheckCommandResult>(json, options);
+        Assert.NotNull(response);
+        Assert.NotNull(response.UsageInfo);
+        Assert.Equal(50, response.UsageInfo.Count);
+    }
 }

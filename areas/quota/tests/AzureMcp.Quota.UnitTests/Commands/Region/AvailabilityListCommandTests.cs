@@ -371,4 +371,159 @@ public sealed class AvailabilityListCommandTests
             cognitiveServiceModelVersion,
             cognitiveServiceDeploymentSkuName);
     }
+
+    [Fact]
+    public async Task Should_handle_whitespace_only_resource_types()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var resourceTypes = "   ";
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(400, result.Status);
+        Assert.Contains("Missing Required options: --resource-types", result.Message);
+
+        // Verify the service was not called
+        await _quotaService.DidNotReceive().GetAvailableRegionsForResourceTypesAsync(
+            Arg.Any<string[]>(),
+            Arg.Any<string>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>());
+    }
+
+    [Fact]
+    public async Task Should_handle_mixed_casing_in_resource_types()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var resourceTypes = "microsoft.web/SITES, MICROSOFT.Storage/storageaccounts, Microsoft.COMPUTE/VirtualMachines";
+
+        var expectedRegions = new List<string> { "eastus", "westus2" };
+
+        _quotaService.GetAvailableRegionsForResourceTypesAsync(
+                Arg.Is<string[]>(array =>
+                    array.Length == 3 &&
+                    array.Contains("microsoft.web/SITES") &&
+                    array.Contains("MICROSOFT.Storage/storageaccounts") &&
+                    array.Contains("Microsoft.COMPUTE/VirtualMachines")),
+                subscriptionId,
+                Arg.Any<string?>(),
+                Arg.Any<string?>(),
+                Arg.Any<string?>())
+            .Returns(expectedRegions);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+
+        // Verify the service was called with resource types preserving original casing
+        await _quotaService.Received(1).GetAvailableRegionsForResourceTypesAsync(
+            Arg.Is<string[]>(array =>
+                array.Length == 3 &&
+                array.Contains("microsoft.web/SITES") &&
+                array.Contains("MICROSOFT.Storage/storageaccounts") &&
+                array.Contains("Microsoft.COMPUTE/VirtualMachines")),
+            subscriptionId,
+            null,
+            null,
+            null);
+    }
+
+    [Fact]
+    public async Task Should_handle_very_long_resource_types_list()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+
+        // Create a very long list of resource types
+        var resourceTypesList = new List<string>();
+        for (int i = 1; i <= 50; i++)
+        {
+            resourceTypesList.Add($"Microsoft.TestProvider{i}/resourceType{i}");
+        }
+        var resourceTypes = string.Join(", ", resourceTypesList);
+
+        var expectedRegions = new List<string>
+        {
+            "eastus",
+            "westus2",
+            "centralus",
+            "northeurope",
+            "southeastasia"
+        };
+
+        _quotaService.GetAvailableRegionsForResourceTypesAsync(
+                Arg.Is<string[]>(array => array.Length == 50),
+                subscriptionId,
+                Arg.Any<string?>(),
+                Arg.Any<string?>(),
+                Arg.Any<string?>())
+            .Returns(expectedRegions);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+        Assert.NotNull(result.Results);
+
+        // Verify the service was called with all 50 resource types
+        await _quotaService.Received(1).GetAvailableRegionsForResourceTypesAsync(
+            Arg.Is<string[]>(array => array.Length == 50),
+            subscriptionId,
+            null,
+            null,
+            null);
+
+        // Verify the response structure
+        var json = JsonSerializer.Serialize(result.Results);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<AvailabilityListCommand.RegionCheckCommandResult>(json, options);
+        Assert.NotNull(response);
+        Assert.NotNull(response.AvailableRegions);
+        Assert.Equal(5, response.AvailableRegions.Count);
+
+        // Verify the expected regions are returned
+        Assert.Contains("eastus", response.AvailableRegions);
+        Assert.Contains("westus2", response.AvailableRegions);
+        Assert.Contains("centralus", response.AvailableRegions);
+        Assert.Contains("northeurope", response.AvailableRegions);
+        Assert.Contains("southeastasia", response.AvailableRegions);
+    }
+
 }

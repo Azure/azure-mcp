@@ -86,7 +86,7 @@ public class QuotaCommandTests : CommandTestsBase,
         Assert.Equal(JsonValueKind.Array, availableRegions.ValueKind);
         Assert.NotEmpty(availableRegions.EnumerateArray());
         var actualRegions = availableRegions.EnumerateArray().Select(x => x.GetString() ?? string.Empty).ToHashSet();
-        // only available for subscription 9e347dc4-e2fb-4892-b7c0-ca6f58eeed6d 
+        // only available for test subscription
         // var expectedRegions = new HashSet<string>
         // {
         //     "southafricanorth","westus","australiaeast","brazilsouth","southeastasia",
@@ -123,7 +123,7 @@ public class QuotaCommandTests : CommandTestsBase,
         Assert.NotEmpty(availableRegions.EnumerateArray());
         var actualRegions = availableRegions.EnumerateArray().Select(x => x.GetString() ?? string.Empty).ToHashSet();
 
-        // only available for subscription 9e347dc4-e2fb-4892-b7c0-ca6f58eeed6d
+        // only available for test subscription
         // var expectedRegions = new HashSet<string>
         // {
         //     "australiaeast", "westus", "southcentralus", "eastus", "eastus2",
