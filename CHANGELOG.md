@@ -24,6 +24,8 @@
 
 ### Other Changes
 
+- Consolidate "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
+
 ## 0.5.4 (2025-08-07)
 
 ### Bugs Fixed
