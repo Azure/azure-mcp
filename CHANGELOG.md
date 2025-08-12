@@ -8,6 +8,11 @@
 - Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
 - Added support for retrieving Azure Storage blob details via the `azmcp-storage-blob-details` command. This command returns comprehensive blob properties including metadata, content information, access tier, lease status, and other blob-specific configuration details.
 - Added support for creating Azure Storage blob containers via the `azmcp-storage-blob-container-create` command. This command enables creating blob containers with optional public access settings (blob or container level) and returns container metadata including last modified time and ETag.
+- Added AI Search to AOT build by switching to AOT-compatible `SearchAsync<T>` overload.
+
+### Dependency Updates
+
+- Updated Azure.Search.Documents: `11.7.0-beta.4` → `11.7.0-beta.6` for AOT support.
 
 ### Breaking Changes
 
