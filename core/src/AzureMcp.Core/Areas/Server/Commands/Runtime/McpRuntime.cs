@@ -58,6 +58,8 @@ public sealed class McpRuntime : IMcpRuntime
     {
         using var activity = await _telemetry.StartActivity(ActivityName.ToolExecuted, request?.Server?.ClientInfo);
 
+        Activity.Current = activity;
+
         if (request?.Params == null)
         {
             var content = new TextContentBlock
