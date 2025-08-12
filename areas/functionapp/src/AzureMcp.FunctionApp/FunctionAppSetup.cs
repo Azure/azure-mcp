@@ -19,7 +19,7 @@ public class FunctionAppSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var functionApp = new CommandGroup("functionapp", "Function App operations");
+        var functionApp = new CommandGroup("functionapp", "Function App operations - Commands for managing and accessing Azure Function App resources.");
         rootGroup.AddSubGroup(functionApp);
 
         functionApp.AddCommand("list", new FunctionAppListCommand(
