@@ -1,17 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace AzureMcp.FunctionApp.Models;
 
-/// <summary>
-/// Information about an Azure Function App resource.
-/// </summary>
 public record FunctionAppInfo(
-    string? Name,
-    string? ResourceGroupName,
-    string? Location,
-    string? AppServicePlanName,
-    string? Status,
-    string? DefaultHostName,
-    IDictionary<string, string>? Tags
+    [property: JsonPropertyName("name")] string? Name,
+    [property: JsonPropertyName("resourceGroupName")] string? ResourceGroupName,
+    [property: JsonPropertyName("location")] string? Location,
+    [property: JsonPropertyName("appServicePlanName")] string? AppServicePlanName,
+    [property: JsonPropertyName("status")] string? Status,
+    [property: JsonPropertyName("defaultHostName")] string? DefaultHostName,
+    [property: JsonPropertyName("tags")] IDictionary<string, string>? Tags
 );
