@@ -14,13 +14,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Storage.Commands.Account;
 
-public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger) : SubscriptionCommand<AccountDetailsOptions>()
+public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger) : BaseStorageCommand<AccountDetailsOptions>()
 {
     private const string CommandTitle = "Get Storage Account Details";
     private readonly ILogger<AccountDetailsCommand> _logger = logger;
-
-    // Define options from OptionDefinitions
-    private readonly Option<string> _accountOption = StorageOptionDefinitions.Account;
 
     public override string Name => "details";
 
@@ -30,25 +27,11 @@ public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger)
         metadata for the specified storage account including name, location, SKU, access settings, and configuration
         details. Returns a JSON object with all storage account properties.
           Required options:
-        - --account: The name of the storage account to get details for
         """;
 
     public override string Title => CommandTitle;
 
     public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
-
-    protected override void RegisterOptions(Command command)
-    {
-        base.RegisterOptions(command);
-        command.AddOption(_accountOption);
-    }
-
-    protected override AccountDetailsOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.Account = parseResult.GetValueForOption(_accountOption);
-        return options;
-    }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -61,8 +44,6 @@ public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger)
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             // Get the storage service from DI
             var storageService = context.GetService<IStorageService>();

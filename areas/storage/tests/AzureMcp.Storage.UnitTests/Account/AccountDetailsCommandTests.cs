@@ -57,31 +57,47 @@ public class AccountDetailsCommandTests
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
-        if (shouldSucceed)
-        {
-            var expectedAccount = new Storage.Models.StorageAccountInfo(
-                "mystorageaccount", "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true);
+        var originalSubscriptionEnv = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
 
-            _storageService.GetStorageAccountDetails(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .Returns(Task.FromResult(expectedAccount));
+        try
+        {
+            // Clear environment variable for failing test cases to ensure proper validation
+            if (!shouldSucceed && !args.Contains("--subscription"))
+            {
+                Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", null);
+            }
+
+            if (shouldSucceed)
+            {
+                var expectedAccount = new Storage.Models.StorageAccountInfo(
+                    "mystorageaccount", "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true);
+
+                _storageService.GetStorageAccountDetails(
+                    Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+                    .Returns(Task.FromResult(expectedAccount));
+            }
+
+            var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+            // Act
+            var response = await _command.ExecuteAsync(_context, parseResult);
+
+            // Assert
+            Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
+            if (shouldSucceed)
+            {
+                Assert.NotNull(response.Results);
+                Assert.Equal("Success", response.Message);
+            }
+            else
+            {
+                Assert.Contains("required", response.Message.ToLower());
+            }
         }
-
-        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
-        if (shouldSucceed)
+        finally
         {
-            Assert.NotNull(response.Results);
-            Assert.Equal("Success", response.Message);
-        }
-        else
-        {
-            Assert.Contains("required", response.Message.ToLower());
+            // Restore original environment variable
+            Environment.SetEnvironmentVariable("AZURE_SUBSCRIPTION_ID", originalSubscriptionEnv);
         }
     }
 
