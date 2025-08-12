@@ -3,4 +3,4 @@
 
 namespace AzureMcp.FunctionApp.Options;
 
-public class FunctionAppListOptions : BaseFunctionAppOptions;
+public class FunctionAppListOptions : SubscriptionOptions;
