@@ -23,9 +23,6 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
     private readonly Option<string> _deploymentTargetServiceOption = DeployOptionDefinitions.PlanGet.TargetAppService;
     private readonly Option<string> _provisioningToolOption = DeployOptionDefinitions.PlanGet.ProvisioningTool;
     private readonly Option<string> _azdIacOptionsOption = DeployOptionDefinitions.PlanGet.AzdIacOptions;
-    private readonly Option<string> _backingServicesOption = DeployOptionDefinitions.PlanGet.BackingServices;
-    private readonly Option<int> _serviceCountOption = DeployOptionDefinitions.PlanGet.ServiceCount;
-    private readonly Option<string> _languagesOption = DeployOptionDefinitions.PlanGet.Languages;
 
     public override string Name => "get";
 
@@ -45,9 +42,6 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
         command.AddOption(_deploymentTargetServiceOption);
         command.AddOption(_provisioningToolOption);
         command.AddOption(_azdIacOptionsOption);
-        command.AddOption(_backingServicesOption);
-        command.AddOption(_serviceCountOption);
-        command.AddOption(_languagesOption);
     }
 
     private GetOptions BindOptions(ParseResult parseResult)
@@ -58,10 +52,7 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
             ProjectName = parseResult.GetValueForOption(_projectNameOption) ?? string.Empty,
             TargetAppService = parseResult.GetValueForOption(_deploymentTargetServiceOption) ?? string.Empty,
             ProvisioningTool = parseResult.GetValueForOption(_provisioningToolOption) ?? string.Empty,
-            AzdIacOptions = parseResult.GetValueForOption(_azdIacOptionsOption) ?? string.Empty,
-            BackingServices = parseResult.GetValueForOption(_backingServicesOption) ?? string.Empty,
-            ServiceCount = parseResult.GetValueForOption(_serviceCountOption),
-            Languages = parseResult.GetValueForOption(_languagesOption) ?? string.Empty
+            AzdIacOptions = parseResult.GetValueForOption(_azdIacOptionsOption) ?? string.Empty
         };
     }
 
@@ -80,10 +71,7 @@ public sealed class GetCommand(ILogger<GetCommand> logger)
                     .AddTag("ProjectName", options.ProjectName)
                     .AddTag("ComputeHostResources", options.TargetAppService)
                     .AddTag("DeploymentTool", options.ProvisioningTool)
-                    .AddTag("IacType", options.AzdIacOptions ?? string.Empty)
-                    .AddTag("BackingServiceResources", options.BackingServices ?? string.Empty)
-                    .AddTag("ServiceCount", options.ServiceCount)
-                    .AddTag("Languages", options.Languages ?? string.Empty);
+                    .AddTag("IacType", options.AzdIacOptions ?? string.Empty);
             
             var planTemplate = DeploymentPlanTemplateUtil.GetPlanTemplate(options.ProjectName, options.TargetAppService, options.ProvisioningTool, options.AzdIacOptions);
 

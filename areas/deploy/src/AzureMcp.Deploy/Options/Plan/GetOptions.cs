@@ -21,13 +21,4 @@ public sealed class GetOptions
 
     [JsonPropertyName("azdIacOptions")]
     public string? AzdIacOptions { get; set; } = string.Empty;
-
-    [JsonPropertyName("backingServices")]
-    public string BackingServices { get; set; } = string.Empty;
-
-    [JsonPropertyName("serviceCount")]
-    public int ServiceCount { get; set; } = 1;
-
-    [JsonPropertyName("languages")]
-    public string Languages { get; set; } = string.Empty;
 }
