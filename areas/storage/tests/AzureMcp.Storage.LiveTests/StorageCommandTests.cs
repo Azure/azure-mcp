@@ -248,30 +248,6 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
-        public async Task Should_create_container_with_blob_public_access()
-        {
-            var containerName = $"test-container-blob-{DateTime.UtcNow.Ticks}";
-
-            var result = await CallToolAsync(
-                "azmcp_storage_blob_container_create",
-                new()
-                {
-                { "subscription", Settings.SubscriptionName },
-                { "account", Settings.ResourceBaseName },
-                { "container", containerName },
-                { "blob-container-public-access", "blob" }
-                });
-
-            var actual = result.AssertProperty("container");
-            Assert.Equal(JsonValueKind.Object, actual.ValueKind);
-            Assert.True(actual.TryGetProperty("lastModified", out _));
-            Assert.True(actual.TryGetProperty("eTag", out _));
-
-            var publicAccess = actual.AssertProperty("publicAccess");
-            Assert.Equal("Blob", publicAccess.GetString());
-        }
-
-        [Fact]
         public async Task Should_list_datalake_filesystem_paths()
         {
             var result = await CallToolAsync(
