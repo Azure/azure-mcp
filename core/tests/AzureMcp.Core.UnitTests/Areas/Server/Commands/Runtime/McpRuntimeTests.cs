@@ -6,6 +6,7 @@ using System.Text.Json;
 using AzureMcp.Core.Areas.Server.Commands.Runtime;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
+using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NSubstitute;
 using Xunit;
+using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server.Commands.Runtime;
 
@@ -65,7 +67,7 @@ public class McpRuntimeTests
 
     private static string GetAndAssertTagKeyValue(Activity activity, string tagName)
     {
-        var matching = activity.Tags.SingleOrDefault(x => x.Key == tagName);
+        var matching = activity.Tags.SingleOrDefault(x => string.Equals(x.Key, tagName, StringComparison.OrdinalIgnoreCase));
 
         Assert.NotNull(matching.Value);
         Assert.NotEmpty(matching.Value);
@@ -240,7 +242,8 @@ public class McpRuntimeTests
         var toolName = "test-tool";
         var request = CreateCallToolRequest(toolName, new Dictionary<string, JsonElement>
         {
-            { "param1", JsonDocument.Parse("\"value1\"").RootElement }
+            { "param1", JsonDocument.Parse("\"value1\"").RootElement },
+            { OptionDefinitions.Common.SubscriptionName, JsonDocument.Parse("\"test-subscription\"").RootElement },
         });
         mockToolLoader.CallToolHandler(request, Arg.Any<CancellationToken>())
             .Returns(new ValueTask<CallToolResult>(expectedResult));
@@ -257,6 +260,9 @@ public class McpRuntimeTests
 
         var actualToolName = GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.ToolName);
         Assert.Equal(toolName, actualToolName);
+
+        var actualSubscription = GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.SubscriptionGuid);
+        Assert.Equal("test-subscription", actualSubscription);
     }
 
     [Fact]
@@ -372,13 +378,16 @@ public class McpRuntimeTests
             runtime.CallToolHandler(request, CancellationToken.None).AsTask());
         Assert.Equal(expectedException.Message, actualException.Message);
 
-        await mockTelemetry.Received(1).StartActivity(TelemetryConstants.ActivityName.ToolExecuted, Arg.Any<Implementation?>());
+        await mockTelemetry.Received(1).StartActivity(ActivityName.ToolExecuted, Arg.Any<Implementation?>());
         Assert.Equal(ActivityStatusCode.Error, activity.Status);
 
-        var actualToolName = GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.ToolName);
+        var actualToolName = GetAndAssertTagKeyValue(activity, TagName.ToolName);
         Assert.Equal(request.Params.Name, actualToolName);
 
-        GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.ErrorDetails);
+        GetAndAssertTagKeyValue(activity, TagName.ErrorDetails);
+
+        Assert.DoesNotContain(activity.Tags,
+            x => string.Equals(x.Key, TagName.SubscriptionGuid, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -738,7 +747,8 @@ public class McpRuntimeTests
         var toolName = "existing-tool";
         var request = CreateCallToolRequest(toolName, new Dictionary<string, JsonElement>
         {
-            { "action", JsonDocument.Parse("\"execute\"").RootElement }
+            { "action", JsonDocument.Parse("\"execute\"").RootElement },
+            { OptionDefinitions.Common.SubscriptionName, JsonDocument.Parse("\"test-subscription\"").RootElement },
         });
         mockToolLoader.CallToolHandler(request, Arg.Any<CancellationToken>())
             .Returns(new ValueTask<CallToolResult>(expectedResult));
@@ -754,5 +764,8 @@ public class McpRuntimeTests
 
         var actualToolName = GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.ToolName);
         Assert.Equal(toolName, actualToolName);
+
+        var actualSubscriptionName = GetAndAssertTagKeyValue(activity, TelemetryConstants.TagName.SubscriptionGuid);
+        Assert.Equal("test-subscription", actualSubscriptionName);
     }
 }
