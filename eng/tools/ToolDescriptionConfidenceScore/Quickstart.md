@@ -48,4 +48,4 @@ Or copy `.env.example` to `.env` and fill in your credentials.
 - Ensure users get the right tool for their requests
 - No need to learn all options—just run and review results
 
-For more details and usage options, see the full [README](README.md).
+For more details and usage options, see the full [README](https://github.com/Azure/azure-mcp/blob/main/eng/tools/ToolDescriptionConfidenceScore/README.md).
