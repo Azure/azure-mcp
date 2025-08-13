@@ -323,28 +323,39 @@ Before running live tests:
 - Deploy test resources:
 
 ```pwsh
-./eng/scripts/Deploy-TestResources.ps1 -Area Storage
+./eng/scripts/Deploy-TestResources.ps1 -Areas @('Storage')
 ```
 
 **Deploy-TestResources.ps1 Parameters:**
 
-| Parameter           | Type   | Description                                                                                                  |
-|---------------------|--------|--------------------------------------------------------------------------------------------------------------|
-| `Area`              | string | REQUIRED. The service area to deploy test resources for (e.g., `Storage`, `KeyVault`). One area per run.    |
-| `SubscriptionId`    | string | Target subscription ID. If omitted, the current Azure context subscription (from `Get-AzContext`) is used. |
-| `ResourceGroupName` | string | Resource group name. Defaults to `{username}-mcp{hash(username)}`.                                          |
-| `BaseName`          | string | Base name prefix for resources. Defaults to `mcp{hash}`.                                                    |
-| `Unique`            | switch | Use a unique GUID-based hash for this invocation instead of the stable username+subscription hash.          |
-| `DeleteAfterHours`  | int    | Hours after which resources are tagged for deletion. Defaults to `12`.                                      |
+| Parameter           | Type     | Description                                                                                                                                                                   |
+|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Areas`             | string[] | REQUIRED (ParameterSet: MultipleAreas). Array of service areas to deploy test resources for (e.g., `@('Storage', 'KeyVault')`). Areas are case-insensitive.               |
+| `All`               | switch   | REQUIRED (ParameterSet: AllAreas). Deploy test resources for all available areas that have test-resources.bicep templates.                                                   |
+| `Area`              | string   | DEPRECATED (ParameterSet: SingleArea). Single service area to deploy test resources for. Use `-Areas @('AreaName')` instead.                                               |
+| `SubscriptionId`    | string   | Target subscription ID. If omitted, the current Azure context subscription (from `Get-AzContext`) is used.                                                                  |
+| `ResourceGroupName` | string   | Resource group name. Defaults to `{username}-mcp{hash(username,subscription,area)}`. When deploying multiple areas, each gets a unique resource group.                      |
+| `BaseName`          | string   | Base name prefix for resources. Defaults to `mcp{hash}`. When deploying multiple areas, each gets a unique base name.                                                       |
+| `Unique`            | switch   | Use a unique GUID-based hash for this invocation instead of the stable username+subscription+area hash. Useful for parallel deployments.                                   |
+| `DeleteAfterHours`  | int      | Hours after which resources are tagged for deletion. Defaults to `12`.                                                                                                       |
 
 Examples:
 
 ```pwsh
 # Deploy Storage test resources using current Azure context subscription
-./eng/scripts/Deploy-TestResources.ps1 -Area Storage
+./eng/scripts/Deploy-TestResources.ps1 -Areas @('Storage')
+
+# Deploy test resources for multiple areas at once
+./eng/scripts/Deploy-TestResources.ps1 -Areas @('Storage', 'KeyVault', 'Cosmos')
+
+# Deploy test resources for all available areas
+./eng/scripts/Deploy-TestResources.ps1 -All
 
 # Deploy Key Vault test resources to a specific subscription and keep for one week
-./eng/scripts/Deploy-TestResources.ps1 -Area KeyVault -SubscriptionId <subId> -DeleteAfterHours 168 -Unique
+./eng/scripts/Deploy-TestResources.ps1 -Areas @('KeyVault') -SubscriptionId <subId> -DeleteAfterHours 168 -Unique
+
+# Backward compatibility - single area (deprecated, shows warning)
+./eng/scripts/Deploy-TestResources.ps1 -Area Storage
 ```
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the deployed areas' `/tests` directory.
@@ -358,7 +369,7 @@ Run live tests with:
 You can scope tests to specific areas:
 
 ```pwsh
-./eng/scripts/Test-Code.ps1 -TestType Live -Areas Storage, KeyVault
+./eng/scripts/Test-Code.ps1 -TestType Live -Areas @('Storage', 'KeyVault')
 ```
 
 ### NPX Live Tests

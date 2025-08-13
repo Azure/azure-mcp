@@ -26,7 +26,7 @@ If your command interacts with Azure resources (storage accounts, databases, VMs
 - ✅ **MUST create** `areas/{area-name}/tests/test-resources-post.ps1` (required even if basic template)
 - ✅ **MUST include** RBAC role assignments for test application
 - ✅ **MUST validate** with `az bicep build --file areas/{area-name}/tests/test-resources.bicep`
-- ✅ **MUST test deployment** with `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name}`
+- ✅ **MUST test deployment** with `./eng/scripts/Deploy-TestResources.ps1 -Areas @('{area-name}')`
 
 ### **Non-Azure Commands (No Test Infrastructure Needed)**
 If your command is a wrapper/utility (CLI tools, best practices, documentation):
@@ -1047,7 +1047,7 @@ Use the deployment script with your area:
 
 ```powershell
 # Deploy test resources for your area
-./eng/scripts/Deploy-TestResources.ps1 -Areas "{Area}"
+./eng/scripts/Deploy-TestResources.ps1 -Areas @('{Area}')
 
 # Run live tests
 dotnet test --filter "Category=Live&Area={Area}"
@@ -1569,7 +1569,7 @@ var subscriptionResource = await _subscriptionService.GetSubscription(subscripti
 - **Cause**: Parameter constraints, resource naming conflicts, or invalid configurations
 - **Solution**:
   - Review deployment logs and error messages
-  - Use `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name} -Debug` for verbose deployment logs including resource provider errors.
+  - Use `./eng/scripts/Deploy-TestResources.ps1 -Areas @('{area-name}') -Debug` for verbose deployment logs including resource provider errors.
 
 ### Live Test Project Configuration Issues
 
@@ -1713,7 +1713,7 @@ Before submitting:
 - [ ] **Live test infrastructure created** (`test-resources.bicep` template in `areas/{area-name}/tests`)
 - [ ] **Post-deployment script created** (`test-resources-post.ps1` in `areas/{area-name}/tests` - required even if basic template)
 - [ ] **Bicep template validated** with `az bicep build --file areas/{area-name}/tests/test-resources.bicep`
-- [ ] **Live test resource template tested** with `./eng/scripts/Deploy-TestResources.ps1 -Area {area-name}`
+- [ ] **Live test resource template tested** with `./eng/scripts/Deploy-TestResources.ps1 -Areas @('{area-name}')`
 - [ ] **RBAC permissions configured** for test application in Bicep template (use appropriate built-in roles)
 - [ ] **Live test project configuration correct**:
   - [ ] References `AzureMcp.Cli.csproj` (not just the area project)
