@@ -22,14 +22,13 @@ public abstract class BaseMySqlCommand<
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_userOption);
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.User = parseResult.GetValueForOption(_userOption);
         return options;
     }
