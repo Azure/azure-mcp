@@ -84,11 +84,6 @@ jobs:
 
         # make the generic 'objcopy' point to the 'objcopy' from the arm64 cross-compilation toolchain.
         sudo ln -sf /usr/bin/aarch64-linux-gnu-objcopy /usr/local/bin/objcopy
-
-        export CC=aarch64-linux-gnu-gcc
-        export CXX=aarch64-linux-gnu-g++
-        export AR=aarch64-linux-gnu-ar
-        export STRIP=aarch64-linux-gnu-strip
       fi
     displayName: "Install ARM64 cross compilation toolchain"
     condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))
