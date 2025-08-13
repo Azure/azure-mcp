@@ -1,9 +1,6 @@
 param(
-    [Parameter(Mandatory=$true, ParameterSetName='MultipleAreas')]
+    [Parameter(Mandatory=$true)]
     [string[]]$Areas,
-    
-    [Parameter(Mandatory=$true, ParameterSetName='AllAreas')]
-    [switch]$All,
     
     [string]$SubscriptionId,
     [string]$ResourceGroupName,
@@ -80,11 +77,16 @@ function Get-AreasToProcess {
     Determines which areas to process based on the provided parameters.
     #>
     param(
-        [string[]]$Areas,
-        [switch]$All
+        [string[]]$Areas
     )
     
-    if ($All) {
+    # Check if "All" is specified in the areas
+    if ($Areas -contains "All") {
+        # If "All" is specified with other areas, just use All logic
+        if ($Areas.Count -gt 1) {
+            Write-Warning "Both 'All' and specific areas specified. Using 'All' to deploy all available areas."
+        }
+        
         $availableAreas = Get-AvailableAreas
         if ($availableAreas.Count -eq 0) {
             Write-Error "No areas with test resources found."
@@ -94,7 +96,7 @@ function Get-AreasToProcess {
         return $availableAreas
     }
     else {
-        # Multiple areas specified
+        # Multiple specific areas specified
         $processAreas = @()
         foreach ($areaName in $Areas) {
             $normalizedArea = $areaName.ToLower()
@@ -181,7 +183,7 @@ function New-StringHash([string[]]$strings) {
 }
 
 # Determine which areas to process
-$areasToProcess = Get-AreasToProcess -Areas $Areas -All:$All
+$areasToProcess = Get-AreasToProcess -Areas $Areas
 
 if ($areasToProcess.Count -eq 0) {
     Write-Error "No valid areas to process."
