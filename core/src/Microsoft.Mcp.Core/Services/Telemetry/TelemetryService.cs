@@ -23,10 +23,10 @@ internal class TelemetryService : ITelemetryService
 
     public TelemetryService(IMachineInformationProvider informationProvider, IOptions<McpServerConfiguration> options)
     {
-        _isEnabled = options.Value.EnableTelemetry;
+        _isEnabled = options.Value.IsTelemetryEnabled;
         _tagsList = new List<KeyValuePair<string, object?>>()
         {
-            new(TagName.McpVersion, options.Value.Version),
+            new(TagName.ProductVersion, options.Value.Version),
         };
 
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);

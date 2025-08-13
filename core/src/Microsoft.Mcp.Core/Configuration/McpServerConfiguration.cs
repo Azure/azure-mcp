@@ -5,10 +5,8 @@ namespace Microsoft.Mcp.Core.Configuration;
 
 public sealed class McpServerConfiguration
 {
-    public const string DefaultName = "Microsoft.Mcp.Server";
-
-    public string Name { get; set; } = DefaultName;
+    public string Name { get; set; } = string.Empty;
     public string? Version { get; set; }
     public string? UserAgent { get; set; }
-    public bool EnableTelemetry { get; set; } = true;
+    public bool IsTelemetryEnabled { get; set; } = true;
 }

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "azmcp": {
-      "commandName": "Project",
-      "commandLineArgs": "server start"
-    }
-  }
-}

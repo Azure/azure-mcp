@@ -11,7 +11,6 @@ namespace Microsoft.Mcp.Core;
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(List<string>))]
 [JsonSerializable(typeof(List<JsonNode>))]
-[JsonSerializable(typeof(List<JsonNode>))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal partial class JsonSourceGenerationContext : JsonSerializerContext
 {
