@@ -10,7 +10,7 @@ public record BlobUploadResult(
     [property: JsonPropertyName("containerName")] string ContainerName,
     [property: JsonPropertyName("uploadedFile")] string UploadedFile,
     [property: JsonPropertyName("lastModified")] DateTimeOffset LastModified,
-    [property: JsonPropertyName("etag")] string ETag,
+    [property: JsonPropertyName("eTag")] string ETag,
     [property: JsonPropertyName("md5Hash")] string? MD5Hash,
     [property: JsonPropertyName("wasOverwritten")] bool WasOverwritten
 );
