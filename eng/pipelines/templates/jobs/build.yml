@@ -85,6 +85,8 @@ jobs:
       arguments: >
         -OutputPath '$(Agent.TempDirectory)/native-build'
         -Version '$(Version)'
+        -OperatingSystem '${{ parameters.OSName }}'
+        -Architecture '$(Architecture)'
         -CleanBuild
         -BuildNative
 
