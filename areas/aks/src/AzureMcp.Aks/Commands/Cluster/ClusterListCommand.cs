@@ -37,8 +37,6 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var aksService = context.GetService<IAksService>();
             var clusters = await aksService.ListClusters(
                 options.Subscription!,

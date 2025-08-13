@@ -52,8 +52,6 @@ public sealed class QueryCommand(ILogger<QueryCommand> logger) : BaseDatabaseCom
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             List<JsonElement> results = [];
             var kusto = context.GetService<IKustoService>();
 

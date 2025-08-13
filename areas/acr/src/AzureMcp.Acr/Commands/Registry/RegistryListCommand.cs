@@ -53,8 +53,6 @@ public sealed class RegistryListCommand(ILogger<RegistryListCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var acrService = context.GetService<IAcrService>();
             var registries = await acrService.ListRegistries(
                 options.Subscription!,

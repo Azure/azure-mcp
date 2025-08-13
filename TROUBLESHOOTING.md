@@ -14,6 +14,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
 - [Authentication](#authentication)
   - [401 Unauthorized: Local authorization is disabled](#401-unauthorized-local-authorization-is-disabled)
   - [403 Forbidden: Authorization Failure](#403-forbidden-authorization-failure)
+  - [Primary Access Token from Wrong Issuer](#primary-access-token-from-wrong-issuer)
   - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
   - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
   - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
@@ -23,6 +24,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
 - [Development Environment](#development-environment)
   - [Development in VS Code](#development-in-vs-code)
+  - [Locating MCP Server Binaries in VS Code](#locating-mcp-server-binaries-in-vs-code)
 
 ## Common Issues
 
@@ -231,6 +233,58 @@ This error indicates that the access token doesn't have sufficient permissions t
     ```
 
     This will prompt you to select your desired account for authentication.
+
+
+### Primary Access Token from Wrong Issuer
+
+When running Azure MCP Server in the **VS Code context**, you may encounter an authentication error like:
+
+```
+Authenticate: Bearer authorization_uri="https://login.windows.net/<Tenant>",
+error="invalid_token",
+error_description="The primary access token is from the wrong issuer.
+It must match the tenant associated with this subscription.
+Please use correct authority to get the token."
+```
+
+#### Why This Happens
+VS Code may default to a tenant different from the one associated with your Azure subscription. When the MCP Server requests a token, the issuer in that token must match the subscription's tenant. If they don't match, the request fails.
+
+#### Resolution
+Specify the preferred tenant in your **VS Code global `settings.json`** file.
+
+**Steps:**
+1. Determine your correct **Tenant ID**:
+   ```bash
+   az account show --query tenantId -o tsv
+   ```
+2. Add the following setting to the VS Code global settings file:
+
+   **Stable (GA) VS Code**
+   `~/AppData/Roaming/Code/User/settings.json` (Windows)
+   `~/Library/Application Support/Code/User/settings.json` (macOS)
+   `~/.config/Code/User/settings.json` (Linux)
+
+   **Insiders VS Code**
+   `~/AppData/Roaming/Code - Insiders/User/settings.json` (Windows)
+   `~/Library/Application Support/Code - Insiders/User/settings.json` (macOS)
+   `~/.config/Code - Insiders/User/settings.json` (Linux)
+
+   ```jsonc
+   "@azure.argTenant": "<Tenant-Id-of-the-preferred-tenant>"
+   ```
+
+3. Restart VS Code and the Azure MCP Server.
+
+**Example:**
+```json
+{
+  "@azure.argTenant": "11111111-2222-3333-4444-555555555555"
+}
+```
+
+This ensures tokens are requested for the correct authority, matching the subscription's tenant, and resolves the `invalid_token` issuer mismatch.
+
 
 ### Network and Firewall Restrictions
 
@@ -483,7 +537,7 @@ The Azure MCP wrapper automatically installs the correct platform-specific packa
 #### Common Causes of Auto-Installation Failure:
 - **Network connectivity issues** during package installation
 - **Permission problems** preventing npm from installing packages
-- **Corporate firewall/proxy** blocking npm registry access  
+- **Corporate firewall/proxy** blocking npm registry access
 - **Disk space issues** preventing package extraction
 - **npm cache corruption** preventing proper package resolution
 
@@ -573,4 +627,23 @@ To export telemetry to Azure Monitor, set the `APPLICATIONINSIGHTS_CONNECTION_ST
 #### Bring your own language model key
 
 [Bring your own language model key](https://code.visualstudio.com/docs/copilot/language-models#_bring-your-own-language-model-key)
-If you already have an API key for a language model provider, you can use their models in chat in VS Code, in addition to the built-in models that Copilot provides. You can use models from the following providers: Anthropic, Azure, Google Gemini, Groq, Ollama, OpenAI, and OpenRouter.
+An existing API key from a language model provider can be used to access that provider’s models in VS Code chat, in addition to the built-in models available through Copilot. Supported providers include Anthropic, Azure, Google Gemini, Groq, Ollama, OpenAI, and OpenRouter.
+
+
+### Locating MCP Server Binaries in VS Code
+
+The Azure MCP Server extension installs its platform-specific binaries in the user profile directory under:
+
+```
+<User-Profile-Dir>/.vscode/extensions/ms-azuretools.vscode-azure-mcp-server-<version>-<platform>/server
+```
+
+**Examples:**
+- **Windows:** `C:\Users\<YourUserName>\.vscode\extensions\ms-azuretools.vscode-azure-mcp-server-1.0.0-win32-x64`
+- **macOS:** `/Users/<YourUserName>/.vscode/extensions/ms-azuretools.vscode-azure-mcp-server-1.0.0-darwin-x64`
+- **Linux:** `/home/<YourUserName>/.vscode/extensions/ms-azuretools.vscode-azure-mcp-server-1.0.0-linux-x64`
+
+This can be useful for:
+- Verifying the exact version installed
+- Checking platform-specific binaries
+- Troubleshooting and replacing binaries in development builds

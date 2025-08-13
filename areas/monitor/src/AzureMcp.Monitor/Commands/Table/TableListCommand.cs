@@ -46,8 +46,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var monitorService = context.GetService<IMonitorService>();
             var tables = await monitorService.ListTables(
                 options.Subscription!,

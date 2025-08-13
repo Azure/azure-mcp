@@ -37,8 +37,6 @@ public sealed class TableSchemaCommand(ILogger<TableSchemaCommand> logger) : Bas
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var kusto = context.GetService<IKustoService>();
             string tableSchema;
 

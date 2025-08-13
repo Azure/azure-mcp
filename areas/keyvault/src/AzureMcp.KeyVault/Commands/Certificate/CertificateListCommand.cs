@@ -53,8 +53,6 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var keyVaultService = context.GetService<IKeyVaultService>();
             var certificates = await keyVaultService.ListCertificates(
                 options.VaultName!,

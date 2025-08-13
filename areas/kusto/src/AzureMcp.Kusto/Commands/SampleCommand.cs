@@ -53,8 +53,6 @@ public sealed class SampleCommand(ILogger<SampleCommand> logger) : BaseTableComm
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var kusto = context.GetService<IKustoService>();
             List<JsonElement> results;
             var query = $"{options.Table} | sample {options.Limit}";

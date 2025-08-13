@@ -40,8 +40,6 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var monitorService = context.GetService<IMonitorService>();
             var workspaces = await monitorService.ListWorkspaces(
                 options.Subscription!,

@@ -67,8 +67,6 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var service = context.GetService<IServiceBusService>();
             var messages = await service.PeekQueueMessages(
                 options.Namespace!,

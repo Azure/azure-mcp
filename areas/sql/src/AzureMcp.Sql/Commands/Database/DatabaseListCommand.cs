@@ -42,8 +42,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var sqlService = context.GetService<ISqlService>();
 
             var databases = await sqlService.ListDatabasesAsync(

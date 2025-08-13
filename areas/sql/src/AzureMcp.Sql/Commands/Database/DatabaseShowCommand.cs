@@ -44,8 +44,6 @@ public sealed class DatabaseShowCommand(ILogger<DatabaseShowCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var sqlService = context.GetService<ISqlService>();
 
             var database = await sqlService.GetDatabaseAsync(

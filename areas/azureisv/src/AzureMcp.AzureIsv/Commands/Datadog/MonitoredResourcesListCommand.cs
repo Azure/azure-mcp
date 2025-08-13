@@ -56,8 +56,6 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(
                 options.ResourceGroup!,
