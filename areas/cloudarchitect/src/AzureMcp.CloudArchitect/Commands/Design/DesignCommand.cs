@@ -25,7 +25,6 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
     private readonly Option<double> _confidenceScoreOption = CloudArchitectOptionDefinitions.ConfidenceScore;
     private readonly Option<string> _architectureComponentOption = CloudArchitectOptionDefinitions.ArchitectureComponent;
 
-
     private static readonly string s_designArchitectureText = LoadArchitectureDesignText();
 
     private static string GetArchitectureDesignText() => s_designArchitectureText;
@@ -84,6 +83,3 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
         return Task.FromResult(context.Response);
     }
 }
-
-// Strongly-typed result record
-public record DesignCommandResult(AzureMcp.CloudArchitect.Models.ArchitectureDesign Design);
