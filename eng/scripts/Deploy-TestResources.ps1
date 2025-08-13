@@ -98,7 +98,7 @@ function Get-AreasToProcess {
             if (Test-AreaExists -AreaName $normalizedArea) {
                 $processAreas += $normalizedArea
             } else {
-                return @()  # Exit early on validation failure
+                throw "Area validation failed for '$areaName'"
             }
         }
         return $processAreas
