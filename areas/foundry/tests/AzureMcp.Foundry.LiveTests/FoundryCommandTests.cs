@@ -1,17 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Azure;
+using Azure.AI.Agents.Persistent;
+using Azure.AI.Projects;
+using AzureMcp.Core.Services.Azure.Authentication;
 using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
-using Azure.AI.Agents.Persistent;
 using Xunit;
-using AzureMcp.Core.Services.Azure.Authentication;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Azure;
-using Azure.AI.Projects;
 
 namespace AzureMcp.Foundry.LiveTests;
 

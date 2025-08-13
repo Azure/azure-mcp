@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 
-using AzureMcp.Foundry.Services;
-using AzureMcp.Foundry.Commands;
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Foundry.Commands;
+using AzureMcp.Foundry.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

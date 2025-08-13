@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using Azure.AI.Agents.Persistent;
+using AzureMcp.Core.Commands;
 using AzureMcp.Foundry.Options;
 using AzureMcp.Foundry.Services;
-using AzureMcp.Core.Commands;
 
 namespace AzureMcp.Foundry.Commands;
 

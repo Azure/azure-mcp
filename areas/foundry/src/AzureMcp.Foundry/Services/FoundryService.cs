@@ -37,7 +37,7 @@ public class FoundryService(IHttpClientService httpClientService, ITenantService
         { "task_adherence", () => new TaskAdherenceEvaluator()},
     };
 
-     private static readonly Dictionary<string, Func<IEnumerable<AITool>, EvaluationContext>> AgentEvaluatorContextDictionary = new()
+    private static readonly Dictionary<string, Func<IEnumerable<AITool>, EvaluationContext>> AgentEvaluatorContextDictionary = new()
     {
         { "intent_resolution", toolDefinitons => new IntentResolutionEvaluatorContext(toolDefinitons)},
         { "tool_call_accuracy", toolDefinitons => new ToolCallAccuracyEvaluatorContext(toolDefinitons)},
@@ -580,7 +580,8 @@ public class FoundryService(IHttpClientService httpClientService, ITenantService
 
                             static Dictionary<string, object?>? Parse(string arguments)
                             {
-                                try { return JsonSerializer.Deserialize(arguments, DictionaryTypeInfo); }
+                                try
+                                { return JsonSerializer.Deserialize(arguments, DictionaryTypeInfo); }
                                 catch { return null; }
                             }
                             break;
