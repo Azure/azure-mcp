@@ -23,7 +23,7 @@ public static class FoundryOptionDefinitions
     public const string AgentId = "agent-id";
     public const string Query = "query";
     public const string Evaluators = "evaluators";
-    public const string EvaluatorName = "evaluator-name";
+    public const string EvaluatorName = "evaluator";
     public const string Response = "response";
     public const string ToolCalls = "tool-calls";
     public const string ToolDefinitions = "tool-definitions";

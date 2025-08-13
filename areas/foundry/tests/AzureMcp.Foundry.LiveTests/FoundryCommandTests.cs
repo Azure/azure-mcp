@@ -196,7 +196,7 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
             "azmcp_foundry_agents_evaluate",
             new()
             {
-                { "evaluator-name", evaluatorName },
+                { "evaluator", evaluatorName },
                 { "query", query},
                 { "response", agentResponse },
                 { "azure-openai-endpoint", azureOpenAIEndpoint },

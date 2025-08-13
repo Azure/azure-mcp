@@ -128,7 +128,7 @@ azmcp foundry agents connect --agent-id <agent-id> \
 azmcp foundry agents evaluate --agent-id <agent-id> \
                                         --query <query> \
                                         --response <response> \
-                                        --evaluator-name <evaluator-name> \
+                                        --evaluator <evaluator> \
                                         --azure-openai-endpoint <azure-openai-endpoint> \
                                         --azure-openai-deployment <azure-openai-deployment> \
                                         [--tool-definitions <tool-definitions>]
