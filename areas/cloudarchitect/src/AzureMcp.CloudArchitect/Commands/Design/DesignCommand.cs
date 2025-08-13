@@ -3,6 +3,7 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AzureMcp.CloudArchitect.Options;
 using AzureMcp.Core.Commands;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.CloudArchitect.Commands.Design;
 
-public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArchitectCommand<ArchitectureDesignToolOptions>
+public sealed class DesignCommand(ILogger<DesignCommand> logger) : GlobalCommand<ArchitectureDesignToolOptions>
 {
     private const string CommandTitle = "Design Azure cloud architectures through guided questions";
     private readonly ILogger<DesignCommand> _logger = logger;

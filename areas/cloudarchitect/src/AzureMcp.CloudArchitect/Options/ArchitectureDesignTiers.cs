@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
-
 namespace AzureMcp.CloudArchitect.Options;
 
 /// <summary>
@@ -10,6 +8,5 @@ namespace AzureMcp.CloudArchitect.Options;
 /// </summary>
 public class ArchitectureDesignTiers
 {
-    [JsonPropertyName("additionalProperties")]
     public List<string> AdditionalProperties { get; set; } = new();
 }

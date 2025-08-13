@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
-
 namespace AzureMcp.CloudArchitect.Options;
 
 /// <summary>
@@ -10,12 +8,9 @@ namespace AzureMcp.CloudArchitect.Options;
 /// </summary>
 public class ArchitectureDesignRequirements
 {
-    [JsonPropertyName("explicit")]
     public List<ArchitectureDesignRequirement> Explicit { get; set; } = new();
 
-    [JsonPropertyName("implicit")]
     public List<ArchitectureDesignRequirement> Implicit { get; set; } = new();
 
-    [JsonPropertyName("assumed")]
     public List<ArchitectureDesignRequirement> Assumed { get; set; } = new();
 }

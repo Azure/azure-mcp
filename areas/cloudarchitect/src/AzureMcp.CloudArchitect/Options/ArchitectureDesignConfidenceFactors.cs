@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
-
 namespace AzureMcp.CloudArchitect.Options;
 
 /// <summary>
@@ -10,12 +8,9 @@ namespace AzureMcp.CloudArchitect.Options;
 /// </summary>
 public class ArchitectureDesignConfidenceFactors
 {
-    [JsonPropertyName("explicitRequirementsCoverage")]
     public double ExplicitRequirementsCoverage { get; set; }
 
-    [JsonPropertyName("implicitRequirementsCertainty")]
     public double ImplicitRequirementsCertainty { get; set; }
 
-    [JsonPropertyName("assumptionRisk")]
     public double AssumptionRisk { get; set; }
 }
