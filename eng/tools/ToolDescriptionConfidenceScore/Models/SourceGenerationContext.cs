@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
-using ToolSelection.Models;
 
-namespace ToolSelection;
+namespace ToolSelection.Models;
 
 [JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(ListToolsResult))]
