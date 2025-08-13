@@ -119,7 +119,7 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : GlobalCommand
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred in cloud architec design command");
+            _logger.LogError(ex, "An exception occurred in cloud architect design command");
             HandleException(context, ex);
         }
         return Task.FromResult(context.Response);
