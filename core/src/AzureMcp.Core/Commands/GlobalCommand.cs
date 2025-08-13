@@ -6,7 +6,6 @@ using Azure;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.Mcp.Core.Commands;
-using Microsoft.Mcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Options;
 
