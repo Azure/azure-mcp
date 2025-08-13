@@ -38,8 +38,6 @@ public sealed class FunctionAppListCommand(ILogger<FunctionAppListCommand> logge
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
                 return context.Response;
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var functionAppService = context.GetService<IFunctionAppService>();
             var functionApps = await functionAppService.ListFunctionApps(
                 options.Subscription!,
