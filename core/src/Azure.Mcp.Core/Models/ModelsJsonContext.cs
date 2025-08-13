@@ -5,8 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace Azure.Mcp.Core.Models;
 
-[JsonSerializable(typeof(List<CommandInfo>))]
-[JsonSerializable(typeof(CommandResponse))]
 [JsonSerializable(typeof(ETag), TypeInfoPropertyName = "McpETag")]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 public sealed partial class ModelsJsonContext : JsonSerializerContext

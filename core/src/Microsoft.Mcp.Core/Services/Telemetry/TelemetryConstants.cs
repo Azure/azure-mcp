@@ -3,12 +3,12 @@
 
 namespace Microsoft.Mcp.Core.Services.Telemetry;
 
-internal static class TelemetryConstants
+public static class TelemetryConstants
 {
     /// <summary>
     /// Name of tags published.
     /// </summary>
-    internal class TagName
+    public class TagName
     {
         public const string AzureMcpVersion = "Version";
         public const string ClientName = "ClientName";

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Mcp.Core.Services.Http;
+using Microsoft.Mcp.Core.Services.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Azure.Mcp.Core.Extensions;

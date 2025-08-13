@@ -3,7 +3,7 @@
 
 namespace Microsoft.Mcp.Core.Services.Telemetry;
 
-internal interface IMachineInformationProvider
+public interface IMachineInformationProvider
 {
     /// <summary>
     /// Gets existing or creates the device id.  In case the cached id cannot be retrieved, or the
