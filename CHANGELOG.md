@@ -6,17 +6,13 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for Azure MySQL. [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
-
-## 0.5.6 (Unreleased)
-
-### Features Added
-
-- Added support for Azure MySQL. [[#855](https://github.com/Azure/azure-mcp/issues/855)]
 
 ## 0.5.5 (2025-08-12)
 
