@@ -16,6 +16,10 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
 
+#### Dependency Updates
+
+- Updated Azure.Monitor.Query version from `1.6.0` to `1.7.1` for AOT support.
+
 ## 0.5.5 (2025-08-12)
 
 ### Features Added
