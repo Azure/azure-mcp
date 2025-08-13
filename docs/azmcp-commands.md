@@ -376,6 +376,13 @@ azmcp extension azd --command "<command>"
 azmcp extension azd --command "init --template todo-nodejs-mongo"
 ```
 
+### Azure Function App Operations
+
+```bash
+# List function apps in a subscription
+azmcp functionapp list --subscription <subscription>
+```
+
 ### Azure Key Vault Operations
 
 ```bash
