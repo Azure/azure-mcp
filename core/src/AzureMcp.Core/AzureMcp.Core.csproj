@@ -24,4 +24,7 @@
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Linq.AsyncEnumerable" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Microsoft.Mcp.Core/Microsoft.Mcp.Core.csproj" />
+  </ItemGroup>
 </Project>

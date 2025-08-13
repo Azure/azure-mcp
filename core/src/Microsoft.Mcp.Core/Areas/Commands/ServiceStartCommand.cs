@@ -123,7 +123,6 @@ public sealed class ServiceStartCommand : BaseCommand
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
-                logging.ConfigureOpenTelemetryLogger();
                 logging.AddEventSourceLogger();
             })
             .ConfigureServices(services =>

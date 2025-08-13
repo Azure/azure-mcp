@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using Azure;
 using Azure.Core;
 using Azure.Identity;
+using Microsoft.Mcp.Core.Commands;
+using Microsoft.Mcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Options;
 
@@ -13,7 +15,7 @@ using AzureMcp.Core.Options;
 namespace AzureMcp.Core.Commands;
 
 public abstract class GlobalCommand<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> : BaseCommand
+    [DynamicallyAccessedMembers(Microsoft.Mcp.Core.Commands.TrimAnnotations.CommandAnnotations)] TOptions> : BaseCommand
     where TOptions : GlobalOptions, new()
 {
     protected readonly Option<string> _tenantOption = OptionDefinitions.Common.Tenant;

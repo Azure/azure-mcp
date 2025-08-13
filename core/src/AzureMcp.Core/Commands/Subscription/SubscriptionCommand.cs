@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Mcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Core.Options;
 
 namespace AzureMcp.Core.Commands.Subscription;
 
 public abstract class SubscriptionCommand<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions> : GlobalCommand<TOptions>
+    [DynamicallyAccessedMembers(Microsoft.Mcp.Core.Commands.TrimAnnotations.CommandAnnotations)] TOptions> : GlobalCommand<TOptions>
     where TOptions : SubscriptionOptions, new()
 {
 

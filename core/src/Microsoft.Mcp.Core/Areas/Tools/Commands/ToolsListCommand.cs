@@ -52,10 +52,12 @@ public sealed class ToolsListCommand(ILogger<ToolsListCommand> logger) : BaseCom
 
         var optionInfos = commandDetails.Options?
             .Where(arg => !arg.IsHidden)
-            .Select(arg => new OptionInfo(
-                name: arg.Name,
-                description: arg.Description!,
-                required: arg.IsRequired))
+            .Select(arg => new OptionInfo
+            {
+                Name = arg.Name,
+                Description = arg.Description!,
+                IsRequired = arg.IsRequired
+            })
             .ToList();
 
         return new CommandInfo
