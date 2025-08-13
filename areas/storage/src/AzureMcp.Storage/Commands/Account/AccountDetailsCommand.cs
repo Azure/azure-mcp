@@ -26,7 +26,6 @@ public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger)
         Get detailed information about a specific Azure Storage account. This command retrieves comprehensive
         metadata for the specified storage account including name, location, SKU, access settings, and configuration
         details. Returns a JSON object with all storage account properties.
-          Required options:
         """;
 
     public override string Title => CommandTitle;
