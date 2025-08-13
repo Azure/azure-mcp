@@ -1,7 +1,4 @@
 param(
-    [Parameter(Mandatory=$true, ParameterSetName='SingleArea')]
-    [string]$Area,  # Deprecated - use -Areas instead
-    
     [Parameter(Mandatory=$true, ParameterSetName='MultipleAreas')]
     [string[]]$Areas,
     
@@ -18,6 +15,20 @@ param(
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/../common/scripts/common.ps1"
 
+function Test-AreaHasTestResources {
+    <#
+    .SYNOPSIS
+    Helper function to check if an area has test resources.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$AreaPath
+    )
+    
+    $testResourcesPath = "$AreaPath/tests/test-resources.bicep"
+    return (Test-Path $testResourcesPath)
+}
+
 function Get-AvailableAreas {
     <#
     .SYNOPSIS
@@ -29,8 +40,7 @@ function Get-AvailableAreas {
     if (Test-Path $areasDir) {
         Get-ChildItem -Path $areasDir -Directory | ForEach-Object {
             $areaName = $_.Name.ToLower()
-            $testResourcesPath = "$($_.FullName)/tests/test-resources.bicep"
-            if (Test-Path $testResourcesPath) {
+            if (Test-AreaHasTestResources -AreaPath $_.FullName) {
                 $areasWithTestResources += $areaName
             }
         }
@@ -50,15 +60,14 @@ function Test-AreaExists {
     )
     
     $areaPath = "$RepoRoot/areas/$($AreaName.ToLower())"
-    $testResourcesPath = "$areaPath/tests/test-resources.bicep"
     
     if (!(Test-Path $areaPath)) {
         Write-Error "Area '$AreaName' does not exist at path '$areaPath'."
         return $false
     }
     
-    if (!(Test-Path $testResourcesPath)) {
-        Write-Error "Area '$AreaName' does not have test resources. Expected bicep template at '$testResourcesPath'."
+    if (!(Test-AreaHasTestResources -AreaPath $areaPath)) {
+        Write-Error "Area '$AreaName' does not have test resources. Expected bicep template at '$areaPath/tests/test-resources.bicep'."
         return $false
     }
     
@@ -71,17 +80,11 @@ function Get-AreasToProcess {
     Determines which areas to process based on the provided parameters.
     #>
     param(
-        [string]$Area,
         [string[]]$Areas,
         [switch]$All
     )
     
-    if ($Area) {
-        # Backward compatibility - show deprecation warning
-        Write-Warning "The -Area parameter is deprecated. Please use -Areas @('$Area') or -All instead."
-        return @($Area.ToLower())
-    }
-    elseif ($All) {
+    if ($All) {
         $availableAreas = Get-AvailableAreas
         if ($availableAreas.Count -eq 0) {
             Write-Error "No areas with test resources found."
@@ -178,7 +181,7 @@ function New-StringHash([string[]]$strings) {
 }
 
 # Determine which areas to process
-$areasToProcess = Get-AreasToProcess -Area $Area -Areas $Areas -All:$All
+$areasToProcess = Get-AreasToProcess -Areas $Areas -All:$All
 
 if ($areasToProcess.Count -eq 0) {
     Write-Error "No valid areas to process."
