@@ -12,6 +12,7 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.Shares;
 using Azure.Storage.Files.Shares.Models;
+using Azure.Storage.Queues;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -29,7 +30,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private const string StorageAccountsCacheKey = "accounts";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<List<string>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<StorageAccountInfo>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription);
 
@@ -41,21 +42,30 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             : $"{StorageAccountsCacheKey}_{subscriptionResource.Data.SubscriptionId}_{tenant}";
 
         // Try to get from cache first
-        var cachedAccounts = await _cacheService.GetAsync<List<string>>(CacheGroup, cacheKey, s_cacheDuration);
+        var cachedAccounts = await _cacheService.GetAsync<List<StorageAccountInfo>>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedAccounts != null)
         {
             return cachedAccounts;
         }
 
-        var accounts = new List<string>();
+        var accounts = new List<StorageAccountInfo>();
         try
         {
             await foreach (var account in subscriptionResource.GetStorageAccountsAsync())
             {
-                if (account?.Data?.Name != null)
-                {
-                    accounts.Add(account.Data.Name);
-                }
+                var data = account?.Data;
+                if (data?.Name == null)
+                    continue;
+
+                accounts.Add(new StorageAccountInfo(
+                    data.Name,
+                    data.Location.ToString(),
+                    data.Kind?.ToString(),
+                    data.Sku?.Name.ToString(),
+                    data.Sku?.Tier.ToString(),
+                    data.IsHnsEnabled,
+                    data.AllowBlobPublicAccess,
+                    data.EnableHttpsTrafficOnly));
             }
 
             // Cache the results
@@ -67,6 +77,73 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
 
         return accounts;
+    }
+
+    public async Task<StorageAccountInfo> CreateStorageAccount(
+        string accountName,
+        string resourceGroup,
+        string location,
+        string subscription,
+        string? sku = null,
+        string? kind = null,
+        string? accessTier = null,
+        bool? enableHttpsTrafficOnly = null,
+        bool? allowBlobPublicAccess = null,
+        bool? enableHierarchicalNamespace = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, resourceGroup, location, subscription);
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
+        try
+        {
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup);
+
+            if (!resourceGroupResource.HasValue)
+            {
+                throw new Exception($"Resource group '{resourceGroup}' not found in subscription '{subscription}'");
+            }
+
+            // Set default values
+            var storageKind = string.IsNullOrEmpty(kind) ? StorageKind.StorageV2 : ParseStorageKind(kind);
+            var storageSku = new StorageSku(string.IsNullOrEmpty(sku) ? StorageSkuName.StandardLrs : ParseStorageSkuName(sku));
+            var defaultAccessTier = string.IsNullOrEmpty(accessTier) ? StorageAccountAccessTier.Hot : ParseAccessTier(accessTier);
+
+            var createOptions = new StorageAccountCreateOrUpdateContent(
+                storageSku,
+                storageKind,
+                location)
+            {
+                AccessTier = defaultAccessTier,
+                EnableHttpsTrafficOnly = enableHttpsTrafficOnly ?? true,
+                AllowBlobPublicAccess = allowBlobPublicAccess ?? false,
+                IsHnsEnabled = enableHierarchicalNamespace ?? false
+            };
+
+            var operation = await resourceGroupResource.Value
+                .GetStorageAccounts()
+                .CreateOrUpdateAsync(WaitUntil.Completed, accountName, createOptions);
+
+            var result = operation.Value;
+            var data = result.Data;
+
+            return new StorageAccountInfo(
+                data.Name,
+                data.Location.ToString(),
+                data.Kind?.ToString(),
+                data.Sku?.Name.ToString(),
+                data.Sku?.Tier.ToString(),
+                data.IsHnsEnabled,
+                data.AllowBlobPublicAccess,
+                data.EnableHttpsTrafficOnly);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating Storage account '{accountName}': {ex.Message}", ex);
+        }
     }
 
     public async Task<List<string>> ListContainers(string accountName, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
@@ -207,6 +284,31 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return blobs;
     }
 
+    public async Task<BlobProperties> GetBlobDetails(
+        string accountName,
+        string containerName,
+        string blobName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, blobName, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        try
+        {
+            var properties = await blobClient.GetPropertiesAsync();
+            return properties.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting blob details: {ex.Message}", ex);
+        }
+    }
+
     public async Task<BlobContainerProperties> GetContainerDetails(
         string accountName,
         string containerName,
@@ -227,6 +329,43 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Error getting container details: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<BlobContainerProperties> CreateContainer(
+        string accountName,
+        string containerName,
+        string subscription,
+        string? blobContainerPublicAccess = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, subscription);
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        try
+        {
+            PublicAccessType publicAccessType = PublicAccessType.None;
+
+            if (!string.IsNullOrEmpty(blobContainerPublicAccess))
+            {
+                publicAccessType = blobContainerPublicAccess.ToLowerInvariant() switch
+                {
+                    "blob" => PublicAccessType.Blob,
+                    "container" => PublicAccessType.BlobContainer,
+                    _ => throw new Exception($"Unknown blob-container-public-access {blobContainerPublicAccess}, only 'blob' or 'container' are allowed.")
+                };
+            }
+
+            await containerClient.CreateAsync(publicAccessType);
+            var properties = await containerClient.GetPropertiesAsync();
+            return properties.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating container: {ex.Message}", ex);
         }
     }
 
@@ -323,6 +462,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
         options.ShareTokenIntent = ShareTokenIntent.Backup; // Set the intent for file backup, needed for Manged Identity
         return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
+    }
+
+    private async Task<QueueServiceClient> CreateQueueServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        var uri = $"https://{accountName}.queue.core.windows.net";
+        var options = ConfigureRetryPolicy(AddDefaultPolicies(new QueueClientOptions()), retryPolicy);
+        return new QueueServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
@@ -524,5 +670,87 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         {
             throw new Exception($"Error listing files and directories: {ex.Message}", ex);
         }
+    }
+
+    public async Task<QueueMessageSendResult> SendQueueMessage(
+        string accountName,
+        string queueName,
+        string messageContent,
+        int? timeToLiveInSeconds,
+        int? visibilityTimeoutInSeconds,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, queueName, messageContent, subscription);
+
+        // Create queue service client
+        var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
+        var queueClient = queueServiceClient.GetQueueClient(queueName);
+
+        try
+        {
+            // Send message with optional parameters
+            TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
+            TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null;
+
+            var response = await queueClient.SendMessageAsync(messageContent, visibilityTimeout, timeToLive);
+
+            return new QueueMessageSendResult
+            {
+                MessageId = response.Value.MessageId,
+                InsertionTime = response.Value.InsertionTime,
+                ExpirationTime = response.Value.ExpirationTime,
+                PopReceipt = response.Value.PopReceipt,
+                NextVisibleTime = response.Value.TimeNextVisible,
+                MessageContent = messageContent
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error sending queue message: {ex.Message}", ex);
+        }
+    }
+
+    private static StorageKind ParseStorageKind(string kind)
+    {
+        return kind?.ToLowerInvariant() switch
+        {
+            "storage" => StorageKind.Storage,
+            "storagev2" => StorageKind.StorageV2,
+            "blobstorage" => StorageKind.BlobStorage,
+            "filestorage" => StorageKind.FileStorage,
+            "blockstorage" => StorageKind.BlockBlobStorage,
+            _ => throw new ArgumentException($"Invalid storage kind '{kind}'. Valid values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage")
+        };
+    }
+
+    private static StorageSkuName ParseStorageSkuName(string sku)
+    {
+        return sku?.ToUpperInvariant() switch
+        {
+            "STANDARD_LRS" => StorageSkuName.StandardLrs,
+            "STANDARD_GRS" => StorageSkuName.StandardGrs,
+            "STANDARD_RAGRS" => StorageSkuName.StandardRagrs,
+            "STANDARD_ZRS" => StorageSkuName.StandardZrs,
+            "PREMIUM_LRS" => StorageSkuName.PremiumLrs,
+            "PREMIUM_ZRS" => StorageSkuName.PremiumZrs,
+            "STANDARD_GZRS" => StorageSkuName.StandardGzrs,
+            "STANDARD_RAGZRS" => StorageSkuName.StandardRagzrs,
+            _ => throw new ArgumentException($"Invalid storage SKU '{sku}'. Valid values are: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS, Standard_GZRS, Standard_RAGZRS")
+        };
+    }
+
+    private static StorageAccountAccessTier? ParseAccessTier(string? accessTier)
+    {
+        if (string.IsNullOrEmpty(accessTier))
+            return null;
+
+        return accessTier.ToLowerInvariant() switch
+        {
+            "hot" => StorageAccountAccessTier.Hot,
+            "cool" => StorageAccountAccessTier.Cool,
+            _ => throw new ArgumentException($"Invalid access tier '{accessTier}'. Valid values are: Hot, Cool")
+        };
     }
 }

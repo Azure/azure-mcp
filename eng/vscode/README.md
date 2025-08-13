@@ -7,6 +7,7 @@ Easily bring the power of Model Context Protocol (MCP) to your Azure projects in
 - [Getting Started](#getting-started)
 - [What can you do with the Azure MCP Server?](#what-can-you-do-with-the-azure-mcp-server)
 - [Complete List of Supported Azure Services](#complete-list-of-supported-azure-services)
+- [Documentation](#documentation)
 - [Feedback & Support](#feedback--support)
 - [Contributing](#contributing)
 - [License](#license)
@@ -22,25 +23,36 @@ Follow these simple steps to start using Azure MCP in VS Code:
 1. **Install the Extension**
    - Get it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-mcp-server).
 
+2. **Start (or Auto-Start) the MCP Server**
 
-2. **Start the MCP Server**
-   - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-   - Run `MCP: List Servers`
+   > **VS Code (version 1.103 or above):** You can now configure MCP servers to start automatically using the `chat.mcp.autostart` setting, instead of manually restarting them after configuration changes.
 
-   ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
+   #### **Enable Autostart**
+      1. Open **Settings** in VS Code.
+      2. Search for `chat.mcp.autostart`.
+      3. Select **newAndOutdated** to automatically start MCP servers without manual refresh.
+      4. You can also set this from the **refresh icon tooltip** in the Chat view, which also shows which servers will auto-start.
 
-   - Select `Azure MCP`, then click **Start Server**
+         ![VS Code MCP Autostart Tooltip](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ToolTip.png)
 
-   ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
-   ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+   #### **Manual Start (if autostart is off)**
+      1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+      2. Run `MCP: List Servers`.
 
-3. **Check That It's Running**
-   - Go to the **Output** tab in VS Code.
-   - Look for log messages confirming the server started successfully.
+         ![List Servers](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/ListServers.png)
 
-   ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
+      3. Select `Azure MCP Server ext`, then click **Start Server**.
 
-4. **(Optional) Enable Specific Azure Services**
+         ![Select Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/SelectServer.png)
+         ![Start Server](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/StartServer.png)
+
+      4. **Check That It's Running**
+         - Go to the **Output** tab in VS Code.
+         - Look for log messages confirming the server started successfully.
+
+         ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
+
+3. **(Optional) Enable Specific Azure Services**
    - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
 
      ```json
@@ -63,6 +75,10 @@ Here are some cool prompts you can try across our supported Azure services:
 * "List my App Configuration stores"
 * "Show my key-value pairs in App Config"
 
+### 📦 Azure Container Registry (ACR)
+* "List all my Azure Container Registries"
+* "Show me my container registries in the 'myproject' resource group"
+
 ### ☸️ Azure Kubernetes Service (AKS)
 * "List my AKS clusters in my subscription"
 * "Show me all my Azure Kubernetes Service clusters"
@@ -77,6 +93,7 @@ Here are some cool prompts you can try across our supported Azure services:
 
 ### 💾 Azure Storage
 * "List my Azure storage accounts"
+* "Create a new storage account with premium SSD storage"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
 
@@ -98,6 +115,7 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - ⚙️ **Azure App Configuration** - Configuration management
 - 🛡️ **Azure Best Practices** - Secure, production-grade guidance
 - 🖥️ **Azure CLI Extension** - Direct Azure CLI command execution
+- 📦 **Azure Container Registry (ACR)** - Container registry management
 - 📊 **Azure Cosmos DB** - NoSQL database operations
 - 🧮 **Azure Data Explorer** - Analytics queries and KQL
 - 🐘 **Azure Database for PostgreSQL** - PostgreSQL database management
@@ -125,12 +143,17 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 📊 **Azure Workbooks** - Custom visualizations
 - 🏗️ **Bicep** - Azure resource templates
 
-For detailed command documentation and examples, see [Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
+## Documentation
+
+- See our [official documentation on learn.microsoft.com](https://learn.microsoft.com/azure/developer/azure-mcp-server/) to learn how to use the Azure MCP Server to interact with Azure resources through natural language commands from AI agents and other types of clients.
+- For additional command documentation and examples, see our [GitHub repository section on Azure MCP Commands](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md).
+
 
 ## Feedback & Support
 
-Have questions, feedback, or feature requests?
-Open an issue on our [GitHub repository](https://github.com/Azure/azure-mcp/issues) — we’d love to hear from you!
+- Check the [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) to diagnose and resolve common issues with the Azure MCP Server.
+- We're building this in the open. Your feedback is much appreciated, and will help us shape the future of the Azure MCP server.
+    - 👉 Open an issue in the public [GitHub repository](https://github.com/Azure/azure-mcp/issues) — we’d love to hear from you!
 
 ## Contributing
 

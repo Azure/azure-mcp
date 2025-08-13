@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.KeyVault.Commands;
 using AzureMcp.KeyVault.Options;
 using AzureMcp.KeyVault.Options.Certificate;
 using AzureMcp.KeyVault.Services;
@@ -23,7 +22,7 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     public override string Description =>
         """
@@ -56,8 +55,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
             var operation = await keyVaultService.CreateCertificate(

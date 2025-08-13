@@ -47,6 +47,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | List all virtual machines in my subscription |
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
 
+## Azure Container Registry (ACR)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-acr-registry-list | List all Azure Container Registries in my subscription |
+| azmcp-acr-registry-list | Show me my Azure Container Registries |
+| azmcp-acr-registry-list | Show me the container registries in my subscription |
+| azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |
@@ -165,11 +175,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | Get the latest Azure code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure deployment best practices |
+| azmcp-bestpractices-get | Get the latest Azure best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Get the latest Azure Functions best practices |
+| azmcp-bestpractices-get | Get the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | What are azure function best practices? |
+| azmcp-bestpractices-get | Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm. |
+| azmcp-bestpractices-get | Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm. |
 
 ## Azure Monitor
 
@@ -280,20 +295,31 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-storage-account-list | List all storage accounts in my subscription |
-| azmcp-storage-account-list | Show me my storage accounts |
-| azmcp-storage-account-list | Show me the storage accounts in my subscription |
+| azmcp-storage-account-create | Create a new storage account called testaccount123 in East US region |
+| azmcp-storage-account-create | Create a storage account with premium performance and LRS replication |
+| azmcp-storage-account-create | Create a new storage account with Data Lake Storage Gen2 enabled |
+| azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
+| azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
+| azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
 | azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the storage container mycontainer in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the container using blob public access in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create a new blob container named documents with container public access in storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
+| azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
+| azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
+| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
 | azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
 | azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
 | azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |

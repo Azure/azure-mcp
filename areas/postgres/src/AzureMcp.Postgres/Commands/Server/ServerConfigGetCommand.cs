@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options.Server;
 using AzureMcp.Postgres.Services;
 using Microsoft.Extensions.Logging;
@@ -30,8 +29,6 @@ public sealed class ServerConfigGetCommand(ILogger<ServerConfigGetCommand> logge
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             var config = await pgService.GetServerConfigAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);

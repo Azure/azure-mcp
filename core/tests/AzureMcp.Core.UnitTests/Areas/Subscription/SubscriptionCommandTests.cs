@@ -66,10 +66,14 @@ public class SubscriptionCommandTests
 
         try
         {
-            var expectedAccounts = new List<string> { "account1", "account2" };
+            var expectedAccounts = new List<AzureMcp.Storage.Models.StorageAccountInfo>
+            {
+                new("account1", null, null, null, null, null, null, null),
+                new("account2", null, null, null, null, null, null, null)
+            };
 
             _storageService.GetStorageAccounts(Arg.Is("env-subs"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .Returns(expectedAccounts);
+                .Returns(Task.FromResult(expectedAccounts));
 
             var parseResult = _parser.Parse([]);
 
@@ -98,10 +102,14 @@ public class SubscriptionCommandTests
 
         try
         {
-            var expectedAccounts = new List<string> { "account1", "account2" };
+            var expectedAccounts = new List<AzureMcp.Storage.Models.StorageAccountInfo>
+            {
+                new("account1", null, null, null, null, null, null, null),
+                new("account2", null, null, null, null, null, null, null)
+            };
 
             _storageService.GetStorageAccounts(Arg.Is("option-subs"), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-                .Returns(expectedAccounts);
+                .Returns(Task.FromResult(expectedAccounts));
 
             var parseResult = _parser.Parse(["--subscription", "option-subs"]);
 

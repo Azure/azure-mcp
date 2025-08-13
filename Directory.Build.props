@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>0.5.4</Version>
+    <Version>0.5.6</Version>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -11,6 +11,6 @@
     <BuildNative Condition="'$(BuildNative)' == ''">false</BuildNative>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BuildNative)' == 'true'">
-    <DefineConstants>$(DefineConstants);AOT_COMPATIBLE_ONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);BUILD_NATIVE</DefineConstants>
   </PropertyGroup>
 </Project>

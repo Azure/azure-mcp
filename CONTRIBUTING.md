@@ -103,6 +103,19 @@ The project is organized as follows:
 
 ### Adding a New Command
 
+> **⚠️ Important: Submit One Tool Per Pull Request**
+> 
+> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach results in:
+> 
+> - **Faster reviews**: Single tools are easier and quicker to review
+> - **Better feedback**: More focused discussions on individual tool implementation  
+> - **Easier iteration**: Smaller changes mean faster iteration cycles
+> - **Incremental progress**: Get your first tool merged to establish baseline, then build upon it
+> 
+> If you're planning to contribute multiple tools, please:
+> 1. Submit your most important or representative tool as your first PR to establish the code patterns.
+> 2. Use that baseline to inform your subsequent tool PRs.
+
 1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
 2. **Set up development environment**:
@@ -162,7 +175,7 @@ To run the Azure MCP server from source for local development:
 
 #### Build the Server
 
-Navigate to the MCP server source directory and build the project:
+Build the project at the root directory of this repository:
 
 ```bash
 dotnet build
@@ -310,19 +323,29 @@ Before running live tests:
 - Deploy test resources:
 
 ```pwsh
-./eng/scripts/Deploy-TestResources.ps1
+./eng/scripts/Deploy-TestResources.ps1 -Area Storage
 ```
 
 **Deploy-TestResources.ps1 Parameters:**
 
-| Parameter           | Type     | Description                                                                                                                   |
-|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------|
-| `Areas`             | string[] | Reduce the scope of your deployment to specific areas. e.g. `-Areas Storage, KeyVault`                                       |
-| `SubscriptionId`    | string   | Deploy to a specific subscription, otherwise, for internal users, the subscription will be defaulted to a known subscription. |
-| `ResourceGroupName` | string   | Set the resource group name. Defaults to "{username}-mcp{hash(username)}".                                                    |
-| `BaseName`          | string   | Set the base name for all of the resources. Defaults to "mcp{hash}".                                                          |
-| `Unique`            | switch   | Make `{hash}` in the resource group name and base name unique per invocation. Defaults to a hash of your username             |
-| `DeleteAfterHours`  | int      | Change the timespan used to set the DeleteAfter tag. Defaults to 12 hours.                                                   |
+| Parameter           | Type   | Description                                                                                                  |
+|---------------------|--------|--------------------------------------------------------------------------------------------------------------|
+| `Area`              | string | REQUIRED. The service area to deploy test resources for (e.g., `Storage`, `KeyVault`). One area per run.    |
+| `SubscriptionId`    | string | Target subscription ID. If omitted, the current Azure context subscription (from `Get-AzContext`) is used. |
+| `ResourceGroupName` | string | Resource group name. Defaults to `{username}-mcp{hash(username)}`.                                          |
+| `BaseName`          | string | Base name prefix for resources. Defaults to `mcp{hash}`.                                                    |
+| `Unique`            | switch | Use a unique GUID-based hash for this invocation instead of the stable username+subscription hash.          |
+| `DeleteAfterHours`  | int    | Hours after which resources are tagged for deletion. Defaults to `12`.                                      |
+
+Examples:
+
+```pwsh
+# Deploy Storage test resources using current Azure context subscription
+./eng/scripts/Deploy-TestResources.ps1 -Area Storage
+
+# Deploy Key Vault test resources to a specific subscription and keep for one week
+./eng/scripts/Deploy-TestResources.ps1 -Area KeyVault -SubscriptionId <subId> -DeleteAfterHours 168 -Unique
+```
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the deployed areas' `/tests` directory.
 

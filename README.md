@@ -36,6 +36,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "List my App Configuration stores"
 * "Show my key-value pairs in App Config"
 
+### 📦 Azure Container Registry (ACR)
+
+* "List all my Azure Container Registries"
+* "Show me my container registries in the 'myproject' resource group"
+
 ### ☸️ Azure Kubernetes Service (AKS)
 
 * "List my AKS clusters in my subscription"
@@ -72,10 +77,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 💾 Azure Storage
 
 * "List my Azure storage accounts"
+* "Create a new storage account in East US with Data Lake support"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
 * "List paths in my Data Lake file system"
 * "List files and directories in my File Share"
+* "Send a message to my storage queue"
 
 ## 🛠️ Currently Supported Tools
 
@@ -103,6 +110,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Execute Azure CLI commands directly
 * Support for all Azure CLI functionality
+
+### 📦 Azure Container Registry (ACR)
+
+* List Azure Container Registries in a subscription
+* Filter container registries by resource group
 * JSON output formatting
 * Cross-platform compatibility
 
@@ -228,7 +240,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 💾 Azure Storage
 
-* List Storage accounts
+* List and create Storage accounts
 * Manage blob containers and blobs
 * List and query Storage tables
 * List paths in Data Lake file systems
@@ -244,7 +256,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Get secure, production-grade Azure Terraform best practices for effective code generation and command execution
 
 ### 🖥️ Azure Virtual Desktop
-  
+
 * List Azure Virtual Desktop host pools
 * List session hosts in host pools
 * List user sessions on a session host

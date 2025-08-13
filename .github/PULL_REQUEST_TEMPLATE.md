@@ -16,6 +16,7 @@
     - [ ] Updated `CHANGELOG.md` for product changes (`features, bug fixes, UI/UX, updated dependencies`)
     - [ ] Spelling check passes: `.\eng\common\spelling\Invoke-Cspell.ps1`
 - [ ] For MCP tool changes:
+    - [ ] **One tool per PR**: This PR adds or modifies only one MCP tool for faster review cycles
     - [ ] Updated `README.md` documentation
     - [ ] Updated command list in `/docs/azmcp-commands.md`
     - [ ] Updated test prompts in `/e2eTests/e2eTestPrompts.md`
