@@ -500,7 +500,7 @@ public class FoundryService(IHttpClientService httpClientService, ITenantService
             return new Dictionary<string, object>
             {
                 { "success", false },
-                { "error", $"Error in text evaluation: {ex.StackTrace}" }
+                { "error", $"Error in text evaluation: {ex.Message}" }
             };
         }
     }
