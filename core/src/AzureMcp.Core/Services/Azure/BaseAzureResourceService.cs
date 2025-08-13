@@ -23,7 +23,7 @@ public abstract class BaseAzureResourceService(
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ITenantService _tenantService = tenantService ?? throw new ArgumentNullException(nameof(tenantService));
-    
+
     /// <summary>
     /// Cache for tenant resources by subscription tenant ID to avoid repeated enumeration of all tenants.
     /// Key: Subscription's tenant ID, Value: TenantResource
@@ -74,6 +74,7 @@ public abstract class BaseAzureResourceService(
     /// <param name="retryPolicy">Optional retry policy configuration</param>
     /// <param name="converter">Function to convert JsonElement to the target type</param>
     /// <param name="additionalFilter">Optional additional KQL filter conditions</param>
+    /// <param name="limit">Maximum number of results to return (default: 50)</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of resources converted to the specified type</returns>
     protected async Task<List<T>> ExecuteResourceQueryAsync<T>(
@@ -83,6 +84,7 @@ public abstract class BaseAzureResourceService(
         RetryPolicyOptions? retryPolicy,
         Func<JsonElement, T> converter,
         string? additionalFilter = null,
+        int limit = 50,
         CancellationToken cancellationToken = default)
     {
         ValidateRequiredParameters(resourceType, resourceGroup, subscription);
@@ -98,6 +100,7 @@ public abstract class BaseAzureResourceService(
         {
             queryFilter += $" and {additionalFilter}";
         }
+        queryFilter += $" | limit {limit}";
 
         var queryContent = new ResourceQueryContent(queryFilter)
         {
@@ -153,6 +156,7 @@ public abstract class BaseAzureResourceService(
         {
             queryFilter += $" and {additionalFilter}";
         }
+        queryFilter += " | limit 1";
 
         var queryContent = new ResourceQueryContent(queryFilter)
         {

@@ -27,7 +27,7 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
     /// <returns>The SQL database if found, otherwise throws KeyNotFoundException</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the specified database is not found</exception>
     /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
-    public async Task<SqlDatabase?> GetDatabaseAsync(
+    public async Task<SqlDatabase> GetDatabaseAsync(
         string serverName,
         string databaseName,
         string resourceGroup,
@@ -125,6 +125,7 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
                 retryPolicy,
                 ConvertToSqlServerEntraAdministratorModel,
                 $"id contains '/servers/{EscapeKqlString(serverName)}/'",
+                50,
                 cancellationToken);
         }
         catch (Exception ex)
@@ -212,12 +213,14 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
 
     private static SqlDatabase ConvertToSqlDatabaseModel(JsonElement item)
     {
-        SqlDatabaseData sqlDatabase = SqlDatabaseData.FromJson(item);
+        SqlDatabaseData? sqlDatabase = SqlDatabaseData.FromJson(item);
+        if (sqlDatabase == null)
+            throw new InvalidOperationException("Failed to parse SQL database data");
 
         return new SqlDatabase(
-                Name: sqlDatabase.ResourceName,
-                Id: sqlDatabase.ResourceId,
-                Type: sqlDatabase.ResourceType,
+                Name: sqlDatabase.ResourceName ?? "Unknown",
+                Id: sqlDatabase.ResourceId ?? "Unknown",
+                Type: sqlDatabase.ResourceType ?? "Unknown",
                 Location: sqlDatabase.Location,
                 Sku: sqlDatabase.Sku != null ? new DatabaseSku(
                     Name: sqlDatabase.Sku.Name,
@@ -226,42 +229,47 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
                     Family: sqlDatabase.Sku.Family,
                     Size: sqlDatabase.Sku.Size
                 ) : null,
-                Status: sqlDatabase.Properties.Status,
-                Collation: sqlDatabase.Properties.Collation,
-                CreationDate: sqlDatabase.Properties.CreatedOn,
-                MaxSizeBytes: sqlDatabase.Properties.MaxSizeBytes,
-                ServiceLevelObjective: sqlDatabase.Properties.CurrentServiceObjectiveName,
-                Edition: sqlDatabase.Properties.CurrentSku?.Name,
-                ElasticPoolName: sqlDatabase.Properties.ElasticPoolId?.ToString().Split('/').LastOrDefault(),
-                EarliestRestoreDate: sqlDatabase.Properties.EarliestRestoreOn,
-                ReadScale: sqlDatabase.Properties.ReadScale,
-                ZoneRedundant: sqlDatabase.Properties.IsZoneRedundant
+                Status: sqlDatabase.Properties?.Status,
+                Collation: sqlDatabase.Properties?.Collation,
+                CreationDate: sqlDatabase.Properties?.CreatedOn,
+                MaxSizeBytes: sqlDatabase.Properties?.MaxSizeBytes,
+                ServiceLevelObjective: sqlDatabase.Properties?.CurrentServiceObjectiveName,
+                Edition: sqlDatabase.Properties?.CurrentSku?.Name,
+                ElasticPoolName: sqlDatabase.Properties?.ElasticPoolId?.ToString().Split('/').LastOrDefault(),
+                EarliestRestoreDate: sqlDatabase.Properties?.EarliestRestoreOn,
+                ReadScale: sqlDatabase.Properties?.ReadScale,
+                ZoneRedundant: sqlDatabase.Properties?.IsZoneRedundant
             );
     }
 
     private static SqlServerEntraAdministrator ConvertToSqlServerEntraAdministratorModel(JsonElement item)
     {
-        SqlServerAadAdministratorData admin = SqlServerAadAdministratorData.FromJson(item);
+        SqlServerAadAdministratorData? admin = SqlServerAadAdministratorData.FromJson(item);
+        if (admin == null)
+            throw new InvalidOperationException("Failed to parse SQL server AAD administrator data");
 
         return new SqlServerEntraAdministrator(
-                    Name: admin.ResourceName,
-                    Id: admin.ResourceId,
-                    Type: admin.ResourceType,
-                    AdministratorType: admin.Properties.AdministratorType,
-                    Login: admin.Properties.Login,
-                    Sid: admin.Properties.Sid?.ToString(),
-                    TenantId: admin.Properties.TenantId?.ToString(),
-                    AzureADOnlyAuthentication: admin.Properties.IsAzureADOnlyAuthenticationEnabled
+                    Name: admin.ResourceName ?? "Unknown",
+                    Id: admin.ResourceId ?? "Unknown",
+                    Type: admin.ResourceType ?? "Unknown",
+                    AdministratorType: admin.Properties?.AdministratorType,
+                    Login: admin.Properties?.Login,
+                    Sid: admin.Properties?.Sid?.ToString(),
+                    TenantId: admin.Properties?.TenantId?.ToString(),
+                    AzureADOnlyAuthentication: admin.Properties?.IsAzureADOnlyAuthenticationEnabled
                 );
     }
 
     private static SqlElasticPool ConvertToSqlElasticPoolModel(JsonElement item)
     {
-        SqlElasticPoolData elasticPool = SqlElasticPoolData.FromJson(item);
+        SqlElasticPoolData? elasticPool = SqlElasticPoolData.FromJson(item);
+        if (elasticPool == null)
+            throw new InvalidOperationException("Failed to parse SQL elastic pool data");
+
         return new SqlElasticPool(
-                    Name: elasticPool.ResourceName,
-                    Id: elasticPool.ResourceId,
-                    Type: elasticPool.ResourceType,
+                    Name: elasticPool.ResourceName ?? "Unknown",
+                    Id: elasticPool.ResourceId ?? "Unknown",
+                    Type: elasticPool.ResourceType ?? "Unknown",
                     Location: elasticPool.Location,
                     Sku: elasticPool.Sku != null ? new ElasticPoolSku(
                         Name: elasticPool.Sku.Name,
@@ -270,15 +278,15 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
                         Family: elasticPool.Sku.Family,
                         Size: elasticPool.Sku.Size
                     ) : null,
-                    State: elasticPool.Properties.State,
-                    CreationDate: elasticPool.Properties.CreatedOn,
-                    MaxSizeBytes: elasticPool.Properties.MaxSizeBytes,
-                    PerDatabaseSettings: elasticPool.Properties.PerDatabaseSettings != null ? new ElasticPoolPerDatabaseSettings(
+                    State: elasticPool.Properties?.State,
+                    CreationDate: elasticPool.Properties?.CreatedOn,
+                    MaxSizeBytes: elasticPool.Properties?.MaxSizeBytes,
+                    PerDatabaseSettings: elasticPool.Properties?.PerDatabaseSettings != null ? new ElasticPoolPerDatabaseSettings(
                         MinCapacity: elasticPool.Properties.PerDatabaseSettings.MinCapacity,
                         MaxCapacity: elasticPool.Properties.PerDatabaseSettings.MaxCapacity
                     ) : null,
-                    ZoneRedundant: elasticPool.Properties.IsZoneRedundant,
-                    LicenseType: elasticPool.Properties.LicenseType,
+                    ZoneRedundant: elasticPool.Properties?.IsZoneRedundant,
+                    LicenseType: elasticPool.Properties?.LicenseType,
                     DatabaseDtuMin: null, // DTU properties not available in current SDK
                     DatabaseDtuMax: null,
                     Dtu: null,
@@ -288,13 +296,16 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
 
     private static SqlServerFirewallRule ConvertToSqlFirewallRuleModel(JsonElement item)
     {
-        SqlFirewallRuleData firewallRule = SqlFirewallRuleData.FromJson(item);
+        SqlFirewallRuleData? firewallRule = SqlFirewallRuleData.FromJson(item);
+        if (firewallRule == null)
+            throw new InvalidOperationException("Failed to parse SQL firewall rule data");
+
         return new SqlServerFirewallRule(
-            Name: firewallRule.ResourceName,
-            Id: firewallRule.ResourceId,
-            Type: firewallRule.ResourceType,
-            StartIpAddress: firewallRule.Properties.StartIPAddress,
-            EndIpAddress: firewallRule.Properties.EndIPAddress
+            Name: firewallRule.ResourceName ?? "Unknown",
+            Id: firewallRule.ResourceId ?? "Unknown",
+            Type: firewallRule.ResourceType ?? "Unknown",
+            StartIpAddress: firewallRule.Properties?.StartIPAddress,
+            EndIpAddress: firewallRule.Properties?.EndIPAddress
         );
     }
 }

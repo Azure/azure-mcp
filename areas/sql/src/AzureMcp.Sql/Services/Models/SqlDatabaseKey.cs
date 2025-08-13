@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable
-
 using System.Text.Json.Serialization;
 
 namespace AzureMcp.Sql.Services.Models
@@ -12,15 +10,15 @@ namespace AzureMcp.Sql.Services.Models
     {
         /// <summary> The database key type. Only supported value is 'AzureKeyVault'. </summary>
         [JsonPropertyName("type")]
-        public string KeyType { get; set; }
+        public string? KeyType { get; set; }
         /// <summary> Thumbprint of the database key. </summary>
-        public string Thumbprint { get; set; }
+        public string? Thumbprint { get; set; }
         /// <summary> The database key creation date. </summary>
         [JsonPropertyName("creationDate")]
         public DateTimeOffset? CreatedOn { get; set; }
         /// <summary> Subregion of the server key. </summary>
-        public string Subregion { get; set; }
+        public string? Subregion { get; set; }
         /// <summary> The database key's version. </summary>
-        public string KeyVersion { get; set; }
+        public string? KeyVersion { get; set; }
     }
 }

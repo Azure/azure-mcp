@@ -5,6 +5,7 @@
 ### Features Added
 
 - Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+- Introduced `BaseAzureResourceService` class that uses Azure Resource Graph queries for improved performance and reduced API calls when retrieving Azure SQL resources. This provides faster and more efficient resource discovery compared to direct ARM API calls.
 
 ### Breaking Changes
 
@@ -16,8 +17,16 @@
 ### Bugs Fixed
 
 - Fixed best practice tool invocation failure when passing "all" action with "general" or "azurefunctions" resources, by adding that support. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Fixed KQL string escaping in Workbooks service queries to prevent potential injection issues and improve query reliability.
+- Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation.
 
 ### Other Changes
+
+- Refactored SQL service implementation to use Azure Resource Graph queries instead of direct ARM API calls, significantly improving performance and reducing the number of API requests required for SQL resource operations.
+- Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
+- Added `BaseAzureResourceService` abstract class that provides common Resource Graph query functionality with tenant caching and consistent error handling for Azure services.
+- Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services.
+- Updated development documentation to include guidance on choosing between `BaseAzureResourceService` and `BaseAzureService` based on service requirements.
 
 ## 0.5.4 (2025-08-07)
 

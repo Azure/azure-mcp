@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable
-
 namespace AzureMcp.Sql.Services.Models
 {
     /// <summary> Per database settings of an elastic pool. </summary>

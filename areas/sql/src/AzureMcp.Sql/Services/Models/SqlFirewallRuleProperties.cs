@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable
-
 using System.Text.Json.Serialization;
 
 namespace AzureMcp.Sql.Services.Models
@@ -15,9 +13,9 @@ namespace AzureMcp.Sql.Services.Models
     {
         /// <summary> The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. </summary>
         [JsonPropertyName("startIpAddress")]
-        public string StartIPAddress { get; set; }
+        public string? StartIPAddress { get; set; }
         /// <summary> The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. </summary>
         [JsonPropertyName("endIpAddress")]
-        public string EndIPAddress { get; set; }
+        public string? EndIPAddress { get; set; }
     }
 }

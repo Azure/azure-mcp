@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable
-
 using System.Text.Json.Serialization;
 using AzureMcp.Sql.Commands;
 
@@ -16,18 +14,18 @@ namespace AzureMcp.Sql.Services.Models
     {
         /// <summary> The resource ID for the resource. </summary>
         [JsonPropertyName("id")]
-        public string ResourceId { get; set; }
+        public string? ResourceId { get; set; }
         /// <summary> The type of the resource. </summary>
         [JsonPropertyName("type")]
-        public string ResourceType { get; set; }
+        public string? ResourceType { get; set; }
         /// <summary> The name of the resource. </summary>
         [JsonPropertyName("name")]
-        public string ResourceName { get; set; }
+        public string? ResourceName { get; set; }
         /// <summary> The properties of the firewall rule. </summary>
-        public SqlFirewallRuleProperties Properties { get; set; }
+        public SqlFirewallRuleProperties? Properties { get; set; }
 
         // Read the JSON response content and create a model instance from it.
-        public static SqlFirewallRuleData FromJson(JsonElement source)
+        public static SqlFirewallRuleData? FromJson(JsonElement source)
         {
             return JsonSerializer.Deserialize<SqlFirewallRuleData>(source, SqlJsonContext.Default.SqlFirewallRuleData);
         }
