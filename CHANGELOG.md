@@ -14,6 +14,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Fixed KQL string escaping in Workbooks service queries to prevent potential injection issues and improve query reliability.
 - Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation.
+- Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value.
 
 ### Other Changes
 
