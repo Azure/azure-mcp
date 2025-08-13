@@ -34,8 +34,6 @@ public sealed class ServerConfigGetCommand(ILogger<ServerConfigGetCommand> logge
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             IMySqlService mysqlService = context.GetService<IMySqlService>() ?? throw new InvalidOperationException("MySQL service is not available.");
             string config = await mysqlService.GetServerConfigAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);
             context.Response.Results = !string.IsNullOrEmpty(config) ?

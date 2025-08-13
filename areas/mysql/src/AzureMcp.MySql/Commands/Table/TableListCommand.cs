@@ -34,8 +34,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             IMySqlService mysqlService = context.GetService<IMySqlService>() ?? throw new InvalidOperationException("MySQL service is not available.");
             List<string> tables = await mysqlService.GetTablesAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Database!);
             context.Response.Results = tables?.Count > 0 ?
