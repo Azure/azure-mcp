@@ -63,8 +63,6 @@ public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : S
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetTopicDetails(
                 options.Namespace!,

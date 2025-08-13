@@ -14,7 +14,8 @@
     "categories": [
         "AI",
         "Azure",
-        "Chat"
+        "Chat",
+        "Extension Packs"
     ],
     "keywords": [
         "azure",
@@ -56,6 +57,9 @@
             }
         }
     },
+    "extensionPack": [
+        "ms-azuretools.vscode-azure-github-copilot"
+    ],
     "scripts": {
         "vscode:prepublish": "npm run build",
         "compile": "tsc -p ./",

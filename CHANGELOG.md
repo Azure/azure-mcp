@@ -1,22 +1,17 @@
-# Release History
+# CHANGELOG 📝
 
-## 0.5.5 (Unreleased)
+The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
+
+## 0.5.6 (Unreleased)
 
 ### Features Added
 
-- Added support for sending messages to Azure Storage queues via the `azmcp-storage-queue-message-send` command. This command enables asynchronous messaging by adding messages to storage queues with configurable time-to-live and visibility timeout settings. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
 - Introduced `BaseAzureResourceService` class that uses Azure Resource Graph queries for improved performance and reduced API calls when retrieving Azure SQL resources. This provides faster and more efficient resource discovery compared to direct ARM API calls.
 
 ### Breaking Changes
 
-- Storage: `azmcp-storage-account-list` now returns account metadata objects instead of plain strings. Each item includes:
-  `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`.
-  If you parsed an array of strings before, update your scripts to read the `name` property. The underlying
-  IStorageService `GetStorageAccounts` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`.
-
 ### Bugs Fixed
 
-- Fixed best practice tool invocation failure when passing "all" action with "general" or "azurefunctions" resources, by adding that support. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
 - Fixed KQL string escaping in Workbooks service queries to prevent potential injection issues and improve query reliability.
 - Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation.
 
@@ -27,6 +22,30 @@
 - Added `BaseAzureResourceService` abstract class that provides common Resource Graph query functionality with tenant caching and consistent error handling for Azure services.
 - Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services.
 - Updated development documentation to include guidance on choosing between `BaseAzureResourceService` and `BaseAzureService` based on service requirements.
+
+## 0.5.5 (2025-08-12)
+
+### Features Added
+
+- Added support for listing ACR (Azure Container Registry) registries in a subscription via the command `azmcp-acr-registry-list`. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
+- Added the following Azure Storage commands:
+  - `azmcp-storage-account-create`: Create a new Azure Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-queue-message-send`: Send a message to an Azure Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+  - `azmcp-storage-blob-details`: Get details about an Azure Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
+  - `azmcp-storage-blob-container-create`: Create a new Azure Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
+
+### Breaking Changes
+
+- The `azmcp-storage-account-list` command now returns account metadata objects instead of plain strings. Each item includes: `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`. Update scripts to read the `name` property. The underlying `IStorageService.GetStorageAccounts()` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`. [[#904](https://github.com/Azure/azure-mcp/issues/904)]
+
+### Bugs Fixed
+
+- Fixed best practices tool invocation failure when passing "all" action with "general" or "azurefunctions" resources. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Updated metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+
+### Other Changes
+
+- Consolidate "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
 
 ## 0.5.4 (2025-08-07)
 

@@ -30,15 +30,15 @@ public class StorageSetup : IAreaSetup
         // Create Storage command group
         var storage = new CommandGroup("storage",
             """
-            Storage operations - Commands for managing and accessing Azure Storage accounts and their data services 
-            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use 
-            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares, 
-            querying table storage, handle queue messages. This tool focuses on object storage, file storage, 
-            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router 
-            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object. 
-            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover 
-            available sub-commands for different Azure Storage service operations including blobs, datalake, shares, 
-            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only 
+            Storage operations - Commands for managing and accessing Azure Storage accounts and their data services
+            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use
+            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares,
+            querying table storage, handle queue messages. This tool focuses on object storage, file storage,
+            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router
+            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object.
+            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover
+            available sub-commands for different Azure Storage service operations including blobs, datalake, shares,
+            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only
             access storage resources accessible to the authenticated user.
             """);
         rootGroup.AddSubGroup(storage);
@@ -91,15 +91,18 @@ public class StorageSetup : IAreaSetup
 
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(loggerFactory.CreateLogger<AccountListCommand>()));
+        storageAccount.AddCommand("create", new AccountCreateCommand(loggerFactory.CreateLogger<AccountCreateCommand>()));
 
         tables.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
 
         blobs.AddCommand("list", new BlobListCommand(loggerFactory.CreateLogger<BlobListCommand>()));
+        blobs.AddCommand("details", new BlobDetailsCommand(loggerFactory.CreateLogger<BlobDetailsCommand>()));
 
         batch.AddCommand("set-tier", new BatchSetTierCommand(loggerFactory.CreateLogger<BatchSetTierCommand>()));
 
         blobContainer.AddCommand("list", new ContainerListCommand(loggerFactory.CreateLogger<ContainerListCommand>()));
         blobContainer.AddCommand("details", new ContainerDetailsCommand(loggerFactory.CreateLogger<ContainerDetailsCommand>()));
+        blobContainer.AddCommand("create", new ContainerCreateCommand(loggerFactory.CreateLogger<ContainerCreateCommand>()));
 
         fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
 

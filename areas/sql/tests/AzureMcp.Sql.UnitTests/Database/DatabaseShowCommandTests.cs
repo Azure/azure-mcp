@@ -7,7 +7,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Sql.Commands.Database;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

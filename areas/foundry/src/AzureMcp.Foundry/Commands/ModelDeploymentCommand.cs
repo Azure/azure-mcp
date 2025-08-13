@@ -83,8 +83,6 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var service = context.GetService<IFoundryService>();
             var deploymentResource = await service.DeployModel(
                 options.DeploymentName!,

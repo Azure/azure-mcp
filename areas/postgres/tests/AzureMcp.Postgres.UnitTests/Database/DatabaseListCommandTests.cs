@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Postgres.Commands.Database;
 using AzureMcp.Postgres.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

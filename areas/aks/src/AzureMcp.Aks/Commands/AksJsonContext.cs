@@ -3,7 +3,6 @@
 
 using System.Text.Json.Serialization;
 using AzureMcp.Aks.Commands.Cluster;
-using AzureMcp.Aks.Models;
 
 namespace AzureMcp.Aks.Commands;
 

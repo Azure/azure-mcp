@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Authorization.Commands;
 using AzureMcp.Authorization.Models;
 using AzureMcp.Authorization.Options;
 using AzureMcp.Authorization.Services;
@@ -55,8 +54,6 @@ public sealed class RoleAssignmentListCommand(ILogger<RoleAssignmentListCommand>
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var authService = context.GetService<IAuthorizationService>();
             var assignments = await authService.ListRoleAssignments(

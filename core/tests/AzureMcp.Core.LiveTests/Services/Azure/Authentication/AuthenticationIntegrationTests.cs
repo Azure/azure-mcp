@@ -12,7 +12,6 @@ using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
 using AzureMcp.Tests;
-using AzureMcp.Tests.Client;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit;
