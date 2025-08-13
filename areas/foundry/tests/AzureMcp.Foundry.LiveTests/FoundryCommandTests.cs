@@ -19,164 +19,164 @@ public class FoundryCommandTests(LiveTestFixture liveTestFixture, ITestOutputHel
     : CommandTestsBase(liveTestFixture, output),
     IClassFixture<LiveTestFixture>
 {
-    // [Fact]
-    // public async Task Should_list_foundry_models()
-    // {
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_models_list",
-    //         new()
-    //         {
-    //             { "search-for-free-playground", "true" }
-    //         });
+    [Fact]
+    public async Task Should_list_foundry_models()
+    {
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_list",
+            new()
+            {
+                { "search-for-free-playground", "true" }
+            });
 
-    //     var modelsArray = result.AssertProperty("models");
-    //     Assert.Equal(JsonValueKind.Array, modelsArray.ValueKind);
-    //     Assert.NotEmpty(modelsArray.EnumerateArray());
-    // }
+        var modelsArray = result.AssertProperty("models");
+        Assert.Equal(JsonValueKind.Array, modelsArray.ValueKind);
+        Assert.NotEmpty(modelsArray.EnumerateArray());
+    }
 
-    // [Fact]
-    // public async Task Should_list_foundry_model_deployments()
-    // {
-    //     var projectName = $"{Settings.ResourceBaseName}-ai-projects";
-    //     var accounts = Settings.ResourceBaseName;
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_models_deployments_list",
-    //         new()
-    //         {
-    //             { "endpoint", $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}" },
-    //             { "tenant", Settings.TenantId }
-    //         });
+    [Fact]
+    public async Task Should_list_foundry_model_deployments()
+    {
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_deployments_list",
+            new()
+            {
+                { "endpoint", $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}" },
+                { "tenant", Settings.TenantId }
+            });
 
-    //     var deploymentsArray = result.AssertProperty("deployments");
-    //     Assert.Equal(JsonValueKind.Array, deploymentsArray.ValueKind);
-    //     Assert.NotEmpty(deploymentsArray.EnumerateArray());
-    // }
+        var deploymentsArray = result.AssertProperty("deployments");
+        Assert.Equal(JsonValueKind.Array, deploymentsArray.ValueKind);
+        Assert.NotEmpty(deploymentsArray.EnumerateArray());
+    }
 
-    // [Fact]
-    // public async Task Should_deploy_foundry_model()
-    // {
-    //     var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_models_deploy",
-    //         new()
-    //         {
-    //             { "deployment-name", deploymentName },
-    //             { "model-name", "gpt-4o" },
-    //             { "model-format", "OpenAI"},
-    //             { "azure-ai-services-name", Settings.ResourceBaseName },
-    //             { "resource-group", Settings.ResourceGroupName },
-    //             { "subscription", Settings.SubscriptionId },
-    //         });
+    [Fact]
+    public async Task Should_deploy_foundry_model()
+    {
+        var deploymentName = $"test-deploy-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var result = await CallToolAsync(
+            "azmcp_foundry_models_deploy",
+            new()
+            {
+                { "deployment-name", deploymentName },
+                { "model-name", "gpt-4o" },
+                { "model-format", "OpenAI"},
+                { "azure-ai-services-name", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "subscription", Settings.SubscriptionId },
+            });
 
-    //     var deploymentResource = result.AssertProperty("deploymentData");
-    //     Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
-    //     Assert.NotEmpty(deploymentResource.EnumerateObject());
-    // }
+        var deploymentResource = result.AssertProperty("deploymentData");
+        Assert.Equal(JsonValueKind.Object, deploymentResource.ValueKind);
+        Assert.NotEmpty(deploymentResource.EnumerateObject());
+    }
 
-    // [Fact]
-    // [Trait("Category", "Live")]
-    // public async Task Should_connect_agent()
-    // {
-    //     var projectName = $"{Settings.ResourceBaseName}-ai-projects";
-    //     var accounts = Settings.ResourceBaseName;
-    //     var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-    //     var query = "What is the weather today?";
-    //     var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_connect_agent()
+    {
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var query = "What is the weather today?";
+        var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
 
-    //     var agentId = await CreateAgent(agentName, endpoint, "gpt-4o");
+        var agentId = await CreateAgent(agentName, endpoint, "gpt-4o");
 
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_agents_connect",
-    //         new()
-    //         {
-    //             { "agent-id", agentId },
-    //             { "query", query },
-    //             { "endpoint", endpoint }
-    //         });
-    //     var response = result.AssertProperty("response");
-    //     Assert.Equal(JsonValueKind.Object, response.ValueKind);
-    //     Assert.NotEmpty(response.EnumerateObject());
-    //     response.AssertProperty("query");
-    //     response.AssertProperty("response");
-    //     response.AssertProperty("text_query");
-    //     response.AssertProperty("text_response");
-    //     response.AssertProperty("agent_id");
-    //     response.AssertProperty("tool_definitions");
-    // }
+        var result = await CallToolAsync(
+            "azmcp_foundry_agents_connect",
+            new()
+            {
+                { "agent-id", agentId },
+                { "query", query },
+                { "endpoint", endpoint }
+            });
+        var response = result.AssertProperty("response");
+        Assert.Equal(JsonValueKind.Object, response.ValueKind);
+        Assert.NotEmpty(response.EnumerateObject());
+        response.AssertProperty("query");
+        response.AssertProperty("response");
+        response.AssertProperty("text_query");
+        response.AssertProperty("text_response");
+        response.AssertProperty("agent_id");
+        response.AssertProperty("tool_definitions");
+    }
 
-    // [Fact]
-    // [Trait("Category", "Live")]
-    // public async Task Should_list_agents()
-    // {
-    //     var projectName = $"{Settings.ResourceBaseName}-ai-projects";
-    //     var accounts = Settings.ResourceBaseName;
-    //     var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-    //     var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
+    [Fact]
+    [Trait("Category", "Live")]
+    public async Task Should_list_agents()
+    {
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
 
-    //     await CreateAgent(agentName, endpoint, "gpt-4o");
+        await CreateAgent(agentName, endpoint, "gpt-4o");
 
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_agents_list",
-    //         new()
-    //         {
-    //             { "endpoint", endpoint }
-    //         });
-    //     var agentsArray = result.AssertProperty("agents");
-    //     Assert.Equal(JsonValueKind.Array, agentsArray.ValueKind);
-    //     Assert.NotEmpty(agentsArray.EnumerateArray());
-    // }
+        var result = await CallToolAsync(
+            "azmcp_foundry_agents_list",
+            new()
+            {
+                { "endpoint", endpoint }
+            });
+        var agentsArray = result.AssertProperty("agents");
+        Assert.Equal(JsonValueKind.Array, agentsArray.ValueKind);
+        Assert.NotEmpty(agentsArray.EnumerateArray());
+    }
 
-    // [Theory]
-    // [InlineData("task_adherence", "Task Adherence")]
-    // [InlineData("tool_call_accuracy", "Tool Call Accuracy")]
-    // [InlineData("intent_resolution", "Intent Resolution")]
-    // [Trait("Category", "Live")]
-    // public async Task Should_query_and_evaluate_agent(string evaluatorName, string evaluationMetric)
-    // {
-    //     // to be filled in
+    [Theory]
+    [InlineData("task_adherence", "Task Adherence")]
+    [InlineData("tool_call_accuracy", "Tool Call Accuracy")]
+    [InlineData("intent_resolution", "Intent Resolution")]
+    [Trait("Category", "Live")]
+    public async Task Should_query_and_evaluate_agent(string evaluatorName, string evaluationMetric)
+    {
+        // to be filled in
 
-    //     var projectName = $"{Settings.ResourceBaseName}-ai-projects";
-    //     var accounts = Settings.ResourceBaseName;
-    //     var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-    //     var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
-    //     var azureOpenAIEndpoint = $"https://{accounts}.cognitiveservices.azure.com";
-    //     var azureOpenAIDeployment = "gpt-4o";
+        var projectName = $"{Settings.ResourceBaseName}-ai-projects";
+        var accounts = Settings.ResourceBaseName;
+        var agentName = $"test-agent-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        var endpoint = $"https://{accounts}.services.ai.azure.com/api/projects/{projectName}";
+        var azureOpenAIEndpoint = $"https://{accounts}.cognitiveservices.azure.com";
+        var azureOpenAIDeployment = "gpt-4o";
 
-    //     var agentId = await CreateAgent(agentName, endpoint, "gpt-4o");
-    //     var result = await CallToolAsync(
-    //         "azmcp_foundry_agents_query-and-evaluate",
-    //         new()
-    //         {
-    //             { "agent-id", agentId },
-    //             { "query", "What is the weather in NYC today?"},
-    //             { "endpoint", endpoint },
-    //             { "azure-openai-endpoint", azureOpenAIEndpoint },
-    //             { "azure-openai-deployment", azureOpenAIDeployment },
-    //             { "evaluators", evaluatorName }
-    //         });
+        var agentId = await CreateAgent(agentName, endpoint, "gpt-4o");
+        var result = await CallToolAsync(
+            "azmcp_foundry_agents_query-and-evaluate",
+            new()
+            {
+                { "agent-id", agentId },
+                { "query", "What is the weather in NYC today?"},
+                { "endpoint", endpoint },
+                { "azure-openai-endpoint", azureOpenAIEndpoint },
+                { "azure-openai-deployment", azureOpenAIDeployment },
+                { "evaluators", evaluatorName }
+            });
 
-    //     var response = result.AssertProperty("response");
-    //     Assert.Equal(JsonValueKind.Object, response.ValueKind);
-    //     Assert.NotEmpty(response.EnumerateObject());
-    //     response.AssertProperty("query");
-    //     response.AssertProperty("response");
-    //     response.AssertProperty("text_query");
-    //     response.AssertProperty("text_response");
-    //     response.AssertProperty("evaluators");
-    //     var evaluationResults = response.AssertProperty("evaluation_result");
-    //     Assert.Equal(JsonValueKind.Object, evaluationResults.ValueKind);
-    //     Assert.NotEmpty(evaluationResults.EnumerateObject());
-    //     var metrics = evaluationResults.AssertProperty("metrics");
-    //     Assert.Equal(JsonValueKind.Object, metrics.ValueKind);
-    //     var metric = metrics.AssertProperty(evaluationMetric);
-    //     Assert.Equal(JsonValueKind.Object, metric.ValueKind);
-    //     metric.AssertProperty("value");
-    //     metric.AssertProperty("reason");
-    //     var interpretation = metric.AssertProperty("interpretation");
-    //     Assert.Equal(JsonValueKind.Object, interpretation.ValueKind);
-    //     var context = metric.AssertProperty("context");
-    //     Assert.Equal(JsonValueKind.Object, context.ValueKind);
-    // }
+        var response = result.AssertProperty("response");
+        Assert.Equal(JsonValueKind.Object, response.ValueKind);
+        Assert.NotEmpty(response.EnumerateObject());
+        response.AssertProperty("query");
+        response.AssertProperty("response");
+        response.AssertProperty("text_query");
+        response.AssertProperty("text_response");
+        response.AssertProperty("evaluators");
+        var evaluationResults = response.AssertProperty("evaluation_result");
+        Assert.Equal(JsonValueKind.Object, evaluationResults.ValueKind);
+        Assert.NotEmpty(evaluationResults.EnumerateObject());
+        var metrics = evaluationResults.AssertProperty("metrics");
+        Assert.Equal(JsonValueKind.Object, metrics.ValueKind);
+        var metric = metrics.AssertProperty(evaluationMetric);
+        Assert.Equal(JsonValueKind.Object, metric.ValueKind);
+        metric.AssertProperty("value");
+        metric.AssertProperty("reason");
+        var interpretation = metric.AssertProperty("interpretation");
+        Assert.Equal(JsonValueKind.Object, interpretation.ValueKind);
+        var context = metric.AssertProperty("context");
+        Assert.Equal(JsonValueKind.Object, context.ValueKind);
+    }
 
     [Theory]
     [InlineData("task_adherence", "Task Adherence")]
