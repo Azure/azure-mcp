@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options.Database;
 using AzureMcp.Postgres.Services;
 using Microsoft.Extensions.Logging;
@@ -31,8 +30,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             List<string> databases = await pgService.ListDatabasesAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!);

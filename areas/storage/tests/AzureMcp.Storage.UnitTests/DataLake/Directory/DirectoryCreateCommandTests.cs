@@ -9,7 +9,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

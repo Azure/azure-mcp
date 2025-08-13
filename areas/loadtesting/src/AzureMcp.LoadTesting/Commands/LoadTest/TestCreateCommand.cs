@@ -24,12 +24,12 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
     public override string Name => "create";
     public override string Description =>
         $"""
-        Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance 
+        Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance
         and scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.
         """;
     public override string Title => _commandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {

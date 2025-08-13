@@ -68,8 +68,6 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             // Get the storage service from DI
             var service = context.GetService<IStorageService>();
 

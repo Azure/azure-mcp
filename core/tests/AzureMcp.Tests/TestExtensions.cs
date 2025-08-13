@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.Tests;
