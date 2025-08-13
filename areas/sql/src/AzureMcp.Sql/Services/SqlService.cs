@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -16,6 +15,18 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
 {
     private readonly ILogger<SqlService> _logger = logger;
 
+    /// <summary>
+    /// Retrieves a specific SQL database from an Azure SQL Server.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server hosting the database</param>
+    /// <param name="databaseName">The name of the database to retrieve</param>
+    /// <param name="resourceGroup">The name of the resource group containing the server</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration for resilient operations</param>
+    /// <param name="cancellationToken">Token to observe for cancellation requests</param>
+    /// <returns>The SQL database if found, otherwise throws KeyNotFoundException</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the specified database is not found</exception>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
     public async Task<SqlDatabase?> GetDatabaseAsync(
         string serverName,
         string databaseName,
@@ -51,6 +62,16 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
         }
     }
 
+    /// <summary>
+    /// Retrieves a list of all SQL databases from an Azure SQL Server.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server to list databases from</param>
+    /// <param name="resourceGroup">The name of the resource group containing the server</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration for resilient operations</param>
+    /// <param name="cancellationToken">Token to observe for cancellation requests</param>
+    /// <returns>A list of SQL databases on the specified server</returns>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
     public async Task<List<SqlDatabase>> ListDatabasesAsync(
         string serverName,
         string resourceGroup,
@@ -77,6 +98,17 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
         }
     }
 
+    /// <summary>
+    /// Retrieves a list of Microsoft Entra ID (formerly Azure AD) administrators for an Azure SQL Server.
+    /// These administrators can authenticate to the SQL server using their Entra ID credentials.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server to get administrators for</param>
+    /// <param name="resourceGroup">The name of the resource group containing the server</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration for resilient operations</param>
+    /// <param name="cancellationToken">Token to observe for cancellation requests</param>
+    /// <returns>A list of Entra ID administrators configured for the SQL server</returns>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
     public async Task<List<SqlServerEntraAdministrator>> GetEntraAdministratorsAsync(
         string serverName,
         string resourceGroup,
@@ -104,6 +136,17 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
         }
     }
 
+    /// <summary>
+    /// Retrieves a list of elastic pools from an Azure SQL Server.
+    /// Elastic pools provide a cost-effective solution for managing multiple databases with varying usage patterns.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server to get elastic pools from</param>
+    /// <param name="resourceGroup">The name of the resource group containing the server</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration for resilient operations</param>
+    /// <param name="cancellationToken">Token to observe for cancellation requests</param>
+    /// <returns>A list of elastic pools configured on the SQL server</returns>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
     public async Task<List<SqlElasticPool>> GetElasticPoolsAsync(
         string serverName,
         string resourceGroup,
@@ -130,6 +173,17 @@ public class SqlService(ISubscriptionService subscriptionService, ITenantService
         }
     }
 
+    /// <summary>
+    /// Retrieves a list of firewall rules configured for an Azure SQL Server.
+    /// Firewall rules control which IP addresses are allowed to connect to the SQL server.
+    /// </summary>
+    /// <param name="serverName">The name of the SQL server to get firewall rules for</param>
+    /// <param name="resourceGroup">The name of the resource group containing the server</param>
+    /// <param name="subscription">The subscription ID or name</param>
+    /// <param name="retryPolicy">Optional retry policy configuration for resilient operations</param>
+    /// <param name="cancellationToken">Token to observe for cancellation requests</param>
+    /// <returns>A list of firewall rules configured on the SQL server</returns>
+    /// <exception cref="ArgumentException">Thrown when required parameters are null or empty</exception>
     public async Task<List<SqlServerFirewallRule>> ListFirewallRulesAsync(
         string serverName,
         string resourceGroup,

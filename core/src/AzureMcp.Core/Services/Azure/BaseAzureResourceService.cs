@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Collections.Concurrent;
 using Azure.ResourceManager.ResourceGraph;
 using Azure.ResourceManager.ResourceGraph.Models;
+using Azure.ResourceManager.Resources;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
@@ -22,6 +23,46 @@ public abstract class BaseAzureResourceService(
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ITenantService _tenantService = tenantService ?? throw new ArgumentNullException(nameof(tenantService));
+    
+    /// <summary>
+    /// Cache for tenant resources by subscription tenant ID to avoid repeated enumeration of all tenants.
+    /// Key: Subscription's tenant ID, Value: TenantResource
+    /// </summary>
+    private readonly ConcurrentDictionary<Guid, TenantResource> _tenantCache = new();
+
+    /// <summary>
+    /// Gets the tenant resource for the specified subscription, using caching to avoid repeated tenant enumeration.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID from the subscription</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The tenant resource associated with the subscription</returns>
+    private async Task<TenantResource> GetTenantResourceAsync(Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        if (tenantId == null || tenantId == Guid.Empty)
+        {
+            throw new ArgumentException("Tenant ID cannot be null or empty", nameof(tenantId));
+        }
+
+        // Try to get from cache first
+        if (_tenantCache.TryGetValue(tenantId.Value, out var cachedTenant))
+        {
+            return cachedTenant;
+        }
+
+        // Not in cache, get all tenants and find the matching one
+        var allTenants = await _tenantService.GetTenants();
+        var tenantResource = allTenants.FirstOrDefault(t => t.Data.TenantId == tenantId.Value);
+
+        if (tenantResource == null)
+        {
+            throw new InvalidOperationException($"No accessible tenant found for tenant ID '{tenantId}'");
+        }
+
+        // Cache the result for future use
+        _tenantCache.TryAdd(tenantId.Value, tenantResource);
+
+        return tenantResource;
+    }
 
     /// <summary>
     /// Executes a Resource Graph query and returns a list of resources of the specified type.
@@ -50,12 +91,7 @@ public abstract class BaseAzureResourceService(
         var results = new List<T>();
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
-        var tenantResource = (await _tenantService.GetTenants()).FirstOrDefault(t => t.Data.TenantId == subscriptionResource.Data.TenantId);
-
-        if (tenantResource == null)
-        {
-            throw new InvalidOperationException($"No accessible tenant found for subscription '{subscription}'");
-        }
+        var tenantResource = await GetTenantResourceAsync(subscriptionResource.Data.TenantId, cancellationToken);
 
         var queryFilter = $"Resources | where type =~ '{EscapeKqlString(resourceType)}' and resourceGroup =~ '{EscapeKqlString(resourceGroup)}'";
         if (!string.IsNullOrEmpty(additionalFilter))
@@ -110,14 +146,9 @@ public abstract class BaseAzureResourceService(
         ArgumentNullException.ThrowIfNull(converter);
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
-        var tenantResource = (await _tenantService.GetTenants()).FirstOrDefault(t => t.Data.TenantId == subscriptionResource.Data.TenantId);
+        var tenantResource = await GetTenantResourceAsync(subscriptionResource.Data.TenantId, cancellationToken);
 
-        if (tenantResource == null)
-        {
-            throw new InvalidOperationException($"No accessible tenant found for subscription '{subscription}'");
-        }
-
-        var queryFilter = $"Resources | where type =~ '{resourceType}' and resourceGroup =~ '{resourceGroup}'";
+        var queryFilter = $"Resources | where type =~ '{EscapeKqlString(resourceType)}' and resourceGroup =~ '{EscapeKqlString(resourceGroup)}'";
         if (!string.IsNullOrEmpty(additionalFilter))
         {
             queryFilter += $" and {additionalFilter}";
