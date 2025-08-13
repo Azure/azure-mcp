@@ -15,10 +15,11 @@ public static class CloudArchitectOptionDefinitions
     public const string ConfidenceScoreName = "confidence-score";
     public const string ArchitectureComponentName = "architecture-component";
     public const string ArchitectureTierName = "architecture-tier";
+    public const string StateName = "state";
 
     public static readonly Option<string> Question = new(
         $"--{QuestionName}",
-        "The question to ask during the architecture design process."
+         "The current question being asked"
     )
     {
         IsRequired = false
@@ -26,7 +27,7 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<int> QuestionNumber = new(
         $"--{QuestionNumberName}",
-        "The current question number in the design process."
+        "Current question number"
     )
     {
         IsRequired = false
@@ -34,7 +35,7 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<int> TotalQuestions = new(
         $"--{TotalQuestionsName}",
-        "The total number of questions in the design process."
+        "Estimated total questions needed"
     )
     {
         IsRequired = false
@@ -42,7 +43,7 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<string> Answer = new(
         $"--{AnswerName}",
-        "The answer to the current question in the design process."
+         "The user's response to the question"
     )
     {
         IsRequired = false
@@ -50,7 +51,7 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<bool> NextQuestionNeeded = new(
         $"--{NextQuestionNeededName}",
-        "Whether the next question is needed in the design process."
+        "Whether another question is needed"
     )
     {
         IsRequired = false
@@ -58,7 +59,7 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<double> ConfidenceScore = new(
         $"--{ConfidenceScoreName}",
-        "The confidence score for the current architecture design."
+        "A value between 0.0 and 1.0 representing confidence in understanding requirements. When this reaches 0.7 or higher, nextQuestionNeeded should be set to false."
     )
     {
         IsRequired = false
@@ -66,23 +67,23 @@ public static class CloudArchitectOptionDefinitions
 
     public static readonly Option<string> ArchitectureComponent = new(
         $"--{ArchitectureComponentName}",
-        "The architecture component being designed."
+        "The specific Azure component being suggested. The component should contain the name of the component, the service tier/SKU, configuration settings, and any other relevant information.\""
     )
     {
         IsRequired = false
     };
 
-    public static readonly Option<string> ArchitectureTier = new(
+    public static readonly Option<ArchitectureTier> ArchitectureTier = new(
         $"--{ArchitectureTierName}",
-        "The architecture tier being designed (e.g., presentation, business, data)."
+        "Which architectural tier this component belongs to"
     )
     {
         IsRequired = false
     };
 
-    public static readonly Option<ArchitectureDesignToolOptions> ArchitectureDesignTool = new(
-        "--architecture-design-tool",
-        "The complete architecture design tool options for guided design flow."
+    public static readonly Option<ArchitectureDesignToolState> State = new(
+        $"--{StateName}",
+        "The complete architecture state from the previous request"
     )
     {
         IsRequired = false

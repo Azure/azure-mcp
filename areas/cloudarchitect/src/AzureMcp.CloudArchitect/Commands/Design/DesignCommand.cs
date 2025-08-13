@@ -24,6 +24,8 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
     private readonly Option<bool> _nextQuestionNeededOption = CloudArchitectOptionDefinitions.NextQuestionNeeded;
     private readonly Option<double> _confidenceScoreOption = CloudArchitectOptionDefinitions.ConfidenceScore;
     private readonly Option<string> _architectureComponentOption = CloudArchitectOptionDefinitions.ArchitectureComponent;
+    private readonly Option<ArchitectureTier> _architectureTierOption = CloudArchitectOptionDefinitions.ArchitectureTier;
+    private readonly Option<ArchitectureDesignToolState> _architectureDesignToolState = CloudArchitectOptionDefinitions.State;
 
     private static readonly string s_designArchitectureText = LoadArchitectureDesignText();
 
@@ -59,6 +61,8 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
         command.AddOption(_nextQuestionNeededOption);
         command.AddOption(_confidenceScoreOption);
         command.AddOption(_architectureComponentOption);
+        command.AddOption(_architectureTierOption);
+        command.AddOption(_architectureDesignToolState);
     }
 
     protected override ArchitectureDesignToolOptions BindOptions(ParseResult parseResult)
@@ -71,6 +75,8 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
         options.NextQuestionNeeded = parseResult.GetValueForOption(_nextQuestionNeededOption);
         options.ConfidenceScore = parseResult.GetValueForOption(_confidenceScoreOption);
         options.ArchitectureComponent = parseResult.GetValueForOption(_architectureComponentOption);
+        options.ArchitectureTier = parseResult.GetValueForOption(_architectureTierOption);
+        options.State = parseResult.GetValueForOption(_architectureDesignToolState) ?? new ArchitectureDesignToolState();
         return options;
     }
 
