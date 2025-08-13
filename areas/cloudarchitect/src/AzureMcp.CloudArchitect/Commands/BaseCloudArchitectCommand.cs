@@ -10,6 +10,6 @@ namespace AzureMcp.CloudArchitect.Commands;
 public abstract class BaseCloudArchitectCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : GlobalCommand<T>
-    where T : BaseCloudArchitectOptions, new()
+    where T : ArchitectureDesignToolOptions, new()
 {
 }

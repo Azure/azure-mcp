@@ -63,6 +63,33 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
         command.AddOption(_architectureComponentOption);
         command.AddOption(_architectureTierOption);
         command.AddOption(_architectureDesignToolState);
+
+        command.AddValidator(result =>
+        {
+            // Validate confidence score is between 0.0 and 1.0
+            var confidenceScore = result.GetValueForOption(_confidenceScoreOption);
+            if (confidenceScore < 0.0 || confidenceScore > 1.0)
+            {
+                result.ErrorMessage = "Confidence score must be between 0.0 and 1.0";
+                return;
+            }
+
+            // Validate question number is not negative
+            var questionNumber = result.GetValueForOption(_questionNumberOption);
+            if (questionNumber < 0)
+            {
+                result.ErrorMessage = "Question number cannot be negative";
+                return;
+            }
+
+            // Validate total questions is not negative
+            var totalQuestions = result.GetValueForOption(_questionTotalQuestions);
+            if (totalQuestions < 0)
+            {
+                result.ErrorMessage = "Total questions cannot be negative";
+                return;
+            }
+        });
     }
 
     protected override ArchitectureDesignToolOptions BindOptions(ParseResult parseResult)
@@ -82,10 +109,19 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : BaseCloudArch
 
     public override Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
-        var designArchitecture = GetArchitectureDesignText();
-        context.Response.Status = 200;
-        context.Response.Results = ResponseResult.Create(new List<string> { designArchitecture }, CloudArchitectJsonContext.Default.ListString);
-        context.Response.Message = string.Empty;
+        try
+        {
+            var designArchitecture = GetArchitectureDesignText();
+            context.Response.Status = 200;
+            context.Response.Results = ResponseResult.Create(new List<string> { designArchitecture }, CloudArchitectJsonContext.Default.ListString);
+            context.Response.Message = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred in cloud architec design command");
+            HandleException(context, ex);
+        }
         return Task.FromResult(context.Response);
+
     }
 }

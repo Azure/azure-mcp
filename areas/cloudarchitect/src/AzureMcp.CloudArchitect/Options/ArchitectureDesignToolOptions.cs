@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using AzureMcp.Core.Options;
 
 namespace AzureMcp.CloudArchitect.Options;
 
 /// <summary>
 /// The set of parameters that the architecture design tool takes as input.
 /// </summary>
-public class ArchitectureDesignToolOptions : BaseCloudArchitectOptions
+public class ArchitectureDesignToolOptions : GlobalOptions
 {
     [JsonPropertyName("question")]
     public string Question { get; set; } = string.Empty;

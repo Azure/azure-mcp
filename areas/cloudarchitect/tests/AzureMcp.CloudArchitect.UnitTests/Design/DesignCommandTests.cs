@@ -60,6 +60,8 @@ public class DesignCommandTests
         Assert.Contains("next-question-needed", optionNames);
         Assert.Contains("confidence-score", optionNames);
         Assert.Contains("architecture-component", optionNames);
+        Assert.Contains("architecture-tier", optionNames);
+        Assert.Contains("state", optionNames);
     }
 
     [Theory]
@@ -71,7 +73,9 @@ public class DesignCommandTests
     [InlineData("--next-question-needed true")]
     [InlineData("--confidence-score 0.8")]
     [InlineData("--architecture-component \"Frontend\"")]
+    [InlineData("--architecture-tier Infrastructure")]
     [InlineData("--question \"App type?\" --question-number 1 --total-questions 5")]
+    [InlineData("--architecture-tier Platform --architecture-component \"AKS Cluster\"")]
     public async Task ExecuteAsync_ReturnsArchitectureDesignText(string args)
     {
         // Arrange
@@ -137,7 +141,8 @@ public class DesignCommandTests
             "--answer", "Web application",
             "--next-question-needed", "true",
             "--confidence-score", "0.8",
-            "--architecture-component", "Frontend"
+            "--architecture-component", "Frontend",
+            "--architecture-tier", "Application"
         };
 
         var parseResult = _parser.Parse(args);
@@ -239,6 +244,103 @@ public class DesignCommandTests
         Assert.True(metadata.ReadOnly);
     }
 
+    [Theory]
+    [InlineData("Infrastructure")]
+    [InlineData("Platform")]
+    [InlineData("Application")]
+    [InlineData("Data")]
+    [InlineData("Security")]
+    [InlineData("Operations")]
+    public async Task ExecuteAsync_WithArchitectureTierOptions(string tierValue)
+    {
+        // Arrange
+        var args = new[] { "--architecture-tier", tierValue };
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        Assert.Empty(response.Message);
+
+        // Verify the architecture tier was parsed correctly
+        var tierOption = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "architecture-tier"));
+        Assert.Equal(Enum.Parse<ArchitectureTier>(tierValue), tierOption);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithStateOption()
+    {
+        // Arrange - Create a simple JSON state object
+        var stateJson = "{\"architectureComponents\":[],\"architectureTiers\":{\"infrastructure\":[],\"platform\":[],\"application\":[],\"data\":[],\"security\":[],\"operations\":[]},\"requirements\":{\"explicit\":[],\"implicit\":[],\"assumed\":[]},\"confidenceFactors\":{\"explicitRequirementsCoverage\":0.5,\"implicitRequirementsCertainty\":0.7,\"assumptionRisk\":0.3}}";
+        var args = new[] { "--state", stateJson };
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        Assert.Empty(response.Message);
+
+        // Verify the command executed successfully with state option
+        string serializedResult = SerializeResponseResult(response.Results);
+        var resultList = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.ListString);
+        Assert.NotNull(resultList);
+        Assert.Single(resultList);
+        Assert.NotEmpty(resultList[0]);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithCompleteOptionSet()
+    {
+        // Arrange - Test all options together including the new ones
+        var args = new[]
+        {
+            "--question", "What type of application are you building?",
+            "--question-number", "3",
+            "--total-questions", "8",
+            "--answer", "A financial trading platform",
+            "--next-question-needed", "false",
+            "--confidence-score", "0.9",
+            "--architecture-component", "Azure SQL Database",
+            "--architecture-tier", "Data"
+        };
+
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        Assert.Empty(response.Message);
+
+        // Verify all options were parsed correctly
+        var command = _command.GetCommand();
+        var questionValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "question"));
+        var questionNumberValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "question-number"));
+        var totalQuestionsValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "total-questions"));
+        var answerValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "answer"));
+        var nextQuestionNeededValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "next-question-needed"));
+        var confidenceScoreValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "confidence-score"));
+        var componentValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "architecture-component"));
+        var tierValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "architecture-tier"));
+
+        Assert.Equal("What type of application are you building?", questionValue);
+        Assert.Equal(3, questionNumberValue);
+        Assert.Equal(8, totalQuestionsValue);
+        Assert.Equal("A financial trading platform", answerValue);
+        Assert.Equal(false, nextQuestionNeededValue);
+        Assert.Equal(0.9, confidenceScoreValue);
+        Assert.Equal("Azure SQL Database", componentValue);
+        Assert.Equal(ArchitectureTier.Data, tierValue);
+    }
+
     private static string SerializeResponseResult(ResponseResult responseResult)
     {
         using var stream = new MemoryStream();
@@ -247,4 +349,152 @@ public class DesignCommandTests
         writer.Flush();
         return Encoding.UTF8.GetString(stream.ToArray());
     }
+
+    #region Validation Tests
+
+    [Theory]
+    [InlineData(-0.1)]
+    [InlineData(1.1)]
+    [InlineData(2.0)]
+    [InlineData(-1.0)]
+    public void Parse_InvalidConfidenceScore_ReturnsError(double invalidScore)
+    {
+        // Arrange
+        var args = new[] { "--confidence-score", invalidScore.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.NotEmpty(parseResult.Errors);
+        Assert.Contains("Confidence score must be between 0.0 and 1.0", parseResult.Errors.Select(e => e.Message));
+    }
+
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.5)]
+    [InlineData(1.0)]
+    [InlineData(0.1)]
+    [InlineData(0.9)]
+    public void Parse_ValidConfidenceScore_NoErrors(double validScore)
+    {
+        // Arrange
+        var args = new[] { "--confidence-score", validScore.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.Empty(parseResult.Errors);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-5)]
+    [InlineData(-100)]
+    public void Parse_NegativeQuestionNumber_ReturnsError(int invalidQuestionNumber)
+    {
+        // Arrange
+        var args = new[] { "--question-number", invalidQuestionNumber.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.NotEmpty(parseResult.Errors);
+        Assert.Contains("Question number cannot be negative", parseResult.Errors.Select(e => e.Message));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(5)]
+    [InlineData(100)]
+    public void Parse_ValidQuestionNumber_NoErrors(int validQuestionNumber)
+    {
+        // Arrange
+        var args = new[] { "--question-number", validQuestionNumber.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.Empty(parseResult.Errors);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-5)]
+    [InlineData(-100)]
+    public void Parse_NegativeTotalQuestions_ReturnsError(int invalidTotalQuestions)
+    {
+        // Arrange
+        var args = new[] { "--total-questions", invalidTotalQuestions.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.NotEmpty(parseResult.Errors);
+        Assert.Contains("Total questions cannot be negative", parseResult.Errors.Select(e => e.Message));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(5)]
+    [InlineData(100)]
+    public void Parse_ValidTotalQuestions_NoErrors(int validTotalQuestions)
+    {
+        // Arrange
+        var args = new[] { "--total-questions", validTotalQuestions.ToString() };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.Empty(parseResult.Errors);
+    }
+
+    [Theory]
+    [InlineData(1, 5)]
+    [InlineData(5, 5)]
+    [InlineData(3, 10)]
+    [InlineData(0, 5)] // Zero is valid for question number
+    public void Parse_QuestionNumberWithinTotalQuestions_NoErrors(int questionNumber, int totalQuestions)
+    {
+        // Arrange
+        var args = new[]
+        {
+            "--question-number", questionNumber.ToString(),
+            "--total-questions", totalQuestions.ToString()
+        };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.Empty(parseResult.Errors);
+    }
+
+    [Fact]
+    public void Parse_MultipleValidationErrors_ReturnsFirstError()
+    {
+        // Arrange - Set both invalid confidence score and negative question number
+        var args = new[]
+        {
+            "--confidence-score", "1.5",
+            "--question-number", "-1"
+        };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+
+        // Assert
+        Assert.NotEmpty(parseResult.Errors);
+        // Should return the first validation error encountered
+        Assert.Contains("Confidence score must be between 0.0 and 1.0", parseResult.Errors.Select(e => e.Message));
+    }
+
+    #endregion
 }
