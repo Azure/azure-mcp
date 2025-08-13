@@ -145,6 +145,7 @@ namespace AzureMcp.Storage.LiveTests
                         { "blob", tempFileName },
                         { "local-file-path", tempFilePath }
                     });
+
                 // Verify upload details
                 var blobName = result.AssertProperty("blobName");
                 Assert.Equal(tempFileName, blobName.GetString());
@@ -153,7 +154,7 @@ namespace AzureMcp.Storage.LiveTests
                 Assert.Equal("bar", containerName.GetString());
 
                 var uploadedFile = result.AssertProperty("uploadedFile");
-                Assert.Equal(tempFileName, uploadedFile.GetString());
+                Assert.Equal(tempFilePath, uploadedFile.GetString());
 
                 var wasOverwritten = result.AssertProperty("wasOverwritten");
                 Assert.False(wasOverwritten.GetBoolean());
@@ -211,9 +212,23 @@ namespace AzureMcp.Storage.LiveTests
                         { "overwrite", true }
                     });
 
+                // Verify upload details
+                var blobName = result.AssertProperty("blobName");
+                Assert.Equal(tempFileName, blobName.GetString());
+
+                var containerName = result.AssertProperty("containerName");
+                Assert.Equal("bar", containerName.GetString());
+
+                var uploadedFile = result.AssertProperty("uploadedFile");
+                Assert.Equal(tempFilePath, uploadedFile.GetString());
+
                 // Verify overwrite occurred
                 var wasOverwritten = result.AssertProperty("wasOverwritten");
                 Assert.True(wasOverwritten.GetBoolean());
+
+                var eTag = result.AssertProperty("eTag");
+                Assert.NotNull(eTag.GetString());
+                Assert.NotEmpty(eTag.GetString()!);
             }
             finally
             {
