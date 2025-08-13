@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
+using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;
 using AzureMcp.Storage.Services;
@@ -72,9 +73,7 @@ public sealed class BlobUploadCommand(ILogger<BlobUploadCommand> logger) : BaseB
                 options.Tenant,
                 options.RetryPolicy);
 
-            var commandResult = new BlobUploadCommandResult(result);
-
-            context.Response.Results = ResponseResult.Create(commandResult, StorageJsonContext.Default.BlobUploadCommandResult);
+            context.Response.Results = ResponseResult.Create(result, StorageJsonContext.Default.BlobUploadResult);
 
             _logger.LogInformation("Successfully uploaded file {LocalFilePath} to blob {BlobName} in container {ContainerName}. Overwritten: {WasOverwritten}",
                 options.LocalFilePath, options.Blob, options.Container, result.WasOverwritten);
@@ -89,6 +88,4 @@ public sealed class BlobUploadCommand(ILogger<BlobUploadCommand> logger) : BaseB
             return context.Response;
         }
     }
-
-    internal record BlobUploadCommandResult(Models.BlobUploadResult Result);
 }

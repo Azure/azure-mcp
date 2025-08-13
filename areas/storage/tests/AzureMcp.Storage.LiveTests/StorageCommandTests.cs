@@ -145,25 +145,20 @@ namespace AzureMcp.Storage.LiveTests
                         { "blob", tempFileName },
                         { "local-file-path", tempFilePath }
                     });
-
-                var uploadResults = result.AssertProperty("results");
-                Assert.Equal(JsonValueKind.Array, uploadResults.ValueKind);
-                var uploadResult = uploadResults.EnumerateArray().First();
-
                 // Verify upload details
-                var blobName = uploadResult.GetProperty("blobName");
+                var blobName = result.AssertProperty("blobName");
                 Assert.Equal(tempFileName, blobName.GetString());
 
-                var containerName = uploadResult.GetProperty("containerName");
+                var containerName = result.AssertProperty("containerName");
                 Assert.Equal("bar", containerName.GetString());
 
-                var uploadedFile = uploadResult.GetProperty("uploadedFile");
+                var uploadedFile = result.AssertProperty("uploadedFile");
                 Assert.Equal(tempFileName, uploadedFile.GetString());
 
-                var wasOverwritten = uploadResult.GetProperty("wasOverwritten");
+                var wasOverwritten = result.AssertProperty("wasOverwritten");
                 Assert.False(wasOverwritten.GetBoolean());
 
-                var eTag = uploadResult.GetProperty("eTag");
+                var eTag = result.AssertProperty("eTag");
                 Assert.NotNull(eTag.GetString());
                 Assert.NotEmpty(eTag.GetString()!);
             }
@@ -216,12 +211,8 @@ namespace AzureMcp.Storage.LiveTests
                         { "overwrite", true }
                     });
 
-                var uploadResults = result.AssertProperty("results");
-                Assert.Equal(JsonValueKind.Array, uploadResults.ValueKind);
-                var uploadResult = uploadResults.EnumerateArray().First();
-
                 // Verify overwrite occurred
-                var wasOverwritten = uploadResult.GetProperty("wasOverwritten");
+                var wasOverwritten = result.AssertProperty("wasOverwritten");
                 Assert.True(wasOverwritten.GetBoolean());
             }
             finally
