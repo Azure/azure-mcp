@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="System.CommandLine" />

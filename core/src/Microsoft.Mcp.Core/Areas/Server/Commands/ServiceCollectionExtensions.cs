@@ -6,6 +6,7 @@ using Microsoft.Mcp.Core.Areas.Server.Commands.Discovery;
 using Microsoft.Mcp.Core.Areas.Server.Commands.Runtime;
 using Microsoft.Mcp.Core.Areas.Server.Commands.ToolLoading;
 using Microsoft.Mcp.Core.Areas.Server.Options;
+using Microsoft.Mcp.Core.Services.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,15 +26,16 @@ public static class AzureMcpServiceCollectionExtensions
     private const string DefaultServerName = "Azure MCP Server";
 
     /// <summary>
-    /// Adds the Azure MCP server services to the specified <see cref="IServiceCollection"/>.
+    /// Adds the MCP server services to the specified <see cref="IServiceCollection"/>.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="serviceStartOptions">The options for configuring the server.</param>
     /// <returns>The service collection with MCP server services added.</returns>
-    public static IServiceCollection AddAzureMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
+    public static IServiceCollection AddMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
     {
         // Register HTTP client services
-        services.AddHttpClientServices();
+        services.AddHttpClient();
+        services.AddSingleton<IHttpClientService, HttpClientService>();
 
         // Register options for service start
         services.AddSingleton(serviceStartOptions);

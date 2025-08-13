@@ -6,6 +6,7 @@ using Microsoft.Mcp.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Server;
 
 namespace Microsoft.Mcp.Core.Areas.Server.Commands;
 
@@ -64,15 +65,15 @@ public class ServiceStartCommand : BaseCommand
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var namespaces = parseResult.GetValueForOption(_namespaceOption) == default
-            ? ServiceOptionDefinitions.Namespace.GetDefaultValue()
+            ? Array.Empty<string>()
             : parseResult.GetValueForOption(_namespaceOption);
 
         var mode = parseResult.GetValueForOption(_modeOption) == default
-            ? ServiceOptionDefinitions.Mode.GetDefaultValue()
+            ? ModeTypes.NamespaceProxy
             : parseResult.GetValueForOption(_modeOption);
 
         var readOnly = parseResult.GetValueForOption(_readOnlyOption) == default
-            ? ServiceOptionDefinitions.ReadOnly.GetDefaultValue()
+            ? (bool?)null
             : parseResult.GetValueForOption(_readOnlyOption);
 
         if (!IsValidMode(mode))
@@ -144,7 +145,9 @@ public class ServiceStartCommand : BaseCommand
     /// <param name="options">The server configuration options.</param>
     protected virtual void ConfigureServices(IServiceCollection services, ServiceStartOptions options)
     {
-        // Default implementation adds basic MCP server - derived classes should override this
+        // Default implementation adds basic MCP server
+        services.AddMcpServer(options);
+        services.AddHostedService<StdioMcpServerHostedService>();
     }
 
     /// <summary>

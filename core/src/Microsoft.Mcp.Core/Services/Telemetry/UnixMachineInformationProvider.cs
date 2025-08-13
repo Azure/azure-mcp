@@ -11,6 +11,10 @@ internal abstract class UnixMachineInformationProvider(ILogger<UnixMachineInform
 {
     private readonly ILogger<UnixMachineInformationProvider> _logger = logger;
 
+    private const string MicrosoftDirectory = "Microsoft";
+    private const string DeveloperToolsDirectory = "DeveloperTools";
+    private const string DeviceId = "device_id";
+
     /// <summary>
     /// Gets the root folder to cache information to.
     /// </summary>
@@ -116,4 +120,6 @@ internal abstract class UnixMachineInformationProvider(ILogger<UnixMachineInform
     }
 
     public override Task<string> GetMacAddressHash() => Task.FromResult(string.Empty);
+
+    private static string GenerateDeviceId() => Guid.NewGuid().ToString();
 }

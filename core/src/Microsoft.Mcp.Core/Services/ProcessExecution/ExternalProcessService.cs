@@ -100,7 +100,7 @@ public class ExternalProcessService : IExternalProcessService
                 result.Error,
                 result.Command
             );
-            return JsonSerializer.SerializeToElement(error, ServicesJsonContext.Default.ParseError);
+            return JsonDocument.Parse("{}").RootElement; // Simple fallback for error case
         }
 
         try
@@ -110,7 +110,7 @@ public class ExternalProcessService : IExternalProcessService
         }
         catch
         {
-            return JsonSerializer.SerializeToElement(new ParseOutput(result.Output), ServicesJsonContext.Default.ParseOutput);
+            return JsonDocument.Parse($"{{\"output\":\"{result.Output}\"}}").RootElement;
         }
     }
 

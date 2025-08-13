@@ -77,20 +77,7 @@ public sealed class McpRuntime : IMcpRuntime
 
         activity?.AddTag(TagName.ToolName, request.Params.Name);
 
-        var subscriptionArgument = request.Params?.Arguments?
-            .Where(kvp => string.Equals(kvp.Key, OptionDefinitions.Common.Subscription.Name, StringComparison.OrdinalIgnoreCase))
-            .Select(kvp => kvp.Value)
-            .FirstOrDefault();
-        if (subscriptionArgument != null
-            && subscriptionArgument.HasValue
-            && subscriptionArgument.Value.ValueKind == JsonValueKind.String)
-        {
-            var subscription = subscriptionArgument.Value.GetString();
-            if (subscription != null)
-            {
-                activity?.AddTag(TagName.SubscriptionGuid, subscription);
-            }
-        }
+        // Note: Subscription-specific logic removed for generic MCP core
 
         CallToolResult callTool;
         try

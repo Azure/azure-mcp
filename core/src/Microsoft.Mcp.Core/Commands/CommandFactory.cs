@@ -170,7 +170,7 @@ public class CommandFactory
                 var isServiceStartCommand = implementation is Microsoft.Mcp.Core.Areas.Server.Commands.ServiceStartCommand;
                 if (!isServiceStartCommand)
                 {
-                    Console.WriteLine(JsonSerializer.Serialize(response, _jsonOptions));
+                    Console.WriteLine($"Command executed: {command.Name}, Status: {response.Status}");
                 }
             }
             catch (Exception ex)

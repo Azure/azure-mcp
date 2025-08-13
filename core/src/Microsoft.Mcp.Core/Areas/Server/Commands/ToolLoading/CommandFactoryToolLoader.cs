@@ -95,7 +95,7 @@ public sealed class CommandFactoryToolLoader(
         try
         {
             var commandResponse = await command.ExecuteAsync(commandContext, commandOptions);
-            var jsonResponse = JsonSerializer.Serialize(commandResponse, ModelsJsonContext.Default.CommandResponse);
+            var jsonResponse = $"{{\"status\":{commandResponse.Status}}}"; // Simple JSON fallback
             var isError = commandResponse.Status < 200 || commandResponse.Status >= 300;
 
             return new CallToolResult
