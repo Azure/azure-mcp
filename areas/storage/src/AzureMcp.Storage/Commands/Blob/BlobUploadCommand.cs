@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;
 using AzureMcp.Storage.Services;
@@ -12,7 +11,7 @@ namespace AzureMcp.Storage.Commands.Blob;
 
 public sealed class BlobUploadCommand(ILogger<BlobUploadCommand> logger) : BaseBlobCommand<BlobUploadOptions>
 {
-    private const string CommandTitle = "Upload File to Blob";
+    private const string CommandTitle = "Upload Local File to Blob";
     private readonly ILogger<BlobUploadCommand> _logger = logger;
 
     // Define options from OptionDefinitions
