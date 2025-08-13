@@ -5,9 +5,9 @@ namespace AzureMcp.Cosmos.Options;
 
 public static class CosmosOptionDefinitions
 {
-    public const string AccountName = "account-name";
-    public const string DatabaseName = "database-name";
-    public const string ContainerName = "container-name";
+    public const string AccountName = "account";
+    public const string DatabaseName = "database";
+    public const string ContainerName = "container";
     public const string QueryText = "query";
 
     public static readonly Option<string> Account = new(

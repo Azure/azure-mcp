@@ -7,16 +7,16 @@ public static class FoundryOptionDefinitions
 {
     public const string Endpoint = "endpoint";
     public const string SearchForFreePlayground = "search-for-free-playground";
-    public const string PublisherName = "publisher-name";
-    public const string LicenseName = "license-name";
+    public const string PublisherName = "publisher";
+    public const string LicenseName = "license";
     public const string OptionalModelName = "model-name";
-    public const string DeploymentName = "deployment-name";
+    public const string DeploymentName = "deployment";
     public const string ModelName = "model-name";
     public const string ModelFormat = "model-format";
-    public const string AzureAiServicesName = "azure-ai-services-name";
+    public const string AzureAiServicesName = "azure-ai-services";
     public const string ModelVersion = "model-version";
     public const string ModelSource = "model-source";
-    public const string SkuName = "sku-name";
+    public const string SkuName = "sku";
     public const string SkuCapacity = "sku-capacity";
     public const string ScaleType = "scale-type";
     public const string ScaleCapacity = "scale-capacity";

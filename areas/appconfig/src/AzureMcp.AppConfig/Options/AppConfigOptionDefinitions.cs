@@ -5,10 +5,12 @@ namespace AzureMcp.AppConfig.Options;
 
 public static class AppConfigOptionDefinitions
 {
-    public const string AccountName = "account-name";
+    public const string AccountName = "account";
     public const string KeyName = "key";
     public const string ValueName = "value";
     public const string LabelName = "label";
+    public const string ContentTypeName = "content-type";
+    public const string TagsName = "tags";
 
     public static readonly Option<string> Account = new(
         $"--{AccountName}",
@@ -42,11 +44,28 @@ public static class AppConfigOptionDefinitions
         IsRequired = false
     };
 
+    public static readonly Option<string> ContentType = new(
+        $"--{ContentTypeName}",
+        "The content type of the configuration value. This is used to indicate how the value should be interpreted or parsed."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string[]> Tags = new(
+        $"--{TagsName}",
+        "The tags to associate with the configuration key. Tags should be in the format 'key=value'. Multiple tags can be specified."
+    )
+    {
+        IsRequired = false,
+        AllowMultipleArgumentsPerToken = true
+    };
+
     public static class KeyValueList
     {
         public static readonly Option<string> Key = new(
             $"--{KeyName}",
-            "Specifies the key filter, if any, to be used when retrieving key-values. The filter can be an exact match, for example a filter of \"foo\" would get all key-values with a key of \"foo\", or the filter can include a '*' character at the end of the string for wildcard searches (e.g., 'App*'). If omitted all keys will be retrieved."
+            "Specifies the key filter, if any, to be used when retrieving key-values. The filter can be an exact match, for example a filter of 'foo' would get all key-values with a key of 'foo', or the filter can include a '*' character at the end of the string for wildcard searches (e.g., 'App*'). If omitted all keys will be retrieved."
         )
         {
             IsRequired = false
@@ -54,7 +73,7 @@ public static class AppConfigOptionDefinitions
 
         public static readonly Option<string> Label = new(
             $"--{LabelName}",
-            "Specifies the label filter, if any, to be used when retrieving key-values. The filter can be an exact match, for example a filter of \"foo\" would get all key-values with a label of \"foo\", or the filter can include a '*' character at the end of the string for wildcard searches (e.g., 'Prod*'). This filter is case-sensitive. If omitted, all labels will be retrieved."
+            "Specifies the label filter, if any, to be used when retrieving key-values. The filter can be an exact match, for example a filter of 'foo' would get all key-values with a label of 'foo', or the filter can include a '*' character at the end of the string for wildcard searches (e.g., 'Prod*'). This filter is case-sensitive. If omitted, all labels will be retrieved."
         )
         {
             IsRequired = false

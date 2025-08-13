@@ -63,7 +63,7 @@ public class KeyValueShowCommandTests
 
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key",
             "--label", "prod"
         ]);
@@ -110,7 +110,7 @@ public class KeyValueShowCommandTests
 
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key"
         ]);
 
@@ -147,7 +147,7 @@ public class KeyValueShowCommandTests
 
         var args = _parser.Parse([
             "--subscription", "sub123",
-            "--account-name", "account1",
+            "--account", "account1",
             "--key", "my-key"
         ]);
 
@@ -160,9 +160,9 @@ public class KeyValueShowCommandTests
     }
 
     [Theory]
-    [InlineData("--account-name", "account1", "--key", "my-key")] // Missing subscription
-    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account-name
-    [InlineData("--subscription", "sub123", "--account-name", "account1")] // Missing key
+    [InlineData("--account", "account1", "--key", "my-key")] // Missing subscription
+    [InlineData("--subscription", "sub123", "--key", "my-key")] // Missing account
+    [InlineData("--subscription", "sub123", "--account", "account1")] // Missing key
     public async Task ExecuteAsync_Returns400_WhenRequiredParametersAreMissing(params string[] args)
     {
         // Arrange

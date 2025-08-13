@@ -40,7 +40,7 @@ public class SetParamCommandTests
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns(expectedMessage);
 
         var command = new SetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -63,7 +63,7 @@ public class SetParamCommandTests
     {
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "param123", "value123").Returns("");
         var command = new SetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "param123", "--value", "value123"]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -76,7 +76,7 @@ public class SetParamCommandTests
     [Theory]
     [InlineData("--subscription")]
     [InlineData("--resource-group")]
-    [InlineData("--user-name")]
+    [InlineData("--user")]
     [InlineData("--server")]
     [InlineData("--param")]
     [InlineData("--value")]
@@ -87,7 +87,7 @@ public class SetParamCommandTests
         {
             missingParameter == "--subscription" ? "" : "--subscription", "sub123",
             missingParameter == "--resource-group" ? "" : "--resource-group", "rg1",
-            missingParameter == "--user-name" ? "" : "--user-name", "user1",
+            missingParameter == "--user" ? "" : "--user", "user1",
             missingParameter == "--server" ? "" : "--server", "server123",
             missingParameter == "--param" ? "" : "--param", "param123",
             missingParameter == "--value" ? "" : "--value", "value123"
@@ -108,7 +108,7 @@ public class SetParamCommandTests
         _postgresService.SetServerParameterAsync("sub123", "rg1", "user1", "server123", "max_connections", "200").Returns(expectedMessage);
 
         var command = new SetParamCommand(_logger);
-        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user-name", "user1", "--server", "server123", "--param", "max_connections", "--value", "200"]);
+        var args = command.GetCommand().Parse(["--subscription", "sub123", "--resource-group", "rg1", "--user", "user1", "--server", "server123", "--param", "max_connections", "--value", "200"]);
         var context = new CommandContext(_serviceProvider);
 
         await command.ExecuteAsync(context, args);
