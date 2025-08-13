@@ -101,7 +101,7 @@ public class AgentsConnectCommandTests
 
         Assert.NotNull(response);
         Assert.NotEqual(200, response.Status);
-        Assert.Contains("AgentId", response.Message);
+        Assert.Contains("--agent-id", response.Message);
     }
 
     [Fact]
