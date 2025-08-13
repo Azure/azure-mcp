@@ -799,6 +799,14 @@ azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
 
+# Upload a file to a Storage blob container
+azmcp storage blob upload --subscription <subscription> \
+                          --account <account> \
+                          --container <container> \
+                          --blob <blob-name> \
+                          --local-file-path <path-to-local-file> \
+                          [--overwrite]
+
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
                                         --account <account> \

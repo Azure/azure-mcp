@@ -6,6 +6,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added `azmcp-storage-blob-upload`: Upload a local file to an Azure Storage blob with the option to overwrite if the blob already exists. Returns blob metadata including name, container, uploaded file, last modified time, ETag, MD5 hash, and overwrite status.
+
 ### Breaking Changes
 
 ### Bugs Fixed

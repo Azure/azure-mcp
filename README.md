@@ -80,6 +80,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "Create a new storage account in East US with Data Lake support"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
+* "Upload my file to the blob container"
 * "List paths in my Data Lake file system"
 * "List files and directories in my File Share"
 * "Send a message to my storage queue"
@@ -238,6 +239,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * List and create Storage accounts
 * Manage blob containers and blobs
+* Upload files to blob containers
 * List and query Storage tables
 * List paths in Data Lake file systems
 * Get container properties and metadata

@@ -123,6 +123,118 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_upload_blob()
+        {
+            // Create a temporary file to upload
+            var tempFileName = $"test-upload-{DateTime.UtcNow.Ticks}.txt";
+            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
+            var testContent = "This is a test file for blob upload";
+
+            try
+            {
+                await File.WriteAllTextAsync(tempFilePath, testContent, TestContext.Current.CancellationToken);
+
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                var uploadResults = result.AssertProperty("results");
+                Assert.Equal(JsonValueKind.Array, uploadResults.ValueKind);
+                var uploadResult = uploadResults.EnumerateArray().First();
+
+                // Verify upload details
+                var blobName = uploadResult.GetProperty("blobName");
+                Assert.Equal(tempFileName, blobName.GetString());
+
+                var containerName = uploadResult.GetProperty("containerName");
+                Assert.Equal("bar", containerName.GetString());
+
+                var uploadedFile = uploadResult.GetProperty("uploadedFile");
+                Assert.Equal(tempFileName, uploadedFile.GetString());
+
+                var wasOverwritten = uploadResult.GetProperty("wasOverwritten");
+                Assert.False(wasOverwritten.GetBoolean());
+
+                var eTag = uploadResult.GetProperty("eTag");
+                Assert.NotNull(eTag.GetString());
+                Assert.NotEmpty(eTag.GetString()!);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Should_upload_blob_with_overwrite()
+        {
+            // Create a temporary file to upload
+            var tempFileName = $"test-overwrite-{DateTime.UtcNow.Ticks}.txt";
+            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
+            var testContent = "This is a test file for blob overwrite";
+
+            try
+            {
+                await File.WriteAllTextAsync(tempFilePath, testContent, TestContext.Current.CancellationToken);
+
+                // First upload
+                await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Second upload with overwrite
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath },
+                        { "overwrite", true }
+                    });
+
+                var uploadResults = result.AssertProperty("results");
+                Assert.Equal(JsonValueKind.Array, uploadResults.ValueKind);
+                var uploadResult = uploadResults.EnumerateArray().First();
+
+                // Verify overwrite occurred
+                var wasOverwritten = uploadResult.GetProperty("wasOverwritten");
+                Assert.True(wasOverwritten.GetBoolean());
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
         public async Task Should_list_containers()
         {
             var result = await CallToolAsync(

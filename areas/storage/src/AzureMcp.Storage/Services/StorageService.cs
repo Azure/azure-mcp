@@ -753,4 +753,49 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             _ => throw new ArgumentException($"Invalid access tier '{accessTier}'. Valid values are: Hot, Cool")
         };
     }
+
+    public async Task<BlobUploadResult> UploadBlob(
+        string accountName,
+        string containerName,
+        string blobName,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, containerName, blobName, localFilePath, subscription);
+
+        if (!File.Exists(localFilePath))
+        {
+            throw new FileNotFoundException($"Local file not found: {localFilePath}");
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = blobContainerClient.GetBlobClient(blobName);
+
+        // Check if blob exists before upload
+        bool blobExists = await blobClient.ExistsAsync();
+        bool wasOverwritten = blobExists && overwrite;
+
+        if (blobExists && !overwrite)
+        {
+            throw new InvalidOperationException($"Blob '{blobName}' already exists in container '{containerName}'. Use --overwrite to replace it.");
+        }
+
+        // Upload the file
+        using var fileStream = File.OpenRead(localFilePath);
+        var response = await blobClient.UploadAsync(fileStream, overwrite);
+
+        return new BlobUploadResult(
+            BlobName: blobName,
+            ContainerName: containerName,
+            UploadedFile: localFilePath,
+            LastModified: response.Value.LastModified,
+            ETag: response.Value.ETag.ToString(),
+            MD5Hash: response.Value.ContentHash != null ? Convert.ToBase64String(response.Value.ContentHash) : null,
+            WasOverwritten: wasOverwritten
+        );
+    }
 }
