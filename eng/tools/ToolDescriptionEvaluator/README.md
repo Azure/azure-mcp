@@ -1,4 +1,4 @@
-# Tool Description Confidence Score Analyzer
+# Tool Description Evaluator
 
 This is a testing and analysis tool that evaluates how well Azure MCP Server tool descriptions match user prompts using AI embeddings. It helps ensure that the right tools are selected when users ask questions or make requests.
 
@@ -20,7 +20,7 @@ The application:
 ├── Models/                                 # Data models for tools, prompts, and results
 ├── Services/                               # Embedding and analysis services
 ├── VectorDb/                               # Vector database implementation with cosine similarity
-├── ToolDescriptionConfidenceScore.csproj   # Project file
+├── ToolDescriptionEvaluator.csproj         # Project file
 ├── tools.json                              # Tool definitions (fallback/static)
 ├── prompts.json                            # Test prompts (fallback/static)
 ├── .env.example                            # Environment variables template
@@ -92,7 +92,7 @@ The tool can load data from multiple sources:
 You can call the build script in this directory:
 
 ```bash
-./Run-ToolDescriptionConfidenceScore.ps1
+./Run-ToolDescriptionEvaluator.ps1
 ```
 
 or run the following commands directly:
