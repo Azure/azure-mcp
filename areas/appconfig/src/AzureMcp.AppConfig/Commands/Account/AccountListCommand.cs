@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Models;
 using AzureMcp.AppConfig.Options.Account;
 using AzureMcp.AppConfig.Services;
@@ -39,8 +38,6 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var appConfigService = context.GetService<IAppConfigService>();
             var accounts = await appConfigService.GetAppConfigAccounts(

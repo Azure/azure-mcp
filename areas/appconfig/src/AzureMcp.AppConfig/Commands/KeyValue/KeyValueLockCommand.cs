@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Options.KeyValue;
 using AzureMcp.AppConfig.Services;
 using AzureMcp.Core.Commands;
@@ -38,8 +37,6 @@ public sealed class KeyValueLockCommand(ILogger<KeyValueLockCommand> logger) : B
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.LockKeyValue(

@@ -15,15 +15,15 @@ public class GrafanaService(ISubscriptionService _subscriptionService, ITenantSe
     : BaseAzureService(tenantService), IGrafanaService
 {
     public async Task<IEnumerable<Models.Workspace.Workspace>> ListWorkspacesAsync(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
         try
         {
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscription}' not found");
             var workspaces = new List<Models.Workspace.Workspace>();
 
             await foreach (var workspaceResource in subscriptionResource.GetManagedGrafanasAsync())

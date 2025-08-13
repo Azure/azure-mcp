@@ -21,12 +21,14 @@ using Microsoft.Extensions.AI.Evaluation.Quality;
 #pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.Tenant;
+using AzureMcp.Core.Services.Http;
 using AzureMcp.Foundry.Commands;
 using AzureMcp.Foundry.Models;
 
 namespace AzureMcp.Foundry.Services;
 
-public class FoundryService : BaseAzureService, IFoundryService
+public class FoundryService(IHttpClientService httpClientService, ITenantService? tenantService = null) : BaseAzureService(tenantService), IFoundryService
 {
     private static readonly Dictionary<string, Func<IEvaluator>> AgentEvaluatorDictionary = new()
     {
@@ -41,6 +43,8 @@ public class FoundryService : BaseAzureService, IFoundryService
         { "tool_call_accuracy", toolDefinitons => new ToolCallAccuracyEvaluatorContext(toolDefinitons)},
         { "task_adherence", toolDefinitons => new TaskAdherenceEvaluatorContext(toolDefinitons)},
     };
+
+    private readonly IHttpClientService _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
 
     public async Task<List<ModelInformation>> ListModels(
         bool searchForFreePlayground = false,
@@ -88,7 +92,7 @@ public class FoundryService : BaseAzureService, IFoundryService
                         Encoding.UTF8,
                         "application/json");
 
-                    var httpResponse = await new HttpClient().PostAsync(url, content);
+                    var httpResponse = await _httpClientService.DefaultClient.PostAsync(url, content);
                     httpResponse.EnsureSuccessStatusCode();
 
                     var responseText = await httpResponse.Content.ReadAsStringAsync();

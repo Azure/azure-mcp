@@ -227,6 +227,17 @@ azmcp extension az --command "storage account show --name <account> --resource-g
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure Container Registry (ACR) Operations
+
+```bash
+# List Azure Container Registries in a subscription
+azmcp acr registry list --subscription <subscription>
+
+# List Azure Container Registries in a specific resource group
+azmcp acr registry list --subscription <subscription> \
+                        --resource-group <resource-group>
+```
+
 ### Azure Cosmos DB Operations
 
 ```bash
@@ -316,22 +327,22 @@ azmcp postgres table list --subscription <subscription> \
                           --database <database>
 
 # Get the schema of a specific table in a PostgreSQL database
-azmcp postgres table schema --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --database <database> \
-                            --table <table>
+azmcp postgres table schema get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --database <database> \
+                                --table <table>
 ```
 
 #### Server Commands
 
 ```bash
 # Retrieve the configuration of a PostgreSQL server
-azmcp postgres server config --subscription <subscription> \
-                             --resource-group <resource-group> \
-                             --user <user> \
-                             --server <server>
+azmcp postgres server config get --subscription <subscription> \
+                                 --resource-group <resource-group> \
+                                 --user <user> \
+                                 --server <server>
 
 # List all PostgreSQL servers in a subscription & resource group
 azmcp postgres server list --subscription <subscription> \
@@ -339,19 +350,19 @@ azmcp postgres server list --subscription <subscription> \
                            --user <user>
 
 # Retrieve a specific parameter of a PostgreSQL server
-azmcp postgres server param --subscription <subscription> \
-                            --resource-group <resource-group> \
-                            --user <user> \
-                            --server <server> \
-                            --param <parameter>
+azmcp postgres server param get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter>
 
 # Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server setparam --subscription <subscription> \
-                               --resource-group <resource-group> \
-                               --user <user> \
-                               --server <server> \
-                               --param <parameter> \
-                               --value <value>
+azmcp postgres server param set --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter> \
+                                --value <value>
 ```
 
 ### Azure Developer CLI Operations
@@ -363,6 +374,13 @@ azmcp extension azd --command "<command>"
 # Examples:
 # Create a sample todo list app with NodeJS and MongoDB
 azmcp extension azd --command "init --template todo-nodejs-mongo"
+```
+
+### Azure Function App Operations
+
+```bash
+# List function apps in a subscription
+azmcp functionapp list --subscription <subscription>
 ```
 
 ### Azure Key Vault Operations
@@ -681,6 +699,11 @@ azmcp group list --subscription <subscription>
 ### Azure Service Bus Operations
 
 ```bash
+# Returns runtime and details about the Service Bus queue
+azmcp servicebus queue details --subscription <subscription> \
+                               --namespace <service-bus-namespace> \
+                               --queue <queue>
+
 # Gets runtime details a Service Bus topic
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -691,11 +714,6 @@ azmcp servicebus topic subscription details --subscription <subscription> \
                                             --namespace <service-bus-namespace> \
                                             --topic <topic> \
                                             --subscription-name <subscription-name>
-
-# Returns runtime and details about the Service Bus queue
-azmcp servicebus queue details --subscription <subscription> \
-                               --namespace <service-bus-namespace> \
-                               --queue <queue>
 ```
 
 ### Azure SQL Database Operations
@@ -739,6 +757,19 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ### Azure Storage Operations
 
 ```bash
+# Create a new Storage account with custom configuration
+azmcp storage account create --subscription <subscription> \
+                             --account-name <unique-account-name> \
+                             --resource-group <resource-group> \
+                             --location <location> \
+                             --sku <sku> \
+                             --kind <kind> \
+                             --access-tier <access-tier> \
+                             --enable-https-traffic-only true \
+                             --allow-blob-public-access false \
+                             --enable-hierarchical-namespace false
+
+
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
 
@@ -749,10 +780,11 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --tier <tier> \
                                   --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
 
-# List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> \
-                        --account <account> \
-                        --container <container>
+# Create a blob container with optional public access
+azmcp storage blob container create --subscription <subscription> \
+                                    --account <account> \
+                                    --container <container> \
+                                    [--blob-container-public-access <blob|container>]
 
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> \
@@ -762,6 +794,17 @@ azmcp storage blob container details --subscription <subscription> \
 # List containers in a Storage blob service
 azmcp storage blob container list --subscription <subscription> \
                                   --account <account>
+
+# Get detailed properties of a blob
+azmcp storage blob details --subscription <subscription> \
+                           --account <account> \
+                           --container <container> \
+                           --blob <blob-name>
+
+# List blobs in a Storage container
+azmcp storage blob list --subscription <subscription> \
+                        --account <account> \
+                        --container <container>
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -775,10 +818,13 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               [--filter-path <filter-path>] \
                                               [--recursive]
 
-# Create a directory in DataLake using a specific path
-azmcp storage datalake directory create --subscription <subscription> \
-                                        --account <account-name> \
-                                        --directory-path <directory-path>
+# Send a message to a Storage queue
+azmcp storage queue message send --subscription <subscription> \
+                                 --account <account-name> \
+                                 --queue <queue-name> \
+                                 --message "<message-content>" \
+                                 [--time-to-live-in-seconds <seconds>] \
+                                 [--visibility-timeout-in-seconds <seconds>]
 
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \

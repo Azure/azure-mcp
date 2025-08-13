@@ -9,6 +9,7 @@ using AzureMcp.Storage.Commands.Blob.Batch;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Commands.DataLake.FileSystem;
+using AzureMcp.Storage.Commands.Queue.Message;
 using AzureMcp.Storage.Commands.Share.File;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
@@ -27,7 +28,19 @@ public class StorageSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Storage command group
-        var storage = new CommandGroup("storage", "Storage operations - Commands for managing and accessing Azure Storage resources. Includes operations for containers, blobs, and tables.");
+        var storage = new CommandGroup("storage",
+            """
+            Storage operations - Commands for managing and accessing Azure Storage accounts and their data services
+            including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use
+            this tool when you need to list storage accounts, work with blob containers and blobs, access file shares,
+            querying table storage, handle queue messages. This tool focuses on object storage, file storage,
+            simple NoSQL table storage scenarios, and queue messaging. This tool is a hierarchical MCP command router
+            where sub-commands are routed to MCP servers that require specific fields inside the "parameters" object.
+            To invoke a command, set "command" and wrap its arguments in "parameters". Set "learn=true" to discover
+            available sub-commands for different Azure Storage service operations including blobs, datalake, shares,
+            tables, and queues. Note that this tool requires appropriate Storage account permissions and will only
+            access storage resources accessible to the authenticated user.
+            """);
         rootGroup.AddSubGroup(storage);
 
         // Create Storage subgroups
@@ -45,7 +58,7 @@ public class StorageSetup : IAreaSetup
         blobs.AddSubGroup(batch);
 
         // Create a containers subgroup under blobs
-        var blobContainer = new CommandGroup("container", "Storage blob container operations - Commands for managing blob container in your Azure Storage accounts.");
+        var blobContainer = new CommandGroup("container", "Storage blob container operations - Commands for managing blob containers in your Azure Storage accounts.");
         blobs.AddSubGroup(blobContainer);
 
         // Create Data Lake subgroup under storage
@@ -60,6 +73,14 @@ public class StorageSetup : IAreaSetup
         var directory = new CommandGroup("directory", "Data Lake directory operations - Commands for managing directories in Azure Data Lake Storage Gen2.");
         dataLake.AddSubGroup(directory);
 
+        // Create Queue subgroup under storage
+        var queues = new CommandGroup("queue", "Storage queue operations - Commands for managing Azure Storage queues and queue messages.");
+        storage.AddSubGroup(queues);
+
+        // Create message subgroup under queue
+        var queueMessage = new CommandGroup("message", "Storage queue message operations - Commands for sending and managing messages in Azure Storage queues.");
+        queues.AddSubGroup(queueMessage);
+
         // Create file shares subgroup under storage
         var shares = new CommandGroup("share", "File share operations - Commands for managing Azure Storage file shares and their contents.");
         storage.AddSubGroup(shares);
@@ -69,28 +90,26 @@ public class StorageSetup : IAreaSetup
         shares.AddSubGroup(shareFiles);
 
         // Register Storage commands
-        storageAccount.AddCommand("list", new AccountListCommand(
-            loggerFactory.CreateLogger<AccountListCommand>()));
-        tables.AddCommand("list", new TableListCommand(
-            loggerFactory.CreateLogger<TableListCommand>()));
+        storageAccount.AddCommand("list", new AccountListCommand(loggerFactory.CreateLogger<AccountListCommand>()));
+        storageAccount.AddCommand("create", new AccountCreateCommand(loggerFactory.CreateLogger<AccountCreateCommand>()));
+
+        tables.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
 
         blobs.AddCommand("list", new BlobListCommand(loggerFactory.CreateLogger<BlobListCommand>()));
+        blobs.AddCommand("details", new BlobDetailsCommand(loggerFactory.CreateLogger<BlobDetailsCommand>()));
 
-        batch.AddCommand("set-tier", new BatchSetTierCommand(
-            loggerFactory.CreateLogger<BatchSetTierCommand>()));
+        batch.AddCommand("set-tier", new BatchSetTierCommand(loggerFactory.CreateLogger<BatchSetTierCommand>()));
 
-        blobContainer.AddCommand("list", new ContainerListCommand(
-            loggerFactory.CreateLogger<ContainerListCommand>()));
-        blobContainer.AddCommand("details", new ContainerDetailsCommand(
-            loggerFactory.CreateLogger<ContainerDetailsCommand>()));
+        blobContainer.AddCommand("list", new ContainerListCommand(loggerFactory.CreateLogger<ContainerListCommand>()));
+        blobContainer.AddCommand("details", new ContainerDetailsCommand(loggerFactory.CreateLogger<ContainerDetailsCommand>()));
+        blobContainer.AddCommand("create", new ContainerCreateCommand(loggerFactory.CreateLogger<ContainerCreateCommand>()));
 
-        fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(
-            loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
+        fileSystem.AddCommand("list-paths", new FileSystemListPathsCommand(loggerFactory.CreateLogger<FileSystemListPathsCommand>()));
 
-        directory.AddCommand("create", new DirectoryCreateCommand(
-            loggerFactory.CreateLogger<DirectoryCreateCommand>()));
+        directory.AddCommand("create", new DirectoryCreateCommand(loggerFactory.CreateLogger<DirectoryCreateCommand>()));
 
-        shareFiles.AddCommand("list", new FileListCommand(
-            loggerFactory.CreateLogger<FileListCommand>()));
+        queueMessage.AddCommand("send", new QueueMessageSendCommand(loggerFactory.CreateLogger<QueueMessageSendCommand>()));
+
+        shareFiles.AddCommand("list", new FileListCommand(loggerFactory.CreateLogger<FileListCommand>()));
     }
 }
