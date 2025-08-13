@@ -347,9 +347,11 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             // Download the blob
-            var response = await blobClient.DownloadContentAsync();
+            var response = await blobClient.DownloadStreamingAsync();
             using var fileStream = File.OpenWrite(localFilePath);
-            await fileStream.WriteAsync(response.Value.Content.ToMemory());
+            await response.Value.Content.CopyToAsync(fileStream);
+            await fileStream.FlushAsync();
+            
             var result = response.Value.Details;
 
             // Calculate MD5 hash if available
