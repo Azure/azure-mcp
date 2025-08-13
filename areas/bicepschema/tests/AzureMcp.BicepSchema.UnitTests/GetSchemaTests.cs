@@ -7,7 +7,6 @@ using Azure.Bicep.Types;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Xunit;

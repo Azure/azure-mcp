@@ -68,6 +68,7 @@ internal class Program
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
+            new AzureMcp.FunctionApp.FunctionAppSetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
@@ -81,6 +82,7 @@ internal class Program
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
 #if !BUILD_NATIVE
+            new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Monitor.MonitorSetup(),

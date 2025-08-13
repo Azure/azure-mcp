@@ -7,6 +7,7 @@ using AzureMcp.Areas.VirtualDesktop.Options.Hostpool;
 using AzureMcp.Core.Commands;
 
 namespace AzureMcp.Areas.VirtualDesktop.Commands.Hostpool;
+
 public abstract class BaseHostPoolCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] T>
     : BaseVirtualDesktopCommand<T>

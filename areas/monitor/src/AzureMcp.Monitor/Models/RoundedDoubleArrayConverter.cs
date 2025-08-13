@@ -23,7 +23,7 @@ namespace AzureMcp.Monitor.Models
                     list.Add(reader.GetDouble());
                 }
             }
-            return list.ToArray();
+            return [.. list];
         }
 
         public override void Write(Utf8JsonWriter writer, double[]? value, JsonSerializerOptions options)

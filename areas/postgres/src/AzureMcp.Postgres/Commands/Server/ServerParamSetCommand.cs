@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Postgres.Commands;
 using AzureMcp.Postgres.Options;
 using AzureMcp.Postgres.Options.Server;
 using AzureMcp.Postgres.Services;
@@ -50,8 +49,6 @@ public sealed class ServerParamSetCommand(ILogger<ServerParamSetCommand> logger)
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             IPostgresService pgService = context.GetService<IPostgresService>() ?? throw new InvalidOperationException("PostgreSQL service is not available.");
             var result = await pgService.SetServerParameterAsync(options.Subscription!, options.ResourceGroup!, options.User!, options.Server!, options.Param!, options.Value!);

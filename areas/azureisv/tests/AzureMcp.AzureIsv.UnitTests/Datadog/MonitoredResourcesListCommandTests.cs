@@ -7,7 +7,6 @@ using System.Text.Json.Serialization;
 using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.AzureIsv.Services;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

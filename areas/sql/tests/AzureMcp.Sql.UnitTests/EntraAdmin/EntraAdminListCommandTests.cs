@@ -6,7 +6,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Sql.Commands.EntraAdmin;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

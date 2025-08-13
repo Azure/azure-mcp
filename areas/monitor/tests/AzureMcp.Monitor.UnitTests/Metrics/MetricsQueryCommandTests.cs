@@ -64,25 +64,6 @@ public class MetricsQueryCommandTests
         // Act & Assert
         Assert.Equal("Query Azure Monitor Metrics", _command.Title);
     }
-
-    [Fact]
-    public void Description_ContainsRequiredInformation()
-    {
-        // Act
-        var description = _command.Description;
-
-        // Assert
-        Assert.Contains("resource", description);
-        Assert.Contains("metric-names", description);
-        Assert.Contains("start-time", description);
-        Assert.Contains("end-time", description);
-        Assert.Contains("interval", description);
-        Assert.Contains("aggregation", description);
-        Assert.Contains("filter", description);
-        Assert.Contains("metric-namespace", description);
-        Assert.Contains("max-buckets", description);
-    }
-
     #endregion
 
     #region Option Registration Tests

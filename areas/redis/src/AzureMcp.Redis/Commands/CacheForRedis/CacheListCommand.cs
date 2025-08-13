@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Redis.Commands;
 using AzureMcp.Redis.Models.CacheForRedis;
 using AzureMcp.Redis.Options.CacheForRedis;
 using AzureMcp.Redis.Services;
@@ -42,8 +41,6 @@ public sealed class CacheListCommand(ILogger<CacheListCommand> logger) : Subscri
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var caches = await redisService.ListCachesAsync(

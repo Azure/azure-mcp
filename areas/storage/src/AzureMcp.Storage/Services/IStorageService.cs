@@ -14,6 +14,12 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<StorageAccountInfo> GetStorageAccountDetails(
+        string accountName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<StorageAccountInfo> CreateStorageAccount(
         string accountName,
         string resourceGroup,

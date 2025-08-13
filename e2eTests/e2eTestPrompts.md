@@ -47,6 +47,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | List all virtual machines in my subscription |
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
 
+## Azure Container Registry (ACR)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-acr-registry-list | List all Azure Container Registries in my subscription |
+| azmcp-acr-registry-list | Show me my Azure Container Registries |
+| azmcp-acr-registry-list | Show me the container registries in my subscription |
+| azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+
 ## Azure Cosmos DB
 
 | Tool Name | Test Prompt |
@@ -99,6 +109,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
 | azmcp-extension-azd | Deploy my web application to Azure App Service |
+
+## Azure Function App
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-functionapp-list | List all function apps in my subscription |
+| azmcp-functionapp-list | Show me my Azure function apps |
+| azmcp-functionapp-list | What function apps do I have? |
 
 ## Azure Key Vault
 
@@ -157,13 +175,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | Get the latest Azure code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure deployment best practices |
+| azmcp-bestpractices-get | Get the latest Azure best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Get the latest Azure Functions best practices |
+| azmcp-bestpractices-get | Get the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | What are azure function best practices? |
+| azmcp-bestpractices-get | Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm. |
+| azmcp-bestpractices-get | Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm. |
 
 ## Azure Monitor
 

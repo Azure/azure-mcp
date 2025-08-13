@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using AzureMcp.Tests;
-using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;

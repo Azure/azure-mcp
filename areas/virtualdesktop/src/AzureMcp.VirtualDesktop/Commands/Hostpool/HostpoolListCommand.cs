@@ -18,10 +18,10 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
 
     public override string Description =>
         $"""
-        List all hostpools in a subscription or resource group. This command retrieves all Azure Virtual Desktop hostpool objects available
-        in the specified {OptionDefinitions.Common.Subscription}. If a resource group is specified, only hostpools in that resource group are returned.
-        Results include hostpool names and are returned as a JSON array.
-        """;
+		List all hostpools in a subscription or resource group. This command retrieves all Azure Virtual Desktop hostpool objects available
+		in the specified {OptionDefinitions.Common.Subscription}. If a resource group is specified, only hostpools in that resource group are returned.
+		Results include hostpool names and are returned as a JSON array.
+		""";
 
     public override string Title => CommandTitle;
 
@@ -59,7 +59,7 @@ public sealed class HostpoolListCommand(ILogger<HostpoolListCommand> logger) : B
             }
 
             context.Response.Results = hostpools.Count > 0
-                ? ResponseResult.Create(new HostPoolListCommandResult(hostpools.ToList()), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)
+                ? ResponseResult.Create(new HostPoolListCommandResult([.. hostpools]), VirtualDesktopJsonContext.Default.HostPoolListCommandResult)
                 : null;
         }
         catch (Exception ex)

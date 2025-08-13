@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.AppConfig.Commands;
 using AzureMcp.AppConfig.Models;
 using AzureMcp.AppConfig.Options;
 using AzureMcp.AppConfig.Options.KeyValue;
@@ -59,8 +58,6 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var appConfigService = context.GetService<IAppConfigService>();
             var settings = await appConfigService.ListKeyValues(
