@@ -78,6 +78,10 @@ jobs:
 
   - bash: |
       if [ "$(uname -m)" = "x86_64" ]; then
+        echo "Before toolchain install"
+        which objcopy || echo "objcopy not found"
+        which aarch64-linux-gnu-objcopy || echo "aarch64-linux-gnu-objcopy not found"
+
         # x64 host building AOT targeting arm64 need cross-compilation toolchain.
         sudo apt-get update
         sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross binutils-aarch64-linux-gnu
@@ -85,6 +89,10 @@ jobs:
         export CXX=aarch64-linux-gnu-g++
         export AR=aarch64-linux-gnu-ar
         export STRIP=aarch64-linux-gnu-strip
+
+        echo "After toolchain install"
+        which objcopy || echo "objcopy not found"
+        which aarch64-linux-gnu-objcopy || echo "aarch64-linux-gnu-objcopy not found"
       fi
     displayName: "Install ARM64 cross compilation toolchain"
     condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))
