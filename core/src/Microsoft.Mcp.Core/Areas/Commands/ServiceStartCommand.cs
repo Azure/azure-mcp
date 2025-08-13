@@ -141,7 +141,7 @@ public sealed class ServiceStartCommand : BaseCommand
     /// <param name="options">The server configuration options.</param>
     private static void ConfigureMcpServer(IServiceCollection services, ServiceStartOptions options)
     {
-        services.AddAzureMcpServer(options);
+        services.AddMcpServer(options);
     }
 
     /// <summary>

@@ -4,7 +4,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Mcp.Core.Services.ProcessExecution;
 
-namespace AzureMcp;
+namespace Microsoft.Mcp.Core;
 
 [JsonSerializable(typeof(ExternalProcessService.ParseError))]
 [JsonSerializable(typeof(ExternalProcessService.ParseOutput))]

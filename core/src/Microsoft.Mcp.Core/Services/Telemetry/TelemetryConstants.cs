@@ -10,15 +10,15 @@ internal static class TelemetryConstants
     /// </summary>
     internal class TagName
     {
-        public const string AzureMcpVersion = "Version";
+        public const string McpVersion = "Version";
         public const string ClientName = "ClientName";
         public const string ClientVersion = "ClientVersion";
         public const string DevDeviceId = "DevDeviceId";
         public const string ErrorDetails = "ErrorDetails";
         public const string EventId = "EventId";
         public const string MacAddressHash = "MacAddressHash";
-        public const string ResourceHash = "AzResourceHash";
-        public const string SubscriptionGuid = "AzSubscriptionGuid";
+        public const string ResourceHash = "ResourceHash";
+        public const string SubscriptionGuid = "SubscriptionGuid";
         public const string ToolName = "ToolName";
     }
 

@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Linq.AsyncEnumerable" />
   </ItemGroup>

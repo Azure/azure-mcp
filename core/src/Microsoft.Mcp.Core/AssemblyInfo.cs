@@ -3,6 +3,9 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Microsoft.Mcp.Core.UnitTests")]
+[assembly: InternalsVisibleTo("Microsoft.Mcp.Core.LiveTests")]
+[assembly: InternalsVisibleTo("Microsoft.Mcp.Tests")]
 [assembly: InternalsVisibleTo("AzureMcp.Core.UnitTests")]
 [assembly: InternalsVisibleTo("AzureMcp.Core.LiveTests")]
 [assembly: InternalsVisibleTo("AzureMcp.Tests")]

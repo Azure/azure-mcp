@@ -18,19 +18,19 @@ namespace Microsoft.Mcp.Core.Areas.Server.Commands;
 using Options = Microsoft.Extensions.Options.Options;
 
 /// <summary>
-/// Extension methods for configuring Azure MCP server services.
+/// Extension methods for configuring MCP server services.
 /// </summary>
-public static class AzureMcpServiceCollectionExtensions
+public static class McpServiceCollectionExtensions
 {
-    private const string DefaultServerName = "Azure MCP Server";
+    private const string DefaultServerName = "Microsoft MCP Server";
 
     /// <summary>
-    /// Adds the Azure MCP server services to the specified <see cref="IServiceCollection"/>.
+    /// Adds the MCP server services to the specified <see cref="IServiceCollection"/>.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="serviceStartOptions">The options for configuring the server.</param>
     /// <returns>The service collection with MCP server services added.</returns>
-    public static IServiceCollection AddAzureMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
+    public static IServiceCollection AddMcpServer(this IServiceCollection services, ServiceStartOptions serviceStartOptions)
     {
         // Register HTTP client services
         services.AddHttpClientServices();

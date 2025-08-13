@@ -21,12 +21,12 @@ internal class TelemetryService : ITelemetryService
 
     internal ActivitySource Parent { get; }
 
-    public TelemetryService(IMachineInformationProvider informationProvider, IOptions<AzureMcpServerConfiguration> options)
+    public TelemetryService(IMachineInformationProvider informationProvider, IOptions<McpServerConfiguration> options)
     {
-        _isEnabled = options.Value.IsTelemetryEnabled;
+        _isEnabled = options.Value.EnableTelemetry;
         _tagsList = new List<KeyValuePair<string, object?>>()
         {
-            new(TagName.AzureMcpVersion, options.Value.Version),
+            new(TagName.McpVersion, options.Value.Version),
         };
 
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);
