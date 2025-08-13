@@ -141,6 +141,7 @@
                 "nettrace",
                 "nslookup",
                 "notcontains",
+                "nonexistentaccount",
                 "nonexistentrg",
                 "notlike",
                 "Ollama",

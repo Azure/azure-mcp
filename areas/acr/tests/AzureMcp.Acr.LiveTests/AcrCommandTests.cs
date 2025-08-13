@@ -47,7 +47,7 @@ public class AcrCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
 
             var rgRegistries = rgResult.AssertProperty("registries");
             Assert.Equal(JsonValueKind.Array, rgRegistries.ValueKind);
-            registryItems = rgRegistries.EnumerateArray().ToList();
+            registryItems = [.. rgRegistries.EnumerateArray()];
         }
 
         Assert.NotEmpty(registryItems); // After fallback we must have the test registry

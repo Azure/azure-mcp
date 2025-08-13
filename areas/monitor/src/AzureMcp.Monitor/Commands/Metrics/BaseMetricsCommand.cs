@@ -20,14 +20,13 @@ public abstract class BaseMetricsCommand<
 {
     protected readonly Option<string> _resourceTypeOption = MonitorOptionDefinitions.Metrics.ResourceType;
     protected readonly Option<string> _resourceNameOption = MonitorOptionDefinitions.Metrics.ResourceName;
-    protected readonly Option<string> _optionalResourceGroupOption = MonitorOptionDefinitions.Metrics.OptionalResourceGroup;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
         command.AddOption(_resourceTypeOption);
         command.AddOption(_resourceNameOption);
-        command.AddOption(_optionalResourceGroupOption);
+        UseResourceGroup();
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
@@ -35,7 +34,6 @@ public abstract class BaseMetricsCommand<
         var options = base.BindOptions(parseResult);
         options.ResourceType = parseResult.GetValueForOption(_resourceTypeOption);
         options.ResourceName = parseResult.GetValueForOption(_resourceNameOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_optionalResourceGroupOption);
         return options;
     }
 }
