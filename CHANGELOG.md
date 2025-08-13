@@ -7,7 +7,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Features Added
 
 - Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added new command for designing Azure Cloud Architecture through guided questions. [[#890]https://github.com/Azure/azure-mcp/pull/890]
+- Added new command for designing Azure Cloud Architecture through guided questions. [[#890](https://github.com/Azure/azure-mcp/pull/890)]
 
 ### Breaking Changes
 
