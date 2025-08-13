@@ -21,15 +21,23 @@ if ($arch -ne 'x64') {
     return
 }
 
+# The bash script below follows the official documentation from .NET AOT Team.
+# https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/cross-compile#linux
+
 $bashScript = @"
-# x64 host building AOT targeting arm64 need cross-compilation toolchain.
-sudo apt-get update
-sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross binutils-aarch64-linux-gnu
+sudo dpkg --add-architecture arm64
 
-# make the generic 'objcopy' point to the 'objcopy' from the arm64 cross-compilation toolchain.
-sudo ln -sf /usr/bin/aarch64-linux-gnu-objcopy /usr/local/bin/objcopy
+sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+EOF'
 
-echo "arm64 cross-compilation toolchain installed successfully"
+sudo sed -i -e 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+sudo sed -i -e 's/deb mirror/deb [arch=amd64] mirror/g' /etc/apt/sources.list
+
+sudo apt update
+sudo apt install -y clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 "@
 
 try {
