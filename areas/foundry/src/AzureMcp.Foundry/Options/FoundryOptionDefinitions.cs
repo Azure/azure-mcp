@@ -131,7 +131,7 @@ public static class FoundryOptionDefinitions
 
     public static readonly Option<string> QueryOption = new(
         $"--{Query}",
-        "The agent id in Agents."
+        "The query sent to agent."
     )
     {
         IsRequired = true
