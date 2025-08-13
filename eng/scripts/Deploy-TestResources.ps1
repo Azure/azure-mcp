@@ -118,6 +118,8 @@ function Deploy-AreaTestResources {
     param(
         [Parameter(Mandatory=$true)]
         [string]$AreaName,
+        [Parameter(Mandatory=$true)]
+        [string]$AccountId,
         [string]$SubscriptionId,
         [string]$ResourceGroupName,
         [string]$BaseName,
@@ -137,12 +139,13 @@ function Deploy-AreaTestResources {
     if($Unique) {
         $hash = [guid]::NewGuid().ToString()
     } else {
-        $hash = (New-StringHash $account.Id, $SubscriptionId, $AreaName)
+        $hash = (New-StringHash $AccountId, $SubscriptionId, $AreaName)
     }
 
     $suffix = $hash.ToLower().Substring(0, 8)
 
     $areaBaseName = if($BaseName) { $BaseName } else { "mcp$($suffix)" }
+    $username = $AccountId.Split('@')[0].ToLower()
     $areaResourceGroupName = if($ResourceGroupName) { $ResourceGroupName } else { "$username-mcp$($suffix)" }
 
     Write-Host @"
@@ -213,14 +216,14 @@ try {
     
     Write-Host "`n🚀 Starting deployment of test resources for $totalCount area(s)" -ForegroundColor Cyan
     
-    for ($i = 0; $i -lt $areasToProcess.Count; $i++) {
-        $currentArea = $areasToProcess[$i]
-        $progressPercent = [int](($i / $totalCount) * 100)
-        
-        Write-Progress -Activity "Deploying Test Resources" -Status "Processing area $($i + 1) of ${totalCount}: $currentArea" -PercentComplete $progressPercent
+    if ($totalCount -eq 1) {
+        # Single area - process synchronously for better output
+        $currentArea = $areasToProcess[0]
+        Write-Progress -Activity "Deploying Test Resources" -Status "Processing area: $currentArea" -PercentComplete 0
         
         $success = Deploy-AreaTestResources `
             -AreaName $currentArea `
+            -AccountId $account.Id `
             -SubscriptionId $SubscriptionId `
             -ResourceGroupName $ResourceGroupName `
             -BaseName $BaseName `
@@ -230,9 +233,161 @@ try {
         if ($success) {
             $successCount++
         }
+        
+        Write-Progress -Activity "Deploying Test Resources" -Completed
+    } else {
+        # Multiple areas - process in parallel using background jobs
+        $jobs = @{}
+        $completedJobs = @()
+        $failedAreas = @()
+        
+        # Start background jobs for each area
+        foreach ($area in $areasToProcess) {
+            Write-Host "Starting deployment job for area: $area" -ForegroundColor Yellow
+            
+            $job = Start-Job -ScriptBlock {
+                param($AreaName, $AccountId, $SubscriptionId, $ResourceGroupName, $BaseName, $DeleteAfterHours, $Unique, $RepoRoot)
+                
+                # Set working directory
+                Set-Location $RepoRoot
+                
+                # Import required modules and scripts
+                $ErrorActionPreference = 'Stop'
+                . "$RepoRoot/eng/common/scripts/common.ps1"
+                
+                function Test-AreaHasTestResources {
+                    param([string]$AreaPath)
+                    $testResourcesPath = "$AreaPath/tests/test-resources.bicep"
+                    return (Test-Path $testResourcesPath)
+                }
+                
+                function New-StringHash([string[]]$strings) {
+                    $string = $strings -join ' '
+                    $hash = [System.Security.Cryptography.SHA1]::Create()
+                    $bytes = [System.Text.Encoding]::UTF8.GetBytes($string)
+                    $hashBytes = $hash.ComputeHash($bytes)
+                    return [BitConverter]::ToString($hashBytes) -replace '-', ''
+                }
+                
+                # Deploy area test resources
+                $testResourcesDirectory = Resolve-Path -Path "$RepoRoot/areas/$AreaName/tests" -ErrorAction SilentlyContinue
+                $bicepPath = "$testResourcesDirectory/test-resources.bicep"
+                
+                if(!(Test-Path -Path $bicepPath)) {
+                    throw "Test resources bicep template '$bicepPath' does not exist."
+                }
+
+                # Base the user hash on the user's account ID, subscription, and area being deployed to
+                if($Unique) {
+                    $hash = [guid]::NewGuid().ToString()
+                } else {
+                    $hash = (New-StringHash $AccountId, $SubscriptionId, $AreaName)
+                }
+
+                $suffix = $hash.ToLower().Substring(0, 8)
+
+                $areaBaseName = if($BaseName) { $BaseName } else { "mcp$($suffix)" }
+                $username = $AccountId.Split('@')[0].ToLower()
+                $areaResourceGroupName = if($ResourceGroupName) { $ResourceGroupName } else { "$username-mcp$($suffix)" }
+
+                Write-Output @"
+
+=== Deploying Area: $($AreaName.ToUpper()) ===
+    AccountId: '$AccountId'
+    SubscriptionId: '$SubscriptionId'
+    ResourceGroupName: '$areaResourceGroupName'
+    BaseName: '$areaBaseName'
+    DeleteAfterHours: $DeleteAfterHours
+    TestResourcesDirectory: '$testResourcesDirectory'
+"@
+
+                try {
+                    & "$RepoRoot/eng/common/TestResources/New-TestResources.ps1" `
+                        -SubscriptionId $SubscriptionId `
+                        -ResourceGroupName $areaResourceGroupName `
+                        -BaseName $areaBaseName `
+                        -TestResourcesDirectory $testResourcesDirectory `
+                        -DeleteAfterHours $DeleteAfterHours `
+                        -Force
+                    
+                    Write-Output "✅ Successfully deployed test resources for area '$AreaName'"
+                    return $true
+                }
+                catch {
+                    Write-Error "❌ Failed to deploy test resources for area '$AreaName': $($_.Exception.Message)"
+                    throw
+                }
+            } -ArgumentList $area, $account.Id, $SubscriptionId, $ResourceGroupName, $BaseName, $DeleteAfterHours, $Unique.IsPresent, $RepoRoot
+            
+            $jobs[$area] = $job
+        }
+        
+        # Poll job status and report progress
+        while ($jobs.Count -gt $completedJobs.Count) {
+            $completedCount = 0
+            $runningJobs = @()
+            
+            foreach ($areaName in $jobs.Keys) {
+                $job = $jobs[$areaName]
+                
+                if ($job.State -eq 'Completed' -and $areaName -notin $completedJobs) {
+                    $completedJobs += $areaName
+                    
+                    # Check if job succeeded
+                    try {
+                        $result = Receive-Job -Job $job -ErrorAction Stop
+                        Write-Host $result -ForegroundColor Green
+                        $successCount++
+                    }
+                    catch {
+                        Write-Host "❌ Job for area '$areaName' failed: $($_.Exception.Message)" -ForegroundColor Red
+                        $failedAreas += $areaName
+                    }
+                    finally {
+                        Remove-Job -Job $job -Force
+                    }
+                }
+                elseif ($job.State -in @('Running', 'NotStarted')) {
+                    $runningJobs += $areaName
+                }
+                elseif ($job.State -eq 'Failed' -and $areaName -notin $completedJobs) {
+                    $completedJobs += $areaName
+                    $failedAreas += $areaName
+                    
+                    try {
+                        $result = Receive-Job -Job $job -ErrorAction SilentlyContinue
+                        if ($result) {
+                            Write-Host $result -ForegroundColor Red
+                        }
+                    }
+                    catch {
+                        Write-Host "❌ Job for area '$areaName' failed: $($_.Exception.Message)" -ForegroundColor Red
+                    }
+                    finally {
+                        Remove-Job -Job $job -Force
+                    }
+                }
+            }
+            
+            $progressPercent = [int](($completedJobs.Count / $totalCount) * 100)
+            $runningJobsText = if ($runningJobs.Count -gt 0) { "Running: $($runningJobs -join ', ')" } else { "All jobs completed" }
+            
+            Write-Progress -Activity "Deploying Test Resources" -Status "Completed: $($completedJobs.Count)/$totalCount areas. $runningJobsText" -PercentComplete $progressPercent
+            
+            if ($completedJobs.Count -lt $totalCount) {
+                Start-Sleep -Seconds 2
+            }
+        }
+        
+        Write-Progress -Activity "Deploying Test Resources" -Completed
+        
+        # Clean up any remaining jobs
+        foreach ($job in $jobs.Values) {
+            if ($job.State -ne 'Completed') {
+                Remove-Job -Job $job -Force
+            }
+        }
     }
-    
-    Write-Progress -Activity "Deploying Test Resources" -Completed
     
     Write-Host "`n📊 Deployment Summary:" -ForegroundColor Cyan
     Write-Host "   Total areas processed: $totalCount" -ForegroundColor White
