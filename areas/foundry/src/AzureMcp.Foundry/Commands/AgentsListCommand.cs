@@ -38,7 +38,6 @@ public sealed class AgentsListCommand : GlobalCommand<AgentsListOptions>
         return options;
     }
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);

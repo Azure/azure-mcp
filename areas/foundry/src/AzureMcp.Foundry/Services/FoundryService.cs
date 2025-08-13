@@ -39,9 +39,9 @@ public class FoundryService(IHttpClientService httpClientService, ITenantService
 
     private static readonly Dictionary<string, Func<IEnumerable<AITool>, EvaluationContext>> AgentEvaluatorContextDictionary = new()
     {
-        { "intent_resolution", toolDefinitons => new IntentResolutionEvaluatorContext(toolDefinitons)},
-        { "tool_call_accuracy", toolDefinitons => new ToolCallAccuracyEvaluatorContext(toolDefinitons)},
-        { "task_adherence", toolDefinitons => new TaskAdherenceEvaluatorContext(toolDefinitons)},
+        { "intent_resolution", toolDefinitions => new IntentResolutionEvaluatorContext(toolDefinitions)},
+        { "tool_call_accuracy", toolDefinitions => new ToolCallAccuracyEvaluatorContext(toolDefinitions)},
+        { "task_adherence", toolDefinitions => new TaskAdherenceEvaluatorContext(toolDefinitions)},
     };
 
     private readonly IHttpClientService _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));

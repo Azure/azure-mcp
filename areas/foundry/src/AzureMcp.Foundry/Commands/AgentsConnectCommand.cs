@@ -48,7 +48,6 @@ public sealed class AgentsConnectCommand : GlobalCommand<AgentsConnectOptions>
 
     public override string Title => CommandTitle;
 
-    [McpServerTool(Destructive = false, ReadOnly = true, Title = CommandTitle)]
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
         var options = BindOptions(parseResult);
