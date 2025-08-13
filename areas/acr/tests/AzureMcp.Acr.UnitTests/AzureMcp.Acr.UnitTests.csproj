@@ -18,6 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AzureMcp.Acr\AzureMcp.Acr.csproj" />
-    <ProjectReference Include="..\..\..\..\core\src\AzureMcp.Core\AzureMcp.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\core\src\Azure.Mcp.Core\Azure.Mcp.Core.csproj" />
   </ItemGroup>
 </Project>

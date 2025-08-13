@@ -48,7 +48,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AzureMcp.Core\AzureMcp.Core.csproj" />
+    <ProjectReference Include="..\Azure.Mcp.Core\Azure.Mcp.Core.csproj" />
     <ProjectReference Include="..\..\..\areas\*\src\**\AzureMcp.*.csproj" />
   </ItemGroup>
   <ItemGroup>
