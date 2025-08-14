@@ -2,28 +2,26 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
-## 0.5.6 (Unreleased)
+## 0.5.6 (2025-08-14)
 
 ### Features Added
 
 - Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-
-### Breaking Changes
-
-### Bugs Fixed
+- Added support for getting details about an Azure Storage Account via the command `azmcp-storage-account-details`. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
 
 ### Other Changes
 
-- Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
+- Refactored resource group option (`--resource-group`) handling and validation for all commands to a centralized location. [[#961](https://github.com/Azure/azure-mcp/issues/961)]
 
 #### Dependency Updates
 
-- Updated Azure.Monitor.Query version from `1.6.0` to `1.7.1` for AOT support.
-- Updated Azure.Monitor.Ingestion version from `1.1.2` to `1.2.0` for AOT support.
-- Updated Azure.Search.Documents version from `11.7.0-beta.4` to `11.7.0-beta.6` for AOT support.
-- Updated Azure.ResourceManager.ContainerRegistry version from `1.3.0` to `1.3.1` for AOT support.
-- Updated Azure.ResourceManager.DesktopVirtualization version from `1.3.1` to `1.3.2` for AOT support.
-- Updated Azure.ResourceManager.PostgreSql version from `1.3.0` to `1.3.1` for AOT support.
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#967](https://github.com/Azure/azure-mcp/issues/967)] [[#969](https://github.com/Azure/azure-mcp/issues/969)]
+  - Azure.Monitor.Query: `1.6.0` → `1.7.1`
+  - Azure.Monitor.Ingestion: `1.1.2` → `1.2.0`
+  - Azure.Search.Documents: `11.7.0-beta.4` → `11.7.0-beta.6`
+  - Azure.ResourceManager.ContainerRegistry: `1.3.0` → `1.3.1`
+  - Azure.ResourceManager.DesktopVirtualization: `1.3.1` → `1.3.2`
+  - Azure.ResourceManager.PostgreSql: `1.3.0` → `1.3.1`
 
 ## 0.5.5 (2025-08-12)
 
@@ -32,7 +30,6 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Added support for listing ACR (Azure Container Registry) registries in a subscription via the command `azmcp-acr-registry-list`. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
 - Added the following Azure Storage commands:
   - `azmcp-storage-account-create`: Create a new Azure Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
-  - `azmcp-storage-account-details` Get details about an Azure Storage Account. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
   - `azmcp-storage-queue-message-send`: Send a message to an Azure Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
   - `azmcp-storage-blob-details`: Get details about an Azure Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
   - `azmcp-storage-blob-container-create`: Create a new Azure Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
