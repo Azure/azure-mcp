@@ -8,6 +8,7 @@ using AzureMcp.Core.Models.Option;
 using AzureMcp.LoadTesting.Options;
 
 namespace AzureMcp.LoadTesting.Commands;
+
 public abstract class BaseLoadTestingCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseLoadTestingOptions, new()
@@ -17,13 +18,13 @@ public abstract class BaseLoadTestingCommand<
     {
         base.RegisterOptions(command);
         command.AddOption(_loadTestOption);
-        command.AddOption(_resourceGroupOption);
+        UseResourceGroup();
     }
+
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.TestResourceName = parseResult.GetValueForOption(_loadTestOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 }

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Acr.Options;
 using AzureMcp.Acr.Options.Registry;
 using AzureMcp.Acr.Services;
 using AzureMcp.Core.Models.Command;
@@ -14,7 +13,6 @@ public sealed class RegistryListCommand(ILogger<RegistryListCommand> logger) : B
 {
     private const string CommandTitle = "List Container Registries";
     private readonly ILogger<RegistryListCommand> _logger = logger;
-    private readonly new Option<string> _resourceGroupOption = AcrOptionDefinitions.OptionalResourceGroup;
 
     public override string Name => "list";
 
@@ -32,14 +30,7 @@ public sealed class RegistryListCommand(ILogger<RegistryListCommand> logger) : B
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption);
-    }
-
-    protected override RegistryListOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        return options;
+        UseResourceGroup();
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -60,8 +51,8 @@ public sealed class RegistryListCommand(ILogger<RegistryListCommand> logger) : B
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = registries?.Any() == true
-                ? ResponseResult.Create<RegistryListCommandResult>(new RegistryListCommandResult(registries), AcrJsonContext.Default.RegistryListCommandResult)
+            context.Response.Results = registries?.Count > 0
+                ? ResponseResult.Create(new RegistryListCommandResult(registries), AcrJsonContext.Default.RegistryListCommandResult)
                 : null;
         }
         catch (Exception ex)

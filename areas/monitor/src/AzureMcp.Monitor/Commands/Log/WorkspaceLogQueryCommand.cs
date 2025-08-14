@@ -40,7 +40,16 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         command.AddOption(_queryOption);
         command.AddOption(_hoursOption);
         command.AddOption(_limitOption);
-        command.AddOption(_resourceGroupOption);
+    }
+
+    protected override WorkspaceLogQueryOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.TableName = parseResult.GetValueForOption(_tableNameOption);
+        options.Query = parseResult.GetValueForOption(_queryOption);
+        options.Hours = parseResult.GetValueForOption(_hoursOption);
+        options.Limit = parseResult.GetValueForOption(_limitOption);
+        return options;
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -74,16 +83,5 @@ public sealed class WorkspaceLogQueryCommand(ILogger<WorkspaceLogQueryCommand> l
         }
 
         return context.Response;
-    }
-
-    protected override WorkspaceLogQueryOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.TableName = parseResult.GetValueForOption(_tableNameOption);
-        options.Query = parseResult.GetValueForOption(_queryOption);
-        options.Hours = parseResult.GetValueForOption(_hoursOption);
-        options.Limit = parseResult.GetValueForOption(_limitOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        return options;
     }
 }

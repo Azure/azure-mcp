@@ -46,7 +46,6 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
         command.AddOption(_maxMessagesOption);
     }
 
-
     protected override QueuePeekOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);

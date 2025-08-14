@@ -19,6 +19,7 @@ public abstract class BaseMonitorCommand<
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
+        RequireResourceGroup();
         command.AddOption(_workspaceOption);
     }
 
