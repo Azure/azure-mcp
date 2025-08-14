@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using System.Collections.Generic;
-using System;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.KeyVault.Commands.Certificate;
