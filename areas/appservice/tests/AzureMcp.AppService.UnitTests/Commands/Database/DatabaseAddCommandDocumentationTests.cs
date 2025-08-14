@@ -75,25 +75,24 @@ public class DatabaseAddCommandDocumentationTests
         var options = systemCommand.Options.ToList();
 
         // Assert - Required App Service specific options
-        Assert.Contains(options, o => o.Name == "--app-name");
-        Assert.Contains(options, o => o.Name == "--database-type");
-        Assert.Contains(options, o => o.Name == "--database-server");
-        Assert.Contains(options, o => o.Name == "--database-name");
+        Assert.Contains(options, o => o.Name == "app-name");
+        Assert.Contains(options, o => o.Name == "database-type");
+        Assert.Contains(options, o => o.Name == "database-server");
+        Assert.Contains(options, o => o.Name == "database-name");
+        Assert.Contains(options, o => o.Name == "resource-group");
 
         // Optional App Service specific option
-        Assert.Contains(options, o => o.Name == "--connection-string");
+        Assert.Contains(options, o => o.Name == "connection-string");
 
-        // Required base options (from BaseAppServiceCommand)
-        Assert.Contains(options, o => o.Name == "--subscription");
-        Assert.Contains(options, o => o.Name == "--resource-group");
-
-        // Optional base options
-        Assert.Contains(options, o => o.Name == "--tenant");
-        Assert.Contains(options, o => o.Name == "--retry-max-retries");
-        Assert.Contains(options, o => o.Name == "--retry-delay");
-        Assert.Contains(options, o => o.Name == "--retry-max-delay");
-        Assert.Contains(options, o => o.Name == "--retry-mode");
-        Assert.Contains(options, o => o.Name == "--retry-network-timeout");
+        // Base options (from BaseAppServiceCommand and GlobalCommand)
+        Assert.Contains(options, o => o.Name == "subscription");
+        Assert.Contains(options, o => o.Name == "tenant");
+        Assert.Contains(options, o => o.Name == "retry-max-retries");
+        Assert.Contains(options, o => o.Name == "retry-delay");
+        Assert.Contains(options, o => o.Name == "retry-max-delay");
+        Assert.Contains(options, o => o.Name == "retry-mode");
+        Assert.Contains(options, o => o.Name == "retry-network-timeout");
+        Assert.Contains(options, o => o.Name == "auth-method");
     }
 
     [Fact]
@@ -107,12 +106,12 @@ public class DatabaseAddCommandDocumentationTests
         var requiredOptions = systemCommand.Options.Where(o => o.IsRequired).ToList();
 
         // Assert - Check that critical options are required
-        Assert.Contains(requiredOptions, o => o.Name == "--subscription");
-        Assert.Contains(requiredOptions, o => o.Name == "--resource-group");
-        Assert.Contains(requiredOptions, o => o.Name == "--app-name");
-        Assert.Contains(requiredOptions, o => o.Name == "--database-type");
-        Assert.Contains(requiredOptions, o => o.Name == "--database-server");
-        Assert.Contains(requiredOptions, o => o.Name == "--database-name");
+        // Note: subscription is not marked as required because it can be provided via environment variable
+        Assert.Contains(requiredOptions, o => o.Name == "resource-group");
+        Assert.Contains(requiredOptions, o => o.Name == "app-name");
+        Assert.Contains(requiredOptions, o => o.Name == "database-type");
+        Assert.Contains(requiredOptions, o => o.Name == "database-server");
+        Assert.Contains(requiredOptions, o => o.Name == "database-name");
     }
 
     [Fact]
@@ -126,13 +125,15 @@ public class DatabaseAddCommandDocumentationTests
         var optionalOptions = systemCommand.Options.Where(o => !o.IsRequired).ToList();
 
         // Assert - Check that optional options are not required
-        Assert.Contains(optionalOptions, o => o.Name == "--connection-string");
-        Assert.Contains(optionalOptions, o => o.Name == "--tenant");
-        Assert.Contains(optionalOptions, o => o.Name == "--retry-max-retries");
-        Assert.Contains(optionalOptions, o => o.Name == "--retry-delay");
-        Assert.Contains(optionalOptions, o => o.Name == "--retry-max-delay");
-        Assert.Contains(optionalOptions, o => o.Name == "--retry-mode");
-        Assert.Contains(optionalOptions, o => o.Name == "--retry-network-timeout");
+        Assert.Contains(optionalOptions, o => o.Name == "connection-string");
+        Assert.Contains(optionalOptions, o => o.Name == "tenant");
+        Assert.Contains(optionalOptions, o => o.Name == "retry-max-retries");
+        Assert.Contains(optionalOptions, o => o.Name == "retry-delay");
+        Assert.Contains(optionalOptions, o => o.Name == "retry-max-delay");
+        Assert.Contains(optionalOptions, o => o.Name == "retry-mode");
+        Assert.Contains(optionalOptions, o => o.Name == "retry-network-timeout");
+        Assert.Contains(optionalOptions, o => o.Name == "subscription"); // Can be provided via env var
+        Assert.Contains(optionalOptions, o => o.Name == "auth-method");
     }
 
     [Theory]
@@ -182,11 +183,11 @@ public class DatabaseAddCommandDocumentationTests
         Assert.True(optionsWithDescriptions.Count > 0, "Command options should have descriptions");
 
         // Check specific critical options have descriptions
-        var appNameOption = systemCommand.Options.FirstOrDefault(o => o.Name == "--app-name");
+        var appNameOption = systemCommand.Options.FirstOrDefault(o => o.Name == "app-name");
         Assert.NotNull(appNameOption);
         Assert.False(string.IsNullOrEmpty(appNameOption.Description));
 
-        var databaseTypeOption = systemCommand.Options.FirstOrDefault(o => o.Name == "--database-type");
+        var databaseTypeOption = systemCommand.Options.FirstOrDefault(o => o.Name == "database-type");
         Assert.NotNull(databaseTypeOption);
         Assert.False(string.IsNullOrEmpty(databaseTypeOption.Description));
     }
