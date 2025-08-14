@@ -11,11 +11,13 @@ using AzureMcp.Storage.Commands.DataLake.FileSystem;
 using AzureMcp.Storage.Commands.Queue.Message;
 using AzureMcp.Storage.Commands.Share.File;
 using AzureMcp.Storage.Commands.Table;
+using AzureMcp.Storage.Models;
 
 namespace AzureMcp.Storage.Commands;
 
 [JsonSerializable(typeof(BlobListCommand.BlobListCommandResult))]
 [JsonSerializable(typeof(BlobDetailsCommand.BlobDetailsCommandResult))]
+[JsonSerializable(typeof(BlobUploadResult))]
 [JsonSerializable(typeof(BatchSetTierCommand.BatchSetTierCommandResult))]
 [JsonSerializable(typeof(AccountListCommand.AccountListCommandResult), TypeInfoPropertyName = "AccountListCommandResult")]
 [JsonSerializable(typeof(AccountDetailsCommand.AccountDetailsCommandResult), TypeInfoPropertyName = "AccountDetailsCommandResult")]

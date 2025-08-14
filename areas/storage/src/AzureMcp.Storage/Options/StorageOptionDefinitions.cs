@@ -22,6 +22,8 @@ public static class StorageOptionDefinitions
     public const string MessageContent = "message";
     public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
     public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
+    public const string LocalFilePathName = "local-file-path";
+    public const string OverwriteName = "overwrite";
     public const string LocationName = "location";
     public const string SkuName = "sku";
     public const string KindName = "kind";
@@ -230,6 +232,22 @@ public static class StorageOptionDefinitions
     public static readonly Option<int?> VisibilityTimeoutInSecondsOption = new(
         $"--{VisibilityTimeoutInSeconds}",
         "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible)."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> LocalFilePath = new(
+        $"--{LocalFilePathName}",
+        "The local file path to read content from or to write content to. This should be the full path to the file on your local system."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<bool> Overwrite = new(
+        $"--{OverwriteName}",
+        "Whether to overwrite content if it already exists. Defaults to false."
     )
     {
         IsRequired = false
