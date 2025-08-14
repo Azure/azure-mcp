@@ -73,7 +73,7 @@ public sealed class FunctionAppGetCommandTests
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
-    var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -94,7 +94,7 @@ public sealed class FunctionAppGetCommandTests
             .Returns((FunctionAppInfo?)null);
 
         var context = new CommandContext(_serviceProvider);
-    var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -109,7 +109,7 @@ public sealed class FunctionAppGetCommandTests
             .Returns(Task.FromException<FunctionAppInfo?>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
-    var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
