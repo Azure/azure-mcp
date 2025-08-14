@@ -8,6 +8,9 @@
     <EmbeddedResource Include="**\Resources\*.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\microsoft\src\Microsoft.Mcp.Core\Microsoft.Mcp.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Azure.Core" />
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Azure.Identity.Broker" />

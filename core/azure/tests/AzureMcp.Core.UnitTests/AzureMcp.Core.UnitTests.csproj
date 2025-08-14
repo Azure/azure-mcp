@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AzureMcp.Tests\AzureMcp.Tests.csproj" />
-    <ProjectReference Include="..\..\src\AzureMcp.Cli\AzureMcp.Cli.csproj" />
+    <ProjectReference Include="..\..\src\AzureMcp.Tests\AzureMcp.Tests.csproj" />
+    <ProjectReference Include="..\..\..\..\cli\azure\src\AzureMcp.Cli\AzureMcp.Cli.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NSubstitute" />
