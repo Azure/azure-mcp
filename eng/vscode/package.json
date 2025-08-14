@@ -53,6 +53,17 @@
                     "type": "array",
                     "items": { "type": "string" },
                     "description": "List of Azure MCP services to enable. If empty or unset, all services are enabled by default."
+                },
+                "azureMcp.mode": {
+                    "type": "string",
+                    "enum": ["namespace", "all", "single"],
+                    "default": "namespace",
+                    "markdownDescription": "MCP server exposure mode. 'namespace' collapses tools per service (default), 'all' exposes every tool individually, 'single' exposes one 'azure' tool that routes internally."
+                },
+                "azureMcp.readOnly": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Start the Azure MCP server in read-only mode (operations that modify resources will be disabled)."
                 }
             }
         }
