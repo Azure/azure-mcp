@@ -13,7 +13,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
-- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for``azmcp.exe`, preventing confidence score calculation on macOS/Linux. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for `azmcp.exe`, preventing confidence score calculation on macOS/Linux. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 
 ### Other Changes
 
