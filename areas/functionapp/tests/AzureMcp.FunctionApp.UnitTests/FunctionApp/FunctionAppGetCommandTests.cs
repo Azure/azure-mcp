@@ -45,10 +45,10 @@ public sealed class FunctionAppGetCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub123 --resource-group rg1 --function-app app1", true)]
+    [InlineData("--subscription sub123 --resource-group rg1 --functionapp app1", true)]
     [InlineData("--subscription sub123 --resource-group rg1", false)]
-    [InlineData("--subscription sub123 --function-app app1", false)]
-    [InlineData("--resource-group rg1 --function-app app1", false)]
+    [InlineData("--subscription sub123 --functionapp app1", false)]
+    [InlineData("--resource-group rg1 --functionapp app1", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         if (shouldSucceed)
@@ -73,7 +73,7 @@ public sealed class FunctionAppGetCommandTests
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --functionapp app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -94,7 +94,7 @@ public sealed class FunctionAppGetCommandTests
             .Returns((FunctionAppInfo?)null);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --functionapp app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -109,8 +109,10 @@ public sealed class FunctionAppGetCommandTests
             .Returns(Task.FromException<FunctionAppInfo?>(new Exception("Test error")));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --functionapp app1");
+
         var response = await _command.ExecuteAsync(context, parseResult);
+
         Assert.Equal(500, response.Status);
         Assert.Contains("Test error", response.Message);
         Assert.Contains("troubleshooting", response.Message);
