@@ -215,28 +215,33 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         var pfxBytes = generated.Export(X509ContentType.Pkcs12, password);
         var tempPath = Path.Combine(Path.GetTempPath(), $"import-{Guid.NewGuid()}.pfx");
 
-        await File.WriteAllBytesAsync(tempPath, pfxBytes, TestContext.Current.CancellationToken);
-
-        var certificateName = Settings.ResourceBaseName + "import" + Random.Shared.NextInt64();
-
-        var result = await CallToolAsync(
-            "azmcp_keyvault_certificate_import",
-            new()
+        try
+        {
+            await File.WriteAllBytesAsync(tempPath, pfxBytes, TestContext.Current.CancellationToken);
+            var certificateName = Settings.ResourceBaseName + "import" + Random.Shared.NextInt64();
+            var result = await CallToolAsync(
+                "azmcp_keyvault_certificate_import",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "vault", Settings.ResourceBaseName },
+                    { "certificate", certificateName },
+                    { "certificate-data", tempPath },
+                    { "password", password }
+                });
+            var createdCertificateName = result.AssertProperty("name");
+            Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
+            Assert.Equal(certificateName, createdCertificateName.GetString());
+            // Validate basic certificate properties
+            ValidateCertificate(result);
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
             {
-                { "subscription", Settings.SubscriptionId },
-                { "vault", Settings.ResourceBaseName },
-                { "certificate", certificateName },
-                { "certificate-data", tempPath },
-                { "password", password }
-            });
-
-        var createdCertificateName = result.AssertProperty("name");
-
-        Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
-        Assert.Equal(certificateName, createdCertificateName.GetString());
-
-        // Validate basic certificate properties
-        ValidateCertificate(result);
+                File.Delete(tempPath);
+            }
+        }
     }
 
     private void ValidateCertificate(JsonElement? result)

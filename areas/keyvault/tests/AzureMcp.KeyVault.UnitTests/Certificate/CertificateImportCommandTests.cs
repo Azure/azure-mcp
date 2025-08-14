@@ -234,37 +234,43 @@ public class CertificateImportCommandTests
     {
         // Arrange - create temp file to simulate file path input
         var tempPath = Path.GetTempFileName();
-        await File.WriteAllBytesAsync(tempPath, new byte[] { 1, 2, 3, 4 }, TestContext.Current.CancellationToken);
-
-        _keyVaultService.ImportCertificate(
-            _knownVault,
-            _knownCertName,
-            tempPath,
-            null,
-            _knownSubscription,
-            Arg.Any<string?>(),
-            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Test error"));
-
-        var args = _parser.Parse([
-            "--vault", _knownVault,
-            "--certificate", _knownCertName,
-            "--certificate-data", tempPath,
-            "--subscription", _knownSubscription
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, args);
-
-        // Assert - ensure the raw path was passed through
-        await _keyVaultService.Received(1).ImportCertificate(
-            _knownVault,
-            _knownCertName,
-            tempPath,
-            null,
-            _knownSubscription,
-            Arg.Any<string?>(),
-            Arg.Any<RetryPolicyOptions>());
-        Assert.Equal(500, response.Status);
+        try
+        {
+            await File.WriteAllBytesAsync(tempPath, new byte[] { 1, 2, 3, 4 }, TestContext.Current.CancellationToken);
+            _keyVaultService.ImportCertificate(
+                _knownVault,
+                _knownCertName,
+                tempPath,
+                null,
+                _knownSubscription,
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Test error"));
+            var args = _parser.Parse([
+                "--vault", _knownVault,
+                "--certificate", _knownCertName,
+                "--certificate-data", tempPath,
+                "--subscription", _knownSubscription
+            ]);
+            // Act
+            var response = await _command.ExecuteAsync(_context, args);
+            // Assert - ensure the raw path was passed through
+            await _keyVaultService.Received(1).ImportCertificate(
+                _knownVault,
+                _knownCertName,
+                tempPath,
+                null,
+                _knownSubscription,
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions>());
+            Assert.Equal(500, response.Status);
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
+        }
     }
 
     [Fact]
