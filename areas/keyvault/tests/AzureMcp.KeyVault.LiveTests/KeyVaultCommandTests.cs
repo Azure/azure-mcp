@@ -204,7 +204,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
     public async Task Should_import_certificate()
     {
         // Generate a self-signed certificate and export to a temporary PFX file with a password
-        var password = "P@ssw0rd!";
+        var fakePassword = "fakePassword";
         using var rsa = RSA.Create(2048);
         var subject = $"CN=Imported-{Guid.NewGuid()}";
         var request = new CertificateRequest(subject, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -212,7 +212,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
         request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
         using var generated = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddYears(1));
 
-        var pfxBytes = generated.Export(X509ContentType.Pkcs12, password);
+        var pfxBytes = generated.Export(X509ContentType.Pkcs12, fakePassword);
         var tempPath = Path.Combine(Path.GetTempPath(), $"import-{Guid.NewGuid()}.pfx");
 
         try
@@ -227,7 +227,7 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
                     { "vault", Settings.ResourceBaseName },
                     { "certificate", certificateName },
                     { "certificate-data", tempPath },
-                    { "password", password }
+                    { "password", fakePassword }
                 });
             var createdCertificateName = result.AssertProperty("name");
             Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
