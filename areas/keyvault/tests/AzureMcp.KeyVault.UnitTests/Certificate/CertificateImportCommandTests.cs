@@ -23,9 +23,9 @@ public class CertificateImportCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownSubscription = "knownSub";
-    private const string _knownVault = "kvtest";
-    private const string _knownCertName = "cert1";
+    private const string _knownSubscription = "knownSubscription";
+    private const string _knownVault = "knownVault";
+    private const string _knownCertName = "knownCertificate";
     private const string _fakePfxBase64 = "VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz"; // arbitrary base64
 
     public CertificateImportCommandTests()
@@ -76,19 +76,52 @@ public class CertificateImportCommandTests
         Assert.Equal(500, response.Status); // due to forced exception
     }
 
-    [Fact]
-    public async Task ExecuteAsync_Returns400_WhenMissingCertificateData()
+    [Theory]
+    [InlineData("", false)]
+    [InlineData("--vault knownVault", false)]
+    [InlineData("--vault knownVault --certificate knownCertificate", false)]
+    [InlineData("--vault knownVault --certificate knownCertificate --subscription knownSubscription", false)]
+    [InlineData("--vault knownVault --certificate knownCertificate --certificate-data VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz", false)]
+    [InlineData("--vault knownVault --certificate knownCertificate --certificate-data VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz --subscription knownSubscription", true)]
+    public async Task ExecuteAsync_ValidatesRequiredArguments(string argLine, bool shouldPassValidation)
     {
-        var args = _parser.Parse([
-            "--vault", _knownVault,
-            "--certificate", _knownCertName,
-            "--subscription", _knownSubscription
-        ]);
+        // Arrange
+        var args = _parser.Parse(argLine.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
+        if (shouldPassValidation)
+        {
+            // Service will throw to avoid constructing a KeyVaultCertificateWithPolicy instance; this still proves validation passed
+            _keyVaultService.ImportCertificate(
+                _knownVault,
+                _knownCertName,
+                _fakePfxBase64,
+                null,
+                _knownSubscription,
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions>())
+                .ThrowsAsync(new Exception("Test error"));
+        }
+
+        // Act
         var response = await _command.ExecuteAsync(_context, args);
 
-        Assert.Equal(400, response.Status);
-        Assert.Contains("required", response.Message.ToLower());
+        // Assert
+        if (shouldPassValidation)
+        {
+            Assert.NotEqual(400, response.Status); // could be 500 due to forced exception, but not a validation failure
+            await _keyVaultService.Received(1).ImportCertificate(
+                _knownVault,
+                _knownCertName,
+                _fakePfxBase64,
+                null,
+                _knownSubscription,
+                Arg.Any<string?>(),
+                Arg.Any<RetryPolicyOptions>());
+        }
+        else
+        {
+            Assert.Equal(400, response.Status);
+        }
     }
 
     [Fact]
@@ -115,5 +148,174 @@ public class CertificateImportCommandTests
 
         Assert.Equal(500, response.Status);
         Assert.StartsWith(expected, response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsService_WithPemData()
+    {
+        // Arrange - minimal mock PEM (not a valid cert, but exercises the code path)
+        var pem = "-----BEGIN CERTIFICATE-----\nABCDEF123456\n-----END CERTIFICATE-----";
+
+        _keyVaultService.ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            pem,
+            null,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Test error"));
+
+        var args = _parser.Parse([
+            "--vault", _knownVault,
+            "--certificate", _knownCertName,
+            "--certificate-data", pem,
+            "--subscription", _knownSubscription
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert - ensure the PEM (with header) was passed through untouched
+        await _keyVaultService.Received(1).ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            pem,
+            null,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>());
+        Assert.Equal(500, response.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsService_WithPassword()
+    {
+        var password = "P@ssw0rd!";
+
+        _keyVaultService.ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            _fakePfxBase64,
+            password,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Test error"));
+
+        var args = _parser.Parse([
+            "--vault", _knownVault,
+            "--certificate", _knownCertName,
+            "--certificate-data", _fakePfxBase64,
+            "--password", password,
+            "--subscription", _knownSubscription
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
+
+        await _keyVaultService.Received(1).ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            _fakePfxBase64,
+            password,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>());
+        Assert.Equal(500, response.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CallsService_WithFilePath()
+    {
+        // Arrange - create temp file to simulate file path input
+        var tempPath = Path.GetTempFileName();
+        await File.WriteAllBytesAsync(tempPath, new byte[] { 1, 2, 3, 4 }, TestContext.Current.CancellationToken);
+
+        _keyVaultService.ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            tempPath,
+            null,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception("Test error"));
+
+        var args = _parser.Parse([
+            "--vault", _knownVault,
+            "--certificate", _knownCertName,
+            "--certificate-data", tempPath,
+            "--subscription", _knownSubscription
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert - ensure the raw path was passed through
+        await _keyVaultService.Received(1).ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            tempPath,
+            null,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>());
+        Assert.Equal(500, response.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Returns500_OnInvalidCertificateData()
+    {
+        // Simulate service throwing the wrapped invalid data message
+        var invalidData = "not-valid-base64-or-path";
+        var errorMessage = $"Error importing certificate '{_knownCertName}' into vault {_knownVault}: The provided certificate-data is neither a file path, raw PEM, nor base64 encoded content.";
+
+        _keyVaultService.ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            invalidData,
+            null,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(errorMessage));
+
+        var args = _parser.Parse([
+            "--vault", _knownVault,
+            "--certificate", _knownCertName,
+            "--certificate-data", invalidData,
+            "--subscription", _knownSubscription
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
+
+        Assert.Equal(500, response.Status);
+        Assert.StartsWith(errorMessage, response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Returns500_OnInvalidPassword()
+    {
+        // Simulate password mismatch scenario
+        var password = "WrongPassword";
+        var mismatchMessage = $"Error importing certificate '{_knownCertName}' into vault {_knownVault}: Invalid password or certificate data.";
+
+        _keyVaultService.ImportCertificate(
+            _knownVault,
+            _knownCertName,
+            _fakePfxBase64,
+            password,
+            _knownSubscription,
+            Arg.Any<string?>(),
+            Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(mismatchMessage));
+
+        var args = _parser.Parse([
+            "--vault", _knownVault,
+            "--certificate", _knownCertName,
+            "--certificate-data", _fakePfxBase64,
+            "--password", password,
+            "--subscription", _knownSubscription
+        ]);
+
+        var response = await _command.ExecuteAsync(_context, args);
+
+        Assert.Equal(500, response.Status);
+        Assert.StartsWith(mismatchMessage, response.Message);
     }
 }
