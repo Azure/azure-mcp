@@ -12,4 +12,11 @@ public interface IFunctionAppService
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<FunctionAppInfo?> GetFunctionApp(
+        string subscription,
+        string functionAppName,
+        string resourceGroup,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
