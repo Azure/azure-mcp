@@ -6,8 +6,9 @@
 ### Added
 
 - New VS Code settings to control Azure MCP server startup behavior:
-  - `azureMcp.mode`: choose tool exposure mode — `single` | `namespace` (default) | `all`.
-  - `azureMcp.readOnly`: start server in read-only mode.
+  - `azureMcp.serverMode`: choose tool exposure mode — `single` | `namespace` (default) | `all`.
+  - `azureMcp.readOnly`: start the server in read-only mode.
+  - `azureMcp.enabledServices`: added drop down list to select and configure the enabled services.
 
 ### Changed
 

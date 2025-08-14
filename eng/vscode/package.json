@@ -51,14 +51,67 @@
             "properties": {
                 "azureMcp.enabledServices": {
                     "type": "array",
-                    "items": { "type": "string" },
-                    "description": "List of Azure MCP services to enable. If empty or unset, all services are enabled by default."
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "appconfig",
+                            "search",
+                            "acr",
+                            "aks",
+                            "cosmos",
+                            "sql",
+                            "servicebus",
+                            "monitor",
+                            "keyvault",
+                            "storage",
+                            "subscription",
+                            "kusto",
+                            "postgres",
+                            "redis",
+                            "grafana",
+                            "marketplace",
+                            "loadtesting",
+                            "rbac",
+                            "resourcegroups",
+                            "virtualdesktop",
+                            "workbooks",
+                            "foundry",
+                            "bicep"
+                        ],
+                        "markdownEnumDescriptions": [
+                            "Azure App Configuration",
+                            "Azure AI Search",
+                            "Azure Container Registry",
+                            "Azure Kubernetes Service",
+                            "Azure Cosmos DB",
+                            "Azure SQL",
+                            "Azure Service Bus",
+                            "Azure Monitor",
+                            "Azure Key Vault",
+                            "Azure Storage",
+                            "Azure Subscription",
+                            "Azure Data Explorer (Kusto)",
+                            "Azure Database for PostgreSQL",
+                            "Azure Cache for Redis",
+                            "Azure Managed Grafana",
+                            "Azure Marketplace",
+                            "Azure Load Testing",
+                            "Azure RBAC",
+                            "Azure Resource Groups",
+                            "Azure Virtual Desktop",
+                            "Azure Workbooks",
+                            "Azure Foundry",
+                            "Bicep"
+                        ]
+                    },
+                    "uniqueItems": true,
+                    "markdownDescription": "Service namespaces to enable. Leave empty to enable all. Choose from the list to avoid typing errors."
                 },
-                "azureMcp.mode": {
+                "azureMcp.serverMode": {
                     "type": "string",
                     "enum": ["single", "namespace", "all"],
                     "default": "namespace",
-                    "markdownDescription": "MCP Tool exposure mode. single collapses every tool (100+) into one (1) single tool that routes internally, namespace (default) collapses all tools down into logical Azure service namespace grouping (about 30 tools), while all exposes every MCP tool directly to the MCP client. We recommend namespace as the right balance between MCP tool count and tool selection accuracy."
+                    "markdownDescription": "Server Mode determines how tools are exposed: `single` collapses every tool (100+) into one (1) single tool that routes internally, `namespace` (default) collapses all tools down into logical Azure service namespace grouping (about 30 tools), while `all` exposes every MCP tool directly to the MCP client. We recommend namespace as the right balance between MCP tool count and tool selection accuracy."
                 },
                 "azureMcp.readOnly": {
                     "type": "boolean",

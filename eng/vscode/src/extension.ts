@@ -53,8 +53,8 @@ export function activate(context: vscode.ExtensionContext) {
                 const enabledServices: string[] | undefined = config.get('enabledServices');
                 const args = ['server', 'start'];
 
-                // Mode: namespace (default), all, single
-                const mode = config.get<string>('mode') || 'namespace';
+                // Server Mode (single | namespace | all). Default 'namespace'.
+                const mode = config.get<string>('serverMode') || 'namespace';
                 if (mode) {
                     args.push('--mode', mode);
                 }
@@ -101,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeConfiguration((event) => {
             if (
                 event.affectsConfiguration('azureMcp.enabledServices') ||
-                event.affectsConfiguration('azureMcp.mode') ||
+                event.affectsConfiguration('azureMcp.serverMode') ||
                 event.affectsConfiguration('azureMcp.readOnly')
             ) {
                 didChangeEmitter.fire();
