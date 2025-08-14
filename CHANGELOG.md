@@ -7,13 +7,13 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Features Added
 
 - Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#???](https://github.com/Azure/azure-mcp/pull/???)]
+- Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
-- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for``azmcp.exe`, preventing confidence score calculation on macOS/Linux.
+- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for``azmcp.exe`, preventing confidence score calculation on macOS/Linux. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 
 ### Other Changes
 
