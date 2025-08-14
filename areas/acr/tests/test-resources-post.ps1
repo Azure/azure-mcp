@@ -142,17 +142,20 @@ function Import-AcrImageAz {
     )
 
     $attempts = 5
+    $imported = $false
     for ($i = 1; $i -le $attempts; $i++) {
         try {
             Write-Host "[$i/$attempts] Importing testrepo:latest into $RegistryName from mcr.microsoft.com via Az PowerShell..."
-            Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "hello-world:latest" -SourceRegistryUri "mcr.microsoft.com" -Image "testrepo:latest" -ErrorAction Stop | Out-Null
+            Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "hello-world:latest" -SourceRegistryUri "mcr.microsoft.com" -TargetTag "testrepo:latest" -ErrorAction Stop | Out-Null
             Write-Host "Imported testrepo:latest from mcr.microsoft.com/hello-world:latest"
+            $imported = $true
             break
         }
         catch {
             $msg = $_.Exception.Message
             if ($msg -match 'already exists' -or $msg -match 'Conflict') {
                 Write-Host "Image already exists; proceeding."
+                $imported = $true
                 break
             }
             if ($i -lt $attempts) { Write-Warning "MCR import failed: $msg. Retrying in 5s..."; Start-Sleep -Seconds 5 }
@@ -160,15 +163,12 @@ function Import-AcrImageAz {
         }
     }
 
-    $imported = $true
-    if ($i -gt $attempts) { $imported = $false }
-
     if (-not $imported) {
         $attempts2 = 3
         for ($j = 1; $j -le $attempts2; $j++) {
             try {
                 Write-Host "[$j/$attempts2] Importing testrepo:latest into $RegistryName from docker.io via Az PowerShell..."
-                Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "alpine:latest" -SourceRegistryUri "docker.io" -Image "testrepo:latest" -ErrorAction Stop | Out-Null
+                Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "alpine:latest" -SourceRegistryUri "docker.io" -TargetTag "testrepo:latest" -ErrorAction Stop | Out-Null
                 Write-Host "Imported testrepo:latest from docker.io/library/alpine:latest"
                 $imported = $true
                 break
@@ -187,8 +187,17 @@ function Import-AcrImageAz {
     if ($verifyCmd) {
         try {
             for ($k = 1; $k -le 6; $k++) {
-                $repos = Get-AzContainerRegistryRepository -RegistryName $RegistryName -ResourceGroupName $ResourceGroupName -ErrorAction Stop
-                if ($repos -and ($repos -contains 'testrepo')) { Write-Host "Verified repository 'testrepo' exists."; return $true }
+                $repos = Get-AzContainerRegistryRepository -RegistryName $RegistryName -ErrorAction Stop
+                $repoNames = @()
+                if ($repos) {
+                    if ($repos | Get-Member -Name Name -MemberType NoteProperty,Property -ErrorAction SilentlyContinue) {
+                        $repoNames = $repos | ForEach-Object { $_.Name }
+                    }
+                    else {
+                        $repoNames = @($repos)
+                    }
+                }
+                if ($repoNames -and ($repoNames -contains 'testrepo')) { Write-Host "Verified repository 'testrepo' exists."; return $true }
                 Start-Sleep -Seconds 5
             }
             Write-Warning "Verification could not find repository 'testrepo' after waiting."
