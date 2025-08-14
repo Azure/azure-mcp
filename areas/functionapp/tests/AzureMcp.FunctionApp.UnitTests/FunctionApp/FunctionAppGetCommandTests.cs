@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using System.CommandLine;
+using System.Text.Json;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.FunctionApp.Commands;
@@ -72,8 +72,8 @@ public sealed class FunctionAppGetCommandTests
         _service.GetFunctionApp(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns(expected);
 
-    var context = new CommandContext(_serviceProvider);
-    var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var context = new CommandContext(_serviceProvider);
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -93,8 +93,8 @@ public sealed class FunctionAppGetCommandTests
         _service.GetFunctionApp(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .Returns((FunctionAppInfo?)null);
 
-    var context = new CommandContext(_serviceProvider);
-    var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
+        var context = new CommandContext(_serviceProvider);
+        var parseResult = _command.GetCommand().Parse("--subscription sub123 --resource-group rg1 --function-app app1");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 

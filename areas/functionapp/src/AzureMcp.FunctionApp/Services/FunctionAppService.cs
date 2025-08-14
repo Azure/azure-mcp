@@ -3,11 +3,11 @@
 
 using Azure.ResourceManager.AppService;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
 using AzureMcp.FunctionApp.Models;
-using AzureMcp.Core.Services.Azure.ResourceGroup;
 
 namespace AzureMcp.FunctionApp.Services;
 
