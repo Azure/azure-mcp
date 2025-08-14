@@ -68,6 +68,7 @@ internal class Program
             new AzureMcp.AzureIsv.AzureIsvSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Deploy.DeploySetup(),
+            new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
             new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.FunctionApp.FunctionAppSetup(),
