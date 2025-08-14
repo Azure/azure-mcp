@@ -88,8 +88,8 @@ Here are some cool prompts you can try across our supported Azure services:
 * "List containers in my Cosmos DB database"
 
 ### 🗄️ Azure SQL Database
-* "List all databases in the Azure SQL server 'myserver'"
-* "Show me the details of SQL database 'mydb' in server 'myserver'"
+* "Show me details about my Azure SQL database 'mydb'"
+* "List all databases in my Azure SQL server 'myserver'"
 * "List all elastic pools in SQL server 'myserver'"
 * "Show me the firewall rules for SQL server 'myserver'"
 * "List Microsoft Entra ID administrators for SQL server 'myserver'"
