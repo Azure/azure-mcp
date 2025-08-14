@@ -27,11 +27,11 @@ public sealed class CertificateImportCommand(ILogger<CertificateImportCommand> l
 
     public override string Description =>
         """
-        Imports an existing certificate (PFX or PEM with private key) into an Azure Key Vault. The --certificate-data option
-        accepts either a file path to a PFX/PEM file, a base64 encoded PFX, or raw PEM text starting with -----BEGIN. If the
-        certificate is a password-protected PFX, provide --password. Returns certificate details including name, id, keyId,
-        secretId, cer (base64), thumbprint, validity, and policy subject/issuer. Required options: --vault, --certificate,
-        --certificate-data.
+        Imports (uploads) an existing certificate (PFX or PEM with private key) into an Azure Key Vault without generating
+        a new certificate or key material. This command accepts either a file path to a PFX/PEM file, a base64 encoded PFX,
+        or raw PEM text starting with -----BEGIN. If the certificate is a password-protected PFX, a password must be provided.
+        Returns certificate details including name, id, keyId, secretId, cer (base64), thumbprint, validity, and policy
+        subject/issuer.
         """;
 
     protected override void RegisterOptions(Command command)
