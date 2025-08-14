@@ -6,23 +6,21 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
-- Introduced `BaseAzureResourceService` class that uses Azure Resource Graph queries for improved performance and reduced API calls when retrieving Azure SQL resources. This provides faster and more efficient resource discovery compared to direct ARM API calls.
+- Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
-- Fixed KQL string escaping in Workbooks service queries to prevent potential injection issues and improve query reliability.
-- Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation.
-- Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value.
+- Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 
 ### Other Changes
 
-- Refactored SQL service implementation to use Azure Resource Graph queries instead of direct ARM API calls, significantly improving performance and reducing the number of API requests required for SQL resource operations.
-- Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
-- Added `BaseAzureResourceService` abstract class that provides common Resource Graph query functionality with tenant caching and consistent error handling for Azure services.
-- Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services.
-- Updated development documentation to include guidance on choosing between `BaseAzureResourceService` and `BaseAzureService` based on service requirements.
+- Refactored SQL service implementation to use Azure Resource Graph queries instead of direct ARM API calls. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+  - Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
+- Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+  - Fixed KQL string escaping in Workbooks service queries.
 
 ## 0.5.5 (2025-08-12)
 
