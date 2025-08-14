@@ -68,7 +68,7 @@ public static class CommandExtensions
             }
         }
 
-        return command.Parse(args.ToArray());
+        return command.Parse([.. args]);
     }
 
     /// <summary>

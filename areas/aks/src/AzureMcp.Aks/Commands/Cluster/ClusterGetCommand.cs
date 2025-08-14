@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Aks.Commands.Cluster;
 
-public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseAksCommand<ClusterGetOptions>()
+public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseAksCommand<ClusterGetOptions>
 {
     private const string CommandTitle = "Get AKS Cluster Details";
     private readonly ILogger<ClusterGetCommand> _logger = logger;
@@ -33,14 +33,13 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseA
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_clusterNameOption);
     }
 
     protected override ClusterGetOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.ClusterName = parseResult.GetValueForOption(_clusterNameOption);
         return options;
     }

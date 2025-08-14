@@ -118,7 +118,7 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
         {
             var messages = await receiver.PeekMessagesAsync(maxMessages);
 
-            return messages.ToList();
+            return [.. messages];
         }
     }
 
@@ -137,7 +137,7 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
         {
             var messages = await receiver.PeekMessagesAsync(maxMessages);
 
-            return messages.ToList();
+            return [.. messages];
         }
     }
 }

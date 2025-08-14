@@ -252,41 +252,65 @@ IMPORTANT:
   - Keep parameter names consistent with Azure SDK parameters when possible
   - If services share similar operations (e.g., ListDatabases), use the same parameter order and names
 
-### Optional Resource Group Pattern
+### Resource Group Usage Pattern
 
-**For commands that need optional resource group filtering (e.g., list commands that can filter by resource group):**
+The `resource-group` option is defined globally once and is always parser-optional. Commands declare their logical need for it using helper methods instead of redefining or manually binding the option.
 
-1. **Create a custom optional resource group option** in your area's OptionDefinitions:
+Helpers (available in `BaseCommand`):
 
 ```csharp
-// In {Area}OptionDefinitions.cs
-public static readonly Option<string> OptionalResourceGroup = new(
-    $"--{OptionDefinitions.Common.ResourceGroupName}",
-    "The name of the Azure resource group. This is a logical container for Azure resources."
-)
+protected void UseResourceGroup();      // Optional filter – user may include it
+protected void RequireResourceGroup();  // Logically required – validation enforces presence
+protected string? GetResourceGroup();   // Convenience accessor with validation side-effects handled centrally
+```
+
+Key rules:
+- Do NOT create area-specific optional resource group options.
+- Do NOT override `_resourceGroupOption` or manually add `OptionDefinitions.Common.ResourceGroup` to commands.
+- Do NOT manually assign `options.ResourceGroup` in `BindOptions` – central binding in `GlobalCommand` handles this when a command calls either helper.
+- Validation for required resource group happens centrally (logical requirement), not at parser level.
+
+Usage examples inside `RegisterOptions`:
+
+```csharp
+protected override void RegisterOptions(Command command)
 {
-    IsRequired = false  // ← Key difference from OptionDefinitions.Common.ResourceGroup
-};
+    base.RegisterOptions(command);
+    RequireResourceGroup();   // Command cannot run without a resource group
+    command.AddOption(_clusterNameOption);
+}
+
+protected override void RegisterOptions(Command command)
+{
+    base.RegisterOptions(command);
+    UseResourceGroup();       // Optional narrowing filter
+}
 ```
 
-2. **Override the base _resourceGroupOption field** in your command:
+Binding example (no manual resource group assignment):
 
 ```csharp
-// In your command class
-private readonly new Option<string> _resourceGroupOption = {Area}OptionDefinitions.OptionalResourceGroup;
+protected override ListServersOptions BindOptions(ParseResult parseResult)
+{
+    var options = base.BindOptions(parseResult);
+    options.Server = parseResult.GetValueForOption(_serverOption);
+    return options; // options.ResourceGroup already populated (or null)
+}
 ```
 
-3. **Examples from existing codebase:**
-   - **Extension Area**: `ExtensionOptionDefinitions.Azqr.OptionalResourceGroup` (for azqr command)
-   - **Monitor Area**: `MonitorOptionDefinitions.Metrics.OptionalResourceGroup` (for metrics commands)
-   - **ACR Area**: `AcrOptionDefinitions.OptionalResourceGroup` (for registry list command)
+Accessing during execution:
 
-**❌ Common Mistake**: Using `OptionDefinitions.Common.ResourceGroup` which has `IsRequired = true`
-**✅ Correct Pattern**: Create area-specific optional resource group option with `IsRequired = false`
+```csharp
+var rg = options.ResourceGroup;          // direct
+// or
+var rg2 = GetResourceGroup();            // helper (throws validation earlier if required & missing)
+```
 
-This allows commands to work both ways:
-- `azmcp {area} {resource} {operation} --subscription <sub>` (all resources in subscription)
-- `azmcp {area} {resource} {operation} --subscription <sub> --resource-group <rg>` (filtered by resource group)
+Rationale:
+- Eliminates duplicated option definitions.
+- Clear, declarative intent (Require vs Use) with minimal boilerplate.
+- Keeps parser surface stable while allowing logical enforcement.
+- Simplifies future extension if other global options adopt the same pattern.
 
 ### 3. Command Class
 
@@ -1278,22 +1302,24 @@ var subscriptionResource = await _subscriptionService.GetSubscription(subscripti
 
 ### Command Option Patterns
 
-**Issue: Using required ResourceGroup for optional filtering**
-- **Problem**: Commands use `OptionDefinitions.Common.ResourceGroup` (required) when they should support optional resource group filtering
-- **Solution**: Create area-specific optional resource group option
+**Issue: Manual resource group option duplication or binding**
+- **Problem**: Command redefines a resource group option or manually assigns `options.ResourceGroup`.
+- **Solution**: Remove duplicate definitions; call `UseResourceGroup()` or `RequireResourceGroup()` only; let central binding populate `options.ResourceGroup`.
 - **Pattern**:
 ```csharp
-// In OptionDefinitions
-public static readonly Option<string> OptionalResourceGroup = new(
-    $"--{OptionDefinitions.Common.ResourceGroupName}",
-    "The name of the Azure resource group."
-)
+protected override void RegisterOptions(Command command)
 {
-    IsRequired = false
-};
+    base.RegisterOptions(command);
+    UseResourceGroup(); // or RequireResourceGroup();
+    command.AddOption(_otherOption);
+}
 
-// In Command class
-private readonly new Option<string> _resourceGroupOption = {Area}OptionDefinitions.OptionalResourceGroup;
+protected override MyOptions BindOptions(ParseResult parseResult)
+{
+    var options = base.BindOptions(parseResult); // ResourceGroup already set if declared
+    options.Other = parseResult.GetValueForOption(_otherOption);
+    return options;
+}
 ```
 
 ### Error Handling Patterns
@@ -1436,7 +1462,7 @@ catch (Exception ex)
 
 1. Do not:
    - **CRITICAL**: Use `subscriptionId` as parameter name - Always use `subscription` to support both IDs and names
-   - **CRITICAL**: Use `OptionDefinitions.Common.ResourceGroup` for optional resource group filtering - Create area-specific `OptionalResourceGroup` with `IsRequired = false`
+    - **CRITICAL**: Re-defining the global `resource-group` option. Use `UseResourceGroup()` / `RequireResourceGroup()` instead.
    - **CRITICAL**: Skip live test infrastructure for Azure service commands - Create `test-resources.bicep` template early in development
    - Redefine base class properties in Options classes
    - Skip base.RegisterOptions() call
@@ -1453,7 +1479,7 @@ catch (Exception ex)
 
 2. Always:
    - Create a static {Area}OptionDefinitions class for the area
-   - **For optional resource group filtering**: Create custom `OptionalResourceGroup` option in area's OptionDefinitions with `IsRequired = false`
+    - **For resource group handling**: Call `UseResourceGroup()` (optional) or `RequireResourceGroup()` (required). Never redefine the option or assign it manually.
    - **For Azure service commands**: Create test infrastructure (`test-resources.bicep`) before implementing live tests
    - Use OptionDefinitions for options
    - Follow exact file structure

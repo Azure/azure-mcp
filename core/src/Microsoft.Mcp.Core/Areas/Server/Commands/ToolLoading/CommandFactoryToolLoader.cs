@@ -158,7 +158,7 @@ public sealed class CommandFactoryToolLoader(
                 schema.Properties.Add(option.Name, TypeToJsonTypeMapper.CreatePropertySchema(option.ValueType, option.Description));
             }
 
-            schema.Required = options.Where(p => p.IsRequired).Select(p => p.Name).ToArray();
+            schema.Required = [.. options.Where(p => p.IsRequired).Select(p => p.Name)];
         }
 
         tool.InputSchema = JsonSerializer.SerializeToElement(schema, ServerJsonContext.Default.ToolInputSchema);
