@@ -117,7 +117,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-functionapp-list | List all function apps in my subscription |
 | azmcp-functionapp-list | Show me my Azure function apps |
 | azmcp-functionapp-list | What function apps do I have? |
-| azmcp-functionapp-get | Show me the details for the function app <function_app_name> in resource group <resource_group_name> |
+| azmcp-functionapp-get | Show me the details for the function app <function_app_name> |
 | azmcp-functionapp-get | Get information about my function app <function_app_name> in <resource_group_name> |
 
 ## Azure Key Vault
