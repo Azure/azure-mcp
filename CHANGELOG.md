@@ -45,6 +45,11 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Other Changes
 - Consolidate "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
 
+#### Dependency Updates
+
+- Removed the following dependencies to reduce the size of Azure MCP Server.
+  - Azure.ResourceManager.CognitiveServices
+
 ## 0.5.4 (2025-08-07)
 
 ### Bugs Fixed

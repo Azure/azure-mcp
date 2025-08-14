@@ -9,11 +9,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\core\src\AzureMcp.Core\AzureMcp.Core.csproj" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\Models\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.AI.Projects" />
     <PackageReference Include="Azure.ResourceManager" />
-    <PackageReference Include="Azure.ResourceManager.CognitiveServices" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />

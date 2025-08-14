@@ -101,12 +101,13 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
     /// </summary>
     /// <param name="tenant">Optional Azure tenant ID or name</param>
     /// <param name="retryPolicy">Optional retry policy configuration</param>
-    protected async Task<ArmClient> CreateArmClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    protected async Task<ArmClient> CreateArmClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null, ArmClientOptions? armClientOptions = null)
     {
         var tenantId = await ResolveTenantIdAsync(tenant);
 
         // Return cached client if parameters match
-        if (_armClient != null &&
+        if (armClientOptions == null &&
+            _armClient != null &&
             _lastArmClientTenantId == tenantId &&
             RetryPolicyOptions.AreEqual(_lastRetryPolicy, retryPolicy))
         {
@@ -116,7 +117,8 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
         try
         {
             var credential = await GetCredential(tenantId);
-            var options = ConfigureRetryPolicy(AddDefaultPolicies(new ArmClientOptions()), retryPolicy);
+            var options = armClientOptions ?? new ArmClientOptions();
+            ConfigureRetryPolicy(AddDefaultPolicies(options), retryPolicy);
 
             _armClient = new ArmClient(credential, default, options);
             _lastArmClientTenantId = tenantId;
