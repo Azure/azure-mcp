@@ -4,6 +4,7 @@
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Monitor.Commands.HealthModels.Entity;
+using AzureMcp.Monitor.Commands.Ingestion;
 using AzureMcp.Monitor.Commands.Log;
 using AzureMcp.Monitor.Commands.Metrics;
 using AzureMcp.Monitor.Commands.Table;
@@ -75,5 +76,11 @@ public class MonitorSetup : IAreaSetup
 
         metrics.AddCommand("query", new MetricsQueryCommand(loggerFactory.CreateLogger<MetricsQueryCommand>()));
         metrics.AddCommand("definitions", new MetricsDefinitionsCommand(loggerFactory.CreateLogger<MetricsDefinitionsCommand>()));
+
+        // Create Ingestion command group and register commands
+        var ingestion = new CommandGroup("ingestion", "Azure Monitor ingestion operations - Commands for uploading custom log data to Azure Monitor.");
+        monitor.AddSubGroup(ingestion);
+
+        ingestion.AddCommand("upload", new IngestionUploadCommand(loggerFactory.CreateLogger<IngestionUploadCommand>()));
     }
 }
