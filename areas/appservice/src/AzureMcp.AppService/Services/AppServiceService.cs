@@ -59,6 +59,11 @@ public class AppServiceService(
         var configResource = webApp.GetWebSiteConfig();
         var config = await configResource.GetAsync();
         
+        if (config?.Value?.Data == null)
+        {
+            throw new ArgumentException($"Unable to retrieve configuration for web app '{appName}'.");
+        }
+        
         // Create or update the connection string
         var connectionStrings = config.Value.Data.ConnectionStrings?.ToList() ?? new List<ConnStringInfo>();
         
