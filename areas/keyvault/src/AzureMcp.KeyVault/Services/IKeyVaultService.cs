@@ -152,4 +152,24 @@ public interface IKeyVaultService
         string subscriptionId,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    /// <summary>
+    /// Imports an existing certificate (PFX or PEM) into an Azure Key Vault.
+    /// </summary>
+    /// <param name="vaultName">The name of the Key Vault.</param>
+    /// <param name="certificateName">The target certificate name in Key Vault.</param>
+    /// <param name="certificateData">Raw certificate data: bytes base64 encoded (PFX) or raw PEM text.</param>
+    /// <param name="password">Optional password if the certificate is a protected PFX.</param>
+    /// <param name="subscriptionId">The subscription ID or name.</param>
+    /// <param name="tenantId">Optional tenant ID for cross-tenant operations.</param>
+    /// <param name="retryPolicy">Optional retry policy for the operation.</param>
+    /// <returns>The imported certificate.</returns>
+    Task<KeyVaultCertificateWithPolicy> ImportCertificate(
+        string vaultName,
+        string certificateName,
+        string certificateData,
+        string? password,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
