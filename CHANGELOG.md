@@ -13,6 +13,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for``azmcp.exe`, preventing confidence score calculation on macOS/Linux.
+
 ### Other Changes
 
 - Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
