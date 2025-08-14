@@ -14,8 +14,6 @@ public abstract class BaseCommand : IBaseCommand
     private const string TroubleshootingUrl = "https://aka.ms/azmcp/troubleshooting";
 
     private readonly Command _command;
-    private bool _usesResourceGroup;
-    private bool _requiresResourceGroup;
 
     protected BaseCommand()
     {
@@ -79,18 +77,6 @@ public abstract class BaseCommand : IBaseCommand
             SetValidationError(commandResponse, result.ErrorMessage!);
         }
 
-        // Check logical requirements (e.g., resource group requirement)
-        if (result.IsValid && _requiresResourceGroup)
-        {
-            var rg = commandResult.GetValueForOption(OptionDefinitions.Common.ResourceGroup);
-            if (string.IsNullOrWhiteSpace(rg))
-            {
-                result.IsValid = false;
-                result.ErrorMessage = $"{MissingRequiredOptionsPrefix}--resource-group";
-                SetValidationError(commandResponse, result.ErrorMessage);
-            }
-        }
-
         return result;
 
         static void SetValidationError(CommandResponse? response, string errorMessage)
@@ -107,23 +93,4 @@ public abstract class BaseCommand : IBaseCommand
     {
         return value == null || (value is string str && string.IsNullOrWhiteSpace(str));
     }
-
-    protected void UseResourceGroup()
-    {
-        if (_usesResourceGroup)
-            return;
-        _usesResourceGroup = true;
-        _command.AddOption(OptionDefinitions.Common.ResourceGroup);
-    }
-
-    protected void RequireResourceGroup()
-    {
-        UseResourceGroup();
-        _requiresResourceGroup = true;
-    }
-
-    protected string? GetResourceGroup(ParseResult parseResult) =>
-        _usesResourceGroup ? parseResult.GetValueForOption(OptionDefinitions.Common.ResourceGroup) : null;
-
-    protected bool UsesResourceGroup => _usesResourceGroup;
 }
