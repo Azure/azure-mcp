@@ -56,9 +56,9 @@
                 },
                 "azureMcp.mode": {
                     "type": "string",
-                    "enum": ["namespace", "all", "single"],
+                    "enum": ["single", "namespace", "all"],
                     "default": "namespace",
-                    "markdownDescription": "MCP server exposure mode. 'namespace' collapses tools per service (default), 'all' exposes every tool individually, 'single' exposes one 'azure' tool that routes internally."
+                    "markdownDescription": "MCP Tool exposure mode. single collapses every tool (100+) into one (1) single tool that routes internally, namespace (default) collapses all tools down into logical Azure service namespace grouping (about 30 tools), while all exposes every MCP tool directly to the MCP client. We recommend namespace as the right balance between MCP tool count and tool selection accuracy."
                 },
                 "azureMcp.readOnly": {
                     "type": "boolean",

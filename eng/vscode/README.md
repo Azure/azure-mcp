@@ -56,10 +56,10 @@ Follow these simple steps to start using Azure MCP in VS Code:
     - Full options: control how tools are exposed and whether mutations are allowed:
 
        ```json
-       // Collapse tools per service (default), or expose all or a single 'azure' tool
-       "azureMcp.mode": "namespace", // one of: "namespace" | "all" | "single"
+      // Collapse tools per service (default), expose every tool, or a single 'azure' tool
+      "azureMcp.mode": "namespace", // one of: "single" | "namespace" (default) | "all"
 
-       // Filter which namespaces to expose (repeat entries allowed)
+       // Filter which namespaces to expose
        "azureMcp.enabledServices": ["storage", "keyvault"],
 
        // Run the server in read-only mode (prevents write operations)
