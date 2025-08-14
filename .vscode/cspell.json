@@ -12,6 +12,12 @@
     ],
     "useGitignore": true,
     "enableGlobDot": true,
+    "overrides": [
+        {
+            "filename": "**/*.trx",
+            "enabled": false
+        }
+    ],
     "ignorePaths": [
         "**/*.binlog",
         "**/.editorconfig",
@@ -23,6 +29,7 @@
         "**/eng/common/**",
         "**/obj/**",
         "**/bin/**",
+        "**/TestResults/**",
         "**/.work/**",
         "**/.dist/**",
         "**/NOTICE.txt",
@@ -138,6 +145,7 @@
                 "myserver",
                 "mystorageaccount",
                 "mysvc",
+                "myacr",
                 "nativeproj",
                 "nettrace",
                 "nslookup",
@@ -169,6 +177,7 @@
                 "testcontainer",
                 "testdb",
                 "testfilesystem",
+                "testrepo",
                 "testpool",
                 "testproxy",
                 "testrg",
@@ -187,6 +196,7 @@
             ]
         }
     ],
+    "ignoreWords": ["testrepo", "myacr", "jong", "livetests", "netcore"],
     "words": [
         "1espt",
         "acaenvironment",
@@ -470,6 +480,8 @@
         "resourcehealth",
         "rhvm",
         "azureadmin",
-        "Occured"
+        "Occured",
+        "testrepo",
+        "myacr"
     ]
 }
