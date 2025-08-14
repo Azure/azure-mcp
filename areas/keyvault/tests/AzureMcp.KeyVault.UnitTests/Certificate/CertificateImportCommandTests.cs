@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using System.Collections.Generic;
+using System;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.KeyVault.Commands.Certificate;
@@ -26,7 +28,8 @@ public class CertificateImportCommandTests
     private const string _knownSubscription = "knownSubscription";
     private const string _knownVault = "knownVault";
     private const string _knownCertName = "knownCertificate";
-    private const string _fakePfxBase64 = "VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz"; // arbitrary base64
+    // Generate a deterministic base64 string from readable words to avoid cspell warnings on opaque text.
+    private static readonly string _fakePfxBase64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("sample certificate data"));
 
     public CertificateImportCommandTests()
     {
@@ -76,13 +79,19 @@ public class CertificateImportCommandTests
         Assert.Equal(500, response.Status); // due to forced exception
     }
 
+    public static IEnumerable<object[]> RequiredArgumentCases()
+    {
+        // Build scenarios without embedding an arbitrary-looking base64 literal in source.
+        yield return new object[] { "", false };
+        yield return new object[] { "--vault knownVault", false };
+        yield return new object[] { "--vault knownVault --certificate knownCertificate", false };
+        yield return new object[] { "--vault knownVault --certificate knownCertificate --subscription knownSubscription", false };
+        yield return new object[] { $"--vault knownVault --certificate knownCertificate --certificate-data {_fakePfxBase64}", false };
+        yield return new object[] { $"--vault knownVault --certificate knownCertificate --certificate-data {_fakePfxBase64} --subscription knownSubscription", true };
+    }
+
     [Theory]
-    [InlineData("", false)]
-    [InlineData("--vault knownVault", false)]
-    [InlineData("--vault knownVault --certificate knownCertificate", false)]
-    [InlineData("--vault knownVault --certificate knownCertificate --subscription knownSubscription", false)]
-    [InlineData("--vault knownVault --certificate knownCertificate --certificate-data VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz", false)]
-    [InlineData("--vault knownVault --certificate knownCertificate --certificate-data VGhpcyBpcyBhIGZha2UgcGZha2UgcGZ4IGJ5dGVz --subscription knownSubscription", true)]
+    [MemberData(nameof(RequiredArgumentCases))]
     public async Task ExecuteAsync_ValidatesRequiredArguments(string argLine, bool shouldPassValidation)
     {
         // Arrange
