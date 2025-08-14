@@ -117,7 +117,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", resourceGroup },
-                { "functionapp", name }
+                { "function-app", name }
             });
 
         var functionApp = getResult.AssertProperty("functionApp");
@@ -140,7 +140,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", "nonexistent-rg" },
-                { "functionapp", "nonexistent-functionapp" }
+                { "function-app", "nonexistent-functionapp" }
             });
 
         Assert.True(result.HasValue);
@@ -169,7 +169,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "functionapp", "name-test" }
+                { "function-app", "name-test" }
             });
         Assert.False(missingRg.HasValue);
 
@@ -179,7 +179,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
             new()
             {
                 { "resource-group", "rg-test" },
-                { "functionapp", "name-test" }
+                { "function-app", "name-test" }
             });
         Assert.False(missingSub.HasValue);
     }
