@@ -77,6 +77,13 @@ jobs:
       summaryFileLocation: $(CoverageFile)
 
   - task: Powershell@2
+    displayName: "(Native AOT) Install Linux arm64 cross compile toolchain"
+    condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Install-LinuxArm64CrossCompileToolchain.ps1
+
+  - task: Powershell@2
     displayName: "(Native AOT) Build module"
     condition: and(succeeded(), ne(variables['NoPackagesChanged'],'true'))
     inputs:
@@ -85,6 +92,8 @@ jobs:
       arguments: >
         -OutputPath '$(Agent.TempDirectory)/native-build'
         -Version '$(Version)'
+        -OperatingSystem '${{ parameters.OSName }}'
+        -Architecture '$(Architecture)'
         -CleanBuild
         -BuildNative
 
