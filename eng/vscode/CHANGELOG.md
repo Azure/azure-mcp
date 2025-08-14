@@ -1,18 +1,20 @@
 
 # Release History
 
-## 0.5.6 - Unreleased
+## 0.5.6 - 2025-08-14
 
 ### Added
 
-- New VS Code settings to control Azure MCP server startup behavior:
+- New VS Code settings to control Azure MCP server startup behavior: [[#971](https://github.com/Azure/azure-mcp/issues/971)]
   - `azureMcp.serverMode`: choose tool exposure mode — `single` | `namespace` (default) | `all`.
   - `azureMcp.readOnly`: start the server in read-only mode.
   - `azureMcp.enabledServices`: added drop down list to select and configure the enabled services.
+- Added support for listing Azure Function Apps via the `azmcp-functionapp-list` command. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for getting details about an Azure Storage Account via the `azmcp-storage-account-details` command. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
 
 ### Changed
 
-### Fixed
+- Centralized handling and validation of the `--resource-group` option across all commands. [[#961](https://github.com/Azure/azure-mcp/issues/961)]
 
 ## 0.5.5 - 2025-08-12
 
