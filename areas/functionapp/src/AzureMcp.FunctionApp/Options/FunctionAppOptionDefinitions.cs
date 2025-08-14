@@ -5,7 +5,7 @@ namespace AzureMcp.FunctionApp.Options;
 
 public static class FunctionAppOptionDefinitions
 {
-    public const string FunctionAppName = "functionapp";
+    public const string FunctionAppName = "function-app";
 
     public static readonly Option<string> FunctionApp = new(
         $"--{FunctionAppName}",

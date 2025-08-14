@@ -385,7 +385,7 @@ azmcp functionapp list --subscription <subscription>
 # Get details for a specific Function App
 azmcp functionapp get --subscription <subscription> \
                       --resource-group <resource-group> \
-                      --functionapp <function-app-name>
+                      --function-app <function-app-name>
 ```
 
 ### Azure Key Vault Operations
