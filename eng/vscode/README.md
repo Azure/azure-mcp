@@ -52,17 +52,8 @@ Follow these simple steps to start using Azure MCP in VS Code:
 
          ![Output](https://raw.githubusercontent.com/Azure/azure-mcp/main/eng/vscode/resources/Walkthrough/Output.png)
 
-3. **(Optional) Enable Specific Azure Services**
-   - To enable specific Azure services (like Storage or Key Vault), add this to your `.vscode/settings.json`:
-
-     ```json
-     "azureMcp.enabledServices": ["storage", "keyvault"]
-     ```
-
-   - Then restart the MCP Server (repeat Step 2).
-
-5. (Optional) Configure Server Startup Mode/Flags
-    - You can control how tools are exposed and whether mutations are allowed:
+3. (Optional) Configure Azure MCP tools and behavior
+    - Full options: control how tools are exposed and whether mutations are allowed:
 
        ```json
        // Collapse tools per service (default), or expose all or a single 'azure' tool
@@ -75,7 +66,7 @@ Follow these simple steps to start using Azure MCP in VS Code:
        "azureMcp.readOnly": false
        ```
 
-   - Changes take effect after restarting the Azure MCP server from the MCP: List Servers view.
+    - Changes take effect after restarting the Azure MCP server from the MCP: List Servers view. (Step 2)
 
 You’re all set! Azure MCP Server is now ready to help you work smarter with Azure resources in VS Code.
 
