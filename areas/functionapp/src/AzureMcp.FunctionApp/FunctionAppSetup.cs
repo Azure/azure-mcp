@@ -24,5 +24,8 @@ public class FunctionAppSetup : IAreaSetup
 
         functionApp.AddCommand("list", new FunctionAppListCommand(
             loggerFactory.CreateLogger<FunctionAppListCommand>()));
+
+        functionApp.AddCommand("get", new FunctionAppGetCommand(
+            loggerFactory.CreateLogger<FunctionAppGetCommand>()));
     }
 }
