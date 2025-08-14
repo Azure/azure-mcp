@@ -20,6 +20,10 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Updated Azure.Monitor.Query version from `1.6.0` to `1.7.1` for AOT support.
 - Updated Azure.Monitor.Ingestion version from `1.1.2` to `1.2.0` for AOT support.
+- Updated Azure.Search.Documents version from `11.7.0-beta.4` to `11.7.0-beta.6` for AOT support.
+- Updated Azure.ResourceManager.ContainerRegistry version from `1.3.0` to `1.3.1` for AOT support.
+- Updated Azure.ResourceManager.DesktopVirtualization version from `1.3.1` to `1.3.2` for AOT support.
+- Updated Azure.ResourceManager.PostgreSql version from `1.3.0` to `1.3.1` for AOT support.
 
 ## 0.5.5 (2025-08-12)
 
