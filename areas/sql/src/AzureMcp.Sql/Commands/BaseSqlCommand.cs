@@ -19,14 +19,13 @@ public abstract class BaseSqlCommand<
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_serverOption);
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.Server = parseResult.GetValueForOption(_serverOption);
         return options;
     }

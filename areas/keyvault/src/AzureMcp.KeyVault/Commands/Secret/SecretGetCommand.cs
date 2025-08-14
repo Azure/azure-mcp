@@ -56,8 +56,6 @@ public sealed class SecretGetCommand(ILogger<SecretGetCommand> logger) : Subscri
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var keyVaultService = context.GetService<IKeyVaultService>();
             var secret = await keyVaultService.GetSecret(
                 options.VaultName!,

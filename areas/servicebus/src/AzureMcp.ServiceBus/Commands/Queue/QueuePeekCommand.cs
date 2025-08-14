@@ -46,7 +46,6 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
         command.AddOption(_maxMessagesOption);
     }
 
-
     protected override QueuePeekOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
@@ -66,8 +65,6 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IServiceBusService>();
             var messages = await service.PeekQueueMessages(

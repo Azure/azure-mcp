@@ -38,8 +38,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var kusto = context.GetService<IKustoService>();
 
             List<string> databasesNames = [];

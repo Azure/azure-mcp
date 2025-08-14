@@ -35,14 +35,13 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
     {
         base.RegisterOptions(command);
         command.AddOption(_datadogResourceOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
     }
 
     protected override MonitoredResourcesListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.DatadogResource = parseResult.GetValueForOption(_datadogResourceOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 
@@ -55,8 +54,6 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(

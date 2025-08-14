@@ -38,8 +38,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var kusto = context.GetService<IKustoService>();
             List<string> tableNames = [];
 

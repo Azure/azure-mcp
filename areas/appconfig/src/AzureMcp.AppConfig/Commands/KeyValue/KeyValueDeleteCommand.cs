@@ -38,8 +38,6 @@ public sealed class KeyValueDeleteCommand(ILogger<KeyValueDeleteCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var appConfigService = context.GetService<IAppConfigService>();
             await appConfigService.DeleteKeyValue(
                 options.Account!,

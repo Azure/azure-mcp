@@ -38,8 +38,6 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var cosmosService = context.GetService<ICosmosService>();
             var accounts = await cosmosService.GetCosmosAccounts(
                 options.Subscription!,

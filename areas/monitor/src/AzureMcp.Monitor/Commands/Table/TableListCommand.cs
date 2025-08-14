@@ -32,7 +32,14 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
     {
         base.RegisterOptions(command);
         command.AddOption(_tableTypeOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
+    }
+
+    protected override TableListOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? MonitorOptionDefinitions.TableType.GetDefaultValue();
+        return options;
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
@@ -45,8 +52,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var monitorService = context.GetService<IMonitorService>();
             var tables = await monitorService.ListTables(
@@ -68,14 +73,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseMon
         }
 
         return context.Response;
-    }
-
-    protected override TableListOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.TableType = parseResult.GetValueForOption(_tableTypeOption) ?? MonitorOptionDefinitions.TableType.GetDefaultValue();
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? OptionDefinitions.Common.ResourceGroup.GetDefaultValue();
-        return options;
     }
 
     internal record TableListCommandResult(List<string> Tables);

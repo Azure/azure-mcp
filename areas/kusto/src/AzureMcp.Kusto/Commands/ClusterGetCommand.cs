@@ -37,8 +37,6 @@ public sealed class ClusterGetCommand(ILogger<ClusterGetCommand> logger) : BaseC
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var kusto = context.GetService<IKustoService>();
             var cluster = await kusto.GetCluster(
                 options.Subscription!,

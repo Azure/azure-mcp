@@ -5,6 +5,7 @@ using AzureMcp.BicepSchema.Options;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

@@ -59,8 +59,6 @@ public sealed class KeyValueListCommand(ILogger<KeyValueListCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var appConfigService = context.GetService<IAppConfigService>();
             var settings = await appConfigService.ListKeyValues(
                 options.Account!,

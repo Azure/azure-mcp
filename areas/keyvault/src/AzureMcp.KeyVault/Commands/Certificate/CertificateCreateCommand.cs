@@ -56,8 +56,6 @@ public sealed class CertificateCreateCommand(ILogger<CertificateCreateCommand> l
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var keyVaultService = context.GetService<IKeyVaultService>();
             var operation = await keyVaultService.CreateCertificate(
                 options.VaultName!,
