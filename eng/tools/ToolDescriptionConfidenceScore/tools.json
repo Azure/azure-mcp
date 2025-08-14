@@ -3,6 +3,31 @@
   "message": "Success",
   "results": [
     {
+      "name": "list",
+      "description": "List Azure Container Registries in a subscription. Optionally filter by resource group. Each registry result\r\nincludes: name, location, loginServer, skuName, skuTier. If no registries are found the tool returns null results\r\n(consistent with other list commands).",
+      "command": "azmcp acr registry list",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
       "name": "get",
       "description": "Get details for a specific Azure Kubernetes Service (AKS) cluster.\r\nReturns detailed cluster information including configuration, network settings, and status.",
       "command": "azmcp aks cluster get",
@@ -23,7 +48,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "cluster",
@@ -380,61 +405,6 @@
       ]
     },
     {
-      "name": "design",
-      "description": "Design and architect comprehensive Azure cloud solutions for applications and services. This interactive assistant helps create scalable cloud architectures for file upload systems, web applications, APIs, e-commerce platforms, financial services, transaction systems, data processing services, and enterprise solutions. Through guided questions, provides tailored Azure architecture recommendations covering storage, compute, networking, databases, security, and application services to create robust user-facing cloud services and applications.",
-      "command": "azmcp cloudarchitect design",
-      "option": [
-        {
-          "name": "auth-method",
-          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "question",
-          "description": "The question to ask during the architecture design process.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "question-number",
-          "description": "The current question number in the design process.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "total-questions",
-          "description": "The total number of questions in the design process.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "answer",
-          "description": "The answer to the current question in the design process.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "next-question-needed",
-          "description": "Whether the next question is needed in the design process.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "confidence-score",
-          "description": "The confidence score for the current architecture design.",
-          "type": "string",
-          "required": null
-        },
-        {
-          "name": "architecture-component",
-          "description": "The architecture component being designed.",
-          "type": "string",
-          "required": null
-        }
-      ]
-    },
-    {
       "name": "list",
       "description": "List all Cosmos DB accounts in a subscription. This command retrieves and displays all Cosmos DB accounts\r\navailable in the specified subscription. Results include account names and are returned as a JSON array.",
       "command": "azmcp cosmos account list",
@@ -554,7 +524,7 @@
     },
     {
       "name": "list",
-      "description": "List monitored resources in Datadog for a datadog resource taken as input from the user. \r\nThis command retrieves all monitored azure resources available.\r\nRequires \u0060datadog-resource\u0060, \u0060resource-group\u0060 and \u0060subscription\u0060.\r\nResult is a list of monitored resources as a JSON array.",
+      "description": "List monitored resources in Datadog for a datadog resource taken as input from the user.\r\nThis command retrieves all monitored azure resources available.\r\nRequires \u0060datadog-resource\u0060, \u0060resource-group\u0060 and \u0060subscription\u0060.\r\nResult is a list of monitored resources as a JSON array.",
       "command": "azmcp datadog monitoredresources list",
       "option": [
         {
@@ -579,7 +549,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -709,7 +679,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "model-version",
@@ -800,6 +770,25 @@
         {
           "name": "model-name",
           "description": "The name of the model to search for.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "Lists all Azure Function Apps in a subscription.\r\nReturns a list of function app details including name, location, status, and app service plan name.",
+      "command": "azmcp functionapp list",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
           "type": "string",
           "required": null
         }
@@ -902,6 +891,49 @@
           "description": "The name of the certificate.",
           "type": "string",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "import",
+      "description": "Imports an existing certificate (PFX or PEM with private key) into an Azure Key Vault. The --certificate-data option\r\naccepts either a file path to a PFX/PEM file, a base64 encoded PFX, or raw PEM text starting with -----BEGIN. If the\r\ncertificate is a password-protected PFX, provide --password. Returns certificate details including name, id, keyId,\r\nsecretId, cer (base64), thumbprint, validity, and policy subject/issuer. Required options: --vault, --certificate,\r\n--certificate-data.",
+      "command": "azmcp keyvault certificate import",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "vault",
+          "description": "The name of the Key Vault.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "certificate",
+          "description": "The name of the certificate.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "certificate-data",
+          "description": "The certificate content: path to a PFX/PEM file, a base64 encoded PFX, or raw PEM text beginning with -----BEGIN.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "password",
+          "description": "Optional password for a protected PFX being imported.",
+          "type": "string",
+          "required": null
         }
       ]
     },
@@ -1143,7 +1175,7 @@
     },
     {
       "name": "query",
-      "description": "Execute a KQL against items in a Kusto cluster.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060 and \u0060subscription\u0060), \u0060database\u0060, and \u0060query\u0060. \r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+      "description": "Execute a KQL against items in a Kusto cluster.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060 and \u0060subscription\u0060), \u0060database\u0060, and \u0060query\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
       "command": "azmcp kusto query",
       "option": [
         {
@@ -1186,7 +1218,7 @@
     },
     {
       "name": "sample",
-      "description": "Return a sample of rows from the specified table in an Kusto table.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060), \u0060database\u0060, and \u0060table\u0060. \r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+      "description": "Return a sample of rows from the specified table in an Kusto table.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060), \u0060database\u0060, and \u0060table\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
       "command": "azmcp kusto sample",
       "option": [
         {
@@ -1315,7 +1347,7 @@
     },
     {
       "name": "create",
-      "description": "Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance \r\nand scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.",
+      "description": "Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance\r\nand scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.",
       "command": "azmcp loadtesting test create",
       "option": [
         {
@@ -1340,7 +1372,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1413,7 +1445,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1450,7 +1482,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -1481,13 +1513,13 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
     {
       "name": "create",
-      "description": "Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution \r\nof a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run \r\nthe same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.",
+      "description": "Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution\r\nof a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run\r\nthe same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.",
       "command": "azmcp loadtesting testrun create",
       "option": [
         {
@@ -1512,7 +1544,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1573,7 +1605,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1610,7 +1642,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1622,7 +1654,7 @@
     },
     {
       "name": "update",
-      "description": "Updates the metadata and display properties of a completed or in-progress load test run execution. \r\nThis command allows you to modify descriptive information for better organization, documentation, \r\nand identification of test runs without affecting the actual test execution or results.",
+      "description": "Updates the metadata and display properties of a completed or in-progress load test run execution.\r\nThis command allows you to modify descriptive information for better organization, documentation,\r\nand identification of test runs without affecting the actual test execution or results.",
       "command": "azmcp loadtesting testrun update",
       "option": [
         {
@@ -1647,7 +1679,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1781,13 +1813,13 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
     {
       "name": "definitions",
-      "description": "List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.\r\nRequired options:\r\n- resource: The name of the Azure resource to query metrics for.\r\nOptional options:\r\n- resource-group: The name of the Azure resource group. This is a logical container for Azure resources.\r\n- resource-type: The Azure resource type (e.g., 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines'). If not specified, will attempt to infer from resource name.\r\n- metric-namespace: The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command.\r\n- search-string: A string to filter the metric definitions by. Helpful for reducing the number of records returned. Performs case-insensitive matching on metric name and description fields.\r\n- limit: The maximum number of metric definitions to return. Defaults to 10.",
+      "description": "    List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.",
       "command": "azmcp monitor metrics definitions",
       "option": [
         {
@@ -1842,7 +1874,7 @@
     },
     {
       "name": "query",
-      "description": "Query Azure Monitor metrics for a resource. Returns time series data for the specified metrics.\r\nRequired options:\r\n- resource: The name of the Azure resource to query metrics for.\r\n- metric-namespace: The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command.\r\n- metric-names: The names of metrics to query (comma-separated).\r\nOptional options:\r\n- resource-group: The name of the Azure resource group. This is a logical container for Azure resources.\r\n- resource-type: The Azure resource type (e.g., 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines'). If not specified, will attempt to infer from resource name.\r\n- start-time: The start time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to 24 hours ago.\r\n- end-time: The end time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to now.\r\n- interval: The time interval for data points (e.g., PT1H for 1 hour, PT5M for 5 minutes).\r\n- aggregation: The aggregation type to use (Average, Maximum, Minimum, Total, Count).\r\n- filter: OData filter to apply to the metrics query.\r\n- max-buckets: The maximum number of time buckets to return. Defaults to 50.",
+      "description": "Query Azure Monitor metrics for a resource. Returns time series data for the specified metrics.",
       "command": "azmcp monitor metrics query",
       "option": [
         {
@@ -1992,6 +2024,12 @@
           "required": null
         },
         {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
           "name": "workspace",
           "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
@@ -2000,12 +2038,6 @@
         {
           "name": "table-type",
           "description": "The type of table to query. Options: 'CustomLog', 'AzureMetrics', etc.",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "resource-group",
-          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
           "required": true
         }
@@ -2029,14 +2061,14 @@
           "required": null
         },
         {
-          "name": "workspace",
-          "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
-          "type": "string",
-          "required": true
-        },
-        {
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "workspace",
+          "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
           "required": true
         }
@@ -2079,6 +2111,12 @@
           "required": null
         },
         {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
           "name": "workspace",
           "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
@@ -2107,12 +2145,6 @@
           "description": "The maximum number of results to return.",
           "type": "string",
           "required": true
-        },
-        {
-          "name": "resource-group",
-          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
-          "type": "string",
-          "required": true
         }
       ]
     },
@@ -2137,7 +2169,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2174,7 +2206,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2205,7 +2237,7 @@
     {
       "name": "config",
       "description": "Retrieve the configuration of a PostgreSQL server.",
-      "command": "azmcp postgres server config",
+      "command": "azmcp postgres server config get",
       "option": [
         {
           "name": "auth-method",
@@ -2223,7 +2255,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2260,7 +2292,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2273,7 +2305,7 @@
     {
       "name": "param",
       "description": "Retrieves a specific parameter of a PostgreSQL server.",
-      "command": "azmcp postgres server param",
+      "command": "azmcp postgres server param get",
       "option": [
         {
           "name": "auth-method",
@@ -2291,7 +2323,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2314,9 +2346,9 @@
       ]
     },
     {
-      "name": "setparam",
+      "name": "set",
       "description": "Sets a specific parameter of a PostgreSQL server to a certain value.",
-      "command": "azmcp postgres server setparam",
+      "command": "azmcp postgres server param set",
       "option": [
         {
           "name": "auth-method",
@@ -2334,7 +2366,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2383,7 +2415,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2408,7 +2440,7 @@
     {
       "name": "schema",
       "description": "Retrieves the schema of a specified table in a PostgreSQL database.",
-      "command": "azmcp postgres table schema",
+      "command": "azmcp postgres table schema get",
       "option": [
         {
           "name": "auth-method",
@@ -2426,7 +2458,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2481,7 +2513,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -2531,7 +2563,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -2793,7 +2825,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2824,7 +2856,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2861,7 +2893,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2892,7 +2924,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2923,7 +2955,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2934,8 +2966,106 @@
       ]
     },
     {
+      "name": "create",
+      "description": "Create a new Azure Storage account in the specified resource group and location.\r\nCreates a storage account with the specified configuration options. Returns the\r\ncreated storage account information including name, location, SKU, and other properties.\r\n  Required options:\r\n- account-name: The globally unique name for the storage account\r\n- resource-group: The resource group where the account will be created\r\n- location: The Azure region for the storage account\r\n  Optional options:\r\n- sku: Storage account SKU (default: Standard_LRS)\r\n- kind: Storage account kind (default: StorageV2)\r\n- access-tier: Default access tier for blobs (default: Hot)\r\n- enable-https-traffic-only: Require HTTPS (default: true)\r\n- allow-blob-public-access: Allow public blob access (default: false)\r\n- enable-hierarchical-namespace: Enable Data Lake Storage Gen2 (default: false)",
+      "command": "azmcp storage account create",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account-name",
+          "description": "The name of the Azure Storage account to create. Must be globally unique, 3-24 characters, lowercase letters and numbers only.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "location",
+          "description": "The Azure region where the storage account will be created (e.g., 'eastus', 'westus2').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "sku",
+          "description": "The storage account SKU. Valid values: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS, Standard_GZRS, Standard_RAGZRS.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "kind",
+          "description": "The storage account kind. Valid values: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "access-tier",
+          "description": "The default access tier for blob storage. Valid values: Hot, Cool.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "enable-https-traffic-only",
+          "description": "Whether to require secure transfer (HTTPS) for the storage account.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "allow-blob-public-access",
+          "description": "Whether to allow public access to blobs in the storage account.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "enable-hierarchical-namespace",
+          "description": "Whether to enable hierarchical namespace (Data Lake Storage Gen2) for the storage account.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "details",
+      "description": "Get detailed information about a specific Azure Storage account. This command retrieves comprehensive\r\nmetadata for the specified storage account including name, location, SKU, access settings, and configuration\r\ndetails. Returns a JSON object with all storage account properties.",
+      "command": "azmcp storage account details",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "list",
-      "description": "List all Storage accounts in a subscription. This command retrieves all Storage accounts available\r\nin the specified subscription. Results include account names and are\r\nreturned as a JSON array.",
+      "description": "List all Storage accounts in a subscription. This command retrieves all Storage accounts available\r\nin the specified subscription. Results are returned as a JSON array of\r\nobjects including common metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess,\r\nenableHttpsTrafficOnly).",
       "command": "azmcp storage account list",
       "option": [
         {
@@ -2996,6 +3126,43 @@
       ]
     },
     {
+      "name": "create",
+      "description": "Creates a blob container with optional blob public access. Returns the last modified time and the ETag of the blob container as JSON.",
+      "command": "azmcp storage blob container create",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "container",
+          "description": "The name of the container to access within the storage account.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "blob-container-public-access",
+          "description": "The public access level for the blob container. Valid values: blob (allows public read access to blobs), container (allows public read access to both blobs and container metadata). If not specified, the container will be private.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
       "name": "details",
       "description": "Get detailed properties of a storage container including metadata, lease status, and access level.\r\nRequires account and container.",
       "command": "azmcp storage blob container details",
@@ -3046,6 +3213,43 @@
         {
           "name": "account",
           "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "details",
+      "description": "Get blob properties, metadata, and general information. This tool retrieves blob configuration including metadata properties, \r\napproximate size, and last modification time information. Returns blob properties as JSON. Requires account, \r\ncontainer, and blob.",
+      "command": "azmcp storage blob details",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "container",
+          "description": "The name of the container to access within the storage account.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "blob",
+          "description": "The name of the blob to access within the container. This should be the full path within the container (e.g., 'file.txt' or 'folder/file.txt').",
           "type": "string",
           "required": true
         }
@@ -3151,6 +3355,55 @@
         {
           "name": "recursive",
           "description": "Flag to indicate whether the command will operate recursively on all subdirectories.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "send",
+      "description": "Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue with optional time-to-live and visibility delay settings. \r\nMessages are returned with receipt handles for tracking. Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, \r\nnext visible time, and message content.",
+      "command": "azmcp storage queue message send",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "queue",
+          "description": "The name of the queue to access within the storage account.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "message",
+          "description": "The content of the message to send to the queue.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "time-to-live-in-seconds",
+          "description": "The time-to-live for the message in seconds. If not specified, the message will use the queue's default TTL. Set to -1 for messages that never expire.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "visibility-timeout-in-seconds",
+          "description": "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible).",
           "type": "string",
           "required": null
         }
@@ -3301,7 +3554,7 @@
     },
     {
       "name": "usersession-list",
-      "description": "List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop \r\nuser session objects available on the specified session host. Results include user session details such as \r\nuser principal name, session state, application type, and creation time.",
+      "description": "List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop\r\nuser session objects available on the specified session host. Results include user session details such as\r\nuser principal name, session state, application type, and creation time.",
       "command": "azmcp virtualdesktop hostpool sessionhost usersession-list",
       "option": [
         {
@@ -3344,7 +3597,7 @@
     },
     {
       "name": "create",
-      "description": "Create a new workbook in the specified resource group and subscription. \r\nYou can set the display name and serialized data JSON content for the workbook.\r\nReturns the created workbook information upon successful completion.",
+      "description": "Create a new workbook in the specified resource group and subscription.\r\nYou can set the display name and serialized data JSON content for the workbook.\r\nReturns the created workbook information upon successful completion.",
       "command": "azmcp workbooks create",
       "option": [
         {
@@ -3363,7 +3616,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "display-name",
@@ -3425,7 +3678,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "kind",
@@ -3498,5 +3751,5 @@
       ]
     }
   ],
-  "duration": 79
+  "duration": 107
 }
