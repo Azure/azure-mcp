@@ -773,6 +773,11 @@ azmcp storage account create --subscription <subscription> \
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
 
+# Get detailed information about a specific Storage account
+azmcp storage account details --subscription <subscription> \
+                              --account <account-name> \
+                              [--tenant <tenant>]
+
 # Set access tier for multiple blobs in a batch operation
 azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \

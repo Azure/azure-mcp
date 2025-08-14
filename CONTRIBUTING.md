@@ -590,6 +590,8 @@ Instructions for consuming the package from the dev feed can be found in the "Ex
 
 ## Support and Community
 
+Please see our [support](https://github.com/Azure/azure-mcp/blob/main/SUPPORT.md) statement.
+
 ### Questions and Support
 
 We're building this in the open.  Your feedback is much appreciated, and will help us shape the future of the Azure MCP server.

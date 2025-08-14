@@ -3,10 +3,7 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Models.Option;
-using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Account;
@@ -62,7 +59,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     {
         base.RegisterOptions(command);
         command.AddOption(_accountNameOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_locationOption);
         command.AddOption(_skuOption);
         command.AddOption(_kindOption);
@@ -76,7 +73,6 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     {
         var options = base.BindOptions(parseResult);
         options.AccountName = parseResult.GetValueForOption(_accountNameOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.Location = parseResult.GetValueForOption(_locationOption);
         options.Sku = parseResult.GetValueForOption(_skuOption);
         options.Kind = parseResult.GetValueForOption(_kindOption);
