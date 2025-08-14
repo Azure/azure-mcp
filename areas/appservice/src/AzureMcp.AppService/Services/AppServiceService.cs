@@ -6,6 +6,8 @@ using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
+using Azure.ResourceManager.AppService;
+using Azure.ResourceManager.AppService.Models;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.AppService.Services;
@@ -40,19 +42,45 @@ public class AppServiceService(
             throw new ArgumentException($"Resource group '{resourceGroup}' not found in subscription '{subscription}'.");
         }
 
-        // For now, we'll simulate the operation since Azure.ResourceManager.AppService is not available
-        // In a real implementation, you would use the Azure.ResourceManager.AppService package
-        // to get the web app resource and update its connection strings
+        // Get the web app resource using Azure.ResourceManager.AppService
+        var webApps = resourceGroupResource.Value.GetWebSites();
+        var webAppResource = await webApps.GetAsync(appName);
+        if (webAppResource?.Value == null)
+        {
+            throw new ArgumentException($"Web app '{appName}' not found in resource group '{resourceGroup}'.");
+        }
 
         // Build connection string if not provided
         var finalConnectionString = string.IsNullOrEmpty(connectionString) ? BuildConnectionString(databaseType, databaseServer, databaseName) : connectionString;
         var connectionStringName = $"{databaseName}Connection";
 
-        // Simulate the database connection addition
-        // In reality, this would call the Azure Resource Manager API to update the web app's connection strings
-        await Task.Delay(100); // Simulate API call
+        // Get current web app configuration
+        var webApp = webAppResource.Value;
+        var configResource = webApp.GetWebSiteConfig();
+        var config = await configResource.GetAsync();
+        
+        // Create or update the connection string
+        var connectionStrings = config.Value.Data.ConnectionStrings?.ToList() ?? new List<ConnStringInfo>();
+        
+        // Remove existing connection string with the same name if it exists
+        connectionStrings.RemoveAll(cs => cs.Name?.Equals(connectionStringName, StringComparison.OrdinalIgnoreCase) == true);
+        
+        // Add the new connection string
+        var connectionStringType = GetConnectionStringType(databaseType);
+        connectionStrings.Add(new ConnStringInfo
+        {
+            Name = connectionStringName,
+            ConnectionString = finalConnectionString,
+            ConnectionStringType = connectionStringType
+        });
 
-        _logger.LogInformation("Successfully simulated adding database connection {ConnectionName} to App Service {AppName}", connectionStringName, appName);
+        // Update the web app configuration
+        var configData = config.Value.Data;
+        configData.ConnectionStrings = connectionStrings;
+        
+        await configResource.CreateOrUpdateAsync(Azure.WaitUntil.Completed, configData);
+
+        _logger.LogInformation("Successfully added database connection {ConnectionName} to App Service {AppName}", connectionStringName, appName);
 
         return new DatabaseConnectionInfo
         {
@@ -73,6 +101,18 @@ public class AppServiceService(
         {
             throw new ArgumentException($"Unsupported database type: {databaseType}");
         }
+    }
+
+    private static ConnectionStringType GetConnectionStringType(string databaseType)
+    {
+        return databaseType.ToLowerInvariant() switch
+        {
+            "sqlserver" => ConnectionStringType.SqlServer,
+            "mysql" => ConnectionStringType.MySql,
+            "postgresql" => ConnectionStringType.PostgreSql,
+            "cosmosdb" => ConnectionStringType.Custom,
+            _ => throw new ArgumentException($"Unsupported database type: {databaseType}")
+        };
     }
 
     private static string BuildConnectionString(string databaseType, string databaseServer, string databaseName)
