@@ -75,7 +75,8 @@ public sealed class FunctionAppService(
 
         var cacheKey = string.IsNullOrEmpty(tenant)
             ? subscription
-            : $"{subscription}_{tenant}";
+            ? $"{subscription}_{resourceGroup}_{functionAppName}"
+            : $"{subscription}_{tenant}_{resourceGroup}_{functionAppName}";
 
         var cachedResults = await _cacheService.GetAsync<FunctionAppInfo>(CacheGroup, cacheKey, s_cacheDuration);
         if (cachedResults != null)
