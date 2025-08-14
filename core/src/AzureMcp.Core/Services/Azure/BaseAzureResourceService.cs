@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Concurrent;
 using Azure.ResourceManager.ResourceGraph;
 using Azure.ResourceManager.ResourceGraph.Models;
 using Azure.ResourceManager.Resources;
@@ -25,13 +24,7 @@ public abstract class BaseAzureResourceService(
     private readonly ITenantService _tenantService = tenantService ?? throw new ArgumentNullException(nameof(tenantService));
 
     /// <summary>
-    /// Cache for tenant resources by subscription tenant ID to avoid repeated enumeration of all tenants.
-    /// Key: Subscription's tenant ID, Value: TenantResource
-    /// </summary>
-    private readonly ConcurrentDictionary<Guid, TenantResource> _tenantCache = new();
-
-    /// <summary>
-    /// Gets the tenant resource for the specified subscription, using caching to avoid repeated tenant enumeration.
+    /// Gets the tenant resource for the specified subscription.
     /// </summary>
     /// <param name="tenantId">The tenant ID from the subscription</param>
     /// <param name="cancellationToken">Cancellation token</param>
@@ -43,13 +36,7 @@ public abstract class BaseAzureResourceService(
             throw new ArgumentException("Tenant ID cannot be null or empty", nameof(tenantId));
         }
 
-        // Try to get from cache first
-        if (_tenantCache.TryGetValue(tenantId.Value, out var cachedTenant))
-        {
-            return cachedTenant;
-        }
-
-        // Not in cache, get all tenants and find the matching one
+        // Get all tenants and find the matching one (GetTenants already has caching)
         var allTenants = await _tenantService.GetTenants();
         var tenantResource = allTenants.FirstOrDefault(t => t.Data.TenantId == tenantId.Value);
 
@@ -57,9 +44,6 @@ public abstract class BaseAzureResourceService(
         {
             throw new InvalidOperationException($"No accessible tenant found for tenant ID '{tenantId}'");
         }
-
-        // Cache the result for future use
-        _tenantCache.TryAdd(tenantId.Value, tenantResource);
 
         return tenantResource;
     }
