@@ -79,6 +79,37 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return accounts;
     }
 
+    public async Task<StorageAccountInfo> GetStorageAccountDetails(string accountName, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, subscription);
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
+        try
+        {
+            var account = await GetStorageAccount(subscriptionResource, accountName);
+            if (account == null)
+            {
+                throw new Exception($"Storage account '{accountName}' not found in subscription '{subscription}'");
+            }
+
+            var data = account.Data;
+            return new StorageAccountInfo(
+                data.Name,
+                data.Location.ToString(),
+                data.Kind?.ToString(),
+                data.Sku?.Name.ToString(),
+                data.Sku?.Tier.ToString(),
+                data.IsHnsEnabled,
+                data.AllowBlobPublicAccess,
+                data.EnableHttpsTrafficOnly);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving Storage account details for '{accountName}': {ex.Message}", ex);
+        }
+    }
+
     public async Task<StorageAccountInfo> CreateStorageAccount(
         string accountName,
         string resourceGroup,
