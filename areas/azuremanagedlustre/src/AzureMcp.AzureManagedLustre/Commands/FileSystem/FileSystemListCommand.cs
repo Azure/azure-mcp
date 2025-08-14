@@ -17,7 +17,7 @@ public sealed class FileSystemListCommand(ILogger<FileSystemListCommand> logger)
 
     public override string Description =>
         """
-        Lists Azure Managed Lustre (AMLFS) file systems in a subscription or optional resource group including provisioning state, runtime state, MGS address, tier, capacity (TiB), blob integration container, and maintenance window details. Use to inventory HPC file systems, inspect operational status, plan capacity, or validate data lifecycle integration. Requires: subscription (or AZURE_SUBSCRIPTION_ID env var). Optional: resource group. Returns: JSON array of AMLFS file systems with key operational properties. Equivalent to filtering 'az resource list' for 'Microsoft.StorageCache/amlFilesystems'.
+        Lists Azure Managed Lustre (AMLFS) file systems in a subscription or optional resource group including provisioning state, MGS address, tier, capacity (TiB), blob integration container, and maintenance window details. Use to inventory Azure Managed Lustre filesystems and to check their properties.
         """;
 
     public override string Title => CommandTitle;
