@@ -38,7 +38,10 @@ function Install-AzModulesIfNeeded {
     try {
         if (-not $hasAccounts) { Install-Module -Name Az.Accounts -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop }
         if (-not $hasAcr) { Install-Module -Name Az.ContainerRegistry -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop }
+<<<<<<< HEAD
         if (-not $hasResources) { Install-Module -Name Az.Resources -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop }
+=======
+>>>>>>> ececf008 (Add command to list repositories in Azure Container Registries and update related files)
     }
     catch {
         Write-Warning "Failed to install specific Az modules: $($_.Exception.Message). Attempting to install Az meta-module..."
@@ -46,7 +49,11 @@ function Install-AzModulesIfNeeded {
         catch { Write-Warning "Failed to install Az modules: $($_.Exception.Message)"; return $false }
     }
 
+<<<<<<< HEAD
     return ([bool](Get-Module -ListAvailable Az.Accounts) -and [bool](Get-Module -ListAvailable Az.ContainerRegistry) -and [bool](Get-Module -ListAvailable Az.Resources))
+=======
+    return ([bool](Get-Module -ListAvailable Az.Accounts) -and [bool](Get-Module -ListAvailable Az.ContainerRegistry))
+>>>>>>> ececf008 (Add command to list repositories in Azure Container Registries and update related files)
 }
 
 function Test-IsCi {
@@ -141,6 +148,7 @@ function Import-AcrImageAz {
         [Parameter(Mandatory = $true)] [string] $RegistryName
     )
 
+<<<<<<< HEAD
     $attempts = 5
     $imported = $false
     for ($i = 1; $i -le $attempts; $i++) {
@@ -206,6 +214,37 @@ function Import-AcrImageAz {
     }
 
     return $imported
+=======
+    try {
+        Write-Host "Importing testrepo:latest into $RegistryName from mcr.microsoft.com via Az PowerShell..."
+        Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "hello-world:latest" -SourceRegistryUri "mcr.microsoft.com" -Image "testrepo:latest" -ErrorAction Stop | Out-Null
+        Write-Host "Imported testrepo:latest from mcr.microsoft.com/hello-world:latest"
+        return $true
+    }
+    catch {
+        $msg = $_.Exception.Message
+        if ($msg -match 'already exists' -or $msg -match 'Conflict') {
+            Write-Host "Image already exists; proceeding."
+            return $true
+        }
+        Write-Warning "MCR import via Az PowerShell failed: $msg. Attempting Docker Hub alpine:latest..."
+    }
+
+    try {
+        Import-AzContainerRegistryImage -ResourceGroupName $ResourceGroupName -RegistryName $RegistryName -SourceImage "alpine:latest" -SourceRegistryUri "docker.io" -Image "testrepo:latest" -ErrorAction Stop | Out-Null
+        Write-Host "Imported testrepo:latest from docker.io/library/alpine:latest"
+        return $true
+    }
+    catch {
+        $msg = $_.Exception.Message
+        if ($msg -match 'already exists' -or $msg -match 'Conflict') {
+            Write-Host "Image already exists; proceeding."
+            return $true
+        }
+        Write-Warning "Docker Hub import via Az PowerShell failed: $msg."
+        return $false
+    }
+>>>>>>> ececf008 (Add command to list repositories in Azure Container Registries and update related files)
 }
 
 try {
@@ -218,13 +257,19 @@ try {
     }
 
     # Ensure Az modules are available and loaded
+<<<<<<< HEAD
     if (-not (Install-AzModulesIfNeeded)) { Write-Warning "Az modules unavailable; skipping seeding."; return }
     try { Import-Module Az.Accounts -ErrorAction Stop; Import-Module Az.ContainerRegistry -ErrorAction Stop; Import-Module Az.Resources -ErrorAction Stop } catch { Write-Warning "Failed to import Az modules: $($_.Exception.Message)"; return }
+=======
+    if (-not (Ensure-AzModules)) { Write-Warning "Az modules unavailable; skipping seeding."; return }
+    try { Import-Module Az.Accounts -ErrorAction Stop; Import-Module Az.ContainerRegistry -ErrorAction Stop } catch { Write-Warning "Failed to import Az modules: $($_.Exception.Message)"; return }
+>>>>>>> ececf008 (Add command to list repositories in Azure Container Registries and update related files)
 
     # Login and import using Az PowerShell only
     $loginOk = Connect-AzPowerShell -SubscriptionId $subscriptionId -TenantIdParam $TenantId
     if (-not $loginOk) { return }
 
+<<<<<<< HEAD
     # Ensure the current signed-in principal has data-plane access (AcrPull/AcrPush) on the registry for local runs
     try {
         $ctx = Get-AzContext -ErrorAction Stop
@@ -270,6 +315,10 @@ try {
     if (-not $seedOk) {
         throw "Failed to seed or verify repository 'testrepo' in registry '$registryName' after retries."
     }
+=======
+    Write-Host "Seeding ACR registry '$registryName' with repo 'testrepo:latest' via Az PowerShell image import..."
+    [void](Import-AcrImageAz -ResourceGroupName $rgName -RegistryName $registryName)
+>>>>>>> ececf008 (Add command to list repositories in Azure Container Registries and update related files)
 }
 catch {
     Write-Warning "ACR seeding step failed: $($_.Exception.Message). Live tests may skip repository assertions."
