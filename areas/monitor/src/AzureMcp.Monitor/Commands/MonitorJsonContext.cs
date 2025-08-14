@@ -3,6 +3,7 @@
 
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AzureMcp.Monitor.Commands.Ingestion;
 using AzureMcp.Monitor.Commands.Metrics;
 using AzureMcp.Monitor.Commands.Table;
 using AzureMcp.Monitor.Commands.TableType;
@@ -16,6 +17,7 @@ namespace AzureMcp.Monitor.Commands;
 [JsonSerializable(typeof(TableTypeListCommand.TableTypeListCommandResult))]
 [JsonSerializable(typeof(MetricsQueryCommand.MetricsQueryCommandResult))]
 [JsonSerializable(typeof(MetricsDefinitionsCommand.MetricsDefinitionsCommandResult))]
+[JsonSerializable(typeof(IngestionUploadCommand.IngestionUploadCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class MonitorJsonContext : JsonSerializerContext
 {

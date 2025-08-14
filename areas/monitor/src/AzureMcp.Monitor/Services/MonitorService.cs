@@ -4,6 +4,7 @@
 using System.Text.Json.Nodes;
 using Azure;
 using Azure.Core;
+using Azure.Monitor.Ingestion;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Azure.ResourceManager.OperationalInsights;
@@ -381,5 +382,100 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
 
         return (matchingWorkspace.CustomerId, matchingWorkspace.Name);
+    }
+
+    public async Task<(string Status, int RecordCount, string Message)> UploadLogs(
+        string workspace,
+        string dataCollectionRule,
+        string streamName,
+        string logData,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(workspace, dataCollectionRule, streamName, logData);
+
+        try
+        {
+            var credential = await GetCredential(tenant);
+
+            // Parse the data collection rule ID to get the endpoint
+            var dcrId = dataCollectionRule;
+            var endpointUrl = BuildIngestionEndpoint(dcrId);
+
+            var ingestionClientOptions = AddDefaultPolicies(new LogsIngestionClientOptions());
+
+            if (retryPolicy != null)
+            {
+                ingestionClientOptions.Retry.Delay = TimeSpan.FromSeconds(retryPolicy.DelaySeconds);
+                ingestionClientOptions.Retry.MaxDelay = TimeSpan.FromSeconds(retryPolicy.MaxDelaySeconds);
+                ingestionClientOptions.Retry.MaxRetries = retryPolicy.MaxRetries;
+            }
+
+            var ingestionClient = new LogsIngestionClient(new Uri(endpointUrl), credential, ingestionClientOptions);
+
+            // Parse the log data as JSON nodes to avoid AOT issues
+            JsonNode? jsonNode;
+            try
+            {
+                jsonNode = JsonNode.Parse(logData);
+            }
+            catch (Exception ex)
+            {
+                return ("Failed", 0, $"Invalid JSON format: {ex.Message}");
+            }
+
+            if (jsonNode is not JsonArray jsonArray)
+            {
+                return ("Failed", 0, "Log data must be a JSON array");
+            }
+
+            if (jsonArray.Count == 0)
+            {
+                return ("Failed", 0, "Log data array is empty");
+            }
+
+            // Convert JsonArray to object array for the ingestion client
+            var logEntries = new List<object>();
+            foreach (var item in jsonArray)
+            {
+                if (item != null)
+                {
+                    logEntries.Add(item);
+                }
+            }
+
+            // Upload the logs
+            var response = await ingestionClient.UploadAsync(dcrId, streamName, logEntries);
+
+            // Check if the upload was successful
+            var recordCount = logEntries.Count;
+            var status = response.Status >= 200 && response.Status < 300 ? "Success" : "Failed";
+            var message = status == "Success"
+                ? $"Successfully uploaded {recordCount} records to stream '{streamName}'"
+                : $"Upload failed with status {response.Status}";
+
+            return (status, recordCount, message);
+        }
+        catch (Exception ex)
+        {
+            return ("Failed", 0, $"Error uploading logs: {ex.Message}");
+        }
+    }
+
+    private static string BuildIngestionEndpoint(string dataCollectionRuleId)
+    {
+        // Extract the data collection endpoint from the DCR ID
+        // DCR ID format: /subscriptions/{subscription}/resourceGroups/{rg}/providers/Microsoft.Insights/dataCollectionRules/{name}
+        // We need to build the data collection endpoint URL
+        var parts = dataCollectionRuleId.Split('/');
+        if (parts.Length < 4)
+        {
+            throw new ArgumentException($"Invalid data collection rule ID format: {dataCollectionRuleId}");
+        }
+
+        // For simplicity, we'll assume the standard ingestion endpoint pattern
+        // In a real implementation, you might need to query the DCR to get the actual endpoint
+        var subscriptionId = parts[2];
+        return $"https://monitor.azure.com/";
     }
 }

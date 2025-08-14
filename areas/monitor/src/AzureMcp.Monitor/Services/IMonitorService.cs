@@ -54,4 +54,12 @@ public interface IMonitorService
         string workspace,
         string? tenant,
         RetryPolicyOptions? retryPolicy);
+
+    Task<(string Status, int RecordCount, string Message)> UploadLogs(
+        string workspace,
+        string dataCollectionRule,
+        string streamName,
+        string logData,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
