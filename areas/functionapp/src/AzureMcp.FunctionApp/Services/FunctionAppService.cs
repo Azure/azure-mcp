@@ -80,42 +80,22 @@ public sealed class FunctionAppService(
         string? planType = null,
         string? planSku = null,
         string? containerAppName = null,
-        string? storageConnectionString = null,
         string? runtime = null,
         string? runtimeVersion = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription, resourceGroup, functionAppName, location);
-
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var rg = await _resourceGroupService.CreateOrUpdateResourceGroup(subscription, resourceGroup, location, tenant, retryPolicy);
-        var options = NormalizeOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
+    var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
 
-        if (options.HostingKind == HostingKind.ContainerApp)
-        {
-            var effectiveContainerName = string.IsNullOrWhiteSpace(containerAppName) ? functionAppName : containerAppName!;
-            var storageForContainer = await ResolveStorageConnectionString(subscriptionResource, rg, functionAppName, location, storageConnectionString);
-            var containerApp = await EnsureMinimalContainerApp(rg, effectiveContainerName, location, options.Runtime, storageForContainer);
-            var host = containerApp.Data.Configuration?.Ingress?.Fqdn ?? containerApp.Data.LatestRevisionName ?? containerApp.Data.Name;
-            return new FunctionAppInfo(
-                containerApp.Data.Name,
-                rg.Data.Name,
-                location,
-                "containerapp",
-                containerApp.Data.ProvisioningState.ToString(),
-                host,
-                containerApp.Data.Tags?.ToDictionary(k => k.Key, v => v.Value));
-        }
-
-        var plan = await EnsureAppServicePlan(rg, appServicePlan, functionAppName, location, options);
-        var site = await CreateFunctionApp(rg, functionAppName, location, plan, options);
-        var storage = await ResolveStorageConnectionString(subscriptionResource, rg, functionAppName, location, storageConnectionString);
-        await ApplyAppSettings(site, options, storage);
-        return ConvertToFunctionAppModel(site);
+        return options.HostingKind == HostingKind.ContainerApp
+            ? await CreateContainerHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, containerAppName, options)
+            : await CreateAppServiceHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, appServicePlan, options);
     }
 
-    private static CreateOptions NormalizeOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? containerAppName)
+    private static CreateOptions BuildCreateOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? containerAppName)
     {
         var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
         var rtv = string.IsNullOrWhiteSpace(runtimeVersion) ? null : runtimeVersion!.Trim();
@@ -189,7 +169,7 @@ public sealed class FunctionAppService(
         return await CreatePlan(rg, autoName, location, options);
     }
 
-    private static async Task<WebSiteResource> CreateFunctionApp(ResourceGroupResource rg, string functionAppName, string location, AppServicePlanResource plan, CreateOptions options)
+    private static async Task<WebSiteResource> CreateAppServiceSiteAsync(ResourceGroupResource rg, string functionAppName, string location, AppServicePlanResource plan, CreateOptions options)
     {
         try
         {
@@ -209,11 +189,41 @@ public sealed class FunctionAppService(
         }
     }
 
-    private static async Task<string> ResolveStorageConnectionString(SubscriptionResource subscription, ResourceGroupResource rg, string functionAppName, string location, string? storageConnectionString)
+    private static async Task<FunctionAppInfo> CreateContainerHostedFunctionAppAsync(
+        SubscriptionResource subscription,
+        ResourceGroupResource rg,
+        string functionAppName,
+        string location,
+        string? containerAppName,
+        CreateOptions options)
     {
-        if (!string.IsNullOrWhiteSpace(storageConnectionString))
-            return storageConnectionString;
-        return await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
+        var effectiveName = string.IsNullOrWhiteSpace(containerAppName) ? functionAppName : containerAppName!;
+        var storage = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
+        var containerApp = await EnsureMinimalContainerApp(rg, effectiveName, location, options.Runtime, storage);
+        var host = containerApp.Data.Configuration?.Ingress?.Fqdn ?? containerApp.Data.LatestRevisionName ?? containerApp.Data.Name;
+        return new FunctionAppInfo(
+            containerApp.Data.Name,
+            rg.Data.Name,
+            location,
+            "containerapp",
+            containerApp.Data.ProvisioningState.ToString(),
+            host,
+            containerApp.Data.Tags?.ToDictionary(k => k.Key, v => v.Value));
+    }
+
+    private static async Task<FunctionAppInfo> CreateAppServiceHostedFunctionAppAsync(
+        SubscriptionResource subscription,
+        ResourceGroupResource rg,
+        string functionAppName,
+        string location,
+        string? appServicePlan,
+        CreateOptions options)
+    {
+        var plan = await EnsureAppServicePlan(rg, appServicePlan, functionAppName, location, options);
+        var site = await CreateAppServiceSiteAsync(rg, functionAppName, location, plan, options);
+        var storage = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
+        await ApplyAppSettings(site, options, storage);
+        return ConvertToFunctionAppModel(site);
     }
 
     private static async Task ApplyAppSettings(WebSiteResource site, CreateOptions options, string storageConnectionString)
