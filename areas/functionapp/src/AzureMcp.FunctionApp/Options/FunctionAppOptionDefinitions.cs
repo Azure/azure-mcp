@@ -9,7 +9,7 @@ public static class FunctionAppOptionDefinitions
 
     public static readonly Option<string> FunctionApp = new(
         $"--{FunctionAppName}",
-        "Function App name.")
+        "The name of the Function App.")
     {
         IsRequired = true
     };
