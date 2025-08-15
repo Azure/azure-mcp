@@ -88,7 +88,7 @@ public sealed class FunctionAppService(
         ValidateRequiredParameters(subscription, resourceGroup, functionAppName, location);
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var rg = await _resourceGroupService.CreateOrUpdateResourceGroup(subscription, resourceGroup, location, tenant, retryPolicy);
-    var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
+        var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
 
         return options.HostingKind == HostingKind.ContainerApp
             ? await CreateContainerHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, containerAppName, options)
