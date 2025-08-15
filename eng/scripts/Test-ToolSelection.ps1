@@ -71,7 +71,7 @@ try {
     try {
         # Check if we have the required sources for dynamic loading
         $hasSourceCode = Test-Path "$RepoRoot/src"
-        $hasMarkdownPrompts = Test-Path "$RepoRoot/e2eTests/e2eTestPrompts.md"
+        $hasMarkdownPrompts = Test-Path "$RepoRoot/docs/e2eTestPrompts.md"
         
         # Check if we have fallback test data files
         $hasToolsData = Test-Path "tools.json"
@@ -154,7 +154,7 @@ try {
             if ($resolvedPromptsFile) {
                 Write-Host "💬 Prompts File: $resolvedPromptsFile"
             } else {
-                Write-Host "💬 Prompts Source: $RepoRoot/e2eTests/e2eTestPrompts.md"
+                Write-Host "💬 Prompts Source: $RepoRoot/docs/e2eTestPrompts.md"
             }
             Write-Host "📄 Output Format: $(if ($OutputMarkdown) { 'Markdown' } else { 'Plain Text' })"
         }
