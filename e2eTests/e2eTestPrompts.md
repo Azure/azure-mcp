@@ -114,18 +114,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-functionapp-get | Describe the function app <function_app_name> in resource group <resource_group_name> |
+| azmcp-functionapp-get | Get configuration for function app <function_app_name> |
+| azmcp-functionapp-get | Get function app status for <function_app_name> |
+| azmcp-functionapp-get | Get information about my function app <function_app_name> in <resource_group_name> |
+| azmcp-functionapp-get | Retrieve host name and status of function app <function_app_name> |
+| azmcp-functionapp-get | Show function app details for <function_app_name> in <resource_group_name> |
+| azmcp-functionapp-get | Show me the details for the function app <function_app_name> |
+| azmcp-functionapp-get | Show plan and region for function app <function_app_name> |
+| azmcp-functionapp-get | What is the status of function app <function_app_name>? |
 | azmcp-functionapp-list | List all function apps in my subscription |
 | azmcp-functionapp-list | Show me my Azure function apps |
 | azmcp-functionapp-list | What function apps do I have? |
-| azmcp-functionapp-get | Show me the details for the function app <function_app_name> |
-| azmcp-functionapp-get | Get information about my function app <function_app_name> in <resource_group_name> |
-| azmcp-functionapp-get | Show function app details for <function_app_name> in <resource_group_name> |
-| azmcp-functionapp-get | Get function app status for <function_app_name> |
-| azmcp-functionapp-get | What is the status of function app <function_app_name>? |
-| azmcp-functionapp-get | Describe the function app <function_app_name> in resource group <resource_group_name> |
-| azmcp-functionapp-get | Get configuration for function app <function_app_name> |
-| azmcp-functionapp-get | Show plan and region for function app <function_app_name> |
-| azmcp-functionapp-get | Retrieve host name and status of function app <function_app_name> |
 
 ## Azure Key Vault
 
