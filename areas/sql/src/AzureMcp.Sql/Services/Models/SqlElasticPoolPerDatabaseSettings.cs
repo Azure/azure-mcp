@@ -10,7 +10,5 @@ namespace AzureMcp.Sql.Services.Models
         public double? MinCapacity { get; set; }
         /// <summary> The maximum capacity any one database can consume. </summary>
         public double? MaxCapacity { get; set; }
-        /// <summary> Auto Pause Delay for per database within pool. </summary>
-        public int? AutoPauseDelay { get; set; }
     }
 }

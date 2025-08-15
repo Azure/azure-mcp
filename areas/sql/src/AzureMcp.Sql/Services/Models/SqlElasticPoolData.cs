@@ -26,10 +26,6 @@ namespace AzureMcp.Sql.Services.Models
         public string? Location { get; set; }
         /// <summary> The database SKU. </summary>
         public SqlSku? Sku { get; set; }
-        /// <summary> Kind of elastic pool. This is metadata used for the Azure portal experience. </summary>
-        public string? Kind { get; set; }
-        /// <summary> The tags of the resource. </summary>
-        public IDictionary<string, string>? Tags { get; set; }
         /// <summary> The properties of elastic pool. </summary>
         public SqlElasticPoolProperties? Properties { get; set; }
 

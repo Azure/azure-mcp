@@ -26,14 +26,6 @@ namespace AzureMcp.Sql.Services.Models
         public string? Location { get; set; }
         /// <summary> The database SKU. </summary>
         public SqlSku? Sku { get; set; }
-        /// <summary> Kind of database. This is metadata used for the Azure portal experience. </summary>
-        public string? Kind { get; set; }
-        /// <summary> Resource that manages the database. </summary>
-        public string? ManagedBy { get; set; }
-        /// <summary> The Azure Active Directory identity of the database. </summary>
-        public DatabaseIdentity? Identity { get; set; }
-        /// <summary> The tags of the resource. </summary>
-        public IDictionary<string, string>? Tags { get; set; }
         /// <summary> Properties of the Sql database. </summary>
         public SqlDatabaseProperties? Properties { get; set; }
 
