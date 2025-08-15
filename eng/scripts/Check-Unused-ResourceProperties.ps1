@@ -18,8 +18,23 @@ function Get-PropertyUsageFromMapping {
     
     # Handle special cases based on class name patterns
     if ($ServicesModelClassName -match "Properties$") {
-        # Look for nested property access: variable.Properties?.PropertyName
-        $propertyPattern = "\w+\.Properties\?\.\s*([A-Z][a-zA-Z0-9_]*)"
+        # For Properties classes, we need to find the specific variable that uses this Properties type
+        # First, find the corresponding Data class name (e.g., SqlDatabaseProperties -> SqlDatabaseData)
+        $dataClassName = $ServicesModelClassName -replace "Properties$", "Data"
+
+        # Look for variable declaration pattern: DataType? variableName = DataType.FromJson(...)
+        $variablePattern = "\b$dataClassName\?\s+(\w+)\s*=\s*$dataClassName\.FromJson"
+        $variableMatch = [regex]::Match($content, $variablePattern)
+
+        if (-not $variableMatch.Success) {
+            # If no variable uses this Data class, then all Properties are unused
+            return @()
+        }
+
+        $variableName = $variableMatch.Groups[1].Value
+
+        # Look for nested property access: variableName.Properties?.PropertyName
+        $propertyPattern = "\b$variableName\.Properties\?\.\s*([A-Z][a-zA-Z0-9_]*)"
         $propertyMatches = [regex]::Matches($content, $propertyPattern)
         
         $usedProperties = @()
@@ -29,7 +44,7 @@ function Get-PropertyUsageFromMapping {
                 $usedProperties += $propName
             }
         }
-        
+
         return $usedProperties | Sort-Object -Unique
     }
     elseif ($ServicesModelClassName -eq "SqlSku") {
