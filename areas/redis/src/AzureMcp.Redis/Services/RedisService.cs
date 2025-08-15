@@ -19,16 +19,16 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
     : BaseAzureService(tenantService), IRedisService
 {
     public async Task<IEnumerable<Cache>> ListCachesAsync(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
         try
         {
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscription}' not found");
             var caches = new List<Cache>();
 
             await foreach (var cacheResource in subscriptionResource.GetAllRedisAsync())
@@ -57,11 +57,11 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     EnableNonSslPort = cache.EnableNonSslPort,
                     IsAccessKeyAuthenticationDisabled = cache.IsAccessKeyAuthenticationDisabled,
                     LinkedServers = cache.LinkedServers.Any() ?
-                        cache.LinkedServers.Select(server => server.Id.ToString()).ToArray()
+                        [.. cache.LinkedServers.Select(server => server.Id.ToString())]
                         : null,
                     MinimumTlsVersion = cache.MinimumTlsVersion.ToString(),
                     PrivateEndpointConnections = cache.PrivateEndpointConnections.Any() ?
-                        cache.PrivateEndpointConnections.Select(connection => connection.Id.ToString()).ToArray()
+                        [.. cache.PrivateEndpointConnections.Select(connection => connection.Id.ToString())]
                         : null,
                     Identity = cache.Identity is null ? null : new ManagedIdentityInfo
                     {
@@ -82,7 +82,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     SubnetId = cache.SubnetId,
                     UpdateChannel = cache.UpdateChannel?.ToString(),
                     ZonalAllocationPolicy = cache.ZonalAllocationPolicy?.ToString(),
-                    Zones = cache.Zones?.Any() == true ? cache.Zones.ToArray() : null,
+                    Zones = cache.Zones?.Any() == true ? [.. cache.Zones] : null,
                     Tags = cache.Tags.Any() ? cache.Tags : null,
                     Configuration = new()
                     {
@@ -117,16 +117,16 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
     public async Task<IEnumerable<AccessPolicyAssignment>> ListAccessPolicyAssignmentsAsync(
         string cacheName,
         string resourceGroupName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(cacheName, resourceGroupName, subscriptionId);
+        ValidateRequiredParameters(cacheName, resourceGroupName, subscription);
 
         try
         {
-            var resourceGroup = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroupName, tenant, retryPolicy) ?? throw new Exception($"Resource group named '{resourceGroupName}' not found");
+            var resourceGroup = await _resourceGroupService.GetResourceGroupResource(subscription, resourceGroupName, tenant, retryPolicy) ?? throw new Exception($"Resource group named '{resourceGroupName}' not found");
             var cacheResponse = await resourceGroup.GetRedisAsync(cacheName);
             var accessPolicyAssignmentCollection = cacheResponse.Value.GetRedisCacheAccessPolicyAssignments();
             var accessPolicyAssignments = new List<AccessPolicyAssignment>();
@@ -157,16 +157,16 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
     }
 
     public async Task<IEnumerable<Cluster>> ListClustersAsync(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
         try
         {
-            var subscriptionResource = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy) ?? throw new Exception($"Subscription '{subscription}' not found");
             var clusters = new List<Cluster>();
 
             await foreach (var clusterResource in subscriptionResource.GetRedisEnterpriseClustersAsync())
@@ -191,7 +191,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     ResourceState = cluster.ResourceState.ToString(),
                     MinimumTlsVersion = cluster.MinimumTlsVersion.ToString(),
                     PrivateEndpointConnections = cluster.PrivateEndpointConnections.Any() ?
-                        cluster.PrivateEndpointConnections.Select(connection => connection.Id.ToString()).ToArray()
+                        [.. cluster.PrivateEndpointConnections.Select(connection => connection.Id.ToString())]
                         : null,
                     Identity = cluster.Identity is null ? null : new ManagedIdentityInfo
                     {
@@ -208,7 +208,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                                 PrincipalId = identity.Value.PrincipalId?.ToString()
                             }).ToArray()
                     },
-                    Zones = cluster.Zones?.Any() == true ? cluster.Zones.ToArray() : null,
+                    Zones = cluster.Zones?.Any() == true ? [.. cluster.Zones] : null,
                     Tags = cluster.Tags.Any() ? cluster.Tags : null,
                 });
             }
@@ -224,16 +224,16 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
     public async Task<IEnumerable<Database>> ListDatabasesAsync(
         string clusterName,
         string resourceGroupName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(clusterName, resourceGroupName, subscriptionId);
+        ValidateRequiredParameters(clusterName, resourceGroupName, subscription);
 
         try
         {
-            var resourceGroup = await _resourceGroupService.GetResourceGroupResource(subscriptionId, resourceGroupName, tenant, retryPolicy) ?? throw new Exception($"Resource group named '{resourceGroupName}' not found");
+            var resourceGroup = await _resourceGroupService.GetResourceGroupResource(subscription, resourceGroupName, tenant, retryPolicy) ?? throw new Exception($"Resource group named '{resourceGroupName}' not found");
             var clusterResponse = await resourceGroup.GetRedisEnterpriseClusterAsync(clusterName);
             var databaseCollection = clusterResponse.Value.GetRedisEnterpriseDatabases();
             var databases = new List<Database>();
@@ -263,9 +263,9 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     AofFrequency = database.Persistence?.AofFrequency?.ToString(),
                     IsRdbEnabled = database.Persistence?.IsRdbEnabled,
                     RdbFrequency = database.Persistence?.RdbFrequency?.ToString(),
-                    Modules = database.Modules?.Any() == true ? database.Modules.Select(module => new Module() { Name = module.Name, Version = module.Version, Args = module.Args }).ToArray() : null,
+                    Modules = database.Modules?.Any() == true ? [.. database.Modules.Select(module => new Module() { Name = module.Name, Version = module.Version, Args = module.Args })] : null,
                     GeoReplicationGroupNickname = database.GeoReplication?.GroupNickname,
-                    GeoReplicationLinkedDatabases = database.GeoReplication?.LinkedDatabases?.Any() == true ? database.GeoReplication.LinkedDatabases.Select(linkedDatabase => $"{linkedDatabase.State}: {linkedDatabase.Id}").ToArray() : null,
+                    GeoReplicationLinkedDatabases = database.GeoReplication?.LinkedDatabases?.Any() == true ? [.. database.GeoReplication.LinkedDatabases.Select(linkedDatabase => $"{linkedDatabase.State}: {linkedDatabase.Id}")] : null,
                 });
             }
 

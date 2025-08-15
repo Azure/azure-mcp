@@ -8,7 +8,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Search.Commands.Index;
 using AzureMcp.Search.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -68,7 +67,7 @@ public class IndexQueryCommandTests
 
         var command = new IndexQueryCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName} --index-name {indexName} --query \"{queryText}\"");
+        var args = parser.Parse($"--service {serviceName} --index {indexName} --query \"{queryText}\"");
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -103,7 +102,7 @@ public class IndexQueryCommandTests
 
         var command = new IndexQueryCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName} --index-name {indexName} --query \"{queryText}\"");
+        var args = parser.Parse($"--service {serviceName} --index {indexName} --query \"{queryText}\"");
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -131,8 +130,8 @@ public class IndexQueryCommandTests
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.NotNull(response.Message);
-        Assert.Contains("service-name", response.Message);
-        Assert.Contains("index-name", response.Message);
+        Assert.Contains("service", response.Message);
+        Assert.Contains("index", response.Message);
         Assert.Contains("query", response.Message);
     }
 

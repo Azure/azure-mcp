@@ -9,7 +9,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -34,8 +33,8 @@ public sealed class SampleCommandTests
 
     public static IEnumerable<object[]> SampleArgumentMatrix()
     {
-        yield return new object[] { "--subscription sub1 --cluster-name mycluster --database-name db1 --table-name table1", false };
-        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database-name db1 --table-name table1", true };
+        yield return new object[] { "--subscription sub1 --cluster mycluster --database db1 --table table1", false };
+        yield return new object[] { "--cluster-uri https://mycluster.kusto.windows.net --database db1 --table table1", true };
     }
 
     [Theory]

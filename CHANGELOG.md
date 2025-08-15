@@ -2,7 +2,7 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
-## 0.5.3 (Unreleased)
+## 0.5.7 (Unreleased)
 
 ### Features Added
 
@@ -11,6 +11,126 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Bugs Fixed
 
 ### Other Changes
+
+- Updated Bicep tool to depend on latest Azure.Bicep.Types (0.6.1) and Azure.Bicep.Types.Az (0.2.792) versions
+
+## 0.5.6 (2025-08-14)
+
+### Features Added
+
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for getting details about an Azure Storage Account via the command `azmcp-storage-account-details`. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
+
+### Other Changes
+
+- Refactored resource group option (`--resource-group`) handling and validation for all commands to a centralized location. [[#961](https://github.com/Azure/azure-mcp/issues/961)]
+
+#### Dependency Updates
+
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#967](https://github.com/Azure/azure-mcp/issues/967)] [[#969](https://github.com/Azure/azure-mcp/issues/969)]
+  - Azure.Monitor.Query: `1.6.0` → `1.7.1`
+  - Azure.Monitor.Ingestion: `1.1.2` → `1.2.0`
+  - Azure.Search.Documents: `11.7.0-beta.4` → `11.7.0-beta.6`
+  - Azure.ResourceManager.ContainerRegistry: `1.3.0` → `1.3.1`
+  - Azure.ResourceManager.DesktopVirtualization: `1.3.1` → `1.3.2`
+  - Azure.ResourceManager.PostgreSql: `1.3.0` → `1.3.1`
+
+## 0.5.5 (2025-08-12)
+
+### Features Added
+
+- Added support for listing ACR (Azure Container Registry) registries in a subscription via the command `azmcp-acr-registry-list`. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
+- Added the following Azure Storage commands:
+  - `azmcp-storage-account-create`: Create a new Azure Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-queue-message-send`: Send a message to an Azure Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+  - `azmcp-storage-blob-details`: Get details about an Azure Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
+  - `azmcp-storage-blob-container-create`: Create a new Azure Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
+
+### Breaking Changes
+
+- The `azmcp-storage-account-list` command now returns account metadata objects instead of plain strings. Each item includes: `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`. Update scripts to read the `name` property. The underlying `IStorageService.GetStorageAccounts()` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`. [[#904](https://github.com/Azure/azure-mcp/issues/904)]
+
+### Bugs Fixed
+
+- Fixed best practices tool invocation failure when passing "all" action with "general" or "azurefunctions" resources. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Updated metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+
+### Other Changes
+- Consolidate "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
+
+## 0.5.4 (2025-08-07)
+
+### Bugs Fixed
+
+- Fixed subscription parameter handling across all Azure MCP service methods to consistently use `subscription` instead of `subscriptionId`, enabling proper support for both subscription IDs and subscription names. [[#877](https://github.com/Azure/azure-mcp/issues/877)]
+- Fixed `ToolExecuted` telemetry activity being created twice. [[#741](https://github.com/Azure/azure-mcp/pull/741)]
+
+### Other Changes
+
+- Improved Azure MCP display name in VS Code from 'azure-mcp-server-ext' to 'Azure MCP' for better user experience in the Configure Tools interface. [[#871](https://github.com/Azure/azure-mcp/issues/871), [#876](https://github.com/Azure/azure-mcp/pull/876)]
+- Updated the  following `CommandGroup` descriptions to improve their tool usage by Agents:
+  - Azure AI Search [[#874](https://github.com/Azure/azure-mcp/pull/874)]
+  - Storage [[#879](https://github.com/Azure/azure-mcp/pull/879)]
+
+## 0.5.3 (2025-08-05)
+
+### Features Added
+
+- Added support for providing the `--content-type` and `--tags` properties to the `azmcp-appconfig-kv-set` command. [[#459](https://github.com/Azure/azure-mcp/pull/459)]
+- Added `filter-path` and `recursive` capabilities to `azmcp-storage-datalake-file-system-list-paths`. [[#770](https://github.com/Azure/azure-mcp/issues/770)]
+- Added support for listing files and directories in Azure File Shares via the `azmcp-storage-share-file-list` command. This command recursively lists all items in a specified file share directory with metadata including size, last modified date, and content type. [[#793](https://github.com/Azure/azure-mcp/pull/793)]
+- Added support for Azure Virtual Desktop with new commands: [[#653](https://github.com/Azure/azure-mcp/pull/653)]
+  - `azmcp-virtualdesktop-hostpool-list` - List all host pools in a subscription
+  - `azmcp-virtualdesktop-sessionhost-list` - List all session hosts in a host pool
+  - `azmcp-virtualdesktop-sessionhost-usersession-list` - List all user sessions on a specific session host
+- Added support for creating and publishing DevDeviceId in telemetry. [[#810](https://github.com/Azure/azure-mcp/pull/810/)]
+
+### Breaking Changes
+
+- **Parameter Name Changes**: Removed unnecessary "-name" suffixes from command parameters across 25+ parameters in 12+ Azure service areas to improve consistency and usability. Users will need to update their command-line usage and scripts. [[#853](https://github.com/Azure/azure-mcp/pull/853)]
+  - **AppConfig**: `--account-name` → `--account`
+  - **Search**: `--service-name` → `--service`, `--index-name` → `--index`
+  - **Cosmos**: `--account-name` → `--account`, `--database-name` → `--database`, `--container-name` → `--container`
+  - **Kusto**: `--cluster-name` → `--cluster`, `--database-name` → `--database`, `--table-name` → `--table`
+  - **AKS**: `--cluster-name` → `--cluster`
+  - **Postgres**: `--user-name` → `--user`
+  - **ServiceBus**: `--queue-name` → `--queue`, `--topic-name` → `--topic`
+  - **Storage**: `--account-name` → `--account`, `--container-name` → `--container`, `--table-name` → `--table`, `--file-system-name` → `--file-system`, `--tier-name` → `--tier`
+  - **Monitor**: `--table-name` → `--table`, `--model` → `--health-model`, `--resource-name` → `--resource`
+  - **Foundry**: `--deployment-name` → `--deployment`, `--publisher-name` → `--publisher`, `--license-name` → `--license`, `--sku-name` → `--sku`, `--azure-ai-services-name` → `--azure-ai-services`
+
+### Bugs Fixed
+
+- Fixed an issue where the `azmcp-storage-blob-batch-set-tier` command did not correctly handle the `--tier` parameter when setting the access tier for multiple blobs. [[#808](https://github.com/Azure/azure-mcp/pull/808)]
+
+### Other Changes
+
+- Implemented centralized HttpClient service with proxy support for better resource management and enterprise compatibility. [[#857](https://github.com/Azure/azure-mcp/pull/857)]
+- Added caching for Cosmos DB databases and containers. [[#813](https://github.com/Azure/azure-mcp/pull/813)]
+- Refactored PostgreSQL commands to follow ObjectVerb naming pattern, fix command hierarchy, and ensure all commands end with verbs. This improves consistency and discoverability across all postgres commands. [[#865](https://github.com/Azure/azure-mcp/issues/865)] [[#866](https://github.com/Azure/azure-mcp/pull/866)]
+
+#### Dependency Updates
+
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support. AOT will enable shipping Azure MCP Server as self-contained native executable.
+  - Azure.Core: `1.46.2` → `1.47.1`
+  - Azure.ResourceManager: `1.13.1` → `1.13.2`
+  - Azure.ResourceManager.ApplicationInsights: `1.0.1` → `1.1.0-beta.1`
+  - Azure.ResourceManager.AppConfiguration: `1.4.0` → `1.4.1`
+  - Azure.ResourceManager.Authorization: `1.1.4` → `1.1.5`
+  - Azure.ResourceManager.ContainerService: `1.2.3` → `1.2.5`
+  - Azure.ResourceManager.Kusto: `1.6.0` → `1.6.1`
+  - Azure.ResourceManager.CognitiveServices: `1.4.0` → `1.5.1`
+  - Azure.ResourceManager.Redis: `1.5.0` → `1.5.1`
+  - Azure.ResourceManager.RedisEnterprise: `1.1.0` → `1.2.1`
+  - Azure.ResourceManager.LoadTesting: `1.1.1` → `1.1.2`
+  - Azure.ResourceManager.Sql: `1.3.0` → `1.4.0-beta.3`
+  - Azure.ResourceManager.Datadog: `1.0.0-beta.5` → `1.0.0-beta.6`
+  - Azure.ResourceManager.CosmosDB: `1.3.2` → `1.4.0-beta.13`
+  - Azure.ResourceManager.OperationalInsights: `1.3.0` → `1.3.1`
+  - Azure.ResourceManager.Search: `1.2.3` → `1.3.0`
+  - Azure.ResourceManager.Storage: `1.4.2` → `1.4.4`
+  - Azure.ResourceManager.Grafana: `1.1.1` → `1.2.0-beta.2`
+  - Azure.ResourceManager.ResourceGraph: `1.1.0-beta.3` → `1.1.0-beta.4`
 
 ## 0.5.2 (2025-07-31)
 
@@ -38,7 +158,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
-- Broadened search for MAC address for telemetry purposes. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
+- Improved the MAC address search logic for telemetry by making it more robust in finding a valid network interface. [[#759](https://github.com/Azure/azure-mcp/pull/759)]
 - Major repository structure change:
   - Service areas moved from `/src/areas/{Area}` and `/tests/areas/{Area}` into `/areas/{area}/src` and `/areas/{area}/tests`
   - Common code moved into `/core/src` and `/core/tests`
@@ -187,7 +307,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
-- Updated the descriptions of the following tools to improve their usage by Agents: [#492](https://github.com/Azure/azure-mcp/pull/492)
+- Updated the descriptions of the following tools to improve their usage by Agents: [[#492](https://github.com/Azure/azure-mcp/pull/492)]
   - `azmcp-datadog-monitoredresources-list`
   - `azmcp-kusto-cluster-list`
   - `azmcp-kusto-database-list`

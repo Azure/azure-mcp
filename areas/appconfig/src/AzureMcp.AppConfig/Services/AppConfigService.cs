@@ -19,14 +19,14 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
 
-    public async Task<List<AppConfigurationAccount>> GetAppConfigAccounts(string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<AppConfigurationAccount>> GetAppConfigAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
-        var subscription = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var accounts = new List<AppConfigurationAccount>();
 
-        await foreach (var account in subscription.GetAppConfigurationStoresAsync())
+        await foreach (var account in subscriptionResource.GetAppConfigurationStoresAsync())
         {
             ResourceIdentifier resourceId = account.Id;
             if (resourceId.ToString().Length == 0)
@@ -81,15 +81,15 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
 
     public async Task<List<KeyValueSetting>> ListKeyValues(
         string accountName,
-        string subscriptionId,
+        string subscription,
         string? key = null,
         string? label = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, subscriptionId);
+        ValidateRequiredParameters(accountName, subscription);
 
-        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+        var client = await GetConfigurationClient(accountName, subscription, tenant, retryPolicy);
         var settings = new List<KeyValueSetting>();
 
         var selector = new SettingSelector
@@ -115,10 +115,10 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         return settings;
     }
 
-    public async Task<KeyValueSetting> GetKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task<KeyValueSetting> GetKeyValue(string accountName, string key, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null)
     {
-        ValidateRequiredParameters(accountName, key, subscriptionId);
-        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+        ValidateRequiredParameters(accountName, key, subscription);
+        var client = await GetConfigurationClient(accountName, subscription, tenant, retryPolicy);
         var response = await client.GetConfigurationSettingAsync(key, label, cancellationToken: default);
         var setting = response.Value;
 
@@ -134,41 +134,69 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         };
     }
 
-    public async Task LockKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task LockKeyValue(string accountName, string key, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
     {
-        await SetKeyValueReadOnlyState(accountName, key, subscriptionId, tenant, retryPolicy, label, true);
+        await SetKeyValueReadOnlyState(accountName, key, subscription, tenant, retryPolicy, label, true);
     }
 
-    public async Task UnlockKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task UnlockKeyValue(string accountName, string key, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
     {
-        await SetKeyValueReadOnlyState(accountName, key, subscriptionId, tenant, retryPolicy, label, false);
+        await SetKeyValueReadOnlyState(accountName, key, subscription, tenant, retryPolicy, label, false);
     }
 
-    public async Task SetKeyValue(string accountName, string key, string value, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+    public async Task SetKeyValue(string accountName, string key, string value, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null, string? contentType = null, string[]? tags = null)
     {
-        ValidateRequiredParameters(accountName, key, value, subscriptionId);
-        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
-        await client.SetConfigurationSettingAsync(key, value, label, cancellationToken: default);
-    }
+        ValidateRequiredParameters(accountName, key, value, subscription);
+        var client = await GetConfigurationClient(accountName, subscription, tenant, retryPolicy);
 
-    public async Task DeleteKeyValue(string accountName, string key, string subscriptionId, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
+        // Create a ConfigurationSetting object to include contentType if provided
+        var setting = new ConfigurationSetting(key, value, label)
+        {
+            ContentType = contentType
+        };
+
+        // Parse and add tags if provided
+        if (tags != null && tags.Length > 0)
+        {
+            foreach (var tagPair in tags)
+            {
+                var parts = tagPair.Split('=', 2);
+                if (parts.Length == 2)
+                {
+                    var tagKey = parts[0].Trim();
+                    if (!string.IsNullOrEmpty(tagKey))
+                    {
+                        setting.Tags[tagKey] = parts[1];
+                    }
+                }
+                else if (parts.Length == 1 && !string.IsNullOrEmpty(parts[0]))
+                {
+                    // Handle tags that don't follow key=value format
+                    setting.Tags[parts[0]] = string.Empty;
+                }
+            }
+        }
+
+        await client.SetConfigurationSettingAsync(setting, cancellationToken: default);
+    }
+    public async Task DeleteKeyValue(string accountName, string key, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null, string? label = null)
     {
-        ValidateRequiredParameters(accountName, key, subscriptionId);
-        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+        ValidateRequiredParameters(accountName, key, subscription);
+        var client = await GetConfigurationClient(accountName, subscription, tenant, retryPolicy);
         await client.DeleteConfigurationSettingAsync(key, label, cancellationToken: default);
     }
 
-    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
+    private async Task SetKeyValueReadOnlyState(string accountName, string key, string subscription, string? tenant, RetryPolicyOptions? retryPolicy, string? label, bool isReadOnly)
     {
-        ValidateRequiredParameters(accountName, key, subscriptionId);
-        var client = await GetConfigurationClient(accountName, subscriptionId, tenant, retryPolicy);
+        ValidateRequiredParameters(accountName, key, subscription);
+        var client = await GetConfigurationClient(accountName, subscription, tenant, retryPolicy);
         await client.SetReadOnlyAsync(key, label, isReadOnly, cancellationToken: default);
     }
 
-    private async Task<ConfigurationClient> GetConfigurationClient(string accountName, string subscriptionId, string? tenant, RetryPolicyOptions? retryPolicy)
+    private async Task<ConfigurationClient> GetConfigurationClient(string accountName, string subscription, string? tenant, RetryPolicyOptions? retryPolicy)
     {
-        var subscription = await _subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy);
-        var configStore = await FindAppConfigStore(subscription, accountName, subscriptionId);
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+        var configStore = await FindAppConfigStore(subscriptionResource, accountName, subscription);
         var endpoint = configStore.Data.Endpoint;
         var credential = await GetCredential(tenant);
         AddDefaultPolicies(new ConfigurationClientOptions());
@@ -176,7 +204,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         return new ConfigurationClient(new Uri(endpoint), credential);
     }
 
-    private static async Task<AppConfigurationStoreResource> FindAppConfigStore(SubscriptionResource subscription, string accountName, string subscriptionId)
+    private static async Task<AppConfigurationStoreResource> FindAppConfigStore(SubscriptionResource subscription, string accountName, string subscriptionIdentifier)
     {
         AppConfigurationStoreResource? configStore = null;
         await foreach (var store in subscription.GetAppConfigurationStoresAsync())
@@ -189,7 +217,7 @@ public class AppConfigService(ISubscriptionService subscriptionService, ITenantS
         }
 
         if (configStore == null)
-            throw new Exception($"App Configuration store '{accountName}' not found in subscription '{subscriptionId}'");
+            throw new Exception($"App Configuration store '{accountName}' not found in subscription '{subscriptionIdentifier}'");
 
         return configStore;
     }

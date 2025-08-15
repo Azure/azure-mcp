@@ -10,7 +10,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Search.Commands.Index;
 using AzureMcp.Search.Models;
 using AzureMcp.Search.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -45,7 +44,7 @@ public class IndexListCommandTests
 
         var command = new IndexListCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--service-name service123");
+        var args = parser.Parse("--service service123");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -72,7 +71,7 @@ public class IndexListCommandTests
 
         var command = new IndexListCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--service-name service123");
+        var args = parser.Parse("--service service123");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -92,7 +91,7 @@ public class IndexListCommandTests
 
         var command = new IndexListCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName}");
+        var args = parser.Parse($"--service {serviceName}");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);

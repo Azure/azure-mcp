@@ -1,19 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Core.Models.Option;
-
 namespace AzureMcp.Monitor.Options;
 
 public static class MonitorOptionDefinitions
 {
-    public const string TableNameName = "table-name";
+    public const string TableNameName = "table";
     public const string TableTypeName = "table-type";
     public const string QueryTextName = "query";
     public const string HoursName = "hours";
     public const string LimitName = "limit";
     public const string EntityName = "entity";
-    public const string HealthModelName = "model-name";
+    public const string HealthModelName = "health-model";
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",
@@ -66,7 +64,7 @@ public static class MonitorOptionDefinitions
         // Metrics related options
         public const string ResourceIdName = "resource-id";
         public const string ResourceTypeName = "resource-type";
-        public const string ResourceNameName = "resource-name";
+        public const string ResourceNameName = "resource";
         public const string MetricNamespaceName = "metric-namespace";
         public const string MetricNamesName = "metric-names";
         public const string StartTimeName = "start-time";
@@ -77,7 +75,7 @@ public static class MonitorOptionDefinitions
         public const string SearchStringName = "search-string";
 
         public const string EntityName = "entity";
-        public const string HealthModelName = "model-name";
+        public const string HealthModelName = "health-model";
         public const string MaxBucketsName = "max-buckets";
 
         // Metrics options
@@ -168,13 +166,6 @@ public static class MonitorOptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string> OptionalResourceGroup = new(
-            $"--{OptionDefinitions.Common.ResourceGroupName}",
-            "The name of the Azure resource group. This is a logical container for Azure resources."
-        )
-        {
-            IsRequired = false
-        };
 
         public static readonly Option<string> ResourceType = new(
             $"--{ResourceTypeName}",

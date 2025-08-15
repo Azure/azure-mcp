@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Aks.Commands;
-using AzureMcp.Aks.Models;
 using AzureMcp.Aks.Options.Cluster;
 using AzureMcp.Aks.Services;
 using AzureMcp.Core.Commands;
@@ -38,8 +36,6 @@ public sealed class ClusterListCommand(ILogger<ClusterListCommand> logger) : Bas
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var aksService = context.GetService<IAksService>();
             var clusters = await aksService.ListClusters(

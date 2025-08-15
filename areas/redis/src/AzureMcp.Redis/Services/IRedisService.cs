@@ -54,7 +54,7 @@ public interface IRedisService
     Task<IEnumerable<Database>> ListDatabasesAsync(
         string clusterName,
         string resourceGroupName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
@@ -73,7 +73,7 @@ public interface IRedisService
     Task<IEnumerable<AccessPolicyAssignment>> ListAccessPolicyAssignmentsAsync(
         string cacheName,
         string resourceGroupName,
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);

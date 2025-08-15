@@ -24,19 +24,19 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
 
     public override string Description =>
         """
-        Create a new workbook in the specified resource group and subscription. 
+        Create a new workbook in the specified resource group and subscription.
         You can set the display name and serialized data JSON content for the workbook.
         Returns the created workbook information upon successful completion.
         """;
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_displayNameOption);
         command.AddOption(_serializedContentOption);
         command.AddOption(_sourceIdOption);
@@ -45,7 +45,6 @@ public sealed class CreateWorkbooksCommand(ILogger<CreateWorkbooksCommand> logge
     protected override CreateWorkbookOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.DisplayName = parseResult.GetValueForOption(_displayNameOption);
         options.SerializedContent = parseResult.GetValueForOption(_serializedContentOption);
         options.SourceId = parseResult.GetValueForOption(_sourceIdOption);

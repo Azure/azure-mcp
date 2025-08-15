@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Collections;
+using AzureMcp.Core.Areas.Server.Models;
+using AzureMcp.Core.Helpers;
 
 namespace AzureMcp.Core.Areas.Server.Commands;
 
@@ -57,21 +59,128 @@ public static class TypeToJsonTypeMapper
             return "null";
         }
 
-        if (s_typeToJsonMap.TryGetValue(type, out string? jsonType) && jsonType != null)
+        // Handle nullable types - treat them as the primitive they're based on
+        var effectiveType = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (s_typeToJsonMap.TryGetValue(effectiveType, out string? jsonType) && jsonType != null)
         {
             return jsonType;
         }
 
         if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
-            return typeof(IDictionary).IsAssignableFrom(type) ? "object" : "array";
+            return CollectionTypeHelper.IsDictionaryType(type) ? "object" : "array";
         }
 
-        if (type.IsEnum)
+        if (effectiveType.IsEnum)
         {
             return "integer";
         }
 
         return "object";
+    }
+
+    /// <summary>
+    /// Gets the element type of an array or collection type.
+    /// </summary>
+    /// <param name="type">The array or collection type to analyze.</param>
+    /// <returns>The element type if the type is an array or collection, otherwise null.</returns>
+    public static Type? GetArrayOrCollectionElementType(Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        // Handle arrays
+        if (type.IsArray)
+        {
+            return type.GetElementType();
+        }
+
+        // Handle generic collections like List<T>, IEnumerable<T>, etc.
+        // Note: Dictionary types are handled as "object" in ToJsonType() so they won't reach this method
+        if (type.IsGenericType && !type.IsGenericTypeDefinition)
+        {
+            var genericArgs = type.GetGenericArguments();
+
+            if (genericArgs.Length == 1)
+            {
+                return genericArgs[0];
+            }
+        }
+
+        // Handle non-generic IEnumerable or open generics
+        if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
+        {
+            // Default to object
+            return typeof(object);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Creates a JSON schema object for a given option type.
+    /// </summary>
+    /// <param name="optionType">The type of the option to create schema for.</param>
+    /// <param name="description">The description for the option.</param>
+    /// <returns>A JsonObject representing the JSON schema for the option.</returns>
+    public static ToolPropertySchema CreatePropertySchema(Type optionType, string? description)
+    {
+        ArgumentNullException.ThrowIfNull(optionType);
+
+        // Handle nullable types - get the underlying type for schema generation
+        var effectiveType = Nullable.GetUnderlyingType(optionType) ?? optionType;
+        var jsonType = effectiveType.ToJsonType();
+        ToolPropertySchema? itemsSchema = null;
+
+        // If the type is an array, we need to specify the items type recursively
+        if (jsonType == "array")
+        {
+            var elementType = GetArrayOrCollectionElementType(effectiveType);
+
+            if (elementType != null)
+            {
+                // Recursively create schema for nested arrays
+                itemsSchema = CreateItemsSchema(elementType);
+            }
+        }
+
+        return new ToolPropertySchema()
+        {
+            Type = jsonType,
+            Description = description ?? string.Empty,
+            Items = itemsSchema
+        };
+    }
+
+    /// <summary>
+    /// Creates a JSON schema object for items in an array or collection, handling nested arrays recursively.
+    /// </summary>
+    /// <param name="itemType">The type of the items in the array or collection.</param>
+    /// <returns>A JsonObject representing the JSON schema for the array/collection items.</returns>
+    private static ToolPropertySchema CreateItemsSchema(Type itemType)
+    {
+        ArgumentNullException.ThrowIfNull(itemType);
+
+        // Handle nullable types for array items
+        var effectiveType = Nullable.GetUnderlyingType(itemType) ?? itemType;
+        var jsonType = effectiveType.ToJsonType();
+        ToolPropertySchema? itemsSchema = null;
+
+        // If the item type is also an array, recursively define its items
+        if (jsonType == "array")
+        {
+            var nestedElementType = GetArrayOrCollectionElementType(effectiveType);
+
+            if (nestedElementType != null)
+            {
+                itemsSchema = CreateItemsSchema(nestedElementType);
+            }
+        }
+
+        return new ToolPropertySchema()
+        {
+            Type = jsonType,
+            Items = itemsSchema
+        };
     }
 }

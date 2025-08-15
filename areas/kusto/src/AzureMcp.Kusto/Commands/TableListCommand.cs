@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
 using AzureMcp.Kusto.Services;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
     public override string Description =>
         """
         List all tables in a specific Kusto database.
-        Required `cluster-uri` (or `subscription` and `cluster-name`) and `database-name`.
+        Required `cluster-uri` (or `subscription` and `cluster`) and `database`.
         Returns table names as a JSON array.
         """;
 
@@ -38,8 +37,6 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
             List<string> tableNames = [];

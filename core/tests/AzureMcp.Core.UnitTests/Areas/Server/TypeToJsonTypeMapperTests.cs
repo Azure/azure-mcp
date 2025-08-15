@@ -203,18 +203,21 @@ public class TypeToJsonTypeMapperTests
     }
 
     [Theory]
-    [InlineData(typeof(int?))]
-    [InlineData(typeof(bool?))]
-    [InlineData(typeof(DateTime?))]
-    [InlineData(typeof(TestEnum?))]
-    public void ToJsonType_WithNullableTypes_ReturnsObject(Type nullableType)
+    [InlineData(typeof(int?), "integer")]
+    [InlineData(typeof(bool?), "boolean")]
+    [InlineData(typeof(DateTime?), "string")]
+    [InlineData(typeof(double?), "number")]
+    [InlineData(typeof(char?), "string")]
+    [InlineData(typeof(Guid?), "string")]
+    [InlineData(typeof(TestEnum?), "integer")]
+    public void ToJsonType_WithNullableTypes_ReturnsUnderlyingType(Type nullableType, string expectedType)
     {
-        // Nullable types are not in the dictionary and don't fall into other categories
+        // Nullable types should return their underlying type, not "object"
         // Act
         var result = nullableType.ToJsonType();
 
         // Assert
-        Assert.Equal("object", result);
+        Assert.Equal(expectedType, result);
     }
 
     [Fact]
@@ -255,5 +258,45 @@ public class TypeToJsonTypeMapperTests
 
         // Assert
         Assert.Equal("array", result);
+    }
+
+    [Theory]
+    [InlineData(typeof(List<int?>))]
+    [InlineData(typeof(IEnumerable<bool?>))]
+    [InlineData(typeof(string?[]))]
+    public void ToJsonType_WithNullableElementArrays_ReturnsArray(Type arrayWithNullableElements)
+    {
+        // Act
+        var result = arrayWithNullableElements.ToJsonType();
+
+        // Assert
+        Assert.Equal("array", result);
+    }
+
+    [Theory]
+    [InlineData(typeof(List<List<int>>))]
+    [InlineData(typeof(IEnumerable<IEnumerable<string>>))]
+    [InlineData(typeof(int[][]))]
+    [InlineData(typeof(List<int[]>))]
+    public void ToJsonType_WithNestedArrayTypes_ReturnsArray(Type nestedArrayType)
+    {
+        // Act
+        var result = nestedArrayType.ToJsonType();
+
+        // Assert
+        Assert.Equal("array", result);
+    }
+
+    [Theory]
+    [InlineData(typeof(Dictionary<string, List<int>>))]
+    [InlineData(typeof(IDictionary<int, string>))]
+    [InlineData(typeof(SortedDictionary<string, object>))]
+    public void ToJsonType_WithDictionaryTypes_ReturnsObject(Type dictionaryType)
+    {
+        // Act
+        var result = dictionaryType.ToJsonType();
+
+        // Assert
+        Assert.Equal("object", result);
     }
 }

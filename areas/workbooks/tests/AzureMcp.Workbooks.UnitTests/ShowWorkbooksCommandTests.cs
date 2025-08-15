@@ -5,7 +5,6 @@ using System.CommandLine;
 using System.Text.Json;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.Tests;
 using AzureMcp.Workbooks.Commands.Workbooks;
 using AzureMcp.Workbooks.Models;
 using AzureMcp.Workbooks.Services;

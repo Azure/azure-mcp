@@ -11,7 +11,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Monitor.Services;
-using AzureMcp.Tests;
 using NSubstitute;
 using Xunit;
 

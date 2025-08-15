@@ -8,7 +8,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -51,7 +50,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).Returns(expectedContainers);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -77,7 +76,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 
@@ -99,7 +98,7 @@ public class ContainerListCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account-name", _knownAccountName,
+            "--account", _knownAccountName,
             "--subscription", _knownSubscriptionId
         ]);
 

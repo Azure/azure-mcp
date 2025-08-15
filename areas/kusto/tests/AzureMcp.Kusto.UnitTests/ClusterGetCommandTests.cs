@@ -8,7 +8,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -60,7 +59,7 @@ public sealed class ClusterGetCommandTests
             .Returns(expectedCluster);
         var command = new ClusterGetCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--subscription sub123 --cluster-name clusterA");
+        var args = parser.Parse("--subscription sub123 --cluster clusterA");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -90,7 +89,7 @@ public sealed class ClusterGetCommandTests
             .Returns(Task.FromResult<KustoClusterResourceProxy?>(null));
         var command = new ClusterGetCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--subscription sub123 --cluster-name clusterA");
+        var args = parser.Parse("--subscription sub123 --cluster clusterA");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -109,7 +108,7 @@ public sealed class ClusterGetCommandTests
             .ThrowsAsync(new Exception("Test error"));
         var command = new ClusterGetCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse("--subscription sub123 --cluster-name clusterA");
+        var args = parser.Parse("--subscription sub123 --cluster clusterA");
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);

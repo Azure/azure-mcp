@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.BicepSchema.UnitTests;

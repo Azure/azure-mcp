@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
+using System.Diagnostics;
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Azure.ResourceGroup;
@@ -60,14 +61,14 @@ internal class Program
             new AzureMcp.Core.Areas.Server.ServerSetup(),
             new AzureMcp.Core.Areas.Subscription.SubscriptionSetup(),
             new AzureMcp.Core.Areas.Tools.ToolsSetup(),
-
             // Register Azure service areas
             new AzureMcp.Aks.AksSetup(),
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
+            new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
+            new AzureMcp.FunctionApp.FunctionAppSetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
@@ -79,10 +80,14 @@ internal class Program
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
+            new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
-            new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.LoadTesting.LoadTestingSetup(),
+#if !BUILD_NATIVE
+            new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.Cosmos.CosmosSetup(),
+#endif
         ];
     }
 
@@ -94,7 +99,7 @@ internal class Program
 
         builder.AddMiddleware(async (context, next) =>
         {
-            var commandContext = new CommandContext(serviceProvider);
+            var commandContext = new CommandContext(serviceProvider, Activity.Current);
             var command = context.ParseResult.CommandResult.Command;
             if (command.Handler is IBaseCommand baseCommand)
             {

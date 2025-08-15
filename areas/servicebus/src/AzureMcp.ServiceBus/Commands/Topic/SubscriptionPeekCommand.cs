@@ -32,7 +32,7 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
 
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
-        - topic-name: Topic name containing the subscription
+        - topic: Topic name containing the subscription
         - subscription-name: Subscription name to peek messages from
         """;
 
@@ -69,8 +69,6 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IServiceBusService>();
             var messages = await service.PeekSubscriptionMessages(

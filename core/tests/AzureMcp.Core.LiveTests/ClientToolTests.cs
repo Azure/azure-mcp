@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using AzureMcp.Tests;
-using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using ModelContextProtocol;
 using ModelContextProtocol.Client;
@@ -62,7 +61,6 @@ public class ClientToolTests(LiveTestFixture liveTestFixture) : IClassFixture<Li
         await _client.PingAsync(cancellationToken: TestContext.Current.CancellationToken);
         // If no exception is thrown, the ping was successful.
     }
-
 
     [Fact]
     public async Task Should_Error_When_Resources_List_Not_Supported()

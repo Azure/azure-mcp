@@ -9,7 +9,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Search.Commands.Index;
 using AzureMcp.Search.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -51,7 +50,7 @@ public class IndexDescribeCommandTests
 
         var command = new IndexDescribeCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName} --index-name {indexName}");
+        var args = parser.Parse($"--service {serviceName} --index {indexName}");
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -91,7 +90,7 @@ public class IndexDescribeCommandTests
 
         var command = new IndexDescribeCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName} --index-name {indexName}");
+        var args = parser.Parse($"--service {serviceName} --index {indexName}");
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -119,7 +118,7 @@ public class IndexDescribeCommandTests
 
         var command = new IndexDescribeCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse($"--service-name {serviceName} --index-name {indexName}");
+        var args = parser.Parse($"--service {serviceName} --index {indexName}");
         var context = new CommandContext(_serviceProvider);
 
         // Act
@@ -147,8 +146,8 @@ public class IndexDescribeCommandTests
         Assert.NotNull(response);
         Assert.Equal(400, response.Status);
         Assert.NotNull(response.Message);
-        Assert.Contains("service-name", response.Message);
-        Assert.Contains("index-name", response.Message);
+        Assert.Contains("service", response.Message);
+        Assert.Contains("index", response.Message);
     }
 
     [Fact]
@@ -164,8 +163,8 @@ public class IndexDescribeCommandTests
         Assert.NotEmpty(cmd.Description!);
 
         // Verify options
-        var serviceOption = cmd.Options.FirstOrDefault(o => o.Name == "service-name");
-        var indexOption = cmd.Options.FirstOrDefault(o => o.Name == "index-name");
+        var serviceOption = cmd.Options.FirstOrDefault(o => o.Name == "service");
+        var indexOption = cmd.Options.FirstOrDefault(o => o.Name == "index");
 
         Assert.NotNull(serviceOption);
         Assert.NotNull(indexOption);

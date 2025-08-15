@@ -4,13 +4,11 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Grafana.Commands.Workspace;
 using AzureMcp.Grafana.Models.Workspace;
 using AzureMcp.Grafana.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

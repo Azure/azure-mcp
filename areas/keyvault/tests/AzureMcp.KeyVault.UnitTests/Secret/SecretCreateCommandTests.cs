@@ -9,12 +9,10 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.KeyVault.Commands.Secret;
 using AzureMcp.KeyVault.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using NSubstitute.ReturnsExtensions;
 using Xunit;
 
 namespace AzureMcp.KeyVault.UnitTests.Secret;

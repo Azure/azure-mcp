@@ -20,9 +20,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-search-index-list | List all indexes in the Cognitive Search service \<service-name> |
 | azmcp-search-index-list | Show me the indexes in the Cognitive Search service \<service-name> |
 | azmcp-search-index-query | Search for instances of \<search_term> in the index \<index-name> in Cognitive Search service \<service-name> |
-| azmcp-search-list | List all Cognitive Search services in my subscription |
-| azmcp-search-list | Show me the Cognitive Search services in my subscription |
-| azmcp-search-list | Show me my Cognitive Search services |
+| azmcp-search-service-list | List all Cognitive Search services in my subscription |
+| azmcp-search-service-list | Show me the Cognitive Search services in my subscription |
+| azmcp-search-service-list | Show me my Cognitive Search services |
 
 ## Azure App Configuration
 
@@ -46,6 +46,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-az | Create a Storage account with name <storage_account_name> |
 | azmcp-extension-az | List all virtual machines in my subscription |
 | azmcp-extension-az | Show me the details of the storage account <account_name> |
+
+## Azure Container Registry (ACR)
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-acr-registry-list | List all Azure Container Registries in my subscription |
+| azmcp-acr-registry-list | Show me my Azure Container Registries |
+| azmcp-acr-registry-list | Show me the container registries in my subscription |
+| azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
 
 ## Azure Cosmos DB
 
@@ -83,15 +93,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
 | azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
 | azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-server-config | Show me the configuration of PostgreSQL server \<server> |
+| azmcp-postgres-server-config-get | Show me the configuration of PostgreSQL server \<server> |
 | azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
 | azmcp-postgres-server-list | Show me my PostgreSQL servers |
 | azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
 | azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
-| azmcp-postgres-server-setparam | Enable replication for my PostgreSQL server \<server> |
+| azmcp-postgres-server-param-set | Enable replication for my PostgreSQL server \<server> |
 | azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
 | azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-table-schema | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-schema-get | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
 
 ## Azure Developer CLI
 
@@ -99,6 +109,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
 | azmcp-extension-azd | Deploy my web application to Azure App Service |
+
+## Azure Function App
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-functionapp-list | List all function apps in my subscription |
+| azmcp-functionapp-list | Show me my Azure function apps |
+| azmcp-functionapp-list | What function apps do I have? |
 
 ## Azure Key Vault
 
@@ -157,18 +175,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-bestpractices-get | Fetch the latest Azure code generation best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Functions code generation best practices |
-| azmcp-bestpractices-get | Fetch the latest Azure Functions deployment best practices|
-| azmcp-bestpractices-get | Fetch the latest Azure Static Web Apps best practices |
-
-## Azure MCP Tools
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-tool-list | List all available tools in the Azure MCP server |
-| azmcp-tool-list | Show me the available tools in the Azure MCP server |
+| azmcp-bestpractices-get | Get the latest Azure code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure deployment best practices |
+| azmcp-bestpractices-get | Get the latest Azure best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions code generation best practices |
+| azmcp-bestpractices-get | Get the latest Azure Functions deployment best practices|
+| azmcp-bestpractices-get | Get the latest Azure Functions best practices |
+| azmcp-bestpractices-get | Get the latest Azure Static Web Apps best practices |
+| azmcp-bestpractices-get | What are azure function best practices? |
+| azmcp-bestpractices-get | Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm. |
+| azmcp-bestpractices-get | Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm. |
 
 ## Azure Monitor
 
@@ -220,11 +236,11 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-redis-cache-accesspolicy-list | List all access policies in the Redis Cache <cache_name> |
+| azmcp-redis-cache-accesspolicy-list | Show me the access policies in the Redis Cache <cache_name> |
 | azmcp-redis-cache-list | List all Redis Caches in my subscription |
 | azmcp-redis-cache-list | Show me my Redis Caches |
 | azmcp-redis-cache-list | Show me the Redis Caches in my subscription |
-| azmcp-redis-cache-list-accesspolicy | List all access policies in the Redis Cache <cache_name> |
-| azmcp-redis-cache-list-accesspolicy | Show me the access policies in the Redis Cache <cache_name> |
 | azmcp-redis-cluster-database-list | List all databases in the Redis Cluster <cluster_name> |
 | azmcp-redis-cluster-database-list | Show me the databases in the Redis Cluster <cluster_name> |
 | azmcp-redis-cluster-list | List all Redis Clusters in my subscription |
@@ -268,30 +284,47 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-sql-firewall-rule-list | List all firewall rules for SQL server <server_name> |
-| azmcp-sql-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
-| azmcp-sql-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 | azmcp-sql-server-entra-admin-list | List Microsoft Entra ID administrators for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | Show me the Entra ID administrators configured for SQL server <server_name> |
 | azmcp-sql-server-entra-admin-list | What Microsoft Entra ID administrators are set up for my SQL server <server_name>? |
+| azmcp-sql-server-firewall-rule-list | List all firewall rules for SQL server <server_name> |
+| azmcp-sql-server-firewall-rule-list | Show me the firewall rules for SQL server <server_name> |
+| azmcp-sql-server-firewall-rule-list | What firewall rules are configured for my SQL server <server_name>? |
 
 ## Azure Storage
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-storage-account-list | List all storage accounts in my subscription |
-| azmcp-storage-account-list | Show me my storage accounts |
-| azmcp-storage-account-list | Show me the storage accounts in my subscription |
+| azmcp-storage-account-create | Create a new storage account called testaccount123 in East US region |
+| azmcp-storage-account-create | Create a storage account with premium performance and LRS replication |
+| azmcp-storage-account-create | Create a new storage account with Data Lake Storage Gen2 enabled |
+| azmcp-storage-account-details | Show me the details for my storage account <account_name> |
+| azmcp-storage-account-details | Get details about the storage account <account_name> |
+| azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
+| azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
+| azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
 | azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the storage container mycontainer in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create the container using blob public access in storage account <account_name> |
+| azmcp-storage-blob-container-create | Create a new blob container named documents with container public access in storage account <account_name> |
 | azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
 | azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
 | azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
+| azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
+| azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
 | azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
 | azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
 | azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
+| azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
+| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
+| azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
+| azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
+| azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
+| azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |
 | azmcp-storage-table-list | List all tables in the storage account <account_name> |
 | azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
 
@@ -311,6 +344,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-azureterraformbestpractices-get | Fetch the Azure Terraform best practices |
 | azmcp-azureterraformbestpractices-get | Show me the Azure Terraform best practices and generate code sample to get a secret from Azure Key Vault |
 
+## Azure Virtual Desktop
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-virtualdesktop-hostpool-list | List all host pools in my subscription |
+| azmcp-virtualdesktop-hostpool-sessionhost-list | List all session hosts in host pool <hostpool_name> |
+| azmcp-virtualdesktop-hostpool-sessionhost-usersession-list | List all user sessions on session host <sessionhost_name> in host pool <hostpool_name> |
+
 ## Azure Workbooks
 
 | Tool Name | Test Prompt |
@@ -328,3 +369,4 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+

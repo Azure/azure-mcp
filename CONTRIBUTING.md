@@ -8,35 +8,50 @@ If you are contributing significant changes, or if the issue is already assigned
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Project Structure](#project-structure)
-- [Development Workflow](#development-workflow)
-  - [Development Process](#development-process)
-  - [Adding a New Command](#adding-a-new-command)
-- [Testing](#testing)
-  - [Unit Tests](#unit-tests)
-  - [End-to-end Tests](#end-to-end-tests)
-  - [Testing Local Build with VS Code](#testing-local-build-with-vs-code)
-  - [Testing Local Build with Docker](#testing-local-build-with-docker)
-  - [Live Tests](#live-tests)
-  - [NPX Live Tests](#npx-live-tests)
-  - [Debugging Live Tests](#debugging-live-tests)
-- [Quality and Standards](#quality-and-standards)
-  - [Code Style](#code-style)
-  - [AOT Compatibility Analysis](#aot-compatibility-analysis)
-  - [Model Context Protocol (MCP)](#model-context-protocol-mcp)
-- [Advanced Configuration](#advanced-configuration)
-  - [Configuring External MCP Servers](#configuring-external-mcp-servers)
-- [Project Management](#project-management)
-  - [Pull Request Process](#pull-request-process)
-  - [Builds and Releases (Internal)](#builds-and-releases-internal)
-- [Support and Community](#support-and-community)
-  - [Questions and Support](#questions-and-support)
-  - [Additional Resources](#additional-resources)
-  - [Code of Conduct](#code-of-conduct)
-  - [License](#license)
+- [Contributing to Azure MCP](#contributing-to-azure-mcp)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Project Structure](#project-structure)
+  - [Development Workflow](#development-workflow)
+    - [Development Process](#development-process)
+    - [Adding a New Command](#adding-a-new-command)
+  - [Testing](#testing)
+    - [Unit Tests](#unit-tests)
+    - [End-to-end Tests](#end-to-end-tests)
+    - [Testing Local Build with VS Code](#testing-local-build-with-vs-code)
+      - [Build the Server](#build-the-server)
+      - [Configure mcp.json](#configure-mcpjson)
+      - [Server Modes](#server-modes)
+      - [Start from IDE](#start-from-ide)
+    - [Testing Local Build with Docker](#testing-local-build-with-docker)
+    - [Live Tests](#live-tests)
+    - [NPX Live Tests](#npx-live-tests)
+    - [Debugging Live Tests](#debugging-live-tests)
+  - [Quality and Standards](#quality-and-standards)
+    - [Code Style](#code-style)
+      - [Spelling Check](#spelling-check)
+      - [Requirements](#requirements)
+    - [AOT Compatibility Analysis](#aot-compatibility-analysis)
+      - [Running the Analysis](#running-the-analysis)
+      - [Installing Git Hooks](#installing-git-hooks)
+    - [Model Context Protocol (MCP)](#model-context-protocol-mcp)
+  - [Advanced Configuration](#advanced-configuration)
+    - [Configuring External MCP Servers](#configuring-external-mcp-servers)
+      - [Registry Configuration](#registry-configuration)
+      - [Transport Types](#transport-types)
+      - [Server Discovery and Namespace Filtering](#server-discovery-and-namespace-filtering)
+      - [Adding New External MCP Servers](#adding-new-external-mcp-servers)
+      - [Example External Servers](#example-external-servers)
+  - [Project Management](#project-management)
+    - [Pull Request Process](#pull-request-process)
+    - [Builds and Releases (Internal)](#builds-and-releases-internal)
+      - [PR Validation](#pr-validation)
+  - [Support and Community](#support-and-community)
+    - [Questions and Support](#questions-and-support)
+    - [Additional Resources](#additional-resources)
+    - [Code of Conduct](#code-of-conduct)
+    - [License](#license)
 
 ## Getting Started
 
@@ -52,6 +67,7 @@ If you are contributing significant changes, or if the issue is already assigned
 ### Project Structure
 
 The project is organized as follows:
+
 - `core/` - Core functionality and CLI application
   - `src/` - Core source code
     - `AzureMcp.Core/` - Core library with shared functionality
@@ -87,6 +103,19 @@ The project is organized as follows:
 
 ### Adding a New Command
 
+> **⚠️ Important: Submit One Tool Per Pull Request**
+> 
+> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach results in:
+> 
+> - **Faster reviews**: Single tools are easier and quicker to review
+> - **Better feedback**: More focused discussions on individual tool implementation  
+> - **Easier iteration**: Smaller changes mean faster iteration cycles
+> - **Incremental progress**: Get your first tool merged to establish baseline, then build upon it
+> 
+> If you're planning to contribute multiple tools, please:
+> 1. Submit your most important or representative tool as your first PR to establish the code patterns.
+> 2. Use that baseline to inform your subsequent tool PRs.
+
 1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
 2. **Set up development environment**:
@@ -95,17 +124,18 @@ The project is organized as follows:
    - Select "Agent" mode
 
 3. **Generate the command** using Copilot:
-   ```
+
+   ```txt
    Execute in Copilot Chat:
    "create [namespace] [resource] [operation] command using #new-command.md as a reference"
    ```
 
 4. **Follow implementation guidelines** in [docs/new-command.md](https://github.com/Azure/azure-mcp/blob/main/docs/new-command.md)
 
-5. **Add documentation**:
-   - Update [/docs/azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
-   - Update [/e2eTests/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/e2eTests/e2eTestPrompts.md)
-   - Update [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md)
+5. **Update documentation**:
+   - Add the new command to [/docs/azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
+   - Add test prompts for the new command in [/e2eTests/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/e2eTests/e2eTestPrompts.md)
+   - Update [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md) to mention the new command
 
 6. **Add CODEOWNERS entry** in [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
 
@@ -113,8 +143,8 @@ The project is organized as follows:
    - Reference the issue you created
    - Include tests in the `/tests` folder
    - Ensure all tests pass
-   - Add sample prompts to `/e2eTests/e2eTestPrompts.md`
    - Follow code style requirements
+   - Run the `eng/tools/ToolDescriptionEvaluator` tool for the new tool description and ensure a result >= 0.4 is achieved
 
 ## Testing
 
@@ -129,6 +159,7 @@ Unit tests live under the `/tests` folder. To run tests:
 ```
 
 Requirements:
+
 - Each command should have unit tests
 - Tests should cover success and error scenarios
 - Mock external service calls
@@ -144,7 +175,7 @@ To run the Azure MCP server from source for local development:
 
 #### Build the Server
 
-Navigate to the MCP server source directory and build the project:
+Build the project at the root directory of this repository:
 
 ```bash
 dotnet build
@@ -174,6 +205,7 @@ Update your mcp.json to point to the locally built azmcp executable:
 Optional `--namespace` and `--mode` parameters can be used to configure different server modes:
 
 **Default Mode** (no additional parameters):
+
 ```json
 {
   "servers": {
@@ -187,6 +219,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 ```
 
 **Namespace Mode** (expose specific services):
+
 ```json
 {
   "servers": {
@@ -200,6 +233,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 ```
 
 **Namespace Proxy Mode** (collapse tools by namespace):
+
 ```json
 {
   "servers": {
@@ -213,6 +247,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 ```
 
 **Single Tool Proxy Mode** (single "azure" tool with internal routing):
+
 ```json
 {
   "servers": {
@@ -226,6 +261,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 ```
 
 **Combined Mode** (filter namespaces with proxy mode):
+
 ```json
 {
   "servers": {
@@ -239,6 +275,7 @@ Optional `--namespace` and `--mode` parameters can be used to configure differen
 ```
 
 > **Server Mode Summary:**
+>
 > - **Default Mode**: No additional parameters - exposes all tools individually
 > - **Namespace Mode**: `--namespace <service-name>` - expose specific services
 > - **Namespace Proxy Mode**: `--mode namespace` - collapse tools by namespace (useful for VS Code's 128 tool limit)
@@ -255,6 +292,7 @@ To build a local image for testing purposes:
 
 1. Execute: `./eng/scripts/Build-Docker.ps1`.
 2. Update `mcp.json` to point to locally built Docker image:
+
     ```json
     {
       "servers": {
@@ -278,34 +316,47 @@ To build a local image for testing purposes:
 > ⚠️ If you are a Microsoft employee with Azure source permissions then please review our [Azure Internal Onboarding Documentation](https://aka.ms/azmcp/intake). As part of reviewing community contributions, Azure team members can run live tests by adding this comment to the PR `/azp run azure - mcp`.
 
 Before running live tests:
+
 - [Install Azure PowerShell](https://learn.microsoft.com/powershell/azure/install-azure-powershell)
 - [Install Azure Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/install#install-manually)
 - Login to Azure PowerShell: [`Connect-AzAccount`](https://learn.microsoft.com/powershell/azure/authenticate-interactive?view=azps-13.4.0)
 - Deploy test resources:
 
 ```pwsh
-./eng/scripts/Deploy-TestResources.ps1
+./eng/scripts/Deploy-TestResources.ps1 -Area Storage
 ```
 
 **Deploy-TestResources.ps1 Parameters:**
 
-| Parameter           | Type     | Description                                                                                                                   |
-|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------|
-| `Areas`             | string[] | Reduce the scope of your deployment to specific areas. e.g. `-Areas Storage, KeyVault`                                       |
-| `SubscriptionId`    | string   | Deploy to a specific subscription, otherwise, for internal users, the subscription will be defaulted to a known subscription. |
-| `ResourceGroupName` | string   | Set the resource group name. Defaults to "{username}-mcp{hash(username)}".                                                    |
-| `BaseName`          | string   | Set the base name for all of the resources. Defaults to "mcp{hash}".                                                          |
-| `Unique`            | switch   | Make `{hash}` in the resource group name and base name unique per invocation. Defaults to a hash of your username             |
-| `DeleteAfterHours`  | int      | Change the timespan used to set the DeleteAfter tag. Defaults to 12 hours.                                                   |
+| Parameter           | Type   | Description                                                                                                  |
+|---------------------|--------|--------------------------------------------------------------------------------------------------------------|
+| `Area`              | string | REQUIRED. The service area to deploy test resources for (e.g., `Storage`, `KeyVault`). One area per run.    |
+| `SubscriptionId`    | string | Target subscription ID. If omitted, the current Azure context subscription (from `Get-AzContext`) is used. |
+| `ResourceGroupName` | string | Resource group name. Defaults to `{username}-mcp{hash(username)}`.                                          |
+| `BaseName`          | string | Base name prefix for resources. Defaults to `mcp{hash}`.                                                    |
+| `Unique`            | switch | Use a unique GUID-based hash for this invocation instead of the stable username+subscription hash.          |
+| `DeleteAfterHours`  | int    | Hours after which resources are tagged for deletion. Defaults to `12`.                                      |
+
+Examples:
+
+```pwsh
+# Deploy Storage test resources using current Azure context subscription
+./eng/scripts/Deploy-TestResources.ps1 -Area Storage
+
+# Deploy Key Vault test resources to a specific subscription and keep for one week
+./eng/scripts/Deploy-TestResources.ps1 -Area KeyVault -SubscriptionId <subId> -DeleteAfterHours 168 -Unique
+```
 
 After deploying test resources, you should have a `.testsettings.json` file with your deployment information in the deployed areas' `/tests` directory.
 
 Run live tests with:
+
 ```pwsh
 ./eng/scripts/Test-Code.ps1 -TestType Live
 ```
 
 You can scope tests to specific areas:
+
 ```pwsh
 ./eng/scripts/Test-Code.ps1 -TestType Live -Areas Storage, KeyVault
 ```
@@ -327,6 +378,7 @@ You can set the `TestPackage` parameter in `.testsettings.json` to have live tes
 ```
 
 To run live tests against the local build of an npm module:
+
 ```pwsh
 ./eng/scripts/Build-Local.ps1
 ```
@@ -348,13 +400,13 @@ To debug the Azure MCP Server (`azmcp`) when running live tests in VS Code:
 3. In VS Code, navigate to a test method (e.g., [`AppConfigCommandTests::Should_list_appconfig_kvs()`](https://github.com/Azure/azure-mcp/blob/4ed650a0507921273acc7b382a79049809ef39c1/tests/Client/AppConfigCommandTests.cs#L56)), add a breakpoint to `CallToolAsync` call in the test method, then right-click and select **Debug Test**
 4. Find the `azmcp` process ID:
 
-```shell
-pgrep -fl azmcp
-```
+    ```shell
+    pgrep -fl azmcp
+    ```
 
-```powershell
-Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id, ProcessName, Path
-```
+    ```powershell
+    Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id, ProcessName, Path
+    ```
 
 5. Open the Command Palette (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows/Linux), select **Debug: Attach to .NET 5+ or .NET Core process**, and enter the `azmcp` process ID
 6. Hit F5 to "Continue" debugging, the debugger should attach to `azmcp` and hit the breakpoint in command file
@@ -365,7 +417,7 @@ Get-Process | Where-Object { $_.ProcessName -like "*azmcp*" } | Select-Object Id
 
 To ensure consistent code quality, code format checks will run during all PR and CI builds. Run `dotnet format` before submitting to catch format errors early.
 
-**Spelling Check**
+#### Spelling Check
 
 To ensure consistent spelling across the codebase, run the spelling check before submitting:
 
@@ -375,7 +427,8 @@ To ensure consistent spelling across the codebase, run the spelling check before
 
 This will check all files for spelling errors using the project's dictionary. Add any new technical terms or proper nouns to `.vscode/cspell.json` if needed.
 
-**Requirements:**
+#### Requirements
+
 - Follow C# coding conventions
 - No comments in implementation code (code should be self-documenting)
 - Use descriptive variable and method names
@@ -401,6 +454,7 @@ The HTML report will be generated at `.work/aotCompactReport/aot-compact-report.
 To output the report to console, run the analysis with `-OutputFormat Console` argument.
 
 AOT compatibility warnings typically indicate:
+
 - Use of reflection without proper annotations
 - Serialization of types that might be trimmed
 - Dynamic code generation
@@ -458,11 +512,13 @@ The registry structure follows this format:
 #### Transport Types
 
 **SSE (Server-Sent Events) Transport:**
+
 - Use the `url` property to specify the endpoint
 - Supports HTTP-based communication with automatic transport mode detection
 - Best for web-based MCP servers and remote endpoints
 
 **Stdio Transport:**
+
 - Use `type: "stdio"` with the `command` property
 - Supports launching external processes that communicate via standard input/output
 - Use `args` array for command-line arguments
@@ -495,6 +551,7 @@ To add a new external MCP server to the registry:
 #### Example External Servers
 
 The current registry includes:
+
 - **documentation**: Microsoft Learn documentation search via SSE transport
 - Additional external servers can be added following the same pattern as VS Code's mcp.json
 
@@ -518,6 +575,7 @@ Only manual runs of the pipeline sign and publish packages. Building `main` or `
 Packages published to npmjs.com will always use the `@latest` [dist-tag](https://docs.npmjs.com/downloading-and-installing-packages-locally#installing-a-package-with-dist-tags).
 
 Packages published to the dev feed will use:
+
 - `@latest` for the latest official/release build
 - `@dev` for the latest CI build of main
 - `@pre` for any arbitrary pipeline run or feature branch build
@@ -531,6 +589,8 @@ If you would like to see the product of a PR as a package on the dev feed, after
 Instructions for consuming the package from the dev feed can be found in the "Extensions" tab of the pipeline run page.
 
 ## Support and Community
+
+Please see our [support](https://github.com/Azure/azure-mcp/blob/main/SUPPORT.md) statement.
 
 ### Questions and Support
 
