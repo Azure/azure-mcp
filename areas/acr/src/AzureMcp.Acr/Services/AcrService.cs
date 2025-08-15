@@ -100,7 +100,10 @@ public sealed class AcrService(ISubscriptionService subscriptionService, ITenant
             }
             catch (RequestFailedException)
             {
+            catch (RequestFailedException ex)
+            {
                 // If we cannot enumerate repositories (e.g., permissions), return empty list for that registry
+                _logger.LogWarning(ex, "Failed to enumerate repositories for registry '{RegistryName}' at '{LoginServer}': {Message}", data?.Name, data?.LoginServer, ex.Message);
             }
 
             result[data.Name] = repoNames;
