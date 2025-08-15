@@ -114,6 +114,27 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-functionapp-create | Create a new function app named <function_app_name> in resource group <resource_group_name> in eastus |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in eastus using plan type consumption |
+| azmcp-functionapp-create | Create a flex consumption function app named <function_app_name> in resource group <resource_group_name> in westus2 using plan type flex |
+| azmcp-functionapp-create | Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium |
+| azmcp-functionapp-create | Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium and plan sku EP1 |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan sku S1 |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan type appservice and plan sku S1 |
+| azmcp-functionapp-create | Create a basic app service function app <function_app_name> in resource group <resource_group_name> in eastus with plan type appservice |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in eastus using existing app service plan <plan_name> |
+| azmcp-functionapp-create | Create a dotnet isolated function app <function_app_name> in resource group <resource_group_name> in eastus with runtime dotnet-isolated |
+| azmcp-functionapp-create | Create a node function app <function_app_name> in resource group <resource_group_name> in centralus with runtime node |
+| azmcp-functionapp-create | Create a node 22 function app <function_app_name> in resource group <resource_group_name> in centralus with runtime node version 22 |
+| azmcp-functionapp-create | Create a python function app <function_app_name> in resource group <resource_group_name> in westus with runtime python |
+| azmcp-functionapp-create | Create a python 3.12 function app <function_app_name> in resource group <resource_group_name> in westus with runtime python version 3.12 |
+| azmcp-functionapp-create | Create a java 21 function app <function_app_name> in resource group <resource_group_name> in eastus with runtime java version 21 |
+| azmcp-functionapp-create | Create a powershell function app <function_app_name> in resource group <resource_group_name> in eastus with runtime powershell |
+| azmcp-functionapp-create | Create a container app function app <function_app_name> in resource group <resource_group_name> in eastus as a container app named <container_app_name> |
+| azmcp-functionapp-create | Create a container app function app <function_app_name> in resource group <resource_group_name> in eastus with runtime python as container app <container_app_name> |
+| azmcp-functionapp-create | Create a flex consumption python 3.12 function app <function_app_name> in resource group <resource_group_name> in eastus with plan type flex runtime python version 3.12 |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in eastus with plan sku P1v3 and runtime java version 21 |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in eastus with runtime powershell version 7.4 |
 | azmcp-functionapp-list | List all function apps in my subscription |
 | azmcp-functionapp-list | Show me my Azure function apps |
 | azmcp-functionapp-list | What function apps do I have? |

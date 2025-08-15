@@ -6,6 +6,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for creating Azure Function Apps via the command `azmcp-functionapp-create`, including options for `--plan-type` (consumption, flexible consumption, premium, app service and container app), `--runtime`, and `--runtime-version`. Auto-creates a storage account when not provided and configures required app settings.  [[#985](https://github.com/Azure/azure-mcp/issues/985)]
+
 ### Breaking Changes
 
 ### Bugs Fixed

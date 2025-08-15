@@ -379,6 +379,18 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Function App Operations
 
 ```bash
+# Create a Function App
+azmcp functionapp create --subscription <subscription> \
+                         --resource-group <resource-group> \
+                         --function-app <function-app-name> \
+                         --location <location> \
+                         [--app-service-plan <plan-name>] \
+                         [--plan-type <consumption|flex|premium|appservice|containerapp>] \
+                         [--plan-sku <sku>] \
+                         [--container-app <container-app-name>] \
+                         [--runtime <dotnet|dotnet-isolated|node|python|java|powershell>] \
+                         [--runtime-version <version>]
+
 # List function apps in a subscription
 azmcp functionapp list --subscription <subscription>
 ```
