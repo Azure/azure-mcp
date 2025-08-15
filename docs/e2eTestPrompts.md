@@ -56,6 +56,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-acr-registry-list | Show me the container registries in my subscription |
 | azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
 | azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-repository-list | List all container registry repositories in my subscription |
+| azmcp-acr-registry-repository-list | Show me my container registry repositories |
+| azmcp-acr-registry-repository-list | List repositories in the container registry <registry_name> |
+| azmcp-acr-registry-repository-list | Show me the repositories in the container registry <registry_name> |
 
 ## Azure Cosmos DB
 
