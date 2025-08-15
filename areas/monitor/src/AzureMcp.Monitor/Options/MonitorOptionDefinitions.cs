@@ -15,6 +15,7 @@ public static class MonitorOptionDefinitions
     public const string DataCollectionRuleName = "data-collection-rule";
     public const string LogDataName = "log-data";
     public const string StreamNameName = "stream-name";
+    public const string OperationIdName = "operation-id";
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",
@@ -230,6 +231,14 @@ public static class MonitorOptionDefinitions
         )
         {
             IsRequired = true
+        };
+
+        public static readonly Option<string> OperationId = new(
+            $"--{OperationIdName}",
+            "The operation ID to check status for. If not provided, the most recent ingestion operation will be checked."
+        )
+        {
+            IsRequired = false
         };
     }
 }

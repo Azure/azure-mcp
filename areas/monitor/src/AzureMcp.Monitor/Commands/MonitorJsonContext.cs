@@ -18,6 +18,7 @@ namespace AzureMcp.Monitor.Commands;
 [JsonSerializable(typeof(MetricsQueryCommand.MetricsQueryCommandResult))]
 [JsonSerializable(typeof(MetricsDefinitionsCommand.MetricsDefinitionsCommandResult))]
 [JsonSerializable(typeof(IngestionUploadCommand.IngestionUploadCommandResult))]
+[JsonSerializable(typeof(IngestionStatusCheckCommand.IngestionStatusCheckCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal sealed partial class MonitorJsonContext : JsonSerializerContext
 {

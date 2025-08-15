@@ -82,5 +82,6 @@ public class MonitorSetup : IAreaSetup
         monitor.AddSubGroup(ingestion);
 
         ingestion.AddCommand("upload", new IngestionUploadCommand(loggerFactory.CreateLogger<IngestionUploadCommand>()));
+        ingestion.AddCommand("status-check", new IngestionStatusCheckCommand(loggerFactory.CreateLogger<IngestionStatusCheckCommand>()));
     }
 }

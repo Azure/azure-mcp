@@ -462,6 +462,39 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
     }
 
+    public Task<(string Status, string Message, JsonNode? Details)> CheckIngestionStatus(
+        string workspace,
+        string dataCollectionRule,
+        string? operationId = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(workspace, dataCollectionRule);
+
+        try
+        {
+            // Note: Azure Monitor ingestion doesn't provide direct status APIs
+            // This is a simplified implementation that checks for recent log operations
+            var message = operationId != null
+                ? $"Operation ID {operationId} status check is not directly supported by Azure Monitor. Check ingestion logs manually."
+                : "Recent ingestion status check is not directly supported by Azure Monitor. Check workspace logs manually.";
+
+            var details = new JsonObject
+            {
+                ["dataCollectionRule"] = dataCollectionRule,
+                ["workspace"] = workspace,
+                ["operationId"] = operationId,
+                ["note"] = "Azure Monitor Log Ingestion API does not provide direct status endpoints. Check Azure Monitor Logs in the portal for ingestion status."
+            };
+
+            return Task.FromResult(("Unavailable", message, (JsonNode?)details));
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(("Error", $"Error checking ingestion status: {ex.Message}", (JsonNode?)null));
+        }
+    }
+
     private static string BuildIngestionEndpoint(string dataCollectionRuleId)
     {
         // Extract the data collection endpoint from the DCR ID

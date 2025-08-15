@@ -62,4 +62,11 @@ public interface IMonitorService
         string logData,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<(string Status, string Message, JsonNode? Details)> CheckIngestionStatus(
+        string workspace,
+        string dataCollectionRule,
+        string? operationId = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
