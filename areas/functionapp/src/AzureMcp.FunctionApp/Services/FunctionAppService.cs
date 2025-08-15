@@ -74,7 +74,6 @@ public sealed class FunctionAppService(
         ValidateRequiredParameters(subscription, functionAppName, resourceGroup);
 
         var cacheKey = string.IsNullOrEmpty(tenant)
-            ? subscription
             ? $"{subscription}_{resourceGroup}_{functionAppName}"
             : $"{subscription}_{tenant}_{resourceGroup}_{functionAppName}";
 
