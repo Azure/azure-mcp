@@ -3,6 +3,7 @@
 
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using AzureMcp.CloudArchitect;
@@ -42,7 +43,10 @@ public class DesignCommandTests
         Assert.Equal("design", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
-        Assert.Contains("Design and architect comprehensive Azure cloud solutions for applications and services. This interactive assistant helps create scalable cloud architectures for file upload systems, web applications, APIs, e-commerce platforms, financial services, transaction systems, data processing services, and enterprise solutions. Through guided questions, provides tailored Azure architecture recommendations covering storage, compute, networking, databases, security, and application services to create robust user-facing cloud services and applications.", command.Description);
+        Assert.Contains("A tool for designing Azure cloud architectures through guided questions", command.Description);
+        Assert.Contains("confidenceScore", command.Description);
+        Assert.Contains("nextQuestionNeeded", command.Description);
+        Assert.Contains("Azure Well-Architected Framework", command.Description);
     }
 
     [Fact]
@@ -89,22 +93,23 @@ public class DesignCommandTests
         Assert.NotNull(response.Results);
         Assert.Empty(response.Message);
 
-        // Verify that results contain the architecture design text by serializing it
+        // Verify that results contain the architecture design response structure
         using var stream = new MemoryStream();
         using var writer = new Utf8JsonWriter(stream);
         response.Results.Write(writer);
         writer.Flush();
 
         var serializedResult = Encoding.UTF8.GetString(stream.ToArray());
-        var resultList = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.ListString);
 
-        Assert.NotNull(resultList);
-        Assert.Single(resultList);
-        Assert.NotEmpty(resultList[0]);
+
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        Assert.NotNull(responseObject.ResponseObject);
 
         // Verify it contains some expected architecture-related content
-        var architectureText = resultList[0];
-        Assert.Contains("architecture", architectureText.ToLower());
+        Assert.Contains("architecture", responseObject.DesignArchitecture.ToLower());
     }
 
     [Fact]
@@ -122,11 +127,19 @@ public class DesignCommandTests
         Assert.Equal(200, response1.Status);
         Assert.Equal(200, response2.Status);
 
-        // Serialize both results to compare them
+        // Serialize both results to compare the design architecture text (which should be consistent)
         string serializedResult1 = SerializeResponseResult(response1.Results!);
         string serializedResult2 = SerializeResponseResult(response2.Results!);
 
-        Assert.Equal(serializedResult1, serializedResult2);
+        var responseObject1 = JsonSerializer.Deserialize(serializedResult1, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        var responseObject2 = JsonSerializer.Deserialize(serializedResult2, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+
+        Assert.NotNull(responseObject1);
+        Assert.NotNull(responseObject2);
+
+        // The design architecture text should be consistent across calls
+        Assert.Equal(responseObject1.DesignArchitecture, responseObject2.DesignArchitecture);
+        Assert.NotEmpty(responseObject1.DesignArchitecture);
     }
 
     [Fact]
@@ -157,10 +170,11 @@ public class DesignCommandTests
 
         // Verify the command executed successfully regardless of the input options
         string serializedResult = SerializeResponseResult(response.Results);
-        var resultList = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.ListString);
-        Assert.NotNull(resultList);
-        Assert.Single(resultList);
-        Assert.NotEmpty(resultList[0]);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        Assert.NotNull(responseObject.ResponseObject);
+        Assert.Equal("What is your application type?", responseObject.ResponseObject.DisplayText);
     }
 
     [Theory]
@@ -186,14 +200,13 @@ public class DesignCommandTests
 
         // Verify that the command executed successfully with the quoted input
         string serializedResult = SerializeResponseResult(response.Results);
-        var resultList = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.ListString);
-        Assert.NotNull(resultList);
-        Assert.Single(resultList);
-        Assert.NotEmpty(resultList[0]);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        Assert.NotNull(responseObject.ResponseObject);
 
-        // Verify the question was parsed correctly by checking if the command can access the option value
-        var questionOption = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "question"));
-        Assert.Equal(expectedQuestion, questionOption);
+        // Verify the question was parsed correctly by checking the DisplayText in response
+        Assert.Equal(expectedQuestion, responseObject.ResponseObject.DisplayText);
     }
 
     [Fact]
@@ -244,6 +257,43 @@ public class DesignCommandTests
         Assert.True(metadata.ReadOnly);
     }
 
+    [Fact]
+    public void Properties_AreConfiguredCorrectly()
+    {
+        // Arrange & Act
+        var name = _command.Name;
+        var title = _command.Title;
+        var description = _command.Description;
+
+        // Assert
+        Assert.Equal("design", name);
+        Assert.Equal("Design Azure cloud architectures through guided questions", title);
+        Assert.NotEmpty(description);
+        Assert.Contains("guided questions", description);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_LoadsEmbeddedResourceText()
+    {
+        // Arrange
+        var args = new[] { "--question", "Test question" };
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+
+        string serializedResult = SerializeResponseResult(response.Results!);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        // The embedded resource should contain Azure architecture guidance
+        Assert.Contains("Azure", responseObject.DesignArchitecture);
+    }
+
     [Theory]
     [InlineData("Infrastructure")]
     [InlineData("Platform")]
@@ -288,10 +338,11 @@ public class DesignCommandTests
 
         // Verify the command executed successfully with state option
         string serializedResult = SerializeResponseResult(response.Results);
-        var resultList = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.ListString);
-        Assert.NotNull(resultList);
-        Assert.Single(resultList);
-        Assert.NotEmpty(resultList[0]);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        Assert.NotNull(responseObject.ResponseObject);
+        Assert.NotNull(responseObject.ResponseObject.State);
     }
 
     [Fact]
@@ -339,6 +390,17 @@ public class DesignCommandTests
         Assert.Equal(0.9, confidenceScoreValue);
         Assert.Equal("Azure SQL Database", componentValue);
         Assert.Equal(ArchitectureTier.Data, tierValue);
+
+        // Verify the response structure
+        string serializedResult = SerializeResponseResult(response.Results);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotEmpty(responseObject.DesignArchitecture);
+        Assert.NotNull(responseObject.ResponseObject);
+        Assert.Equal(questionValue, responseObject.ResponseObject.DisplayText);
+        Assert.Equal(questionNumberValue, responseObject.ResponseObject.QuestionNumber);
+        Assert.Equal(totalQuestionsValue, responseObject.ResponseObject.TotalQuestions);
+        Assert.Equal(nextQuestionNeededValue, responseObject.ResponseObject.NextQuestionNeeded);
     }
 
     private static string SerializeResponseResult(ResponseResult responseResult)
@@ -494,6 +556,159 @@ public class DesignCommandTests
         Assert.NotEmpty(parseResult.Errors);
         // Should return the first validation error encountered
         Assert.Contains("Confidence score must be between 0.0 and 1.0", parseResult.Errors.Select(e => e.Message));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithComplexStateJson_ParsesSuccessfully()
+    {
+        // Arrange - Use the exact JSON from the original error
+        var stateJson = """
+                        {
+                            "architectureComponents": [],
+                            "architectureTiers": {
+                                "infrastructure": [],
+                                "platform": [],
+                                "application": [],
+                                "data": [],
+                                "security": [],
+                                "operations": []
+                            },
+                            "requirements": {
+                                "explicit": [
+                                    {
+                                        "category": "functionality",
+                                        "description": "Video upload capability for users",
+                                        "source": "User statement",
+                                        "importance": "high",
+                                        "confidence": 1
+                                    },
+                                    {
+                                        "category": "functionality",
+                                        "description": "Video viewing/playback capability for users",
+                                        "source": "User statement",
+                                        "importance": "high",
+                                        "confidence": 1
+                                    }
+                                ],
+                                "implicit": [
+                                    {
+                                        "category": "performance",
+                                        "description": "Large-scale video processing and streaming required",
+                                        "source": "Inferred from 'large video playback company'",
+                                        "importance": "high",
+                                        "confidence": 0.9
+                                    }
+                                ],
+                                "assumed": [
+                                    {
+                                        "category": "scale",
+                                        "description": "Potentially thousands of concurrent users",
+                                        "source": "Assumed from 'large' company description",
+                                        "importance": "medium",
+                                        "confidence": 0.6
+                                    }
+                                ]
+                            },
+                            "confidenceFactors": {
+                                "explicitRequirementsCoverage": 0.4,
+                                "implicitRequirementsCertainty": 0.8,
+                                "assumptionRisk": 0.4
+                            }
+                        }
+                        """;
+
+        var args = new[]
+        {
+            "--state", stateJson,
+            "--question", "What is your primary business goal?",
+            "--confidence-score", "0.5"
+        };
+
+        // Act
+        var parseResult = _parser.Parse(args);
+        var result = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Empty(parseResult.Errors);
+        Assert.Equal(200, _context.Response.Status);
+
+        // Verify that the state was parsed correctly by checking the response
+        string serializedResult = SerializeResponseResult(_context.Response.Results!);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotNull(responseObject.ResponseObject.State);
+        Assert.Empty(responseObject.ResponseObject.State.ArchitectureComponents);
+        Assert.NotNull(responseObject.ResponseObject.State.Requirements);
+        Assert.Equal(2, responseObject.ResponseObject.State.Requirements.Explicit.Count);
+        Assert.Single(responseObject.ResponseObject.State.Requirements.Implicit);
+        Assert.Single(responseObject.ResponseObject.State.Requirements.Assumed);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithInvalidStateJson_HandlesGracefully()
+    {
+        // Arrange
+        var invalidStateJson = "{ invalid json }";
+        var args = new[] { "--state", invalidStateJson };
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert - The command should handle the error gracefully and return an error response
+        Assert.NotEqual(200, response.Status);
+        Assert.NotEmpty(response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithEmptyState_CreatesDefaultState()
+    {
+        // Arrange
+        var args = new[] { "--state", "" };
+        var parseResult = _parser.Parse(args);
+
+        // Act
+        var result = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, _context.Response.Status);
+
+        string serializedResult = SerializeResponseResult(_context.Response.Results!);
+        var responseObject = JsonSerializer.Deserialize(serializedResult, CloudArchitectJsonContext.Default.CloudArchitectDesignResponse);
+        Assert.NotNull(responseObject);
+        Assert.NotNull(responseObject.ResponseObject.State);
+        Assert.Empty(responseObject.ResponseObject.State.ArchitectureComponents);
+        Assert.NotNull(responseObject.ResponseObject.State.Requirements);
+        Assert.Empty(responseObject.ResponseObject.State.Requirements.Explicit);
+    }
+
+    [Fact]
+    public void BindOptions_WithInvalidStateJson_ThrowsException()
+    {
+        // Arrange
+        var invalidStateJson = "{ invalid json }";
+        var args = new[] { "--state", invalidStateJson };
+        var parseResult = _parser.Parse(args);
+
+        // Act & Assert
+        var exception = Assert.Throws<TargetInvocationException>(() =>
+        {
+            // Access the protected BindOptions method via reflection to test state deserialization
+            var command = _command.GetCommand();
+            var stateOption = command.Options.First(o => o.Name == "state");
+            var stateValue = parseResult.GetValueForOption((Option<string>)stateOption);
+
+            // Manually call the state deserialization that happens in BindOptions
+            var deserializeMethod = typeof(DesignCommand).GetMethod("DeserializeState",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            Assert.NotNull(deserializeMethod);
+            deserializeMethod.Invoke(null, new object?[] { stateValue });
+        });
+
+        // Verify the inner exception is the InvalidOperationException we expect
+        Assert.IsType<InvalidOperationException>(exception.InnerException);
+        Assert.Contains("Failed to deserialize state JSON", exception.InnerException!.Message);
     }
 
     #endregion

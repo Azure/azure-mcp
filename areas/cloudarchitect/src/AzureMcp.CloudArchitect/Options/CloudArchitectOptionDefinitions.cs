@@ -81,9 +81,9 @@ public static class CloudArchitectOptionDefinitions
         IsRequired = false
     };
 
-    public static readonly Option<ArchitectureDesignToolState> State = new(
+    public static readonly Option<string> State = new(
         $"--{StateName}",
-        "The complete architecture state from the previous request"
+        "The complete architecture state from the previous request as JSON"
     )
     {
         IsRequired = false

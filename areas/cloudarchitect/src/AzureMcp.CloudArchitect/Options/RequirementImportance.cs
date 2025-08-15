@@ -8,7 +8,7 @@ namespace AzureMcp.CloudArchitect.Options;
 /// <summary>
 /// Represents the importance level of a requirement.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(RequirementImportanceConverter))]
 public enum RequirementImportance
 {
     High,

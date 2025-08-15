@@ -8,7 +8,7 @@ namespace AzureMcp.CloudArchitect.Options;
 /// <summary>
 /// Represents the different architecture tiers.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<ArchitectureTier>))]
 public enum ArchitectureTier
 {
     Infrastructure,
