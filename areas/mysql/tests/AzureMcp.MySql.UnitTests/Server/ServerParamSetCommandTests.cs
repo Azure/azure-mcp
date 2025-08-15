@@ -95,7 +95,7 @@ public class ServerParamSetCommandTests
         var command = new ServerParamSetCommand(_logger);
         
         Assert.Equal("set", command.Name);
-        Assert.Equal("Modifies specific server parameters on an Azure Database for MySQL Flexible Server instance to optimize performance, security, or operational behavior. This command enables fine-tuned configuration management with validation to ensure parameter changes are compatible with the server's current state and constraints. Common parameters include (max_connections, innodb_buffer_pool_size, slow_query_log, general_log, binlog_expire_logs_seconds).", command.Description);
+        Assert.Equal("Modifies specific server parameters on an Azure Database for MySQL Flexible Server instance to optimize performance, security, or operational behavior. This command enables fine-tuned configuration management with validation to ensure parameter changes are compatible with the server's current state and constraints.", command.Description);
         Assert.Equal("Set MySQL Server Parameter", command.Title);
         Assert.True(command.Metadata.Destructive);
         Assert.False(command.Metadata.ReadOnly);
