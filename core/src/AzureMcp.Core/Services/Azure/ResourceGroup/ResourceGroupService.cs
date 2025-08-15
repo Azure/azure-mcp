@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure;
 using Azure.ResourceManager.Resources;
 using AzureMcp.Core.Models.ResourceGroup;
 using AzureMcp.Core.Options;
@@ -105,6 +106,24 @@ public class ResourceGroupService(ICacheService cacheService, ISubscriptionServi
         catch (Exception ex)
         {
             throw new Exception($"Error retrieving resource group {resourceGroupName}: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<ResourceGroupResource> CreateOrUpdateResourceGroup(string subscription, string resourceGroupName, string location, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, resourceGroupName, location);
+
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+            var op = await subscriptionResource.GetResourceGroups()
+                .CreateOrUpdateAsync(WaitUntil.Completed, resourceGroupName, new ResourceGroupData(location))
+                .ConfigureAwait(false);
+            return op.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating or updating resource group {resourceGroupName}: {ex.Message}", ex);
         }
     }
 }
