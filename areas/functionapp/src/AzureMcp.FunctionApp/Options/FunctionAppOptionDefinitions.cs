@@ -5,7 +5,7 @@ namespace AzureMcp.FunctionApp.Options;
 
 public static class FunctionAppOptionDefinitions
 {
-    public const string FunctionAppName = "functionapp";
+    public const string FunctionAppName = "function-app";
     public const string LocationName = "location";
     public const string AppServicePlanName = "app-service-plan";
     public const string PlanTypeName = "plan-type";
@@ -16,42 +16,42 @@ public static class FunctionAppOptionDefinitions
 
     public static readonly Option<string> FunctionApp = new(
         $"--{FunctionAppName}",
-        "Function App name.")
+        "The Function App name.")
     {
         IsRequired = true
     };
 
     public static readonly Option<string> Location = new(
         $"--{LocationName}",
-        "Azure region for the Function App (e.g., eastus, westus2).")
+        "The Azure region for the Function App (e.g., eastus, westus2).")
     {
         IsRequired = true
     };
 
     public static readonly Option<string> AppServicePlan = new(
         $"--{AppServicePlanName}",
-        "App Service plan name to use. If not supplied, a Consumption plan will be created automatically.")
+        "The App Service plan name to use. If not supplied, a Consumption plan will be created automatically.")
     {
         IsRequired = false
     };
 
     public static readonly Option<string> PlanType = new(
         $"--{PlanTypeName}",
-        "App Service plan type when creating a plan automatically. Values: consumption, flex, premium. Defaults to consumption.")
+        "The App Service plan type when creating a plan automatically. Values: consumption, flex, premium. Defaults to consumption.")
     {
         IsRequired = false
     };
 
     public static readonly Option<string> PlanSku = new(
         $"--{PlanSkuName}",
-        "Explicit App Service plan SKU (e.g., B1, S1, P1v3). Mutually exclusive with --plan-type. If provided and --app-service-plan omitted a dedicated plan using this SKU is created.")
+        "The explicit App Service plan SKU (e.g., B1, S1, P1v3). Mutually exclusive with --plan-type. If provided and --app-service-plan omitted a dedicated plan using this SKU is created.")
     {
         IsRequired = false
     };
 
     public static readonly Option<string> ContainerApp = new(
         $"--{ContainerAppName}",
-        "Optional: also scaffold a minimal Azure Container App (single revision) alongside the Function App. Name provided here will be used; environment auto-created if missing.")
+        "Provision a Container App instead of App Service hosting (containerapp plan type). Creates a managed environment if one doesn't exist. The value is used as the Container App name. Cannot be combined with --app-service-plan, --plan-sku, or --plan-type (other than containerapp).")
     {
         IsRequired = false
     };

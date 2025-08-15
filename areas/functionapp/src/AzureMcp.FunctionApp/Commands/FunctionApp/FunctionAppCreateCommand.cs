@@ -36,7 +36,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     Required options:
     - subscription: Target Azure subscription (ID or name)
     - resource-group: Resource group (created if missing)
-    - functionapp: Globally unique Function App name
+    - function-app: Globally unique Function App name
     - location: Azure region (e.g. eastus)
 
     Optional options:
@@ -54,7 +54,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
 
     Automatic resources & defaults:
     - Storage account: Always created (Standard_LRS, HTTPS only, blob public access disabled). Name pattern: <sanitized-functionapp>[random6]. Connection string injected as AzureWebJobsStorage.
-    - App Service plan: Auto-created when not provided (name: <functionapp>-plan) unless containerapp hosting.
+    - App Service plan: Auto-created when not provided (name: <function-app>-plan) unless containerapp hosting.
     - Container App: If containerapp hosting selected, a managed environment (<name>) and container app (<name>) are created with an official Azure Functions image for the runtime.
     - Linux vs Windows: Linux automatically enforced for python and flex consumption. Other runtimes default to Windows unless plan-type dictates Linux (flex) or runtime is python.
     - Runtime version defaults (LinuxFxVersion when Linux):

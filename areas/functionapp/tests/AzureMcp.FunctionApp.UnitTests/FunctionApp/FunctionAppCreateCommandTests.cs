@@ -46,10 +46,10 @@ public sealed class FunctionAppCreateCommandTests
     }
 
     [Theory]
-    [InlineData("--subscription sub --resource-group rg --functionapp myapp --location eastus", true)]
-    [InlineData("--subscription sub --resource-group rg --functionapp myapp", false)]
-    [InlineData("--subscription sub --location eastus --functionapp myapp", false)]
-    [InlineData("--resource-group rg --location eastus --functionapp myapp", false)]
+    [InlineData("--subscription sub --resource-group rg --function-app myapp --location eastus", true)]
+    [InlineData("--subscription sub --resource-group rg --function-app myapp", false)]
+    [InlineData("--subscription sub --location eastus --function-app myapp", false)]
+    [InlineData("--resource-group rg --location eastus --function-app myapp", false)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         if (shouldSucceed)
@@ -76,7 +76,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
                 .Returns(new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null));
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus --container-app my-container-app");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --container-app my-container-app");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
     }
@@ -91,7 +91,7 @@ public sealed class FunctionAppCreateCommandTests
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -113,7 +113,7 @@ public sealed class FunctionAppCreateCommandTests
             .Returns(Task.FromException<FunctionAppInfo>(new Exception("Create error")));
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -131,7 +131,7 @@ public sealed class FunctionAppCreateCommandTests
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
-        var args = "--subscription sub --resource-group rg --functionapp myapp --location eastus --plan-type flex --runtime node --runtime-version 22";
+        var args = "--subscription sub --resource-group rg --function-app myapp --location eastus --plan-type flex --runtime node --runtime-version 22";
         var parseResult = _command.GetCommand().Parse(args);
 
         var response = await _command.ExecuteAsync(context, parseResult);
@@ -149,7 +149,7 @@ public sealed class FunctionAppCreateCommandTests
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus");
 
         var response = await _command.ExecuteAsync(context, parseResult);
 
@@ -160,7 +160,7 @@ public sealed class FunctionAppCreateCommandTests
     public async Task ExecuteAsync_Fails_WhenContainerAndPlanOptionsCombined()
     {
         var context = new CommandContext(_serviceProvider);
-        var args = "--subscription sub --resource-group rg --functionapp myapp --location eastus --container-app my-container-app --plan-type consumption";
+        var args = "--subscription sub --resource-group rg --function-app myapp --location eastus --container-app my-container-app --plan-type consumption";
         var parseResult = _command.GetCommand().Parse(args);
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(400, response.Status);
@@ -183,7 +183,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
 
-        var baseArgs = "--subscription sub --resource-group rg --functionapp myapp --location eastus";
+        var baseArgs = "--subscription sub --resource-group rg --function-app myapp --location eastus";
         var fullArgs = string.IsNullOrWhiteSpace(argsSuffix) ? baseArgs : $"{baseArgs} {argsSuffix}";
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(fullArgs);
@@ -216,7 +216,7 @@ public sealed class FunctionAppCreateCommandTests
     [InlineData("--container-app my-container-app --app-service-plan existingPlan")]
     public async Task ExecuteAsync_InvalidContainerAppCombinations_Return400(string argsSuffix)
     {
-        var baseArgs = "--subscription sub --resource-group rg --functionapp myapp --location eastus";
+        var baseArgs = "--subscription sub --resource-group rg --function-app myapp --location eastus";
         var fullArgs = $"{baseArgs} {argsSuffix}";
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse(fullArgs);
@@ -273,7 +273,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus --plan-type containerapp");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --plan-type containerapp");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
         _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Is<string?>(pt => pt == "containerapp"), Arg.Any<string?>(), Arg.Is<string?>(c => c == null), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
@@ -288,7 +288,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus --app-service-plan existingPlan");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --app-service-plan existingPlan");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
         _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Is<string?>(p => p == "existingPlan"), Arg.Is<string?>(pt => pt == null), Arg.Is<string?>(ps => ps == null), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
@@ -303,7 +303,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus --plan-type flex --plan-sku B1");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --plan-type flex --plan-sku B1");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
         _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Is<string?>(pt => pt == "flex"), Arg.Is<string?>(ps => ps == "B1"), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
@@ -318,7 +318,7 @@ public sealed class FunctionAppCreateCommandTests
             Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --functionapp myapp --location eastus --runtime dotnet-isolated");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --runtime dotnet-isolated");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
         _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Is<string?>(r => r == "dotnet-isolated"), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
