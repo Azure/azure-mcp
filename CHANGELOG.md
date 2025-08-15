@@ -10,10 +10,10 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Breaking Changes
 
+### Bugs Fixed
+
 - Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
-
-### Bugs Fixed
 
 ### Other Changes
 
