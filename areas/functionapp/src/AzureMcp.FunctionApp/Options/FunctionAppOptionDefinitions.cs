@@ -9,6 +9,8 @@ public static class FunctionAppOptionDefinitions
     public const string LocationName = "location";
     public const string AppServicePlanName = "app-service-plan";
     public const string PlanTypeName = "plan-type";
+    public const string PlanSkuName = "plan-sku";
+    public const string ContainerAppName = "container-app";
     public const string StorageConnectionStringName = "storage-connection-string";
     public const string RuntimeName = "runtime";
     public const string RuntimeVersionName = "runtime-version";
@@ -40,6 +42,21 @@ public static class FunctionAppOptionDefinitions
     {
         IsRequired = false
     };
+
+    public static readonly Option<string> PlanSku = new(
+        $"--{PlanSkuName}",
+        "Explicit App Service plan SKU (e.g., B1, S1, P1v3). Mutually exclusive with --plan-type. If provided and --app-service-plan omitted a dedicated plan using this SKU is created.")
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> ContainerApp = new(
+        $"--{ContainerAppName}",
+        "Optional: also scaffold a minimal Azure Container App (single revision) alongside the Function App. Name provided here will be used; environment auto-created if missing.")
+    {
+        IsRequired = false
+    };
+
 
     public static readonly Option<string> StorageConnectionString = new(
         $"--{StorageConnectionStringName}",

@@ -17,6 +17,12 @@ public class FunctionAppCreateOptions : BaseFunctionAppOptions
     [JsonPropertyName(FunctionAppOptionDefinitions.PlanTypeName)]
     public string? PlanType { get; set; }
 
+    [JsonPropertyName(FunctionAppOptionDefinitions.PlanSkuName)]
+    public string? PlanSku { get; set; }
+
+    [JsonPropertyName(FunctionAppOptionDefinitions.ContainerAppName)]
+    public string? ContainerAppName { get; set; }
+
     [JsonPropertyName(FunctionAppOptionDefinitions.StorageConnectionStringName)]
     public string? StorageConnectionString { get; set; }
 

@@ -5,9 +5,9 @@ using Azure;
 using AzureMcp.Core.Commands;
 using AzureMcp.FunctionApp.Models;
 using AzureMcp.FunctionApp.Options;
+using AzureMcp.FunctionApp.Options.FunctionApp;
 using AzureMcp.FunctionApp.Services;
 using Microsoft.Extensions.Logging;
-using AzureMcp.FunctionApp.Options.FunctionApp;
 
 namespace AzureMcp.FunctionApp.Commands.FunctionApp;
 
@@ -21,6 +21,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     private readonly Option<string> _locationOption = FunctionAppOptionDefinitions.Location;
     private readonly Option<string> _appServicePlanOption = FunctionAppOptionDefinitions.AppServicePlan;
     private readonly Option<string> _planTypeOption = FunctionAppOptionDefinitions.PlanType;
+    private readonly Option<string> _planSkuOption = FunctionAppOptionDefinitions.PlanSku;
+    private readonly Option<string> _containerAppOption = FunctionAppOptionDefinitions.ContainerApp;
     private readonly Option<string> _storageConnectionStringOption = FunctionAppOptionDefinitions.StorageConnectionString;
     private readonly Option<string> _runtimeOption = FunctionAppOptionDefinitions.Runtime;
     private readonly Option<string> _runtimeVersionOption = FunctionAppOptionDefinitions.RuntimeVersion;
@@ -38,10 +40,12 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     - location: Azure region (e.g. eastus)
     Optional options:
     - app-service-plan: Existing App Service plan name to use; if omitted a new plan is created
-    - plan-type: Plan kind when creating a plan (consumption|flex|premium) (default: consumption)
+    - plan-type: Plan kind when creating a plan (consumption|flex|premium) (default: consumption) (cannot combine with --plan-sku)
         * consumption -> Y1 (Consumption)
         * flex -> FC1 (Flex Consumption; Linux)
         * premium -> EP1 (Elastic Premium; Linux optional)
+    - plan-sku: Explicit dedicated App Service plan SKU to create/use when no --app-service-plan provided (e.g., B1, S1, P1v3). Overrides --plan-type if specified.
+    - container-app: (Optional) Also create a minimal Azure Container App with a hello-world image, plus a managed environment (<name>-env) if it does not exist.
     - storage-connection-string: AzureWebJobsStorage connection string; if omitted a new Storage account is created
     - runtime: Worker runtime (dotnet|node|python|java|powershell) (default: dotnet)
     - runtime-version: Specific runtime version (auto default if omitted)
@@ -59,11 +63,13 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        RequireResourceGroup(); // logically required per contributing guide
+        RequireResourceGroup();
         command.AddOption(_functionAppNameOption);
         command.AddOption(_locationOption);
         command.AddOption(_appServicePlanOption);
         command.AddOption(_planTypeOption);
+        command.AddOption(_planSkuOption);
+        command.AddOption(_containerAppOption);
         command.AddOption(_storageConnectionStringOption);
         command.AddOption(_runtimeOption);
         command.AddOption(_runtimeVersionOption);
@@ -72,14 +78,15 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     protected override FunctionAppCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-    // Resource group binding handled centrally when RequireResourceGroup() invoked
         options.FunctionAppName = parseResult.GetValueForOption(_functionAppNameOption);
         options.Location = parseResult.GetValueForOption(_locationOption);
-    options.AppServicePlan = parseResult.GetValueForOption(_appServicePlanOption);
-    options.PlanType = parseResult.GetValueForOption(_planTypeOption);
+        options.AppServicePlan = parseResult.GetValueForOption(_appServicePlanOption);
+        options.PlanType = parseResult.GetValueForOption(_planTypeOption);
+        options.PlanSku = parseResult.GetValueForOption(_planSkuOption);
+        options.ContainerAppName = parseResult.GetValueForOption(_containerAppOption);
         options.StorageConnectionString = parseResult.GetValueForOption(_storageConnectionStringOption);
         options.Runtime = parseResult.GetValueForOption(_runtimeOption) ?? "dotnet";
-    options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
+        options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
         return options;
     }
 
@@ -92,6 +99,16 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
                 return context.Response;
 
+            if (!string.IsNullOrWhiteSpace(options.ContainerAppName) &&
+                (!string.IsNullOrWhiteSpace(options.PlanType) ||
+                 !string.IsNullOrWhiteSpace(options.PlanSku) ||
+                 !string.IsNullOrWhiteSpace(options.AppServicePlan)))
+            {
+                context.Response.Status = 400;
+                context.Response.Message = "--container-app cannot be used with --plan-type, --plan-sku or --app-service-plan.";
+                return context.Response;
+            }
+
             var service = context.GetService<IFunctionAppService>();
             var result = await service.CreateFunctionApp(
                 options.Subscription!,
@@ -100,6 +117,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
                 options.Location!,
                 options.AppServicePlan,
                 options.PlanType,
+                options.PlanSku,
+                options.ContainerAppName,
                 options.StorageConnectionString,
                 options.Runtime ?? "dotnet",
                 options.RuntimeVersion,
