@@ -528,7 +528,7 @@ public class MonitorService : BaseAzureService, IMonitorService
                 };
                 validationResults.Add(error);
                 hasErrors = true;
-                
+
                 var failureResult = new JsonObject
                 {
                     ["summary"] = new JsonObject
@@ -541,7 +541,7 @@ public class MonitorService : BaseAzureService, IMonitorService
                     },
                     ["validationResults"] = new JsonArray([error])
                 };
-                
+
                 return Task.FromResult(("Invalid", "Log data contains invalid JSON format", (JsonNode?)failureResult));
             }
 
@@ -561,7 +561,7 @@ public class MonitorService : BaseAzureService, IMonitorService
             else
             {
                 recordCount = jsonArray.Count;
-                
+
                 // Validate array contents
                 if (jsonArray.Count == 0)
                 {
@@ -609,7 +609,7 @@ public class MonitorService : BaseAzureService, IMonitorService
                         {
                             // Validate common Azure Monitor requirements
                             var entryObj = entry.AsObject();
-                            
+
                             // Check for TimeGenerated field (recommended for custom logs)
                             if (!entryObj.ContainsKey("TimeGenerated"))
                             {
@@ -623,7 +623,7 @@ public class MonitorService : BaseAzureService, IMonitorService
                                 validationResults.Add(warning);
                                 hasWarnings = true;
                             }
-                            
+
                             // Check for empty objects
                             if (entryObj.Count == 0)
                             {
@@ -666,9 +666,9 @@ public class MonitorService : BaseAzureService, IMonitorService
             };
 
             var status = hasErrors ? "Invalid" : hasWarnings ? "Valid with warnings" : "Valid";
-            var message = hasErrors 
+            var message = hasErrors
                 ? $"Validation failed with {summary["errorCount"]} error(s)"
-                : hasWarnings 
+                : hasWarnings
                     ? $"Validation passed with {summary["warningCount"]} warning(s)"
                     : $"Validation passed successfully for {summary["recordCount"]} record(s)";
 

@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Nodes;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;
-using System.Text.Json.Nodes;
 
 namespace AzureMcp.Monitor.Commands.Ingestion;
 
