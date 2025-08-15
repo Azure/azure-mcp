@@ -23,7 +23,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     private readonly Option<string> _planTypeOption = FunctionAppOptionDefinitions.PlanType;
     private readonly Option<string> _planSkuOption = FunctionAppOptionDefinitions.PlanSku;
     private readonly Option<string> _containerAppOption = FunctionAppOptionDefinitions.ContainerApp;
-    private readonly Option<string> _storageConnectionStringOption = FunctionAppOptionDefinitions.StorageConnectionString;
     private readonly Option<string> _runtimeOption = FunctionAppOptionDefinitions.Runtime;
     private readonly Option<string> _runtimeVersionOption = FunctionAppOptionDefinitions.RuntimeVersion;
 
@@ -32,27 +31,46 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     public override string Description =>
     """
     Create a new Azure Function App in the specified resource group and region.
-    Automatically provisions dependencies when omitted (App Service plan, Storage account) and applies sensible runtime defaults.
+    Automatically provisions dependencies when omitted (App Service plan OR Container App managed environment + Container App, and a Storage account) and applies sensible runtime & SKU defaults.
+
     Required options:
-    - subscription: Target Azure subscription (can be ID or name)
-    - resource-group: Resource group for the Function App (created if it does not exist)
+    - subscription: Target Azure subscription (ID or name)
+    - resource-group: Resource group (created if missing)
     - functionapp: Globally unique Function App name
     - location: Azure region (e.g. eastus)
+
     Optional options:
-    - app-service-plan: Existing App Service plan name to use; if omitted a new plan is created
-    - plan-type: Plan kind when creating a plan (consumption|flex|premium) (default: consumption) (cannot combine with --plan-sku)
-        * consumption -> Y1 (Consumption)
-        * flex -> FC1 (Flex Consumption; Linux)
-        * premium -> EP1 (Elastic Premium; Linux optional)
-    - plan-sku: Explicit dedicated App Service plan SKU to create/use when no --app-service-plan provided (e.g., B1, S1, P1v3). Overrides --plan-type if specified.
-    - container-app: (Optional) Also create a minimal Azure Container App with a hello-world image, plus a managed environment (<name>-env) if it does not exist.
-    - storage-connection-string: AzureWebJobsStorage connection string; if omitted a new Storage account is created
-    - runtime: Worker runtime (dotnet|node|python|java|powershell) (default: dotnet)
-    - runtime-version: Specific runtime version (auto default if omitted)
-    Behavior:
-    - Linux plan required for python and flex consumption; enforced automatically
-    - Generates WEBSITE_NODE_DEFAULT_VERSION for Windows Node apps when a version is supplied
-    - Applies FUNCTIONS_EXTENSION_VERSION ~4 and sets FUNCTIONS_WORKER_RUNTIME
+    - app-service-plan: Use an existing App Service plan; if omitted one is created when hosting on App Service (non-container).
+    - plan-type: Hosting kind to create when a plan is needed (consumption|flex|premium|appservice|containerapp). Default: consumption.
+        * consumption  -> Y1   (Dynamic)
+        * flex / flexconsumption -> FC1 (FlexConsumption, Linux only)
+        * premium / functionspremium -> EP1 (Elastic Premium)
+        * appservice   -> B1 (Basic) unless overridden by --plan-sku
+        * containerapp -> Creates a Container App instead of an App Service plan/site (no plan created)
+    - plan-sku: Explicit App Service plan SKU (e.g. B1, S1, P1v3). Overrides --plan-type SKU selection (ignored for containerapp).
+    - container-app: Name for the Container App (implies containerapp hosting). Cannot be combined with --app-service-plan, --plan-type (other than containerapp), or --plan-sku.
+    - runtime: FUNCTIONS_WORKER_RUNTIME (dotnet|dotnet-isolated|node|python|java|powershell). Default: dotnet.
+    - runtime-version: Specific runtime version; if omitted a default per runtime is applied (see defaults below).
+
+    Automatic resources & defaults:
+    - Storage account: Always created (Standard_LRS, HTTPS only, blob public access disabled). Name pattern: <sanitized-functionapp>[random6]. Connection string injected as AzureWebJobsStorage.
+    - App Service plan: Auto-created when not provided (name: <functionapp>-plan) unless containerapp hosting.
+    - Container App: If containerapp hosting selected, a managed environment (<name>) and container app (<name>) are created with an official Azure Functions image for the runtime.
+    - Linux vs Windows: Linux automatically enforced for python and flex consumption. Other runtimes default to Windows unless plan-type dictates Linux (flex) or runtime is python.
+    - Runtime version defaults (LinuxFxVersion when Linux):
+        * python -> 3.12
+        * node -> 22
+        * dotnet -> 8.0
+        * java -> 21.0
+        * powershell -> 7.4
+    - WEBSITE_NODE_DEFAULT_VERSION: Set to ~<major> for Windows Node apps when a version is supplied.
+    - FUNCTIONS_EXTENSION_VERSION: Always ~4.
+
+    Behavior notes:
+    - Providing --plan-sku with --plan-type is allowed; SKU wins.
+    - --container-app path skips App Service plan & site creation and provisions a Container App instead.
+    - Invalid combination: --container-app with any of --plan-type (non-containerapp), --plan-sku, or --app-service-plan.
+
     Returns: functionApp object (name, resourceGroup, location, plan, state, defaultHostName, tags)
     """;
 
@@ -70,7 +88,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         command.AddOption(_planTypeOption);
         command.AddOption(_planSkuOption);
         command.AddOption(_containerAppOption);
-        command.AddOption(_storageConnectionStringOption);
         command.AddOption(_runtimeOption);
         command.AddOption(_runtimeVersionOption);
     }
@@ -84,7 +101,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         options.PlanType = parseResult.GetValueForOption(_planTypeOption);
         options.PlanSku = parseResult.GetValueForOption(_planSkuOption);
         options.ContainerAppName = parseResult.GetValueForOption(_containerAppOption);
-        options.StorageConnectionString = parseResult.GetValueForOption(_storageConnectionStringOption);
         options.Runtime = parseResult.GetValueForOption(_runtimeOption) ?? "dotnet";
         options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
         return options;
@@ -119,7 +135,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
                 options.PlanType,
                 options.PlanSku,
                 options.ContainerAppName,
-                options.StorageConnectionString,
                 options.Runtime ?? "dotnet",
                 options.RuntimeVersion,
                 options.Tenant,
