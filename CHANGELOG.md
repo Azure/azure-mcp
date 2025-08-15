@@ -6,22 +6,14 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
-### Breaking Changes
-
-### Bugs Fixed
-
-### Other Changes
-
-## 0.5.6 (2025-08-14)
-
-### Features Added
-
 - Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
-- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added support for getting details about an Azure Storage Account via the command `azmcp-storage-account-details`. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
+
+### Breaking Changes
 
 - Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+
+### Bugs Fixed
 
 ### Other Changes
 
@@ -29,7 +21,16 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
 - Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
   - Fixed KQL string escaping in Workbooks service queries.
-- Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
+
+## 0.5.6 (2025-08-14)
+
+### Features Added
+
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for getting details about an Azure Storage Account via the command `azmcp-storage-account-details`. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
+
+### Other Changes
+
 - Refactored resource group option (`--resource-group`) handling and validation for all commands to a centralized location. [[#961](https://github.com/Azure/azure-mcp/issues/961)]
 
 #### Dependency Updates
