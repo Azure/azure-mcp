@@ -25,7 +25,7 @@
         "**/bin/**",
         "**/.work/**",
         "**/.dist/**",
-        "**/eng/vscode/NOTICE.txt",
+        "**/NOTICE.txt",
         "!**/.devcontainer/**"
     ],
     "dictionaryDefinitions": [
