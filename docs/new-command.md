@@ -1381,12 +1381,11 @@ catch (Exception ex)
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
 5. Tool Description Quality Validation:
-    - Test your command descriptions for quality using the validation tool before submitting:
+    - Test your command descriptions for quality using the validation tool located at `eng/tools/ToolDescriptionEvaluator` before submitting:
 
       - **Single prompt validation** (test one description against one prompt):
 
         ```bash
-        cd eng/tools/ToolDescriptionConfidenceScore
         dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
         ```
 
@@ -1411,7 +1410,7 @@ catch (Exception ex)
         dotnet run -- --prompts-file my-prompts.json
 
         # Tools:
-        # Use JSON format (same as eng/tools/ToolDescriptionConfidenceScore/tools.json):
+        # Use JSON format (same as eng/tools/ToolDescriptionEvaluator/tools.json):
         dotnet run -- --tools-file my-tools.json
 
         # Combine both:
@@ -1448,7 +1447,7 @@ catch (Exception ex)
         ```
 
     - Custom tools file format:
-      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionConfidenceScore/tools.json`.
+      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionEvaluator/tools.json`.
 
 6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency

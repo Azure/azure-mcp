@@ -139,6 +139,7 @@
     "Show me my Azure function apps",
     "What function apps do I have?"
   ],
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/prompts.json
   "azmcp-functionapp-get": [
     "Show me the details for the function app <function_app_name>",
     "Get information about my function app <function_app_name> in <resource_group_name>",
@@ -150,6 +151,8 @@
     "Show plan and region for function app <function_app_name>",
     "Retrieve host name and status of function app <function_app_name>"
   ],
+=======
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/prompts.json
   "azmcp-keyvault-certificate-create": [
     "Create a new certificate called <certificate_name> in the key vault <key_vault_account_name>"
   ],

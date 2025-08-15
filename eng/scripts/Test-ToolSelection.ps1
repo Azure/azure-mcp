@@ -60,7 +60,7 @@ $RepoRoot = $RepoRoot.Path.Replace('\', '/')
 
 Push-Location $RepoRoot
 try {
-    $toolSelectionPath = "$RepoRoot/eng/tools/ToolDescriptionConfidenceScore"
+    $toolSelectionPath = "$RepoRoot/eng/tools/ToolDescriptionEvaluator"
     
     if (-not (Test-Path $toolSelectionPath)) {
         Write-Host "⏭️  Tool selection test not found at $toolSelectionPath - skipping"

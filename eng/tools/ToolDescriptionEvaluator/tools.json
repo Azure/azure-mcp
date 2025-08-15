@@ -4,7 +4,11 @@
   "results": [
     {
       "name": "list",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "List Azure Container Registries in a subscription. Optionally filter by resource group. Each registry result\nincludes: name, location, loginServer, skuName, skuTier. If no registries are found the tool returns null results\n(consistent with other list commands).",
+=======
+      "description": "List Azure Container Registries in a subscription. Optionally filter by resource group. Each registry result\r\nincludes: name, location, loginServer, skuName, skuTier. If no registries are found the tool returns null results\r\n(consistent with other list commands).",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp acr registry list",
       "option": [
         {
@@ -524,7 +528,11 @@
     },
     {
       "name": "list",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "List monitored resources in Datadog for a datadog resource taken as input from the user.\nThis command retrieves all monitored azure resources available.\nRequires \u0060datadog-resource\u0060, \u0060resource-group\u0060 and \u0060subscription\u0060.\nResult is a list of monitored resources as a JSON array.",
+=======
+      "description": "List monitored resources in Datadog for a datadog resource taken as input from the user.\r\nThis command retrieves all monitored azure resources available.\r\nRequires \u0060datadog-resource\u0060, \u0060resource-group\u0060 and \u0060subscription\u0060.\r\nResult is a list of monitored resources as a JSON array.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp datadog monitoredresources list",
       "option": [
         {
@@ -808,7 +816,11 @@
     },
     {
       "name": "list",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Lists all Azure Function Apps in a subscription.\nReturns a list of function app details including name, location, status, and app service plan name.",
+=======
+      "description": "Lists all Azure Function Apps in a subscription.\r\nReturns a list of function app details including name, location, status, and app service plan name.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp functionapp list",
       "option": [
         {
@@ -827,7 +839,11 @@
     },
     {
       "name": "list",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "List all Grafana workspace resources in a specified subscription. Returns an array of Grafana workspace details.\nUse this command to explore which Grafana workspace resources are available in your subscription.",
+=======
+      "description": "List all Grafana workspace resources in a specified subscription. Returns an array of Grafana workspace details.\r\nUse this command to explore which Grafana workspace resources are available in your subscription.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp grafana list",
       "option": [
         {
@@ -1163,7 +1179,11 @@
     },
     {
       "name": "query",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Execute a KQL against items in a Kusto cluster.\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060 and \u0060subscription\u0060), \u0060database\u0060, and \u0060query\u0060.\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+=======
+      "description": "Execute a KQL against items in a Kusto cluster.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060 and \u0060subscription\u0060), \u0060database\u0060, and \u0060query\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp kusto query",
       "option": [
         {
@@ -1206,7 +1226,11 @@
     },
     {
       "name": "sample",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Return a sample of rows from the specified table in an Kusto table.\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060), \u0060database\u0060, and \u0060table\u0060.\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+=======
+      "description": "Return a sample of rows from the specified table in an Kusto table.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060), \u0060database\u0060, and \u0060table\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp kusto sample",
       "option": [
         {
@@ -1335,7 +1359,11 @@
     },
     {
       "name": "create",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance\nand scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.",
+=======
+      "description": "Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance\r\nand scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp loadtesting test create",
       "option": [
         {
@@ -1507,7 +1535,11 @@
     },
     {
       "name": "create",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution\nof a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run\nthe same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.",
+=======
+      "description": "Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution\r\nof a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run\r\nthe same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp loadtesting testrun create",
       "option": [
         {
@@ -1642,7 +1674,11 @@
     },
     {
       "name": "update",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Updates the metadata and display properties of a completed or in-progress load test run execution.\nThis command allows you to modify descriptive information for better organization, documentation,\nand identification of test runs without affecting the actual test execution or results.",
+=======
+      "description": "Updates the metadata and display properties of a completed or in-progress load test run execution.\r\nThis command allows you to modify descriptive information for better organization, documentation,\r\nand identification of test runs without affecting the actual test execution or results.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp loadtesting testrun update",
       "option": [
         {
@@ -2955,7 +2991,11 @@
     },
     {
       "name": "create",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Create a new Azure Storage account in the specified resource group and location.\nCreates a storage account with the specified configuration options. Returns the\ncreated storage account information including name, location, SKU, and other properties.\n  Required options:\n- account-name: The globally unique name for the storage account\n- resource-group: The resource group where the account will be created\n- location: The Azure region for the storage account\n  Optional options:\n- sku: Storage account SKU (default: Standard_LRS)\n- kind: Storage account kind (default: StorageV2)\n- access-tier: Default access tier for blobs (default: Hot)\n- enable-https-traffic-only: Require HTTPS (default: true)\n- allow-blob-public-access: Allow public blob access (default: false)\n- enable-hierarchical-namespace: Enable Data Lake Storage Gen2 (default: false)",
+=======
+      "description": "Create a new Azure Storage account in the specified resource group and location.\r\nCreates a storage account with the specified configuration options. Returns the\r\ncreated storage account information including name, location, SKU, and other properties.\r\n  Required options:\r\n- account-name: The globally unique name for the storage account\r\n- resource-group: The resource group where the account will be created\r\n- location: The Azure region for the storage account\r\n  Optional options:\r\n- sku: Storage account SKU (default: Standard_LRS)\r\n- kind: Storage account kind (default: StorageV2)\r\n- access-tier: Default access tier for blobs (default: Hot)\r\n- enable-https-traffic-only: Require HTTPS (default: true)\r\n- allow-blob-public-access: Allow public blob access (default: false)\r\n- enable-hierarchical-namespace: Enable Data Lake Storage Gen2 (default: false)",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp storage account create",
       "option": [
         {
@@ -2980,7 +3020,11 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
           "required": null
+=======
+          "required": true
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
         },
         {
           "name": "location",
@@ -3027,6 +3071,7 @@
       ]
     },
     {
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "name": "details",
       "description": "Get detailed information about a specific Azure Storage account. This command retrieves comprehensive\nmetadata for the specified storage account including name, location, SKU, access settings, and configuration\ndetails. Returns a JSON object with all storage account properties.",
       "command": "azmcp storage account details",
@@ -3054,6 +3099,10 @@
     {
       "name": "list",
       "description": "List all Storage accounts in a subscription. This command retrieves all Storage accounts available\nin the specified subscription. Results are returned as a JSON array of\nobjects including common metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess,\nenableHttpsTrafficOnly).",
+=======
+      "name": "list",
+      "description": "List all Storage accounts in a subscription. This command retrieves all Storage accounts available\r\nin the specified subscription. Results are returned as a JSON array of\r\nobjects including common metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess,\r\nenableHttpsTrafficOnly).",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp storage account list",
       "option": [
         {
@@ -3208,7 +3257,11 @@
     },
     {
       "name": "details",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Get blob properties, metadata, and general information. This tool retrieves blob configuration including metadata properties, \napproximate size, and last modification time information. Returns blob properties as JSON. Requires account, \ncontainer, and blob.",
+=======
+      "description": "Get blob properties, metadata, and general information. This tool retrieves blob configuration including metadata properties, \r\napproximate size, and last modification time information. Returns blob properties as JSON. Requires account, \r\ncontainer, and blob.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp storage blob details",
       "option": [
         {
@@ -3350,7 +3403,11 @@
     },
     {
       "name": "send",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue with optional time-to-live and visibility delay settings. \nMessages are returned with receipt handles for tracking. Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, \nnext visible time, and message content.",
+=======
+      "description": "Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue with optional time-to-live and visibility delay settings. \r\nMessages are returned with receipt handles for tracking. Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, \r\nnext visible time, and message content.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp storage queue message send",
       "option": [
         {
@@ -3585,7 +3642,11 @@
     },
     {
       "name": "create",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "description": "Create a new workbook in the specified resource group and subscription.\nYou can set the display name and serialized data JSON content for the workbook.\nReturns the created workbook information upon successful completion.",
+=======
+      "description": "Create a new workbook in the specified resource group and subscription.\r\nYou can set the display name and serialized data JSON content for the workbook.\r\nReturns the created workbook information upon successful completion.",
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
       "command": "azmcp workbooks create",
       "option": [
         {
@@ -3739,5 +3800,9 @@
       ]
     }
   ],
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
   "duration": 8
+=======
+  "duration": 82
+>>>>>>> 8b5af3c8 (Updated scoring metrics and renamed utility for evaluating tool descriptions (#965)):eng/tools/ToolDescriptionEvaluator/tools.json
 }

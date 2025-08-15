@@ -144,7 +144,7 @@ The project is organized as follows:
    - Include tests in the `/tests` folder
    - Ensure all tests pass
    - Follow code style requirements
-   - Run the `eng/tools/ToolDescriptionConfidenceScore` tool for the new tool description and ensure a result >= 0.4 is achieved
+   - Run the `eng/tools/ToolDescriptionEvaluator` tool for the new tool description and ensure a result >= 0.4 is achieved
 
 ## Testing
 
