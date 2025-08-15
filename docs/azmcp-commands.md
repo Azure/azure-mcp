@@ -379,13 +379,13 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ### Azure Function App Operations
 
 ```bash
-# List function apps in a subscription
-azmcp functionapp list --subscription <subscription>
-
 # Get details for a specific Function App
 azmcp functionapp get --subscription <subscription> \
                       --resource-group <resource-group> \
                       --function-app <function-app-name>
+
+# List function apps in a subscription
+azmcp functionapp list --subscription <subscription>
 ```
 
 ### Azure Key Vault Operations
