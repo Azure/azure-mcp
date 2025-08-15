@@ -1,0 +1,32 @@
+{
+  "name": "-linux-x64",
+  "version": "0.5.6",
+  "description": ", for linux on x64",
+  "author": "Microsoft Corporation",
+  "homepage": "https://github.com/Azure/azure-mcp#readme",
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "bugs": {
+    "url": "https://github.com/Azure/azure-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azure/azure-mcp.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "bin": {
+    "-linux-x64": "./dist/"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

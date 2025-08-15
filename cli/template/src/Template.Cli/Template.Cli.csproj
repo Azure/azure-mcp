@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <CliName>azmcp</CliName>
+    <CliName>mcptmp</CliName>
     <AssemblyName>$(CliName)</AssemblyName>
     <AssemblyTitle>Azure MCP Server</AssemblyTitle>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

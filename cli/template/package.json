@@ -1,0 +1,34 @@
+{
+  "name": "mcp-template",
+  "version": "0.0.0",
+  "description": "Template MCP Server - Basic Model Context Protocol implementation",
+  "author": "Microsoft Corporation",
+  "homepage": "https://github.com/Azure/azure-mcp#readme",
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "bugs": {
+    "url": "https://github.com/Azure/azure-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azure/azure-mcp.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "bin": {
+    "mcptmp": "./index.js"
+  },
+  "os": [
+  ],
+  "cpu": [
+  ],
+  "optionalDependencies": {},
+  "scripts": {
+    "postinstall": "node ./scripts/post-install-script.js"
+  }
+}
