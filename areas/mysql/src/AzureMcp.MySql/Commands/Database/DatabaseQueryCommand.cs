@@ -21,7 +21,7 @@ public sealed class DatabaseQueryCommand(ILogger<DatabaseQueryCommand> logger) :
 
     public override string Name => "query";
 
-    public override string Description => "Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.";
+    public override string Description => "Executes secure SELECT queries against databases hosted on Azure Database for MySQL Flexible Server. This command provides read-only access to database content with built-in security validation to prevent destructive operations. Only SELECT statements are permitted, ensuring data integrity while enabling comprehensive data retrieval and analysis.";
 
     public override string Title => CommandTitle;
 

@@ -93,7 +93,7 @@ public class ServerParamGetCommandTests
         var command = new ServerParamGetCommand(_logger);
         
         Assert.Equal("param", command.Name);
-        Assert.Equal("Retrieves a specific parameter of a MySQL server.", command.Description);
+        Assert.Equal("Retrieves the current value and configuration details of a specific server parameter from an Azure Database for MySQL Flexible Server instance. This command enables precise monitoring and validation of individual server settings, supporting database performance tuning and compliance verification. Common parameters include (max_connections, innodb_buffer_pool_size, slow_query_log, general_log, binlog_expire_logs_seconds).", command.Description);
         Assert.Equal("Get MySQL Server Parameter", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);

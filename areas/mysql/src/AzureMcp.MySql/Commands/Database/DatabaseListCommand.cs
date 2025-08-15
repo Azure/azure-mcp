@@ -18,7 +18,7 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
 
     public override string Name => "list";
 
-    public override string Description => "Lists all databases in the MySQL server.";
+    public override string Description => "Retrieves a comprehensive list of all databases available on the specified Azure Database for MySQL Flexible Server instance. This command provides visibility into the database structure and helps identify available databases for connection and querying operations.";
 
     public override string Title => CommandTitle;
 

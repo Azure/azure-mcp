@@ -21,7 +21,7 @@ public sealed class ServerParamGetCommand(ILogger<ServerParamGetCommand> logger)
 
     public override string Name => "param";
 
-    public override string Description => "Retrieves a specific parameter of a MySQL server.";
+    public override string Description => "Retrieves the current value and configuration details of a specific server parameter from an Azure Database for MySQL Flexible Server instance. This command enables precise monitoring and validation of individual server settings, supporting database performance tuning and compliance verification. Common parameters include (max_connections, innodb_buffer_pool_size, slow_query_log, general_log, binlog_expire_logs_seconds).";
 
     public override string Title => CommandTitle;
 

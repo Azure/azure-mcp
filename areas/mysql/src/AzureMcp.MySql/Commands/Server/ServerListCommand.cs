@@ -18,7 +18,7 @@ public sealed class ServerListCommand(ILogger<ServerListCommand> logger) : BaseM
 
     public override string Name => "list";
 
-    public override string Description => "Lists all MySQL servers in the resource group.";
+    public override string Description => "Discovers and lists all Azure Database for MySQL Flexible Server instances within the specified resource group. This command provides an inventory of available MySQL server resources, including their names and current status, enabling efficient server management and resource planning.";
 
     public override string Title => CommandTitle;
 

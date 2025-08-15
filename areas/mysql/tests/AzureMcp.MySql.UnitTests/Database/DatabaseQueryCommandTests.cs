@@ -92,7 +92,7 @@ public class DatabaseQueryCommandTests
         var command = new DatabaseQueryCommand(_logger);
         
         Assert.Equal("query", command.Name);
-        Assert.Equal("Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.", command.Description);
+        Assert.Equal("Executes secure SELECT queries against databases hosted on Azure Database for MySQL Flexible Server. This command provides read-only access to database content with built-in security validation to prevent destructive operations. Only SELECT statements are permitted, ensuring data integrity while enabling comprehensive data retrieval and analysis.", command.Description);
         Assert.Equal("Query MySQL Database", command.Title);
         Assert.False(command.Metadata.Destructive);
         Assert.True(command.Metadata.ReadOnly);

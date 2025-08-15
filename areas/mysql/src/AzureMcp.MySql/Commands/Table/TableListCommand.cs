@@ -18,7 +18,7 @@ public sealed class TableListCommand(ILogger<TableListCommand> logger) : BaseDat
 
     public override string Name => "list";
 
-    public override string Description => "Lists all tables in the MySQL database.";
+    public override string Description => "Enumerates all tables within a specified database on an Azure Database for MySQL Flexible Server instance. This command provides a complete inventory of table objects, facilitating database exploration, schema analysis, and data architecture understanding for development tasks.";
 
     public override string Title => CommandTitle;
 

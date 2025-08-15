@@ -22,7 +22,7 @@ public sealed class ServerParamSetCommand(ILogger<ServerParamSetCommand> logger)
 
     public override string Name => "set";
 
-    public override string Description => "Sets a specific parameter of a MySQL server.";
+    public override string Description => "Modifies specific server parameters on an Azure Database for MySQL Flexible Server instance to optimize performance, security, or operational behavior. This command enables fine-tuned configuration management with validation to ensure parameter changes are compatible with the server's current state and constraints. Common parameters include (max_connections, innodb_buffer_pool_size, slow_query_log, general_log, binlog_expire_logs_seconds).";
 
     public override string Title => CommandTitle;
 
