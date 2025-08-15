@@ -1,15 +1,17 @@
 
 # MCP/LLM Tool Organization & Task Reference
 
-This document is the authoritative reference for organizing MCP and LLM tools to support a wide variety of Azure code-to-cloud scenarios. It is designed for easy consumption by agents and LLMs, enabling automation, planning, and code generation workflows. Use this guide to plan, build, and evolve granular, reusable tools for Azure migration, IaC generation, CI/CD pipeline creation, and modernization. All tasks and tools are structured for assertive, agentic execution and continuous improvement.
+This document is the reference for organizing MCP and LLM tools to support a wide variety of Azure code-to-cloud scenarios. It is designed for easy consumption by agents and LLMs, enabling automation, planning, and code generation workflows. Use this guide to plan, build, and evolve granular, reusable tools for Azure migration, IaC generation, CI/CD pipeline creation, and modernization. All tasks and tools are structured for assertive, agentic execution and continuous improvement.
 
 ## Shared Goal: Granular, Reusable Tools for Azure App Planning & Code Generation
 
 Work items are broken down into small, focused tools to maximize:
+
 - Reuse across Azure app planning and code generation workflows
 - Maintainability and extensibility
 - Agentic and CLI-driven automation
 - Consistent experience for partners and users
+- Smaller tools can be used in isolation or as part of orchestrating larger scenarios
 
 ## Scenarios Supported
 
@@ -24,27 +26,27 @@ All tools and tasks below support these scenarios. Use them to deliver flexible,
 ## Priority Legend
 
 | Priority | Description                                  |
-|----------|----------------------------------------------|
+|:--------:|----------------------------------------------|
 | P0       | Required to merge                            |
 | P1       | After initial PR                             |
 | P2       | Nice to have, after P1 issues are resolved   |
 
 ## Command Groups
 
-Use the following command groups for all tools in this PR.
+Update to use the command groups for all the tools within this PR.
 
-| Command Group      | Description                                       |
-|-------------------|---------------------------------------------------|
-| **quota**         | For all quota and usage tools                     |
-| **infrastructure**| For all generic infrastructure tools              |
-| **azd**           | For all `azd` specific tools                      |
-| **az**            | For all `az cli` specific tools                   |
-| **architecture**  | For all architecture planning and diagramming tools|
-| **pipelines**     | For all generic CI/CD pipeline generation tools   |
-| **github**        | For all Github pipeline and integration tools     |
-| **azuredevops**   | For all Azure DevOps pipeline and integration tools|
-| **bicep**         | For all Bicep IaC generation and validation tools |
-| **terraform**     | For all Terraform IaC generation and validation tools|
+|  x  | Priority | Command Group      | Description                                          |
+|:---:|:--------:|-------------------|------------------------------------------------------ |
+| [ ] | P0       | **quota**         | For all quota and usage tools                         |
+| [ ] | P0       | **infrastructure**| For all generic infrastructure tools                  |
+| [ ] | P0       | **azd**           | For all `azd` specific tools                          |
+| [ ] | P0       | **az**            | For all `az cli` specific tools                       |
+| [ ] | P0       | **architecture**  | For all architecture planning and diagramming tools   |
+| [ ] | P0       | **pipelines**     | For all generic CI/CD pipeline generation tools       |
+| [ ] | P0       | **github**        | For all Github pipeline and integration tools         |
+| [ ] | P0       | **azuredevops**   | For all Azure DevOps pipeline and integration tools   |
+| [ ] | P0       | **bicep**         | For all Bicep IaC generation and validation tools     |
+| [ ] | P0       | **terraform**     | For all Terraform IaC generation and validation tools |
 
 Deprecate the `deploy` command group. The included tools do not perform application deployment. Focus on migration, architecture planning, and validation to support deployment.
 
@@ -56,9 +58,9 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Task                                   | Command Group |
-|---|----------|----------------------------------------|--------------|
-| [ ] | P2       | Implement `azd monitor logs` command  | azd          |
+|  x  | Priority | Task                                   | Command Group |
+|:---:|:--------:|----------------------------------------|---------------|
+| [ ] | P2       | Implement `azd monitor logs` command   | azd           |
 
 ### Links
 
@@ -74,11 +76,11 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Tool                                         | Command Group   |
-|---|----------|----------------------------------------------|----------------|
-| [ ] | P1       | Tool to get topology of application         | architecture   |
-| [ ] | P1       | Tool to generate diagram from topology      | architecture   |
-| [ ] | P1       | Tool to generate diagram from existing Azure resources | architecture |
+|  x  | Priority | Tool                                                   | Command Group  |
+|:---:|:--------:|--------------------------------------------------------|----------------|
+| [ ] | P0       | Tool to get topology of application                    | architecture   |
+| [ ] | P0       | Tool to generate diagram from topology                 | architecture   |
+| [ ] | P1       | Tool to generate diagram from existing Azure resources | architecture   |
 
 ### Links
 
@@ -96,12 +98,12 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Tool                                             | Command Group   |
-|---|----------|--------------------------------------------------|----------------|
-| [ ] | P1       | Tool for generic pipeline best practices/rules   | pipelines      |
-| [ ] | P1       | Tool for pipeline best practices/rules for Github| github         |
-| [ ] | P1       | Tool for pipeline best practices/rules for Azure DevOps (azdo) | azuredevops |
-| [ ] | P1       | Tool for pipeline best practices/rules for azd   | azd            |
+|  x  | Priority | Tool                                                           | Command Group  |
+|:---:|:--------:|----------------------------------------------------------------|----------------|
+| [ ] | P0       | Tool for generic pipeline best practices/rules                 | pipelines      |
+| [ ] | P0       | Tool for pipeline best practices/rules for Github              | github         |
+| [ ] | P0       | Tool for pipeline best practices/rules for azd                 | azd            |
+| [ ] | P1       | Tool for pipeline best practices/rules for Azure DevOps (azdo) | azuredevops    |
 
 ### Links
 
@@ -118,16 +120,16 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Tool                                             | Command Group   |
-|---|----------|--------------------------------------------------|----------------|
-| [ ] | P1       | Discover/analyze app components                | architecture   |
-| [ ] | P1       | Generate infrastructure files                  | infrastructure |
-| [ ] | P1       | Containerize apps (dockerfiles)                | architecture   |
-| [ ] | P1       | Generate azure.yaml                            | azd            |
-| [ ] | P1       | Generate CI/CD pipelines                       | pipelines      |
-| [ ] | P1       | Generate architecture artifacts (plan, diagrams)| architecture   |
-| [ ] | P1       | Validate app for deployment                    | azd            |
-| [ ] | P1       | azure_yaml_schema_validation tool              | azd            |
+|  x  | Priority | Tool                                             | Command Group  |
+|:---:|:--------:|--------------------------------------------------|----------------|
+| [ ] | P0       | Discover/analyze app components                  | architecture   |
+| [ ] | P0       | Generate infrastructure files                    | infrastructure |
+| [ ] | P0       | Containerize apps (dockerfiles)                  | architecture   |
+| [ ] | P0       | Generate CI/CD pipelines                         | pipelines      |
+| [ ] | P0       | Generate architecture artifacts (plan, diagrams) | architecture   |
+| [ ] | P0       | Generate azure.yaml                              | azd            |
+| [ ] | P0       | Validate app for azd deployment                  | azd            |
+| [ ] | P1       | Azure Yaml validation tool                       | azd            |
 
 ### Links
 
@@ -144,14 +146,14 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Tool                                             | Command Group   |
-|---|----------|--------------------------------------------------|----------------|
+|  x  | Priority | Tool                                                   | Command Group  |
+|:---:|:--------:|--------------------------------------------------------|----------------|
 | [ ] | P0       | Leverage existing bicep/terraform best practices tools |                |
-| [ ] | P1       | Tool for generic IaC rules                          | infrastructure |
-| [ ] | P1       | Tool for bicep rules                                 | bicep          |
-| [ ] | P1       | Tool for terraform rules                             | terraform      |
-| [ ] | P1       | Tool for required azd rules                          | azd            |
-| [ ] | P2       | Tool for required az cli rules                       | az             |
+| [ ] | P0       | Tool for generic IaC best practices /rules             | infrastructure |
+| [ ] | P0       | Tool for bicep best practices / rules                  | bicep          |
+| [ ] | P0       | Tool for terraform best practices / rules              | terraform      |
+| [ ] | P0       | Tool for required azd rules                            | azd            |
+| [ ] | P2       | Tool for required az cli rules                         | az             |
 
 ### Links
 
@@ -168,9 +170,9 @@ Deprecate the `deploy` command group. The included tools do not perform applicat
 
 ### Tasks
 
-|   | Priority | Task                                                      | Command Group |
-|---|----------|-----------------------------------------------------------|--------------|
-| [ ] | P2       | Refactor usage checker implementations to a single shared implementation across resource types | quota        |
+|  x  | Priority | Task                                                                                           | Command Group |
+|:---:|:--------:|------------------------------------------------------------------------------------------------|---------------|
+| [ ] | P2       | Refactor usage checker implementations to a single shared implementation across resource types | quota         |
 
 ### Examples
 
