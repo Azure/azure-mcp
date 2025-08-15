@@ -62,12 +62,8 @@
   <!-- Remove non-AOT safe projects and packages when building native -->
   <!-- https://github.com/Azure/azure-mcp-pr/issues/318 -->
   <ItemGroup Condition="'$(BuildNative)' == 'true'">
-    <ProjectReference Remove="..\..\..\areas\acr\src\AzureMcp.Acr\AzureMcp.Acr.csproj" />
     <ProjectReference Remove="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
     <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
-    <ProjectReference Remove="..\..\..\areas\postgres\src\AzureMcp.Postgres\AzureMcp.Postgres.csproj" />
-    <ProjectReference Remove="..\..\..\areas\search\src\AzureMcp.Search\AzureMcp.Search.csproj" />
-    <ProjectReference Remove="..\..\..\areas\virtualdesktop\src\AzureMcp.VirtualDesktop\AzureMcp.VirtualDesktop.csproj" />
     <PackageReference Remove="Microsoft.Azure.Cosmos" />
   </ItemGroup>
 
