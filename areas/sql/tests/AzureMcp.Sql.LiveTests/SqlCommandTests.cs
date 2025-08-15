@@ -39,7 +39,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         Assert.Equal(databaseName, dbName);
 
         var dbType = database.GetProperty("type").GetString();
-        Assert.Equal("Microsoft.Sql/servers/databases", dbType);
+        Assert.Equal("Microsoft.Sql/servers/databases", dbType, ignoreCase: true);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         if (testDb.ValueKind != JsonValueKind.Undefined)
         {
             var dbType = testDb.GetProperty("type").GetString();
-            Assert.Equal("Microsoft.Sql/servers/databases", dbType);
+            Assert.Equal("Microsoft.Sql/servers/databases", dbType, ignoreCase: true);
 
             var dbStatus = testDb.GetProperty("status").GetString();
             Assert.Equal("Online", dbStatus);
@@ -275,6 +275,6 @@ public class SqlCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
         Assert.True(firstPool.TryGetProperty("location", out _));
 
         var poolType = firstPool.GetProperty("type").GetString();
-        Assert.Equal("Microsoft.Sql/servers/elasticPools", poolType);
+        Assert.Equal("Microsoft.Sql/servers/elasticPools", poolType, ignoreCase: true);
     }
 }

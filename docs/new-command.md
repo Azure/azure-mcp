@@ -171,6 +171,13 @@ This convention ensures:
 When creating commands that interact with Azure services, you'll need to:
 
 **Package Management:**
+
+For **Resource Graph queries** (using `BaseAzureResourceService`):
+- No additional packages required - `Azure.ResourceManager.ResourceGraph` is already included in the core project
+- Only add area-specific packages if you need direct ARM operations beyond Resource Graph queries
+- Example: `<PackageReference Include="Azure.ResourceManager.Sql" />` (only if needed for direct ARM operations)
+
+For **Direct ARM operations** (using `BaseAzureService`):
 - Add the appropriate Azure Resource Manager package to `Directory.Packages.props`
   - Example: `<PackageVersion Include="Azure.ResourceManager.Sql" Version="1.3.0" />`
 - Add the package reference in `AzureMcp.{AreaName}.csproj`
@@ -178,33 +185,100 @@ When creating commands that interact with Azure services, you'll need to:
 - **Version Consistency**: Ensure the package version in `Directory.Packages.props` matches across all projects
 - **Build Order**: Add the package to `Directory.Packages.props` first, then reference it in project files to avoid build errors
 
-**Subscription Resolution:**
-- Always use `ISubscriptionService.GetSubscription()` to resolve subscription ID or name
-- Inject `ISubscriptionService` into your service constructor
-- This handles both subscription IDs and subscription names automatically
-- Example pattern:
-```csharp
-public class MyService(ISubscriptionService subscriptionService, ITenantService tenantService)
-    : BaseAzureService(tenantService), IMyService
-{
-    private readonly ISubscriptionService _subscriptionService = subscriptionService;
+**Service Base Class Selection:**
+Choose the appropriate base class for your service based on the operations needed:
 
-    public async Task<MyResource> GetResourceAsync(string subscription, ...)
-    {
-        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
-        // Use subscriptionResource instead of creating one manually
-    }
-}
-```
+1. **For Azure Resource Graph queries** (recommended for resource management operations):
+   - Inherit from `BaseAzureResourceService` for services that need to query Azure Resource Graph
+   - Automatically provides `ExecuteResourceQueryAsync<T>()` and `ExecuteSingleResourceQueryAsync<T>()` methods
+   - Handles subscription resolution, tenant lookup, and Resource Graph query execution
+   - Example:
+   ```csharp
+   public class MyService(ISubscriptionService subscriptionService, ITenantService tenantService)
+       : BaseAzureResourceService(subscriptionService, tenantService), IMyService
+   {
+       public async Task<List<MyResource>> ListResourcesAsync(
+           string resourceGroup,
+           string subscription,
+           RetryPolicyOptions? retryPolicy)
+       {
+           return await ExecuteResourceQueryAsync(
+               "Microsoft.MyService/resources",
+               resourceGroup,
+               subscription,
+               retryPolicy,
+               ConvertToMyResourceModel);
+       }
+
+       public async Task<MyResource?> GetResourceAsync(
+           string resourceName,
+           string resourceGroup,
+           string subscription,
+           RetryPolicyOptions? retryPolicy)
+       {
+           return await ExecuteSingleResourceQueryAsync(
+               "Microsoft.MyService/resources",
+               resourceGroup,
+               subscription,
+               retryPolicy,
+               ConvertToMyResourceModel,
+               $"name =~ '{resourceName}'");
+       }
+
+       private static MyResource ConvertToMyResourceModel(JsonElement item)
+       {
+           var data = MyResourceData.FromJson(item);
+           return new MyResource(
+               Name: data.ResourceName,
+               Id: data.ResourceId,
+               // Map other properties...
+           );
+       }
+   }
+   ```
+
+2. **For direct Azure Resource Manager operations**:
+   - Inherit from `BaseAzureService` for services that use ARM clients directly
+   - Use when you need direct ARM resource manipulation (create, update, delete)
+   - Example:
+   ```csharp
+   public class MyService(ISubscriptionService subscriptionService, ITenantService tenantService)
+       : BaseAzureService(tenantService), IMyService
+   {
+       private readonly ISubscriptionService _subscriptionService = subscriptionService;
+
+       public async Task<MyResource> GetResourceAsync(string subscription, ...)
+       {
+           var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+           // Use subscriptionResource for direct ARM operations
+       }
+   }
+   ```
+
+**BaseAzureResourceService Benefits:**
+- Eliminates duplicate Resource Graph query code across services
+- Provides consistent error handling and validation
+- Handles subscription resolution and tenant lookup automatically
+- Supports additional KQL filter parameters for complex queries
+- Maintains AOT compatibility
 
 **API Pattern Discovery:**
-- Study existing services (e.g., Postgres, Redis) to understand resource access patterns
+- Study existing services (e.g., Sql, Postgres, Redis) to understand resource access patterns
 - Use resource collections correctly: `.GetSqlServers().GetAsync(serverName)` not `.GetSqlServerAsync(serverName, cancellationToken)`
 - Check Azure SDK documentation for correct method signatures and property names
 
 **Common Azure Resource Manager Patterns:**
 ```csharp
-// Correct pattern for subscription resolution and resource access
+// Resource Graph pattern (via BaseAzureResourceService)
+var resources = await ExecuteResourceQueryAsync(
+    "Microsoft.Sql/servers/databases",
+    resourceGroup,
+    subscription,
+    retryPolicy,
+    ConvertToSqlDatabaseModel,
+    "name =~ 'mydb*'");  // Optional KQL filter
+
+// Direct ARM pattern (via BaseAzureService)
 var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
 
 var resourceGroupResource = await subscriptionResource
@@ -1766,6 +1840,7 @@ Before submitting:
 - [ ] **AOT compilation verified** with `./eng/scripts/Build-Local.ps1 -BuildNative`
 - [ ] **Clean up unused using statements**: Run `dotnet format --include="areas/{area-name}/**/*.cs"` to remove unnecessary imports and ensure consistent formatting
 - [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
+- [ ] Identify unused properties for Azure Resource with `.\eng\scripts\Check-Unused-ResourceProperties.ps1`
 
 ### Azure SDK Integration
 - [ ] All Azure SDK property names verified and correct

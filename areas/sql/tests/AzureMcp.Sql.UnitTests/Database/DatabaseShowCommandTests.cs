@@ -126,7 +126,7 @@ public class DatabaseShowCommandTests
                 Arg.Any<string>(),
                 Arg.Any<RetryPolicyOptions>(),
                 Arg.Any<CancellationToken>())
-            .Returns((SqlDatabase?)null);
+            .Returns(Task.FromException<SqlDatabase>(new KeyNotFoundException("Database not found")));
 
         var args = _parser.Parse(["--subscription", "sub", "--resource-group", "rg", "--server", "server1", "--database", "notfound"]);
 
@@ -136,8 +136,6 @@ public class DatabaseShowCommandTests
         // Assert
         Assert.Equal(404, response.Status);
         Assert.Contains("not found", response.Message);
-        Assert.Contains("notfound", response.Message);
-        Assert.Contains("server1", response.Message);
     }
 
     [Fact]

@@ -17,8 +17,9 @@ public interface ISqlService
     /// <param name="subscription">The subscription ID or name</param>
     /// <param name="retryPolicy">Optional retry policy options</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The SQL database information, or null if not found</returns>
-    Task<SqlDatabase?> GetDatabaseAsync(
+    /// <returns>The SQL database information</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the database is not found</exception>
+    Task<SqlDatabase> GetDatabaseAsync(
         string serverName,
         string databaseName,
         string resourceGroup,

@@ -7,6 +7,7 @@ using AzureMcp.Sql.Commands.ElasticPool;
 using AzureMcp.Sql.Commands.EntraAdmin;
 using AzureMcp.Sql.Commands.FirewallRule;
 using AzureMcp.Sql.Models;
+using AzureMcp.Sql.Services.Models;
 
 namespace AzureMcp.Sql.Commands;
 
@@ -22,6 +23,13 @@ namespace AzureMcp.Sql.Commands;
 [JsonSerializable(typeof(DatabaseSku))]
 [JsonSerializable(typeof(ElasticPoolSku))]
 [JsonSerializable(typeof(ElasticPoolPerDatabaseSettings))]
+[JsonSerializable(typeof(SqlDatabaseData))]
+[JsonSerializable(typeof(SqlDatabaseProperties))]
+[JsonSerializable(typeof(SqlServerAadAdministratorData))]
+[JsonSerializable(typeof(SqlElasticPoolData))]
+[JsonSerializable(typeof(SqlElasticPoolProperties))]
+[JsonSerializable(typeof(SqlElasticPoolPerDatabaseSettings))]
+[JsonSerializable(typeof(SqlFirewallRuleData))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     WriteIndented = true,

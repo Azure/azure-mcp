@@ -323,8 +323,8 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
         var queryText = $@"
             resources
             | where type == 'microsoft.insights/workbooks'
-            | where resourceGroup =~ '{resourceGroupName}'
-            | where subscriptionId =~ '{subscriptionIdentifier}'";
+            | where resourceGroup =~ '{EscapeKqlString(resourceGroupName)}'
+            | where subscriptionId =~ '{EscapeKqlString(subscriptionIdentifier)}'";
 
         // Add optional filters if provided
         if (filters?.HasFilters == true)
@@ -332,19 +332,19 @@ public class WorkbooksService(ISubscriptionService _subscriptionService, ITenant
             if (!string.IsNullOrEmpty(filters.Kind))
             {
                 queryText += $@"
-            | where kind =~ '{filters.Kind}'";
+            | where kind =~ '{EscapeKqlString(filters.Kind)}'";
             }
 
             if (!string.IsNullOrEmpty(filters.Category))
             {
                 queryText += $@"
-            | where properties.category =~ '{filters.Category}'";
+            | where properties.category =~ '{EscapeKqlString(filters.Category)}'";
             }
 
             if (!string.IsNullOrEmpty(filters.SourceId))
             {
                 queryText += $@"
-            | where properties.sourceId =~ '{filters.SourceId}'";
+            | where properties.sourceId =~ '{EscapeKqlString(filters.SourceId)}'";
             }
         }
 

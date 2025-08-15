@@ -53,13 +53,6 @@ public sealed class DatabaseShowCommand(ILogger<DatabaseShowCommand> logger)
                 options.Subscription!,
                 options.RetryPolicy);
 
-            if (database == null)
-            {
-                context.Response.Status = 404;
-                context.Response.Message = $"Database '{options.Database}' not found on server '{options.Server}' in resource group '{options.ResourceGroup}'.";
-                return context.Response;
-            }
-
             context.Response.Results = ResponseResult.Create(
                 new DatabaseShowResult(database),
                 SqlJsonContext.Default.DatabaseShowResult);
@@ -77,6 +70,7 @@ public sealed class DatabaseShowCommand(ILogger<DatabaseShowCommand> logger)
 
     protected override string GetErrorMessage(Exception ex) => ex switch
     {
+        KeyNotFoundException => $"SQL database not found. Verify the database name, server name, resource group, and that you have access.",
         Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
             "Database or server not found. Verify the database name, server name, resource group, and that you have access.",
         Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
@@ -87,6 +81,7 @@ public sealed class DatabaseShowCommand(ILogger<DatabaseShowCommand> logger)
 
     protected override int GetStatusCode(Exception ex) => ex switch
     {
+        KeyNotFoundException => 404,
         Azure.RequestFailedException reqEx => reqEx.Status,
         _ => base.GetStatusCode(ex)
     };

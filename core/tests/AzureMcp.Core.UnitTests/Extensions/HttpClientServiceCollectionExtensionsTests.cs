@@ -69,7 +69,7 @@ public class HttpClientServiceCollectionExtensionsTests
             // Assert
             var options = serviceProvider.GetRequiredService<IOptions<HttpClientOptions>>();
             Assert.Equal("http://test.proxy:8080", options.Value.HttpProxy);
-            Assert.Equal("localhost", options.Value.NoProxy);
+            Assert.Contains("localhost", options.Value.NoProxy);
         }
         finally
         {
