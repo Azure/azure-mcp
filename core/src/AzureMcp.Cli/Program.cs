@@ -63,6 +63,7 @@ internal class Program
             new AzureMcp.Core.Areas.Tools.ToolsSetup(),
             // Register Azure service areas
             new AzureMcp.Aks.AksSetup(),
+            new AzureMcp.AppService.AppServiceSetup(),
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
