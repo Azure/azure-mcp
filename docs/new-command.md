@@ -1841,7 +1841,7 @@ Before submitting:
 - [ ] **AOT compilation verified** with `./eng/scripts/Build-Local.ps1 -BuildNative`
 - [ ] **Clean up unused using statements**: Run `dotnet format --include="areas/{area-name}/**/*.cs"` to remove unnecessary imports and ensure consistent formatting
 - [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
-- [ ] Identify unused properteis for Azure Resource with `.\eng\scripts\Check-Unused-ResourceProperties.ps1`
+- [ ] Identify unused properties for Azure Resource with `.\eng\scripts\Check-Unused-ResourceProperties.ps1`
 
 ### Azure SDK Integration
 - [ ] All Azure SDK property names verified and correct
