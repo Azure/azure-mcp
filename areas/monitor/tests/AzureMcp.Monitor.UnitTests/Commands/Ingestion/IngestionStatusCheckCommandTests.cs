@@ -134,10 +134,10 @@ public sealed class IngestionStatusCheckCommandTests
     {
         // Arrange
         var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule} --operation-id {_knownOperationId}";
-        
+
         var details = new JsonObject { ["operationId"] = _knownOperationId };
         var mockResult = ("Unavailable", "Operation ID status check not supported", details);
-        
+
         _monitorService.CheckIngestionStatus(
             _knownWorkspace,
             _knownDataCollectionRule,
@@ -164,10 +164,10 @@ public sealed class IngestionStatusCheckCommandTests
     {
         // Arrange
         var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule}";
-        
+
         var details = new JsonObject { ["note"] = "No operation ID provided" };
         var mockResult = ("Unavailable", "Recent ingestion status check not supported", details);
-        
+
         _monitorService.CheckIngestionStatus(
             _knownWorkspace,
             _knownDataCollectionRule,

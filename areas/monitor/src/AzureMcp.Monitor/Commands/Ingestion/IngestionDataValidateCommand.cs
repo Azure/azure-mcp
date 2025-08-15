@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Nodes;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;
-using System.Text.Json.Nodes;
 
 namespace AzureMcp.Monitor.Commands.Ingestion;
 
@@ -36,7 +36,7 @@ public sealed class IngestionDataValidateCommand(ILogger<IngestionDataValidateCo
         base.RegisterOptions(command);
         command.AddOption(_dataCollectionRuleOption);
         command.AddOption(_logDataOption);
-        
+
         // Add validation for required options
         command.AddValidator(result =>
         {
@@ -44,12 +44,12 @@ public sealed class IngestionDataValidateCommand(ILogger<IngestionDataValidateCo
             var logData = result.GetValueForOption(_logDataOption);
 
             var missingOptions = new List<string>();
-            
+
             if (string.IsNullOrEmpty(dataCollectionRule))
             {
                 missingOptions.Add("--data-collection-rule");
             }
-            
+
             if (string.IsNullOrEmpty(logData))
             {
                 missingOptions.Add("--log-data");
@@ -82,10 +82,10 @@ public sealed class IngestionDataValidateCommand(ILogger<IngestionDataValidateCo
 
             var commandResult = new IngestionDataValidateCommandResult(result.Status, result.Message, result.ValidationResults);
             context.Response.Results = ResponseResult.Create(commandResult, MonitorJsonContext.Default.IngestionDataValidateCommandResult);
-            
+
             // Set the response message from the service result
             context.Response.Message = result.Message;
-            
+
             // Set status based on validation result - keep 200 for all validation results since the command succeeded
             // The actual validation status is in the result object
         }
