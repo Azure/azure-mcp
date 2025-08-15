@@ -370,6 +370,9 @@
         "timechart",
         "myapp",
         "mygroup",
-        "myworkbook"
+        "myworkbook",
+        "aieval",
+        "requesturl",
+        "dataagent"
     ]
 }

@@ -6,6 +6,9 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-foundry-agents-connect | Query an agent in my AI foundry project |
+| azmcp-foundry-agents-evaluate | Evaluate the full query and response I got from my agent for task_adherence |
+| azmcp-foundry-agents-query-and-evaluate | Query and evaluate an agent in my AI Foundry project for task_adherence |
 | azmcp-foundry-models-deploy | Deploy a GPT4o instance on my resource \<resource-name> |
 | azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
 | azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
