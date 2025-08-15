@@ -3,9 +3,8 @@
 
 using Azure;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.FunctionApp.Models;
-using AzureMcp.FunctionApp.Options;
+using AzureMcp.FunctionApp.Options.FunctionApp;
 using AzureMcp.FunctionApp.Services;
 using Microsoft.Extensions.Logging;
 

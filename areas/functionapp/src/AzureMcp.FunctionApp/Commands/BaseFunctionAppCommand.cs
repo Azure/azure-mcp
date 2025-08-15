@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Options;
 
 namespace AzureMcp.FunctionApp.Commands;
 

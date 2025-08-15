@@ -492,7 +492,7 @@ class Program
         try
         {
             var json = JsonSerializer.Serialize(toolsResult, SourceGenerationContext.Default.ListToolsResult);
-            
+
             await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
         }
         catch (Exception ex)

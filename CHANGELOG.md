@@ -2,12 +2,29 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
+## 0.5.7 (Unreleased)
+
+### Features Added
+
+- Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+
+### Breaking Changes
+
+-
+
+### Bugs Fixed
+
+- Fixed cross-platform failure in `Run-ToolDescriptionConfidenceScore.ps1` where script attempted to access non-existent `$PSStyle.Platform` property and only searched for `azmcp.exe`, preventing confidence score calculation on macOS/Linux. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+
+#### Dependency Updates
+
+-
+
 ## 0.5.6 (2025-08-14)
 
 ### Features Added
 
 - Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added support for getting details about an Azure Storage Account via the command `azmcp-storage-account-details`. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
 
 ### Other Changes
 
