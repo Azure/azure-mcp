@@ -1,7 +1,9 @@
-using System.Text.Json.Serialization;
-using ToolSelection.Models;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-namespace ToolSelection;
+using System.Text.Json.Serialization;
+
+namespace ToolSelection.Models;
 
 [JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(ListToolsResult))]

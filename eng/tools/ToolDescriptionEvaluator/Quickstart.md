@@ -1,4 +1,4 @@
-# Tool Description Evaluation – Quickstart Guide
+# Tool Description Evaluator – Quickstart Guide
 
 This tool helps you test and validate the descriptions of new Azure MCP Server tools. It checks how well your tool descriptions match real user prompts, ensuring users get the right tool when they ask for something.
 
@@ -36,7 +36,7 @@ Or copy `.env.example` to `.env` and fill in your credentials.
 3. Run the analyzer using PowerShell
 
     ```pwsh
-    ./Run-ToolDescriptionConfidenceScore.ps1
+    ./Run-ToolDescriptionEvaluator.ps1
     ```
 
 4. Check if your tool ranks in the top 3 for the prompts (ideally #1) and with a score of at least `0.4`
@@ -48,4 +48,4 @@ Or copy `.env.example` to `.env` and fill in your credentials.
 - Ensure users get the right tool for their requests
 - No need to learn all options—just run and review results
 
-For more details and usage options, see the full [README](https://github.com/Azure/azure-mcp/blob/main/eng/tools/ToolDescriptionConfidenceScore/README.md).
+For more details and usage options, see the full [README](https://github.com/Azure/azure-mcp/blob/main/eng/tools/ToolDescriptionEvaluator/README.md).

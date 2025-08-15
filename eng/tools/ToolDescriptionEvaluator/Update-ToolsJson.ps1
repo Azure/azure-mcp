@@ -6,7 +6,7 @@
 
 .DESCRIPTION
     This script generates a fresh tools.json file by executing the azmcp.exe tools list command.
-    The generated JSON file will have the correct format expected by the ToolDescriptionConfidenceScore tool.
+    The generated JSON file will have the correct format expected by the ToolDescriptionEvaluator tool.
 
 .PARAMETER Force
     Overwrite the existing tools.json file without prompting

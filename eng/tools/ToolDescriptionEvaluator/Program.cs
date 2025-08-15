@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Diagnostics;
 using System.Text.Json;
 using ToolSelection.Models;
 using ToolSelection.Services;
@@ -764,13 +767,28 @@ class Program
             await writer.WriteLineAsync("### Success Rate Metrics");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync($"**Top Choice Success:** {metrics.TopChoicePercentage:F1}% ({metrics.TopChoiceCount}/{promptCount} tests)  ");
-            await writer.WriteLineAsync($"**High Confidence (≥0.5):** {metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests)  ");
-            await writer.WriteLineAsync($"**Top Choice + High Confidence:** {metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("#### Confidence Level Distribution");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync($"**💪 Very High Confidence (≥0.8):** {metrics.VeryHighConfidencePercentage:F1}% ({metrics.VeryHighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**🎯 High Confidence (≥0.7):** {metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**✅ Good Confidence (≥0.6):** {metrics.GoodConfidencePercentage:F1}% ({metrics.GoodConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**👍 Fair Confidence (≥0.5):** {metrics.FairConfidencePercentage:F1}% ({metrics.FairConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**👌 Acceptable Confidence (≥0.4):** {metrics.AcceptableConfidencePercentage:F1}% ({metrics.AcceptableConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**❌ Low Confidence (<0.4):** {metrics.LowConfidencePercentage:F1}% ({metrics.LowConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("#### Top Choice + Confidence Combinations");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync($"**💪 Top Choice + Very High Confidence (≥0.8):** {metrics.TopChoiceVeryHighConfidencePercentage:F1}% ({metrics.TopChoiceVeryHighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**🎯 Top Choice + High Confidence (≥0.7):** {metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**✅ Top Choice + Good Confidence (≥0.6):** {metrics.TopChoiceGoodConfidencePercentage:F1}% ({metrics.TopChoiceGoodConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**👍 Top Choice + Fair Confidence (≥0.5):** {metrics.TopChoiceFairConfidencePercentage:F1}% ({metrics.TopChoiceFairConfidenceCount}/{promptCount} tests)  ");
+            await writer.WriteLineAsync($"**👌 Top Choice + Acceptable Confidence (≥0.4):** {metrics.TopChoiceAcceptableConfidencePercentage:F1}% ({metrics.TopChoiceAcceptableConfidenceCount}/{promptCount} tests)  ");
             await writer.WriteLineAsync();
 
             await writer.WriteLineAsync("### Success Rate Analysis");
             await writer.WriteLineAsync();
-            var overallScore = metrics.TopChoiceHighConfidencePercentage; // Use the most stringent metric for analysis
+            var overallScore = metrics.TopChoiceAcceptableConfidencePercentage; // Use ≥0.4 (acceptable) as the primary metric
             if (overallScore >= 90)
             {
                 await writer.WriteLineAsync("🟢 **Excellent** - The tool selection system is performing very well.");
@@ -787,6 +805,28 @@ class Program
             {
                 await writer.WriteLineAsync("🔴 **Poor** - The tool selection system requires major improvements.");
             }
+            
+            // Add recommendation based on confidence distribution
+            if (metrics.VeryHighConfidencePercentage >= 70)
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("🎯 **Recommendation:** Tool descriptions are highly optimized for user intent matching.");
+            }
+            else if (metrics.GoodConfidencePercentage >= 80)
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("📈 **Recommendation:** Consider optimizing tool descriptions to achieve higher confidence scores (≥0.8).");
+            }
+            else if (metrics.AcceptableConfidencePercentage + metrics.GoodConfidencePercentage >= 70)
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("⚠️ **Recommendation:** Tool descriptions need improvement to better match user intent (targets: ≥0.6 good, ≥0.7 high).");
+            }
+            else
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("🔧 **Recommendation:** Significant improvements needed in tool descriptions for better semantic matching.");
+            }
             await writer.WriteLineAsync();
         }
         else
@@ -796,8 +836,21 @@ class Program
 
             await writer.WriteLineAsync($"\n\nPrompt count={promptCount}, Execution time={stopwatch.Elapsed.TotalSeconds:F7}s");
             await writer.WriteLineAsync($"Top choice success rate={metrics.TopChoicePercentage:F1}% ({metrics.TopChoiceCount}/{promptCount} tests passed)");
-            await writer.WriteLineAsync($"High confidence rate={metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests with ≥0.5 score)");
-            await writer.WriteLineAsync($"Top choice + high confidence rate={metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests passed)");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("Confidence Level Distribution:");
+            await writer.WriteLineAsync($"  Very High Confidence (≥0.8): {metrics.VeryHighConfidencePercentage:F1}% ({metrics.VeryHighConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  High Confidence (≥0.7): {metrics.HighConfidencePercentage:F1}% ({metrics.HighConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Good Confidence (≥0.6): {metrics.GoodConfidencePercentage:F1}% ({metrics.GoodConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Fair Confidence (≥0.5): {metrics.FairConfidencePercentage:F1}% ({metrics.FairConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Acceptable Confidence (≥0.4): {metrics.AcceptableConfidencePercentage:F1}% ({metrics.AcceptableConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Low Confidence (<0.4): {metrics.LowConfidencePercentage:F1}% ({metrics.LowConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("Top Choice + Confidence Combinations:");
+            await writer.WriteLineAsync($"  Top + Very High Confidence (≥0.8): {metrics.TopChoiceVeryHighConfidencePercentage:F1}% ({metrics.TopChoiceVeryHighConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Top + High Confidence (≥0.7): {metrics.TopChoiceHighConfidencePercentage:F1}% ({metrics.TopChoiceHighConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Top + Good Confidence (≥0.6): {metrics.TopChoiceGoodConfidencePercentage:F1}% ({metrics.TopChoiceGoodConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Top + Fair Confidence (≥0.5): {metrics.TopChoiceFairConfidencePercentage:F1}% ({metrics.TopChoiceFairConfidenceCount}/{promptCount} tests)");
+            await writer.WriteLineAsync($"  Top + Acceptable Confidence (≥0.4): {metrics.TopChoiceAcceptableConfidencePercentage:F1}% ({metrics.TopChoiceAcceptableConfidenceCount}/{promptCount} tests)");
         }
 
         // Calculate success rate metrics for console output
@@ -806,8 +859,12 @@ class Program
         // Print summary to console for feedback
         Console.WriteLine($"🧪 Tested {promptCount} prompts:");
         Console.WriteLine($"   📊 Top choice: {metricsForConsole.TopChoicePercentage:F1}%");
-        Console.WriteLine($"   🎯 High confidence: {metricsForConsole.HighConfidencePercentage:F1}%");
-        Console.WriteLine($"   ⭐ Top + high confidence: {metricsForConsole.TopChoiceHighConfidencePercentage:F1}%");
+    Console.WriteLine($"   💪 Very High confidence (≥0.8): {metricsForConsole.VeryHighConfidencePercentage:F1}%");
+    Console.WriteLine($"   🎯 High confidence (≥0.7): {metricsForConsole.HighConfidencePercentage:F1}%");
+    Console.WriteLine($"   ✅ Good confidence (≥0.6): {metricsForConsole.GoodConfidencePercentage:F1}%");
+    Console.WriteLine($"   👍 Fair confidence (≥0.5): {metricsForConsole.FairConfidencePercentage:F1}%");
+    Console.WriteLine($"   👌 Acceptable confidence (≥0.4): {metricsForConsole.AcceptableConfidencePercentage:F1}%");
+    Console.WriteLine($"   ⭐ Top + acceptable confidence (≥0.4): {metricsForConsole.TopChoiceAcceptableConfidencePercentage:F1}%");
     }
 
     private static async Task<SuccessRateMetrics> CalculateSuccessRateAsync(VectorDB db, Dictionary<string, List<string>> toolNameWithPrompts, EmbeddingService embeddingService)
@@ -824,23 +881,78 @@ class Program
 
                 if (queryResults.Count > 0)
                 {
+                    var topResult = queryResults[0];
+                    var expectedToolResult = queryResults.FirstOrDefault(r => r.Entry.Id == toolName);
+
                     // Check if expected tool is top choice
-                    if (queryResults[0].Entry.Id == toolName)
+                    if (topResult.Entry.Id == toolName)
                     {
                         metrics.TopChoiceCount++;
 
-                        // Check if it also has high confidence (0.5 or higher)
-                        if (queryResults[0].Score >= 0.5)
+                        // Granular confidence categories for top choice
+                        if (topResult.Score >= 0.8)
+                        {
+                            metrics.TopChoiceVeryHighConfidenceCount++;
+                        }
+                        if (topResult.Score >= 0.7)
                         {
                             metrics.TopChoiceHighConfidenceCount++;
                         }
+                        if (topResult.Score >= 0.6)
+                        {
+                            metrics.TopChoiceGoodConfidenceCount++;
+                        }
+                        if (topResult.Score >= 0.5)
+                        {
+                            metrics.TopChoiceFairConfidenceCount++;
+                        }
+                        if (topResult.Score >= 0.4)
+                        {
+                            metrics.TopChoiceAcceptableConfidenceCount++;
+                        }
                     }
 
-                    // Check if expected tool appears anywhere with confidence 0.5 or higher
-                    if (queryResults.Any(r => r.Entry.Id == toolName && r.Score >= 0.5))
+                    // Count confidence levels for expected tool (regardless of rank)
+                    if (expectedToolResult != null)
                     {
-                        metrics.HighConfidenceCount++;
+                        var score = expectedToolResult.Score;
+
+                        // Granular confidence categories
+                        if (score >= 0.8)
+                        {
+                            metrics.VeryHighConfidenceCount++;
+                        }
+                        if (score >= 0.7)
+                        {
+                            metrics.HighConfidenceCount++;
+                        }
+                        if (score >= 0.6)
+                        {
+                            metrics.GoodConfidenceCount++;
+                        }
+                        if (score >= 0.5)
+                        {
+                            metrics.FairConfidenceCount++;
+                        }
+                        if (score >= 0.4)
+                        {
+                            metrics.AcceptableConfidenceCount++;
+                        }
+                        if (score < 0.4)
+                        {
+                            metrics.LowConfidenceCount++;
+                        }
                     }
+                    else
+                    {
+                        // Expected tool not found in top 10 results
+                        metrics.LowConfidenceCount++;
+                    }
+                }
+                else
+                {
+                    // No results at all
+                    metrics.LowConfidenceCount++;
                 }
             }
         }
@@ -853,7 +965,7 @@ class Program
         Console.WriteLine("Tool Selection Confidence Score Analyzer");
         Console.WriteLine();
         Console.WriteLine("USAGE:");
-        Console.WriteLine("  ToolDescriptionConfidenceScore [OPTIONS]");
+        Console.WriteLine("  ToolDescriptionEvaluator [OPTIONS]");
         Console.WriteLine();
         Console.WriteLine("MODES:");
         Console.WriteLine("  Default mode         Run full analysis on all tools and prompts");
@@ -874,19 +986,19 @@ class Program
         Console.WriteLine("  output                  Set to 'md' for markdown output");
         Console.WriteLine();
         Console.WriteLine("EXAMPLES:");
-        Console.WriteLine("  ToolDescriptionConfidenceScore                                          # Use dynamic tool loading (default)");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --tools-file my-tools.json               # Use custom tools file");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --prompts-file my-prompts.md             # Use custom prompts file");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --markdown                               # Output in markdown format");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --ci --tools-file tools.json        # CI mode with JSON file");
+        Console.WriteLine("  ToolDescriptionEvaluator                                          # Use dynamic tool loading (default)");
+        Console.WriteLine("  ToolDescriptionEvaluator --tools-file my-tools.json               # Use custom tools file");
+        Console.WriteLine("  ToolDescriptionEvaluator --prompts-file my-prompts.md             # Use custom prompts file");
+        Console.WriteLine("  ToolDescriptionEvaluator --markdown                               # Output in markdown format");
+        Console.WriteLine("  ToolDescriptionEvaluator --ci --tools-file tools.json        # CI mode with JSON file");
         Console.WriteLine();
         Console.WriteLine("  # Validate a single tool description:");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --validate \\");
+        Console.WriteLine("  ToolDescriptionEvaluator --validate \\");
         Console.WriteLine("    --tool-description \"Lists all storage accounts in a subscription\" \\");
         Console.WriteLine("    --prompt \"show me my storage accounts\"");
         Console.WriteLine();
         Console.WriteLine("  # Validate one description against multiple prompts:");
-        Console.WriteLine("  ToolDescriptionConfidenceScore --validate \\");
+        Console.WriteLine("  ToolDescriptionEvaluator --validate \\");
         Console.WriteLine("    --tool-description \"Lists storage accounts\" \\");
         Console.WriteLine("    --prompt \"show me storage accounts\" \\");
         Console.WriteLine("    --prompt \"list my storage accounts\" \\");
@@ -1004,7 +1116,11 @@ class Program
                     var quality = rank == 1 ? "✅ EXCELLENT" :
                                  rank <= 3 ? "🟡 GOOD" :
                                  rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
-                    var confidence = score >= 0.5 ? "💪 High confidence" : "⚠️  Low confidence";
+                    var confidence = score >= 0.8 ? "💪 Very High confidence" :
+                                   score >= 0.7 ? "🎯 High confidence" :
+                                   score >= 0.6 ? "✅ Good confidence" :
+                                   score >= 0.5 ? "👍 Fair confidence" :
+                                   score >= 0.4 ? "👌 Acceptable confidence" : "❌ Low confidence";
 
                     Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
                     Console.WriteLine($"      Description: \"{toolDescription}\"");
@@ -1029,10 +1145,10 @@ class Program
                 // Suggestions for improvement
                 Console.WriteLine();
                 var bestTestTool = testToolResults.FirstOrDefault();
-                if (bestTestTool.rank > 1 || bestTestTool.score < 0.5)
+                if (bestTestTool.rank > 1 || bestTestTool.score < 0.6)
                 {
                     Console.WriteLine("💡 Suggestions for improvement:");
-                    if (bestTestTool.score < 0.3)
+                    if (bestTestTool.score < 0.4)
                     {
                         Console.WriteLine("   • Consider using more specific keywords from the prompt");
                         Console.WriteLine("   • Include common synonyms or alternative phrasings");
