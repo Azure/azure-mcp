@@ -104,7 +104,7 @@ public sealed class FunctionAppService(
         return new CreateOptions(rt, rtv, hostingKind, requiresLinux, planSku);
     }
 
-    private static HostingKind ParseHostingKind(string? planType, string? containerAppName)
+    internal static HostingKind ParseHostingKind(string? planType, string? containerAppName)
     {
         var pt = planType?.Trim().ToLowerInvariant();
         if (!string.IsNullOrWhiteSpace(containerAppName) && pt is null)
@@ -280,17 +280,7 @@ public sealed class FunctionAppService(
     private static async Task<string> EnsureStorageForFunctionApp(SubscriptionResource subscription, ResourceGroupResource rg, string functionAppName, string location)
     {
         var storageAccountName = CreateStorageAccountName(functionAppName);
-
-        var createOptions = new StorageAccountCreateOrUpdateContent(
-            new StorageSku(StorageSkuName.StandardLrs),
-            StorageKind.StorageV2,
-            location)
-        {
-            AccessTier = StorageAccountAccessTier.Hot,
-            EnableHttpsTrafficOnly = true,
-            AllowBlobPublicAccess = false,
-            IsHnsEnabled = false
-        };
+        var createOptions = CreateStorageAccountOptions(location);
 
         var op = await rg.GetStorageAccounts().CreateOrUpdateAsync(Azure.WaitUntil.Completed, storageAccountName, createOptions);
         var storage = op.Value;
@@ -302,6 +292,20 @@ public sealed class FunctionAppService(
         }
         var primary = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{storageAccountName}'");
         return BuildConnectionString(storageAccountName, primary.Value);
+    }
+
+    internal static StorageAccountCreateOrUpdateContent CreateStorageAccountOptions(string location)
+    {
+        return new StorageAccountCreateOrUpdateContent(
+            new StorageSku(StorageSkuName.StandardLrs),
+            StorageKind.StorageV2,
+            location)
+        {
+            AccessTier = StorageAccountAccessTier.Hot,
+            EnableHttpsTrafficOnly = true,
+            AllowBlobPublicAccess = false,
+            IsHnsEnabled = false
+        };
     }
 
     internal static SiteConfigProperties? CreateLinuxSiteConfig(string runtime, string? runtimeVersion)
@@ -446,7 +450,7 @@ public sealed class FunctionAppService(
         return app;
     }
 
-    private static string ResolveFunctionsContainerImage(string runtime)
+    internal static string ResolveFunctionsContainerImage(string runtime)
     {
         var rt = (runtime ?? "dotnet").Trim().ToLowerInvariant();
         return rt switch
@@ -461,13 +465,20 @@ public sealed class FunctionAppService(
         };
     }
 
+    internal static bool RequiresLinuxFor(string? runtime, string? planType, string? containerAppName)
+    {
+        var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
+        var hostingKind = ParseHostingKind(planType, containerAppName);
+        return rt == "python" || hostingKind == HostingKind.FlexConsumption;
+    }
+
 
     private static bool IsFlexConsumption(AppServicePlanData plan)
     {
         return string.Equals(plan.Sku?.Tier, "FlexConsumption", StringComparison.OrdinalIgnoreCase);
     }
 
-    private enum HostingKind
+    internal enum HostingKind
     {
         Consumption,
         FlexConsumption,
