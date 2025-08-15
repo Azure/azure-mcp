@@ -20,6 +20,8 @@ public interface IFunctionAppService
         string location,
         string? appServicePlan = null,
         string? planType = null,
+        string? planSku = null,
+        string? containerAppName = null,
         string? storageConnectionString = null,
         string? runtime = null,
         string? runtimeVersion = null,
