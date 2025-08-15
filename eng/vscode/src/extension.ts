@@ -52,11 +52,26 @@ export function activate(context: vscode.ExtensionContext) {
                 // Example: ["storage", "keyvault", ...]
                 const enabledServices: string[] | undefined = config.get('enabledServices');
                 const args = ['server', 'start'];
+
+                // Server Mode (single | namespace | all). Default 'namespace'.
+                const mode = config.get<string>('serverMode') || 'namespace';
+                if (mode) {
+                    args.push('--mode', mode);
+                }
+
+                // Namespaces filter
                 if (enabledServices && Array.isArray(enabledServices) && enabledServices.length > 0) {
                     for (const svc of enabledServices) {
                         args.push('--namespace', svc);
                     }
                 }
+
+                // Read-only flag
+                const readOnly = config.get<boolean>('readOnly') === true;
+                if (readOnly) {
+                    args.push('--read-only');
+                }
+
 
                 // Honor VS Code telemetry settings
                 // Only set AZURE_MCP_COLLECT_TELEMETRY if telemetry is disabled
@@ -84,7 +99,11 @@ export function activate(context: vscode.ExtensionContext) {
     // Listen for changes to azureMcp.enabledServices and re-register MCP server
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration((event) => {
-            if (event.affectsConfiguration('azureMcp.enabledServices')) {
+            if (
+                event.affectsConfiguration('azureMcp.enabledServices') ||
+                event.affectsConfiguration('azureMcp.serverMode') ||
+                event.affectsConfiguration('azureMcp.readOnly')
+            ) {
                 didChangeEmitter.fire();
             }
         })

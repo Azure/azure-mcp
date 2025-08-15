@@ -12,9 +12,9 @@
     It restores dependencies, builds the application in Release configuration, and runs it.
 
 .EXAMPLE
-    .\Run-ToolDescriptionConfidenceScore.ps1
+    .\Run-ToolDescriptionEvaluator.ps1
     Builds and runs the application with default settings
-    .\Run-ToolDescriptionConfidenceScore.ps1 -BuildAzureMcp
+    .\Run-ToolDescriptionEvaluator.ps1 -BuildAzureMcp
     Builds the root project, then runs the tool selection confidence score calculation app
 #>
 
@@ -53,7 +53,7 @@ try {
     
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
-    & dotnet build "$toolDir/ToolDescriptionConfidenceScore.csproj" --configuration Release
+    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj" --configuration Release
 
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build application"
