@@ -1841,7 +1841,7 @@ Before submitting:
 - [ ] **AOT compilation verified** with `./eng/scripts/Build-Local.ps1 -BuildNative`
 - [ ] **Clean up unused using statements**: Run `dotnet format --include="areas/{area-name}/**/*.cs"` to remove unnecessary imports and ensure consistent formatting
 - [ ] Fix formatting issues with `dotnet format ./AzureMcp.sln` and ensure no warnings
-- [ ] Remove any properties from classes located in the `areas\{area-name}\Services\Models` folder that are not used by the classes in the `areas\{area-name}\Models` folder, based on the mapping logic defined in `areas\{area-name}\Service.cs`
+- [ ] Identify unused properteis for Azure Resource with `.\eng\scripts\Check-Unused-ResourceProperties.ps1`
 
 ### Azure SDK Integration
 - [ ] All Azure SDK property names verified and correct
