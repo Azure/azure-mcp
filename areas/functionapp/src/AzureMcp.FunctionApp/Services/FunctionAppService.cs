@@ -2,17 +2,18 @@
 // Licensed under the MIT License.
 
 using Azure;
+using Azure.ResourceManager.AppContainers;
+using Azure.ResourceManager.AppContainers.Models;
 using Azure.ResourceManager.AppService;
 using Azure.ResourceManager.AppService.Models;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Resources;
-using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
-using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.FunctionApp.Models;
 
 namespace AzureMcp.FunctionApp.Services;
@@ -77,6 +78,8 @@ public sealed class FunctionAppService(
         string location,
         string? appServicePlan = null,
         string? planType = null,
+        string? planSku = null,
+        string? containerAppName = null,
         string? storageConnectionString = null,
         string? runtime = null,
         string? runtimeVersion = null,
@@ -87,40 +90,63 @@ public sealed class FunctionAppService(
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var rg = await _resourceGroupService.CreateOrUpdateResourceGroup(subscription, resourceGroup, location, tenant, retryPolicy);
+        var options = NormalizeOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
 
-        var options = NormalizeOptions(runtime, runtimeVersion, planType);
+        if (options.HostingKind == HostingKind.ContainerApp)
+        {
+            var effectiveContainerName = string.IsNullOrWhiteSpace(containerAppName) ? functionAppName : containerAppName!;
+            var storageForContainer = await ResolveStorageConnectionString(subscriptionResource, rg, functionAppName, location, storageConnectionString);
+            var containerApp = await EnsureMinimalContainerApp(rg, effectiveContainerName, location, options.Runtime, storageForContainer);
+            var host = containerApp.Data.Configuration?.Ingress?.Fqdn ?? containerApp.Data.LatestRevisionName ?? containerApp.Data.Name;
+            return new FunctionAppInfo(
+                containerApp.Data.Name,
+                rg.Data.Name,
+                location,
+                "containerapp",
+                containerApp.Data.ProvisioningState.ToString(),
+                host,
+                containerApp.Data.Tags?.ToDictionary(k => k.Key, v => v.Value));
+        }
+
         var plan = await EnsureAppServicePlan(rg, appServicePlan, functionAppName, location, options);
         var site = await CreateFunctionApp(rg, functionAppName, location, plan, options);
-
         var storage = await ResolveStorageConnectionString(subscriptionResource, rg, functionAppName, location, storageConnectionString);
         await ApplyAppSettings(site, options, storage);
-
         return ConvertToFunctionAppModel(site);
     }
 
-    private static CreateOptions NormalizeOptions(string? runtime, string? runtimeVersion, string? planType)
+    private static CreateOptions NormalizeOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? containerAppName)
     {
         var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
         var rtv = string.IsNullOrWhiteSpace(runtimeVersion) ? null : runtimeVersion!.Trim();
-        var kind = ParsePlanKind(planType);
-        var requiresLinux = rt == "python" || kind == PlanKind.Flex;
-        return new CreateOptions(rt, rtv, kind, requiresLinux);
+        var hostingKind = ParseHostingKind(planType, containerAppName);
+        var requiresLinux = rt == "python" || hostingKind == HostingKind.FlexConsumption;
+        return new CreateOptions(rt, rtv, hostingKind, requiresLinux, planSku);
     }
 
-    private static PlanKind ParsePlanKind(string? planType) => planType?.Trim().ToLowerInvariant() switch
+    private static HostingKind ParseHostingKind(string? planType, string? containerAppName)
     {
-        "flex" => PlanKind.Flex,
-        "premium" => PlanKind.Premium,
-        _ => PlanKind.Consumption
-    };
+        var pt = planType?.Trim().ToLowerInvariant();
+        if (!string.IsNullOrWhiteSpace(containerAppName) && pt is null)
+            return HostingKind.ContainerApp;
+
+        return pt switch
+        {
+            "flex" or "flexconsumption" => HostingKind.FlexConsumption,
+            "premium" or "functionspremium" => HostingKind.Premium,
+            "appservice" => HostingKind.AppService,
+            "containerapp" or "containerapps" => HostingKind.ContainerApp,
+            _ => HostingKind.Consumption
+        };
+    }
 
     private static async Task<AppServicePlanResource> CreatePlan(ResourceGroupResource rg, string planName, string location, CreateOptions options)
     {
-        var data = new AppServicePlanData(location)
-        {
-            Sku = CreateSkuForPlanKind(options.PlanKind),
-            IsReserved = options.RequiresLinux
-        };
+        var sku = !string.IsNullOrWhiteSpace(options.ExplicitSku)
+            ? new AppServiceSkuDescription { Name = options.ExplicitSku!.Trim(), Tier = InferTier(options.ExplicitSku!) }
+            : CreateSkuForHostingKind(options.HostingKind);
+
+        var data = new AppServicePlanData(location) { Sku = sku, IsReserved = options.RequiresLinux };
         var op = await rg.GetAppServicePlans().CreateOrUpdateAsync(WaitUntil.Completed, planName, data);
         return op.Value;
     }
@@ -130,13 +156,16 @@ public sealed class FunctionAppService(
         if (options.RequiresLinux && plan.Data.IsReserved != true)
             throw new InvalidOperationException($"App Service plan '{planName}' must be Linux for runtime '{options.Runtime}'.");
 
-        if (options.PlanKind == PlanKind.Flex && !IsFlexConsumption(plan.Data))
+        if (options.HostingKind == HostingKind.FlexConsumption && !IsFlexConsumption(plan.Data))
             throw new InvalidOperationException($"App Service plan '{planName}' is not a Flex Consumption plan.");
+        if (options.HostingKind == HostingKind.Premium && !string.Equals(plan.Data.Sku?.Tier, "ElasticPremium", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"App Service plan '{planName}' is not an Elastic Premium plan.");
     }
 
     private static SiteConfigProperties? BuildSiteConfig(bool isLinux, CreateOptions options)
     {
-        if (!isLinux) return null;
+        if (!isLinux)
+            return null;
         return CreateLinuxSiteConfig(options.Runtime, options.RuntimeVersion);
     }
 
@@ -319,36 +348,128 @@ public sealed class FunctionAppService(
 
     private static string? ExtractMajorVersion(string version)
     {
-        if (string.IsNullOrWhiteSpace(version)) return null;
+        if (string.IsNullOrWhiteSpace(version))
+            return null;
         var digits = new string(version.Trim().TakeWhile(ch => char.IsDigit(ch)).ToArray());
         return string.IsNullOrEmpty(digits) ? null : digits;
     }
 
-    private static AppServiceSkuDescription CreateSkuForPlanKind(PlanKind planKind)
+    private static AppServiceSkuDescription CreateSkuForHostingKind(HostingKind kind) => kind switch
     {
-        return planKind switch
+        HostingKind.FlexConsumption => new AppServiceSkuDescription { Name = "FC1", Tier = "FlexConsumption" },
+        HostingKind.Premium => new AppServiceSkuDescription { Name = "EP1", Tier = "ElasticPremium" },
+        HostingKind.Consumption => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" },
+        HostingKind.AppService => new AppServiceSkuDescription { Name = "B1", Tier = "Basic" },
+        _ => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" }
+    };
+
+    private static string InferTier(string skuName)
+    {
+        var upper = skuName.Trim().ToUpperInvariant();
+        if (upper.StartsWith("B"))
+            return "Basic";
+        if (upper.StartsWith("S"))
+            return "Standard";
+        if (upper.StartsWith("P1V3") || upper.StartsWith("P2V3") || upper.StartsWith("P3V3") || upper.StartsWith("P"))
+            return "PremiumV3";
+        if (upper.StartsWith("P"))
+            return "Premium";
+        return "Standard";
+    }
+
+    private static async Task<ContainerAppResource> EnsureMinimalContainerApp(ResourceGroupResource rg, string name, string location, string runtime, string storageConnectionString)
+    {
+        var envs = rg.GetContainerAppManagedEnvironments();
+        var envData = new ContainerAppManagedEnvironmentData(location);
+        var env = (await envs.CreateOrUpdateAsync(WaitUntil.Completed, name, envData)).Value;
+
+        var apps = rg.GetContainerApps();
+        var image = ResolveFunctionsContainerImage(runtime);
+        var data = new ContainerAppData(location)
         {
-            PlanKind.Flex => new AppServiceSkuDescription { Name = "FC1", Tier = "FlexConsumption" },
-            PlanKind.Premium => new AppServiceSkuDescription { Name = "EP1", Tier = "ElasticPremium" },
-            _ => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" }
+            ManagedEnvironmentId = env.Id,
+            Configuration = new ContainerAppConfiguration()
+            {
+                Ingress = new ContainerAppIngressConfiguration()
+                {
+                    External = true,
+                    TargetPort = 80
+                }
+            },
+            Template = new ContainerAppTemplate()
+            {
+                Containers =
+                {
+                    new ContainerAppContainer()
+                    {
+                        Name = "functions",
+                        Image = image,
+                        Resources = new AppContainerResources()
+                        {
+                            Cpu = 0.25,
+                            Memory = "0.5Gi"
+                        },
+                        Env =
+                        {
+                            new ContainerAppEnvironmentVariable()
+                            {
+                                Name = "FUNCTIONS_WORKER_RUNTIME",
+                                Value = runtime
+                            },
+                            new ContainerAppEnvironmentVariable()
+                            {
+                                Name = "FUNCTIONS_EXTENSION_VERSION",
+                                Value = "~4"
+                            },
+                            new ContainerAppEnvironmentVariable()
+                            {
+                                Name = "AzureWebJobsStorage",
+                                Value = storageConnectionString
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var app = (await apps.CreateOrUpdateAsync(WaitUntil.Completed, name, data)).Value;
+        return app;
+    }
+
+    private static string ResolveFunctionsContainerImage(string runtime)
+    {
+        var rt = (runtime ?? "dotnet").Trim().ToLowerInvariant();
+        return rt switch
+        {
+            "dotnet" => "mcr.microsoft.com/azure-functions/dotnet:4",
+            "dotnet-isolated" => "mcr.microsoft.com/azure-functions/dotnet-isolated:4",
+            "node" => "mcr.microsoft.com/azure-functions/node:4",
+            "python" => "mcr.microsoft.com/azure-functions/python:4",
+            "java" => "mcr.microsoft.com/azure-functions/java:4",
+            "powershell" => "mcr.microsoft.com/azure-functions/powershell:4",
+            _ => "mcr.microsoft.com/azure-functions/dotnet-isolated:4"
         };
     }
+
 
     private static bool IsFlexConsumption(AppServicePlanData plan)
     {
         return string.Equals(plan.Sku?.Tier, "FlexConsumption", StringComparison.OrdinalIgnoreCase);
     }
 
-    private enum PlanKind
+    private enum HostingKind
     {
         Consumption,
-        Flex,
-        Premium
+        FlexConsumption,
+        Premium,
+        AppService,
+        ContainerApp
     }
 
     private readonly record struct CreateOptions(
         string Runtime,
         string? RuntimeVersion,
-        PlanKind PlanKind,
-        bool RequiresLinux);
+        HostingKind HostingKind,
+        bool RequiresLinux,
+        string? ExplicitSku);
 }
