@@ -265,6 +265,201 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
     }
 
     [Fact]
+    public async Task Should_validate_log_data_for_ingestion()
+    {
+        var testLogData = @"[{""TimeGenerated"": ""2023-01-01T12:00:00Z"", ""Message"": ""Test log entry"", ""Level"": ""Info"", ""Source"": ""LiveTest""}]";
+        var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
+
+        var result = await CallToolAsync(
+            "azmcp_monitor_ingestion_data_validate",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "data-collection-rule", testDcrResourceId },
+                { "log-data", testLogData }
+            });
+
+        // Verify the response structure
+        Assert.NotNull(result);
+
+        // Check for validation results
+        var status = result.AssertProperty("Status");
+        Assert.Equal(JsonValueKind.String, status.ValueKind);
+        var statusString = status.GetString();
+        Assert.NotNull(statusString);
+
+        var message = result.AssertProperty("Message");
+        Assert.Equal(JsonValueKind.String, message.ValueKind);
+        var messageString = message.GetString();
+        Assert.NotNull(messageString);
+
+        // Should have validation results
+        Assert.True(result.Value.TryGetProperty("ValidationResults", out var validationResults));
+        Assert.Equal(JsonValueKind.Object, validationResults.ValueKind);
+
+        // Verify validation results structure
+        Assert.True(validationResults.TryGetProperty("summary", out var summary));
+        Assert.Equal(JsonValueKind.Object, summary.ValueKind);
+
+        Assert.True(summary.TryGetProperty("recordCount", out var recordCount));
+        Assert.Equal(JsonValueKind.Number, recordCount.ValueKind);
+        Assert.True(recordCount.GetInt32() >= 1);
+
+        Assert.True(summary.TryGetProperty("isValid", out var isValid));
+        Assert.Equal(JsonValueKind.True, isValid.ValueKind);
+    }
+
+    [Fact]
+    public async Task Should_validate_invalid_log_data()
+    {
+        var invalidLogData = "invalid json";
+        var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
+
+        var result = await CallToolAsync(
+            "azmcp_monitor_ingestion_data_validate",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "data-collection-rule", testDcrResourceId },
+                { "log-data", invalidLogData }
+            });
+
+        // Verify the response structure
+        Assert.NotNull(result);
+
+        var status = result.AssertProperty("Status");
+        Assert.Equal(JsonValueKind.String, status.ValueKind);
+        var statusString = status.GetString();
+        Assert.NotNull(statusString);
+        Assert.Contains("invalid", statusString.ToLowerInvariant());
+
+        var message = result.AssertProperty("Message");
+        Assert.Equal(JsonValueKind.String, message.ValueKind);
+        var messageString = message.GetString();
+        Assert.NotNull(messageString);
+        Assert.Contains("error", messageString.ToLowerInvariant());
+
+        // Should have validation results showing errors
+        Assert.True(result.Value.TryGetProperty("ValidationResults", out var validationResults));
+        Assert.Equal(JsonValueKind.Object, validationResults.ValueKind);
+
+        Assert.True(validationResults.TryGetProperty("summary", out var summary));
+        Assert.True(summary.TryGetProperty("errorCount", out var errorCount));
+        Assert.Equal(JsonValueKind.Number, errorCount.ValueKind);
+        Assert.True(errorCount.GetInt32() > 0);
+
+        Assert.True(summary.TryGetProperty("isValid", out var isValid));
+        Assert.Equal(JsonValueKind.False, isValid.ValueKind);
+    }
+
+    [Fact]
+    public async Task Should_upload_log_data()
+    {
+        var testLogData = @"[{""TimeGenerated"": ""2023-01-01T12:00:00Z"", ""Message"": ""Test log entry for upload"", ""Level"": ""Info"", ""Source"": ""LiveTest""}]";
+        var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
+        var testStreamName = "Custom-TestLogs";
+
+        var result = await CallToolAsync(
+            "azmcp_monitor_ingestion_upload",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "workspace", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "data-collection-rule", testDcrResourceId },
+                { "stream-name", testStreamName },
+                { "log-data", testLogData }
+            });
+
+        // Verify the response structure
+        Assert.NotNull(result);
+
+        var status = result.AssertProperty("Status");
+        Assert.Equal(JsonValueKind.String, status.ValueKind);
+        var statusString = status.GetString();
+        Assert.NotNull(statusString);
+
+        var recordCount = result.AssertProperty("RecordCount");
+        Assert.Equal(JsonValueKind.Number, recordCount.ValueKind);
+        Assert.True(recordCount.GetInt32() >= 1);
+
+        var message = result.AssertProperty("Message");
+        Assert.Equal(JsonValueKind.String, message.ValueKind);
+        var messageString = message.GetString();
+        Assert.NotNull(messageString);
+        Assert.Contains("upload", messageString.ToLowerInvariant());
+    }
+
+    [Fact]
+    public async Task Should_check_ingestion_status()
+    {
+        var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
+
+        var result = await CallToolAsync(
+            "azmcp_monitor_ingestion_status_check",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "workspace", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "data-collection-rule", testDcrResourceId }
+            });
+
+        // Verify the response structure
+        Assert.NotNull(result);
+
+        var status = result.AssertProperty("Status");
+        Assert.Equal(JsonValueKind.String, status.ValueKind);
+        var statusString = status.GetString();
+        Assert.NotNull(statusString);
+
+        var message = result.AssertProperty("Message");
+        Assert.Equal(JsonValueKind.String, message.ValueKind);
+        var messageString = message.GetString();
+        Assert.NotNull(messageString);
+
+        // Should have details about ingestion status
+        Assert.True(result.Value.TryGetProperty("Details", out var details));
+        Assert.Equal(JsonValueKind.Object, details.ValueKind);
+    }
+
+
+    [Fact(Skip = "Requires complex setup with actual operation ID from previous ingestion")]
+    public async Task Should_check_specific_operation_status()
+    {
+        var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
+        var testOperationId = "test-operation-id-12345";
+
+        var result = await CallToolAsync(
+            "azmcp_monitor_ingestion_status_check",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "workspace", Settings.ResourceBaseName },
+                { "resource-group", Settings.ResourceGroupName },
+                { "data-collection-rule", testDcrResourceId },
+                { "operation-id", testOperationId }
+            });
+
+        // Verify the response structure
+        Assert.NotNull(result);
+
+        var status = result.AssertProperty("Status");
+        Assert.Equal(JsonValueKind.String, status.ValueKind);
+        var statusString = status.GetString();
+        Assert.NotNull(statusString);
+
+        var message = result.AssertProperty("Message");
+        Assert.Equal(JsonValueKind.String, message.ValueKind);
+        var messageString = message.GetString();
+        Assert.NotNull(messageString);
+
+        // Should have details about the specific operation
+        Assert.True(result.Value.TryGetProperty("Details", out var details));
+        Assert.Equal(JsonValueKind.Object, details.ValueKind);
+    }
+
+    [Fact]
     public async Task Should_list_metric_definitions()
     {
         // Example resource ID - uses a storage account that should exist from the test fixture

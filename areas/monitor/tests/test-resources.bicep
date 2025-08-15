@@ -31,6 +31,91 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
+// Create a custom table for ingestion testing
+resource customTable 'Microsoft.OperationalInsights/workspaces/tables@2022-10-01' = {
+  parent: workspace
+  name: 'TestLogs_CL'
+  properties: {
+    totalRetentionInDays: 30
+    plan: 'Analytics'
+    schema: {
+      name: 'TestLogs_CL'
+      columns: [
+        {
+          name: 'TimeGenerated'
+          type: 'datetime'
+          description: 'The time the log was generated'
+        }
+        {
+          name: 'Message'
+          type: 'string'
+          description: 'The log message'
+        }
+        {
+          name: 'Level'
+          type: 'string'
+          description: 'The log level'
+        }
+        {
+          name: 'Source'
+          type: 'string'
+          description: 'The source of the log'
+        }
+      ]
+    }
+  }
+}
+
+// Create a Data Collection Rule for ingestion testing
+resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
+  name: 'test-dcr'
+  location: location
+  properties: {
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: workspace.id
+          name: 'workspace-destination'
+        }
+      ]
+    }
+    dataFlows: [
+      {
+        streams: [
+          'Custom-TestLogs'
+        ]
+        destinations: [
+          'workspace-destination'
+        ]
+        transformKql: 'source'
+        outputStream: 'Custom-TestLogs_CL'
+      }
+    ]
+    streamDeclarations: {
+      'Custom-TestLogs': {
+        columns: [
+          {
+            name: 'TimeGenerated'
+            type: 'datetime'
+          }
+          {
+            name: 'Message'
+            type: 'string'
+          }
+          {
+            name: 'Level'
+            type: 'string'
+          }
+          {
+            name: 'Source'
+            type: 'string'
+          }
+        ]
+      }
+    }
+  }
+}
+
 // Create a storage account to monitor
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: '${baseName}mon'
@@ -207,5 +292,40 @@ resource appBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
     principalId: testApplicationOid
     roleDefinitionId: blobContributorRoleDefinition.id
     description: 'Blob Contributor for testApplicationOid'
+  }
+}
+
+// Role assignment for Monitoring Metrics Publisher to enable ingestion
+resource monitoringMetricsPublisherRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Monitoring Metrics Publisher role
+  // Enables publishing metrics against Azure resources
+  name: '3913510d-42f4-4e42-8a64-420c390055eb'
+}
+
+resource appMonitoringMetricsPublisherRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(monitoringMetricsPublisherRoleDefinition.id, testApplicationOid, dataCollectionRule.id)
+  scope: dataCollectionRule
+  properties: {
+    principalId: testApplicationOid
+    roleDefinitionId: monitoringMetricsPublisherRoleDefinition.id
+    description: 'Monitoring Metrics Publisher for DCR ingestion'
+  }
+}
+
+// Add Log Analytics Contributor role for the test application on the workspace
+resource logAnalyticsContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  // This is the Log Analytics Contributor role
+  name: '92aaf0da-9dab-42b6-94a3-d43ce8d16293'
+}
+
+resource appLogAnalyticsContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(logAnalyticsContributorRoleDefinition.id, testApplicationOid, workspace.id)
+  scope: workspace
+  properties: {
+    principalId: testApplicationOid
+    roleDefinitionId: logAnalyticsContributorRoleDefinition.id
+    description: 'Log Analytics Contributor for workspace access'
   }
 }
