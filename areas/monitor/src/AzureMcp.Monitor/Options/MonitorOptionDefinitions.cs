@@ -12,6 +12,10 @@ public static class MonitorOptionDefinitions
     public const string LimitName = "limit";
     public const string EntityName = "entity";
     public const string HealthModelName = "health-model";
+    public const string DataCollectionRuleName = "data-collection-rule";
+    public const string LogDataName = "log-data";
+    public const string StreamNameName = "stream-name";
+    public const string OperationIdName = "operation-id";
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",
@@ -200,6 +204,41 @@ public static class MonitorOptionDefinitions
         )
         {
             IsRequired = true
+        };
+    }
+
+    public static class Ingestion
+    {
+        public static readonly Option<string> DataCollectionRule = new(
+            $"--{DataCollectionRuleName}",
+            "The ID of the data collection rule (DCR) to use for log ingestion. This defines the schema and transformation rules for the uploaded data."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> LogData = new(
+            $"--{LogDataName}",
+            "The log data to upload as a JSON string or JSON array. The data must conform to the schema defined in the data collection rule."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> StreamName = new(
+            $"--{StreamNameName}",
+            "The name of the stream within the data collection rule to target for the log data upload."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> OperationId = new(
+            $"--{OperationIdName}",
+            "The operation ID to check status for. If not provided, the most recent ingestion operation will be checked."
+        )
+        {
+            IsRequired = false
         };
     }
 }
