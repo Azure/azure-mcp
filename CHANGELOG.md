@@ -15,6 +15,17 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
+
+#### Dependency Updates
+
+- Updated Azure.Monitor.Query version from `1.6.0` to `1.7.1` for AOT support.
+- Updated Azure.Monitor.Ingestion version from `1.1.2` to `1.2.0` for AOT support.
+- Updated Azure.Search.Documents version from `11.7.0-beta.4` to `11.7.0-beta.6` for AOT support.
+- Updated Azure.ResourceManager.ContainerRegistry version from `1.3.0` to `1.3.1` for AOT support.
+- Updated Azure.ResourceManager.DesktopVirtualization version from `1.3.1` to `1.3.2` for AOT support.
+- Updated Azure.ResourceManager.PostgreSql version from `1.3.0` to `1.3.1` for AOT support.
+
 ## 0.5.5 (2025-08-12)
 
 ### Features Added
@@ -22,6 +33,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Added support for listing ACR (Azure Container Registry) registries in a subscription via the command `azmcp-acr-registry-list`. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
 - Added the following Azure Storage commands:
   - `azmcp-storage-account-create`: Create a new Azure Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-account-details` Get details about an Azure Storage Account. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
   - `azmcp-storage-queue-message-send`: Send a message to an Azure Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
   - `azmcp-storage-blob-details`: Get details about an Azure Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
   - `azmcp-storage-blob-container-create`: Create a new Azure Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
@@ -36,7 +48,6 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Updated metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
 
 ### Other Changes
-
 - Consolidate "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
 
 ## 0.5.4 (2025-08-07)

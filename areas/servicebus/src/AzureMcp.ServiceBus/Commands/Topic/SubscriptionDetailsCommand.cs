@@ -44,8 +44,6 @@ public sealed class SubscriptionDetailsCommand(ILogger<SubscriptionDetailsComman
         command.AddOption(_subscriptionNameOption);
     }
 
-
-
     protected override SubscriptionDetailsOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);

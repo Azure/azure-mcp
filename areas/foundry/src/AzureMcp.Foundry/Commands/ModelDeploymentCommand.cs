@@ -45,7 +45,7 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         command.AddOption(_modelNameOption);
         command.AddOption(_modelFormatOption);
         command.AddOption(_azureAiServicesNameOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
         command.AddOption(_modelVersionOption);
         command.AddOption(_modelSourceOption);
         command.AddOption(_skuNameOption);
@@ -61,7 +61,6 @@ public sealed class ModelDeploymentCommand : SubscriptionCommand<ModelDeployment
         options.ModelName = parseResult.GetValueForOption(_modelNameOption);
         options.ModelFormat = parseResult.GetValueForOption(_modelFormatOption);
         options.AzureAiServicesName = parseResult.GetValueForOption(_azureAiServicesNameOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         options.ModelVersion = parseResult.GetValueForOption(_modelVersionOption);
         options.ModelSource = parseResult.GetValueForOption(_modelSourceOption);
         options.SkuName = parseResult.GetValueForOption(_skuNameOption);

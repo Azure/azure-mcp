@@ -93,6 +93,7 @@ Here are some cool prompts you can try across our supported Azure services:
 
 ### 💾 Azure Storage
 * "List my Azure storage accounts"
+* "Get details about my storage account 'mystorageaccount'"
 * "Create a new storage account with premium SSD storage"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"

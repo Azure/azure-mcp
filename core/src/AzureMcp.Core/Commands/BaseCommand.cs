@@ -3,13 +3,20 @@
 
 
 using System.Diagnostics;
+using AzureMcp.Core.Models.Option;
 using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 
 namespace AzureMcp.Core.Commands;
 
 public abstract class BaseCommand : IBaseCommand
 {
+    private const string MissingRequiredOptionsPrefix = "Missing Required options: ";
+    private const int ValidationErrorStatusCode = 400;
+    private const string TroubleshootingUrl = "https://aka.ms/azmcp/troubleshooting";
+
     private readonly Command _command;
+    private bool _usesResourceGroup;
+    private bool _requiresResourceGroup;
 
     protected BaseCommand()
     {
@@ -41,7 +48,7 @@ public abstract class BaseCommand : IBaseCommand
             Type: ex.GetType().Name);
 
         response.Status = GetStatusCode(ex);
-        response.Message = GetErrorMessage(ex) + ". To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
+        response.Message = GetErrorMessage(ex) + $". To mitigate this issue, please refer to the troubleshooting guidelines here at {TroubleshootingUrl}.";
         response.Results = ResponseResult.Create(result, JsonSourceGenerationContext.Default.ExceptionResult);
     }
 
@@ -67,21 +74,57 @@ public abstract class BaseCommand : IBaseCommand
         {
             result.IsValid = false;
             result.ErrorMessage = missingOptions.Count > 0
-                ? $"Missing Required options: {string.Join(", ", missingOptions)}"
+                ? $"{MissingRequiredOptionsPrefix}{string.Join(", ", missingOptions)}"
                 : commandResult.ErrorMessage;
 
-            if (commandResponse != null && !result.IsValid)
+            SetValidationError(commandResponse, result.ErrorMessage!);
+        }
+
+        // Check logical requirements (e.g., resource group requirement)
+        if (result.IsValid && _requiresResourceGroup)
+        {
+            var rg = commandResult.GetValueForOption(OptionDefinitions.Common.ResourceGroup);
+            if (string.IsNullOrWhiteSpace(rg))
             {
-                commandResponse.Status = 400;
-                commandResponse.Message = result.ErrorMessage!;
+                result.IsValid = false;
+                result.ErrorMessage = $"{MissingRequiredOptionsPrefix}--resource-group";
+                SetValidationError(commandResponse, result.ErrorMessage);
             }
         }
 
         return result;
+
+        static void SetValidationError(CommandResponse? response, string errorMessage)
+        {
+            if (response != null)
+            {
+                response.Status = ValidationErrorStatusCode;
+                response.Message = errorMessage;
+            }
+        }
     }
 
     private static bool IsOptionValueMissing(object? value)
     {
         return value == null || (value is string str && string.IsNullOrWhiteSpace(str));
     }
+
+    protected void UseResourceGroup()
+    {
+        if (_usesResourceGroup)
+            return;
+        _usesResourceGroup = true;
+        _command.AddOption(OptionDefinitions.Common.ResourceGroup);
+    }
+
+    protected void RequireResourceGroup()
+    {
+        UseResourceGroup();
+        _requiresResourceGroup = true;
+    }
+
+    protected string? GetResourceGroup(ParseResult parseResult) =>
+        _usesResourceGroup ? parseResult.GetValueForOption(OptionDefinitions.Common.ResourceGroup) : null;
+
+    protected bool UsesResourceGroup => _usesResourceGroup;
 }
