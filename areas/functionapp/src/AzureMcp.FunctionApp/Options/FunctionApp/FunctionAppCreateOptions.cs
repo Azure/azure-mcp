@@ -23,9 +23,6 @@ public class FunctionAppCreateOptions : BaseFunctionAppOptions
     [JsonPropertyName(FunctionAppOptionDefinitions.ContainerAppName)]
     public string? ContainerAppName { get; set; }
 
-    [JsonPropertyName(FunctionAppOptionDefinitions.StorageConnectionStringName)]
-    public string? StorageConnectionString { get; set; }
-
     [JsonPropertyName(FunctionAppOptionDefinitions.RuntimeName)]
     public string? Runtime { get; set; }
 

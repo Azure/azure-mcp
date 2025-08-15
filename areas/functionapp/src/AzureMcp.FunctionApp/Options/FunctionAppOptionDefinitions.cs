@@ -11,7 +11,6 @@ public static class FunctionAppOptionDefinitions
     public const string PlanTypeName = "plan-type";
     public const string PlanSkuName = "plan-sku";
     public const string ContainerAppName = "container-app";
-    public const string StorageConnectionStringName = "storage-connection-string";
     public const string RuntimeName = "runtime";
     public const string RuntimeVersionName = "runtime-version";
 
@@ -53,14 +52,6 @@ public static class FunctionAppOptionDefinitions
     public static readonly Option<string> ContainerApp = new(
         $"--{ContainerAppName}",
         "Optional: also scaffold a minimal Azure Container App (single revision) alongside the Function App. Name provided here will be used; environment auto-created if missing.")
-    {
-        IsRequired = false
-    };
-
-
-    public static readonly Option<string> StorageConnectionString = new(
-        $"--{StorageConnectionStringName}",
-        "Storage account connection string used for AzureWebJobsStorage. Required for Windows/Consumption apps.")
     {
         IsRequired = false
     };
