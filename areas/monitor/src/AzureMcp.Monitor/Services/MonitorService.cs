@@ -495,6 +495,190 @@ public class MonitorService : BaseAzureService, IMonitorService
         }
     }
 
+    public Task<(string Status, string Message, JsonNode? ValidationResults)> ValidateLogData(
+        string dataCollectionRule,
+        string logData,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(dataCollectionRule, logData);
+
+        try
+        {
+            var validationResults = new List<JsonObject>();
+            var hasErrors = false;
+            var hasWarnings = false;
+            var recordCount = 0;
+
+            // Validate JSON format
+            JsonNode? jsonNode;
+            try
+            {
+                jsonNode = JsonNode.Parse(logData);
+            }
+            catch (JsonException ex)
+            {
+                var error = new JsonObject
+                {
+                    ["type"] = "error",
+                    ["field"] = "logData",
+                    ["message"] = $"Invalid JSON format: {ex.Message}",
+                    ["code"] = "INVALID_JSON"
+                };
+                validationResults.Add(error);
+                hasErrors = true;
+                
+                var failureResult = new JsonObject
+                {
+                    ["summary"] = new JsonObject
+                    {
+                        ["dataCollectionRule"] = dataCollectionRule,
+                        ["recordCount"] = 0,
+                        ["errorCount"] = 1,
+                        ["warningCount"] = 0,
+                        ["isValid"] = false
+                    },
+                    ["validationResults"] = new JsonArray([error])
+                };
+                
+                return Task.FromResult(("Invalid", "Log data contains invalid JSON format", (JsonNode?)failureResult));
+            }
+
+            // Validate structure (must be array)
+            if (jsonNode is not JsonArray jsonArray)
+            {
+                var error = new JsonObject
+                {
+                    ["type"] = "error",
+                    ["field"] = "logData",
+                    ["message"] = "Log data must be a JSON array",
+                    ["code"] = "INVALID_STRUCTURE"
+                };
+                validationResults.Add(error);
+                hasErrors = true;
+            }
+            else
+            {
+                recordCount = jsonArray.Count;
+                
+                // Validate array contents
+                if (jsonArray.Count == 0)
+                {
+                    var warning = new JsonObject
+                    {
+                        ["type"] = "warning",
+                        ["field"] = "logData",
+                        ["message"] = "Log data array is empty - no data to ingest",
+                        ["code"] = "EMPTY_ARRAY"
+                    };
+                    validationResults.Add(warning);
+                    hasWarnings = true;
+                }
+                else
+                {
+                    // Validate individual entries
+                    for (int i = 0; i < jsonArray.Count; i++)
+                    {
+                        var entry = jsonArray[i];
+                        if (entry == null)
+                        {
+                            var error = new JsonObject
+                            {
+                                ["type"] = "error",
+                                ["field"] = $"logData[{i}]",
+                                ["message"] = "Log entry cannot be null",
+                                ["code"] = "NULL_ENTRY"
+                            };
+                            validationResults.Add(error);
+                            hasErrors = true;
+                        }
+                        else if (entry is not JsonObject)
+                        {
+                            var error = new JsonObject
+                            {
+                                ["type"] = "error",
+                                ["field"] = $"logData[{i}]",
+                                ["message"] = "Log entry must be a JSON object",
+                                ["code"] = "INVALID_ENTRY_TYPE"
+                            };
+                            validationResults.Add(error);
+                            hasErrors = true;
+                        }
+                        else
+                        {
+                            // Validate common Azure Monitor requirements
+                            var entryObj = entry.AsObject();
+                            
+                            // Check for TimeGenerated field (recommended for custom logs)
+                            if (!entryObj.ContainsKey("TimeGenerated"))
+                            {
+                                var warning = new JsonObject
+                                {
+                                    ["type"] = "warning",
+                                    ["field"] = $"logData[{i}].TimeGenerated",
+                                    ["message"] = "TimeGenerated field is recommended for custom logs",
+                                    ["code"] = "MISSING_TIMEGENERATED"
+                                };
+                                validationResults.Add(warning);
+                                hasWarnings = true;
+                            }
+                            
+                            // Check for empty objects
+                            if (entryObj.Count == 0)
+                            {
+                                var error = new JsonObject
+                                {
+                                    ["type"] = "error",
+                                    ["field"] = $"logData[{i}]",
+                                    ["message"] = "Log entry cannot be empty",
+                                    ["code"] = "EMPTY_ENTRY"
+                                };
+                                validationResults.Add(error);
+                                hasErrors = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Build results array - AOT compatible
+            var resultsArray = new JsonArray();
+            foreach (var validationItem in validationResults)
+            {
+                resultsArray.Add(JsonNode.Parse(validationItem.ToJsonString()));
+            }
+
+            // Add validation summary
+            var summary = new JsonObject
+            {
+                ["dataCollectionRule"] = dataCollectionRule,
+                ["recordCount"] = recordCount,
+                ["errorCount"] = validationResults.Count(r => r["type"]?.ToString() == "error"),
+                ["warningCount"] = validationResults.Count(r => r["type"]?.ToString() == "warning"),
+                ["isValid"] = !hasErrors
+            };
+
+            var result = new JsonObject
+            {
+                ["summary"] = summary,
+                ["validationResults"] = resultsArray
+            };
+
+            var status = hasErrors ? "Invalid" : hasWarnings ? "Valid with warnings" : "Valid";
+            var message = hasErrors 
+                ? $"Validation failed with {summary["errorCount"]} error(s)"
+                : hasWarnings 
+                    ? $"Validation passed with {summary["warningCount"]} warning(s)"
+                    : $"Validation passed successfully for {summary["recordCount"]} record(s)";
+
+            return Task.FromResult((status, message, (JsonNode?)result));
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(("Error", $"Error validating log data: {ex.Message}", (JsonNode?)null));
+        }
+    }
+
     private static string BuildIngestionEndpoint(string dataCollectionRuleId)
     {
         // Extract the data collection endpoint from the DCR ID

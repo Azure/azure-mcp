@@ -69,4 +69,10 @@ public interface IMonitorService
         string? operationId = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<(string Status, string Message, JsonNode? ValidationResults)> ValidateLogData(
+        string dataCollectionRule,
+        string logData,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

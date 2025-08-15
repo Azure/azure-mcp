@@ -83,5 +83,7 @@ public class MonitorSetup : IAreaSetup
 
         ingestion.AddCommand("upload", new IngestionUploadCommand(loggerFactory.CreateLogger<IngestionUploadCommand>()));
         ingestion.AddCommand("status-check", new IngestionStatusCheckCommand(loggerFactory.CreateLogger<IngestionStatusCheckCommand>()));
+        ingestion.AddCommand("data-validate", new IngestionDataValidateCommand(loggerFactory.CreateLogger<IngestionDataValidateCommand>()));
+        ingestion.AddCommand("data-validate", new IngestionDataValidateCommand(loggerFactory.CreateLogger<IngestionDataValidateCommand>()));
     }
 }
