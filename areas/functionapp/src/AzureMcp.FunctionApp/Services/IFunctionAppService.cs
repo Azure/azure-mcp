@@ -24,6 +24,7 @@ public interface IFunctionAppService
         string? containerAppName = null,
         string? runtime = null,
         string? runtimeVersion = null,
+        string? operatingSystem = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 }

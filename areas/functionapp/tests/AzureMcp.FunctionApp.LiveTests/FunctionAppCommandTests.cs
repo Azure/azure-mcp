@@ -54,7 +54,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
     }
 
     [Fact]
-    public async Task Should_handle_empty_subscription_gracefully()
+    public async Task Should_handle_empty_subscription_gracefully_function_app_list()
     {
         var result = await CallToolAsync(
             "azmcp_functionapp_list",
@@ -67,7 +67,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
     }
 
     [Fact]
-    public async Task Should_handle_invalid_subscription_gracefully()
+    public async Task Should_handle_invalid_subscription_gracefully_function_app_list()
     {
         var result = await CallToolAsync(
             "azmcp_functionapp_list",
@@ -84,7 +84,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
     }
 
     [Fact]
-    public async Task Should_validate_required_subscription_parameter()
+    public async Task Should_validate_required_subscription_parameter_function_app_list()
     {
         var result = await CallToolAsync(
             "azmcp_functionapp_list",
@@ -92,4 +92,36 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
 
         Assert.False(result.HasValue);
     }
+
+    // [Theory]
+    // [InlineData("consumption", null, "python", null, "python", "linux")]
+    // [InlineData("flex", null, "dotnet", null, "dotnet", "windows")]
+    // [InlineData("premium", null, "powershell", "windows", "python", "windows")]
+    // [InlineData("container", null, "dotnet-isolated", "windows", "dotnet-isolated", "windows")]
+    // [InlineData("premium", "", "node", "windows", "node", "windows")]
+    // public async Task Should_create_function_app(
+    //     string planType,
+    //     string? planSku,
+    //     string runtime,
+    //     string? operatingSystem,
+    //     string expectedRuntime,
+    //     string expectedOperatingSystem)
+    // {
+    //     var uniqueFunctionAppName = $"test-functionapp-{planType}-{runtime}-{DateTime.UtcNow:MMddHHmmss}";
+    //
+    //     var result = await CallToolAsync(
+    //         "azmcp_functionapp_create",
+    //         new()
+    //         {
+    //             { "subscription", Settings.SubscriptionId },
+    //             { "resource-group", Settings.ResourceGroupName },
+    //             { "function-app", uniqueFunctionAppName },
+    //             { "location", "eastus" },
+    //             { "plan-type", planType },
+    //             { "plan-sku", planSku },
+    //             { "runtime", runtime },
+    //             { "os", operatingSystem }
+    //         });
+    //
+    // }
 }

@@ -25,6 +25,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     private readonly Option<string> _containerAppOption = FunctionAppOptionDefinitions.ContainerApp;
     private readonly Option<string> _runtimeOption = FunctionAppOptionDefinitions.Runtime;
     private readonly Option<string> _runtimeVersionOption = FunctionAppOptionDefinitions.RuntimeVersion;
+    private readonly Option<string> _osOption = FunctionAppOptionDefinitions.OperatingSystem;
 
     public override string Name => "create";
 
@@ -51,12 +52,14 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     - container-app: Name for the Container App (implies containerapp hosting). Cannot be combined with --app-service-plan, --plan-type (other than containerapp), or --plan-sku.
     - runtime: FUNCTIONS_WORKER_RUNTIME (dotnet|dotnet-isolated|node|python|java|powershell). Default: dotnet.
     - runtime-version: Specific runtime version; if omitted a default per runtime is applied (see defaults below).
+    - os: windows|linux. Default: windows unless runtime/plan requires linux (python, flex consumption, containerapp). Overridden to linux automatically when required. Python & flex consumption do not support Windows.
 
     Automatic resources & defaults:
     - Storage account: Always created (Standard_LRS, HTTPS only, blob public access disabled). Name pattern: <sanitized-functionapp>[random6]. Connection string injected as AzureWebJobsStorage.
     - App Service plan: Auto-created when not provided (name: <function-app>-plan) unless containerapp hosting.
     - Container App: If containerapp hosting selected, a managed environment (<name>) and container app (<name>) are created with an official Azure Functions image for the runtime.
     - Linux vs Windows: Linux automatically enforced for python and flex consumption. Other runtimes default to Windows unless plan-type dictates Linux (flex) or runtime is python.
+    - Explicit --os overrides default when compatible; incompatible combinations cause validation errors (e.g. --os windows with python or flex consumption).
     - Runtime version defaults (LinuxFxVersion when Linux):
         * python -> 3.12
         * node -> 22
@@ -90,6 +93,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         command.AddOption(_containerAppOption);
         command.AddOption(_runtimeOption);
         command.AddOption(_runtimeVersionOption);
+        command.AddOption(_osOption);
     }
 
     protected override FunctionAppCreateOptions BindOptions(ParseResult parseResult)
@@ -103,6 +107,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         options.ContainerAppName = parseResult.GetValueForOption(_containerAppOption);
         options.Runtime = parseResult.GetValueForOption(_runtimeOption) ?? "dotnet";
         options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
+        options.OperatingSystem = parseResult.GetValueForOption(_osOption);
         return options;
     }
 
@@ -137,6 +142,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
                 options.ContainerAppName,
                 options.Runtime ?? "dotnet",
                 options.RuntimeVersion,
+                options.OperatingSystem,
                 options.Tenant,
                 options.RetryPolicy);
 

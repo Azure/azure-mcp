@@ -28,4 +28,7 @@ public class FunctionAppCreateOptions : BaseFunctionAppOptions
 
     [JsonPropertyName(FunctionAppOptionDefinitions.RuntimeVersionName)]
     public string? RuntimeVersion { get; set; }
+
+    [JsonPropertyName(FunctionAppOptionDefinitions.OperatingSystemName)]
+    public string? OperatingSystem { get; set; }
 }

@@ -82,26 +82,27 @@ public sealed class FunctionAppService(
         string? containerAppName = null,
         string? runtime = null,
         string? runtimeVersion = null,
+        string? operatingSystem = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription, resourceGroup, functionAppName, location);
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var rg = await _resourceGroupService.CreateOrUpdateResourceGroup(subscription, resourceGroup, location, tenant, retryPolicy);
-        var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, containerAppName);
+        var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, containerAppName, operatingSystem);
 
         return options.HostingKind == HostingKind.ContainerApp
             ? await CreateContainerHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, containerAppName, options)
             : await CreateAppServiceHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, appServicePlan, options);
     }
 
-    private static CreateOptions BuildCreateOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? containerAppName)
+    private static CreateOptions BuildCreateOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? containerAppName, string? operatingSystem)
     {
         var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
         var rtv = string.IsNullOrWhiteSpace(runtimeVersion) ? null : runtimeVersion!.Trim();
         var hostingKind = ParseHostingKind(planType, containerAppName);
-        var requiresLinux = rt == "python" || hostingKind == HostingKind.FlexConsumption;
-        return new CreateOptions(rt, rtv, hostingKind, requiresLinux, planSku);
+        var (requiresLinux, normalizedOs) = ResolveOs(rt, hostingKind, operatingSystem);
+        return new CreateOptions(rt, rtv, hostingKind, requiresLinux, planSku, normalizedOs);
     }
 
     internal static HostingKind ParseHostingKind(string? planType, string? containerAppName)
@@ -469,9 +470,33 @@ public sealed class FunctionAppService(
     {
         var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
         var hostingKind = ParseHostingKind(planType, containerAppName);
-        return rt == "python" || hostingKind == HostingKind.FlexConsumption;
+        return rt == "python" || hostingKind == HostingKind.FlexConsumption || hostingKind == HostingKind.ContainerApp;
     }
 
+    internal static (bool RequiresLinux, string? NormalizedOs) ResolveOs(string runtime, HostingKind hostingKind, string? operatingSystem)
+    {
+        var forcedLinux = runtime == "python" || hostingKind == HostingKind.FlexConsumption || hostingKind == HostingKind.ContainerApp;
+        var os = string.IsNullOrWhiteSpace(operatingSystem) ? null : operatingSystem!.Trim().ToLowerInvariant();
+        bool requiresLinux = forcedLinux;
+
+        if (string.IsNullOrEmpty(os))
+        {
+            return (requiresLinux, null);
+        }
+
+        if (os is not ("linux" or "windows"))
+            throw new ArgumentException("--os must be either 'windows' or 'linux'.");
+
+        if (forcedLinux && os == "windows")
+            throw new InvalidOperationException("Selected runtime/plan requires Linux. Remove --os or set --os linux.");
+
+        if (!forcedLinux)
+        {
+            requiresLinux = os == "linux";
+        }
+
+        return (requiresLinux, os);
+    }
 
     private static bool IsFlexConsumption(AppServicePlanData plan)
     {
@@ -492,5 +517,6 @@ public sealed class FunctionAppService(
         string? RuntimeVersion,
         HostingKind HostingKind,
         bool RequiresLinux,
-        string? ExplicitSku);
+        string? ExplicitSku,
+        string? ExplicitOs);
 }
