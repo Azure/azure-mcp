@@ -22,6 +22,9 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
     private DateTime _tokenExpiryTime;
     private readonly object _tokenLock = new object();
 
+    // Maximum number of items to return to prevent DoS attacks and performance issues
+    private const int MaxResultLimit = 10000;
+
     // Static arrays for security validation - initialized once per class
     private static readonly string[] DangerousKeywords =
     [
@@ -114,9 +117,9 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
         }
 
         // Prevent DoS attacks by limiting query length
-        if (query.Length > 10000)
+        if (query.Length > MaxResultLimit)
         {
-            throw new InvalidOperationException("Query length exceeds the maximum allowed limit of 10,000 characters to prevent potential DoS attacks.");
+            throw new InvalidOperationException($"Query length exceeds the maximum allowed limit of {MaxResultLimit:N0} characters to prevent potential DoS attacks.");
         }
 
         // Clean the query: remove comments, normalize whitespace, and trim
@@ -208,15 +211,23 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
             await using var command = new MySqlCommand(query, resource.Connection);
             await using var reader = await command.ExecuteReaderAsync();
             var dbs = new List<string>();
-            while (await reader.ReadAsync())
+            var dbCount = 0;
+            while (await reader.ReadAsync() && dbCount < MaxResultLimit)
             {
                 var dbName = reader.GetString(0);
                 // Filter out system databases
                 if (dbName != "information_schema" && dbName != "mysql" && dbName != "performance_schema" && dbName != "sys")
                 {
                     dbs.Add(dbName);
+                    dbCount++;
                 }
             }
+            
+            if (dbCount >= MaxResultLimit)
+            {
+                dbs.Add($"... (output limited to {MaxResultLimit:N0} databases for security and performance reasons)");
+            }
+            
             return dbs;
         }
         catch (Exception ex)
@@ -248,9 +259,8 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
             rows.Add(string.Join(", ", columnNames));
 
             var rowCount = 0;
-            const int maxRows = 10000;
 
-            while (await reader.ReadAsync() && rowCount < maxRows)
+            while (await reader.ReadAsync() && rowCount < MaxResultLimit)
             {
                 var row = new List<string>();
                 for (int i = 0; i < reader.FieldCount; i++)
@@ -261,9 +271,9 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
                 rowCount++;
             }
 
-            if (rowCount >= maxRows)
+            if (rowCount >= MaxResultLimit)
             {
-                rows.Add($"... (output limited to {maxRows} rows for security and performance reasons)");
+                rows.Add($"... (output limited to {MaxResultLimit:N0} rows for security and performance reasons)");
             }
 
             return rows;
@@ -340,9 +350,16 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
             await using var command = new MySqlCommand(query, resource.Connection);
             await using var reader = await command.ExecuteReaderAsync();
             var tables = new List<string>();
-            while (await reader.ReadAsync())
+            var tableCount = 0;
+            while (await reader.ReadAsync() && tableCount < MaxResultLimit)
             {
                 tables.Add(reader.GetString(0));
+                tableCount++;
+            }
+
+            if (tableCount >= MaxResultLimit)
+            {
+                tables.Add($"... (output limited to {MaxResultLimit:N0} tables for security and performance reasons)");
             }
 
             return tables;
