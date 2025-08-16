@@ -12,7 +12,7 @@ namespace AzureMcp.ResourceHealth.Commands.AvailabilityStatus;
 /// <summary>
 /// Gets the current availability status of the specified Azure resource for health diagnostics.
 /// </summary>
-public sealed class AvailabilityStatusGetCommand(ILogger<AvailabilityStatusGetCommand> logger) 
+public sealed class AvailabilityStatusGetCommand(ILogger<AvailabilityStatusGetCommand> logger)
     : BaseResourceHealthCommand<AvailabilityStatusGetOptions>()
 {
     private const string CommandTitle = "Get Resource Availability Status";
@@ -55,9 +55,9 @@ public sealed class AvailabilityStatusGetCommand(ILogger<AvailabilityStatusGetCo
                 return context.Response;
             }
 
-            var resourceHealthService = context.GetService<IResourceHealthService>() ?? 
+            var resourceHealthService = context.GetService<IResourceHealthService>() ??
                 throw new InvalidOperationException("Resource Health service is not available.");
-            
+
             var status = await resourceHealthService.GetAvailabilityStatusAsync(
                 options.ResourceId!,
                 options.RetryPolicy);

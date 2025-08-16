@@ -27,18 +27,18 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
         try
         {
             var armClient = await CreateArmClientAsync(null, retryPolicy);
-            
+
             // Create ResourceIdentifier from the resource ID string
             var resourceIdentifier = new ResourceIdentifier(resourceId);
-            
+
             // Call the Azure ResourceHealth API to get current availability status
             var response = await armClient.GetAvailabilityStatusAsync(
-                resourceIdentifier, 
+                resourceIdentifier,
                 cancellationToken: default);
-            
+
             var availabilityStatus = response.Value;
             var properties = availabilityStatus.Properties;
-            
+
             // Map Azure SDK response to our model
             return new AvailabilityStatus
             {
@@ -47,7 +47,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
                 Summary = properties.Summary,
                 DetailedStatus = properties.DetailedStatus,
                 ReasonType = properties.ReasonType,
-                OccurredTime = properties.OccuredOn, // Note: "Occured" spelling from Azure SDK
+                OccurredTime = properties.OccuredOn, // Note: "OccuredOn" property name is misspelled in Azure SDK
                 ReportedTime = properties.ReportedOn,
                 CauseType = properties.HealthEventCause,
                 RootCauseAttributionTime = properties.RootCauseAttributionOn?.ToString("O"),
@@ -73,14 +73,14 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
         try
         {
             var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-            
+
             // Get all availability statuses from the subscription
             var availabilityStatuses = new List<AvailabilityStatus>();
-            
+
             foreach (var status in subscriptionResource.GetAvailabilityStatusesBySubscription())
             {
                 var properties = status.Properties;
-                
+
                 // If resource group filter is specified, check if the resource belongs to that group
                 if (!string.IsNullOrWhiteSpace(resourceGroup))
                 {
@@ -90,7 +90,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
                         continue; // Skip resources not in the specified resource group
                     }
                 }
-                
+
                 availabilityStatuses.Add(new AvailabilityStatus
                 {
                     ResourceId = status.Id?.ToString() ?? status.Name, // Use Id first, fallback to Name
@@ -98,7 +98,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
                     Summary = properties.Summary,
                     DetailedStatus = properties.DetailedStatus,
                     ReasonType = properties.ReasonType,
-                    OccurredTime = properties.OccuredOn,
+                    OccurredTime = properties.OccuredOn, // Note: "OccuredOn" property name is misspelled in Azure SDK
                     ReportedTime = properties.ReportedOn,
                     CauseType = properties.HealthEventCause,
                     RootCauseAttributionTime = properties.RootCauseAttributionOn?.ToString("O"),

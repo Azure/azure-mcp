@@ -64,6 +64,7 @@
   <ItemGroup Condition="'$(BuildNative)' == 'true'">
     <ProjectReference Remove="..\..\..\areas\bicepschema\src\AzureMcp.BicepSchema\AzureMcp.BicepSchema.csproj" />
     <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
+    <ProjectReference Remove="..\..\..\areas\resourcehealth\src\AzureMcp.ResourceHealth\AzureMcp.ResourceHealth.csproj" />
     <PackageReference Remove="Microsoft.Azure.Cosmos" />
   </ItemGroup>
 

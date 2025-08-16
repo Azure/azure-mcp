@@ -39,19 +39,20 @@ public class AvailabilityStatusGetCommandTests
     public async Task ExecuteAsync_ReturnsAvailabilityStatus_WhenResourceExists()
     {
         var resourceId = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/vm";
-        var expectedStatus = new AvailabilityStatusModel 
-        { 
+        var subscriptionId = "12345678-1234-1234-1234-123456789012";
+        var expectedStatus = new AvailabilityStatusModel
+        {
             ResourceId = resourceId,
             AvailabilityState = "Available",
             Summary = "Resource is healthy",
             DetailedStatus = "Virtual machine is running normally"
         };
-        
+
         _resourceHealthService.GetAvailabilityStatusAsync(resourceId, Arg.Any<RetryPolicyOptions>())
             .Returns(expectedStatus);
 
         var command = new AvailabilityStatusGetCommand(_logger);
-        var args = command.GetCommand().Parse(["--resourceId", resourceId]);
+        var args = command.GetCommand().Parse(["--resourceId", resourceId, "--subscription", subscriptionId]);
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);
 
@@ -77,14 +78,15 @@ public class AvailabilityStatusGetCommandTests
     public async Task ExecuteAsync_HandlesException()
     {
         var resourceId = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/vm";
+        var subscriptionId = "12345678-1234-1234-1234-123456789012";
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
-        
+
         _resourceHealthService.GetAvailabilityStatusAsync(resourceId, Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
         var command = new AvailabilityStatusGetCommand(_logger);
         var parser = new Parser(command.GetCommand());
-        var args = parser.Parse(["--resourceId", resourceId]);
+        var args = parser.Parse(["--resourceId", resourceId, "--subscription", subscriptionId]);
         var context = new CommandContext(_serviceProvider);
 
         var response = await command.ExecuteAsync(context, args);
@@ -96,13 +98,15 @@ public class AvailabilityStatusGetCommandTests
 
     [Theory]
     [InlineData("--resourceId")]
+    [InlineData("--subscription")]
     public async Task ExecuteAsync_ReturnsError_WhenParameterIsMissing(string missingParameter)
     {
         var command = new AvailabilityStatusGetCommand(_logger);
-        var args = command.GetCommand().Parse(
-        [
+        var args = command.GetCommand().Parse(new string[]
+        {
+            missingParameter == "--subscription" ? "" : "--subscription", "12345678-1234-1234-1234-123456789012",
             missingParameter == "--resourceId" ? "" : "--resourceId", "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/vm",
-        ]);
+        });
 
         var context = new CommandContext(_serviceProvider);
         var response = await command.ExecuteAsync(context, args);

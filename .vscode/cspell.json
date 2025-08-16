@@ -370,6 +370,10 @@
         "timechart",
         "myapp",
         "mygroup",
-        "myworkbook"
+        "myworkbook",
+        "resourcehealth",
+        "rhvm",
+        "azureadmin",
+        "Occured"
     ]
 }

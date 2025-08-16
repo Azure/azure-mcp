@@ -56,7 +56,7 @@ public class AvailabilityStatusListCommandTests
                 DetailedStatus = "Storage account is accessible"
             }
         };
-        
+
         _resourceHealthService.ListAvailabilityStatusesAsync(subscriptionId, null, Arg.Any<string?>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedStatuses);
 
@@ -98,7 +98,7 @@ public class AvailabilityStatusListCommandTests
                 DetailedStatus = "Virtual machine is running normally"
             }
         };
-        
+
         _resourceHealthService.ListAvailabilityStatusesAsync(subscriptionId, resourceGroup, Arg.Any<string?>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedStatuses);
 
@@ -129,7 +129,7 @@ public class AvailabilityStatusListCommandTests
     {
         var subscriptionId = "12345678-1234-1234-1234-123456789012";
         var expectedError = "Test error. To mitigate this issue, please refer to the troubleshooting guidelines here at https://aka.ms/azmcp/troubleshooting.";
-        
+
         _resourceHealthService.ListAvailabilityStatusesAsync(subscriptionId, null, Arg.Any<string?>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 

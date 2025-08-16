@@ -11,7 +11,7 @@ namespace AzureMcp.ResourceHealth.LiveTests;
 
 [Trait("Area", "ResourceHealth")]
 [Trait("Category", "Live")]
-public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) 
+public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
     : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
 {
     [Fact]
@@ -19,7 +19,7 @@ public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOu
     {
         // Use a storage account resource ID for testing since it's commonly available
         var resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
-        
+
         var result = await CallToolAsync(
             "azmcp_resourcehealth_availability-status_get",
             new()
@@ -29,11 +29,11 @@ public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOu
 
         var status = result.AssertProperty("status");
         Assert.Equal(JsonValueKind.Object, status.ValueKind);
-        
+
         // Verify key properties are present
         var resourceIdProperty = status.GetProperty("resourceId");
         Assert.Equal(resourceId, resourceIdProperty.GetString());
-        
+
         var availabilityState = status.GetProperty("availabilityState");
         Assert.True(availabilityState.ValueKind == JsonValueKind.String);
     }
@@ -42,7 +42,7 @@ public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOu
     public async Task Should_get_availability_status_with_retry_policy()
     {
         var resourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Storage/storageAccounts/{Settings.ResourceBaseName}";
-        
+
         var result = await CallToolAsync(
             "azmcp_resourcehealth_availability-status_get",
             new()
@@ -54,7 +54,7 @@ public class ResourceHealthCommandTests(LiveTestFixture liveTestFixture, ITestOu
 
         var status = result.AssertProperty("status");
         Assert.Equal(JsonValueKind.Object, status.ValueKind);
-        
+
         var resourceIdProperty = status.GetProperty("resourceId");
         Assert.Equal(resourceId, resourceIdProperty.GetString());
     }

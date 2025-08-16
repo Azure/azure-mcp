@@ -12,7 +12,7 @@ namespace AzureMcp.ResourceHealth.Commands.AvailabilityStatus;
 /// <summary>
 /// Lists availability statuses for all resources in a subscription or resource group.
 /// </summary>
-public sealed class AvailabilityStatusListCommand(ILogger<AvailabilityStatusListCommand> logger) 
+public sealed class AvailabilityStatusListCommand(ILogger<AvailabilityStatusListCommand> logger)
     : BaseResourceHealthCommand<AvailabilityStatusListOptions>()
 {
     private const string CommandTitle = "List Resource Availability Statuses";
@@ -55,16 +55,16 @@ public sealed class AvailabilityStatusListCommand(ILogger<AvailabilityStatusList
                 return context.Response;
             }
 
-            var resourceHealthService = context.GetService<IResourceHealthService>() ?? 
+            var resourceHealthService = context.GetService<IResourceHealthService>() ??
                 throw new InvalidOperationException("Resource Health service is not available.");
-            
+
             var statuses = await resourceHealthService.ListAvailabilityStatusesAsync(
                 options.Subscription!,
                 options.ResourceGroup,
                 options.Tenant,
                 options.RetryPolicy);
 
-            context.Response.Results = statuses?.Count > 0 
+            context.Response.Results = statuses?.Count > 0
                 ? ResponseResult.Create(
                     new AvailabilityStatusListCommandResult(statuses),
                     ResourceHealthJsonContext.Default.AvailabilityStatusListCommandResult)
@@ -72,8 +72,8 @@ public sealed class AvailabilityStatusListCommand(ILogger<AvailabilityStatusList
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to list availability statuses for subscription {Subscription}{ResourceGroupInfo}", 
-                options.Subscription, 
+            _logger.LogError(ex, "Failed to list availability statuses for subscription {Subscription}{ResourceGroupInfo}",
+                options.Subscription,
                 options.ResourceGroup != null ? $" and resource group {options.ResourceGroup}" : "");
             HandleException(context, ex);
         }
