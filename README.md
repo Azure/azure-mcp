@@ -411,7 +411,10 @@ To opt out, set the environment variable `AZURE_MCP_COLLECT_TELEMETRY` to `false
 
 ## 📝 Troubleshooting
 
-See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md#128-tool-limit-issue) for help with common issues and logging.
+See [Troubleshooting guide](https://github.com/Azure/azure-mcp/blob/main/TROUBLESHOOTING.md) for help with common issues and logging.
+
+> [!NOTE]
+> Log files may contain information like user names, IP addresses, file paths, etc. Be sure to remove those before sharing here.
 
 ### 🔑 Authentication
 

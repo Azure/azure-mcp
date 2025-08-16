@@ -8,7 +8,7 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Console window is empty when running Azure MCP Server](#console-window-is-empty-when-running-azure-mcp-server)
   - [Can I select what tools to load in the MCP server?](#can-i-select-what-tools-to-load-in-the-mcp-server)
   - [Why does VS Code only show a subset of tools available?](#why-does-vs-code-only-show-a-subset-of-tools-available)
-  - [Bring your own language model key](#bring-your-own-language-model-key)
+  - [VS Code Permission Dialog for Language Model Calls](#vs-code-permission-dialog-for-language-model-calls)
 - [Tool Limitations](#tool-limitations)
   - [128-Tool Limit Issue](#128-tool-limit-issue)
 - [Authentication](#authentication)
@@ -548,6 +548,9 @@ If you're behind a corporate firewall, you may need to:
 - Work with IT to ensure npm can download packages
 
 ## Logging and Diagnostics
+
+> [!NOTE]
+> Log files may contain information like user names, IP addresses, file paths, etc. Be sure to remove those before sharing here.
 
 ### Logging
 
