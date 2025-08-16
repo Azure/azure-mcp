@@ -170,7 +170,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🔑 Azure Key Vault
 
-* List and create certificates
+* List, create, and import certificates
 * List and create keys
 * List and create secrets
 

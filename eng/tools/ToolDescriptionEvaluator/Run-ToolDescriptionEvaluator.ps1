@@ -9,7 +9,7 @@
 .DESCRIPTION
     This script optionally builds the root project to ensure tools can be loaded dynamically,
     then builds the tool selection confidence score calculation application.
-    It restores dependencies, builds the application in Release configuration, and runs it.
+    It restores dependencies, builds the application in Debug configuration, and runs it.
 
 .EXAMPLE
     .\Run-ToolDescriptionEvaluator.ps1
@@ -36,7 +36,7 @@ try {
     if ($BuildAzureMcp
     ) {
         Write-Host "Building root project to enable dynamic tool loading..." -ForegroundColor Yellow
-        & dotnet build "$repoRoot/AzureMcp.sln" --configuration Release
+        & dotnet build "$repoRoot/AzureMcp.sln"
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to build root project"
         }
@@ -44,7 +44,7 @@ try {
     }
 
     # Check for AzureMcp.exe before building
-    $cliBinDir = Join-Path $repoRoot "core/src/AzureMcp.Cli/bin/Release"
+    $cliBinDir = Join-Path $repoRoot "core/src/AzureMcp.Cli/bin/Debug"
     $exePath = Get-ChildItem -Path $cliBinDir -Filter "azmcp.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
     if (-not $exePath) {
         Write-Host "[ERROR] azmcp.exe not found in project. Please run this script again with the option -BuildAzureMcp." -ForegroundColor Red
@@ -53,7 +53,7 @@ try {
     
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
-    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj" --configuration Release
+    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj"
 
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build application"

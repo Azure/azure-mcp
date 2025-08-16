@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using Azure.Security.KeyVault.Keys;
 using AzureMcp.Tests;
@@ -196,6 +198,50 @@ public class KeyVaultCommandTests(LiveTestFixture liveTestFixture, ITestOutputHe
 
         // Verify that the certificate has some expected properties
         ValidateCertificate(result);
+    }
+
+    [Fact]
+    public async Task Should_import_certificate()
+    {
+        // Generate a self-signed certificate and export to a temporary PFX file with a password
+        var fakePassword = "fakePassword";
+        using var rsa = RSA.Create(2048);
+        var subject = $"CN=Imported-{Guid.NewGuid()}";
+        var request = new CertificateRequest(subject, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+        request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+        using var generated = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddYears(1));
+
+        var pfxBytes = generated.Export(X509ContentType.Pkcs12, fakePassword);
+        var tempPath = Path.Combine(Path.GetTempPath(), $"import-{Guid.NewGuid()}.pfx");
+
+        try
+        {
+            await File.WriteAllBytesAsync(tempPath, pfxBytes, TestContext.Current.CancellationToken);
+            var certificateName = Settings.ResourceBaseName + "import" + Random.Shared.NextInt64();
+            var result = await CallToolAsync(
+                "azmcp_keyvault_certificate_import",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "vault", Settings.ResourceBaseName },
+                    { "certificate", certificateName },
+                    { "certificate-data", tempPath },
+                    { "password", fakePassword }
+                });
+            var createdCertificateName = result.AssertProperty("name");
+            Assert.Equal(JsonValueKind.String, createdCertificateName.ValueKind);
+            Assert.Equal(certificateName, createdCertificateName.GetString());
+            // Validate basic certificate properties
+            ValidateCertificate(result);
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
+        }
     }
 
     private void ValidateCertificate(JsonElement? result)

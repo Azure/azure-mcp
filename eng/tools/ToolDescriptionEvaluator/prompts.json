@@ -146,6 +146,10 @@
     "Show me the certificate <certificate_name> in the key vault <key_vault_account_name>",
     "Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name>"
   ],
+  "azmcp-keyvault-certificate-import": [
+    "Import the certificate in file <file_path> into the key vault <key_vault_account_name>",
+    "Import a certificate into the key vault <key_vault_account_name> using the name <certificate_name>"
+  ],
   "azmcp-keyvault-certificate-list": [
     "List all certificates in the key vault <key_vault_account_name>",
     "Show me the certificates in the key vault <key_vault_account_name>"
@@ -324,6 +328,10 @@
     "Create a new storage account called testaccount123 in East US region",
     "Create a storage account with premium performance and LRS replication",
     "Create a new storage account with Data Lake Storage Gen2 enabled"
+  ],
+  "azmcp-storage-account-details": [
+    "Show me the details for my storage account <account_name>",
+    "Get details about the storage account <account_name>"
   ],
   "azmcp-storage-account-list": [
     "List all storage accounts in my subscription including their location and SKU",
