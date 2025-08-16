@@ -76,6 +76,7 @@ internal class Program
             new AzureMcp.Monitor.MonitorSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
+            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
             new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),

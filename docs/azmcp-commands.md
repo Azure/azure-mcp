@@ -689,6 +689,20 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --cache <cache-name>
 ```
 
+### Azure Resource Health Operations
+
+```bash
+# Get availability status for a specific resource
+azmcp resourcehealth availability-status get --resourceId <resource-id>
+
+# List availability statuses for all resources in a subscription
+azmcp resourcehealth availability-status list --subscription <subscription>
+
+# List availability statuses for all resources in a specific resource group
+azmcp resourcehealth availability-status list --subscription <subscription> \
+                                              --resource-group <resource-group>
+```
+
 ### Azure Resource Group Operations
 
 ```bash
