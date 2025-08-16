@@ -42,7 +42,7 @@ This specification defines the architecture, deployment targets, authentication 
 | Term | Definition |
 |------|------------|
 | MCP | Model Context Protocol. |
-| PRM Document | Initial protocol registration metadata from the server. |
+| PRM Document | Protected Resource Metadata ([RFC 9728](https://datatracker.ietf.org/doc/rfc9728/)). |
 | MI | Managed Identity (system or user-assigned) in Azure. |
 | OBO | OAuth 2.0 On-Behalf-Of flow for delegated downstream API access. |
 | Demo Mode | Unauthenticated, strictly static, read-only operational mode for UX validation. |
