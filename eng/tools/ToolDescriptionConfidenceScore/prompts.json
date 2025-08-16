@@ -54,6 +54,13 @@
     "List all virtual machines in my subscription",
     "Show me the details of the storage account <account_name>"
   ],
+  "azmcp-acr-registry-list": [
+    "List all Azure Container Registries in my subscription",
+    "Show me my Azure Container Registries",
+    "Show me the container registries in my subscription",
+    "List container registries in resource group <resource_group_name>",
+    "Show me the container registries in resource group <resource_group_name>"
+  ],
   "azmcp-cosmos-account-list": [
     "List all cosmosdb accounts in my subscription",
     "Show me my cosmosdb accounts",
@@ -127,6 +134,34 @@
     "Create a To-Do list web application that uses NodeJS and MongoDB",
     "Deploy my web application to Azure App Service"
   ],
+  "azmcp-functionapp-create": [
+    "Create a new function app named <function_app_name> in resource group <resource_group_name> in eastus",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in eastus using plan type consumption",
+    "Create a flex consumption function app named <function_app_name> in resource group <resource_group_name> in westus2 using plan type flex",
+    "Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium",
+    "Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium and plan sku EP1",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan sku S1",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan type appservice and plan sku B2",
+    "Create a basic app service function app <function_app_name> in resource group <resource_group_name> in eastus with plan type appservice",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in eastus using existing app service plan <plan_name>",
+    "Create a dotnet isolated function app <function_app_name> in resource group <resource_group_name> in eastus with runtime dotnet-isolated",
+    "Create a node function app <function_app_name> in resource group <resource_group_name> in centralus with runtime node",
+    "Create a node 22 function app <function_app_name> in resource group <resource_group_name> in centralus with runtime node version 22",
+    "Create a python function app <function_app_name> in resource group <resource_group_name> in westus with runtime python",
+    "Create a python 3.12 function app <function_app_name> in resource group <resource_group_name> in westus with runtime python version 3.12",
+    "Create a java 21 function app <function_app_name> in resource group <resource_group_name> in eastus with runtime java version 21",
+    "Create a powershell function app <function_app_name> in resource group <resource_group_name> in eastus with runtime powershell",
+    "Create a container app function app <function_app_name> in resource group <resource_group_name> in eastus as a container app named <container_app_name>",
+    "Create a container app function app <function_app_name> in resource group <resource_group_name> in eastus with runtime python as container app <container_app_name>",
+    "Create a flex consumption python 3.12 function app <function_app_name> in resource group <resource_group_name> in eastus with plan type flex runtime python version 3.12",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in eastus with plan sku P1v3 and runtime java version 21",
+    "Create a function app <function_app_name> in resource group <resource_group_name> in eastus with runtime powershell version 7.4"
+  ],
+  "azmcp-functionapp-list": [
+    "List all function apps in my subscription",
+    "Show me my Azure function apps",
+    "What function apps do I have?"
+  ],
   "azmcp-keyvault-certificate-create": [
     "Create a new certificate called <certificate_name> in the key vault <key_vault_account_name>"
   ],
@@ -194,13 +229,16 @@
     "Get details about marketplace product <product_name>"
   ],
   "azmcp-bestpractices-get": [
-    "Fetch the latest Azure code generation best practices",
-    "Fetch the latest Azure deployment best practices",
-    "Fetch the latest Azure best practices",
-    "Fetch the latest Azure Functions code generation best practices",
-    "Fetch the latest Azure Functions deployment best practices",
-    "Fetch the latest Azure Functions best practices",
-    "Fetch the latest Azure Static Web Apps best practices"
+    "Get the latest Azure code generation best practices",
+    "Get the latest Azure deployment best practices",
+    "Get the latest Azure best practices",
+    "Get the latest Azure Functions code generation best practices",
+    "Get the latest Azure Functions deployment best practices",
+    "Get the latest Azure Functions best practices",
+    "Get the latest Azure Static Web Apps best practices",
+    "What are azure function best practices?",
+    "Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm.",
+    "Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm."
   ],
   "azmcp-monitor-healthmodels-entity-gethealth": [
     "Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name>"
@@ -309,6 +347,10 @@
     "Create a new storage account called testaccount123 in East US region",
     "Create a storage account with premium performance and LRS replication",
     "Create a new storage account with Data Lake Storage Gen2 enabled"
+  ],
+  "azmcp-storage-account-details": [
+    "Show me the details for my storage account <account_name>",
+    "Get details about the storage account <account_name>"
   ],
   "azmcp-storage-account-list": [
     "List all storage accounts in my subscription including their location and SKU",

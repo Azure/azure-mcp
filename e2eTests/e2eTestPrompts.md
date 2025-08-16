@@ -120,7 +120,7 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-functionapp-create | Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium |
 | azmcp-functionapp-create | Create a premium function app <function_app_name> in resource group <resource_group_name> in eastus2 with plan type premium and plan sku EP1 |
 | azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan sku S1 |
-| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan type appservice and plan sku S1 |
+| azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in centralus with plan type appservice and plan sku B2 |
 | azmcp-functionapp-create | Create a basic app service function app <function_app_name> in resource group <resource_group_name> in eastus with plan type appservice |
 | azmcp-functionapp-create | Create a function app <function_app_name> in resource group <resource_group_name> in eastus using existing app service plan <plan_name> |
 | azmcp-functionapp-create | Create a dotnet isolated function app <function_app_name> in resource group <resource_group_name> in eastus with runtime dotnet-isolated |
