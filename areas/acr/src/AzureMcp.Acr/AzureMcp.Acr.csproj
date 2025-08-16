@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.ResourceManager" />
     <PackageReference Include="Azure.ResourceManager.ContainerRegistry" />
+    <PackageReference Include="Azure.Containers.ContainerRegistry" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />

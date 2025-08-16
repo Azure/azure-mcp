@@ -6,6 +6,9 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for listing repositories in Azure Container Registries via the command `azmcp-acr-registry-repository-list`. This lists repository names per registry with optional filtering by resource group or registry name. [[#983](https://github.com/Azure/azure-mcp/pull/983)]
+
 ### Breaking Changes
 
 ### Bugs Fixed
