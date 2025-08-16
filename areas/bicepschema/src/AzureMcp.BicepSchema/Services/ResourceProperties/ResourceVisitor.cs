@@ -8,7 +8,7 @@ using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
 using AzureMcp.BicepSchema.Services.Support;
 
 
-// This is mostly from 
+// This is mostly from
 // https://msazure.visualstudio.com/One/_git/AzureUX-Deployments-Tooling?path=%2FBicepTypesDefinitions%2FResourcePropertiesApp%2FProgram.cs, which
 // is based off of the code in https://github.com/Azure/bicep-types/blob/main/src/bicep-types/src/writers/markdown.ts
 
@@ -243,9 +243,8 @@ public class ResourceVisitor
                 {
                     Name = resourceType.Name,
                     BodyType = WriteComplexType(resourceType.Body.Type),
-                    Flags = resourceType.Flags.ToString(),
-                    ScopeType = resourceType.ScopeType.ToString(),
-                    ReadOnlyScopes = resourceType.ReadOnlyScopes?.ToString()
+                    WritableScopes = resourceType.WritableScopes.ToString(),
+                    ReadableScopes = resourceType.ReadableScopes.ToString(),
                 };
                 return rtEntity;
             case ResourceFunctionType resourceFunctionType:
