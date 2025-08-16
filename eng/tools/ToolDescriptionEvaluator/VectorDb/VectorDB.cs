@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Numerics.Tensors;
 
 namespace ToolSelection.VectorDb;

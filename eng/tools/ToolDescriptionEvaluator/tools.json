@@ -2992,7 +2992,11 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
           "required": null
+=======
+          "required": true
+>>>>>>> origin/main:eng/tools/ToolDescriptionEvaluator/tools.json
         },
         {
           "name": "location",
@@ -3039,6 +3043,7 @@
       ]
     },
     {
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
       "name": "details",
       "description": "Get detailed information about a specific Azure Storage account. This command retrieves comprehensive\r\nmetadata for the specified storage account including name, location, SKU, access settings, and configuration\r\ndetails. Returns a JSON object with all storage account properties.",
       "command": "azmcp storage account details",
@@ -3064,6 +3069,8 @@
       ]
     },
     {
+=======
+>>>>>>> origin/main:eng/tools/ToolDescriptionEvaluator/tools.json
       "name": "list",
       "description": "List all Storage accounts in a subscription. This command retrieves all Storage accounts available\r\nin the specified subscription. Results are returned as a JSON array of\r\nobjects including common metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess,\r\nenableHttpsTrafficOnly).",
       "command": "azmcp storage account list",
@@ -3751,5 +3758,9 @@
       ]
     }
   ],
+<<<<<<< HEAD:eng/tools/ToolDescriptionConfidenceScore/tools.json
   "duration": 107
+=======
+  "duration": 82
+>>>>>>> origin/main:eng/tools/ToolDescriptionEvaluator/tools.json
 }
