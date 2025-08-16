@@ -222,12 +222,12 @@ public class MySqlService(IResourceGroupService resourceGroupService, ITenantSer
                     dbCount++;
                 }
             }
-            
+
             if (dbCount >= MaxResultLimit)
             {
                 dbs.Add($"... (output limited to {MaxResultLimit:N0} databases for security and performance reasons)");
             }
-            
+
             return dbs;
         }
         catch (Exception ex)
