@@ -134,7 +134,7 @@ The project is organized as follows:
 
 5. **Update documentation**:
    - Add the new command to [/docs/azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
-   - Add test prompts for the new command in [/e2eTests/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/e2eTests/e2eTestPrompts.md)
+   - Add test prompts for the new command in [/docs/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/docs/e2eTestPrompts.md)
    - Update [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md) to mention the new command
 
 6. **Add CODEOWNERS entry** in [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
@@ -167,7 +167,7 @@ Requirements:
 
 ### End-to-end Tests
 
-End-to-end tests are performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to `/e2eTests/e2eTestPrompts.md`.
+End-to-end tests are performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to `/docs/e2eTestPrompts.md`.
 
 ### Testing Local Build with VS Code
 

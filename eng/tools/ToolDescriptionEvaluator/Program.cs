@@ -257,7 +257,7 @@ class Program
             {
                 // Use default fallback logic
 
-                var defaultPromptsPath = Path.Combine(repoRoot, "e2eTests", "e2eTestPrompts.md");
+                var defaultPromptsPath = Path.Combine(repoRoot, "docs", "e2eTestPrompts.md");
                 toolNameAndPrompts = await LoadPromptsFromMarkdownAsync(defaultPromptsPath, isCiMode);
 
                 // Save parsed prompts to prompts.json for future use

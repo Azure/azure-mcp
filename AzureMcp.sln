@@ -331,8 +331,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{75F7911D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.ResourceHealth.UnitTests", "areas\resourcehealth\tests\AzureMcp.ResourceHealth.UnitTests\AzureMcp.ResourceHealth.UnitTests.csproj", "{2A346B5F-D5FB-4454-ABBB-5E60280CBDF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.ResourceHealth.LiveTests", "areas\resourcehealth\tests\AzureMcp.ResourceHealth.LiveTests\AzureMcp.ResourceHealth.LiveTests.csproj", "{8927AF2A-026B-4495-8C31-D489C471E798}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1291,18 +1289,6 @@ Global
 		{2A346B5F-D5FB-4454-ABBB-5E60280CBDF2}.Release|x64.Build.0 = Release|Any CPU
 		{2A346B5F-D5FB-4454-ABBB-5E60280CBDF2}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A346B5F-D5FB-4454-ABBB-5E60280CBDF2}.Release|x86.Build.0 = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|x64.Build.0 = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Debug|x86.Build.0 = Debug|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|x64.ActiveCfg = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|x64.Build.0 = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|x86.ActiveCfg = Release|Any CPU
-		{8927AF2A-026B-4495-8C31-D489C471E798}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1470,6 +1456,5 @@ Global
 		{FD987DB2-B19B-42EE-99C9-BF743D1288E3} = {74490446-B0E8-F412-A296-BAE0BDC966AF}
 		{75F7911D-A518-6F54-1978-62BEAF400CFE} = {A29DD7BA-996D-C4EA-7CB3-91A08E5445CC}
 		{2A346B5F-D5FB-4454-ABBB-5E60280CBDF2} = {75F7911D-A518-6F54-1978-62BEAF400CFE}
-		{8927AF2A-026B-4495-8C31-D489C471E798} = {75F7911D-A518-6F54-1978-62BEAF400CFE}
 	EndGlobalSection
 EndGlobal

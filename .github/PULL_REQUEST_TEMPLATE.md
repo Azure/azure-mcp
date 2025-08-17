@@ -19,7 +19,7 @@
     - [ ] **One tool per PR**: This PR adds or modifies only one MCP tool for faster review cycles
     - [ ] Updated `README.md` documentation
     - [ ] Updated command list in `/docs/azmcp-commands.md`
-    - [ ] Updated test prompts in `/e2eTests/e2eTestPrompts.md`
+    - [ ] Updated test prompts in `/docs/e2eTestPrompts.md`
     - [ ] For new or modified tool descriptions, ran the `eng/tools/ToolDescriptionEvaluator` tool and obtained a result >= 0.4
 - [ ] 👉 For Community (non-Azure team member) PRs:
     - [ ] **Security review**: Reviewed code for security vulnerabilities, malicious code, or suspicious activities before running tests (`crypto mining, spam, data exfiltration, etc.`)
