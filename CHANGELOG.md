@@ -6,6 +6,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for listing knowledge indexes in Azure AI Foundry projects via the command `azmcp-foundry-knowledge-index-list`. [[#1234](https://github.com/Azure/azure-mcp/pull/1234)]
+
 ### Breaking Changes
 
 ### Bugs Fixed

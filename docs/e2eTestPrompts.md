@@ -6,6 +6,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-foundry-knowledge-index-list | List all knowledge indexes in my AI Foundry project |
+| azmcp-foundry-knowledge-index-list | Show me the knowledge indexes in my AI Foundry project |
 | azmcp-foundry-models-deploy | Deploy a GPT4o instance on my resource \<resource-name> |
 | azmcp-foundry-models-deployments-list | List all AI Foundry model deployments |
 | azmcp-foundry-models-deployments-list | Show me all AI Foundry model deployments |
