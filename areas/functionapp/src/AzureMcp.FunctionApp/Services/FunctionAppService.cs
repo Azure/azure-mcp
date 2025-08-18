@@ -37,8 +37,8 @@ public sealed class FunctionAppService(
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription);
-    var cacheKey = string.IsNullOrEmpty(tenant) ? subscription : $"{subscription}_{tenant}";
-    var cachedResults = await _cacheService.GetAsync<List<FunctionAppInfo>>(CacheGroup, cacheKey, CacheDuration);
+        var cacheKey = string.IsNullOrEmpty(tenant) ? subscription : $"{subscription}_{tenant}";
+        var cachedResults = await _cacheService.GetAsync<List<FunctionAppInfo>>(CacheGroup, cacheKey, CacheDuration);
         if (cachedResults != null)
         {
             return cachedResults;
@@ -49,7 +49,8 @@ public sealed class FunctionAppService(
 
         await foreach (var site in subscriptionResource.GetWebSitesAsync())
         {
-            if (site?.Data is { } d && IsFunctionApp(d)) functionApps.Add(ConvertToFunctionAppModel(site));
+            if (site?.Data is { } d && IsFunctionApp(d))
+                functionApps.Add(ConvertToFunctionAppModel(site));
         }
         await _cacheService.SetAsync(CacheGroup, cacheKey, functionApps, CacheDuration);
 
@@ -84,7 +85,8 @@ public sealed class FunctionAppService(
     {
         var selectedRuntime = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
         var hostingKind = ParseHostingKind(planType);
-        if (hostingKind == HostingKind.FlexConsumption && selectedRuntime == "dotnet") selectedRuntime = "dotnet-isolated";
+        if (hostingKind == HostingKind.FlexConsumption && selectedRuntime == "dotnet")
+            selectedRuntime = "dotnet-isolated";
         var selectedRuntimeVersion = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion(selectedRuntime) : runtimeVersion!.Trim();
         var (requiresLinux, normalizedOs) = ResolveOs(selectedRuntime, hostingKind, operatingSystem);
         return new CreateOptions(selectedRuntime, selectedRuntimeVersion, hostingKind, requiresLinux, planSku, normalizedOs);
@@ -161,8 +163,10 @@ public sealed class FunctionAppService(
             AppServicePlanId = plan.Id,
             SiteConfig = BuildSiteConfig(isLinux, options)
         };
-        if (options.HostingKind == HostingKind.FlexConsumption && data.SiteConfig is not null) data.SiteConfig.LinuxFxVersion = null;
-        if (options.HostingKind == HostingKind.FlexConsumption) data.FunctionAppConfig = new FunctionAppConfig();
+        if (options.HostingKind == HostingKind.FlexConsumption && data.SiteConfig is not null)
+            data.SiteConfig.LinuxFxVersion = null;
+        if (options.HostingKind == HostingKind.FlexConsumption)
+            data.FunctionAppConfig = new FunctionAppConfig();
         var op = await rg.GetWebSites().CreateOrUpdateAsync(WaitUntil.Completed, functionAppName, data);
         return op.Value;
     }
@@ -206,7 +210,8 @@ public sealed class FunctionAppService(
     private static async Task ApplyAppSettings(WebSiteResource site, CreateOptions options, string storageConnectionString)
     {
         var appSettings = BuildAppSettings(options.Runtime, options.RuntimeVersion, options.RequiresLinux, storageConnectionString, includeWorkerRuntime: options.HostingKind != HostingKind.FlexConsumption);
-        if (options.HostingKind == HostingKind.FlexConsumption) SanitizeAppSettingsForFlexConsumption(appSettings);
+        if (options.HostingKind == HostingKind.FlexConsumption)
+            SanitizeAppSettingsForFlexConsumption(appSettings);
         await site.UpdateApplicationSettingsAsync(appSettings);
     }
 
@@ -284,7 +289,8 @@ public sealed class FunctionAppService(
     {
         var config = new SiteConfigProperties();
         var version = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion(runtime) : runtimeVersion;
-        if (runtime == "java" && version != null && version.EndsWith(".0", StringComparison.Ordinal)) version = version.Substring(0, version.Length - 2);
+        if (runtime == "java" && version != null && version.EndsWith(".0", StringComparison.Ordinal))
+            version = version.Substring(0, version.Length - 2);
         config.LinuxFxVersion = runtime switch
         {
             "python" => $"Python|{version}",
@@ -316,7 +322,8 @@ public sealed class FunctionAppService(
         if (!requiresLinux && runtime == "node" && !string.IsNullOrWhiteSpace(effectiveVersion))
         {
             var major = ExtractMajorVersion(effectiveVersion!);
-            if (!string.IsNullOrEmpty(major)) settings.Properties["WEBSITE_NODE_DEFAULT_VERSION"] = $"~{major}";
+            if (!string.IsNullOrEmpty(major))
+                settings.Properties["WEBSITE_NODE_DEFAULT_VERSION"] = $"~{major}";
         }
         return settings;
     }
