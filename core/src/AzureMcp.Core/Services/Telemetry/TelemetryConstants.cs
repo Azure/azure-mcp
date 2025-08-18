@@ -27,5 +27,9 @@ internal static class TelemetryConstants
         public const string CommandExecuted = "CommandExecuted";
         public const string ListToolsHandler = "ListToolsHandler";
         public const string ToolExecuted = "ToolExecuted";
+        public const string ListResourcesHandler = "ListResourcesHandler";
+        public const string ReadResourceHandler = "ReadResourceHandler";
+        public const string SubscribeResourceHandler = "SubscribeResourceHandler";
+        public const string UnsubscribeResourceHandler = "UnsubscribeResourceHandler";
     }
 }

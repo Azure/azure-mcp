@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using AzureMcp.Core.Areas.Server.Commands.ResourceLoading;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
 using AzureMcp.Core.Models.Option;
@@ -14,12 +15,14 @@ using static AzureMcp.Core.Services.Telemetry.TelemetryConstants;
 namespace AzureMcp.Core.Areas.Server.Commands.Runtime;
 
 /// <summary>
-/// Implementation of the MCP runtime that delegates tool discovery and invocation to a tool loader.
+/// Implementation of the MCP runtime that delegates tool discovery and invocation to a tool loader,
+/// and resource operations to a resource loader.
 /// Provides logging and configuration support for the MCP server.
 /// </summary>
 public sealed class McpRuntime : IMcpRuntime
 {
     private readonly IToolLoader _toolLoader;
+    private readonly IResourceLoader _resourceLoader;
     private readonly IOptions<ServiceStartOptions> _options;
     private readonly ILogger<McpRuntime> _logger;
 
@@ -29,21 +32,25 @@ public sealed class McpRuntime : IMcpRuntime
     /// Initializes a new instance of the McpRuntime class.
     /// </summary>
     /// <param name="toolLoader">The tool loader responsible for discovering and loading tools.</param>
+    /// <param name="resourceLoader">The resource loader responsible for managing resources.</param>
     /// <param name="options">Configuration options for the MCP server.</param>
     /// <param name="logger">Logger for runtime operations.</param>
     /// <exception cref="ArgumentNullException">Thrown if any required dependencies are null.</exception>
     public McpRuntime(
         IToolLoader toolLoader,
+        IResourceLoader resourceLoader,
         IOptions<ServiceStartOptions> options,
         ITelemetryService telemetry,
         ILogger<McpRuntime> logger)
     {
         _toolLoader = toolLoader ?? throw new ArgumentNullException(nameof(toolLoader));
+        _resourceLoader = resourceLoader ?? throw new ArgumentNullException(nameof(resourceLoader));
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _logger.LogInformation("McpRuntime initialized with tool loader of type {ToolLoaderType}.", _toolLoader.GetType().Name);
+        _logger.LogInformation("McpRuntime initialized with resource loader of type {ResourceLoaderType}.", _resourceLoader.GetType().Name);
         _logger.LogInformation("ReadOnly mode is set to {ReadOnly}.", _options.Value.ReadOnly ?? false);
         _logger.LogInformation("Namespace is set to {Namespace}.", string.Join(",", _options.Value.Namespace ?? Array.Empty<string>()));
     }
@@ -157,10 +164,70 @@ public sealed class McpRuntime : IMcpRuntime
     }
 
     /// <summary>
-    /// Disposes the tool loader and releases associated resources.
+    /// Delegates resource listing requests to the configured resource loader.
+    /// </summary>
+    /// <param name="request">The request context containing metadata and parameters.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the list of available resources.</returns>
+    public async ValueTask<ListResourcesResult> ListResourcesHandler(RequestContext<ListResourcesRequestParams> request, CancellationToken cancellationToken)
+    {
+        using var activity = await _telemetry.StartActivity(ActivityName.ListResourcesHandler, request?.Server?.ClientInfo);
+
+        try
+        {
+            var result = await _resourceLoader.ListResourcesHandler(request!, cancellationToken);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling list resources handler")
+                ?.SetTag(TagName.ErrorDetails, ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Delegates resource reading requests to the configured resource loader.
+    /// </summary>
+    /// <param name="request">The request context containing the resource URI to read.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the resource contents.</returns>
+    public async ValueTask<ReadResourceResult> ReadResourceHandler(RequestContext<ReadResourceRequestParams> request, CancellationToken cancellationToken)
+    {
+        using var activity = await _telemetry.StartActivity(ActivityName.ReadResourceHandler, request?.Server?.ClientInfo);
+
+        if (request?.Params?.Uri == null)
+        {
+            var errorMessage = "Cannot read resource with null URI.";
+            activity?.SetStatus(ActivityStatusCode.Error)?.AddTag(TagName.ErrorDetails, errorMessage);
+            throw new ArgumentException(errorMessage, nameof(request));
+        }
+
+        activity?.AddTag("resource.uri", request.Params.Uri);
+
+        try
+        {
+            var result = await _resourceLoader.ReadResourceHandler(request, cancellationToken);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Exception occurred calling read resource handler")
+                ?.SetTag(TagName.ErrorDetails, ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Disposes the tool loader and resource loader, releasing associated resources.
     /// </summary>
     public async ValueTask DisposeAsync()
     {
         await _toolLoader.DisposeAsync();
+        await _resourceLoader.DisposeAsync();
     }
 }

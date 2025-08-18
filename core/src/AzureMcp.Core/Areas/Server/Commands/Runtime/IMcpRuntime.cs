@@ -7,7 +7,8 @@ namespace AzureMcp.Core.Areas.Server.Commands.Runtime;
 
 /// <summary>
 /// Defines the core functionality for a Model Context Protocol (MCP) runtime.
-/// The runtime is responsible for handling tool discovery and invocation requests.
+/// The runtime is responsible for handling tool discovery and invocation requests,
+/// as well as resource management operations.
 /// </summary>
 public interface IMcpRuntime : IAsyncDisposable
 {
@@ -26,4 +27,20 @@ public interface IMcpRuntime : IAsyncDisposable
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A result containing the output of the tool invocation.</returns>
     ValueTask<CallToolResult> CallToolHandler(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Handles requests to list all resources available in the MCP server.
+    /// </summary>
+    /// <param name="request">The request context containing metadata and parameters.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the list of available resources.</returns>
+    ValueTask<ListResourcesResult> ListResourcesHandler(RequestContext<ListResourcesRequestParams> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Handles requests to read the contents of a specific resource.
+    /// </summary>
+    /// <param name="request">The request context containing the resource URI to read.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A result containing the resource contents.</returns>
+    ValueTask<ReadResourceResult> ReadResourceHandler(RequestContext<ReadResourceRequestParams> request, CancellationToken cancellationToken);
 }

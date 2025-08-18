@@ -3,9 +3,11 @@
 
 using System.Reflection;
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
+using AzureMcp.Core.Areas.Server.Commands.ResourceLoading;
 using AzureMcp.Core.Areas.Server.Commands.Runtime;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
+using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -72,6 +74,19 @@ public static class AzureMcpServiceCollectionExtensions
         services.AddSingleton<CompositeToolLoader>();
         services.AddSingleton<ServerToolLoader>();
 
+        // Register resource loaders
+        services.AddSingleton<ExampleAzureResourceLoader>();
+        services.AddSingleton<IResourceLoader>(sp =>
+        {
+            var resourceLoaders = new List<IResourceLoader>
+            {
+                sp.GetRequiredService<ExampleAzureResourceLoader>()
+            };
+            
+            var logger = sp.GetRequiredService<ILogger<CompositeResourceLoader>>();
+            return new CompositeResourceLoader(resourceLoaders, logger);
+        });
+
         // Register server discovery strategies
         services.AddSingleton<CommandGroupDiscoveryStrategy>();
         services.AddSingleton<CompositeDiscoveryStrategy>();
@@ -82,7 +97,16 @@ public static class AzureMcpServiceCollectionExtensions
         services.AddSingleton<RegistryServerProvider>();
 
         // Register MCP runtimes
-        services.AddSingleton<IMcpRuntime, McpRuntime>();
+        services.AddSingleton<IMcpRuntime>(sp =>
+        {
+            var toolLoader = sp.GetRequiredService<IToolLoader>();
+            var resourceLoader = sp.GetRequiredService<IResourceLoader>();
+            var options = sp.GetRequiredService<IOptions<ServiceStartOptions>>();
+            var telemetry = sp.GetRequiredService<ITelemetryService>();
+            var logger = sp.GetRequiredService<ILogger<McpRuntime>>();
+            
+            return new McpRuntime(toolLoader, resourceLoader, options, telemetry, logger);
+        });
 
         // Register MCP discovery strategies based on proxy mode
         if (serviceStartOptions.Mode == ModeTypes.SingleToolProxy || serviceStartOptions.Mode == ModeTypes.NamespaceProxy)
@@ -162,6 +186,13 @@ public static class AzureMcpServiceCollectionExtensions
                     {
                         CallToolHandler = mcpRuntime.CallToolHandler,
                         ListToolsHandler = mcpRuntime.ListToolsHandler,
+                    },
+                    Resources = new ResourcesCapability()
+                    {
+                        Subscribe = false,
+                        ListChanged = false,
+                        ListResourcesHandler = mcpRuntime.ListResourcesHandler,
+                        ReadResourceHandler = mcpRuntime.ReadResourceHandler
                     }
                 };
             });
