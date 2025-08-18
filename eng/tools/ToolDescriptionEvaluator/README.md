@@ -1,4 +1,4 @@
-# Tool Description Confidence Score Analyzer
+# Tool Description Evaluator
 
 This is a testing and analysis tool that evaluates how well Azure MCP Server tool descriptions match user prompts using AI embeddings. It helps ensure that the right tools are selected when users ask questions or make requests.
 
@@ -7,7 +7,7 @@ This is a testing and analysis tool that evaluates how well Azure MCP Server too
 The application:
 
 1. Loads tool definitions from the Azure MCP Server (dynamically or from JSON files)
-1. Loads test prompts from markdown or JSON files (default: `e2eTests/e2eTestPrompts.md`)
+1. Loads test prompts from markdown or JSON files (default: `docs/e2eTestPrompts.md`)
 1. Creates embeddings for tool descriptions using Azure OpenAI's `text-embedding-3-large` model
 1. Tests prompt-to-tool matching using vector similarity search with cosine similarity
 1. Generates confidence scores and analysis reports to identify gaps in tool selection accuracy
@@ -20,7 +20,7 @@ The application:
 ├── Models/                                 # Data models for tools, prompts, and results
 ├── Services/                               # Embedding and analysis services
 ├── VectorDb/                               # Vector database implementation with cosine similarity
-├── ToolDescriptionConfidenceScore.csproj   # Project file
+├── ToolDescriptionEvaluator.csproj         # Project file
 ├── tools.json                              # Tool definitions (fallback/static)
 ├── prompts.json                            # Test prompts (fallback/static)
 ├── .env.example                            # Environment variables template
@@ -83,7 +83,7 @@ The tool can load data from multiple sources:
 
 ### Test Prompts
 
-- **Markdown format** (default): Uses `../../../e2eTests/e2eTestPrompts.md`
+- **Markdown format** (default): Uses `../../../docs/e2eTestPrompts.md`
 - **JSON format**: Uses `prompts.json` or custom file specified with `--prompts-file`
 - **Custom files**: Supports both `.md` and `.json` formats
 
@@ -92,7 +92,7 @@ The tool can load data from multiple sources:
 You can call the build script in this directory:
 
 ```bash
-./Run-ToolDescriptionConfidenceScore.ps1
+./Run-ToolDescriptionEvaluator.ps1
 ```
 
 or run the following commands directly:
@@ -191,7 +191,7 @@ The tool provides several key metrics:
 
 #### Markdown Format (Default)
 
-The tool reads from `e2eTests/e2eTestPrompts.md` which contains tables like:
+The tool reads from `docs/e2eTestPrompts.md` which contains tables like:
 
 ```markdown
 ## Azure Storage

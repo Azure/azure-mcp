@@ -1455,12 +1455,11 @@ catch (Exception ex)
    - **Maintain alphabetical sorting in e2eTestPrompts.md**: Insert new test prompts in correct alphabetical position by Tool Name within each service section
 
 5. Tool Description Quality Validation:
-    - Test your command descriptions for quality using the validation tool before submitting:
+    - Test your command descriptions for quality using the validation tool located at `eng/tools/ToolDescriptionEvaluator` before submitting:
 
       - **Single prompt validation** (test one description against one prompt):
 
         ```bash
-        cd eng/tools/ToolDescriptionConfidenceScore
         dotnet run -- --validate --tool-description "Your command description here" --prompt "typical user request"
         ```
 
@@ -1478,14 +1477,14 @@ catch (Exception ex)
 
         ```bash
         # Prompts:
-        # Use markdown format (same as e2eTests/e2eTestPrompts.md):
+        # Use markdown format (same as docs/e2eTestPrompts.md):
         dotnet run -- --prompts-file my-prompts.md
 
         # Use JSON format:
         dotnet run -- --prompts-file my-prompts.json
 
         # Tools:
-        # Use JSON format (same as eng/tools/ToolDescriptionConfidenceScore/tools.json):
+        # Use JSON format (same as eng/tools/ToolDescriptionEvaluator/tools.json):
         dotnet run -- --tools-file my-tools.json
 
         # Combine both:
@@ -1501,7 +1500,7 @@ catch (Exception ex)
       - If validation shows POOR results or a confidence score of < 0.4, refine your description and test again
 
     - Custom prompts file formats:
-      - **Markdown format**: Use same table format as `e2eTests/e2eTestPrompts.md`:
+      - **Markdown format**: Use same table format as `docs/e2eTestPrompts.md`:
 
         ```markdown
         | Tool Name | Test Prompt |
@@ -1522,7 +1521,7 @@ catch (Exception ex)
         ```
 
     - Custom tools file format:
-      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionConfidenceScore/tools.json`.
+      - Use the JSON format returned by calling the server command `azmcp-tools-list` or found in `eng/tools/ToolDescriptionEvaluator/tools.json`.
 
 6. Live Test Infrastructure:
    - Use minimal resource configurations for cost efficiency
@@ -1857,7 +1856,7 @@ Before submitting:
 - [ ] **docs/azmcp-commands.md**: Add command documentation with description, syntax, parameters, and examples
 - [ ] **README.md**: Update the supported services table and add example prompts demonstrating the new command(s) in the appropriate area section
 - [ ] **eng/vscode/README.md**: Update the VSIX README with new service area (if applicable) and add sample prompts to showcase new command capabilities
-- [ ] **e2eTests/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
+- [ ] **docs/e2eTestPrompts.md**: Add test prompts for end-to-end validation of the new command(s)
 - [ ] **.github/CODEOWNERS**: Add new area to CODEOWNERS file for proper ownership and review assignments
 
 **Documentation Standards**:

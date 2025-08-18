@@ -54,6 +54,13 @@
     "List all virtual machines in my subscription",
     "Show me the details of the storage account <account_name>"
   ],
+  "azmcp-acr-registry-list": [
+    "List all Azure Container Registries in my subscription",
+    "Show me my Azure Container Registries",
+    "Show me the container registries in my subscription",
+    "List container registries in resource group <resource_group_name>",
+    "Show me the container registries in resource group <resource_group_name>"
+  ],
   "azmcp-cosmos-account-list": [
     "List all cosmosdb accounts in my subscription",
     "Show me my cosmosdb accounts",
@@ -127,6 +134,11 @@
     "Create a To-Do list web application that uses NodeJS and MongoDB",
     "Deploy my web application to Azure App Service"
   ],
+  "azmcp-functionapp-list": [
+    "List all function apps in my subscription",
+    "Show me my Azure function apps",
+    "What function apps do I have?"
+  ],
   "azmcp-keyvault-certificate-create": [
     "Create a new certificate called <certificate_name> in the key vault <key_vault_account_name>"
   ],
@@ -194,13 +206,16 @@
     "Get details about marketplace product <product_name>"
   ],
   "azmcp-bestpractices-get": [
-    "Fetch the latest Azure code generation best practices",
-    "Fetch the latest Azure deployment best practices",
-    "Fetch the latest Azure best practices",
-    "Fetch the latest Azure Functions code generation best practices",
-    "Fetch the latest Azure Functions deployment best practices",
-    "Fetch the latest Azure Functions best practices",
-    "Fetch the latest Azure Static Web Apps best practices"
+    "Get the latest Azure code generation best practices",
+    "Get the latest Azure deployment best practices",
+    "Get the latest Azure best practices",
+    "Get the latest Azure Functions code generation best practices",
+    "Get the latest Azure Functions deployment best practices",
+    "Get the latest Azure Functions best practices",
+    "Get the latest Azure Static Web Apps best practices",
+    "What are azure function best practices?",
+    "Create the plan for creating a simple HTTP-triggered function app in javascript that returns a random compliment from a predefined list in a JSON response. And deploy it to azure eventually. But don't create any code until I confirm.",
+    "Create the plan for creating a to-do list app. And deploy it to azure as a container app. But don't create any code until I confirm."
   ],
   "azmcp-monitor-healthmodels-entity-gethealth": [
     "Show me the health status of entity <entity_id> in the Log Analytics workspace <workspace_name>"
