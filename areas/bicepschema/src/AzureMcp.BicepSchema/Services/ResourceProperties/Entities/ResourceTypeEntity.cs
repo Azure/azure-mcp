@@ -13,39 +13,19 @@ public class ResourceTypeEntity : ComplexType
     [JsonPropertyName("bodyType")]
     public required ComplexType BodyType { get; init; }
 
-    private string? _flags;
-    [JsonPropertyName("flags")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Flags
-    {
-        get
-        {
-            Debug.Assert(_flags?.EqualsOrdinalInsensitively(nameof(ResourceFlags.None)) != true);
-            return _flags;
-        }
-        init
-        {
-            _flags = value?.EqualsOrdinalInsensitively(nameof(ResourceFlags.None)) == true
-                ? null
-                : value.NullIfEmptyOrWhitespace();
-        }
-    }
+    [JsonPropertyName("writableScopes")]
+    public string WritableScopes { get; init; } = "Unknown";
 
-    [JsonPropertyName("scopeType")]
-    public string ScopeType { get; init; } = "Unknown";
-
-    [JsonPropertyName("readOnlyScopes")]
+    [JsonPropertyName("readableScopes")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ReadOnlyScopes { get; init; }
+    public string? ReadableScopes { get; init; }
 
     public override bool Equals(object? obj) =>
         obj is ResourceTypeEntity other &&
         Name == other.Name &&
         BodyType.Equals(other.BodyType) &&
-        Flags == other.Flags &&
-        ScopeType == other.ScopeType &&
-        ReadOnlyScopes == other.ReadOnlyScopes;
-
+        WritableScopes == other.WritableScopes &&
+        ReadableScopes == other.ReadableScopes;
     public override int GetHashCode() =>
-        HashCode.Combine(Name, BodyType, Flags, ScopeType, ReadOnlyScopes);
+        HashCode.Combine(Name, BodyType, WritableScopes, ReadableScopes);
 }

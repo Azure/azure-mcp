@@ -255,6 +255,17 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-group-list | Show me my resource groups |
 | azmcp-group-list | Show me the resource groups in my subscription |
 
+## Azure Resource Health
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-resourcehealth-availability-status-get | Get the availability status for resource <resource_name> |
+| azmcp-resourcehealth-availability-status-get | Show me the health status of the storage account <storage_account_name> |
+| azmcp-resourcehealth-availability-status-get | What is the availability status of virtual machine <vm_name> in resource group <resource_group_name>? |
+| azmcp-resourcehealth-availability-status-list | List availability status for all resources in my subscription |
+| azmcp-resourcehealth-availability-status-list | Show me the health status of all my Azure resources |
+| azmcp-resourcehealth-availability-status-list | What resources in resource group <resource_group_name> have health issues? |
+
 ## Azure Service Bus
 
 | Tool Name | Test Prompt |
