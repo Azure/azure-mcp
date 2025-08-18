@@ -40,8 +40,6 @@ public sealed class ServiceListCommand(ILogger<ServiceListCommand> logger) : Sub
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var searchService = context.GetService<ISearchService>();
 
             var services = await searchService.ListServices(

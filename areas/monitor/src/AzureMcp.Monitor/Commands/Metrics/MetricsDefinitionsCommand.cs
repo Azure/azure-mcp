@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Models;
 using AzureMcp.Monitor.Options;
 using AzureMcp.Monitor.Options.Metrics;
@@ -27,17 +26,9 @@ public sealed class MetricsDefinitionsCommand(ILogger<MetricsDefinitionsCommand>
     public override string Name => "definitions";
 
     public override string Description =>
-        $"""
-        List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.
-        Required options:
-        - {_resourceNameOption.Name}: {_resourceNameOption.Description}
-        Optional options:
-        - {_optionalResourceGroupOption.Name}: {_optionalResourceGroupOption.Description}
-        - {_resourceTypeOption.Name}: {_resourceTypeOption.Description}
-        - {_metricNamespaceOption.Name}: {_metricNamespaceOption.Description}
-        - {_searchStringOption.Name}: {_searchStringOption.Description}
-        - {_limitOption.Name}: {_limitOption.Description}
-        """;
+            $"""
+                List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.
+            """;
 
     public override string Title => CommandTitle;
 

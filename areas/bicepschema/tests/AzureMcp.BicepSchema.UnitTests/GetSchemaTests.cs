@@ -7,7 +7,6 @@ using Azure.Bicep.Types;
 using AzureMcp.BicepSchema.Services;
 using AzureMcp.BicepSchema.Services.ResourceProperties;
 using AzureMcp.BicepSchema.Services.ResourceProperties.Entities;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -288,7 +287,8 @@ public class GetSchemaTests
                 ],
                 "name": "Microsoft.ApiManagement/service/diagnostics/loggers"
               },
-              "scopeType": "ResourceGroup",
+              "writableScopes": "ResourceGroup",
+              "readableScopes": "ResourceGroup",
               "name": "Microsoft.ApiManagement/service/diagnostics/loggers@2018-01-01"
             }
           ]

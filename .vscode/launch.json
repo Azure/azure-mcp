@@ -326,6 +326,26 @@
             }
         },
         {
+            "name": "Debug ACR Registry List",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/core/src/AzureMcp.Cli/bin/Debug/net9.0/azmcp.exe",
+            "args": [
+                "acr",
+                "registry",
+                "list",
+                "--subscription",
+                "${input:subscription}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
             "name": "Debug Monitor Log Query",
             "type": "coreclr",
             "request": "launch",

@@ -85,6 +85,11 @@ public abstract class GlobalCommand<
             AuthMethod = parseResult.GetValueForOption(_authMethodOption)
         };
 
+        if (UsesResourceGroup)
+        {
+            options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
+        }
+
         // Only create RetryPolicy if any retry options are specified
         if (parseResult.HasAnyRetryOptions())
         {

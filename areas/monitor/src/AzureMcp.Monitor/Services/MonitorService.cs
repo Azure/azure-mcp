@@ -180,12 +180,11 @@ public class MonitorService : BaseAzureService, IMonitorService
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            return tables
+            return [.. tables
                 .Where(table => string.IsNullOrEmpty(tableType) || table.Data.Schema.TableType.ToString() == tableType)
                 .Select(table => table.Data.Name ?? string.Empty) // ensure non-null
                 .Where(name => !string.IsNullOrEmpty(name))
-                .OrderBy(name => name)
-                .ToList();
+                .OrderBy(name => name)];
         }
         catch (Exception ex)
         {

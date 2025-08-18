@@ -57,7 +57,6 @@ public class CheckCommand(ILogger<CheckCommand> logger) : SubscriptionCommand<Ch
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
             var ResourceTypes = options.ResourceTypes.Split(',')
                 .Select(rt => rt.Trim())
                 .Where(rt => !string.IsNullOrWhiteSpace(rt))

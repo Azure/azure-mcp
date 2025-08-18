@@ -71,7 +71,7 @@ public static class CommandExtensions
             }
         }
 
-        return command.Parse(args.ToArray());
+        return command.Parse([.. args]);
     }
 
     public static ParseResult ParseFromRawMcpToolInput(this Command command, IReadOnlyDictionary<string, JsonElement>? arguments)

@@ -52,8 +52,6 @@ public sealed class FileListCommand(ILogger<FileListCommand> logger) : BaseFileC
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var storageService = context.GetService<IStorageService>();
             var filesAndDirectories = await storageService.ListFilesAndDirectories(
                 options.Account!,

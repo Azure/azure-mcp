@@ -59,19 +59,6 @@ public class MetricsDefinitionsCommandTests
     }
 
     [Fact]
-    public void Description_ContainsRequiredInformation()
-    {
-        var description = _command.Description;
-        Assert.Contains("List available metric definitions", description);
-        Assert.Contains("Required options:", description);
-        Assert.Contains("Optional options:", description);
-        Assert.Contains("resource", description);
-        Assert.Contains("metric-namespace", description);
-        Assert.Contains("search-string", description);
-        Assert.Contains("limit", description);
-    }
-
-    [Fact]
     public void GetCommand_RegistersAllRequiredOptions()
     {
         var command = _command.GetCommand();

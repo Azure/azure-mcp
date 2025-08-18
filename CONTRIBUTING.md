@@ -103,6 +103,19 @@ The project is organized as follows:
 
 ### Adding a New Command
 
+> **⚠️ Important: Submit One Tool Per Pull Request**
+> 
+> We strongly recommend submitting **one tool per pull request** to streamline the review process and provide better onboarding experience. This approach results in:
+> 
+> - **Faster reviews**: Single tools are easier and quicker to review
+> - **Better feedback**: More focused discussions on individual tool implementation  
+> - **Easier iteration**: Smaller changes mean faster iteration cycles
+> - **Incremental progress**: Get your first tool merged to establish baseline, then build upon it
+> 
+> If you're planning to contribute multiple tools, please:
+> 1. Submit your most important or representative tool as your first PR to establish the code patterns.
+> 2. Use that baseline to inform your subsequent tool PRs.
+
 1. **Create an issue** with title: "Add command: azmcp [namespace] [resource] [operation]" and detailed description
 
 2. **Set up development environment**:
@@ -121,7 +134,7 @@ The project is organized as follows:
 
 5. **Update documentation**:
    - Add the new command to [/docs/azmcp-commands.md](https://github.com/Azure/azure-mcp/blob/main/docs/azmcp-commands.md)
-   - Add test prompts for the new command in [/e2eTests/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/e2eTests/e2eTestPrompts.md)
+   - Add test prompts for the new command in [/docs/e2eTestPrompts.md](https://github.com/Azure/azure-mcp/blob/main/docs/e2eTestPrompts.md)
    - Update [README.md](https://github.com/Azure/azure-mcp/blob/main/README.md) to mention the new command
 
 6. **Add CODEOWNERS entry** in [CODEOWNERS](https://github.com/Azure/azure-mcp/blob/main/.github/CODEOWNERS) [(example)](https://github.com/Azure/azure-mcp/commit/08f73efe826d5d47c0f93be5ed9e614740e82091)
@@ -131,7 +144,7 @@ The project is organized as follows:
    - Include tests in the `/tests` folder
    - Ensure all tests pass
    - Follow code style requirements
-   - Run the `eng/tools/ToolDescriptionConfidenceScore` tool for the new tool description and ensure a result >= 0.4 is achieved
+   - Run the `eng/tools/ToolDescriptionEvaluator` tool for the new tool description and ensure a result >= 0.4 is achieved
 
 ## Testing
 
@@ -154,7 +167,7 @@ Requirements:
 
 ### End-to-end Tests
 
-End-to-end tests are performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to `/e2eTests/e2eTestPrompts.md`.
+End-to-end tests are performed manually. Command authors must thoroughly test each command to ensure correct tool invocation and results. At least one prompt per tool is required and should be added to `/docs/e2eTestPrompts.md`.
 
 ### Testing Local Build with VS Code
 
@@ -576,6 +589,8 @@ If you would like to see the product of a PR as a package on the dev feed, after
 Instructions for consuming the package from the dev feed can be found in the "Extensions" tab of the pipeline run page.
 
 ## Support and Community
+
+Please see our [support](https://github.com/Azure/azure-mcp/blob/main/SUPPORT.md) statement.
 
 ### Questions and Support
 

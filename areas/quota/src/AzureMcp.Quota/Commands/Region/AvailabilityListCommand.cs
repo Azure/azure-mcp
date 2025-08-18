@@ -62,8 +62,6 @@ public sealed class AvailabilityListCommand(ILogger<AvailabilityListCommand> log
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var resourceTypes = options.ResourceTypes.Split(',')
                 .Select(rt => rt.Trim())
                 .Where(rt => !string.IsNullOrWhiteSpace(rt))

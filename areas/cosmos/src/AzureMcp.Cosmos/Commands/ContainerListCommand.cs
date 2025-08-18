@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Cosmos.Commands;
 using AzureMcp.Cosmos.Options;
 using AzureMcp.Cosmos.Services;
 using Microsoft.Extensions.Logging;
@@ -38,8 +37,6 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var cosmosService = context.GetService<ICosmosService>();
             var containers = await cosmosService.ListContainers(

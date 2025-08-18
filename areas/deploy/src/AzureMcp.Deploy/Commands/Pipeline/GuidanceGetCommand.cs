@@ -61,7 +61,6 @@ public sealed class GuidanceGetCommand(ILogger<GuidanceGetCommand> logger)
             {
                 return Task.FromResult(context.Response);
             }
-            context.Activity?.WithSubscriptionTag(options);
             var result = PipelineGenerationUtil.GeneratePipelineGuidelines(options);
 
             context.Response.Message = result;
