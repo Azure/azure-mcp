@@ -314,6 +314,7 @@
         "GZRS",
         "healthmodels",
         "hnsw",
+        "hostings",
         "hostpool",
         "hostpools",
         "idempotency",
