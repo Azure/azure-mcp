@@ -197,8 +197,8 @@ public sealed class FunctionAppCreateCommandTests
     [InlineData("node", "20", "Node|20")]
     [InlineData("dotnet", null, "DOTNET|8.0")]
     [InlineData("dotnet", "7.0", "DOTNET|7.0")]
-    [InlineData("java", null, "Java|21.0")]
-    [InlineData("java", "17.0", "Java|17.0")]
+    [InlineData("java", "21.0", "Java|21")]
+    [InlineData("java", null, "Java|17")]
     [InlineData("powershell", null, "PowerShell|7.4")]
     [InlineData("powershell", "7.3", "PowerShell|7.3")]
     public void CreateLinuxSiteConfig_ComposesLinuxFxVersion(string runtime, string? version, string expected)
