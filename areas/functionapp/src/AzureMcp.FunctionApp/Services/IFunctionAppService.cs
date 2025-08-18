@@ -21,7 +21,6 @@ public interface IFunctionAppService
         string? appServicePlan = null,
         string? planType = null,
         string? planSku = null,
-        string? containerAppName = null,
         string? runtime = null,
         string? runtimeVersion = null,
         string? operatingSystem = null,
