@@ -47,8 +47,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, "azd env list --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -105,8 +104,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .Returns(new ProcessResult(1, string.Empty, errorMessage, "azd env invalid-command --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -158,8 +156,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .ThrowsAsync(new FileNotFoundException(exceptionMessage));
 
         // Act
@@ -241,8 +238,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .Returns(new ProcessResult(0, "output", "", "command"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -340,8 +336,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, "azd env get-values --output json --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
@@ -371,8 +366,7 @@ public sealed class AzdCommandTests
                 await _processService.Received(1).ExecuteAsync(
                     Arg.Any<string>(),
                     Arg.Is<string>(cmd => cmd.Contains("env get-values") && cmd.Contains("--output json") && cmd.Contains("--no-prompt")),
-                    Arg.Any<int>(),
-                    Arg.Any<IEnumerable<string>>());
+                    Arg.Any<int>());
             }
             finally
             {
@@ -403,8 +397,7 @@ public sealed class AzdCommandTests
         _processService.ExecuteAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<int>(),
-            Arg.Any<IEnumerable<string>>())
+            Arg.Any<int>())
             .Returns(new ProcessResult(0, expectedOutput, string.Empty, $"azd {infoCommand} --cwd test-dir --no-prompt"));
 
         var tempDir = CreateTempAzdCliDirectory();
