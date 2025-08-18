@@ -87,6 +87,7 @@ internal class Program
 #if !BUILD_NATIVE
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
+            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
 #endif
         ];
     }
