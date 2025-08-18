@@ -126,6 +126,10 @@
 # ServiceLabel: %area-Monitor
 # ServiceOwners:                       @smritiy @srnagar @jongio
 
+# PRLabel: %area-AzureManagedLustre
+/areas/azuremanagedlustre/                        @wolfgang-desalvador
+# ServiceLabel: %area-AzureManagedLustre
+# ServiceOwners:                       @wolfgang-desalvador
 
 # PRLabel: %area-Postgres
 /areas/postgres/                       @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp

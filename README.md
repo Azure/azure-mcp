@@ -68,6 +68,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "Query my Log Analytics workspace"
 
+### ⚡ Azure Managed Lustre
+
+* "List the Azure Managed Lustre clusters in resource group 'my-resourcegroup'"
+* "How many IP Addresses I need to create a 128 TiB cluster of AMLFS 500?"
+
 ### 🗄️ Azure SQL Database
 
 * "Show me details about my Azure SQL database 'mydb'"

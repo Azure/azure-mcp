@@ -689,6 +689,21 @@ azmcp monitor metrics query --subscription <subscription> \
                             --aggregation "Average"
 ```
 
+### Azure Managed Lustre
+
+```bash
+# List Azure Managed Lustre Filesystems available in a subscription or resource group
+azmcp azuremanagedlustre filesystem list --subscription <subscription> \
+                                      --resource-group <resource-group> 
+
+# Returns the required number of IP addresses for a specific Azure Managed Lustre SKU and filesystem size
+azmcp azuremanagedlustre filesystem requiredsubnetsize --subscription <subscription> \
+                                      --sku <azure-managed-lustre-sku> \
+                                      --size <filesystem-size-in-tib>
+```
+
+
+
 ### Azure Native ISV Operations
 
 ```bash

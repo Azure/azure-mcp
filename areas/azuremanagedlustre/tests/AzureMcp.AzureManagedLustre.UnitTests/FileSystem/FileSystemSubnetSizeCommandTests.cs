@@ -39,6 +39,16 @@ public class FileSystemSubnetSizeCommandTests
     }
 
     [Fact]
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        var command = _command.GetCommand();
+        Assert.Equal("requiredsubnetsize", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+    }
+
+
+    [Fact]
     public async Task ExecuteAsync_ReturnsRequiredIPs()
     {
         // Arrange
@@ -75,7 +85,7 @@ public class FileSystemSubnetSizeCommandTests
     {
         // Arrange
         _amlfsService.GetRequiredAmlFSSubnetsSize(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>()).Returns(10);
-        var args = _parser.Parse(["--sku", sku, "--size", "100", "--subscription", _knownSubscriptionId]);
+        var args = _parser.Parse(["--sku", sku, "--size", "32", "--subscription", _knownSubscriptionId]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);

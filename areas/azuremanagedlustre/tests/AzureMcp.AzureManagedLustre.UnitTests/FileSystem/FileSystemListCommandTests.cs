@@ -40,6 +40,15 @@ public class FileSystemListCommandTests
     }
 
     [Fact]
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        var command = _command.GetCommand();
+        Assert.Equal("list", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_ReturnsFileSystems()
     {
         // Arrange
@@ -76,6 +85,55 @@ public class FileSystemListCommandTests
         Assert.Equal("fs1", result.FileSystems[0].Name);
     }
 
+    [Theory]
+    [InlineData("--resource-group testrg", false)] // Missing subscription
+    [InlineData("--subscription sub123", true)] // Missing resource group
+    [InlineData(" --resource-group testrg --subscription sub123", true)]
+    [InlineData("", false)] // No parameters
+    public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
+    {
+        // Arrange
+        if (shouldSucceed)
+        {
+            var expected = new List<LustreFileSystem>
+        {
+            new LustreFileSystem() { Name = "fs1", SubscriptionId = _knownSubscriptionId, ResourceGroupName = "rg1" }
+        };
+
+            _amlfsService.ListFileSystemsAsync(
+            Arg.Is(_knownSubscriptionId),
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<RetryPolicyOptions?>())
+            .Returns(expected);
+
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
+        if (shouldSucceed)
+        {
+            Assert.NotNull(response.Results);
+            Assert.Equal("Success", response.Message);
+
+            var json = JsonSerializer.Serialize(response.Results);
+            var result = JsonSerializer.Deserialize<FileSystemListResultJson>(json);
+            Assert.NotNull(result!.FileSystems);
+            Assert.NotNull(result.FileSystems[0].Name);
+            Assert.Equal("fs1", result.FileSystems[0].Name);
+        }
+        else
+        {
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
+
+
     [Fact]
     public async Task ExecuteAsync_ReturnsNull_WhenNoItems()
     {
@@ -100,27 +158,35 @@ public class FileSystemListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_HandlesRequestFailedExceptions()
+    public async Task ExecuteAsync_HandlesRequestFailedException_NotFound()
     {
         // Arrange - 404 Not Found
         _amlfsService.ListFileSystemsAsync(
             Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Azure.RequestFailedException(404, "not found"));
 
-        var pr1 = _parser.Parse(["--subscription", _knownSubscriptionId]);
-        var resp1 = await _command.ExecuteAsync(_context, pr1);
-        Assert.Equal(404, resp1.Status);
-        Assert.Contains("not found", resp1.Message, StringComparison.OrdinalIgnoreCase);
+        var args = _parser.Parse(["--subscription", _knownSubscriptionId]);
+        var response = await _command.ExecuteAsync(_context, args);
 
+        // Assert
+        Assert.Equal(404, response.Status);
+        Assert.Contains("not found", response.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesRequestFailedException_Forbidden()
+    {
         // Arrange - 403 Forbidden
         _amlfsService.ListFileSystemsAsync(
             Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Azure.RequestFailedException(403, "forbidden"));
 
-        var pr2 = _parser.Parse(["--subscription", _knownSubscriptionId]);
-        var resp2 = await _command.ExecuteAsync(_context, pr2);
-        Assert.Equal(403, resp2.Status);
-        Assert.Contains("authorization", resp2.Message, StringComparison.OrdinalIgnoreCase);
+        var args = _parser.Parse(["--subscription", _knownSubscriptionId]);
+        var response = await _command.ExecuteAsync(_context, args);
+
+        // Assert
+        Assert.Equal(403, response.Status);
+        Assert.Contains("authorization", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private class FileSystemListResultJson

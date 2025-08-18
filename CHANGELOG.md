@@ -15,6 +15,9 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ## 0.5.7 (2025-08-19)
 
 ### Features Added
+- Added the following Azure Managed Lustre commands:
+  - `azmcp-azuremanagedlustre-filesystem-list`: List available Azure Managed Lustre filesystem. [[#1001](https://github.com/Azure/azure-mcp/issues/1001)]
+  - `azmcp-azuremanagedlustre-filesystem-requiredsubnetsize`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem. [[#1002](https://github.com/Azure/azure-mcp/issues/1002)]
 
 - Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
   - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
@@ -41,6 +44,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#893](https://github.com/Azure/azure-mcp/pull/893)]
   - Azure.Bicep.Types: `0.5.110` → `0.6.1`
   - Azure.Bicep.Types.Az: `0.2.771` → `0.2.792`
+- Added the following dependencies to support Azure Managed Lustre
+  - Azure.ResourceManager.StorageCache:  `1.3.1`
 
 ## 0.5.6 (2025-08-14)
 

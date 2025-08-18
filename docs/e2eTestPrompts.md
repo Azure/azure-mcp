@@ -226,6 +226,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 
+## Azure Managed Lustre
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-azuremanaged-lustre-filesytem-list | List the Azure Managed Lustre fileystems in my subscription |
+| azmcp-azuremanaged-lustre-filesytem-list | List the Azure Managed Lustre fileystems in my resource group |
+| azmcp-azuremanaged-lustre-filesytem-requiredsubnetsize | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
+
 ## Azure Native ISV
 
 | Tool Name | Test Prompt |

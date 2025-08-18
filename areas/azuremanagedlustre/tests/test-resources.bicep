@@ -14,6 +14,10 @@ param vnetAddressPrefix string = '10.20.0.0/16'
 @description('Subnet prefix for AMLFS (must be at least /24 per RP requirement)')
 param amlfsSubnetPrefix string = '10.20.1.0/24'
 
+@description('The client OID to grant access to test resources.')
+param testApplicationOid string = deployer().objectId
+
+
 @description('AMLFS SKU name')
 @allowed([
   'AMLFS-Durable-Premium-40'
