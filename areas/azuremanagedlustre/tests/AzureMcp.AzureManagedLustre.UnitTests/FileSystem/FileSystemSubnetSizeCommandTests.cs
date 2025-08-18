@@ -42,7 +42,7 @@ public class FileSystemSubnetSizeCommandTests
     public void Constructor_InitializesCommandCorrectly()
     {
         var command = _command.GetCommand();
-        Assert.Equal("requiredsubnetsize", command.Name);
+        Assert.Equal("required-subnet-size", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
     }

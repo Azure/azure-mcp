@@ -30,7 +30,7 @@ namespace AzureMcp.AzureManagedLustre.LiveTests
         public async Task Should_calculate_required_subnet_size()
         {
             var result = await CallToolAsync(
-                "azmcp_azuremanagedlustre_filesystem_requiredsubnetsize",
+                "azmcp_azuremanagedlustre_filesystem_required-subnet-size",
                 new()
                 {
                     { "subscription", Settings.SubscriptionId },
