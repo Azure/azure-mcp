@@ -63,7 +63,6 @@ try {
         exit 1
     }
     Write-Host "Discovered CLI artifact: $($cliArtifact.FullName)" -ForegroundColor Green
-
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
     & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj" --configuration Release

@@ -16,8 +16,6 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 #### Dependency Updates
 
-#### Dependency Updates
-
 - Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#893](https://github.com/Azure/azure-mcp/pull/893)]
   - Azure.Bicep.Types: `0.5.110` → `0.6.1`
   - Azure.Bicep.Types.Az: `0.2.771` → `0.2.792`
