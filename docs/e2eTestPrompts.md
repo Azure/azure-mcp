@@ -225,8 +225,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
-| azmcp-monitor-ingestion-logs-upload | Upload <logs-data> to the Log Analytics workspace <workspace_name> with the data collection rule <data_collection_rule> |
-| azmcp-monitor-ingestion-logs-upload | Using the dcr <data_collection_rule>, upload <logs-data> to the Log Analytics workspace <workspace_name> |
+| azmcp-monitor-ingestion-upload | Upload <logs-data> to the Log Analytics workspace <workspace_name> with the data collection rule <data_collection_rule> |
+| azmcp-monitor-ingestion-upload | Using the dcr <data_collection_rule>, upload <logs-data> to the Log Analytics workspace <workspace_name> |
 | azmcp-monitor-ingestion-status-check | Check the ingestion status for the Log Analytics workspace <workspace_name> with the data collection rule <data_collection_rule> |
 | azmcp-monitor-ingestion-data-validate | Validate this Azure Monitor log data: <log_data> |
 

@@ -445,7 +445,9 @@ public class MonitorService : BaseAzureService, IMonitorService
             }
 
             // Upload the logs
-            var response = await ingestionClient.UploadAsync(dcrId, streamName, logEntries);
+            // Serialize log data to JSON binary data for AOT compliance
+            var binaryData = BinaryData.FromString(logData);
+            var response = await ingestionClient.UploadAsync(dcrId, streamName, binaryData);
 
             // Check if the upload was successful
             var recordCount = logEntries.Count;

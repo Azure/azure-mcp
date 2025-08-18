@@ -27,6 +27,7 @@ public sealed class IngestionStatusCheckCommandTests
 
     private const string _knownWorkspace = "knownWorkspace";
     private const string _knownSubscription = "knownSubscription";
+    private const string _knownResourceGroup = "knownResourceGroup";
     private const string _knownDataCollectionRule = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-test/providers/Microsoft.Insights/dataCollectionRules/dcr-test";
     private const string _knownOperationId = "test-operation-123";
     private const string _knownTenant = "knownTenant";
@@ -46,11 +47,12 @@ public sealed class IngestionStatusCheckCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule} --operation-id {_knownOperationId}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule} --tenant {_knownTenant}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace}", false)] // missing data-collection-rule
-    [InlineData($"--subscription {_knownSubscription}", false)] // missing workspace and data-collection-rule
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --operation-id {_knownOperationId}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --tenant {_knownTenant}", true)]
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup}", false)] // missing data-collection-rule
+    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace}", false)] // missing resource-group and data-collection-rule
+    [InlineData($"--subscription {_knownSubscription}", false)] // missing workspace, resource-group and data-collection-rule
     [InlineData("", false)] // missing all parameters
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -102,7 +104,7 @@ public sealed class IngestionStatusCheckCommandTests
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<(string, string, JsonNode?)>(new Exception("Test service error")));
 
-        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule}";
+        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule}";
 
         // Act
         var response = await _command.ExecuteAsync(_context, _parser.Parse(args));
@@ -133,7 +135,7 @@ public sealed class IngestionStatusCheckCommandTests
     public async Task ExecuteAsync_WithValidOperationId_ShouldCallServiceWithCorrectParameters()
     {
         // Arrange
-        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule} --operation-id {_knownOperationId}";
+        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --operation-id {_knownOperationId}";
 
         var details = new JsonObject { ["operationId"] = _knownOperationId };
         var mockResult = ("Unavailable", "Operation ID status check not supported", details);
@@ -163,7 +165,7 @@ public sealed class IngestionStatusCheckCommandTests
     public async Task ExecuteAsync_WithoutOperationId_ShouldCallServiceWithNullOperationId()
     {
         // Arrange
-        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --data-collection-rule {_knownDataCollectionRule}";
+        var args = $"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule}";
 
         var details = new JsonObject { ["note"] = "No operation ID provided" };
         var mockResult = ("Unavailable", "Recent ingestion status check not supported", details);
