@@ -56,8 +56,9 @@ public sealed class FunctionAppCreateCommandTests
         {
             _service.CreateFunctionApp(
                 Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
-                .Returns(new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null));
+                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+                Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+                .Returns(new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null));
         }
 
         var context = new CommandContext(_serviceProvider);
@@ -69,25 +70,13 @@ public sealed class FunctionAppCreateCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ValidatesInputCorrectly_WithContainerApp()
-    {
-        _service.CreateFunctionApp(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
-                .Returns(new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null));
-        var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --container-app my-container-app");
-        var response = await _command.ExecuteAsync(context, parseResult);
-        Assert.Equal(200, response.Status);
-    }
-
-    [Fact]
     public async Task ExecuteAsync_ReturnsCreatedFunctionApp()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
@@ -109,7 +98,8 @@ public sealed class FunctionAppCreateCommandTests
     {
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(Task.FromException<FunctionAppInfo>(new Exception("Create error")));
 
         var context = new CommandContext(_serviceProvider);
@@ -124,10 +114,11 @@ public sealed class FunctionAppCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_PassesPlanTypeAndRuntimeVersionToService()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+                Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
@@ -142,10 +133,11 @@ public sealed class FunctionAppCreateCommandTests
     [Fact]
     public async Task ExecuteAsync_DefaultsRuntimeToDotnet_WhenNotProvided()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
 
         var context = new CommandContext(_serviceProvider);
@@ -156,31 +148,22 @@ public sealed class FunctionAppCreateCommandTests
         Assert.Equal(200, response.Status);
     }
 
-    [Fact]
-    public async Task ExecuteAsync_Fails_WhenContainerAndPlanOptionsCombined()
-    {
-        var context = new CommandContext(_serviceProvider);
-        var args = "--subscription sub --resource-group rg --function-app myapp --location eastus --container-app my-container-app --plan-type consumption";
-        var parseResult = _command.GetCommand().Parse(args);
-        var response = await _command.ExecuteAsync(context, parseResult);
-        Assert.Equal(400, response.Status);
-    }
-
     [Theory]
-    [InlineData("", null, null, null)]
-    [InlineData("--plan-type consumption", "consumption", null, null)]
-    [InlineData("--plan-type flex", "flex", null, null)]
-    [InlineData("--plan-type premium", "premium", null, null)]
-    [InlineData("--plan-type appservice", "appservice", null, null)]
-    [InlineData("--plan-sku S1", null, "S1", null)]
-    [InlineData("--plan-type premium --plan-sku EP2", "premium", "EP2", null)]
-    [InlineData("--container-app my-container-app", null, null, "my-container-app")]
-    public async Task ExecuteAsync_PlanSelection_Matrix(string argsSuffix, string? expectedPlanType, string? expectedPlanSku, string? expectedContainerApp)
+    [InlineData("", null, null)]
+    [InlineData("--plan-type consumption", "consumption", null)]
+    [InlineData("--plan-type flex", "flex", null)]
+    [InlineData("--plan-type premium", "premium", null)]
+    [InlineData("--plan-type appservice", "appservice", null)]
+    [InlineData("--plan-sku S1", null, "S1")]
+    [InlineData("--plan-type premium --plan-sku EP2", "premium", "EP2")]
+    [InlineData("--plan-type containerapp", "containerapp", null)]
+    public async Task ExecuteAsync_PlanSelection_Matrix(string argsSuffix, string? expectedPlanType, string? expectedPlanSku)
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", expectedPlanType ?? "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", expectedPlanType ?? "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
 
         var baseArgs = "--subscription sub --resource-group rg --function-app myapp --location eastus";
@@ -191,41 +174,21 @@ public sealed class FunctionAppCreateCommandTests
 
         Assert.Equal(200, response.Status);
 
-        _ = await _service.Received(1).CreateFunctionApp(
-            "sub",
-            "rg",
-            "myapp",
-            "eastus",
-            Arg.Any<string?>(),
-            Arg.Is<string?>(pt => pt == expectedPlanType),
-            Arg.Is<string?>(ps => ps == expectedPlanSku),
-            Arg.Is<string?>(c => c == expectedContainerApp),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
+        await _service.Received(1).CreateFunctionApp(
+                "sub",
+                "rg",
+                "myapp",
+                "eastus",
+                Arg.Any<string?>(),
+                Arg.Is<string?>(pt => pt == expectedPlanType),
+                Arg.Is<string?>(ps => ps == expectedPlanSku),
+                Arg.Any<string?>(),
+                Arg.Any<string?>(),
+                Arg.Any<string?>(),
+                Arg.Any<string?>(),
+                Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
     }
 
-    [Theory]
-    [InlineData("--container-app my-container-app --plan-type consumption")]
-    [InlineData("--container-app my-container-app --plan-type flex")]
-    [InlineData("--container-app my-container-app --plan-type premium")]
-    [InlineData("--container-app my-container-app --plan-type appservice")]
-    [InlineData("--container-app my-container-app --plan-type containerapp")]
-    [InlineData("--container-app my-container-app --plan-sku S1")]
-    [InlineData("--container-app my-container-app --app-service-plan existingPlan")]
-    public async Task ExecuteAsync_InvalidContainerAppCombinations_Return400(string argsSuffix)
-    {
-        var baseArgs = "--subscription sub --resource-group rg --function-app myapp --location eastus";
-        var fullArgs = $"{baseArgs} {argsSuffix}";
-        var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse(fullArgs);
-        var response = await _command.ExecuteAsync(context, parseResult);
-
-        Assert.Equal(400, response.Status);
-        Assert.DoesNotContain(_service.ReceivedCalls(), c => c.GetMethodInfo().Name == nameof(IFunctionAppService.CreateFunctionApp));
-    }
 
     [Theory]
     [InlineData("python", null, "Python|3.12")]
@@ -249,7 +212,7 @@ public sealed class FunctionAppCreateCommandTests
     [InlineData("node", "22", false, "~22")]
     [InlineData("node", "22.3.1", false, "~22")]
     [InlineData("node", "22 LTS", false, "~22")]
-    [InlineData("node", null, false, null)]
+    [InlineData("node", null, false, "~22")]
     [InlineData("node", "20", true, null)]
     [InlineData("python", "3.12", false, null)]
     public void BuildAppSettings_ComposesWebsiteNodeDefaultVersion_WhenApplicable(string runtime, string? runtimeVersion, bool requiresLinux, string? expected)
@@ -266,23 +229,23 @@ public sealed class FunctionAppCreateCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ContainerAppImplicitName_WhenPlanTypeContainerApp()
+    public async Task ExecuteAsync_ExistingPlan_NoPlanTypeOrSku()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "containerapp", "Running", "myapp.containers.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "existingPlan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --plan-type containerapp");
+        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --app-service-plan existingPlan");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
-        _ = await _service.Received(1).CreateFunctionApp(
+        await _service.Received(1).CreateFunctionApp(
             "sub", "rg", "myapp", "eastus",
-            Arg.Any<string?>(),
-            Arg.Is<string?>(pt => pt == "containerapp"),
-            Arg.Any<string?>(),
-            Arg.Is<string?>(c => c == null),
+            Arg.Is<string?>(p => p == "existingPlan"),
+            Arg.Is<string?>(pt => pt == null),
+            Arg.Is<string?>(ps => ps == null),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -291,63 +254,77 @@ public sealed class FunctionAppCreateCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ExistingPlan_NoPlanTypeOrSku()
-    {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "existingPlan", "Running", "myapp.azurewebsites.net", null);
-        _service.CreateFunctionApp(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
-            .Returns(expected);
-        var context = new CommandContext(_serviceProvider);
-        var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --app-service-plan existingPlan");
-        var response = await _command.ExecuteAsync(context, parseResult);
-        Assert.Equal(200, response.Status);
-        _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Is<string?>(p => p == "existingPlan"), Arg.Is<string?>(pt => pt == null), Arg.Is<string?>(ps => ps == null), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
-    }
-
-    [Fact]
     public async Task ExecuteAsync_SkuPrecedence_OverridesPlanType()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --plan-type flex --plan-sku B1");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
-        _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Is<string?>(pt => pt == "flex"), Arg.Is<string?>(ps => ps == "B1"), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
+        await _service.Received(1).CreateFunctionApp(
+            "sub", "rg", "myapp", "eastus",
+            Arg.Any<string?>(),
+            Arg.Is<string?>(pt => pt == "flex"),
+            Arg.Is<string?>(ps => ps == "B1"),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
     }
 
     [Fact]
     public async Task ExecuteAsync_DotnetIsolated_RuntimeAccepted()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --runtime dotnet-isolated");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
-        _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Is<string?>(r => r == "dotnet-isolated"), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
+        await _service.Received(1).CreateFunctionApp(
+            "sub", "rg", "myapp", "eastus",
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Is<string?>(r => r == "dotnet-isolated"),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
     }
 
     [Fact]
     public async Task ExecuteAsync_PassesOperatingSystemOption()
     {
-        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null);
+        var expected = new FunctionAppInfo("myapp", "rg", "eastus", "plan", "Running", "myapp.azurewebsites.net", null, null);
         _service.CreateFunctionApp(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Is<string?>(os => os == "linux"), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
+            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Is<string?>(os => os == "linux"), Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>())
             .Returns(expected);
         var context = new CommandContext(_serviceProvider);
         var parseResult = _command.GetCommand().Parse("--subscription sub --resource-group rg --function-app myapp --location eastus --os linux");
         var response = await _command.ExecuteAsync(context, parseResult);
         Assert.Equal(200, response.Status);
-        _ = await _service.Received(1).CreateFunctionApp("sub", "rg", "myapp", "eastus", Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Is<string?>(os => os == "linux"), Arg.Any<string?>(), Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
+        await _service.Received(1).CreateFunctionApp(
+            "sub", "rg", "myapp", "eastus",
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Is<string?>(os => os == "linux"),
+            Arg.Any<string?>(),
+            Arg.Any<AzureMcp.Core.Options.RetryPolicyOptions?>());
     }
 
     [Fact]
@@ -355,6 +332,15 @@ public sealed class FunctionAppCreateCommandTests
     {
         var dict = FunctionAppService.BuildAppSettings("node", "22", true, "UseDevelopmentStorage=true");
         Assert.False(dict.Properties.ContainsKey("WEBSITE_NODE_DEFAULT_VERSION"));
+    }
+
+    [Fact]
+    public void BuildAppSettings_FlexConsumption_OmitsFunctionsWorkerRuntime()
+    {
+        var dict = FunctionAppService.BuildAppSettings("dotnet", null, false, "UseDevelopmentStorage=true", includeWorkerRuntime: false);
+        Assert.False(dict.Properties.ContainsKey("FUNCTIONS_WORKER_RUNTIME"));
+        Assert.Equal("~4", dict.Properties["FUNCTIONS_EXTENSION_VERSION"]);
+        Assert.Equal("UseDevelopmentStorage=true", dict.Properties["AzureWebJobsStorage"]);
     }
 
     [Fact]
@@ -384,17 +370,17 @@ public sealed class FunctionAppCreateCommandTests
     }
 
     [Theory]
-    [InlineData("python", null, null, true)]
-    [InlineData("node", "flex", null, true)]
-    [InlineData("dotnet", "flex", null, true)]
-    [InlineData("dotnet", null, null, false)]
-    [InlineData("java", null, null, false)]
-    [InlineData("python", "appservice", null, true)]
-    [InlineData("node", "consumption", null, false)]
-    [InlineData("node", null, "my-container-app", false)]
-    public void RequiresLinuxFor_CorrectlyEvaluates(string runtime, string? planType, string? containerAppName, bool expected)
+    [InlineData("python", null, true)]
+    [InlineData("node", "flex", true)]
+    [InlineData("dotnet", "flex", true)]
+    [InlineData("dotnet", null, false)]
+    [InlineData("java", null, false)]
+    [InlineData("python", "appservice", true)]
+    [InlineData("node", "consumption", false)]
+    [InlineData("node", "containerapp", true)]
+    public void RequiresLinuxFor_CorrectlyEvaluates(string runtime, string? planType, bool expected)
     {
-        var actual = FunctionAppService.RequiresLinuxFor(runtime, planType, containerAppName);
+        var actual = FunctionAppService.RequiresLinuxFor(runtime, planType);
         Assert.Equal(expected, actual);
     }
 }
