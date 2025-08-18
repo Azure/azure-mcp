@@ -20,9 +20,6 @@ public class FunctionAppCreateOptions : BaseFunctionAppOptions
     [JsonPropertyName(FunctionAppOptionDefinitions.PlanSkuName)]
     public string? PlanSku { get; set; }
 
-    [JsonPropertyName(FunctionAppOptionDefinitions.ContainerAppName)]
-    public string? ContainerAppName { get; set; }
-
     [JsonPropertyName(FunctionAppOptionDefinitions.RuntimeName)]
     public string? Runtime { get; set; }
 

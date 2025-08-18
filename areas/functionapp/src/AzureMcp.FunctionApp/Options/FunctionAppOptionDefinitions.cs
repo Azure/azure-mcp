@@ -10,7 +10,6 @@ public static class FunctionAppOptionDefinitions
     public const string AppServicePlanName = "app-service-plan";
     public const string PlanTypeName = "plan-type";
     public const string PlanSkuName = "plan-sku";
-    public const string ContainerAppName = "container-app";
     public const string RuntimeName = "runtime";
     public const string RuntimeVersionName = "runtime-version";
     public const string OperatingSystemName = "os";
@@ -46,13 +45,6 @@ public static class FunctionAppOptionDefinitions
     public static readonly Option<string> PlanSku = new(
         $"--{PlanSkuName}",
         "The explicit App Service plan SKU (e.g., B1, S1, P1v3). Mutually exclusive with --plan-type. If provided and --app-service-plan omitted a dedicated plan using this SKU is created.")
-    {
-        IsRequired = false
-    };
-
-    public static readonly Option<string> ContainerApp = new(
-        $"--{ContainerAppName}",
-        "Provision a Container App instead of App Service hosting (containerapp plan type). Creates a managed environment if one doesn't exist. The value is used as the Container App name. Cannot be combined with --app-service-plan, --plan-sku, or --plan-type (other than containerapp).")
     {
         IsRequired = false
     };

@@ -22,7 +22,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     private readonly Option<string> _appServicePlanOption = FunctionAppOptionDefinitions.AppServicePlan;
     private readonly Option<string> _planTypeOption = FunctionAppOptionDefinitions.PlanType;
     private readonly Option<string> _planSkuOption = FunctionAppOptionDefinitions.PlanSku;
-    private readonly Option<string> _containerAppOption = FunctionAppOptionDefinitions.ContainerApp;
     private readonly Option<string> _runtimeOption = FunctionAppOptionDefinitions.Runtime;
     private readonly Option<string> _runtimeVersionOption = FunctionAppOptionDefinitions.RuntimeVersion;
     private readonly Option<string> _osOption = FunctionAppOptionDefinitions.OperatingSystem;
@@ -47,9 +46,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         * flex / flexconsumption -> FC1 (FlexConsumption, Linux only)
         * premium / functionspremium -> EP1 (Elastic Premium)
         * appservice   -> B1 (Basic) unless overridden by --plan-sku
-        * containerapp -> Creates a Container App instead of an App Service plan/site (no plan created)
+    * containerapp -> Creates a Container App instead of an App Service plan/site (no plan created). Container App will reuse the function-app name.
     - plan-sku: Explicit App Service plan SKU (e.g. B1, S1, P1v3). Overrides --plan-type SKU selection (ignored for containerapp).
-    - container-app: Name for the Container App (implies containerapp hosting). Cannot be combined with --app-service-plan, --plan-type (other than containerapp), or --plan-sku.
     - runtime: FUNCTIONS_WORKER_RUNTIME (dotnet|dotnet-isolated|node|python|java|powershell). Default: dotnet.
     - runtime-version: Specific runtime version; if omitted a default per runtime is applied (see defaults below).
     - os: windows|linux. Default: windows unless runtime/plan requires linux (python, flex consumption, containerapp). Overridden to linux automatically when required. Python & flex consumption do not support Windows.
@@ -57,7 +55,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     Automatic resources & defaults:
     - Storage account: Always created (Standard_LRS, HTTPS only, blob public access disabled). Name pattern: <sanitized-functionapp>[random6]. Connection string injected as AzureWebJobsStorage.
     - App Service plan: Auto-created when not provided (name: <function-app>-plan) unless containerapp hosting.
-    - Container App: If containerapp hosting selected, a managed environment (<name>) and container app (<name>) are created with an official Azure Functions image for the runtime.
+    - Container App: If containerapp hosting selected, a managed environment and container app are created using the function-app name and an official Azure Functions image for the runtime.
     - Linux vs Windows: Linux automatically enforced for python and flex consumption. Other runtimes default to Windows unless plan-type dictates Linux (flex) or runtime is python.
     - Explicit --os overrides default when compatible; incompatible combinations cause validation errors (e.g. --os windows with python or flex consumption).
     - Runtime version defaults (LinuxFxVersion when Linux):
@@ -72,7 +70,7 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     Behavior notes:
     - Providing --plan-sku with --plan-type is allowed; SKU wins.
     - --container-app path skips App Service plan & site creation and provisions a Container App instead.
-    - Invalid combination: --container-app with any of --plan-type (non-containerapp), --plan-sku, or --app-service-plan.
+    - Invalid combination examples: specifying app-service-plan with plan-type containerapp.
 
     Returns: functionApp object (name, resourceGroup, location, plan, state, defaultHostName, tags)
     """;
@@ -90,7 +88,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         command.AddOption(_appServicePlanOption);
         command.AddOption(_planTypeOption);
         command.AddOption(_planSkuOption);
-        command.AddOption(_containerAppOption);
         command.AddOption(_runtimeOption);
         command.AddOption(_runtimeVersionOption);
         command.AddOption(_osOption);
@@ -104,7 +101,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         options.AppServicePlan = parseResult.GetValueForOption(_appServicePlanOption);
         options.PlanType = parseResult.GetValueForOption(_planTypeOption);
         options.PlanSku = parseResult.GetValueForOption(_planSkuOption);
-        options.ContainerAppName = parseResult.GetValueForOption(_containerAppOption);
         options.Runtime = parseResult.GetValueForOption(_runtimeOption) ?? "dotnet";
         options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
         options.OperatingSystem = parseResult.GetValueForOption(_osOption);
@@ -120,13 +116,21 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
             if (!Validate(parseResult.CommandResult, context.Response).IsValid)
                 return context.Response;
 
-            if (!string.IsNullOrWhiteSpace(options.ContainerAppName) &&
-                (!string.IsNullOrWhiteSpace(options.PlanType) ||
-                 !string.IsNullOrWhiteSpace(options.PlanSku) ||
-                 !string.IsNullOrWhiteSpace(options.AppServicePlan)))
+            if (!string.IsNullOrWhiteSpace(options.FunctionAppName))
+            {
+                var len = options.FunctionAppName.Length;
+                if (len < 2 || len > 43)
+                {
+                    context.Response.Status = 400;
+                    context.Response.Message = "function-app name must be between 2 and 43 characters.";
+                    return context.Response;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.AppServicePlan) && string.Equals(options.PlanType, "containerapp", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.Status = 400;
-                context.Response.Message = "--container-app cannot be used with --plan-type, --plan-sku or --app-service-plan.";
+                context.Response.Message = "--app-service-plan cannot be combined with --plan-type containerapp.";
                 return context.Response;
             }
 
@@ -139,7 +143,6 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
                 options.AppServicePlan,
                 options.PlanType,
                 options.PlanSku,
-                options.ContainerAppName,
                 options.Runtime ?? "dotnet",
                 options.RuntimeVersion,
                 options.OperatingSystem,
