@@ -4,7 +4,7 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Models.Option;
 using AzureMcp.Models.Monitor.WebTests;
-using AzureMcp.Monitor.Options.AppInsights.WebTests;
+using AzureMcp.Monitor.Options.WebTests;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;
 

@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.Monitor.Options.AppInsights.WebTests;
+namespace AzureMcp.Monitor.Options.WebTests;
 
-public class WebTestsCreateOrUpdateOptions : BaseAppInsightsOptions
+public class WebTestsCreateOrUpdateOptions : BaseMonitorOptions
 {
     public string? ResourceName { get; set; }
     public string? AppInsightsComponentId { get; set; }

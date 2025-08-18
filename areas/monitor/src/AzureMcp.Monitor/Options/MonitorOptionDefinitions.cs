@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Net;
-using AzureMcp.Core.Models.Option;
 
 namespace AzureMcp.Monitor.Options;
 

@@ -25,8 +25,6 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     IngestionMode: 'LogAnalytics'
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
-    // Use workspace-based pricing (cheapest option)
-    Flow_Type: 'Redfield'
     Request_Source: 'rest'
   }
 }

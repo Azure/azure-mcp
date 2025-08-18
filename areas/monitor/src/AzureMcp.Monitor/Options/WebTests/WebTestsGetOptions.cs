@@ -3,9 +3,9 @@
 
 using System.Text.Json.Serialization;
 
-namespace AzureMcp.Monitor.Options.AppInsights.WebTests;
+namespace AzureMcp.Monitor.Options.WebTests;
 
-public class WebTestsGetOptions : BaseAppInsightsOptions
+public class WebTestsGetOptions : BaseMonitorOptions
 {
     [JsonPropertyName(MonitorOptionDefinitions.WebTestResourceName)]
     public string? ResourceName { get; set; }

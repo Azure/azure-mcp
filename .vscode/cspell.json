@@ -183,7 +183,14 @@
                 "vsix",
                 "vsixtarget",
                 "VSTEST",
-                "Xunit"
+                "Xunit",
+                "webtest",
+                "webtests",
+                "resourcename",
+                "appinsights",
+                "createorupdate",
+                "Multstep",
+                "multistep",
             ]
         }
     ],
