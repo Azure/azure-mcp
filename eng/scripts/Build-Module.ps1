@@ -83,6 +83,7 @@ try {
 
     # Copy the platform package files to the output directory
     Copy-Item -Path "$npmPackagePath/*" -Recurse -Destination $outputDir -Force
+    Copy-Item -Path "$RepoRoot/NOTICE.txt" -Destination "$outputDir/dist" -Force
 
     $command = "dotnet publish '$projectFile' --runtime '$os-$arch' --output '$outputDir/dist' /p:Version=$Version /p:Configuration=$configuration"
 
