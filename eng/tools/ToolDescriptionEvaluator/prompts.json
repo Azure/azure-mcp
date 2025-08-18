@@ -134,21 +134,21 @@
     "Create a To-Do list web application that uses NodeJS and MongoDB",
     "Deploy my web application to Azure App Service"
   ],
+  "azmcp-functionapp-get": [
+    "Describe the function app <function_app_name> in resource group <resource_group_name>",
+    "Get configuration for function app <function_app_name>",
+    "Get function app status for <function_app_name>",
+    "Get information about my function app <function_app_name> in <resource_group_name>",
+    "Retrieve host name and status of function app <function_app_name>",
+    "Show function app details for <function_app_name> in <resource_group_name>",
+    "Show me the details for the function app <function_app_name>",
+    "Show plan and region for function app <function_app_name>",
+    "What is the status of function app <function_app_name>?"
+  ],
   "azmcp-functionapp-list": [
     "List all function apps in my subscription",
     "Show me my Azure function apps",
     "What function apps do I have?"
-  ],
-  "azmcp-functionapp-get": [
-    "Show me the details for the function app <function_app_name>",
-    "Get information about my function app <function_app_name> in <resource_group_name>",
-    "Show function app details for <function_app_name> in <resource_group_name>",
-    "Get function app status for <function_app_name>",
-    "What is the status of function app <function_app_name>?",
-    "Describe the function app <function_app_name> in resource group <resource_group_name>",
-    "Get configuration for function app <function_app_name>",
-    "Show plan and region for function app <function_app_name>",
-    "Retrieve host name and status of function app <function_app_name>"
   ],
   "azmcp-keyvault-certificate-create": [
     "Create a new certificate called <certificate_name> in the key vault <key_vault_account_name>"
@@ -299,6 +299,16 @@
     "Show me my resource groups",
     "Show me the resource groups in my subscription"
   ],
+  "azmcp-resourcehealth-availability-status-get": [
+    "Get the availability status for resource <resource_name>",
+    "Show me the health status of the storage account <storage_account_name>",
+    "What is the availability status of virtual machine <vm_name> in resource group <resource_group_name>?"
+  ],
+  "azmcp-resourcehealth-availability-status-list": [
+    "List availability status for all resources in my subscription",
+    "Show me the health status of all my Azure resources",
+    "What resources in resource group <resource_group_name> have health issues?"
+  ],
   "azmcp-servicebus-queue-details": [
     "Show me the details of service bus <service_bus_name> queue <queue_name>"
   ],
@@ -335,6 +345,10 @@
     "Create a new storage account called testaccount123 in East US region",
     "Create a storage account with premium performance and LRS replication",
     "Create a new storage account with Data Lake Storage Gen2 enabled"
+  ],
+  "azmcp-storage-account-details": [
+    "Show me the details for my storage account <account_name>",
+    "Get details about the storage account <account_name>"
   ],
   "azmcp-storage-account-list": [
     "List all storage accounts in my subscription including their location and SKU",
