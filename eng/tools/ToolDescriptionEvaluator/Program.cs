@@ -13,20 +13,8 @@ class Program
 {
     private static readonly HttpClient HttpClient = new();
 
-    private static readonly string CommandPrefix = "azmcp ";
-    private static readonly string SpaceReplacement = "-";
-
-    // Unicode character constants
-    private static readonly string UnicodeSingleQuote = "\\u0027";
-    private static readonly string UnicodeLeftSingleQuote = "\\u2018";
-    private static readonly string UnicodeRightSingleQuote = "\\u2019";
-    private static readonly string UnicodeDoubleQuote = "\\u0022";
-    private static readonly string UnicodeLeftDoubleQuote = "\\u201C";
-    private static readonly string UnicodeRightDoubleQuote = "\\u201D";
-    private static readonly string UnicodeLessThan = "\\u003C";
-    private static readonly string UnicodeGreaterThan = "\\u003E";
-    private static readonly string UnicodeAmpersand = "\\u0026";
-    private static readonly string UnicodeBacktick = "\\u0060";
+    private const string CommandPrefix = "azmcp ";
+    private const string SpaceReplacement = "_";
 
     static async Task Main(string[] args)
     {
@@ -591,16 +579,16 @@ class Program
 
     private static string EscapeCharactersForJson(string json)
     {
-        return json.Replace(UnicodeSingleQuote, "'")
-                   .Replace(UnicodeLeftSingleQuote, "'")
-                   .Replace(UnicodeRightSingleQuote, "'")
-                   .Replace(UnicodeDoubleQuote, "\\\"")
-                   .Replace(UnicodeLeftDoubleQuote, "\\\"")
-                   .Replace(UnicodeRightDoubleQuote, "\\\"")
-                   .Replace(UnicodeLessThan, "<")
-                   .Replace(UnicodeGreaterThan, ">")
-                   .Replace(UnicodeAmpersand, "&")
-                   .Replace(UnicodeBacktick, "`");
+        return json.Replace(UnicodeChars.SingleQuote, "'")
+                   .Replace(UnicodeChars.LeftSingleQuote, "'")
+                   .Replace(UnicodeChars.RightSingleQuote, "'")
+                   .Replace(UnicodeChars.DoubleQuote, "\\\"")
+                   .Replace(UnicodeChars.LeftDoubleQuote, "\\\"")
+                   .Replace(UnicodeChars.RightDoubleQuote, "\\\"")
+                   .Replace(UnicodeChars.LessThan, "<")
+                   .Replace(UnicodeChars.GreaterThan, ">")
+                   .Replace(UnicodeChars.Ampersand, "&")
+                   .Replace(UnicodeChars.Backtick, "`");
     }
 
     private static async Task PopulateDatabaseAsync(VectorDB db, List<Tool> tools, EmbeddingService embeddingService)
@@ -1180,4 +1168,18 @@ class Program
             Environment.Exit(1);
         }
     }
+}
+
+internal static class UnicodeChars
+{
+    public const char SingleQuote = '\u0027';
+    public const char LeftSingleQuote = '\u2018';
+    public const char RightSingleQuote = '\u2019';
+    public const char DoubleQuote = '\u0022';
+    public const char LeftDoubleQuote = '\u201C';
+    public const char RightDoubleQuote = '\u201D';
+    public const char LessThan = '\u003C';
+    public const char GreaterThan = '\u003E';
+    public const char Ampersand = '\u0026';
+    public const char Backtick = '\u0060';
 }
