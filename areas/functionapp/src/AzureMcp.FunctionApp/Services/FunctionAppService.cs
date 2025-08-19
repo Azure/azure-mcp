@@ -163,10 +163,36 @@ public sealed class FunctionAppService(
             AppServicePlanId = plan.Id,
             SiteConfig = BuildSiteConfig(isLinux, options)
         };
-        if (options.HostingKind == HostingKind.FlexConsumption && data.SiteConfig is not null)
-            data.SiteConfig.LinuxFxVersion = null;
         if (options.HostingKind == HostingKind.FlexConsumption)
-            data.FunctionAppConfig = new FunctionAppConfig();
+        {
+            if (data.SiteConfig is not null)
+            {
+                data.SiteConfig.LinuxFxVersion = null;
+            }
+            data.FunctionAppConfig = new FunctionAppConfig
+            {
+                Runtime = new FunctionAppRuntime
+                {
+                    Name = MapToFunctionAppRuntimeName(options.Runtime),
+                    Version = NormalizeRuntimeVersionForConfig(options.Runtime, options.RuntimeVersion)
+                },
+                DeploymentStorage = new FunctionAppStorage
+                {
+                    StorageType = FunctionAppStorageType.BlobContainer,
+                    Value = new Uri($"https://{CreateStorageAccountName(functionAppName)}.blob.core.windows.net/{functionAppName}"),
+                    Authentication = new FunctionAppStorageAuthentication
+                    {
+                        AuthenticationType = FunctionAppStorageAccountAuthenticationType.StorageAccountConnectionString,
+                        StorageAccountConnectionStringName = "AzureWebJobsStorage"
+                    }
+                },
+                ScaleAndConcurrency = new FunctionAppScaleAndConcurrency
+                {
+                    InstanceMemoryMB = 2048,
+                    MaximumInstanceCount = 100
+                }
+            };
+        }
         var op = await rg.GetWebSites().CreateOrUpdateAsync(WaitUntil.Completed, functionAppName, data);
         return op.Value;
     }
@@ -201,9 +227,14 @@ public sealed class FunctionAppService(
         CreateOptions options)
     {
         var plan = await EnsureAppServicePlan(rg, appServicePlan, functionAppName, location, options);
-        var site = await CreateAppServiceSiteAsync(rg, functionAppName, location, plan, options);
-        var storage = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
-        await ApplyAppSettings(site, options, storage);
+        var storageConnection = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
+        var site = await CreateAppServiceSiteAsync(
+            rg,
+            functionAppName,
+            location,
+            plan,
+            options);
+        await ApplyAppSettings(site, options, storageConnection);
         return ConvertToFunctionAppModel(site);
     }
 
@@ -304,6 +335,27 @@ public sealed class FunctionAppService(
         return config;
     }
 
+    private static FunctionAppRuntimeName? MapToFunctionAppRuntimeName(string runtime) => runtime switch
+    {
+        "dotnet-isolated" => FunctionAppRuntimeName.DotnetIsolated,
+        "node" => FunctionAppRuntimeName.Node,
+        "java" => FunctionAppRuntimeName.Java,
+        "powershell" => FunctionAppRuntimeName.Powershell,
+        "python" => FunctionAppRuntimeName.Python,
+        "custom" => FunctionAppRuntimeName.Custom,
+        "dotnet" => FunctionAppRuntimeName.DotnetIsolated,
+        _ => null
+    };
+
+    private static string NormalizeRuntimeVersionForConfig(string runtime, string? runtimeVersion)
+    {
+        var version = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion(runtime) : runtimeVersion;
+        if (string.IsNullOrWhiteSpace(version)) return string.Empty;
+        if (runtime == "java" && version.EndsWith(".0", StringComparison.Ordinal))
+            version = version[..^2];
+        return version;
+    }
+
     internal static AppServiceConfigurationDictionary BuildAppSettings(string runtime, string? runtimeVersion, bool requiresLinux, string storageConnectionString, bool includeWorkerRuntime = true)
     {
         var settings = new AppServiceConfigurationDictionary
@@ -400,7 +452,7 @@ public sealed class FunctionAppService(
                 {
                     new ContainerAppContainer()
                     {
-                        Name = "functions",
+                        Name = "functions", //TODO: set to name
                         Image = image,
                         Resources = new AppContainerResources()
                         {
