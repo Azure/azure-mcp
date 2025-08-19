@@ -108,7 +108,7 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
         string expectedOperatingSystem,
         string? runtimeVersion)
     {
-        var uniqueFunctionAppName = $"mcp-test-{planType}-{runtime}-{DateTime.UtcNow:MMddHHmmss}";
+        var uniqueFunctionAppName = $"mcp-test-{planType}-{DateTime.UtcNow:MMddHHmmss}";
 
         var result = await CallToolAsync(
             "azmcp_functionapp_create",
