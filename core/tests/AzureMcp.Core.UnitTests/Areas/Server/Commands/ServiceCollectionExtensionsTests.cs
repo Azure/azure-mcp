@@ -10,8 +10,6 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Server;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server.Commands;
