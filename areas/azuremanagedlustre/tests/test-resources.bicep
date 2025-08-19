@@ -36,18 +36,48 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   location: location
   properties: {
     addressSpace: {
-      addressPrefixes: [ vnetAddressPrefix ]
+      addressPrefixes: [vnetAddressPrefix]
     }
     subnets: [
       {
         name: 'amlfs'
         properties: {
           addressPrefix: amlfsSubnetPrefix
+          natGateway: {
+            id: natGateway.id
+          }
           privateEndpointNetworkPolicies: 'Disabled'
           privateLinkServiceNetworkPolicies: 'Disabled'
         }
       }
     ]
+  }
+}
+
+resource natGateway 'Microsoft.Network/natGateways@2024-07-01' = {
+  name: '${baseName}-nat'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    idleTimeoutInMinutes: 10
+    publicIpAddresses: [
+      {
+        id: natPublicIp.id
+      }
+    ]
+  }
+}
+
+resource natPublicIp 'Microsoft.Network/publicIPAddresses@2024-07-01' = {
+  name: '${baseName}-nat-pip'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
   }
 }
 
