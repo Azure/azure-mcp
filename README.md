@@ -47,6 +47,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "List all my Azure Container Registries"
 * "Show me my container registries in the 'myproject' resource group"
+* "List all my Azure Container Registry repositories"
 
 ### ☸️ Azure Kubernetes Service (AKS)
 
@@ -122,8 +123,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 📦 Azure Container Registry (ACR)
 
-* List Azure Container Registries in a subscription
-* Filter container registries by resource group
+* List Azure Container Registries and repositories in a subscription
+* Filter container registries and repositories by resource group
 * JSON output formatting
 * Cross-platform compatibility
 
