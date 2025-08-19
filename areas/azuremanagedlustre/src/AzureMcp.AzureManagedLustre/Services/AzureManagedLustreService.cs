@@ -54,21 +54,21 @@ public sealed class AzureManagedLustreService(ISubscriptionService subscriptionS
     private static LustreFileSystem Map(AmlFileSystemResource fs)
     {
         var data = fs.Data;
-        return new LustreFileSystem
-        {
-            Name = data.Name,
-            Id = fs.Id.ToString(),
-            ResourceGroupName = fs.Id.ResourceGroupName,
-            SubscriptionId = fs.Id.SubscriptionId,
-            Location = data.Location,
-            ProvisioningState = data.ProvisioningState?.ToString(),
-            MgsAddress = data.ClientInfo.MgsAddress,
-            SkuTier = data.SkuName,
-            StorageCapacityTiB = data.StorageCapacityTiB.HasValue ? (long?)Convert.ToInt64(Math.Round(data.StorageCapacityTiB.Value)) : null,
-            BlobContainerId = data.Hsm?.Settings?.Container,
-            MaintenanceDay = data.MaintenanceWindow?.DayOfWeek?.ToString(),
-            MaintenanceTime = data.MaintenanceWindow?.TimeOfDayUTC?.ToString()
-        };
+        return new LustreFileSystem(
+            data.Name,
+            fs.Id.ToString(),
+            fs.Id.ResourceGroupName,
+            fs.Id.SubscriptionId,
+            data.Location,
+            data.ProvisioningState?.ToString(),
+            data.Health?.ToString(),
+            data.ClientInfo?.MgsAddress,
+            data.SkuName,
+            data.StorageCapacityTiB.HasValue ? (long?)Convert.ToInt64(Math.Round(data.StorageCapacityTiB.Value)) : null,
+            data.Hsm?.Settings?.Container,
+            data.MaintenanceWindow?.DayOfWeek?.ToString(),
+            data.MaintenanceWindow?.TimeOfDayUTC?.ToString()
+        );
     }
 
     public async Task<int> GetRequiredAmlFSSubnetsSize(string subscription,

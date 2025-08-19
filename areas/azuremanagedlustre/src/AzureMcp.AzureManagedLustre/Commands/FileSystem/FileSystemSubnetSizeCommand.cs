@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.AzureManagedLustre.Options;
 using AzureMcp.AzureManagedLustre.Options.FileSystem;
 using AzureMcp.AzureManagedLustre.Services;
 using AzureMcp.Core.Commands;
@@ -17,7 +18,7 @@ public sealed class FileSystemSubnetSizeCommand(ILogger<FileSystemSubnetSizeComm
 
     public override string Description =>
         """
-        Calculates the required subnet size for an Azure Managed Lustre file system given a SKU and size. Use to plan network deployment for AMLFS. Requires: sku (string), size (int). Returns: Number of required IPs.
+        Calculates the required subnet size for an Azure Managed Lustre file system given a SKU and size. Use to plan network deployment for AMLFS. Returns the number of required IPs.
         """;
 
     public override string Title => CommandTitle;
@@ -31,12 +32,8 @@ public sealed class FileSystemSubnetSizeCommand(ILogger<FileSystemSubnetSizeComm
         "AMLFS-Durable-Premium-500"
     ];
 
-    private readonly Option<string> _skuOption = new("--sku", "The AMLFS SKU. Allowed values: AMLFS-Durable-Premium-40, AMLFS-Durable-Premium-125, AMLFS-Durable-Premium-250, AMLFS-Durable-Premium-500.")
-    {
-        IsRequired = true
-    };
-
-    private readonly Option<int> _sizeOption = new("--size", "The AMLFS size (TiB).") { IsRequired = true };
+    private readonly Option<string> _skuOption = AzureManagedLustreOptionDefinitions.SkuOption;
+    private static readonly Option<int> _sizeOption = AzureManagedLustreOptionDefinitions.SizeOption;
 
     protected override void RegisterOptions(Command command)
     {

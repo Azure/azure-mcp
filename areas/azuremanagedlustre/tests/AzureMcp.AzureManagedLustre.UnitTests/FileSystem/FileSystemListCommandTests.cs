@@ -25,6 +25,8 @@ public class FileSystemListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownResurceIdRg1 = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Lustre/amlfs/fs1";
+    private readonly string _knownResurceIdRg2 = "/subscriptions/sub123/resourceGroups/rg2/providers/Microsoft.Lustre/amlfs/fs2";
 
     public FileSystemListCommandTests()
     {
@@ -54,8 +56,36 @@ public class FileSystemListCommandTests
         // Arrange
         var expected = new List<LustreFileSystem>
         {
-            new LustreFileSystem() { Name = "fs1", SubscriptionId = _knownSubscriptionId, ResourceGroupName = "rg1" },
-            new LustreFileSystem() { Name = "fs2", SubscriptionId = _knownSubscriptionId, ResourceGroupName = "rg2" }
+            new LustreFileSystem(
+                "fs1",
+                _knownResurceIdRg1,
+                _knownSubscriptionId,
+                "rg1",
+                "eastus",
+                "Succeded",
+                "Available",
+                "10.0.0.5",
+                "AMLFS-Durable-Premium-40",
+                48,
+                null,
+                "Monday",
+                "01:00"
+            ),
+            new LustreFileSystem(
+                "fs2",
+                _knownResurceIdRg2,
+                _knownSubscriptionId,
+                "rg2",
+                "eastus",
+                "Succeded",
+                "Available",
+                "10.0.0.20",
+                "AMLFS-Durable-Premium-40",
+                48,
+                null,
+                "Monday",
+                "01:00"
+            ),
         };
 
         _amlfsService.ListFileSystemsAsync(
@@ -97,7 +127,21 @@ public class FileSystemListCommandTests
         {
             var expected = new List<LustreFileSystem>
         {
-            new LustreFileSystem() { Name = "fs1", SubscriptionId = _knownSubscriptionId, ResourceGroupName = "rg1" }
+            new LustreFileSystem(
+                "fs1",
+                _knownResurceIdRg1,
+                _knownSubscriptionId,
+                "rg1",
+                "eastus",
+                "Succeded",
+                "Available",
+                "10.0.0.5",
+                "AMLFS-Durable-Premium-40",
+                48,
+                null,
+                "Monday",
+                "01:00"
+            ),
         };
 
             _amlfsService.ListFileSystemsAsync(
@@ -186,7 +230,7 @@ public class FileSystemListCommandTests
 
         // Assert
         Assert.Equal(403, response.Status);
-        Assert.Contains("authorization", response.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("forbidden", response.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private class FileSystemListResultJson

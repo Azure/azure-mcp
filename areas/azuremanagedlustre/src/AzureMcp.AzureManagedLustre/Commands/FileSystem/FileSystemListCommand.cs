@@ -57,16 +57,6 @@ public sealed class FileSystemListCommand(ILogger<FileSystemListCommand> logger)
         return context.Response;
     }
 
-    protected override string GetErrorMessage(Exception ex) => ex switch
-    {
-        Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
-            "File systems not found. Verify subscription/resource group scope and access.",
-        Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
-            $"Authorization failed accessing AMLFS resources. Details: {reqEx.Message}",
-        Azure.RequestFailedException reqEx => reqEx.Message,
-        _ => base.GetErrorMessage(ex)
-    };
-
     protected override int GetStatusCode(Exception ex) => ex switch
     {
         Azure.RequestFailedException reqEx => reqEx.Status,
