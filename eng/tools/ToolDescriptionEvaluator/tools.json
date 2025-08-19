@@ -48,7 +48,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "cluster",
@@ -549,7 +549,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -679,7 +679,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "model-version",
@@ -891,6 +891,49 @@
           "description": "The name of the certificate.",
           "type": "string",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "import",
+      "description": "Imports (uploads) an existing certificate (PFX or PEM with private key) into an Azure Key Vault without generating\r\na new certificate or key material. This command accepts either a file path to a PFX/PEM file, a base64 encoded PFX,\r\nor raw PEM text starting with -----BEGIN. If the certificate is a password-protected PFX, a password must be provided.\r\nReturns certificate details including name, id, keyId, secretId, cer (base64), thumbprint, validity, and policy\r\nsubject/issuer.",
+      "command": "azmcp keyvault certificate import",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "vault",
+          "description": "The name of the Key Vault.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "certificate",
+          "description": "The name of the certificate.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "certificate-data",
+          "description": "The certificate content: path to a PFX/PEM file, a base64 encoded PFX, or raw PEM text beginning with -----BEGIN.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "password",
+          "description": "Optional password for a protected PFX being imported.",
+          "type": "string",
+          "required": null
         }
       ]
     },
@@ -1329,7 +1372,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1402,7 +1445,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1439,7 +1482,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -1470,7 +1513,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -1501,7 +1544,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1562,7 +1605,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1599,7 +1642,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "test-id",
@@ -1636,7 +1679,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "testrun-id",
@@ -1770,13 +1813,13 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
     {
       "name": "definitions",
-      "description": "List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.\r\nRequired options:\r\n- resource: The name of the Azure resource to query metrics for.\r\nOptional options:\r\n- resource-group: The name of the Azure resource group. This is a logical container for Azure resources.\r\n- resource-type: The Azure resource type (e.g., 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines'). If not specified, will attempt to infer from resource name.\r\n- metric-namespace: The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command.\r\n- search-string: A string to filter the metric definitions by. Helpful for reducing the number of records returned. Performs case-insensitive matching on metric name and description fields.\r\n- limit: The maximum number of metric definitions to return. Defaults to 10.",
+      "description": "    List available metric definitions for an Azure resource. Returns metadata about the metrics available for the resource.",
       "command": "azmcp monitor metrics definitions",
       "option": [
         {
@@ -1831,7 +1874,7 @@
     },
     {
       "name": "query",
-      "description": "Query Azure Monitor metrics for a resource. Returns time series data for the specified metrics.\r\nRequired options:\r\n- resource: The name of the Azure resource to query metrics for.\r\n- metric-namespace: The metric namespace to query. Obtain this value from the azmcp-monitor-metrics-definitions command.\r\n- metric-names: The names of metrics to query (comma-separated).\r\nOptional options:\r\n- resource-group: The name of the Azure resource group. This is a logical container for Azure resources.\r\n- resource-type: The Azure resource type (e.g., 'Microsoft.Storage/storageAccounts', 'Microsoft.Compute/virtualMachines'). If not specified, will attempt to infer from resource name.\r\n- start-time: The start time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to 24 hours ago.\r\n- end-time: The end time for the query in ISO format (e.g., 2023-01-01T00:00:00Z). Defaults to now.\r\n- interval: The time interval for data points (e.g., PT1H for 1 hour, PT5M for 5 minutes).\r\n- aggregation: The aggregation type to use (Average, Maximum, Minimum, Total, Count).\r\n- filter: OData filter to apply to the metrics query.\r\n- max-buckets: The maximum number of time buckets to return. Defaults to 50.",
+      "description": "Query Azure Monitor metrics for a resource. Returns time series data for the specified metrics.",
       "command": "azmcp monitor metrics query",
       "option": [
         {
@@ -1981,6 +2024,12 @@
           "required": null
         },
         {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
           "name": "workspace",
           "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
@@ -1989,12 +2038,6 @@
         {
           "name": "table-type",
           "description": "The type of table to query. Options: 'CustomLog', 'AzureMetrics', etc.",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "resource-group",
-          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
           "required": true
         }
@@ -2018,14 +2061,14 @@
           "required": null
         },
         {
-          "name": "workspace",
-          "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
-          "type": "string",
-          "required": true
-        },
-        {
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "workspace",
+          "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
           "required": true
         }
@@ -2068,6 +2111,12 @@
           "required": null
         },
         {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
           "name": "workspace",
           "description": "The Log Analytics workspace ID or name. This can be either the unique identifier (GUID) or the display name of your workspace.",
           "type": "string",
@@ -2096,12 +2145,6 @@
           "description": "The maximum number of results to return.",
           "type": "string",
           "required": true
-        },
-        {
-          "name": "resource-group",
-          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
-          "type": "string",
-          "required": true
         }
       ]
     },
@@ -2126,7 +2169,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2163,7 +2206,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2212,7 +2255,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2249,7 +2292,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2280,7 +2323,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2323,7 +2366,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2372,7 +2415,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2415,7 +2458,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "user",
@@ -2470,7 +2513,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -2520,7 +2563,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         }
       ]
     },
@@ -2782,7 +2825,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2813,7 +2856,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2850,7 +2893,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2881,7 +2924,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2912,7 +2955,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "server",
@@ -2949,7 +2992,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "location",
@@ -2992,6 +3035,31 @@
           "description": "Whether to enable hierarchical namespace (Data Lake Storage Gen2) for the storage account.",
           "type": "string",
           "required": null
+        }
+      ]
+    },
+    {
+      "name": "details",
+      "description": "Get detailed information about a specific Azure Storage account. This command retrieves comprehensive\r\nmetadata for the specified storage account including name, location, SKU, access settings, and configuration\r\ndetails. Returns a JSON object with all storage account properties.",
+      "command": "azmcp storage account details",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
         }
       ]
     },
@@ -3486,7 +3554,7 @@
     },
     {
       "name": "usersession-list",
-      "description": "List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop \r\nuser session objects available on the specified session host. Results include user session details such as \r\nuser principal name, session state, application type, and creation time.",
+      "description": "List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop\r\nuser session objects available on the specified session host. Results include user session details such as\r\nuser principal name, session state, application type, and creation time.",
       "command": "azmcp virtualdesktop hostpool sessionhost usersession-list",
       "option": [
         {
@@ -3548,7 +3616,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "display-name",
@@ -3610,7 +3678,7 @@
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
-          "required": true
+          "required": null
         },
         {
           "name": "kind",
@@ -3683,5 +3751,5 @@
       ]
     }
   ],
-  "duration": 82
+  "duration": 56
 }

@@ -110,6 +110,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
 | azmcp-extension-azd | Deploy my web application to Azure App Service |
 
+## Azure Deploy
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-deploy-app-logs-get | Show me the log of the application deployed by azd  |
+| azmcp-deploy-architecture-diagram-generate | Generate the azure architecture diagram for this application |
+| azmcp-deploy-iac-rules-get | Show me the rules to generate bicep scripts  |
+| azmcp-deploy-pipeline-guidance-get | How can I create a CI/CD pipeline to deploy this app to Azure? |
+| azmcp-deploy-plan-get | Create a plan to deploy this application to azure |
+
 ## Azure Function App
 
 | Tool Name | Test Prompt |
@@ -125,6 +135,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import the certificate in file <file_path> into the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import a certificate into the key vault <key_vault_account_name> using the name <certificate_name> |
 | azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
@@ -224,6 +236,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-azqr | Check my Azure subscription for any compliance issues or recommendations |
 | azmcp-extension-azqr | Provide compliance recommendations for my current Azure subscription |
 | azmcp-extension-azqr | Scan my Azure subscription for compliance recommendations |
+
+## Azure Quota
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-quota-region-availability-list | Show me the available regions for these resource types <resource_types> |
+| azmcp-quota-usage-check | Check usage information for <resource_type> in region <region> |
 
 ## Azure RBAC
 
