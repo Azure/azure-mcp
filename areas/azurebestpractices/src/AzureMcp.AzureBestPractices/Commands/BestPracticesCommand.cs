@@ -135,7 +135,10 @@ public sealed class BestPracticesCommand(ILogger<BestPracticesCommand> logger) :
 
     private string LoadBestPracticesText(string resourceFileName)
     {
-        Assembly assembly = typeof(BestPracticesCommand).Assembly;
+        // Use the core assembly to load embedded resources
+        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies()
+            .FirstOrDefault(a => a.GetName().Name == "AzureMcp.Core") 
+            ?? throw new InvalidOperationException("AzureMcp.Core assembly not found");
 
         // Handle multiple files separated by comma
         if (resourceFileName.Contains(','))

@@ -10,6 +10,8 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Server;
+using System.Linq;
+using System.Reflection;
 using Xunit;
 
 namespace AzureMcp.Core.UnitTests.Areas.Server.Commands;
@@ -363,5 +365,41 @@ public class ServiceCollectionExtensionsTests
         // Verify discovery strategy is registered for individual tools
         Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
         Assert.IsType<RegistryDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
+    }
+
+    [Fact]
+    public void AddAzureMcpServer_ConfiguresServerInstructions()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+        var mcpServerOptions = provider.GetService<IOptions<McpServerOptions>>()?.Value;
+
+        // Verify server instructions are configured
+        Assert.NotNull(mcpServerOptions);
+        Assert.NotNull(mcpServerOptions.ServerInstructions);
+        Assert.NotEmpty(mcpServerOptions.ServerInstructions);
+
+        // Output the actual content for debugging
+        var instructions = mcpServerOptions.ServerInstructions;
+
+        // Verify the instructions contain expected sections
+        Assert.Contains("Azure MCP Server", instructions);
+        Assert.Contains("Available Capabilities", instructions);
+        Assert.Contains("Key Usage Guidelines", instructions);
+        Assert.Contains("v4 for JavaScript, v2 for Python", instructions);
+        Assert.Contains("Default hosting plan is flex consumption plan", instructions);
+        Assert.Contains("Implement credential rotation and least privilege", instructions);
+        Assert.Contains("Quality requirements for IaC files", instructions);
+        Assert.Contains("npx swa build", instructions);
     }
 }
