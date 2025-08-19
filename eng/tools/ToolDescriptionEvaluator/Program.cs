@@ -300,11 +300,6 @@ class Program
         {
             Console.WriteLine($"❌ Error: {ex.Message}");
 
-            // Provide helpful error information
-            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
-            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-            Console.WriteLine("   or create a .env file with these values");
-
             Environment.Exit(1);
         }
     }
@@ -1204,9 +1199,6 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error during validation: {ex.Message}");
-            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
-            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-            Console.WriteLine("   or create a .env file with these values");
 
             Environment.Exit(1);
         }
