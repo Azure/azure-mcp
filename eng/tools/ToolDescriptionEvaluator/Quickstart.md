@@ -16,14 +16,16 @@ The tool returns a confidence score between `0.00` and `1.00` for each tool-prom
 
 ### Requirements
 
-- An Azure OpenAI deployment of the text embedding model `text-embedding-3-large`
+An Azure OpenAI deployment of the text embedding model `text-embedding-3-large`.
+
+> For internal contributors, refer to the **Before creating a pull request** section of [this document](https://eng.ms/docs/products/azure-developer-experience/mcp/mcp-getting-started) to use our team's deployment.
 
 ### Minimal Setup
 
 Set your Azure OpenAI endpoint and API key as environment variables:
 
 ```bash
-export AOAI_ENDPOINT="https://<your-resource>.openai.azure.com"
+export AOAI_ENDPOINT="https://<your-resource>.openai.azure.com/openai/deployments/<embeddings-deployment-name>/embeddings?api-version=<api-version>"
 export TEXT_EMBEDDING_API_KEY="your_api_key_here"
 ```
 

@@ -116,8 +116,8 @@ class Program
             await LoadDotEnvFile(toolDir);
 
             // Get configuration values
-            var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
-            if (string.IsNullOrEmpty(baseEndpoint))
+            var endpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
+            if (string.IsNullOrEmpty(endpoint))
             {
                 if (isCiMode)
                 {
@@ -126,18 +126,6 @@ class Program
                 }
                 throw new InvalidOperationException("AOAI_ENDPOINT environment variable is required");
             }
-
-            // Construct the full Azure OpenAI embeddings endpoint
-            const string deploymentName = "text-embedding-3-large";
-            const string apiVersion = "2024-02-01";
-
-            // Remove trailing slash if present
-            if (baseEndpoint.EndsWith("/"))
-            {
-                baseEndpoint = baseEndpoint.TrimEnd('/');
-            }
-
-            var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
             var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
@@ -603,12 +591,12 @@ class Program
 
     private static string EscapeCharactersForJson(string json)
     {
-        return json.Replace(UnicodeApostrophe, "'")          // Single quotation mark
-                   .Replace(UnicodeLeftSingleQuote, "'")     // Left single quotation mark
-                   .Replace(UnicodeRightSingleQuote, "'")    // Right single quotation mark
-                   .Replace(UnicodeQuote, "\\\"")            // Double quotation mark
-                   .Replace(UnicodeLeftDoubleQuote, "\\\"")  // Left double quotation mark
-                   .Replace(UnicodeRightDoubleQuote, "\\\"") // Right double quotation mark
+        return json.Replace(UnicodeSingleQuote, "'")
+                   .Replace(UnicodeLeftSingleQuote, "'")
+                   .Replace(UnicodeRightSingleQuote, "'")
+                   .Replace(UnicodeDoubleQuote, "\\\"")
+                   .Replace(UnicodeLeftDoubleQuote, "\\\"")
+                   .Replace(UnicodeRightDoubleQuote, "\\\"")
                    .Replace(UnicodeLessThan, "<")
                    .Replace(UnicodeGreaterThan, ">")
                    .Replace(UnicodeAmpersand, "&")
@@ -1019,8 +1007,8 @@ class Program
             await LoadDotEnvFile(toolDir);
 
             // Get configuration values
-            var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
-            if (string.IsNullOrEmpty(baseEndpoint))
+            var endpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
+            if (string.IsNullOrEmpty(endpoint))
             {
                 if (isCiMode)
                 {
@@ -1033,17 +1021,6 @@ class Program
                 Console.WriteLine("   or create a .env file with these values");
                 Environment.Exit(1);
             }
-
-            // Construct the full Azure OpenAI embeddings endpoint
-            const string deploymentName = "text-embedding-3-large";
-            const string apiVersion = "2024-02-01";
-
-            if (baseEndpoint.EndsWith("/"))
-            {
-                baseEndpoint = baseEndpoint.TrimEnd('/');
-            }
-
-            var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
             var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
