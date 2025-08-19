@@ -125,6 +125,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import the certificate in file <file_path> into the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import a certificate into the key vault <key_vault_account_name> using the name <certificate_name> |
 | azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
