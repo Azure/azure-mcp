@@ -15,19 +15,12 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp_quota_region_availability-list` - List available Azure regions for specific resource types.
   - `azmcp_quota_usage_check` - Check Azure resource usage and quota information for specific resource types and regions.
 - Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. This command accepts PFX or PEM certificate data (file path, base64, or raw PEM) with optional password protection. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
-- Improved guidance for LLM interactions with Azure MCP server by adding rules around bestpractices tool calling to server instructions. [[#1007](https://github.com/Azure/azure-mcp/pull/1007)]
-
-### Breaking Changes
-
-### Bugs Fixed
-
-### Other Changes
 - Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
 - Added support for uploading a local file to an Azure Storage blob via the command `azmcp-storage-blob-upload`. [[#960](https://github.com/Azure/azure-mcp/pull/960)]
 - Added support for the following Azure Service Health operations: [[#998](https://github.com/Azure/azure-mcp/pull/998)]
   - `azmcp-resourcehealth-availability-status-get` - Get the availability status for a specific resource.
   - `azmcp-resourcehealth-availability-status-list` - List availability statuses for all resources in a subscription or resource group.
+- Improved guidance for LLM interactions with Azure MCP server by adding rules around bestpractices tool calling to server instructions. [[#1007](https://github.com/Azure/azure-mcp/pull/1007)]
 
 #### Dependency Updates
 
