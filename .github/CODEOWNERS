@@ -55,6 +55,11 @@
 # ServiceLabel: %area-BestPractices
 # ServiceOwners:                       @g2vinay @conniey
 
+# PRLabel: %area-CloudArchitect
+/areas/cloudarchitect/                         @msalaman @Azure/azure-mcp
+
+# ServiceLabel: %area-CloudArchitect
+# ServiceOwners:                       @msalaman
 
 # PRLabel: %area-CosmosDB
 /areas/cosmos/                         @sajeetharan @xiangyan99 @Azure/azure-mcp

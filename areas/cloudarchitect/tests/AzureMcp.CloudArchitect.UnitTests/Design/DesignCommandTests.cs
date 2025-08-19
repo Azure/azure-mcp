@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.CommandLine;
@@ -43,7 +43,7 @@ public class DesignCommandTests
         Assert.Equal("design", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
-        Assert.Contains("A tool for designing Azure cloud architectures through guided questions", command.Description);
+        Assert.Contains("Azure architecture design tool that gathers requirements through guided questions and recommends optimal solutions.\n\nKey parameters: question, questionNumber, confidenceScore (0.0-1.0, present architecture when ≥0.7), totalQuestions, answer, nextQuestionNeeded, architectureComponent, architectureTier, state.\n\nProcess:\n1. Ask about user role, business goals (1-2 questions at a time)\n2. Track confidence and update requirements (explicit/implicit/assumed)\n3. When confident enough, present architecture with table format, visual organization, ASCII diagrams\n4. Follow Azure Well-Architected Framework principles\n5. Cover all tiers: infrastructure, platform, application, data, security, operations\n6. Provide actionable advice and high-level overview\n\nState tracks components, requirements by category, and confidence factors. Be conservative with suggestions.", command.Description);
         Assert.Contains("confidenceScore", command.Description);
         Assert.Contains("nextQuestionNeeded", command.Description);
         Assert.Contains("Azure Well-Architected Framework", command.Description);
@@ -63,8 +63,6 @@ public class DesignCommandTests
         Assert.Contains("answer", optionNames);
         Assert.Contains("next-question-needed", optionNames);
         Assert.Contains("confidence-score", optionNames);
-        Assert.Contains("architecture-component", optionNames);
-        Assert.Contains("architecture-tier", optionNames);
         Assert.Contains("state", optionNames);
     }
 
@@ -154,8 +152,6 @@ public class DesignCommandTests
             "--answer", "Web application",
             "--next-question-needed", "true",
             "--confidence-score", "0.8",
-            "--architecture-component", "Frontend",
-            "--architecture-tier", "Application"
         };
 
         var parseResult = _parser.Parse(args);
@@ -215,13 +211,11 @@ public class DesignCommandTests
         // Arrange - Test multiple options with various escaping scenarios
         var complexQuestion = "What is your \"primary\" application 'type' and how \"big\" will it be?";
         var complexAnswer = "It's a \"web application\" with 'high' scalability requirements";
-        var complexComponent = "Frontend with \"React\" and 'TypeScript'";
 
         var args = new[]
         {
             "--question", complexQuestion,
             "--answer", complexAnswer,
-            "--architecture-component", complexComponent,
             "--question-number", "2",
             "--total-questions", "10"
         };
@@ -239,11 +233,9 @@ public class DesignCommandTests
         // Verify all options were parsed correctly
         var questionValue = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "question"));
         var answerValue = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "answer"));
-        var componentValue = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "architecture-component"));
 
         Assert.Equal(complexQuestion, questionValue);
         Assert.Equal(complexAnswer, answerValue);
-        Assert.Equal(complexComponent, componentValue);
     }
 
     [Fact]
@@ -294,32 +286,6 @@ public class DesignCommandTests
         Assert.Contains("Azure", responseObject.DesignArchitecture);
     }
 
-    [Theory]
-    [InlineData("Infrastructure")]
-    [InlineData("Platform")]
-    [InlineData("Application")]
-    [InlineData("Data")]
-    [InlineData("Security")]
-    [InlineData("Operations")]
-    public async Task ExecuteAsync_WithArchitectureTierOptions(string tierValue)
-    {
-        // Arrange
-        var args = new[] { "--architecture-tier", tierValue };
-        var parseResult = _parser.Parse(args);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.Equal(200, response.Status);
-        Assert.NotNull(response.Results);
-        Assert.Empty(response.Message);
-
-        // Verify the architecture tier was parsed correctly
-        var tierOption = parseResult.GetValueForOption(_command.GetCommand().Options.First(o => o.Name == "architecture-tier"));
-        Assert.Equal(Enum.Parse<ArchitectureTier>(tierValue), tierOption);
-    }
-
     [Fact]
     public async Task ExecuteAsync_WithStateOption()
     {
@@ -357,8 +323,6 @@ public class DesignCommandTests
             "--answer", "A financial trading platform",
             "--next-question-needed", "false",
             "--confidence-score", "0.9",
-            "--architecture-component", "Azure SQL Database",
-            "--architecture-tier", "Data"
         };
 
         var parseResult = _parser.Parse(args);
@@ -379,8 +343,6 @@ public class DesignCommandTests
         var answerValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "answer"));
         var nextQuestionNeededValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "next-question-needed"));
         var confidenceScoreValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "confidence-score"));
-        var componentValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "architecture-component"));
-        var tierValue = parseResult.GetValueForOption(command.Options.First(o => o.Name == "architecture-tier"));
 
         Assert.Equal("What type of application are you building?", questionValue);
         Assert.Equal(3, questionNumberValue);
@@ -388,8 +350,6 @@ public class DesignCommandTests
         Assert.Equal("A financial trading platform", answerValue);
         Assert.Equal(false, nextQuestionNeededValue);
         Assert.Equal(0.9, confidenceScoreValue);
-        Assert.Equal("Azure SQL Database", componentValue);
-        Assert.Equal(ArchitectureTier.Data, tierValue);
 
         // Verify the response structure
         string serializedResult = SerializeResponseResult(response.Results);
