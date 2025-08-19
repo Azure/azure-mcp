@@ -22,8 +22,8 @@ public sealed class IngestionUploadCommand(ILogger<IngestionUploadCommand> logge
 
     public override string Description =>
         $"""
-        Upload custom log data to Azure Monitor workspaces using data collection rules. This tool sends structured log data to Azure Monitor with schema validation and transformation support for custom monitoring scenarios. 
-        Requires {WorkspaceOptionDefinitions.WorkspaceIdOrName}, {MonitorOptionDefinitions.DataCollectionRuleName}, {MonitorOptionDefinitions.StreamNameName}, and {MonitorOptionDefinitions.LogDataName} parameters.
+        Upload custom log data to Azure Monitor using data collection rules. This tool sends structured log data to Azure Monitor with schema validation and transformation support for custom monitoring scenarios. 
+        Requires {MonitorOptionDefinitions.IngestionEndpointName}, {MonitorOptionDefinitions.DataCollectionRuleName}, {MonitorOptionDefinitions.StreamNameName}, and {MonitorOptionDefinitions.LogDataName} parameters.
         Returns ingestion operation status and record count.
         """;
 
@@ -52,7 +52,7 @@ public sealed class IngestionUploadCommand(ILogger<IngestionUploadCommand> logge
 
             var monitorService = context.GetService<IMonitorService>();
             var result = await monitorService.UploadLogs(
-                options.Workspace!,
+                options.IngestionEndpoint!,
                 options.DataCollectionRule!,
                 options.StreamName!,
                 options.LogData!,
@@ -64,8 +64,8 @@ public sealed class IngestionUploadCommand(ILogger<IngestionUploadCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error executing ingestion upload command for workspace {Workspace} with DCR {DataCollectionRule}",
-                options.Workspace, options.DataCollectionRule);
+            _logger.LogError(ex, "Error executing ingestion upload command for endpoint {IngestionEndpoint} with DCR {DataCollectionRule}",
+                options.IngestionEndpoint, options.DataCollectionRule);
             HandleException(context, ex);
         }
 

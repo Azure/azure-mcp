@@ -385,14 +385,14 @@ public class MonitorService : BaseAzureService, IMonitorService
     }
 
     public async Task<(string Status, int RecordCount, string Message)> UploadLogs(
-        string workspace,
+        string ingestionEndpoint,
         string dataCollectionRule,
         string streamName,
         string logData,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(workspace, dataCollectionRule, streamName, logData);
+        ValidateRequiredParameters(ingestionEndpoint, dataCollectionRule, streamName, logData);
 
         try
         {
@@ -400,7 +400,7 @@ public class MonitorService : BaseAzureService, IMonitorService
 
             // Parse the data collection rule ID to get the endpoint
             var dcrId = dataCollectionRule;
-            var endpointUrl = BuildIngestionEndpoint(dcrId);
+            var endpointUrl = ingestionEndpoint;
 
             var ingestionClientOptions = AddDefaultPolicies(new LogsIngestionClientOptions());
 
@@ -679,22 +679,5 @@ public class MonitorService : BaseAzureService, IMonitorService
         {
             return Task.FromResult(("Error", $"Error validating log data: {ex.Message}", (JsonNode?)null));
         }
-    }
-
-    private static string BuildIngestionEndpoint(string dataCollectionRuleId)
-    {
-        // Extract the data collection endpoint from the DCR ID
-        // DCR ID format: /subscriptions/{subscription}/resourceGroups/{rg}/providers/Microsoft.Insights/dataCollectionRules/{name}
-        // We need to build the data collection endpoint URL
-        var parts = dataCollectionRuleId.Split('/');
-        if (parts.Length < 4)
-        {
-            throw new ArgumentException($"Invalid data collection rule ID format: {dataCollectionRuleId}");
-        }
-
-        // For simplicity, we'll assume the standard ingestion endpoint pattern
-        // In a real implementation, you might need to query the DCR to get the actual endpoint
-        var subscriptionId = parts[2];
-        return $"https://monitor.azure.com/";
     }
 }

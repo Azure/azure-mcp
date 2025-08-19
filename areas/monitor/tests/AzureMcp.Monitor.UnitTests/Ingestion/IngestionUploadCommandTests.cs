@@ -24,9 +24,8 @@ public sealed class IngestionUploadCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
 
-    private const string _knownWorkspace = "knownWorkspace";
+    private const string _knownIngestionEndpoint = "https://myendpoint-abcd.eastus-1.ingest.monitor.azure.com";
     private const string _knownSubscription = "knownSubscription";
-    private const string _knownResourceGroup = "knownResourceGroup";
     private const string _knownDataCollectionRule = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-test/providers/Microsoft.Insights/dataCollectionRules/dcr-test";
     private const string _knownStreamName = "Custom-MyStream";
     private const string _knownLogData = @"[{""TimeGenerated"": ""2023-01-01T12:00:00Z"", ""Message"": ""Test log entry"", ""Level"": ""Info""}]";
@@ -47,11 +46,11 @@ public sealed class IngestionUploadCommandTests
     }
 
     [Theory]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName} --log-data {_knownLogData}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName} --log-data {_knownLogData} --tenant {_knownTenant}", true)]
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName}", false)] // missing log-data
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup} --data-collection-rule {_knownDataCollectionRule}", false)] // missing stream-name and log-data
-    [InlineData($"--subscription {_knownSubscription} --workspace {_knownWorkspace} --resource-group {_knownResourceGroup}", false)] // missing most parameters
+    [InlineData($"--subscription {_knownSubscription} --ingestion-endpoint {_knownIngestionEndpoint} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName} --log-data {_knownLogData}", true)]
+    [InlineData($"--subscription {_knownSubscription} --ingestion-endpoint {_knownIngestionEndpoint} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName} --log-data {_knownLogData} --tenant {_knownTenant}", true)]
+    [InlineData($"--subscription {_knownSubscription} --ingestion-endpoint {_knownIngestionEndpoint} --data-collection-rule {_knownDataCollectionRule} --stream-name {_knownStreamName}", false)] // missing log-data
+    [InlineData($"--subscription {_knownSubscription} --ingestion-endpoint {_knownIngestionEndpoint} --data-collection-rule {_knownDataCollectionRule}", false)] // missing stream-name and log-data
+    [InlineData($"--subscription {_knownSubscription} --ingestion-endpoint {_knownIngestionEndpoint}", false)] // missing most parameters
     [InlineData("", false)] // missing all parameters
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -101,9 +100,8 @@ public sealed class IngestionUploadCommandTests
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
-            "--workspace", _knownWorkspace,
+            "--ingestion-endpoint", _knownIngestionEndpoint,
             "--data-collection-rule", _knownDataCollectionRule,
-            "--resource-group", _knownResourceGroup,
             "--stream-name", _knownStreamName,
             "--log-data", _knownLogData
         ]);
@@ -131,7 +129,7 @@ public sealed class IngestionUploadCommandTests
         // Arrange
         var mockResult = ("Success", 1, "Successfully uploaded 1 records to stream 'Custom-MyStream'");
         _monitorService.UploadLogs(
-            _knownWorkspace,
+            _knownIngestionEndpoint,
             _knownDataCollectionRule,
             _knownStreamName,
             _knownLogData,
@@ -141,9 +139,8 @@ public sealed class IngestionUploadCommandTests
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
-            "--workspace", _knownWorkspace,
+            "--ingestion-endpoint", _knownIngestionEndpoint,
             "--data-collection-rule", _knownDataCollectionRule,
-            "--resource-group", _knownResourceGroup,
             "--stream-name", _knownStreamName,
             "--log-data", _knownLogData,
             "--tenant", _knownTenant
@@ -155,7 +152,7 @@ public sealed class IngestionUploadCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         await _monitorService.Received(1).UploadLogs(
-            _knownWorkspace,
+            _knownIngestionEndpoint,
             _knownDataCollectionRule,
             _knownStreamName,
             _knownLogData,
@@ -178,9 +175,8 @@ public sealed class IngestionUploadCommandTests
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
-            "--workspace", _knownWorkspace,
+            "--ingestion-endpoint", _knownIngestionEndpoint,
             "--data-collection-rule", _knownDataCollectionRule,
-            "--resource-group", _knownResourceGroup,
             "--stream-name", _knownStreamName,
             "--log-data", _knownLogData
         ]);
@@ -211,9 +207,8 @@ public sealed class IngestionUploadCommandTests
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
-            "--workspace", _knownWorkspace,
+            "--ingestion-endpoint", _knownIngestionEndpoint,
             "--data-collection-rule", _knownDataCollectionRule,
-            "--resource-group", _knownResourceGroup,
             "--stream-name", _knownStreamName,
             "--log-data", invalidLogData
         ]);
@@ -243,9 +238,8 @@ public sealed class IngestionUploadCommandTests
 
         var args = _parser.Parse([
             "--subscription", _knownSubscription,
-            "--workspace", _knownWorkspace,
+            "--ingestion-endpoint", _knownIngestionEndpoint,
             "--data-collection-rule", _knownDataCollectionRule,
-            "--resource-group", _knownResourceGroup,
             "--stream-name", _knownStreamName,
             "--log-data", emptyLogData
         ]);

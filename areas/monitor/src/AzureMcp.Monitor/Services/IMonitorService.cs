@@ -56,7 +56,7 @@ public interface IMonitorService
         RetryPolicyOptions? retryPolicy);
 
     Task<(string Status, int RecordCount, string Message)> UploadLogs(
-        string workspace,
+        string ingestionEndpoint,
         string dataCollectionRule,
         string streamName,
         string logData,

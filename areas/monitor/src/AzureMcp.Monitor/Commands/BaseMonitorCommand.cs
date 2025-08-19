@@ -12,21 +12,40 @@ namespace AzureMcp.Monitor.Commands;
 public abstract class BaseMonitorCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
     : SubscriptionCommand<TOptions>
-    where TOptions : SubscriptionOptions, IWorkspaceOptions, new()
+    where TOptions : SubscriptionOptions, new()
 {
-    private readonly Option<string> _workspaceOption = WorkspaceOptionDefinitions.Workspace;
-
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        RequireResourceGroup();
-        command.AddOption(_workspaceOption);
+
+        var optionsType = typeof(TOptions);
+
+        // Check if TOptions implements IWorkspaceOptions to decide which option to use
+        if (typeof(IWorkspaceOptions).IsAssignableFrom(optionsType))
+        {
+            RequireResourceGroup();
+            command.AddOption(WorkspaceOptionDefinitions.Workspace);
+        }
+        else if (optionsType == typeof(IngestionUploadOptions))
+        {
+            command.AddOption(MonitorOptionDefinitions.Ingestion.IngestionEndpoint);
+        }
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.Workspace = parseResult.GetValueForOption(_workspaceOption);
+        var optionsType = typeof(TOptions);
+
+        if (typeof(IWorkspaceOptions).IsAssignableFrom(optionsType) && options is IWorkspaceOptions workspaceOptions)
+        {
+            workspaceOptions.Workspace = parseResult.GetValueForOption(WorkspaceOptionDefinitions.Workspace);
+        }
+        else if (optionsType == typeof(IngestionUploadOptions) && options is IngestionUploadOptions ingestionOptions)
+        {
+            ingestionOptions.IngestionEndpoint = parseResult.GetValueForOption(MonitorOptionDefinitions.Ingestion.IngestionEndpoint);
+        }
+
         return options;
     }
 }

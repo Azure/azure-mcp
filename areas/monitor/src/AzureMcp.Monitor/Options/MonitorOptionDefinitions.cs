@@ -16,6 +16,7 @@ public static class MonitorOptionDefinitions
     public const string LogDataName = "log-data";
     public const string StreamNameName = "stream-name";
     public const string OperationIdName = "operation-id";
+    public const string IngestionEndpointName = "ingestion-endpoint";
 
     public static readonly Option<string> TableType = new(
         $"--{TableTypeName}",
@@ -239,6 +240,14 @@ public static class MonitorOptionDefinitions
         )
         {
             IsRequired = false
+        };
+
+        public static readonly Option<string> IngestionEndpoint = new(
+            $"--{IngestionEndpointName}",
+            "The Azure Monitor ingestion endpoint URL (e.g., https://myendpoint-abcd.eastus-1.ingest.monitor.azure.com). This is the data collection endpoint associated with your data collection rule."
+        )
+        {
+            IsRequired = true
         };
     }
 }
