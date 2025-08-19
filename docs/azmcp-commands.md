@@ -826,7 +826,7 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ```bash
 # Create a new Storage account with custom configuration
 azmcp storage account create --subscription <subscription> \
-                             --account-name <unique-account-name> \
+                             --account <unique-account-name> \
                              --resource-group <resource-group> \
                              --location <location> \
                              --sku <sku> \
@@ -849,7 +849,7 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \
                                   --container <container> \
                                   --tier <tier> \
-                                  --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
+                                  --blobs <blob-name1> <blob-name2> ... <blob-nameN>
 
 # Create a blob container with optional public access
 azmcp storage blob container create --subscription <subscription> \

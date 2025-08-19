@@ -8,11 +8,11 @@ namespace AzureMcp.Storage.Models;
 // Lightweight projection of StorageAccountData with commonly useful metadata.
 // Keep property names stable; only add new nullable properties to extend.
 public sealed record StorageAccountInfo(
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("location")] string? Location,
-    [property: JsonPropertyName("kind")] string? Kind,
-    [property: JsonPropertyName("skuName")] string? SkuName,
-    [property: JsonPropertyName("skuTier")] string? SkuTier,
+    string Name,
+    string? Location,
+    string? Kind,
+    string? SkuName,
+    string? SkuTier,
     [property: JsonPropertyName("hnsEnabled")] bool? IsHnsEnabled,
-    [property: JsonPropertyName("allowBlobPublicAccess")] bool? AllowBlobPublicAccess,
-    [property: JsonPropertyName("enableHttpsTrafficOnly")] bool? EnableHttpsTrafficOnly);
+    bool? AllowBlobPublicAccess,
+    bool? EnableHttpsTrafficOnly);

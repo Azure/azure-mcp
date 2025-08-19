@@ -7,12 +7,12 @@ namespace AzureMcp.Storage.Options.Queue.Message;
 
 public class QueueMessageSendOptions : BaseQueueOptions
 {
-    [JsonPropertyName(StorageOptionDefinitions.MessageContent)]
-    public string? MessageContent { get; set; }
+    [JsonPropertyName(StorageOptionDefinitions.MessageName)]
+    public string? Message { get; set; }
 
-    [JsonPropertyName(StorageOptionDefinitions.TimeToLiveInSeconds)]
+    [JsonPropertyName(StorageOptionDefinitions.TimeToLiveInSecondsName)]
     public int? TimeToLiveInSeconds { get; set; }
 
-    [JsonPropertyName(StorageOptionDefinitions.VisibilityTimeoutInSeconds)]
+    [JsonPropertyName(StorageOptionDefinitions.VisibilityTimeoutInSecondsName)]
     public int? VisibilityTimeoutInSeconds { get; set; }
 }

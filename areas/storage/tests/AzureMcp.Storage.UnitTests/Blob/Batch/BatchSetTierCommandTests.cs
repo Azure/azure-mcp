@@ -24,11 +24,11 @@ public class BatchSetTierCommandTests
     private readonly BatchSetTierCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownSubscription = "sub123";
     private readonly string _knownTier = "Cool";
-    private readonly string[] _knownBlobNames = ["blob1.txt", "blob2.txt", "blob3.txt"];
+    private readonly string[] _knownBlobs = ["blob1.txt", "blob2.txt", "blob3.txt"];
 
     public BatchSetTierCommandTests()
     {
@@ -57,25 +57,25 @@ public class BatchSetTierCommandTests
     {
         // Arrange
         var expectedResult = (
-            SuccessfulBlobs: _knownBlobNames.ToList(),
+            SuccessfulBlobs: _knownBlobs.ToList(),
             FailedBlobs: new List<string>()
         );
 
         _storageService.SetBlobTierBatch(
-            Arg.Is(_knownAccountName),
-            Arg.Is(_knownContainerName),
+            Arg.Is(_knownAccount),
+            Arg.Is(_knownContainer),
             Arg.Is(_knownTier),
-            Arg.Is<string[]>(x => x.SequenceEqual(_knownBlobNames)),
-            Arg.Is(_knownSubscriptionId),
+            Arg.Is<string[]>(x => x.SequenceEqual(_knownBlobs)),
+            Arg.Is(_knownSubscription),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns(expectedResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
             "--tier", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
-            "--subscription", _knownSubscriptionId
+            "--blobs", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -107,20 +107,20 @@ public class BatchSetTierCommandTests
         );
 
         _storageService.SetBlobTierBatch(
-            Arg.Is(_knownAccountName),
-            Arg.Is(_knownContainerName),
+            Arg.Is(_knownAccount),
+            Arg.Is(_knownContainer),
             Arg.Is(_knownTier),
-            Arg.Is<string[]>(x => x.SequenceEqual(_knownBlobNames)),
-            Arg.Is(_knownSubscriptionId),
+            Arg.Is<string[]>(x => x.SequenceEqual(_knownBlobs)),
+            Arg.Is(_knownSubscription),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns(expectedResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
             "--tier", _knownTier,
-            "--blob-names", "blob1.txt", "blob2.txt", "blob3.txt",
-            "--subscription", _knownSubscriptionId
+            "--blobs", "blob1.txt", "blob2.txt", "blob3.txt",
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -146,7 +146,7 @@ public class BatchSetTierCommandTests
     [InlineData("", false, "required")]
     [InlineData("--account account --container container", false, "required")]
     [InlineData("--account account --container container --tier Cool", false, "required")]
-    [InlineData("--account account --container container --tier Cool --blob-names blob1.txt --subscription sub", true, null)]
+    [InlineData("--account account --container container --tier Cool --blobs blob1.txt --subscription sub", true, null)]
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed, string? expectedErrorKeyword)
     {
         // Arrange
@@ -205,11 +205,11 @@ public class BatchSetTierCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
             "--tier", _knownTier,
-            "--blob-names", "blob1.txt",
-            "--subscription", _knownSubscriptionId
+            "--blobs", "blob1.txt",
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -238,11 +238,11 @@ public class BatchSetTierCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(requestFailedException);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
             "--tier", _knownTier,
-            "--blob-names", "blob1.txt",
-            "--subscription", _knownSubscriptionId
+            "--blobs", "blob1.txt",
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -271,11 +271,11 @@ public class BatchSetTierCommandTests
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(requestFailedException);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
             "--tier", _knownTier,
-            "--blob-names", "blob1.txt",
-            "--subscription", _knownSubscriptionId
+            "--blobs", "blob1.txt",
+            "--subscription", _knownSubscription
         ]);
 
         // Act

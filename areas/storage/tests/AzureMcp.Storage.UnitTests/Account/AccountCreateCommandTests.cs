@@ -49,12 +49,12 @@ public class AccountCreateCommandTests
     }
 
     [Theory]
-    [InlineData("--account-name testaccount --resource-group testrg --location eastus --subscription sub123", true)]
-    [InlineData("--account-name testaccount --resource-group testrg --location eastus --sku Standard_GRS --subscription sub123", true)]
-    [InlineData("--account-name testaccount --resource-group testrg --location eastus --kind StorageV2 --access-tier Cool --subscription sub123", true)]
+    [InlineData("--account testaccount --resource-group testrg --location eastus --subscription sub123", true)]
+    [InlineData("--account testaccount --resource-group testrg --location eastus --sku Standard_GRS --subscription sub123", true)]
+    [InlineData("--account testaccount --resource-group testrg --location eastus --kind StorageV2 --access-tier Cool --subscription sub123", true)]
     [InlineData("--resource-group testrg --location eastus --subscription sub123", false)] // Missing account name
-    [InlineData("--account-name testaccount --location eastus --subscription sub123", false)] // Missing resource group
-    [InlineData("--account-name testaccount --resource-group testrg --subscription sub123", false)] // Missing location
+    [InlineData("--account testaccount --location eastus --subscription sub123", false)] // Missing resource group
+    [InlineData("--account testaccount --resource-group testrg --subscription sub123", false)] // Missing location
     [InlineData("", false)] // No parameters
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
@@ -132,7 +132,7 @@ public class AccountCreateCommandTests
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(conflictException);
 
-        var parseResult = _parser.Parse(["--account-name", "existingaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
+        var parseResult = _parser.Parse(["--account", "existingaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -163,7 +163,7 @@ public class AccountCreateCommandTests
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(notFoundException);
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--resource-group", "nonexistentrg", "--location", "eastus", "--subscription", "sub123"]);
+        var parseResult = _parser.Parse(["--account", "testaccount", "--resource-group", "nonexistentrg", "--location", "eastus", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -194,7 +194,7 @@ public class AccountCreateCommandTests
             Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(authException);
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
+        var parseResult = _parser.Parse(["--account", "testaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -223,7 +223,7 @@ public class AccountCreateCommandTests
             Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<StorageAccountInfo>(new Exception("Test error")));
 
-        var parseResult = _parser.Parse(["--account-name", "testaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
+        var parseResult = _parser.Parse(["--account", "testaccount", "--resource-group", "testrg", "--location", "eastus", "--subscription", "sub123"]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -264,7 +264,7 @@ public class AccountCreateCommandTests
             .Returns(expectedAccount);
 
         var parseResult = _parser.Parse([
-            "--account-name", "testaccount",
+            "--account", "testaccount",
             "--resource-group", "testrg",
             "--location", "eastus",
             "--subscription", "sub123",

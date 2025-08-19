@@ -3,7 +3,7 @@
 
 namespace AzureMcp.Storage.Models;
 
-public record BlobUploadResult(
+public sealed record BlobUploadResult(
     string Blob,
     string Container,
     string UploadedFile,
