@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace AzureMcp.Monitor.UnitTests.Commands.Ingestion;
+namespace AzureMcp.Monitor.UnitTests.Ingestion;
 
 [Trait("Area", "Monitor")]
 public sealed class IngestionStatusCheckCommandTests
