@@ -44,7 +44,7 @@ public abstract class BaseCommand : IBaseCommand
         var response = context.Response;
         var result = new ExceptionResult(
             Message: ex.Message,
-            StackTrace: ex.StackTrace,
+            //StackTrace: ex.StackTrace,
             Type: ex.GetType().Name);
 
         response.Status = GetStatusCode(ex);
@@ -54,7 +54,7 @@ public abstract class BaseCommand : IBaseCommand
 
     internal record ExceptionResult(
         string Message,
-        string? StackTrace,
+        //string? StackTrace,
         string Type);
 
     protected virtual string GetErrorMessage(Exception ex) => ex.Message;
