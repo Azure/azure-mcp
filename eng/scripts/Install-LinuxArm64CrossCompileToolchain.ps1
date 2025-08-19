@@ -27,14 +27,15 @@ set -euo pipefail
 
 echo "Installing arm64 cross-compilation toolchain"
 
-# Enable arm64 architecture if not already enabled
+# turning on multi-arch support for arm64 on amd64 host
 sudo dpkg --add-architecture arm64 || true
 
-# Constrain existing sources to amd64 to avoid conflicts
+# Constrains the existing binary package repositories to provide only amd64 packages
 sudo sed -i 's/^deb \([^[].*\)/deb [arch=amd64] \1/' /etc/apt/sources.list
+# Constrains the existing source package repositories to provide only amd64 sources
 sudo sed -i 's/^deb-src \([^[].*\)/deb-src [arch=amd64] \1/' /etc/apt/sources.list
 
-# Ensure apt sources include arm64 variants from ports.ubuntu.com
+# Adds package repositories that provide arm64 packages from ports.ubuntu.com
 sudo tee /etc/apt/sources.list.d/arm64.list >/dev/null <<'EOF'
 deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted universe multiverse
 deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted universe multiverse
@@ -42,9 +43,10 @@ deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restr
 deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
 EOF
 
+# Refresh package indices for both amd64 and arm64 architectures
 sudo apt-get update -qq
 
-# Detect gcc base package (e.g., gcc-12-base on jammy)
+# Find the 'gcc base package' name (there is only one 'gcc base package' name per Ubuntu series across all architectures)
 GCC_BASE=$(apt-cache search --names-only '^gcc-[0-9]+-base$' | awk '{print $1}' | sort -V | tail -1)
 
 if [[ -z "$GCC_BASE" ]]; then
@@ -52,7 +54,7 @@ if [[ -z "$GCC_BASE" ]]; then
   exit 1
 fi
 
-# Find candidate versions for both arches
+# Find versions of 'gcc base package' for amd64 and arm64
 amd64_ver=$(apt-cache madison ${GCC_BASE}:amd64 | awk '{print $3}' | head -1)
 arm64_ver=$(apt-cache madison ${GCC_BASE}:arm64 | awk '{print $3}' | head -1)
 
@@ -70,7 +72,7 @@ fi
 
 echo "Using ${GCC_BASE} version: ${common_ver} (amd64=${amd64_ver:-N/A}, arm64=${arm64_ver:-N/A})"
 
-# Install base libs
+# # Install gcc base libraries for both amd64 and arm64 with versions pinned
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   ${GCC_BASE}:amd64=${common_ver} \
   ${GCC_BASE}:arm64=${common_ver} \
@@ -90,7 +92,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # Verification step
 dpkg -l | grep -E '^(ii)\s+(libc6|libgcc-s1|gcc-[0-9]+-base):arm64' || true
 
-echo "arm64 cross-compilation toolchain installation completed successfully."
 '@
 
 try {
