@@ -12,21 +12,21 @@ namespace ToolSelection;
 class Program
 {
     private static readonly HttpClient HttpClient = new();
-    private const string CommandPrefix = "azmcp ";
-    private const string SpaceReplacement = "-";
+
+    private static readonly string CommandPrefix = "azmcp ";
+    private static readonly string SpaceReplacement = "-";
 
     // Unicode character constants
-    private const string UnicodeApostrophe = "\\u0027";
-    private const string UnicodeLeftSingleQuote = "\\u2018";
-    private const string UnicodeRightSingleQuote = "\\u2019";
-    private const string UnicodeQuote = "\\u0022";
-    private const string UnicodeLeftDoubleQuote = "\\u201C";
-    private const string UnicodeRightDoubleQuote = "\\u201D";
-    private const string UnicodeEnDash = "\\u2013";
-    private const string UnicodeEmDash = "\\u2014";
-    private const string UnicodeLessThan = "\\u003C";
-    private const string UnicodeGreaterThan = "\\u003E";
-    private const string UnicodeAmpersand = "\\u0026";
+    private static readonly string UnicodeSingleQuote = "\\u0027";
+    private static readonly string UnicodeLeftSingleQuote = "\\u2018";
+    private static readonly string UnicodeRightSingleQuote = "\\u2019";
+    private static readonly string UnicodeDoubleQuote = "\\u0022";
+    private static readonly string UnicodeLeftDoubleQuote = "\\u201C";
+    private static readonly string UnicodeRightDoubleQuote = "\\u201D";
+    private static readonly string UnicodeLessThan = "\\u003C";
+    private static readonly string UnicodeGreaterThan = "\\u003E";
+    private static readonly string UnicodeAmpersand = "\\u0026";
+    private static readonly string UnicodeBacktick = "\\u0060";
 
     static async Task Main(string[] args)
     {
@@ -616,7 +616,8 @@ class Program
                    .Replace(UnicodeRightDoubleQuote, "\\\"") // Right double quotation mark
                    .Replace(UnicodeLessThan, "<")
                    .Replace(UnicodeGreaterThan, ">")
-                   .Replace(UnicodeAmpersand, "&");
+                   .Replace(UnicodeAmpersand, "&")
+                   .Replace(UnicodeBacktick, "`");
     }
 
     private static async Task PopulateDatabaseAsync(VectorDB db, List<Tool> tools, EmbeddingService embeddingService)
