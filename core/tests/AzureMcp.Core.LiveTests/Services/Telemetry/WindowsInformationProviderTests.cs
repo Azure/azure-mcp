@@ -15,7 +15,7 @@ public class WindowsInformationProviderTests
 {
     [Fact]
     [Trait("Category", "Live")]
-    public async Task GetOrCreateDeviceId_WorksCorrectly()
+    public void GetOrCreateDeviceId_WorksCorrectly()
     {
         Assert.SkipUnless(RuntimeInformation.IsOSPlatform(OSPlatform.Windows),
             "Only supported on Windows.");
@@ -25,14 +25,14 @@ public class WindowsInformationProviderTests
         var provider = new WindowsMachineInformationProvider(_logger);
 
         // Act
-        var deviceId = await provider.GetOrCreateDeviceId();
+        var deviceId = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.NotNull(deviceId);
         Assert.NotEmpty(deviceId);
 
         // Verify it's persisted by calling again
-        var deviceId2 = await provider.GetOrCreateDeviceId();
+        var deviceId2 = provider.GetOrCreateDeviceId();
         Assert.Equal(deviceId, deviceId2);
     }
 }

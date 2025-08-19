@@ -150,7 +150,7 @@ public class CommandFactory
         {
             _logger.LogTrace("Executing '{Command}'.", command.Name);
 
-            using var activity = await _telemetryService.StartActivity(ActivityName.CommandExecuted);
+            using var activity = _telemetryService.StartActivity(ActivityName.CommandExecuted);
 
             var cmdContext = new CommandContext(_serviceProvider, activity);
             var startTime = DateTime.UtcNow;
@@ -167,7 +167,7 @@ public class CommandFactory
                     response.Results = ResponseResult.Create(new List<string>(), JsonSourceGenerationContext.Default.ListString);
                 }
 
-                var isServiceStartCommand = implementation is AzureMcp.Core.Areas.Server.Commands.ServiceStartCommand;
+                var isServiceStartCommand = implementation is Areas.Server.Commands.ServiceStartCommand;
                 if (!isServiceStartCommand)
                 {
                     Console.WriteLine(JsonSerializer.Serialize(response, _srcGenWithOptions.CommandResponse));

@@ -15,7 +15,7 @@ public class MacOSXInformationProviderTests
 {
     [Fact]
     [Trait("Category", "Live")]
-    public async Task GetOrCreateDeviceId_WorksCorrectly()
+    public void GetOrCreateDeviceId_WorksCorrectly()
     {
         Assert.SkipUnless(RuntimeInformation.IsOSPlatform(OSPlatform.Linux),
             "Only supported on Linux.");
@@ -25,14 +25,14 @@ public class MacOSXInformationProviderTests
         var provider = new MacOSXMachineInformationProvider(_logger);
 
         // Act
-        var deviceId = await provider.GetOrCreateDeviceId();
+        var deviceId = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.NotNull(deviceId);
         Assert.NotEmpty(deviceId);
 
         // Verify it's persisted by calling again
-        var deviceId2 = await provider.GetOrCreateDeviceId();
+        var deviceId2 = provider.GetOrCreateDeviceId();
         Assert.Equal(deviceId, deviceId2);
     }
 }

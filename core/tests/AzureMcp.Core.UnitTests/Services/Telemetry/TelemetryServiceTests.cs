@@ -29,12 +29,12 @@ public class TelemetryServiceTests
         _mockOptions.Value.Returns(_configuration);
 
         _mockInformationProvider = Substitute.For<IMachineInformationProvider>();
-        _mockInformationProvider.GetMacAddressHash().Returns(Task.FromResult("test-hash"));
-        _mockInformationProvider.GetOrCreateDeviceId().Returns(Task.FromResult<string?>("test-device-id"));
+        _mockInformationProvider.GetMacAddressHash().Returns("test-hash");
+        _mockInformationProvider.GetOrCreateDeviceId().Returns("test-device-id");
     }
 
     [Fact]
-    public async Task StartActivity_WhenTelemetryDisabled_ShouldReturnNull()
+    public void StartActivity_WhenTelemetryDisabled_ShouldReturnNull()
     {
         // Arrange
         _configuration.IsTelemetryEnabled = false;
@@ -42,14 +42,14 @@ public class TelemetryServiceTests
         const string activityId = "test-activity";
 
         // Act
-        var activity = await service.StartActivity(activityId);
+        var activity = service.StartActivity(activityId);
 
         // Assert
         Assert.Null(activity);
     }
 
     [Fact]
-    public async Task StartActivity_WithClientInfo_WhenTelemetryDisabled_ShouldReturnNull()
+    public void StartActivity_WithClientInfo_WhenTelemetryDisabled_ShouldReturnNull()
     {
         // Arrange
         _configuration.IsTelemetryEnabled = false;
@@ -62,7 +62,7 @@ public class TelemetryServiceTests
         };
 
         // Act
-        var activity = await service.StartActivity(activityId, clientInfo);
+        var activity = service.StartActivity(activityId, clientInfo);
 
         // Assert
         Assert.Null(activity);
@@ -100,7 +100,7 @@ public class TelemetryServiceTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task StartActivity_WithInvalidActivityId_ShouldHandleGracefully(string activityId)
+    public void StartActivity_WithInvalidActivityId_ShouldHandleGracefully(string activityId)
     {
         // Arrange
         var configuration = new AzureMcpServerConfiguration
@@ -116,7 +116,7 @@ public class TelemetryServiceTests
         using var service = new TelemetryService(_mockInformationProvider, mockOptions);
 
         // Act
-        var activity = await service.StartActivity(activityId);
+        var activity = service.StartActivity(activityId);
 
         // Assert
         // ActivitySource.StartActivity typically handles null/empty names gracefully

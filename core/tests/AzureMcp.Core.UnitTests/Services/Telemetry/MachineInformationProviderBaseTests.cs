@@ -22,10 +22,10 @@ public class MachineInformationProviderBaseTests
     }
 
     [Fact]
-    public async Task GetMacAddressHash_WhenMacAddressExists_ReturnsHashedValue()
+    public void GetMacAddressHash_WhenMacAddressExists_ReturnsHashedValue()
     {
         // Act
-        var result = await _provider.GetMacAddressHash();
+        var result = _provider.GetMacAddressHash();
 
         // Assert
         Assert.NotNull(result);
@@ -35,14 +35,14 @@ public class MachineInformationProviderBaseTests
     }
 
     [Fact]
-    public async Task GetMacAddressHash_WhenNoMacAddressFound_ReturnsNotAvailable()
+    public void GetMacAddressHash_WhenNoMacAddressFound_ReturnsNotAvailable()
     {
         // This test is challenging since we can't easily mock NetworkInterface.GetAllNetworkInterfaces()
         // In a real scenario, you might want to refactor the code to make it more testable
         // For now, we'll test the happy path and error handling
 
         // Act
-        var result = await _provider.GetMacAddressHash();
+        var result = _provider.GetMacAddressHash();
 
         // Assert
         Assert.NotNull(result);
@@ -165,10 +165,7 @@ public class MachineInformationProviderBaseTests
         {
         }
 
-        public override Task<string?> GetOrCreateDeviceId()
-        {
-            return Task.FromResult<string?>("test-device-id");
-        }
+        public override string? GetOrCreateDeviceId() => "test-device-id";
 
         // Override to throw exception for testing error handling
         protected override string? GetMacAddress()
@@ -177,17 +174,17 @@ public class MachineInformationProviderBaseTests
         }
 
         // Expose protected method
-        public new Task<string> GetMacAddressHash() => base.GetMacAddressHash();
+        public new string GetMacAddressHash() => base.GetMacAddressHash();
     }
 
     [Fact]
-    public async Task GetMacAddressHash_WhenExceptionThrown_ReturnsNotAvailableAndLogsError()
+    public void GetMacAddressHash_WhenExceptionThrown_ReturnsNotAvailableAndLogsError()
     {
         // Arrange
         var exceptionProvider = new ExceptionThrowingProvider(_logger);
 
         // Act
-        var result = await exceptionProvider.GetMacAddressHash();
+        var result = exceptionProvider.GetMacAddressHash();
 
         // Assert
         Assert.Equal("N/A", result);
@@ -218,10 +215,10 @@ public class MachineInformationProviderBaseTests
 internal class TestMachineInformationProvider(ILogger<MachineInformationProviderBase> logger)
     : MachineInformationProviderBase(logger)
 {
-    public override Task<string?> GetOrCreateDeviceId()
+    public override string GetOrCreateDeviceId()
     {
         // Default implementation for testing - can be overridden in specific tests
-        return Task.FromResult<string?>("test-device-id");
+        return "test-device-id";
     }
 
     public new string? GetMacAddress() => base.GetMacAddress();

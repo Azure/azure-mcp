@@ -11,12 +11,12 @@ namespace AzureMcp.Core.LiveTests.Services.Telemetry;
 public class DefaultMachineInformationProviderTests
 {
     [Fact]
-    public async Task ReturnsNullDeviceId()
+    public void ReturnsNullDeviceId()
     {
         var logger = Substitute.For<ILogger<DefaultMachineInformationProvider>>();
         var provider = new DefaultMachineInformationProvider(logger);
 
-        var result = await provider.GetOrCreateDeviceId();
+        var result = provider.GetOrCreateDeviceId();
 
         Assert.Null(result);
     }

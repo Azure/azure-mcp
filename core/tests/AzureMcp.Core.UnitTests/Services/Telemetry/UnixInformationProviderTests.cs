@@ -25,20 +25,20 @@ public class UnixInformationProviderTests
     }
 
     [Fact]
-    public async Task GetOrCreateDeviceId_WhenStoragePathThrows_ReturnsNull()
+    public void GetOrCreateDeviceId_WhenStoragePathThrows_ReturnsNull()
     {
         // Arrange
         var provider = new TestUnixInformationProvider(_logger, storagePath: TestStorageDirectory.ToString(), throwOnGetStoragePath: true);
 
         // Act
-        var result = await provider.GetOrCreateDeviceId();
+        var result = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task GetOrCreateDeviceId_WhenExistingDeviceIdExists_ReturnsExistingValue()
+    public void GetOrCreateDeviceId_WhenExistingDeviceIdExists_ReturnsExistingValue()
     {
         // Arrange
         const string existingDeviceId = "existing-device-id";
@@ -46,7 +46,7 @@ public class UnixInformationProviderTests
         var provider = new NoOpUnixInformationProvider(existingDeviceId, true);
 
         // Act
-        var result = await provider.GetOrCreateDeviceId();
+        var result = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.Equal(existingDeviceId, result);
@@ -59,13 +59,13 @@ public class UnixInformationProviderTests
     }
 
     [Fact]
-    public async Task GetOrCreateDeviceId_WhenNoExistingDeviceId_CreatesNewDeviceId()
+    public void GetOrCreateDeviceId_WhenNoExistingDeviceId_CreatesNewDeviceId()
     {
         // Arrange
         var provider = new NoOpUnixInformationProvider(null, true);
 
         // Act
-        var result = await provider.GetOrCreateDeviceId();
+        var result = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.NotNull(result);
@@ -79,13 +79,13 @@ public class UnixInformationProviderTests
     }
 
     [Fact]
-    public async Task GetOrCreateDeviceId_WhenWriteValueToDiskFails_ReturnsNull()
+    public void GetOrCreateDeviceId_WhenWriteValueToDiskFails_ReturnsNull()
     {
         // Arrange
         var provider = new NoOpUnixInformationProvider(null, false);
 
         // Act
-        var result = await provider.GetOrCreateDeviceId();
+        var result = provider.GetOrCreateDeviceId();
 
         // Assert
         Assert.Null(result);
@@ -95,20 +95,20 @@ public class UnixInformationProviderTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task WriteValueToDisk_WhenValueIsNullOrWhitespace_ReturnsFalse(string? value)
+    public void WriteValueToDisk_WhenValueIsNullOrWhitespace_ReturnsFalse(string? value)
     {
         // Act
-        var result = await _provider.WriteValueToDisk("/test/path", "filename", value);
+        var result = _provider.WriteValueToDisk("/test/path", "filename", value);
 
         // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public async Task ReadValueFromDisk_WhenFileDoesNotExist_ReturnsNull()
+    public void ReadValueFromDisk_WhenFileDoesNotExist_ReturnsNull()
     {
         // Act
-        var result = await _provider.ReadValueFromDisk("/nonexistent/path", "nonexistent.txt");
+        var result = _provider.ReadValueFromDisk("/nonexistent/path", "nonexistent.txt");
 
         // Assert
         Assert.Null(result);
@@ -161,20 +161,20 @@ public class UnixInformationProviderTests
         public string? WriteFileName { get; private set; }
         public string? WriteValue { get; private set; }
 
-        public override Task<string?> ReadValueFromDisk(string directoryPath, string fileName)
+        public override string? ReadValueFromDisk(string directoryPath, string fileName)
         {
             ReadDirectoryPath = directoryPath;
             ReadFileName = fileName;
-            return Task.FromResult(_readStorageResult);
+            return _readStorageResult;
         }
 
-        public override Task<bool> WriteValueToDisk(string directoryPath, string fileName, string? value)
+        public override bool WriteValueToDisk(string directoryPath, string fileName, string? value)
         {
             WriteDirectoryPath = directoryPath;
             WriteFileName = fileName;
             WriteValue = value;
 
-            return Task.FromResult(_writeValueResult);
+            return _writeValueResult;
         }
     }
 
@@ -188,7 +188,7 @@ public class UnixInformationProviderTests
 
         public string GetTestStoragePath() => GetStoragePath();
 
-        public override Task<string?> GetOrCreateDeviceId()
+        public override string? GetOrCreateDeviceId()
         {
             if (string.IsNullOrEmpty(_deviceId))
             {
@@ -196,7 +196,7 @@ public class UnixInformationProviderTests
             }
             else
             {
-                return Task.FromResult<string?>(_deviceId);
+                return _deviceId;
             }
         }
 
