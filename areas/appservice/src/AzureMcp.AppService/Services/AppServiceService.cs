@@ -31,18 +31,65 @@ public class AppServiceService(
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        _logger.LogInformation("Adding database connection to App Service {AppName} in resource group {ResourceGroup}", appName, resourceGroup);
+        _logger.LogInformation(
+            "Adding database connection to App Service {AppName} in resource group {ResourceGroup}",
+            appName, resourceGroup);
 
-        // Validate database type upfront
+        try
+        {
+            // Validate inputs
+            ValidateInputs(appName, resourceGroup, databaseType, databaseServer, databaseName, subscription);
+
+            // Get Azure resources
+            var webApp = await GetWebAppResourceAsync(subscription, resourceGroup, appName, tenant, retryPolicy);
+
+            // Prepare connection string
+            var finalConnectionString = PrepareConnectionString(connectionString, databaseType, databaseServer, databaseName);
+            var connectionStringName = $"{databaseName}Connection";
+
+            // Update web app configuration
+            await UpdateWebAppConnectionStringAsync(webApp, connectionStringName, finalConnectionString, databaseType);
+
+            _logger.LogInformation(
+                "Successfully added database connection {ConnectionName} to App Service {AppName}",
+                connectionStringName, appName);
+
+            return CreateDatabaseConnectionInfo(
+                databaseType, databaseServer, databaseName, finalConnectionString, connectionStringName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to add database connection to App Service {AppName} in resource group {ResourceGroup}",
+                appName, resourceGroup);
+            throw;
+        }
+    }
+
+    private static void ValidateInputs(string appName, string resourceGroup, string databaseType,
+        string databaseServer, string databaseName, string subscription)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(resourceGroup);
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseServer);
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(subscription);
+
         ValidateDatabaseType(databaseType);
+    }
+
+    private async Task<WebSiteResource> GetWebAppResourceAsync(string subscription, string resourceGroup,
+        string appName, string? tenant, RetryPolicyOptions? retryPolicy)
+    {
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
         var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
         if (resourceGroupResource?.Value == null)
         {
             throw new ArgumentException($"Resource group '{resourceGroup}' not found in subscription '{subscription}'.");
         }
 
-        // Get the web app resource using Azure.ResourceManager.AppService
         var webApps = resourceGroupResource.Value.GetWebSites();
         var webAppResource = await webApps.GetAsync(appName);
         if (webAppResource?.Value == null)
@@ -50,49 +97,64 @@ public class AppServiceService(
             throw new ArgumentException($"Web app '{appName}' not found in resource group '{resourceGroup}'.");
         }
 
-        // Build connection string if not provided
-        var finalConnectionString = string.IsNullOrEmpty(connectionString) ? BuildConnectionString(databaseType, databaseServer, databaseName) : connectionString;
-        var connectionStringName = $"{databaseName}Connection";
+        return webAppResource.Value;
+    }
 
+    private static string PrepareConnectionString(string? connectionString, string databaseType,
+        string databaseServer, string databaseName)
+    {
+        return string.IsNullOrWhiteSpace(connectionString)
+            ? BuildConnectionString(databaseType, databaseServer, databaseName)
+            : connectionString;
+    }
+
+    private static async Task UpdateWebAppConnectionStringAsync(WebSiteResource webApp, string connectionStringName,
+        string connectionString, string databaseType)
+    {
         // Get current web app configuration
-        var webApp = webAppResource.Value;
         var configResource = webApp.GetWebSiteConfig();
         var config = await configResource.GetAsync();
-        
+
         if (config?.Value?.Data == null)
         {
-            throw new ArgumentException($"Unable to retrieve configuration for web app '{appName}'.");
+            throw new InvalidOperationException($"Unable to retrieve configuration for web app '{webApp.Data.Name}'.");
         }
-        
-        // Create or update the connection string
+
+        // Prepare connection strings collection
         var connectionStrings = config.Value.Data.ConnectionStrings?.ToList() ?? new List<ConnStringInfo>();
-        
+
         // Remove existing connection string with the same name if it exists
-        connectionStrings.RemoveAll(cs => cs.Name?.Equals(connectionStringName, StringComparison.OrdinalIgnoreCase) == true);
-        
+        connectionStrings.RemoveAll(cs =>
+            string.Equals(cs.Name, connectionStringName, StringComparison.OrdinalIgnoreCase));
+
         // Add the new connection string
-        var connectionStringType = GetConnectionStringType(databaseType);
         connectionStrings.Add(new ConnStringInfo
         {
             Name = connectionStringName,
-            ConnectionString = finalConnectionString,
-            ConnectionStringType = connectionStringType
+            ConnectionString = connectionString,
+            ConnectionStringType = GetConnectionStringType(databaseType)
         });
 
         // Update the web app configuration
         var configData = config.Value.Data;
         configData.ConnectionStrings = connectionStrings;
-        
-        await configResource.CreateOrUpdateAsync(Azure.WaitUntil.Completed, configData);
 
-        _logger.LogInformation("Successfully added database connection {ConnectionName} to App Service {AppName}", connectionStringName, appName);
+        var updatedConfig = await configResource.CreateOrUpdateAsync(Azure.WaitUntil.Completed, configData);
+        if (updatedConfig?.Value == null)
+        {
+            throw new InvalidOperationException($"Failed to update configuration for web app '{webApp.Data.Name}'.");
+        }
+    }
 
+    private static DatabaseConnectionInfo CreateDatabaseConnectionInfo(string databaseType, string databaseServer,
+        string databaseName, string connectionString, string connectionStringName)
+    {
         return new DatabaseConnectionInfo
         {
             DatabaseType = databaseType,
             DatabaseServer = databaseServer,
             DatabaseName = databaseName,
-            ConnectionString = finalConnectionString,
+            ConnectionString = connectionString,
             ConnectionStringName = connectionStringName,
             IsConfigured = true,
             ConfiguredAt = DateTime.UtcNow
@@ -102,9 +164,9 @@ public class AppServiceService(
     private static void ValidateDatabaseType(string databaseType)
     {
         var supportedTypes = new[] { "sqlserver", "mysql", "postgresql", "cosmosdb" };
-        if (!supportedTypes.Contains(databaseType.ToLowerInvariant()))
+        if (!supportedTypes.Contains(databaseType, StringComparer.OrdinalIgnoreCase))
         {
-            throw new ArgumentException($"Unsupported database type: {databaseType}");
+            throw new ArgumentException($"Unsupported database type: {databaseType}. Supported types: {string.Join(", ", supportedTypes)}");
         }
     }
 
