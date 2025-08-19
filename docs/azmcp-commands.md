@@ -236,6 +236,18 @@ azmcp acr registry list --subscription <subscription>
 # List Azure Container Registries in a specific resource group
 azmcp acr registry list --subscription <subscription> \
                         --resource-group <resource-group>
+
+# List repositories across all registries in a subscription
+azmcp acr registry repository list --subscription <subscription>
+
+# List repositories across all registries in a specific resource group
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group>
+
+# List repositories in a specific registry
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group> \
+                                   --registry <registry>
 ```
 
 ### Azure Cosmos DB Operations
