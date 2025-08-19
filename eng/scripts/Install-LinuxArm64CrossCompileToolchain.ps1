@@ -30,8 +30,8 @@ sudo dpkg --add-architecture arm64 || true
 
 # Constrains the existing binary (and optionally source) package repositories to provide only amd64 packages,
 # this ensures only amd64 stuffs are pulled from 'archive.ubuntu.com' and 'security.ubuntu.com'
-sudo sed -i -E 's/^deb (?!\[arch=)/deb [arch=amd64] /' /etc/apt/sources.list
-sudo sed -i -E 's/^deb-src (?!\[arch=)/deb-src [arch=amd64] /' /etc/apt/sources.list
+sudo sed -i -E 's/^deb ([^[])/deb [arch=amd64] \1/' /etc/apt/sources.list
+sudo sed -i -E 's/^deb-src ([^[])/deb-src [arch=amd64] \1/' /etc/apt/sources.list
 
 # Adds package repositories that provide arm64 packages,
 # this ensures the arm64 stuffs are pulled from 'ports.ubuntu.com'.
@@ -53,7 +53,7 @@ if [[ -z "$GCC_BASE" ]]; then
   exit 1
 fi
 
-# Find candidate versions 'gcc base package' in both architectures
+# Find 'gcc base package' candidate versions in both architectures
 amd64_list=$(apt-cache madison "${GCC_BASE}:amd64" | awk '{print $3}')
 arm64_list=$(apt-cache madison "${GCC_BASE}:arm64" | awk '{print $3}')
 
