@@ -30,12 +30,13 @@ echo "Installing arm64 cross-compilation toolchain"
 # turning on multi-arch support for arm64 on amd64 host
 sudo dpkg --add-architecture arm64 || true
 
-# Constrains the existing binary package repositories to provide only amd64 packages
+# Constrains the existing binary (and optionally source) package repositories to provide only amd64 packages,
+# this ensures only amd64 stuffs are pulled from 'archive.ubuntu.com' and 'security.ubuntu.com'
 sudo sed -i 's/^deb \([^[].*\)/deb [arch=amd64] \1/' /etc/apt/sources.list
-# Constrains the existing source package repositories to provide only amd64 sources
 sudo sed -i 's/^deb-src \([^[].*\)/deb-src [arch=amd64] \1/' /etc/apt/sources.list
 
-# Adds package repositories that provide arm64 packages from ports.ubuntu.com
+# Adds package repositories that provide arm64 packages,
+# this ensures the arm64 stuffs are pulled from 'ports.ubuntu.com'.
 sudo tee /etc/apt/sources.list.d/arm64.list >/dev/null <<'EOF'
 deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted universe multiverse
 deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted universe multiverse
@@ -54,30 +55,33 @@ if [[ -z "$GCC_BASE" ]]; then
   exit 1
 fi
 
-# Find versions of 'gcc base package' for amd64 and arm64
-amd64_ver=$(apt-cache madison ${GCC_BASE}:amd64 | awk '{print $3}' | head -1)
-arm64_ver=$(apt-cache madison ${GCC_BASE}:arm64 | awk '{print $3}' | head -1)
+# Find candidate versions 'gcc base package' in both architectures
+amd64_list=$(apt-cache madison "${GCC_BASE}:amd64" | awk '{print $3}')
+arm64_list=$(apt-cache madison "${GCC_BASE}:arm64" | awk '{print $3}')
 
-if [[ -z "$amd64_ver" && -z "$arm64_ver" ]]; then
-  echo "ERROR: No candidate versions found for ${GCC_BASE} on either arch." >&2
+# Use the highest common version of 'gcc base package'
+gcc_version=$(
+  comm -12 \
+    <(printf "%s\n" "$amd64_list" | sort -V) \
+    <(printf "%s\n" "$arm64_list" | sort -V) \
+  | tail -1
+)
+
+if [[ -z "$gcc_version" ]]; then
+  echo "ERROR: No common ${GCC_BASE} version across amd64 and arm64." >&2
+  echo "amd64 candidates:" >&2; printf "%s\n" "$amd64_list" | sort -V >&2
+  echo "arm64 candidates:" >&2; printf "%s\n" "$arm64_list" | sort -V >&2
   exit 1
 fi
 
-# Choose a common version (prefer matching; otherwise lowest common available)
-if [[ -n "$amd64_ver" && "$amd64_ver" == "$arm64_ver" ]]; then
-  common_ver="$amd64_ver"
-else
-  common_ver=$(printf "%s\n%s\n" "$amd64_ver" "$arm64_ver" | sed '/^$/d' | sort -V | head -1)
-fi
+echo "Using ${GCC_BASE} version: ${gcc_version} (amd64=${amd64_ver:-N/A}, arm64=${arm64_ver:-N/A})"
 
-echo "Using ${GCC_BASE} version: ${common_ver} (amd64=${amd64_ver:-N/A}, arm64=${arm64_ver:-N/A})"
-
-# # Install gcc base libraries for both amd64 and arm64 with versions pinned
+# Install gcc base libraries for both amd64 and arm64 with versions pinned
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  ${GCC_BASE}:amd64=${common_ver} \
-  ${GCC_BASE}:arm64=${common_ver} \
-  libgcc-s1:amd64=${common_ver} \
-  libgcc-s1:arm64=${common_ver}
+  ${GCC_BASE}:amd64=${gcc_version} \
+  ${GCC_BASE}:arm64=${gcc_version} \
+  libgcc-s1:amd64=${gcc_version} \
+  libgcc-s1:arm64=${gcc_version}
 
 # Install libc6 and rest of toolchain
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
