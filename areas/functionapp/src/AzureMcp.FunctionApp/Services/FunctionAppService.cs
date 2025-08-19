@@ -129,9 +129,24 @@ public sealed class FunctionAppService(
 
     private static SiteConfigProperties? BuildSiteConfig(bool isLinux, CreateOptions options)
     {
-        if (!isLinux)
+        if (isLinux)
+        {
+            return CreateLinuxSiteConfig(options.Runtime, options.RuntimeVersion);
+        }
+
+        if (options.Runtime != "powershell")
             return null;
-        return CreateLinuxSiteConfig(options.Runtime, options.RuntimeVersion);
+
+        var version = string.IsNullOrWhiteSpace(options.RuntimeVersion)
+            ? GetDefaultRuntimeVersion("powershell")
+            : options.RuntimeVersion;
+        if (string.IsNullOrWhiteSpace(version))
+            return null;
+
+        return new SiteConfigProperties
+        {
+            PowerShellVersion = version
+        };
     }
 
     private static string BuildKind(bool isLinux) => isLinux ? "functionapp,linux" : "functionapp";
