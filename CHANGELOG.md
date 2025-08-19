@@ -12,7 +12,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
-- Fixed issue where current `Activity` was incorrectly propagated to children method calls in `McpRuntime.CallToolHandler`. []()
+- Fixed issue where current `Activity` was incorrectly propagated to children method calls in `McpRuntime.CallToolHandler`. [#1009](https://github.com/Azure/azure-mcp/pull/1009)
 
 ### Other Changes
 
