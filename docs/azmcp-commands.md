@@ -907,7 +907,7 @@ azmcp storage account create --subscription <subscription> \
 
 # Get detailed information about a specific Storage account
 azmcp storage account details --subscription <subscription> \
-                              --account <account-name> \
+                              --account <account> \
                               [--tenant <tenant>]
 
 # List Storage accounts in a subscription
@@ -939,12 +939,20 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob details --subscription <subscription> \
                            --account <account> \
                            --container <container> \
-                           --blob <blob-name>
+                           --blob <blob>
 
 # List blobs in a Storage container
 azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
+
+# Upload a file to a Storage blob container
+azmcp storage blob upload --subscription <subscription> \
+                          --account <account> \
+                          --container <container> \
+                          --blob <blob> \
+                          --local-file-path <path-to-local-file> \
+                          [--overwrite]
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -960,16 +968,16 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
 
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
-                                 --account <account-name> \
-                                 --queue <queue-name> \
-                                 --message "<message-content>" \
+                                 --account <account> \
+                                 --queue <queue> \
+                                 --message "<message>" \
                                  [--time-to-live-in-seconds <seconds>] \
                                  [--visibility-timeout-in-seconds <seconds>]
 
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \
-                              --account <account-name> \
-                              --share <share-name> \
+                              --account <account> \
+                              --share <share> \
                               --directory-path <directory-path> \
                               [--prefix <prefix>]
 

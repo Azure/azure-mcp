@@ -784,4 +784,39 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             _ => throw new ArgumentException($"Invalid access tier '{accessTier}'. Valid values are: Hot, Cool")
         };
     }
+
+    public async Task<BlobUploadResult> UploadBlob(
+        string account,
+        string container,
+        string blob,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(account, container, blob, localFilePath, subscription);
+
+        if (!File.Exists(localFilePath))
+        {
+            throw new FileNotFoundException($"Local file not found: {localFilePath}");
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(container);
+        var blobClient = blobContainerClient.GetBlobClient(blob);
+
+        // Upload the file
+        using var fileStream = File.OpenRead(localFilePath);
+        var response = await blobClient.UploadAsync(fileStream, overwrite);
+
+        return new BlobUploadResult(
+            Blob: blob,
+            Container: container,
+            UploadedFile: localFilePath,
+            LastModified: response.Value.LastModified,
+            ETag: response.Value.ETag.ToString(),
+            MD5Hash: response.Value.ContentHash != null ? Convert.ToBase64String(response.Value.ContentHash) : null
+        );
+    }
 }
