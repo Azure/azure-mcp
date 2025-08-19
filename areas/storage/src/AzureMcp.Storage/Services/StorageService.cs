@@ -79,6 +79,37 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return accounts;
     }
 
+    public async Task<StorageAccountInfo> GetStorageAccountDetails(string accountName, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(accountName, subscription);
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
+        try
+        {
+            var account = await GetStorageAccount(subscriptionResource, accountName);
+            if (account == null)
+            {
+                throw new Exception($"Storage account '{accountName}' not found in subscription '{subscription}'");
+            }
+
+            var data = account.Data;
+            return new StorageAccountInfo(
+                data.Name,
+                data.Location.ToString(),
+                data.Kind?.ToString(),
+                data.Sku?.Name.ToString(),
+                data.Sku?.Tier.ToString(),
+                data.IsHnsEnabled,
+                data.AllowBlobPublicAccess,
+                data.EnableHttpsTrafficOnly);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving Storage account details for '{accountName}': {ex.Message}", ex);
+        }
+    }
+
     public async Task<StorageAccountInfo> CreateStorageAccount(
         string accountName,
         string resourceGroup,
@@ -755,47 +786,37 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<BlobUploadResult> UploadBlob(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string localFilePath,
         bool overwrite,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, blobName, localFilePath, subscription);
+        ValidateRequiredParameters(account, container, blob, localFilePath, subscription);
 
         if (!File.Exists(localFilePath))
         {
             throw new FileNotFoundException($"Local file not found: {localFilePath}");
         }
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        var blobClient = blobContainerClient.GetBlobClient(blobName);
-
-        // Check if blob exists before upload
-        bool blobExists = await blobClient.ExistsAsync();
-        bool wasOverwritten = blobExists && overwrite;
-
-        if (blobExists && !overwrite)
-        {
-            throw new InvalidOperationException($"Blob '{blobName}' already exists in container '{containerName}'. Use --overwrite to replace it.");
-        }
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(container);
+        var blobClient = blobContainerClient.GetBlobClient(blob);
 
         // Upload the file
         using var fileStream = File.OpenRead(localFilePath);
         var response = await blobClient.UploadAsync(fileStream, overwrite);
 
         return new BlobUploadResult(
-            BlobName: blobName,
-            ContainerName: containerName,
+            Blob: blob,
+            Container: container,
             UploadedFile: localFilePath,
             LastModified: response.Value.LastModified,
             ETag: response.Value.ETag.ToString(),
-            MD5Hash: response.Value.ContentHash != null ? Convert.ToBase64String(response.Value.ContentHash) : null,
-            WasOverwritten: wasOverwritten
+            MD5Hash: response.Value.ContentHash != null ? Convert.ToBase64String(response.Value.ContentHash) : null
         );
     }
 }

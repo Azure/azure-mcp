@@ -2,6 +2,13 @@
 
 The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.  This project is in Public Preview and implementation may significantly change prior to our General Availability.
 
+
+>[!WARNING]
+>**Deprecation Notice: SSE transport mode has been removed in version [0.4.0 (2025-07-15)](https://github.com/Azure/azure-mcp/blob/main/CHANGELOG.md#breaking-changes-7).**
+>
+> SSE was deprecated in MCP `2025-03-26` due to [security vulnerabilities and architectural limitations](https://blog.fka.dev/blog/2025-06-06-why-mcp-deprecated-sse-and-go-with-streamable-http/). Users must discontinue use of SSE transport mode and upgrade to version `0.4.0` or newer to maintain compatibility with current MCP clients.
+
+
 ### ✅ VS Code Install Guide (Recommended)
 
 1. Install either the stable or Insiders release of VS Code:
@@ -77,6 +84,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 💾 Azure Storage
 
 * "List my Azure storage accounts"
+* "Get details about my storage account 'mystorageaccount'"
 * "Create a new storage account in East US with Data Lake support"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
@@ -147,6 +155,14 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Support for template discovery, template initialization, provisioning and deployment
 * Cross-platform compatibility
 
+### 🚀 Azure Deploy 
+
+* Generate azure service architecture diagrams from the source code
+* Create a deploy plan for provision and deploy the application
+* Get the application service log for a specific azd environment
+* Get the bicep or terraform file generation rules for the application
+* Get the github pipeline creation guideline for the application
+
 ### 🧮 Azure Foundry
 
 * List Azure Foundry models
@@ -163,7 +179,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🔑 Azure Key Vault
 
-* List and create certificates
+* List, create, and import certificates
 * List and create keys
 * List and create secrets
 
@@ -206,6 +222,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Scan Azure resources for compliance related recommendations
 
+### 📊 Azure Quota
+
+* List the available regions
+* Check the quota usage 
+
 ### 🔴 Azure Redis Cache
 
 * List Redis Cluster resources
@@ -242,6 +263,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 💾 Azure Storage
 
 * List and create Storage accounts
+* Get detailed information about specific Storage accounts
 * Manage blob containers and blobs
 * Upload files to blob containers
 * List and query Storage tables

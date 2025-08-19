@@ -44,5 +44,6 @@ public class KeyVaultSetup : IAreaSetup
         certificate.AddCommand("list", new CertificateListCommand(loggerFactory.CreateLogger<CertificateListCommand>()));
         certificate.AddCommand("get", new CertificateGetCommand(loggerFactory.CreateLogger<CertificateGetCommand>()));
         certificate.AddCommand("create", new CertificateCreateCommand(loggerFactory.CreateLogger<CertificateCreateCommand>()));
+        certificate.AddCommand("import", new CertificateImportCommand(loggerFactory.CreateLogger<CertificateImportCommand>()));
     }
 }

@@ -14,6 +14,12 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<StorageAccountInfo> GetStorageAccountDetails(
+        string accountName,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<StorageAccountInfo> CreateStorageAccount(
         string accountName,
         string resourceGroup,
@@ -116,9 +122,9 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<BlobUploadResult> UploadBlob(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string localFilePath,
         bool overwrite,
         string subscription,

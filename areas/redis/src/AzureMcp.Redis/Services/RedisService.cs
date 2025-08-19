@@ -57,11 +57,11 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     EnableNonSslPort = cache.EnableNonSslPort,
                     IsAccessKeyAuthenticationDisabled = cache.IsAccessKeyAuthenticationDisabled,
                     LinkedServers = cache.LinkedServers.Any() ?
-                        cache.LinkedServers.Select(server => server.Id.ToString()).ToArray()
+                        [.. cache.LinkedServers.Select(server => server.Id.ToString())]
                         : null,
                     MinimumTlsVersion = cache.MinimumTlsVersion.ToString(),
                     PrivateEndpointConnections = cache.PrivateEndpointConnections.Any() ?
-                        cache.PrivateEndpointConnections.Select(connection => connection.Id.ToString()).ToArray()
+                        [.. cache.PrivateEndpointConnections.Select(connection => connection.Id.ToString())]
                         : null,
                     Identity = cache.Identity is null ? null : new ManagedIdentityInfo
                     {
@@ -82,7 +82,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     SubnetId = cache.SubnetId,
                     UpdateChannel = cache.UpdateChannel?.ToString(),
                     ZonalAllocationPolicy = cache.ZonalAllocationPolicy?.ToString(),
-                    Zones = cache.Zones?.Any() == true ? cache.Zones.ToArray() : null,
+                    Zones = cache.Zones?.Any() == true ? [.. cache.Zones] : null,
                     Tags = cache.Tags.Any() ? cache.Tags : null,
                     Configuration = new()
                     {
@@ -191,7 +191,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     ResourceState = cluster.ResourceState.ToString(),
                     MinimumTlsVersion = cluster.MinimumTlsVersion.ToString(),
                     PrivateEndpointConnections = cluster.PrivateEndpointConnections.Any() ?
-                        cluster.PrivateEndpointConnections.Select(connection => connection.Id.ToString()).ToArray()
+                        [.. cluster.PrivateEndpointConnections.Select(connection => connection.Id.ToString())]
                         : null,
                     Identity = cluster.Identity is null ? null : new ManagedIdentityInfo
                     {
@@ -208,7 +208,7 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                                 PrincipalId = identity.Value.PrincipalId?.ToString()
                             }).ToArray()
                     },
-                    Zones = cluster.Zones?.Any() == true ? cluster.Zones.ToArray() : null,
+                    Zones = cluster.Zones?.Any() == true ? [.. cluster.Zones] : null,
                     Tags = cluster.Tags.Any() ? cluster.Tags : null,
                 });
             }
@@ -263,9 +263,9 @@ public class RedisService(ISubscriptionService _subscriptionService, IResourceGr
                     AofFrequency = database.Persistence?.AofFrequency?.ToString(),
                     IsRdbEnabled = database.Persistence?.IsRdbEnabled,
                     RdbFrequency = database.Persistence?.RdbFrequency?.ToString(),
-                    Modules = database.Modules?.Any() == true ? database.Modules.Select(module => new Module() { Name = module.Name, Version = module.Version, Args = module.Args }).ToArray() : null,
+                    Modules = database.Modules?.Any() == true ? [.. database.Modules.Select(module => new Module() { Name = module.Name, Version = module.Version, Args = module.Args })] : null,
                     GeoReplicationGroupNickname = database.GeoReplication?.GroupNickname,
-                    GeoReplicationLinkedDatabases = database.GeoReplication?.LinkedDatabases?.Any() == true ? database.GeoReplication.LinkedDatabases.Select(linkedDatabase => $"{linkedDatabase.State}: {linkedDatabase.Id}").ToArray() : null,
+                    GeoReplicationLinkedDatabases = database.GeoReplication?.LinkedDatabases?.Any() == true ? [.. database.GeoReplication.LinkedDatabases.Select(linkedDatabase => $"{linkedDatabase.State}: {linkedDatabase.Id}")] : null,
                 });
             }
 

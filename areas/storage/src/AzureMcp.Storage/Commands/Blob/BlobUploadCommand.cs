@@ -74,15 +74,15 @@ public sealed class BlobUploadCommand(ILogger<BlobUploadCommand> logger) : BaseB
 
             context.Response.Results = ResponseResult.Create(result, StorageJsonContext.Default.BlobUploadResult);
 
-            _logger.LogInformation("Successfully uploaded file {LocalFilePath} to blob {BlobName} in container {ContainerName}. Overwritten: {WasOverwritten}",
-                options.LocalFilePath, options.Blob, options.Container, result.WasOverwritten);
+            _logger.LogInformation("Successfully uploaded file {LocalFilePath} to blob {Blob} in container {Container} (Overwrite: {Overwrite}).",
+                options.LocalFilePath, options.Blob, options.Container, options.Overwrite);
 
             return context.Response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error uploading file {LocalFilePath} to blob {BlobName} in container {ContainerName}",
-                options.LocalFilePath, options.Blob, options.Container);
+            _logger.LogError(ex, "Error uploading file {LocalFilePath} to blob {Blob} in container {Container} (Overwrite {Overwrite}).",
+                options.LocalFilePath, options.Blob, options.Container, options.Overwrite);
             HandleException(context, ex);
             return context.Response;
         }

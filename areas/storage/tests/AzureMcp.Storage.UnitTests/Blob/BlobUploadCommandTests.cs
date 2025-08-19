@@ -22,9 +22,9 @@ public class BlobUploadCommandTests
     private readonly BlobUploadCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownBlobName = "test-blob.txt";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownBlob = "test-blob.txt";
     private readonly string _knownLocalFilePath = "C:\\temp\\test-file.txt";
     private readonly string _knownSubscriptionId = "sub123";
 
@@ -46,19 +46,18 @@ public class BlobUploadCommandTests
     {
         // Arrange
         var uploadResult = new BlobUploadResult(
-            BlobName: _knownBlobName,
-            ContainerName: _knownContainerName,
+            Blob: _knownBlob,
+            Container: _knownContainer,
             UploadedFile: Path.GetFileName(_knownLocalFilePath),
             LastModified: DateTimeOffset.UtcNow,
             ETag: "\"0x8D123456789ABCD\"",
-            MD5Hash: "abc123def456",
-            WasOverwritten: false
+            MD5Hash: "abc123def456"
         );
 
         _storageService.UploadBlob(
-            _knownAccountName,
-            _knownContainerName,
-            _knownBlobName,
+            _knownAccount,
+            _knownContainer,
+            _knownBlob,
             _knownLocalFilePath,
             false,
             _knownSubscriptionId,
@@ -67,9 +66,9 @@ public class BlobUploadCommandTests
             .Returns(uploadResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -88,19 +87,18 @@ public class BlobUploadCommandTests
     {
         // Arrange
         var uploadResult = new BlobUploadResult(
-            BlobName: _knownBlobName,
-            ContainerName: _knownContainerName,
+            Blob: _knownBlob,
+            Container: _knownContainer,
             UploadedFile: Path.GetFileName(_knownLocalFilePath),
             LastModified: DateTimeOffset.UtcNow,
             ETag: "\"0x8D123456789ABCD\"",
-            MD5Hash: "abc123def456",
-            WasOverwritten: true
+            MD5Hash: "abc123def456"
         );
 
         _storageService.UploadBlob(
-            _knownAccountName,
-            _knownContainerName,
-            _knownBlobName,
+            _knownAccount,
+            _knownContainer,
+            _knownBlob,
             _knownLocalFilePath,
             true,
             _knownSubscriptionId,
@@ -109,9 +107,9 @@ public class BlobUploadCommandTests
             .Returns(uploadResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--overwrite",
             "--subscription", _knownSubscriptionId
@@ -142,9 +140,9 @@ public class BlobUploadCommandTests
             .ThrowsAsync(new FileNotFoundException($"Local file not found: {_knownLocalFilePath}"));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -173,9 +171,9 @@ public class BlobUploadCommandTests
             .ThrowsAsync(new InvalidOperationException("Blob 'test-blob.txt' already exists in container 'container123'. Use --overwrite to replace it."));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--subscription", _knownSubscriptionId
         ]);
@@ -225,9 +223,9 @@ public class BlobUploadCommandTests
             .ThrowsAsync(requestFailedException);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--subscription", _knownSubscriptionId
         ]);

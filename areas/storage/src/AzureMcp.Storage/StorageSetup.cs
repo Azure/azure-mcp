@@ -91,6 +91,7 @@ public class StorageSetup : IAreaSetup
 
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(loggerFactory.CreateLogger<AccountListCommand>()));
+        storageAccount.AddCommand("details", new AccountDetailsCommand(loggerFactory.CreateLogger<AccountDetailsCommand>()));
         storageAccount.AddCommand("create", new AccountCreateCommand(loggerFactory.CreateLogger<AccountCreateCommand>()));
 
         tables.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));

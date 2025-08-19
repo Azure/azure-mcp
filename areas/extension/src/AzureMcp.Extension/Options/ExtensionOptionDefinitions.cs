@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Core.Models.Option;
-
 namespace AzureMcp.Extension.Options;
 
 public static class ExtensionOptionDefinitions
@@ -38,6 +36,7 @@ public static class ExtensionOptionDefinitions
             IsRequired = false
         };
 
+
         public const string CwdName = "cwd";
 
         public static readonly Option<string> Cwd = new(
@@ -69,17 +68,6 @@ public static class ExtensionOptionDefinitions
                 Always run this command with learn=true and empty command on first run.
                 """
         )
-        {
-            IsRequired = false
-        };
-    }
-
-    public static class Azqr
-    {
-        public static readonly Option<string> OptionalResourceGroup = new(
-             $"--{OptionDefinitions.Common.ResourceGroupName}",
-             "The name of the Azure resource group. This is a logical container for Azure resources."
-         )
         {
             IsRequired = false
         };
