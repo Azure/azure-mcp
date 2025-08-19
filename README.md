@@ -88,6 +88,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "Create a new storage account in East US with Data Lake support"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
+* "Upload my file to the blob container"
 * "List paths in my Data Lake file system"
 * "List files and directories in my File Share"
 * "Send a message to my storage queue"
@@ -154,12 +155,20 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Support for template discovery, template initialization, provisioning and deployment
 * Cross-platform compatibility
 
+### 🚀 Azure Deploy
+
+* Generate Azure service architecture diagrams from source code
+* Create a deploy plan for provisioning and deploying the application
+* Get the application service log for a specific azd environment
+* Get the bicep or terraform file generation rules for an application
+* Get the GitHub pipeline creation guideline for an application
+
 ### 🧮 Azure Foundry
 
 * List Azure Foundry models
 * Deploy foundry models
 * List foundry model deployments
-  
+ 
 ### ☁️ Azure Function App
 
 * List Azure Function Apps
@@ -213,6 +222,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Scan Azure resources for compliance related recommendations
 
+### 📊 Azure Quota
+
+* List available regions
+* Check quota usage
+
 ### 🔴 Azure Redis Cache
 
 * List Redis Cluster resources
@@ -251,6 +265,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List and create Storage accounts
 * Get detailed information about specific Storage accounts
 * Manage blob containers and blobs
+* Upload files to blob containers
 * List and query Storage tables
 * List paths in Data Lake file systems
 * Get container properties and metadata

@@ -45,6 +45,7 @@ jobs:
         win-*/**/Npgsql.dll
         win-*/**/OpenAI.dll
         win-*/**/OpenTelemetry*.dll
+        win-*/**/YamlDotNet.dll
 
   - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
     parameters:
