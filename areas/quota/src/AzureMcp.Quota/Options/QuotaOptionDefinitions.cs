@@ -1,0 +1,71 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace AzureMcp.Quota.Options;
+
+public static class QuotaOptionDefinitions
+{
+    public static class QuotaCheck
+    {
+        public const string RegionName = "region";
+        public const string ResourceTypesName = "resource-types";
+
+        public static readonly Option<string> Region = new(
+            $"--{RegionName}",
+            "The valid Azure region where the resources will be deployed. E.g. 'eastus', 'westus', etc."
+        )
+        {
+            IsRequired = true
+        };
+
+        public static readonly Option<string> ResourceTypes = new(
+            $"--{ResourceTypesName}",
+            "The valid Azure resource types that are going to be deployed(comma-separated). E.g. 'Microsoft.App/containerApps,Microsoft.Web/sites,Microsoft.CognitiveServices/accounts', etc."
+        )
+        {
+            IsRequired = true,
+            AllowMultipleArgumentsPerToken = true
+        };
+    }
+
+    public static class RegionCheck
+    {
+        public const string ResourceTypesName = "resource-types";
+        public const string CognitiveServiceModelNameName = "cognitive-service-model-name";
+        public const string CognitiveServiceModelVersionName = "cognitive-service-model-version";
+        public const string CognitiveServiceDeploymentSkuNameName = "cognitive-service-deployment-sku-name";
+
+        public static readonly Option<string> ResourceTypes = new(
+            $"--{ResourceTypesName}",
+            "Comma-separated list of Azure resource types to check available regions for. The valid Azure resource types. E.g. 'Microsoft.App/containerApps, Microsoft.Web/sites, Microsoft.CognitiveServices/accounts'."
+        )
+        {
+            IsRequired = true,
+            AllowMultipleArgumentsPerToken = true
+        };
+
+        public static readonly Option<string> CognitiveServiceModelName = new(
+            $"--{CognitiveServiceModelNameName}",
+            "Optional model name for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> CognitiveServiceModelVersion = new(
+            $"--{CognitiveServiceModelVersionName}",
+            "Optional model version for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types."
+        )
+        {
+            IsRequired = false
+        };
+
+        public static readonly Option<string> CognitiveServiceDeploymentSkuName = new(
+            $"--{CognitiveServiceDeploymentSkuNameName}",
+            "Optional deployment SKU name for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types."
+        )
+        {
+            IsRequired = false
+        };
+    }
+}

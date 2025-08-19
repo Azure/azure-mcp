@@ -110,6 +110,16 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-azd | Create a To-Do list web application that uses NodeJS and MongoDB |
 | azmcp-extension-azd | Deploy my web application to Azure App Service |
 
+## Azure Deploy
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-deploy-app-logs-get | Show me the log of the application deployed by azd  |
+| azmcp-deploy-architecture-diagram-generate | Generate the azure architecture diagram for this application |
+| azmcp-deploy-iac-rules-get | Show me the rules to generate bicep scripts  |
+| azmcp-deploy-pipeline-guidance-get | How can I create a CI/CD pipeline to deploy this app to Azure? |
+| azmcp-deploy-plan-get | Create a plan to deploy this application to azure |
+
 ## Azure Function App
 
 | Tool Name | Test Prompt |
@@ -226,6 +236,13 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-extension-azqr | Check my Azure subscription for any compliance issues or recommendations |
 | azmcp-extension-azqr | Provide compliance recommendations for my current Azure subscription |
 | azmcp-extension-azqr | Scan my Azure subscription for compliance recommendations |
+
+## Azure Quota
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-quota-region-availability-list | Show me the available regions for these resource types <resource_types> |
+| azmcp-quota-usage-check | Check usage information for <resource_type> in region <region> |
 
 ## Azure RBAC
 
@@ -382,4 +399,3 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
-
