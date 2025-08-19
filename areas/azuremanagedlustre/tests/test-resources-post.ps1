@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 
 $testSettings = New-TestSettings @PSBoundParameters -OutputPath $PSScriptRoot
 
-Install-Module -Name Az.StorageCache -Repository PSGallery -Scope CurrentUser
+Install-Module -Name Az.StorageCache -Repository PSGallery -Scope CurrentUser -Force
 
 $amlfsName = $testSettings.ResourceBaseName
 
