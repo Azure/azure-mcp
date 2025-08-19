@@ -13,6 +13,8 @@ $ErrorActionPreference = "Stop"
 
 $testSettings = New-TestSettings @PSBoundParameters -OutputPath $PSScriptRoot
 
+Install-Module -Name Az.StorageCache -Scope CurrentUser
+
 $amlfsName = $testSettings.ResourceBaseName
 
 Write-Host "Verifying AMLFS cluster deployment: $amlfsName" -ForegroundColor Yellow
