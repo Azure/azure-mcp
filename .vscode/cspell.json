@@ -475,6 +475,17 @@
         "WINDOWSVMIMAGE",
         "wscript",
         "xvfb",
-        "Xunit"
+        "Xunit",
+        "operationalinsights",
+        "piechart",
+        "timechart",
+        "myapp",
+        "mygroup",
+        "myworkbook",
+        "resourcehealth",
+        "rhvm",
+        "azureadmin",
+        "Occured",
+        "TIMEGENERATED"
     ]
 }
