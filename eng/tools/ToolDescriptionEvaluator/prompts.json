@@ -61,6 +61,12 @@
     "List container registries in resource group <resource_group_name>",
     "Show me the container registries in resource group <resource_group_name>"
   ],
+  "azmcp-acr-registry-repository-list": [
+    "List all container registry repositories in my subscription",
+    "Show me my container registry repositories",
+    "List repositories in the container registry <registry_name>",
+    "Show me the repositories in the container registry <registry_name>"
+  ],
   "azmcp-cosmos-account-list": [
     "List all cosmosdb accounts in my subscription",
     "Show me my cosmosdb accounts",
@@ -133,6 +139,21 @@
   "azmcp-extension-azd": [
     "Create a To-Do list web application that uses NodeJS and MongoDB",
     "Deploy my web application to Azure App Service"
+  ],
+  "azmcp-deploy-app-logs-get": [
+    "Show me the log of the application deployed by azd"
+  ],
+  "azmcp-deploy-architecture-diagram-generate": [
+    "Generate the azure architecture diagram for this application"
+  ],
+  "azmcp-deploy-iac-rules-get": [
+    "Show me the rules to generate bicep scripts"
+  ],
+  "azmcp-deploy-pipeline-guidance-get": [
+    "How can I create a CI/CD pipeline to deploy this app to Azure?"
+  ],
+  "azmcp-deploy-plan-get": [
+    "Create a plan to deploy this application to azure"
   ],
   "azmcp-functionapp-list": [
     "List all function apps in my subscription",
@@ -265,6 +286,12 @@
     "Provide compliance recommendations for my current Azure subscription",
     "Scan my Azure subscription for compliance recommendations"
   ],
+  "azmcp-quota-region-availability-list": [
+    "Show me the available regions for these resource types <resource_types>"
+  ],
+  "azmcp-quota-usage-check": [
+    "Check usage information for <resource_type> in region <region>"
+  ],
   "azmcp-role-assignment-list": [
     "List all available role assignments in my subscription",
     "Show me the available role assignments in my subscription"
@@ -291,6 +318,16 @@
     "List all resource groups in my subscription",
     "Show me my resource groups",
     "Show me the resource groups in my subscription"
+  ],
+  "azmcp-resourcehealth-availability-status-get": [
+    "Get the availability status for resource <resource_name>",
+    "Show me the health status of the storage account <storage_account_name>",
+    "What is the availability status of virtual machine <vm_name> in resource group <resource_group_name>?"
+  ],
+  "azmcp-resourcehealth-availability-status-list": [
+    "List availability status for all resources in my subscription",
+    "Show me the health status of all my Azure resources",
+    "What resources in resource group <resource_group_name> have health issues?"
   ],
   "azmcp-servicebus-queue-details": [
     "Show me the details of service bus <service_bus_name> queue <queue_name>"
@@ -330,8 +367,8 @@
     "Create a new storage account with Data Lake Storage Gen2 enabled"
   ],
   "azmcp-storage-account-details": [
-    "Show me the details for my storage account <account_name>",
-    "Get details about the storage account <account_name>"
+    "Show me the details for my storage account <account>",
+    "Get details about the storage account <account>"
   ],
   "azmcp-storage-account-list": [
     "List all storage accounts in my subscription including their location and SKU",
@@ -339,50 +376,55 @@
     "Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings"
   ],
   "azmcp-storage-blob-batch-set-tier": [
-    "Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name>",
-    "Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name>"
+    "Set access tier to Cool for multiple blobs in the container <container> in the storage account <account>",
+    "Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container> in the storage account <account>"
   ],
   "azmcp-storage-blob-container-create": [
-    "Create the storage container mycontainer in storage account <account_name>",
-    "Create the container using blob public access in storage account <account_name>",
-    "Create a new blob container named documents with container public access in storage account <account_name>"
+    "Create the storage container mycontainer in storage account <account>",
+    "Create the container using blob public access in storage account <account>",
+    "Create a new blob container named documents with container public access in storage account <account>"
   ],
   "azmcp-storage-blob-container-details": [
-    "Show me the properties of the storage container files in the storage account <account_name>"
+    "Show me the properties of the storage container files in the storage account <account>"
   ],
   "azmcp-storage-blob-container-list": [
-    "List all blob containers in the storage account <account_name>",
-    "Show me the blob containers in the storage account <account_name>"
+    "List all blob containers in the storage account <account>",
+    "Show me the blob containers in the storage account <account>"
   ],
   "azmcp-storage-blob-details": [
-    "Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name>",
-    "Get the details about blob <blob_name> in the container <container_name> in storage account <account_name>"
+    "Show me the properties for blob <blob> in container <container> in storage account <account>",
+    "Get the details about blob <blob> in the container <container> in storage account <account>"
   ],
   "azmcp-storage-blob-list": [
-    "List all blobs in the blob container <container_name> in the storage account <account_name>",
-    "Show me the blobs in the blob container <container_name> in the storage account <account_name>"
+    "List all blobs in the blob container <container> in the storage account <account>",
+    "Show me the blobs in the blob container <container> in the storage account <account>"
+  ],
+  "azmcp-storage-blob-upload": [
+    "Upload file <local-file-path> to storage blob <blob> in container <container> in storage account <account>",
+    "Upload the file <local-file-path> overwriting blob <blob> in container <container> in storage account <account>",
+    "Overwrite <blob> with <local-file-name> in container <container> in storage account <account>"
   ],
   "azmcp-storage-datalake-directory-create": [
-    "Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name>"
+    "Create a new directory at the path <directory_path> in Data Lake in the storage account <account>"
   ],
   "azmcp-storage-datalake-file-system-list-paths": [
-    "List all paths in the Data Lake file system <file_system_name> in the storage account <account_name>",
-    "Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name>",
-    "Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path>"
+    "List all paths in the Data Lake file system <file_system> in the storage account <account>",
+    "Show me the paths in the Data Lake file system <file_system> in the storage account <account>",
+    "Recursively list all paths in the Data Lake file system <file_system> in the storage account <account> filtered by <filter_path>"
   ],
   "azmcp-storage-queue-message-send": [
-    "Send a message \"Hello, World!\" to the queue <queue_name> in storage account <account_name>",
-    "Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name>",
-    "Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds"
+    "Send a message \"Hello, World!\" to the queue <queue> in storage account <account>",
+    "Send a message with TTL of 3600 seconds to the queue <queue> in storage account <account>",
+    "Add a message to the queue <queue> in storage account <account> with visibility timeout of 30 seconds"
   ],
   "azmcp-storage-share-file-list": [
-    "List all files and directories in the File Share <share_name> in the storage account <account_name>",
-    "Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name>",
-    "List files with prefix 'report' in the File Share <share_name> in the storage account <account_name>"
+    "List all files and directories in the File Share <share> in the storage account <account>",
+    "Show me the files in the File Share <share> directory <directory_path> in the storage account <account>",
+    "List files with prefix 'report' in the File Share <share> in the storage account <account>"
   ],
   "azmcp-storage-table-list": [
-    "List all tables in the storage account <account_name>",
-    "Show me the tables in the storage account <account_name>"
+    "List all tables in the storage account <account>",
+    "Show me the tables in the storage account <account>"
   ],
   "azmcp-subscription-list": [
     "List all subscriptions for my account",
