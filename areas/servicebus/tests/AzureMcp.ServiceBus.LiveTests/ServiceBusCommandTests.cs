@@ -26,7 +26,7 @@ namespace AzureMcp.ServiceBus.LiveTests
             _serviceBusNamespace = $"{Settings.ResourceBaseName}.servicebus.windows.net";
         }
 
-        [Fact(Skip = "The command for this test has been commented out until we know how to surface binary data.")]
+        [Fact]
         public async Task Queue_peek_messages()
         {
             var numberOfMessages = 2;
@@ -48,7 +48,7 @@ namespace AzureMcp.ServiceBus.LiveTests
             Assert.Equal(numberOfMessages, messages.GetArrayLength());
         }
 
-        [Fact(Skip = "The command for this test has been commented out until we know how to surface binary data.")]
+        [Fact]
         public async Task Topic_subscription_peek_messages()
         {
             var numberOfMessages = 2;
@@ -120,6 +120,53 @@ namespace AzureMcp.ServiceBus.LiveTests
             Assert.Equal(JsonValueKind.Object, details.ValueKind);
         }
 
+        [Fact]
+        public async Task Queue_peek_dead_letter_messages()
+        {
+            var numberOfMessages = 2;
+
+            await SendTestMessagesToDeadLetter(QueueName, numberOfMessages);
+
+            var result = await CallToolAsync(
+                "azmcp_servicebus_queue_peek",
+                new()
+                {
+                    { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
+                    { ServiceBusOptionDefinitions.QueueName, QueueName },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.MaxMessagesName, numberOfMessages.ToString() },
+                    { ServiceBusOptionDefinitions.DeadLetterName, "true" }
+                });
+
+            var messages = result.AssertProperty("messages");
+            Assert.Equal(JsonValueKind.Array, messages.ValueKind);
+            Assert.Equal(numberOfMessages, messages.GetArrayLength());
+        }
+
+        [Fact]
+        public async Task Topic_subscription_peek_dead_letter_messages()
+        {
+            var numberOfMessages = 2;
+
+            await SendTestMessagesToDeadLetterSubscription(TopicName, SubscriptionName, numberOfMessages);
+
+            var result = await CallToolAsync(
+                "azmcp_servicebus_topic_subscription_peek",
+                new()
+                {
+                    { OptionDefinitions.Common.SubscriptionName, Settings.SubscriptionId },
+                    { ServiceBusOptionDefinitions.NamespaceName, _serviceBusNamespace},
+                    { ServiceBusOptionDefinitions.TopicName, TopicName },
+                    { ServiceBusOptionDefinitions.SubscriptionName, SubscriptionName },
+                    { ServiceBusOptionDefinitions.MaxMessagesName, numberOfMessages.ToString() },
+                    { ServiceBusOptionDefinitions.DeadLetterName, "true" }
+                });
+
+            var messages = result.AssertProperty("messages");
+            Assert.Equal(JsonValueKind.Array, messages.ValueKind);
+            Assert.Equal(numberOfMessages, messages.GetArrayLength());
+        }
+
         private async Task SendTestMessages(string queueOrTopicName, int numberOfMessages)
         {
             var credentials = new CustomChainedCredential(Settings.TenantId);
@@ -135,6 +182,66 @@ namespace AzureMcp.ServiceBus.LiveTests
                 }
 
                 await sender.SendMessagesAsync(batch, TestContext.Current.CancellationToken);
+            }
+        }
+
+        private async Task SendTestMessagesToDeadLetter(string queueName, int numberOfMessages)
+        {
+            var credentials = new CustomChainedCredential(Settings.TenantId);
+            await using (var client = new ServiceBusClient(_serviceBusNamespace, credentials))
+            {
+                await using (var sender = client.CreateSender(queueName))
+                {
+                    var batch = await sender.CreateMessageBatchAsync(TestContext.Current.CancellationToken);
+
+                    for (int i = 0; i < numberOfMessages; i++)
+                    {
+                        Assert.True(batch.TryAddMessage(new ServiceBusMessage("Dead Letter Message " + i)),
+                            $"Unable to add message #{i} to batch.");
+                    }
+
+                    await sender.SendMessagesAsync(batch, TestContext.Current.CancellationToken);
+                }
+
+                await using (var receiver = client.CreateReceiver(queueName))
+                {
+                    var messages = await receiver.ReceiveMessagesAsync(numberOfMessages, TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+                    
+                    foreach (var message in messages)
+                    {
+                        await receiver.DeadLetterMessageAsync(message, "Test", "Message moved to dead letter for testing", TestContext.Current.CancellationToken);
+                    }
+                }
+            }
+        }
+
+        private async Task SendTestMessagesToDeadLetterSubscription(string topicName, string subscriptionName, int numberOfMessages)
+        {
+            var credentials = new CustomChainedCredential(Settings.TenantId);
+            await using (var client = new ServiceBusClient(_serviceBusNamespace, credentials))
+            {
+                await using (var sender = client.CreateSender(topicName))
+                {
+                    var batch = await sender.CreateMessageBatchAsync(TestContext.Current.CancellationToken);
+
+                    for (int i = 0; i < numberOfMessages; i++)
+                    {
+                        Assert.True(batch.TryAddMessage(new ServiceBusMessage("Dead Letter Message " + i)),
+                            $"Unable to add message #{i} to batch.");
+                    }
+
+                    await sender.SendMessagesAsync(batch, TestContext.Current.CancellationToken);
+                }
+
+                await using (var receiver = client.CreateReceiver(topicName, subscriptionName))
+                {
+                    var messages = await receiver.ReceiveMessagesAsync(numberOfMessages, TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+                    
+                    foreach (var message in messages)
+                    {
+                        await receiver.DeadLetterMessageAsync(message, "Test", "Message moved to dead letter for testing", TestContext.Current.CancellationToken);
+                    }
+                }
             }
         }
     }

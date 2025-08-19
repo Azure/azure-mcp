@@ -108,13 +108,16 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
         string namespaceName,
         string queueName,
         int maxMessages,
+        bool deadLetter = false,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         var credential = await GetCredential(tenantId);
 
         await using (var client = new ServiceBusClient(namespaceName, credential))
-        await using (var receiver = client.CreateReceiver(queueName))
+        await using (var receiver = deadLetter 
+            ? client.CreateReceiver(queueName, new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter })
+            : client.CreateReceiver(queueName))
         {
             var messages = await receiver.PeekMessagesAsync(maxMessages);
 
@@ -127,13 +130,16 @@ public class ServiceBusService : BaseAzureService, IServiceBusService
         string topicName,
         string subscriptionName,
         int maxMessages,
+        bool deadLetter = false,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null)
     {
         var credential = await GetCredential(tenantId);
 
         await using (var client = new ServiceBusClient(namespaceName, credential))
-        await using (var receiver = client.CreateReceiver(topicName, subscriptionName))
+        await using (var receiver = deadLetter 
+            ? client.CreateReceiver(topicName, subscriptionName, new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter })
+            : client.CreateReceiver(topicName, subscriptionName))
         {
             var messages = await receiver.PeekMessagesAsync(maxMessages);
 

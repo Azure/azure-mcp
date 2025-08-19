@@ -6,6 +6,10 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for peeking at Service Bus messages without removing them via the following commands:
+    - `azmcp-servicebus-queue-peek` - Peek at messages in a Service Bus queue for diagnostic and debugging purposes. Returns message content, properties, and metadata while leaving messages in the queue.
+    - `azmcp-servicebus-topic-subscription-peek` - Peek at messages in a Service Bus topic subscription without removing them. Supports viewing active, locked, deferred, scheduled and dead letter messages.
+
 ### Breaking Changes
 
 ### Bugs Fixed

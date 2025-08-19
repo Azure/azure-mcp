@@ -10,6 +10,7 @@ public static class ServiceBusOptionDefinitions
     public const string MaxMessagesName = "max-messages";
     public const string TopicName = "topic";
     public const string SubscriptionName = "subscription-name";
+    public const string DeadLetterName = "dead-letter";
 
     public static readonly Option<string> Namespace = new(
         $"--{NamespaceName}",
@@ -47,6 +48,14 @@ public static class ServiceBusOptionDefinitions
         $"--{MaxMessagesName}",
         () => 1,
         "The maximum number of messages to return."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<bool> DeadLetter = new(
+        $"--{DeadLetterName}",
+        "Peek messages from the dead letter queue instead of the active queue."
     )
     {
         IsRequired = false

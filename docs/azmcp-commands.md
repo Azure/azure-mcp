@@ -780,6 +780,13 @@ azmcp servicebus queue details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
                                --queue <queue>
 
+# Peek messages from a Service Bus queue without removing them
+azmcp servicebus queue peek --subscription <subscription> \
+                            --namespace <service-bus-namespace> \
+                            --queue <queue> \
+                            [--max-messages <max-messages>] \
+                            [--dead-letter]
+
 # Gets runtime details a Service Bus topic
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -790,6 +797,14 @@ azmcp servicebus topic subscription details --subscription <subscription> \
                                             --namespace <service-bus-namespace> \
                                             --topic <topic> \
                                             --subscription-name <subscription-name>
+
+# Peek messages from a Service Bus topic subscription without removing them
+azmcp servicebus topic subscription peek --subscription <subscription> \
+                                         --namespace <service-bus-namespace> \
+                                         --topic <topic> \
+                                         --subscription-name <subscription-name> \
+                                         [--max-messages <max-messages>] \
+                                         [--dead-letter]
 ```
 
 ### Azure SQL Database Operations

@@ -18,6 +18,7 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
     private readonly Option<string> _queueOption = ServiceBusOptionDefinitions.Queue;
     private readonly Option<int> _maxMessagesOption = ServiceBusOptionDefinitions.MaxMessages;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
+    private readonly Option<bool> _deadLetterOption = ServiceBusOptionDefinitions.DeadLetter;
     private readonly ILogger<QueuePeekCommand> _logger = logger;
     public override string Name => "peek";
 
@@ -32,6 +33,9 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
         Required arguments:
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - queue: Queue name to peek messages from
+
+        Optional arguments:
+        - dead-letter: Peek messages from the dead letter queue instead of the active queue
         """;
 
     public override string Title => CommandTitle;
@@ -44,6 +48,7 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
         command.AddOption(_namespaceOption);
         command.AddOption(_queueOption);
         command.AddOption(_maxMessagesOption);
+        command.AddOption(_deadLetterOption);
     }
 
     protected override QueuePeekOptions BindOptions(ParseResult parseResult)
@@ -52,6 +57,7 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
         options.Name = parseResult.GetValueForOption(_queueOption);
         options.Namespace = parseResult.GetValueForOption(_namespaceOption);
         options.MaxMessages = parseResult.GetValueForOption(_maxMessagesOption);
+        options.DeadLetter = parseResult.GetValueForOption(_deadLetterOption);
         return options;
     }
 
@@ -71,6 +77,7 @@ public sealed class QueuePeekCommand(ILogger<QueuePeekCommand> logger) : Subscri
                 options.Namespace!,
                 options.Name!,
                 options.MaxMessages ?? 1,
+                options.DeadLetter,
                 options.Tenant,
                 options.RetryPolicy);
 

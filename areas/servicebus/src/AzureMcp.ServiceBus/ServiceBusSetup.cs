@@ -24,7 +24,8 @@ public class ServiceBusSetup : IAreaSetup
         rootGroup.AddSubGroup(serviceBus);
 
         var queue = new CommandGroup("queue", "Queue operations - Commands for using Azure Service Bus queues.");
-        // queue.AddCommand("peek", new QueuePeekCommand());
+        queue.AddCommand("peek", new QueuePeekCommand(
+            loggerFactory.CreateLogger<QueuePeekCommand>()));
         queue.AddCommand("details", new QueueDetailsCommand(
             loggerFactory.CreateLogger<QueueDetailsCommand>()));
 
@@ -33,7 +34,8 @@ public class ServiceBusSetup : IAreaSetup
             loggerFactory.CreateLogger<TopicDetailsCommand>()));
 
         var subscription = new CommandGroup("subscription", "Subscription operations - Commands for using subscriptions within a Service Bus topic.");
-        // subscription.AddCommand("peek", new SubscriptionPeekCommand());
+        subscription.AddCommand("peek", new SubscriptionPeekCommand(
+            loggerFactory.CreateLogger<SubscriptionPeekCommand>()));
         subscription.AddCommand("details", new SubscriptionDetailsCommand(
             loggerFactory.CreateLogger<SubscriptionDetailsCommand>()));
 

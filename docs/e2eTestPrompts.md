@@ -294,8 +294,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-servicebus-queue-details | Show me the details of service bus <service_bus_name> queue <queue_name> |
+| azmcp-servicebus-queue-peek | Peek messages from service bus <service_bus_name> queue <queue_name> |
+| azmcp-servicebus-queue-peek | Show me the messages in service bus <service_bus_name> queue <queue_name> without removing them |
+| azmcp-servicebus-queue-peek | Browse messages from the dead letter queue in service bus <service_bus_name> queue <queue_name> |
 | azmcp-servicebus-topic-details | Show me the details of service bus <service_bus_name> topic <topic_name> |
 | azmcp-servicebus-topic-subscription-details | Show me the details of service bus <service_bus_name> subscription <subscription_name> |
+| azmcp-servicebus-topic-subscription-peek | Peek messages from service bus <service_bus_name> topic <topic_name> subscription <subscription_name> |
+| azmcp-servicebus-topic-subscription-peek | Show me the messages in service bus <service_bus_name> topic <topic_name> subscription <subscription_name> without removing them |
+| azmcp-servicebus-topic-subscription-peek | Browse messages from the dead letter queue in service bus <service_bus_name> topic <topic_name> subscription <subscription_name> |
 
 ## Azure SQL Database
 

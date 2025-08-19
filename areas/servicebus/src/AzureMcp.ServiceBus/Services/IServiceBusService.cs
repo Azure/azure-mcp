@@ -63,7 +63,7 @@ public interface IServiceBusService
     /// <param name="namespaceName">The Service Bus namespace name</param>
     /// <param name="queueName">The queue name to peek messages from</param>
     /// <param name="maxMessages">Maximum number of messages to peek (default: 1)</param>
-    /// <param name="subscription">Subscription ID or name</param>
+    /// <param name="deadLetter">Whether to peek from Dead Letter Queue instead of Active Queue</param>
     /// <param name="tenantId">Optional tenant ID</param>
     /// <param name="retryPolicy">Optional retry policy</param>
     /// <returns>List of peeked messages</returns>
@@ -72,6 +72,7 @@ public interface IServiceBusService
         string namespaceName,
         string queueName,
         int maxMessages,
+        bool deadLetter = false,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);
 
@@ -82,7 +83,7 @@ public interface IServiceBusService
     /// <param name="topicName">The topic name containing the subscription</param>
     /// <param name="subscriptionName">The subscription name to peek messages from</param>
     /// <param name="maxMessages">Maximum number of messages to peek (default: 1)</param>
-    /// <param name="subscription">Subscription ID or name</param>
+    /// <param name="deadLetter">Whether to peek from Dead Letter Queue instead of active queue</param>
     /// <param name="tenantId">Optional tenant ID</param>
     /// <param name="retryPolicy">Optional retry policy</param>
     /// <returns>List of peeked messages</returns>
@@ -92,6 +93,7 @@ public interface IServiceBusService
         string topicName,
         string subscriptionName,
         int maxMessages,
+        bool deadLetter = false,
         string? tenantId = null,
         RetryPolicyOptions? retryPolicy = null);
 }

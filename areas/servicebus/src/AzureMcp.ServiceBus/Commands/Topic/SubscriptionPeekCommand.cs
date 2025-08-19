@@ -19,6 +19,7 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
     private readonly Option<string> _subscriptionNameOption = ServiceBusOptionDefinitions.Subscription;
     private readonly Option<int> _maxMessagesOption = ServiceBusOptionDefinitions.MaxMessages;
     private readonly Option<string> _namespaceOption = ServiceBusOptionDefinitions.Namespace;
+    private readonly Option<bool> _deadLetterOption = ServiceBusOptionDefinitions.DeadLetter;
     private readonly ILogger<SubscriptionPeekCommand> _logger = logger;
     public override string Name => "peek";
 
@@ -34,6 +35,9 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
         - namespace: The fully qualified Service Bus namespace host name. (This is usually in the form <namespace>.servicebus.windows.net)
         - topic: Topic name containing the subscription
         - subscription-name: Subscription name to peek messages from
+
+        Optional arguments:
+        - dead-letter: Peek messages from the dead letter queue instead of the active queue
         """;
 
     public override string Title => CommandTitle;
@@ -47,6 +51,7 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
         command.AddOption(_topicOption);
         command.AddOption(_subscriptionNameOption);
         command.AddOption(_maxMessagesOption);
+        command.AddOption(_deadLetterOption);
     }
 
     protected override SubscriptionPeekOptions BindOptions(ParseResult parseResult)
@@ -56,6 +61,7 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
         options.TopicName = parseResult.GetValueForOption(_topicOption);
         options.Namespace = parseResult.GetValueForOption(_namespaceOption);
         options.MaxMessages = parseResult.GetValueForOption(_maxMessagesOption);
+        options.DeadLetter = parseResult.GetValueForOption(_deadLetterOption);
         return options;
     }
 
@@ -76,6 +82,7 @@ public sealed class SubscriptionPeekCommand(ILogger<SubscriptionPeekCommand> log
                 options.TopicName!,
                 options.SubscriptionName!,
                 options.MaxMessages ?? 1,
+                options.DeadLetter,
                 options.Tenant,
                 options.RetryPolicy);
 
