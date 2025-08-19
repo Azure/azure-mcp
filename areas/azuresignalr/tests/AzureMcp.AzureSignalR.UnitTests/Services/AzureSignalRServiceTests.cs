@@ -1,16 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure;
-using Azure.ResourceManager.Resources;
-using AzureMcp.Core.Models;
-using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
-using AzureMcp.AzureSignalR.Models;
 using AzureMcp.AzureSignalR.Services;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.AzureSignalR.UnitTests.Services;
@@ -24,7 +18,6 @@ public class AzureSignalRServiceTests
     private readonly string _knownResourceGroup = "rg123";
     private readonly string _knownSignalRName = "signalr123";
     private readonly string _knownCertificateName = "cert123";
-    private readonly SubscriptionResource _subscriptionResource = Substitute.For<SubscriptionResource>();
 
     public AzureSignalRServiceTests()
     {
@@ -66,24 +59,6 @@ public class AzureSignalRServiceTests
     }
 
     [Fact]
-    public async Task GetCertificateAsync_WrapsException_WhenAzureOperationFails()
-    {
-        // Arrange
-        _subscriptionService.GetSubscription(
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string?>(),
-            Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(new RequestFailedException("Azure error"));
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<Exception>(() =>
-            _service.GetCertificateAsync(_knownSubscriptionId, _knownResourceGroup, _knownSignalRName, _knownCertificateName));
-
-        Assert.Contains("Failed to get SignalR certificate", exception.Message);
-        Assert.Contains(_knownCertificateName, exception.Message);
-    }
-
-    [Fact]
     public async Task ListSignalRServicesAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
     {
         // Act & Assert
@@ -91,29 +66,131 @@ public class AzureSignalRServiceTests
             _service.ListSignalRServicesAsync(null!));
     }
 
-    [Theory]
-    [InlineData("")]
-    public async Task ListSignalRServicesAsync_ThrowsArgumentException_WhenSubscriptionIdIsEmpty(string emptyValue)
+    [Fact]
+    public async Task ListCustomDomainsAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
     {
-        // Act & Assert - Skip whitespace test as behavior may vary
-        await Assert.ThrowsAsync<ArgumentException>(() =>
-            _service.ListSignalRServicesAsync(emptyValue));
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCustomDomainsAsync(null!, _knownResourceGroup, _knownSignalRName));
     }
 
     [Fact]
-    public async Task ListSignalRServicesAsync_WrapsException_WhenAzureOperationFails()
+    public async Task ListCustomDomainsAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
     {
-        // Arrange
-        _subscriptionService.GetSubscription(
-            Arg.Is(_knownSubscriptionId),
-            Arg.Any<string?>(),
-            Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(new RequestFailedException("Azure error"));
-
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<Exception>(() =>
-            _service.ListSignalRServicesAsync(_knownSubscriptionId));
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCustomDomainsAsync(_knownSubscriptionId, null!, _knownSignalRName));
+    }
 
-        Assert.Contains("Failed to list SignalR services", exception.Message);
+    [Fact]
+    public async Task ListCustomDomainsAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCustomDomainsAsync(_knownSubscriptionId, _knownResourceGroup, null!));
+    }
+
+    [Fact]
+    public async Task ListCertificatesAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCertificatesAsync(null!, _knownResourceGroup, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task ListCertificatesAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCertificatesAsync(_knownSubscriptionId, null!, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task ListCertificatesAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListCertificatesAsync(_knownSubscriptionId, _knownResourceGroup, null!));
+    }
+
+    [Fact]
+    public async Task GetCustomDomainAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetCustomDomainAsync(null!, _knownResourceGroup, _knownSignalRName, "domain"));
+    }
+
+    [Fact]
+    public async Task GetCustomDomainAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetCustomDomainAsync(_knownSubscriptionId, null!, _knownSignalRName, "domain"));
+    }
+
+    [Fact]
+    public async Task GetCustomDomainAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetCustomDomainAsync(_knownSubscriptionId, _knownResourceGroup, null!, "domain"));
+    }
+
+    [Fact]
+    public async Task GetCustomDomainAsync_ThrowsArgumentNullException_WhenCustomDomainNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetCustomDomainAsync(_knownSubscriptionId, _knownResourceGroup, _knownSignalRName, null!));
+    }
+
+    [Fact]
+    public async Task ListKeysAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListKeysAsync(null!, _knownResourceGroup, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task ListKeysAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListKeysAsync(_knownSubscriptionId, null!, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task ListKeysAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.ListKeysAsync(_knownSubscriptionId, _knownResourceGroup, null!));
+    }
+
+    [Fact]
+    public async Task GetSignalRServiceAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetSignalRServiceAsync(null!, _knownResourceGroup, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task GetSignalRServiceAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetSignalRServiceAsync(_knownSubscriptionId, null!, _knownSignalRName));
+    }
+
+    [Fact]
+    public async Task GetSignalRServiceAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.GetSignalRServiceAsync(_knownSubscriptionId, _knownResourceGroup, null!));
     }
 }

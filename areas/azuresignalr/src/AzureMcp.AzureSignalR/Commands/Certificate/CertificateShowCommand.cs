@@ -95,7 +95,7 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
 
             context.Response.Results = ResponseResult.Create(
                 new CertificateShowCommandResult(certificate),
-                SignalRJsonContext.Default.CertificateShowCommandResult);
+                AzureSignalRJsonContext.Default.CertificateShowCommandResult);
         }
         catch (Exception ex)
         {

@@ -59,7 +59,7 @@ public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand>
             context.Response.Results = signalRServices.Any() ?
                 ResponseResult.Create(
                     new SignalRServiceListCommandResult(signalRServices),
-                    SignalRJsonContext.Default.SignalRServiceListCommandResult) :
+                    AzureSignalRJsonContext.Default.SignalRServiceListCommandResult) :
                 null;
         }
         catch (Exception ex)

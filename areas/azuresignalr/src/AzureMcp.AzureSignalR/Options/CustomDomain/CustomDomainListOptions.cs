@@ -1,0 +1,13 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.AzureSignalR.Options;
+
+namespace AzureMcp.AzureSignalR.Options.CustomDomain;
+
+/// <summary>
+/// Options for listing SignalR custom domains.
+/// </summary>
+public class CustomDomainListOptions : BaseAzureSignalROptions
+{
+}

@@ -92,7 +92,7 @@ public class SignalRServiceListCommandTests
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
         var resultData = System.Text.Json.JsonSerializer.Deserialize<SignalRServiceListCommand.SignalRServiceListCommandResult>(
-            json, SignalRJsonContext.Default.SignalRServiceListCommandResult);
+            json, AzureSignalRJsonContext.Default.SignalRServiceListCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(2, resultData.SignalRServices.Count());
 

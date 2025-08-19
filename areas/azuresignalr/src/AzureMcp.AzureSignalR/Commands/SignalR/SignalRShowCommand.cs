@@ -1,0 +1,106 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.AzureSignalR.Options.SignalR;
+using AzureMcp.AzureSignalR.Services;
+using AzureMcp.AzureSignalR.Models;
+using Microsoft.Extensions.Logging;
+using System.CommandLine;
+
+namespace AzureMcp.AzureSignalR.Commands.SignalR;
+
+/// <summary>
+/// Shows details of an Azure SignalR Service.
+/// </summary>
+public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
+    : BaseAzureSignalRCommand<SignalRShowOptions>
+{
+    private const string CommandTitle = "Show SignalR Service";
+    private readonly ILogger<SignalRShowCommand> _logger = logger;
+
+    private static readonly Option<string> _signalRNameOption = new(
+        ["--signalr-name", "-n"],
+        "The name of the SignalR service")
+    {
+        IsRequired = true
+    };
+
+    public override string Name => "show";
+
+    public override string Description =>
+        """
+        Show details of an Azure SignalR Service. Returns service information including location, SKU,
+        provisioning state, hostname, and port configuration.
+        Required options:
+        - --subscription: The subscription ID or name
+        - --resource-group: The resource group name
+        - --signalr-name: The SignalR service name
+        """;
+
+    public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new()
+    {
+        Destructive = false,
+        ReadOnly = true
+    };
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_signalRNameOption);
+    }
+
+    protected override SignalRShowOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
+        return options;
+    }
+
+    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
+    {
+        var options = BindOptions(parseResult);
+
+        try
+        {
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            context.Activity?.WithSubscriptionTag(options);
+
+            var signalRService = context.GetService<IAzureSignalRService>();
+            var service = await signalRService.GetSignalRServiceAsync(
+                options.Subscription!,
+                options.ResourceGroup!,
+                options.SignalRName!,
+                options.Tenant,
+                options.AuthMethod,
+                options.RetryPolicy);
+
+            if (service == null)
+            {
+                context.Response.Status = 404;
+                context.Response.Message = $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
+                return context.Response;
+            }
+
+            context.Response.Results = ResponseResult.Create(
+                new SignalRShowCommandResult(service),
+                AzureSignalRJsonContext.Default.SignalRShowCommandResult);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred showing SignalR service");
+            HandleException(context, ex);
+        }
+
+        return context.Response;
+    }
+
+    public record SignalRShowCommandResult(SignalRServiceModel Service);
+}

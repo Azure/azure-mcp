@@ -78,7 +78,7 @@ public class CertificateShowCommandTests
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
         var resultData = System.Text.Json.JsonSerializer.Deserialize<CertificateShowCommand.CertificateShowCommandResult>(
-            json, SignalRJsonContext.Default.CertificateShowCommandResult);
+            json, AzureSignalRJsonContext.Default.CertificateShowCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(expectedCertificate.Name, resultData.Certificate.Name);
         Assert.Equal(expectedCertificate.Id, resultData.Certificate.Id);
