@@ -186,43 +186,43 @@ public static class AzureMcpServiceCollectionExtensions
     private static string GetServerInstructions()
     {
         var instructions = new StringBuilder();
-        
+
         // Base instructions for Azure MCP Server
         instructions.AppendLine("You are interacting with the Azure MCP Server, which provides secure access to Azure services and resources. Here's how to use it effectively:");
         instructions.AppendLine();
-        
+
         instructions.AppendLine("## Available Capabilities");
         instructions.AppendLine("- **Azure Resource Management**: List, query, and manage Azure resources across 28+ Azure services");
         instructions.AppendLine("- **Read and Write Operations**: Full CRUD operations on Azure resources (when not in read-only mode)");
         instructions.AppendLine("- **Multi-Service Support**: Storage, Key Vault, Cosmos DB, Monitor, SQL, AKS, and many more");
         instructions.AppendLine("- **Flexible Modes**: Can operate as individual tools, grouped by service, or as a single routing tool");
         instructions.AppendLine();
-        
+
         instructions.AppendLine("## Key Usage Guidelines");
         instructions.AppendLine("1. **Authentication**: Ensure you're authenticated to Azure before making requests");
         instructions.AppendLine("2. **Resource Identification**: Use specific resource names, resource groups, and subscription IDs when possible");
         instructions.AppendLine("3. **Error Handling**: If a command fails, check authentication, permissions, and resource existence");
         instructions.AppendLine("4. **Read-Only Mode**: Some servers may be configured in read-only mode, preventing write operations");
         instructions.AppendLine();
-        
+
         instructions.AppendLine("## Common Patterns");
         instructions.AppendLine("- Start with listing operations to discover available resources (e.g., \"list storage accounts\")");
         instructions.AppendLine("- Use resource group and subscription filters to narrow down results");
         instructions.AppendLine("- For queries, provide specific parameters like table names, database names, etc.");
         instructions.AppendLine("- When creating resources, specify required parameters like location, SKU, and configuration settings");
         instructions.AppendLine();
-        
+
         instructions.AppendLine("## Security Notes");
         instructions.AppendLine("- The server respects Azure RBAC permissions - you can only access resources you have permission to");
         instructions.AppendLine("- Sensitive data like connection strings and keys are handled securely");
         instructions.AppendLine("- Always use managed identities and secure authentication methods when possible");
         instructions.AppendLine();
-        
+
         // Add Azure best practices from embedded resources
         instructions.AppendLine("## Azure Development Best Practices");
         instructions.AppendLine("The following guidelines ensure you follow Azure best practices when developing solutions:");
         instructions.AppendLine();
-        
+
         try
         {
             var bestPracticesContent = LoadAzureBestPractices();
@@ -237,10 +237,10 @@ public static class AzureMcpServiceCollectionExtensions
             instructions.AppendLine("**Note**: Azure best practices resources are not available in this configuration.");
             instructions.AppendLine("An error occurred while loading Azure best practices.");
         }
-        
+
         instructions.AppendLine();
         instructions.AppendLine("For detailed command documentation, refer to the Azure MCP Server documentation.");
-        
+
         return instructions.ToString();
     }
 
@@ -257,7 +257,7 @@ public static class AzureMcpServiceCollectionExtensions
         var resourceFiles = new[]
         {
             "azure-general-codegen-best-practices.txt",
-            "azure-general-deployment-best-practices.txt", 
+            "azure-general-deployment-best-practices.txt",
             "azure-functions-codegen-best-practices.txt",
             "azure-functions-deployment-best-practices.txt",
             "azure-swa-best-practices.txt"
@@ -269,7 +269,7 @@ public static class AzureMcpServiceCollectionExtensions
             {
                 string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(coreAssembly, resourceFile);
                 string content = EmbeddedResourceHelper.ReadEmbeddedResource(coreAssembly, resourceName);
-                
+
                 // Add section header based on filename
                 var sectionTitle = GetSectionTitle(resourceFile);
                 bestPracticesContent.AppendLine($"### {sectionTitle}");
@@ -281,7 +281,7 @@ public static class AzureMcpServiceCollectionExtensions
             {
                 // Log the error but continue processing other files
                 bestPracticesContent.AppendLine($"### Error loading {resourceFile}");
-                bestPracticesContent.AppendLine("An error occurred while loading this section."); 
+                bestPracticesContent.AppendLine("An error occurred while loading this section.");
                 bestPracticesContent.AppendLine();
             }
         }
@@ -301,7 +301,7 @@ public static class AzureMcpServiceCollectionExtensions
             "azure-general-codegen-best-practices.txt" => "General Azure Code Generation Best Practices",
             "azure-general-deployment-best-practices.txt" => "General Azure Deployment Best Practices",
             "azure-functions-codegen-best-practices.txt" => "Azure Functions Code Generation Best Practices",
-            "azure-functions-deployment-best-practices.txt" => "Azure Functions Deployment Best Practices", 
+            "azure-functions-deployment-best-practices.txt" => "Azure Functions Deployment Best Practices",
             "azure-swa-best-practices.txt" => "Azure Static Web Apps Best Practices",
             _ => filename.Replace("-", " ").Replace(".txt", "").Replace("azure ", "Azure ")
         };
