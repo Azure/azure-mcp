@@ -52,6 +52,18 @@ public class MonitorSetup : IAreaSetup
         var resourceLogs = new CommandGroup("log", "Azure Monitor resource logs operations - Commands for querying resource logs using KQL.");
         resources.AddSubGroup(resourceLogs);
 
+        var ingestion = new CommandGroup("ingestion", "Azure Monitor ingestion operations - Commands for uploading custom log data to Azure Monitor.");
+        monitor.AddSubGroup(ingestion);
+
+        var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
+        monitor.AddSubGroup(health);
+
+        var entity = new CommandGroup("entity", "Entity operations - Commands for working with entities in Azure Monitor Health Models.");
+        health.AddSubGroup(entity);
+
+        var metrics = new CommandGroup("metrics", "Azure Monitor metrics operations - Commands for querying and analyzing Azure Monitor metrics.");
+        monitor.AddSubGroup(metrics);
+
         // Register Monitor commands
 
         workspaceLogs.AddCommand("query", new WorkspaceLogQueryCommand(loggerFactory.CreateLogger<WorkspaceLogQueryCommand>()));
@@ -62,24 +74,17 @@ public class MonitorSetup : IAreaSetup
 
         monitorTableType.AddCommand("list", new TableTypeListCommand(loggerFactory.CreateLogger<TableTypeListCommand>()));
 
-        var health = new CommandGroup("healthmodels", "Azure Monitor Health Models operations - Commands for working with Azure Monitor Health Models.");
-        monitor.AddSubGroup(health);
 
-        var entity = new CommandGroup("entity", "Entity operations - Commands for working with entities in Azure Monitor Health Models.");
-        health.AddSubGroup(entity);
 
         entity.AddCommand("gethealth", new EntityGetHealthCommand(loggerFactory.CreateLogger<EntityGetHealthCommand>()));
 
         // Create Metrics command group and register commands
-        var metrics = new CommandGroup("metrics", "Azure Monitor metrics operations - Commands for querying and analyzing Azure Monitor metrics.");
-        monitor.AddSubGroup(metrics);
+
 
         metrics.AddCommand("query", new MetricsQueryCommand(loggerFactory.CreateLogger<MetricsQueryCommand>()));
         metrics.AddCommand("definitions", new MetricsDefinitionsCommand(loggerFactory.CreateLogger<MetricsDefinitionsCommand>()));
 
-        // Create Ingestion command group and register commands
-        var ingestion = new CommandGroup("ingestion", "Azure Monitor ingestion operations - Commands for uploading custom log data to Azure Monitor.");
-        monitor.AddSubGroup(ingestion);
+
 
         ingestion.AddCommand("upload", new IngestionUploadCommand(loggerFactory.CreateLogger<IngestionUploadCommand>()));
         ingestion.AddCommand("status-check", new IngestionStatusCheckCommand(loggerFactory.CreateLogger<IngestionStatusCheckCommand>()));

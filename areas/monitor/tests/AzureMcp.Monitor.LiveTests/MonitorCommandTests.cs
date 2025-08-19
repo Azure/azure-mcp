@@ -308,7 +308,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         var testDcrResourceId = $"/subscriptions/{Settings.SubscriptionId}/resourceGroups/{Settings.ResourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/test-dcr";
 
         var result = await CallToolAsync(
-            "azmcp_monitor_ingestion_status_check",
+            "azmcp-monitor-ingestion-status-check",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
@@ -343,7 +343,7 @@ public class MonitorCommandTests(LiveTestFixture fixture, ITestOutputHelper outp
         var testOperationId = "test-operation-id-12345";
 
         var result = await CallToolAsync(
-            "azmcp_monitor_ingestion_status_check",
+            "azmcp-monitor-ingestion-status-check",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
