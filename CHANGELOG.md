@@ -6,7 +6,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
-- Improved guidance for LLM interactions with Azure MCP server by adding best practices content to server instructions. [[#XXX](https://github.com/Azure/azure-mcp/pull/XXX)]
+- Improved guidance for LLM interactions with Azure MCP server by adding best practices content to server instructions. [[#1007](https://github.com/Azure/azure-mcp/pull/1007)]
 
 ### Breaking Changes
 
