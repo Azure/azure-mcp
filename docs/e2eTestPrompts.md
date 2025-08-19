@@ -125,6 +125,8 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-keyvault-certificate-create | Create a new certificate called <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the certificate <certificate_name> in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-get | Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import the certificate in file <file_path> into the key vault <key_vault_account_name> |
+| azmcp-keyvault-certificate-import | Import a certificate into the key vault <key_vault_account_name> using the name <certificate_name> |
 | azmcp-keyvault-certificate-list | List all certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-certificate-list | Show me the certificates in the key vault <key_vault_account_name> |
 | azmcp-keyvault-key-create | Create a new key called <key_name> with the RSA type in the key vault <key_vault_account_name> |
@@ -254,6 +256,17 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-group-list | List all resource groups in my subscription |
 | azmcp-group-list | Show me my resource groups |
 | azmcp-group-list | Show me the resource groups in my subscription |
+
+## Azure Resource Health
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-resourcehealth-availability-status-get | Get the availability status for resource <resource_name> |
+| azmcp-resourcehealth-availability-status-get | Show me the health status of the storage account <storage_account_name> |
+| azmcp-resourcehealth-availability-status-get | What is the availability status of virtual machine <vm_name> in resource group <resource_group_name>? |
+| azmcp-resourcehealth-availability-status-list | List availability status for all resources in my subscription |
+| azmcp-resourcehealth-availability-status-list | Show me the health status of all my Azure resources |
+| azmcp-resourcehealth-availability-status-list | What resources in resource group <resource_group_name> have health issues? |
 
 ## Azure Service Bus
 

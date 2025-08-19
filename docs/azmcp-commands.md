@@ -400,6 +400,13 @@ azmcp keyvault certificate get --subscription <subscription> \
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
 
+# Imports an existing certificate (PFX or PEM) into a key vault
+azmcp keyvault certificate import --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --certificate <certificate-name> \
+                                  --certificate-data <path-or-base64-or-raw-pem> \
+                                  [--password <pfx-password>]
+
 # Creates a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
                           --vault <vault-name> \
@@ -687,6 +694,20 @@ azmcp redis cache list --subscription <subscription>
 azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --resource-group <resource-group> \
                                     --cache <cache-name>
+```
+
+### Azure Resource Health Operations
+
+```bash
+# Get availability status for a specific resource
+azmcp resourcehealth availability-status get --resourceId <resource-id>
+
+# List availability statuses for all resources in a subscription
+azmcp resourcehealth availability-status list --subscription <subscription>
+
+# List availability statuses for all resources in a specific resource group
+azmcp resourcehealth availability-status list --subscription <subscription> \
+                                              --resource-group <resource-group>
 ```
 
 ### Azure Resource Group Operations
