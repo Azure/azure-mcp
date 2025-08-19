@@ -14,6 +14,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp-deploy-architecture-diagram-generate` - Generate Azure service architecture diagrams based on application topology.
   - `azmcp-quota-region-availability-list` - List available Azure regions for specific resource types.
   - `azmcp-quota-usage-check` - Check Azure resource usage and quota information for specific resource types and regions.
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. This command accepts PFX or PEM certificate data (file path, base64, or raw PEM) with optional password protection. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
 
 ### Breaking Changes
 

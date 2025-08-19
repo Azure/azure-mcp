@@ -11,6 +11,7 @@ namespace AzureMcp.KeyVault.Commands;
 [JsonSerializable(typeof(CertificateCreateCommand.CertificateCreateCommandResult))]
 [JsonSerializable(typeof(CertificateGetCommand.CertificateGetCommandResult))]
 [JsonSerializable(typeof(CertificateListCommand.CertificateListCommandResult))]
+[JsonSerializable(typeof(CertificateImportCommand.CertificateImportCommandResult))]
 [JsonSerializable(typeof(KeyCreateCommand.KeyCreateCommandResult))]
 [JsonSerializable(typeof(KeyGetCommand.KeyGetCommandResult))]
 [JsonSerializable(typeof(KeyListCommand.KeyListCommandResult))]
