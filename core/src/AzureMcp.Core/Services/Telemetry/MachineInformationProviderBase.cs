@@ -27,29 +27,26 @@ internal abstract class MachineInformationProviderBase(ILogger<MachineInformatio
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public abstract Task<string?> GetOrCreateDeviceId();
+    public abstract string? GetOrCreateDeviceId();
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public virtual Task<string> GetMacAddressHash()
+    public virtual string GetMacAddressHash()
     {
-        return Task.Run(() =>
+        try
         {
-            try
-            {
-                var address = GetMacAddress();
+            var address = GetMacAddress();
 
-                return address != null
-                    ? HashValue(address)
-                    : NotAvailable;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to calculate MAC address hash.");
-                return NotAvailable;
-            }
-        });
+            return address != null
+                ? HashValue(address)
+                : NotAvailable;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to calculate MAC address hash.");
+            return NotAvailable;
+        }
     }
 
     /// <summary>

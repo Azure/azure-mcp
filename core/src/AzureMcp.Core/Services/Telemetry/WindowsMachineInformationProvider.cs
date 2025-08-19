@@ -18,38 +18,35 @@ internal class WindowsMachineInformationProvider(ILogger<WindowsMachineInformati
 
     private readonly ILogger<WindowsMachineInformationProvider> _logger = logger;
 
-    public override Task<string?> GetOrCreateDeviceId()
+    public override string? GetOrCreateDeviceId()
     {
-        return Task.Run<string?>(() =>
+        try
         {
-            try
+            if (TryGetRegistryValue(RegistryPathRoot, DeviceId, out var existingDeviceId))
             {
-                if (TryGetRegistryValue(RegistryPathRoot, DeviceId, out var existingDeviceId))
-                {
-                    return existingDeviceId;
-                }
+                return existingDeviceId;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to fetch {Key} value from {RegistryRoot}.", DeviceId, RegistryPathRoot);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to fetch {Key} value from {RegistryRoot}.", DeviceId, RegistryPathRoot);
+        }
 
-            var newDeviceId = GenerateDeviceId();
+        var newDeviceId = GenerateDeviceId();
 
-            try
+        try
+        {
+            if (TrySetRegistryValue(RegistryPathRoot, DeviceId, newDeviceId))
             {
-                if (TrySetRegistryValue(RegistryPathRoot, DeviceId, newDeviceId))
-                {
-                    return newDeviceId;
-                }
+                return newDeviceId;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to persist {Key} in {RegistryPath}.", DeviceId, RegistryPathRoot);
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to persist {Key} in {RegistryPath}.", DeviceId, RegistryPathRoot);
+        }
 
-            return newDeviceId;
-        });
+        return newDeviceId;
     }
 
     private static bool TryGetRegistryValue(string registryRoot, string keyName, out string value)

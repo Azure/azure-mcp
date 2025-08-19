@@ -17,7 +17,6 @@ internal class TelemetryService : ITelemetryService
     private readonly bool _isEnabled;
     private readonly List<KeyValuePair<string, object?>> _tagsList;
     private readonly IMachineInformationProvider _informationProvider;
-    private readonly TaskCompletionSource _isInitialized = new TaskCompletionSource();
 
     internal ActivitySource Parent { get; }
 
@@ -32,19 +31,17 @@ internal class TelemetryService : ITelemetryService
         Parent = new ActivitySource(options.Value.Name, options.Value.Version, _tagsList);
         _informationProvider = informationProvider;
 
-        Task.Factory.StartNew(InitializeTagList);
+        InitializeTagList();
     }
 
-    public ValueTask<Activity?> StartActivity(string activityId) => StartActivity(activityId, null);
+    public Activity? StartActivity(string activityId) => StartActivity(activityId, null);
 
-    public async ValueTask<Activity?> StartActivity(string activityId, Implementation? clientInfo)
+    public Activity? StartActivity(string activityId, Implementation? clientInfo)
     {
         if (!_isEnabled)
         {
             return null;
         }
-
-        await _isInitialized.Task;
 
         var activity = Parent.StartActivity(activityId);
 
@@ -70,21 +67,12 @@ internal class TelemetryService : ITelemetryService
     {
     }
 
-    private async Task InitializeTagList()
+    private void InitializeTagList()
     {
-        try
-        {
-            var macAddressHash = await _informationProvider.GetMacAddressHash();
-            var deviceId = await _informationProvider.GetOrCreateDeviceId();
+        var macAddressHash = _informationProvider.GetMacAddressHash();
+        var deviceId = _informationProvider.GetOrCreateDeviceId();
 
-            _tagsList.Add(new(TagName.MacAddressHash, macAddressHash));
-            _tagsList.Add(new(TagName.DevDeviceId, deviceId));
-
-            _isInitialized.SetResult();
-        }
-        catch (Exception ex)
-        {
-            _isInitialized.SetException(ex);
-        }
+        _tagsList.Add(new(TagName.MacAddressHash, macAddressHash));
+        _tagsList.Add(new(TagName.DevDeviceId, deviceId));
     }
 }
