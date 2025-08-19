@@ -1,0 +1,17 @@
+Azure Functions deployment best practices:
+    - Refer to this GitHub repo for best practices on generating Bicep templates using Azure Verified Modules (AVM):
+        - https://github.com/Azure-Samples/functions-quickstart-javascript-azd/tree/main/infra
+        - https://github.com/Azure-Samples/functions-quickstart-dotnet-azd-eventgrid-blob/tree/main/infra
+    - Default hosting plan is flex consumption plan.
+    - If Flex Consumption is not an option, prefer Elastic Premium (EP) SKU.
+    - Always use Linux OS for Python-based Functions.
+    - Configure Function authentication or stronger mechanisms; avoid anonymous access.
+    - Enable private networking options such as Virtual Network (VNET) integration or private endpoints for enhanced security.
+    - Deploy one Function per Function App for optimal horizontal scaling.
+    - Ensure the Function App instance is sized appropriately to balance performance and cost efficiency.
+    - **Failure Recovery**: Always clean up partial deployments before retrying
+        - Use `azd down` to delete failed deployment resources and deployed code
+    - **Alternative Methods**: If all the resources were provisioned successfully but the app failed to be deployed
+        with error message "deployment failed: Input string was not in a correct format. Failure to parse near offset 40.
+        Format item ends prematurely.", use Azure CLI deployment to upload the function app code.
+    - Always enable Application Insights to monitor Function Apps, including exception tracking and dependency monitoring.

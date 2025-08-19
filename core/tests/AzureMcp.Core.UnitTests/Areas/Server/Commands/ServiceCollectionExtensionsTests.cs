@@ -391,13 +391,8 @@ public class ServiceCollectionExtensionsTests
         var instructions = mcpServerOptions.ServerInstructions;
 
         // Verify the instructions contain expected sections
-        Assert.Contains("Azure MCP Server", instructions);
-        Assert.Contains("Available Capabilities", instructions);
-        Assert.Contains("Key Usage Guidelines", instructions);
-        Assert.Contains("v4 for JavaScript, v2 for Python", instructions);
-        Assert.Contains("Default hosting plan is flex consumption plan", instructions);
-        Assert.Contains("Implement credential rotation and least privilege", instructions);
-        Assert.Contains("Quality requirements for IaC files", instructions);
-        Assert.Contains("npx swa build", instructions);
+        Assert.Contains("Azure MCP server usage rules:", instructions);
+        Assert.Contains("Use Azure Code Gen Best Practices:", instructions);
+        Assert.Contains("Use Azure SWA Best Practices:", instructions);
     }
 }
