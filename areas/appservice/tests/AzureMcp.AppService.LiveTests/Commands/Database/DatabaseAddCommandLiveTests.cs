@@ -35,62 +35,47 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
         Assert.True(true, "Command executed without interface errors");
     }
 
-    [Fact]
-    public async Task ExecuteAsync_WithCustomConnectionString_AcceptsParameter()
+    [Theory]
+    [InlineData("basic", null, null, null, null, "Command executed without interface errors")]
+    [InlineData("custom-connection-string", "Server=custom;Database=custom;UserId=user;Password=pass;", null, null, null, "Command accepts custom connection string parameter")]
+    [InlineData("tenant", null, "test-tenant-id", null, null, "Command accepts tenant parameter")]
+    [InlineData("retry-policy", null, null, 3, 1.0, "Command accepts retry policy parameters")]
+    public async Task ExecuteAsync_WithVariousParameters_AcceptsParameters(
+        string scenario,
+        string? connectionString,
+        string? tenant,
+        int? retryMaxRetries,
+        double? retryDelay,
+        string expectedMessage)
     {
-        var result = await CallToolAsync(
-            "azmcp_appservice_database_add",
-            new Dictionary<string, object?>
-            {
-                { "subscription", Settings.SubscriptionId },
-                { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
-                { "database-type", "SqlServer" },
-                { "database-server", "test-server.database.windows.net" },
-                { "database-name", "test-db" },
-                { "connection-string", "Server=custom;Database=custom;UserId=user;Password=pass;" }
-            });
+        var parameters = new Dictionary<string, object?>
+        {
+            { "subscription", Settings.SubscriptionId },
+            { "resource-group", "test-rg" },
+            { "app-name", "test-app" },
+            { "database-type", "SqlServer" },
+            { "database-server", "test-server.database.windows.net" },
+            { "database-name", "test-db" }
+        };
 
-        Assert.True(true, "Command accepts custom connection string parameter");
-    }
+        // Add optional parameters based on scenario
+        if (connectionString != null)
+            parameters.Add("connection-string", connectionString);
 
-    [Fact]
-    public async Task ExecuteAsync_WithTenant_AcceptsParameter()
-    {
-        var result = await CallToolAsync(
-            "azmcp_appservice_database_add",
-            new Dictionary<string, object?>
-            {
-                { "subscription", Settings.SubscriptionId },
-                { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
-                { "database-type", "SqlServer" },
-                { "database-server", "test-server.database.windows.net" },
-                { "database-name", "test-db" },
-                { "tenant", "test-tenant-id" }
-            });
+        if (tenant != null)
+            parameters.Add("tenant", tenant);
 
-        Assert.True(true, "Command accepts tenant parameter");
-    }
+        if (retryMaxRetries.HasValue)
+            parameters.Add("retry-max-retries", retryMaxRetries.Value);
 
-    [Fact]
-    public async Task ExecuteAsync_WithRetryPolicy_AcceptsParameters()
-    {
-        var result = await CallToolAsync(
-            "azmcp_appservice_database_add",
-            new Dictionary<string, object?>
-            {
-                { "subscription", Settings.SubscriptionId },
-                { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
-                { "database-type", "SqlServer" },
-                { "database-server", "test-server.database.windows.net" },
-                { "database-name", "test-db" },
-                { "retry-max-retries", 3 },
-                { "retry-delay", 1.0 }
-            });
+        if (retryDelay.HasValue)
+            parameters.Add("retry-delay", retryDelay.Value);
 
-        Assert.True(true, "Command accepts retry policy parameters");
+        var result = await CallToolAsync("azmcp_appservice_database_add", parameters);
+
+        // In a live environment, this might fail due to resource validation
+        // but the command should exist and be callable
+        Assert.True(true, $"[{scenario}] {expectedMessage}");
     }
 
     [Theory]
