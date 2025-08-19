@@ -197,9 +197,9 @@
     ],
     "words": [
         "1espt",
-        "acaenvironment",
         "aarch",
         "accesspolicy",
+        "acaenvironment",
         "ADMINPROVIDER",
         "akscluster",
         "aksservice",
@@ -212,7 +212,6 @@
         "australiaeast",
         "australiasoutheast",
         "Autorenewable",
-<<<<<<< HEAD
         "azapi",
         "azcli",
         "azext",
@@ -220,13 +219,11 @@
         "azqr",
         "azsdk",
         "aztfmod",
+        "azureadmin",
         "azureaisearch",
         "azureaiservices",
         "azureapplicationinsights",
         "azureappservice",
-=======
-        "azureadmin",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "azurebestpractices",
         "azureblob",
         "azurebotservice",
@@ -241,21 +238,11 @@
         "azureisv",
         "azurekeyvault",
         "azuremcp",
-<<<<<<< HEAD
         "azureopenai",
         "azureprivateendpoint",
         "azureresourcegroups",
         "azureresources",
         "azurerm",
-=======
-        "azext",
-        "azmcp",
-        "azqr",
-        "azsdk",
-        "azureresourcegroups",
-        "azureresources",
-        "azureterraformbestpractices",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "azuresdk",
         "azureservicebus",
         "azuresignalrservice",
@@ -287,13 +274,10 @@
         "codegen",
         "codeium",
         "CODEOWNERS",
-<<<<<<< HEAD
-        "cognitiveservices",
-        "containerapp",
-=======
         "codesign",
         "Codespace",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
+        "cognitiveservices",
+        "containerapp",
         "containerapps",
         "CONTENTAZUREFILECONNECTIONSTRING",
         "CONTENTSHARE",
@@ -313,17 +297,12 @@
         "devcontainers",
         "discoverability",
         "Distributedtask",
-<<<<<<< HEAD
-        "dotenv",
         "dotnettools",
+        "dotenv",
         "drawcord",
         "eastasia",
+        "eastus",
         "eastus2euap",
-=======
-        "dotnettools",
-        "dotenv",
-        "drawcord",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "enumerables",
         "eslintcache",
         "esrp",
@@ -345,15 +324,11 @@
         "GZRS",
         "healthmodels",
         "hnsw",
-<<<<<<< HEAD
         "hostings",
-=======
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "hostpool",
         "hostpools",
         "idempotency",
         "idtyp",
-<<<<<<< HEAD
         "indonesiacentral",
         "israelcentral",
         "italynorth",
@@ -361,8 +336,6 @@
         "japanwest",
         "jioindiawest",
         "jsonencode",
-=======
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "jspm",
         "kcsb",
         "keyspace",
@@ -380,7 +353,6 @@
         "LLM",
         "loadtest",
         "loadtesting",
-<<<<<<< HEAD
         "loadtestrun",
         "loadtests",
         "MACOS",
@@ -388,44 +360,27 @@
         "MACVMIMAGE",
         "malaysiawest",
         "mexicocentral",
-        "Microbundle",
-        "midsole",
-=======
-        "loadtests",
-        "loadtestrun",
-        "MACOS",
-        "MACPOOL",
-        "MACVMIMAGE",
         "midsole",
         "Microbundle",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "monitoredresources",
         "msal",
         "MSRP",
         "myaccount",
-<<<<<<< HEAD
-=======
         "myacr",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "myapp",
         "mycluster",
         "myfilesystem",
         "mygroup",
-<<<<<<< HEAD
-        "mysvc",
-        "myworkbook",
-=======
         "myworkbook",
         "mysvc",
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
-        "Newtonsoft",
         "newzealandnorth",
+        "Newtonsoft",
+        "Npgsql",
         "norequired",
         "northcentralus",
         "northeurope",
         "norwayeast",
         "norwaywest",
-        "Npgsql",
         "npmjs",
         "nuxt",
         "Occured",
@@ -441,7 +396,6 @@
         "pgrep",
         "piechart",
         "pids",
-        "piechart",
         "polandcentral",
         "portalsettings",
         "predeploy",
@@ -482,9 +436,6 @@
         "switzerlandnorth",
         "switzerlandwest",
         "syslib",
-        "staticwebapp",
-        "submode",
-        "syslib",
         "test_test_pmc2pc1.vmsr_uat_beta",
         "testaccount",
         "testacct",
@@ -494,10 +445,7 @@
         "testresource",
         "testrun",
         "testsettings",
-<<<<<<< HEAD
         "tfvars",
-=======
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
         "timechart",
         "timespan",
         "toolsets",
@@ -516,35 +464,11 @@
         "vsmarketplace",
         "vsts",
         "vuepress",
-<<<<<<< HEAD
         "westcentralus",
         "westeurope",
         "westus",
         "westus2",
         "westus3",
-        "WINDOWSOS",
-        "WINDOWSPOOL",
-        "WINDOWSVMIMAGE",
-        "winget",
-        "wscript",
-        "Xunit",
-        "xvfb",
-        "operationalinsights",
-        "piechart",
-        "timechart",
-        "myapp",
-        "mygroup",
-        "myworkbook",
-        "testrepo",
-        "resourcehealth",
-        "rhvm",
-        "azureadmin",
-        "Occured",
-        "testrepo",
-        "myacr"
-=======
-        "westus",
-        "westus2",
         "winget",
         "WINDOWSOS",
         "WINDOWSPOOL",
@@ -552,6 +476,5 @@
         "wscript",
         "xvfb",
         "Xunit"
->>>>>>> 2f6e7cfe (Took cspell through hooked on phonics)
     ]
 }
