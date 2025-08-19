@@ -186,7 +186,7 @@ public class AppServiceService(
     {
         return databaseType.ToLowerInvariant() switch
         {
-            "sqlserver" => $"Server={databaseServer};Database={databaseName};Trusted_Connection=True;TrustServerCertificate=True;",
+            "sqlserver" => $"Server={databaseServer};Database={databaseName};User Id={{username}};Password={{password}};TrustServerCertificate=True;",
             "mysql" => $"Server={databaseServer};Database={databaseName};Uid={{username}};Pwd={{password}};",
             "postgresql" => $"Host={databaseServer};Database={databaseName};Username={{username}};Password={{password}};",
             "cosmosdb" => $"AccountEndpoint=https://{databaseServer}.documents.azure.com:443/;AccountKey={{key}};Database={databaseName};",
