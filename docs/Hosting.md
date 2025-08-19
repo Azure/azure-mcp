@@ -12,24 +12,26 @@
 | Version | 0.5-draft |
 | Status | Draft (for internal review) |
 | Owners | TBD |
-| Last Updated | 2025-08-19 (Microsoft-hosted model integrated; Sections 24/25 promoted to normative Phase 0 for hosted) |
+| Last Updated | 2025-08-19 (Microsoft-hosted model integrated; Sections 24/25 promoted to binding Phase 0 for hosted) |
 | Target Milestone | Remote Preview |
 
-All normative requirements use RFC 2119 keywords (MUST, SHOULD, MAY, MUST NOT, SHOULD NOT).
+All binding requirements use RFC 2119 keywords (MUST, SHOULD, MAY, MUST NOT, SHOULD NOT).
 
 ### Executive Summary
 **One unified blueprint** to run the Azure MCP Server in Azure: immediately safe for customer self‑hosting and deliberately low risk when Microsoft hosts it. The design ties every real Azure action to an authenticated user, constrains privilege to only what each tool declares, and adds capability in controlled phases. We start with a strictly static, non‑tenant‑aware “safe” tool subset (no live calls into customer Azure, no secrets, no subscription or resource IDs), add delegated read access only after security gates pass, then introduce isolated write tiers. **No hidden elevation paths. No speculative features before controls.**
 
 
 **Core Proposal**
-| Aspect | Summary | Value | Guardrails |
+| Pillar | Summary | Value | Guardrails |
 |--------|---------|-------|------------|
-| Self‑Hosted Baseline | All real Azure calls use per‑user delegated tokens (Auth Code + PKCE + OBO) from day one | Immediate productive use with precise RBAC & audit fidelity | MI restricted to infra support (secrets, logging) only; no privilege aggregation |
-| Hosted Phase 0 | Public endpoint offers only static, pre‑vetted safe tools; zero interaction with customer Azure resources | Enables early ecosystem integration with negligible customer risk | Prominent labeling, telemetry, strict allowlist, hard rate limits |
-| Phase Progression | Read (Phase 1) then constrained write (Phase 2) added only after explicit security & reliability gates | Predictable risk escalation; stakeholders see measurable readiness before capability expands | Exit metrics + rollback objective (<15 min) + mandatory scope minimization tests |
-| Unified Specification | Single doc covers self‑host + hosted; conditional exposure instead of forked designs | Eliminates drift, duplicated reviews, inconsistent guidance | Any change merges once; phase gating controls runtime activation, not content divergence |
+| Delegated Access Baseline (Self‑Hosted & Any Live Azure Ops) | Any environment that performs real Azure resource operations MUST use per‑user delegated tokens (Auth Code + PKCE + OBO) exclusively¹ | Immediate productive use with precise RBAC & audit fidelity | MI restricted to infra support (secrets, logging) only; no privilege aggregation |
+| Hosted Safe Entry Surface | Public hosted entry phase exposes only static, pre‑vetted safe tools (no Azure API calls, no tenant context) | Early ecosystem integration with negligible customer risk | Prominent labeling, telemetry, strict allowlist, hard rate limits |
+| Controlled Capability Phasing | Delegated read (Phase 1) then constrained write (Phase 2) only after explicit security & reliability gates | Predictable risk escalation; measurable readiness before capability expands | Exit metrics + rollback objective (<15 min) + mandatory scope minimization tests |
+| Enforced Single Source Spec | One authoritative specification governs both self‑hosted and hosted operation; runtime feature gates toggle capability—never alternate documents or forks | Eliminates drift, accelerates security review reuse, guarantees consistent guardrails | Every change merges here exactly once; phases adjust config only. Any attempt to fork must be rejected in review |
 
-**Problem Statement**: Existing ad hoc hosting paths trade off velocity and security (broad Managed Identity roles, privilege expansion, speculative features). This design replaces that with per‑request least‑privilege delegation, explicit phase gates, and a static safe surface for early hosted discovery.
+¹ Hosted Phase 0 performs no Azure resource operations; therefore delegated access is not yet invoked there. The delegated requirement becomes active at the first hosted phase (Phase 1) that enables live Azure reads.
+
+**Problem Statement**: Today there is no authoritative, security-first path to run an Azure MCP Server. Early experiments lean on oversized Managed Identity roles, improvised CLI steps, and premature feature enablement—producing unclear audit trails, hidden privilege aggregation, and divergent guidance between self-hosted and prospective Microsoft-hosted offerings. This specification cures those failure modes by (1) mandating per-user delegated access for every real Azure operation, (2) isolating an initial hosted surface to a zero-Azure-call safe tool set, (3) introducing explicit, testable phase gates before any read or write capability is exposed, and (4) enforcing a single governed specification so security, tooling, and documentation never fork.
 
 **Strategic Guarantees**
 1. No Azure resource access occurs without an authenticated user principal (except static safe subset).  
@@ -40,29 +42,29 @@ All normative requirements use RFC 2119 keywords (MUST, SHOULD, MAY, MUST NOT, S
 
 **Rationale**: Enables immediate self‑hosted use while establishing measurable gates for hosted expansion, reducing tension between rapid delivery and required controls.
 
-**Key ideas 🧩**
+🧩 **Key Ideas**
 * ⚙️ Stateless Implementation: Although the MCP protocol defines conversational / session semantics, our server treats each request independently (no server-held workflow/session state) so any replica can handle any request.
 * 🎯 Declarative scopes: Each tool declares only the minimal Azure scopes it needs (or marks itself static); broader requests are rejected.
 * 🛑 Fail‑fast startup: Missing required auth configuration halts the server (unless explicitly in safe mode).
 * 🧱 Tiered model: Safe (static), Guarded (read), Privileged (write). Only Safe runs without auth.
 * 🔌 Modular infra: Add logging, tracing, network isolation, cache, Key Vault only when needed.
 
-**Tracks 🗺️**
+🗺️ **Tracks**
 1. Self‑Hosted (single tenant): full per‑user delegated calls now.
 2. Hosted: Phase 0 safe tools only; later phases add delegated access, isolation, and privileged operations.
 
-**Security at a glance 🔐**
+🔐 **Security Overview**
 * ❌ No MI shortcut for user actions.
 * 🔄 Per‑user tokens validated then exchanged (OBO) for exact downstream scopes.
 * 📜 Rate limiting + logging from day zero; PoP / stronger token binding evaluated later.
 * 🪧 Safe mode clearly labeled to prevent mistaken Azure interaction assumptions.
 
-**Success indicators 📊**
+📊 **Success Indicators**
 * ✅ <1% unauthorized attempts succeed.
 * 🚀 P95 latency <2s (delegated) / <1.2s (safe tools).
 * 🔁 Risky feature rollback <15 minutes.
 
-**Headline risks & mitigations ⚠️**
+⚠️ **Key Risks & Mitigations**
 | Risk | Simple Mitigation |
 |------|------------------|
 | Shared public client misuse | Monitor telemetry; encourage vendor-specific client IDs |
@@ -72,12 +74,12 @@ All normative requirements use RFC 2119 keywords (MUST, SHOULD, MAY, MUST NOT, S
 | Incorrect tool scope mapping | Test: declared vs actual Azure calls |
 | Future cross-tenant leakage | Design isolation seams early (process/container tiers) |
 
-**Out of scope (this draft) 🚫** Billing, multi‑region SLA, sovereign cloud rollout, dynamic client registration, collaborative session state, deep compliance mapping.
+🚫 **Out of Scope (This Draft)** Billing, multi‑region SLA, sovereign cloud rollout, dynamic client registration, collaborative session state, deep compliance mapping.
 
-**Outcome ✅** One design that secures self‑hosted usage immediately and allows safe hosted expansion, adding capability only after explicit security gates are met.
+✅ **Outcome** One design that secures self‑hosted usage immediately and allows safe hosted expansion, adding capability only after explicit security gates are met.
 
 ### Visual Overview (Diagrams)
-The following mermaid diagrams supplement the specification. They are illustrative – normative text prevails if discrepancies arise.
+The following mermaid diagrams supplement the specification. They are illustrative – specification text prevails if discrepancies arise.
 
 #### Figure 1. System Architecture (Core Components & Data Flow)
 ```mermaid
@@ -197,7 +199,7 @@ Included:
 
 Coverage labels:
 * Self‑Hosted – Fully specified with mandatory per‑user delegated access.
-* Hosted – Phase 0 (safe tools only) is normative; later phases (delegated access, isolation tiers) remain descriptive pending approval.
+* Hosted – Phase 0 (safe tools only) is binding; later phases (delegated access, isolation tiers) remain descriptive pending approval.
 
 Excluded (this draft): Billing, premium isolation SKUs, sovereign cloud schedules, full compliance certification roadmap.
 
@@ -266,7 +268,7 @@ The implementation MUST initially deliver Tier 1. Tier 2 MAY be documented. Tier
 ### 5.1 Infrastructure Modularity & Selective Resource Enablement
 Infrastructure add‑ons MUST be opt‑in. Templates MUST provision only components explicitly enabled by parameters or flags; the default (all disabled) MUST still yield a functional server. This section defines the pattern—NOT an exhaustive module catalog—to avoid implying a closed set of integrations.
 
-Pattern (Normative):
+Pattern (Required):
 1. Boolean (or equivalent) enable switch per module (e.g., `param enable<KeyVault> bool = false`).
 2. No resource deployment when disabled (no placeholder stubs).
 3. Least‑privilege role assignments emitted only when enabled.
@@ -414,16 +416,23 @@ Target future architecture for per-user delegated access:
 **Current Blocking Gap**: No dynamic client registration for arbitrary third-party native MCP clients.
 
 **Interim Alternatives**
-| Approach | Description | Pros | Cons / Risks |
-|----------|-------------|------|--------------|
-| Pre-registered multi-tenant Public Client | Publish a client ID (no secret) that all MCP clients can use for auth code + PKCE | Simple for ecosystem, no secret distribution | Hard to apply client-specific policies, revocation affects all, potential misuse rate limits |
-| Per-vendor Client IDs (manual registration) | Each MCP client vendor maintains an Entra app registration | Stronger isolation/accountability | Friction for new clients; coordination overhead |
-| Device Code Flow (interactive fallback) | Clients invoke device code to let user authenticate in browser | Works without embedded browser, simpler UX for CLIs | Less seamless, slower, not ideal for high-frequency re-auth scenarios |
-| Managed Identity Only (DISALLOWED for remote production) | No per-user token; server uses MI for downstream calls | Simplicity (theoretical) | Eliminates per-user RBAC & auditing; aggregated privilege; not permitted |
-| Brokered Auth (VS Code / WAM) | Leverage existing signed-in account in host environment | Smooth UX for first-party tools | Not portable to arbitrary MCP clients |
-| Central Host-Managed Per-Client Registrations (REJECTED) | Platform centrally creates distinct app registrations & redirect URIs | Superficial onboarding simplicity | Governance/security risk (sprawl), broad revocation impact, higher operational overhead |
+| Approach | Status | Description | Rationale (If Accepted) | Ruled Out Reason (If Rejected) |
+|----------|--------|-------------|--------------------------|-------------------------------|
+| Pre-registered multi-tenant Public Client | Conditional | Publish a client ID (no secret) that all MCP clients can use for Auth Code + PKCE | Lowers onboarding friction; allows quick trials | Abuse risk; throttling not client-specific; encourage migration to per-vendor IDs |
+| Per-vendor Client IDs (manual registration) | Accepted | Each MCP client vendor maintains its own Entra app registration | Isolation, revocation locality, clearer telemetry by vendor | — |
+| Device Code Flow | Accepted (fallback) | Interactive device code for environments without embedded browser | Broad environment compatibility (CLIs, headless) | — |
+| Managed Identity Only | Rejected | Server uses MI for downstream calls without user token | — | Eliminates per-user RBAC & audit trail; aggregates privilege under one principal |
+| MI + Broad Reader Fallback | Rejected | Use MI with broad Reader when user lacks access | — | Encourages scope creep; violates least privilege; hides RBAC misconfiguration |
+| Brokered Auth (VS Code / WAM) | Accepted (adjunct) | Reuse existing signed-in identity broker | Smooth UX for first-party shells | Not universal; cannot rely on as sole option |
+| Central Host-Managed Per-Client Registrations | Rejected | Platform centrally creates registrations for all vendors | — | Operational sprawl, revocation blast breadth, governance risk |
+| OAuth Client Credentials for User Ops | Rejected | App-only token stands in for user | — | No user identity; bypasses RBAC; audit dilution |
+| API Keys / Static Secrets | Rejected | Static shared secret for access | — | Rotation burden, replay risk, no per-user isolation |
+| Personal Access Tokens (PAT) | Rejected | PAT-style bearer for access | — | Not aligned with Azure resource RBAC model; unmanaged scope |
+| Dynamic Client Registration (DCR) | Deferred | Automatic client onboarding via Entra DCR | Future friction reduction | Feature not available securely today |
+| Proof-of-Possession Tokens | Future | Channel-bound or signed tokens | Replay mitigation | Ecosystem & spec support pending |
+| mTLS Client Cert Mapping | Future (investigate) | Mutual TLS for client authentication | Strong binding | Certificate lifecycle complexity; optional layer only |
 
-Per-user OBO is required for precise RBAC enforcement and auditability. MI-only mode is disallowed for remote production usage to avoid aggregated privilege under a single principal.
+Per-user OBO is required for precise RBAC enforcement and auditability. All rejected alternatives above are excluded explicitly to preserve least privilege, maintain per-user audit fidelity, reduce operational risk, or because supporting platform features are not yet available.
 
 **Mandatory Mitigations (Enforced)**
 1. Fail-fast startup if required app registration / audience not configured (unless Demo Mode explicitly enabled).
@@ -485,7 +494,7 @@ This subsection enumerates potential authentication patterns and formally ACCEPT
 | Proof-of-Possession (channel bound tokens) | FUTURE | Strong replay mitigation | Complexity / ecosystem support | Track MCP & Entra roadmap |
 | mTLS Client Cert Mapping | FUTURE (investigate) | Strong binding, mutual auth | Client cert provisioning complexity | Optional additive layer later |
 
-Normative Outcomes:
+Required Outcomes:
 1. Only per-user delegated flows (Auth Code + PKCE + OBO; Device Code fallback) MAY authorize end-user Azure operations.
 2. Managed Identity MUST remain infrastructure-only; it MUST NOT fulfill or broaden user delegation gaps.
 3. Client Credentials, API keys, static secrets, PATs MUST NOT be used for end-user initiated Azure resource operations.
@@ -495,7 +504,7 @@ Normative Outcomes:
 ### 6.10 Authorization Failure Role Guidance (User Feedback)
 When a tool invocation fails due to insufficient Azure permissions (authorization failure after successful authentication), the server SHOULD help the user (and operator) remediate by indicating the minimal roles or actions required. This feedback MUST avoid over-disclosure (no full internal policy dump) while being actionable.
 
-Normative Requirements:
+Requirements:
 1. The tool metadata MUST declare the minimal Azure permissions (expressed as scope → required role set or specific action list) it expects.
 2. On an authorization failure, the server SHOULD return a structured error payload containing: an error code (e.g., `authorization_denied`), the specific missing actions or roles, and a short remediation hint ("Assign Role X at scope Y").
 3. The server MUST NOT suggest overly broad roles when a narrower role satisfies the requirement (e.g., suggest `Storage Blob Data Reader` instead of `Reader` if only blob read is needed).
@@ -573,7 +582,7 @@ The preview MUST remain stateless to simplify horizontal scaling, reduce operati
 | Cache / Performance State | Bicep schema snapshot, best practices content | Bundled or external cache (opt‑in), never authoritative source of truth |
 | User Delegation Artifacts | Downstream token cache | In-memory with bounded TTL; recomputable |
 
-### 8.4 Preview Requirements (Normative)
+### 8.4 Preview Requirements (Binding)
 1. The server MUST NOT require sticky sessions or affinity at any layer (ingress, transport, execution).
 2. Any in-memory cache MUST be treated as an optimization: safe to miss / evict without correctness loss.
 3. Downstream (OBO) token caches MUST be keyed by userOID+tenantID+resource+scopeSet and evicted automatically at or before expiry; no disk persistence.
@@ -629,7 +638,7 @@ Operating statelessly necessarily defers or constrains some optional or higher-l
 | Server Callback / Subscription Mechanisms | Push notifications for resource changes | Requires subscription registry + callback routing state | Client polls or uses Azure native event sources directly | Event-driven scenarios with unacceptable polling overhead |
 | Protocol-Level Session Negotiation Extensions | Custom negotiated capabilities bound to a session | Persists negotiated state; complicates horizontal scaling | Capability flags declared per request in headers/payload | MCP standard mandates negotiation only once per session |
 
-Normative Clarification:
+Clarification (Binding):
 1. None of the above MAY be implemented in preview without updating this section and passing state re‑evaluation gates (8.5).
 2. Any proposal to add one MUST include: data classification, failure model, isolation approach, rollback plan, and explicit state minimization rationale.
 3. Clients integrating during preview MUST assume the server forgets all prior interactions (beyond transient in-flight execution) and design idempotent, context-complete requests.
@@ -772,11 +781,11 @@ Permissible Patterns:
 4. Constrained Tool Discovery: A filtered listing that reveals only the currently enabled unauthenticated-safe tools (never leaking existence of privileged tools).
 5. Server Build / Version Metadata: Non-sensitive version, build ID, feature flag booleans (excluding internal deployment IDs, tenant context, or secrets).
 
-Normative Rules:
+Rules:
 * The safe registry MUST be derived programmatically at startup from tool metadata annotations (e.g., `safety=static`), not hard-coded lists duplicated in multiple places.
 * Removing a pattern or tightening its constraints MUST NOT silently broaden the existing safe surface (fail-safe principle).
 * A change proposal adding a new pattern MUST include a threat analysis and rollback plan (see 20.7).
-* Concrete tool identifiers MAY appear in implementation documentation (`safe-tools.md`) but remain non-normative; this section governs eligibility rules only.
+* Concrete tool identifiers MAY appear in implementation documentation (`safe-tools.md`) but remain informational; this section governs eligibility rules only.
 
 ### 20.3 Azure Foundry Catalog Listing
 Foundry model and catalog listing endpoints MAY be exposed without authentication provided:
@@ -877,63 +886,33 @@ Objective: Stand up a minimal, secure remote Azure MCP Server instance using Azu
 | 8 | Validate health & auth fail-fast | Confirm OBO mandatory enforcement |
 | 9 | Acquire user token & invoke tool | Functional end-to-end test |
 
-### 23.3 Example (CLI)
-```pwsh
-# Step 1: Variables
-$RG="mcp-poc-rg"
-$LOC="eastus"
-$ENV="mcp-poc-env"
-$APP="mcp-server"
-$ACR="mcppocacr$(Get-Random)"
-$IMAGE_TAG="mcr.microsoft.com/azure-sdk/azure-mcp:preview"  # replace if using private build
-$SERVER_APP_CLIENT_ID="<server-app-client-id>"  # Entra application ID (audience)
+### 23.3 Deployment (Templates Only: Bicep / azd)
+Ad-hoc CLI walkthroughs are intentionally omitted to prevent drift and configuration inconsistency. Deployment MUST rely on the provided Bicep and `azd` templates (see Section 26) which encode least‑privilege defaults, required parameters, and fail‑fast validation.
 
-# (Optional) Build & Push custom image
-# docker build -t $IMAGE_TAG .
-# az acr create -n $ACR -g $RG --sku Basic
-# az acr login -n $ACR
-# docker tag $IMAGE_TAG $ACR.azurecr.io/azure-mcp:preview
-# docker push $ACR.azurecr.io/azure-mcp:preview
+Required (Preview):
+1. Obtain the published container image tag (or build locally and push—documented in the template README).
+2. Customize the parameter file (Bicep) or `azure.yaml` / `.env` (azd) with:
+	- `location`
+	- `environmentName`
+	- `serverAppClientId` (Entra application ID / audience)
+	- Optional module enable flags (e.g., logging, key vault) set explicitly (defaults are OFF).
+3. Deploy using ONE of:
+	- Bicep: `az deployment sub create` or `az deployment group create` (template chooses scope) with the provided parameter file.
+	- azd: `azd up` from the template directory after `azd init` (the template sets required infra + app in a single flow).
+4. Post‑deploy validation:
+	- Server reports fail‑fast if auth config incomplete (unless demo mode explicitly enabled).
+	- Logs show `auth_mode=obo` for delegated requests once a user token is supplied.
 
-# Step 2: Resource Group
-az group create -n $RG -l $LOC
+Template Guarantees:
+* No resource is provisioned unless its enable flag is true (Section 5.1 pattern).
+* Managed Identity (if emitted) is scoped infrastructure‑only; no customer subscription Reader role assignments are created by default.
+* Output values surface FQDN / endpoints and (if enabled) logging workspace identifiers; absence of optional outputs is expected when modules disabled.
 
-# Step 3: (Optional) Log Analytics Workspace
-az monitor log-analytics workspace create -g $RG -n "$APP-logs" --retention-time 30
-$LAW_ID=$(az monitor log-analytics workspace show -g $RG -n "$APP-logs" --query customerId -o tsv)
-$LAW_KEY=$(az monitor log-analytics workspace get-shared-keys -g $RG -n "$APP-logs" --query primarySharedKey -o tsv)
+Operator Notes:
+* If experimentation outside the template is required, clone and modify the template rather than crafting ad‑hoc CLI scripts—this preserves review visibility.
+* Any future change adding manual steps MUST first update the template; documentation MUST NOT introduce divergent imperative instructions.
 
-# Step 4: Container Apps Environment
-az containerapp env create -g $RG -n $ENV -l $LOC
-
-# Step 5: Deploy App (Managed Identity system-assigned)
-az containerapp create -g $RG -n $APP \
-	--environment $ENV \
-	--image $IMAGE_TAG \
-	--ingress external --target-port 8080 \
-	--system-assigned \
-	--env-vars \
-		AZURE_MCP_REQUIRE_USER_AUTH=true \
-		AZURE_MCP_INCLUDE_PRODUCTION_CREDENTIALS=true \
-		AZURE_MCP_COLLECT_TELEMETRY=true \
-		AZURE_MCP_ENABLE_STREAM_HTTP=false \
-		AZURE_MCP_SERVER_APP_CLIENT_ID=$SERVER_APP_CLIENT_ID
-
-# Step 6: (Optional) Assign Least Privilege Roles to MI
-$MI_PRINCIPAL_ID=$(az containerapp show -g $RG -n $APP --query identity.principalId -o tsv)
-# Example: Reader on a specific resource group (adjust scope)
-# az role assignment create --assignee $MI_PRINCIPAL_ID --role "Reader" --scope "/subscriptions/<sub>/resourceGroups/<rg>"
-
-# Step 7: Validate Startup (should fail WITHOUT proper auth config if missing)
-az containerapp logs show -g $RG -n $APP --tail 100
-
-# Step 8: Obtain User Token (Device Code example for quick test)
-az login --scope api://$SERVER_APP_CLIENT_ID/.default --use-device-code
-$TOKEN=(az account get-access-token --resource api://$SERVER_APP_CLIENT_ID --query accessToken -o tsv)
-
-# Step 9: Call a tool endpoint (example placeholder)
-curl -H "Authorization: Bearer $TOKEN" https://$(az containerapp show -g $RG -n $APP --query properties.configuration.ingress.fqdn -o tsv)/health
-```
+Rationale: Centralizing deployment logic in versioned templates enforces consistent security posture, reduces copy/paste errors, and simplifies future automated validations (policy, role drift, module gating).
 
 ### 23.4 Validation Checklist
 | Item | Expected |
@@ -955,18 +934,19 @@ az group delete -n $RG -y --no-wait
 * Integrate Application Insights connection string for distributed tracing.
 * Add automated post-deploy script validating fail-fast auth behavior.
 
-## 24. Microsoft-Hosted Multi-Tenant Service (Phase 0 Normative, Future Phases Draft)
+## 24. Microsoft-Hosted Multi-Tenant Service (Phase 0 Binding, Future Phases Draft)
 The hosted roadmap now explicitly frames capability growth across three major phases (aligned to your suggested model) before any advanced isolation tiers:
 
 | Phase | Working Label | Auth Mode | Data Access | Mutations | Stateless Requirement | MI Usage | Tool Tier Exposure | Primary Gates to Exit |
 |-------|---------------|-----------|-------------|-----------|-----------------------|----------|--------------------|-----------------------|
+| -1 | VS Code Internal Dogfood | IDE-integrated identity broker (existing signed-in account); no standalone AS onboarding | Static bundled reference + optional scoped synthetic responses | None | MUST | Infra-only (internal logs/secrets) | Safe only | Internal stability, instrumentation correctness, zero external dependency on separate Auth Server |
 | 0 | Safe Preview | None (unauth) | Static bundled reference only | None | MUST | Infra-only (internal logs/secrets) | Safe only | Latency, abuse, telemetry completeness, doc clarity |
 | 1 | Delegated Read | Per-user OBO (Auth Code/PKCE; Device Code fallback) | Read of user-authorized Azure resources | None (no create/update/delete) | MUST | Infra-only (unchanged) | Safe + Guarded (read) | Auth hardness (gates G1–G5), scope minimization tests, rate limiting efficacy |
 | 2 | Delegated Read/Write | Per-user OBO | Read + constrained write (mutative) operations for user-authorized resources | Limited (guard‑railed create/update/delete) | MUST (server-held workflow state still disallowed) | Infra-only (unchanged) | Safe + Guarded + Privileged | Idempotency tests, rollback plan (<15 min), extended threat model, mutation audit & alerting |
 
 Out-of-scope (future consideration after Phase 2): dedicated isolation SKUs (per-tenant process/container), privileged execution sandboxes, multi-region SLA, billing.
 
-Normative Additions:
+Additional Binding Requirements:
 1. Progression MUST be monotonic on security controls: no control (e.g., logging fields, rate limiting) removed when advancing a phase.
 2. Phase 1 MUST NOT introduce server-held conversational/session state; mutation introduction (Phase 2) alone does not justify statefulness.
 3. Any proposed mutation tool in Phase 2 MUST document: required actions, idempotency strategy, failure rollback semantics, and least-privilege RBAC mapping before activation.
@@ -985,7 +965,7 @@ Phase Exit Metrics (Illustrative, refined during implementation):
 | Mutation Idempotency Test Coverage | N/A | N/A | 100% of privileged mutations |
 
 Note: Mutation metrics only become applicable post Phase 2 feature readiness.
-Status: Phase 0 (Safe Tool Preview) requirements are normative for the hosted deployment model. Phase 1+ (per-user delegated access to customer Azure resources) remains draft pending closure of open questions.
+Status: Phase 0 (Safe Tool Preview) requirements are binding for the hosted deployment model. Phase 1+ (per-user delegated access to customer Azure resources) remains draft pending closure of open questions.
 
 ### 24.1 Hosted Service Goals
 1. Provide immediate exploratory value (tool discovery, guidance) without requiring customer tenant access (Phase 0).
@@ -1039,7 +1019,7 @@ See table below (retained from exploratory addendum; now tracked for Phase 1 rea
 | Cross-tenant logging data mix-up | Low | High | Log schema validation + tenant tagging readiness (future) |
 
 ## 25. Phase 0 Hosted Preview Plan: Unauthenticated Safe Tools Only
-Objective (Normative for Hosted Phase 0): Launch a Microsoft-operated sandbox that serves ONLY the Section 20 safe tool subset with zero access to customer Azure resources; gather ecosystem feedback while building foundation for per-user delegated access (Phase 1).
+Objective (Binding for Hosted Phase 0): Launch a Microsoft-operated sandbox that serves ONLY the Section 20 safe tool subset with zero access to customer Azure resources; gather ecosystem feedback while building foundation for per-user delegated access (Phase 1).
 
 ### 25.1 Scope (Phase 0)
 IN: Static guidance tools, schema lookups (bundled), server metadata.
@@ -1093,7 +1073,7 @@ Introduce per-user auth (multi-tenant Entra app), delegated access under strict 
 |------|------------|
 | Stakeholders treat Phase 0 latency as GA benchmark | Label environment “Sandbox / Non-SLA”; exclude from public SLA | 
 | Scope creep (early ask for resource access) | Document change control; require design review referencing MTQ IDs |
-| Confusion with self-host spec | Keep addendum segregated; cross-link but tag non-normative |
+| Confusion with self-host spec | Keep addendum segregated; cross-link but tag informational |
 
 ### 25.11 Operational Runbook (Abbreviated)
 | Scenario | Action |
@@ -1115,7 +1095,7 @@ Introduce per-user auth (multi-tenant Entra app), delegated access under strict 
 | A0-7 | Draft per-user auth extension design (Phase 1 seed) | Medium |
 | A0-8 | Security review: static data exposure & logging schema | High |
 
-Note: Sections 24 & 25 are normative for the hosted Phase 0 track; future hosted phases will extend with additional normative subsections when approved.
+Note: Sections 24 & 25 are binding for the hosted Phase 0 track; future hosted phases will extend with additional binding subsections when approved.
 
 ## 26. Provisioning Assets: Bicep & azd Templates (Forward Implementation Note)
 Remote (self-hosted) deployers will receive an official infrastructure template delivered as:
@@ -1126,7 +1106,7 @@ Remote (self-hosted) deployers will receive an official infrastructure template 
 * Turnkey secure-by-default deployment (no editing dozens of parameters manually).
 * Opinionated minimal baseline: ACA (or App Service fallback), Log Analytics, optional Key Vault, no broad MI RBAC.
 * Extensibility via `param` toggles consistent with spec: enabling a capability should expose ONLY its required Azure resources.
-* Rapid iteration: local `azd up` path for dev; CI/CD GitHub Actions sample (non-normative) referencing same Bicep.
+* Rapid iteration: local `azd up` path for dev; CI/CD GitHub Actions sample (informational) referencing same Bicep.
 
 ### 26.2 Non-Goals
 * Supporting every Azure compute SKU out-of-the-box (AKS, Functions, VMSS may arrive later via community overlays).
@@ -1196,6 +1176,6 @@ Windows PowerShell variant (identical commands) documented; commands above are s
 | Built-in cost estimation (what-if) | Pre-deploy transparency |
 | Policy as Code sample (Azure Policy) | Enforce least privilege & resource tags |
 
-This section is a forward implementation note; once the template ships, authoritative README content MAY move to a dedicated `infra/README.md` while this spec keeps only normative constraints.
+This section is a forward implementation note; once the template ships, authoritative README content MAY move to a dedicated `infra/README.md` while this spec keeps only binding constraints.
 
 END OF SPEC
