@@ -376,6 +376,36 @@ azmcp extension azd --command "<command>"
 azmcp extension azd --command "init --template todo-nodejs-mongo"
 ```
 
+### Azure Deploy Operations
+
+```bash
+# Get the application service log for a specific azd environment
+azmcp deploy app logs get --workspace-folder <workspace-folder> \
+                             --azd-env-name <azd-env-name> \
+                             [--limit <limit>]
+
+# Generate a mermaid architecture diagram for the application topology follow the schema defined in [deploy-app-topology-schema.json](../areas/deploy/src/AzureMcp.Deploy/Schemas/deploy-app-topology-schema.json)
+azmcp deploy architecture diagram generate --raw-mcp-tool-input <app-topology>
+
+# Get the iac generation rules for the resource types
+azmcp deploy iac rules get --deployment-tool <deployment-tool> \
+                           --iac-type <iac-type> \
+                           --resource-types <resource-types>
+
+# Get the ci/cd pipeline guidance
+azmcp deploy pipeline guidance get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
+                                        [--organization-name <organization-name>] \
+                                        [--repository-name <repository-name>] \
+                                        [--github-environment-name <github-environment-name>]
+
+# Get a deployment plan for a specific project
+azmcp deploy plan get --workspace-folder <workspace-folder> \
+                      --project-name <project-name> \
+                      --target-app-service <target-app-service> \
+                      --provisioning-tool <provisioning-tool> \
+                      [--azd-iac-options <azd-iac-options>]
+```
+
 ### Azure Function App Operations
 
 ```bash
@@ -399,6 +429,13 @@ azmcp keyvault certificate get --subscription <subscription> \
 # Lists certificates in a key vault
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
+
+# Imports an existing certificate (PFX or PEM) into a key vault
+azmcp keyvault certificate import --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --certificate <certificate-name> \
+                                  --certificate-data <path-or-base64-or-raw-pem> \
+                                  [--password <pfx-password>]
 
 # Creates a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
@@ -660,6 +697,22 @@ azmcp extension azqr --subscription <subscription> \
                      --resource-group <resource-group-name>
 ```
 
+### Azure Quota Operations
+
+```bash
+# Get the available regions for the resources types
+azmcp quota region availability list --subscription <subscription> \
+                                  --resource-types <resource-types> \
+                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+
+# Check the usage for Azure resources type
+azmcp quota usage check --subscription <subscription> \
+                         --region <region> \
+                         --resource-types <resource-types>
+```
+
 ### Azure RBAC Operations
 
 ```bash
@@ -687,6 +740,20 @@ azmcp redis cache list --subscription <subscription>
 azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --resource-group <resource-group> \
                                     --cache <cache-name>
+```
+
+### Azure Resource Health Operations
+
+```bash
+# Get availability status for a specific resource
+azmcp resourcehealth availability-status get --resourceId <resource-id>
+
+# List availability statuses for all resources in a subscription
+azmcp resourcehealth availability-status list --subscription <subscription>
+
+# List availability statuses for all resources in a specific resource group
+azmcp resourcehealth availability-status list --subscription <subscription> \
+                                              --resource-group <resource-group>
 ```
 
 ### Azure Resource Group Operations
