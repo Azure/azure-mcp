@@ -7,6 +7,16 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Features Added
 
 - Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+- Added support for the following Azure Deploy operations and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
+  - `azmcp-deploy-app-logs-get` - Get logs from Azure applications deployed using azd.
+  - `azmcp-deploy-iac-rules-get` - Get Infrastructure as Code rules.
+  - `azmcp-deploy-pipeline-guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
+  - `azmcp-deploy-plan-get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
+  - `azmcp-deploy-architecture-diagram-generate` - Generate Azure service architecture diagrams based on application topology.
+  - `azmcp-quota-region-availability-list` - List available Azure regions for specific resource types.
+  - `azmcp-quota-usage-check` - Check Azure resource usage and quota information for specific resource types and regions.
+- Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. This command accepts PFX or PEM certificate data (file path, base64, or raw PEM) with optional password protection. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
+- Added `azmcp-storage-blob-upload`: Upload a local file to an Azure Storage blob with the option to overwrite if the blob already exists. Returns blob metadata including name, container, uploaded file, last modified time, ETag, MD5 hash, and overwrite status. [[#960](https://github.com/Azure/azure-mcp/pull/960)]
 
 ### Breaking Changes
 

@@ -9,7 +9,7 @@
 .DESCRIPTION
     This script optionally builds the root project to ensure tools can be loaded dynamically,
     then builds the tool selection confidence score calculation application.
-    It restores dependencies, builds the application in Release configuration, and runs it.
+    It restores dependencies, builds the application in Debug configuration, and runs it.
 
 .EXAMPLE
     .\Run-ToolDescriptionEvaluator.ps1
@@ -35,7 +35,7 @@ try {
     if ($BuildAzureMcp
     ) {
         Write-Host "Building root project to enable dynamic tool loading..." -ForegroundColor Yellow
-        & dotnet build "$repoRoot/AzureMcp.sln" --configuration Release
+        & dotnet build "$repoRoot/AzureMcp.sln"
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to build root project"
         }
@@ -65,7 +65,7 @@ try {
     Write-Host "Discovered CLI artifact: $($cliArtifact.FullName)" -ForegroundColor Green
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
-    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj" --configuration Release
+    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj"
 
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build application"

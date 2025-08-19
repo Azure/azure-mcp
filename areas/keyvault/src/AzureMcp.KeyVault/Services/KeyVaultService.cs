@@ -228,4 +228,62 @@ public sealed class KeyVaultService : BaseAzureService, IKeyVaultService
             throw new Exception($"Error creating certificate '{certificateName}' in vault {vaultName}: {ex.Message}", ex);
         }
     }
+
+    public async Task<KeyVaultCertificateWithPolicy> ImportCertificate(
+        string vaultName,
+        string certificateName,
+        string certificateData,
+        string? password,
+        string subscriptionId,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(vaultName, certificateName, certificateData, subscriptionId);
+
+        var credential = await GetCredential(tenantId);
+        var client = new CertificateClient(new Uri($"https://{vaultName}.vault.azure.net"), credential);
+
+        try
+        {
+            // certificateData expected as base64 PFX bytes or raw PEM text.
+            byte[] bytes;
+
+            if (certificateData.StartsWith("-----BEGIN"))
+            {
+                // Treat as PEM text
+                bytes = System.Text.Encoding.UTF8.GetBytes(certificateData);
+            }
+            else
+            {
+                // Try base64, fallback to file path if exists
+                if (System.IO.File.Exists(certificateData))
+                {
+                    bytes = await System.IO.File.ReadAllBytesAsync(certificateData);
+                }
+                else
+                {
+                    try
+                    {
+                        bytes = Convert.FromBase64String(certificateData);
+                    }
+                    catch (FormatException ex)
+                    {
+                        throw new Exception("The provided certificate-data is neither a file path, raw PEM, nor base64 encoded content.", ex);
+                    }
+                }
+            }
+
+            var importOptions = new ImportCertificateOptions(certificateName, bytes)
+            {
+                Password = string.IsNullOrEmpty(password) ? null : password
+            };
+
+            var response = await client.ImportCertificateAsync(importOptions);
+            return response.Value;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error importing certificate '{certificateName}' into vault {vaultName}: {ex.Message}", ex);
+        }
+    }
 }

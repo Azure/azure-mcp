@@ -157,6 +157,10 @@
     "Show me the certificate <certificate_name> in the key vault <key_vault_account_name>",
     "Show me the details of the certificate <certificate_name> in the key vault <key_vault_account_name>"
   ],
+  "azmcp-keyvault-certificate-import": [
+    "Import the certificate in file <file_path> into the key vault <key_vault_account_name>",
+    "Import a certificate into the key vault <key_vault_account_name> using the name <certificate_name>"
+  ],
   "azmcp-keyvault-certificate-list": [
     "List all certificates in the key vault <key_vault_account_name>",
     "Show me the certificates in the key vault <key_vault_account_name>"

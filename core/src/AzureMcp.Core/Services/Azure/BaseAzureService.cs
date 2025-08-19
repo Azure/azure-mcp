@@ -25,6 +25,8 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
     private readonly ITenantService? _tenantService = tenantService;
     private readonly ILoggerFactory? _loggerFactory = loggerFactory;
 
+    protected ILoggerFactory LoggerFactory => _loggerFactory ?? Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance;
+
     static BaseAzureService()
     {
         var assembly = typeof(BaseAzureService).Assembly;
