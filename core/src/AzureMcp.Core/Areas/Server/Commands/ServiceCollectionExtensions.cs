@@ -231,11 +231,11 @@ public static class AzureMcpServiceCollectionExtensions
                 instructions.AppendLine(bestPracticesContent);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Fallback if resources are not available
             instructions.AppendLine("**Note**: Azure best practices resources are not available in this configuration.");
-            instructions.AppendLine($"Error: {ex.Message}");
+            instructions.AppendLine("An error occurred while loading Azure best practices.");
         }
         
         instructions.AppendLine();
@@ -277,11 +277,11 @@ public static class AzureMcpServiceCollectionExtensions
                 bestPracticesContent.AppendLine(content);
                 bestPracticesContent.AppendLine();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the error but continue processing other files
                 bestPracticesContent.AppendLine($"### Error loading {resourceFile}");
-                bestPracticesContent.AppendLine($"Error: {ex.Message}");
+                bestPracticesContent.AppendLine("An error occurred while loading this section."); 
                 bestPracticesContent.AppendLine();
             }
         }
