@@ -5,20 +5,50 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AzureMcp.Tests.Client.Helpers;
+using AzureMcp.Tests.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using Xunit;
 
 namespace AzureMcp.Tests.Client;
 
-public abstract class CommandTestsBase(LiveTestFixture liveTestFixture, ITestOutputHelper output) : IDisposable
+public abstract class CommandTestsBase : IDisposable
 {
     protected const string TenantNameReason = "Service principals cannot use TenantName for lookup";
 
-    protected IMcpClient Client { get; } = liveTestFixture.Client;
-    protected LiveTestSettings Settings { get; } = liveTestFixture.Settings;
+    protected IMcpClient Client { get; }
+    protected LiveTestSettings Settings { get; }
     protected StringBuilder FailureOutput { get; } = new();
-    protected ITestOutputHelper Output { get; } = output;
+    protected ITestOutputHelper Output { get; }
+    protected ILoggerFactory LoggerFactory { get; }
+
+    protected CommandTestsBase(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+    {
+        Client = liveTestFixture.Client;
+        Settings = liveTestFixture.Settings;
+        Output = output;
+
+        // Set up logging to route to xUnit output
+        var services = new ServiceCollection();
+        services.AddLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.SetMinimumLevel(LogLevel.Information);
+            builder.AddProvider(new XUnitTestOutputLoggerProvider(output));
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+        LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+        // Configure the LiveTestFixture to use our logger factory
+        liveTestFixture.SetLoggerFactory(LoggerFactory);
+        
+        // Test that our logging integration works
+        var logger = LoggerFactory.CreateLogger("MCP.Test");
+        logger.LogInformation("MCP server logging integration is active");
+    }
 
     protected async Task<JsonElement?> CallToolAsync(string command, Dictionary<string, object?> parameters)
     {

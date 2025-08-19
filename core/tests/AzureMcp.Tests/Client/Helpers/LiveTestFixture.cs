@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 
 namespace AzureMcp.Tests.Client.Helpers;
@@ -11,6 +12,7 @@ public class LiveTestFixture : LiveTestSettingsFixture
     public IMcpClient Client { get; private set; } = default!;
 
     private string[]? _customArguments;
+    private ILoggerFactory? _loggerFactory;
 
     /// <summary>
     /// Sets custom arguments for the MCP server. Call this before InitializeAsync().
@@ -19,6 +21,15 @@ public class LiveTestFixture : LiveTestSettingsFixture
     public void SetArguments(params string[] arguments)
     {
         _customArguments = arguments;
+    }
+
+    /// <summary>
+    /// Sets the logger factory for capturing MCP server logs. Call this before InitializeAsync().
+    /// </summary>
+    /// <param name="loggerFactory">Logger factory that will capture server stderr and route to test output</param>
+    public void SetLoggerFactory(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
     }
 
     public override async ValueTask InitializeAsync()
