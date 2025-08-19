@@ -75,7 +75,7 @@ if [[ -z "$gcc_version" ]]; then
   exit 1
 fi
 
-echo "Using ${GCC_BASE} version: ${gcc_version} (amd64=${amd64_list}, arm64=${arm64_list})"
+echo "Using ${GCC_BASE} version: ${gcc_version} (selected from amd64 and arm64 candidates)"
 
 # Install gcc base libraries for both amd64 and arm64 with versions pinned
 # Note: 'libgcc-s1' and 'gcc-*-base' are 'Multi-Arch:same', which means they must be installed at the exact same version across all enabled architectures
@@ -103,7 +103,7 @@ dpkg -l | grep -E '^(ii)\s+(libc6|libgcc-s1|gcc-[0-9]+-base):arm64' || true
 
 try {
     Write-Host "Installing arm64 cross-compilation toolchain..." -ForegroundColor Green
-    bash -lc $bashScript
+    bash -c $bashScript
 
     if ($LASTEXITCODE -eq 0) {
         Write-Host "arm64 cross-compilation toolchain installation completed successfully" -ForegroundColor Green
