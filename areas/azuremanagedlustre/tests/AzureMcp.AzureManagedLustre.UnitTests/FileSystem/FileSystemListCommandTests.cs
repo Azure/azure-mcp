@@ -25,8 +25,8 @@ public class FileSystemListCommandTests
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownSubscriptionId = "sub123";
-    private readonly string _knownResurceIdRg1 = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Lustre/amlfs/fs1";
-    private readonly string _knownResurceIdRg2 = "/subscriptions/sub123/resourceGroups/rg2/providers/Microsoft.Lustre/amlfs/fs2";
+    private readonly string _knownResourceIdRg1 = "/subscriptions/sub123/resourceGroups/rg1/providers/Microsoft.Lustre/amlfs/fs1";
+    private readonly string _knownResourceIdRg2 = "/subscriptions/sub123/resourceGroups/rg2/providers/Microsoft.Lustre/amlfs/fs2";
 
     public FileSystemListCommandTests()
     {
@@ -58,11 +58,11 @@ public class FileSystemListCommandTests
         {
             new LustreFileSystem(
                 "fs1",
-                _knownResurceIdRg1,
+                _knownResourceIdRg1,
                 _knownSubscriptionId,
                 "rg1",
                 "eastus",
-                "Succeded",
+                "Succeeded",
                 "Available",
                 "10.0.0.5",
                 "AMLFS-Durable-Premium-40",
@@ -73,11 +73,11 @@ public class FileSystemListCommandTests
             ),
             new LustreFileSystem(
                 "fs2",
-                _knownResurceIdRg2,
+                _knownResourceIdRg2,
                 _knownSubscriptionId,
                 "rg2",
                 "eastus",
-                "Succeded",
+                "Succeeded",
                 "Available",
                 "10.0.0.20",
                 "AMLFS-Durable-Premium-40",
@@ -129,11 +129,11 @@ public class FileSystemListCommandTests
         {
             new LustreFileSystem(
                 "fs1",
-                _knownResurceIdRg1,
+                _knownResourceIdRg1,
                 _knownSubscriptionId,
                 "rg1",
                 "eastus",
-                "Succeded",
+                "Succeeded",
                 "Available",
                 "10.0.0.5",
                 "AMLFS-Durable-Premium-40",
