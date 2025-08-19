@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
