@@ -8,7 +8,7 @@ namespace AzureMcp.Storage.Options.Account;
 
 public class AccountCreateOptions : SubscriptionOptions
 {
-    [JsonPropertyName(StorageOptionDefinitions.AccountName)]
+    [JsonPropertyName(StorageOptionDefinitions.AccountCreateName)]
     public string? Account { get; set; }
 
     [JsonPropertyName(StorageOptionDefinitions.LocationName)]

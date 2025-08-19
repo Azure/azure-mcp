@@ -137,8 +137,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroup);
+            var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
 
             if (!resourceGroupResource.HasValue)
             {

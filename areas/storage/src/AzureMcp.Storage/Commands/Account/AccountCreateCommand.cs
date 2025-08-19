@@ -17,7 +17,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     private readonly ILogger<AccountCreateCommand> _logger = logger;
 
     // Define options from OptionDefinitions
-    private readonly Option<string> _accountOption = StorageOptionDefinitions.AccountCreate;
+    private readonly Option<string> _accountCreateOption = StorageOptionDefinitions.AccountCreate;
     private readonly Option<string> _locationOption = StorageOptionDefinitions.Location;
     private readonly Option<string> _skuOption = StorageOptionDefinitions.Sku;
     private readonly Option<string> _kindOption = StorageOptionDefinitions.Kind;
@@ -46,7 +46,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_accountOption);
+        command.AddOption(_accountCreateOption);
         RequireResourceGroup();
         command.AddOption(_locationOption);
         command.AddOption(_skuOption);
@@ -60,7 +60,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     protected override AccountCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.Account = parseResult.GetValueForOption(_accountOption);
+        options.Account = parseResult.GetValueForOption(_accountCreateOption);
         options.Location = parseResult.GetValueForOption(_locationOption);
         options.Sku = parseResult.GetValueForOption(_skuOption);
         options.Kind = parseResult.GetValueForOption(_kindOption);
