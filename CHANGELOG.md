@@ -12,6 +12,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Bugs Fixed
 
+- Fixed issue where current `Activity` was incorrectly propagated to children method calls in `McpRuntime.CallToolHandler`. []()
+
 ### Other Changes
 
 - Refactored resource group option handling: introduced single global parser-optional `--resource-group` with declarative helpers `UseResourceGroup()` / `RequireResourceGroup()` and centralized logical validation & binding. Removed all area-specific optional resource group option definitions and manual per-command bindings; updated documentation to reflect new pattern.
