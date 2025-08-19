@@ -30,13 +30,33 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
                 { "database-name", "test-db" }
             });
 
-        // In a live environment, this might fail due to resource validation
-        // but the command should exist and be callable
-        Assert.True(true, "Command executed without interface errors");
+        // Test should validate actual command execution and error handling
+        Assert.NotNull(result);
+
+        // In live environment, this will likely fail due to non-existent resources,
+        // but we should get a proper error response rather than a system exception
+        if (result.IsError)
+        {
+            // Validate we get expected Azure resource errors, not system/interface errors
+            var errorContent = result.Content?.ToString() ?? "";
+            Assert.True(
+                errorContent.Contains("not found") ||
+                errorContent.Contains("does not exist") ||
+                errorContent.Contains("ResourceGroupNotFound") ||
+                errorContent.Contains("WebSiteNotFound") ||
+                errorContent.Contains("subscription"),
+                $"Expected Azure resource error but got: {errorContent}");
+        }
+        else
+        {
+            // If successful, validate the response structure
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(result.Content);
+        }
     }
 
     [Theory]
-    [InlineData("basic", null, null, null, null, "Command executed without interface errors")]
+    [InlineData("basic", null, null, null, null, "Command executed and handled properly")]
     [InlineData("custom-connection-string", "Server=custom;Database=custom;UserId=user;Password=pass;", null, null, null, "Command accepts custom connection string parameter")]
     [InlineData("tenant", null, "test-tenant-id", null, null, "Command accepts tenant parameter")]
     [InlineData("retry-policy", null, null, 3, 1.0, "Command accepts retry policy parameters")]
@@ -73,9 +93,35 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
 
         var result = await CallToolAsync("azmcp_appservice_database_add", parameters);
 
-        // In a live environment, this might fail due to resource validation
-        // but the command should exist and be callable
-        Assert.True(true, $"[{scenario}] {expectedMessage}");
+        // Test actual command execution and proper error handling
+        Assert.NotNull(result);
+
+        // Validate that parameters are correctly passed and processed
+        if (result.IsError)
+        {
+            var errorContent = result.Content?.ToString() ?? "";
+
+            // Should not fail due to parameter validation issues for valid scenarios
+            Assert.False(
+                errorContent.Contains("required parameter") ||
+                errorContent.Contains("invalid parameter") ||
+                errorContent.Contains("ArgumentException"),
+                $"[{scenario}] Parameter validation failed: {errorContent}");
+
+            // Should fail due to Azure resource issues, which is expected in live tests
+            Assert.True(
+                errorContent.Contains("not found") ||
+                errorContent.Contains("does not exist") ||
+                errorContent.Contains("ResourceGroupNotFound") ||
+                errorContent.Contains("WebSiteNotFound") ||
+                errorContent.Contains("subscription"),
+                $"[{scenario}] Expected Azure resource error but got: {errorContent}");
+        }
+        else
+        {
+            // If successful, validate the response has expected structure
+            Assert.True(result.IsSuccess, $"[{scenario}] Command should succeed or fail with proper Azure error");
+        }
     }
 
     [Theory]
@@ -97,6 +143,60 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
                 { "database-name", "test-db" }
             });
 
-        Assert.True(true, $"Command accepts {databaseType} database type");
+        Assert.NotNull(result);
+
+        // Test that database type validation works correctly
+        if (result.IsError)
+        {
+            var errorContent = result.Content?.ToString() ?? "";
+
+            // Should not fail due to invalid database type since we're testing valid types
+            Assert.False(
+                errorContent.Contains("Unsupported database type") ||
+                errorContent.Contains("invalid database type"),
+                $"Database type '{databaseType}' should be supported but got error: {errorContent}");
+
+            // Should fail due to Azure resource issues (expected in live environment)
+            Assert.True(
+                errorContent.Contains("not found") ||
+                errorContent.Contains("does not exist") ||
+                errorContent.Contains("ResourceGroupNotFound") ||
+                errorContent.Contains("WebSiteNotFound") ||
+                errorContent.Contains("subscription"),
+                $"Expected Azure resource error for {databaseType} but got: {errorContent}");
+        }
+        else
+        {
+            Assert.True(result.IsSuccess, $"Command should handle {databaseType} database type correctly");
+        }
+    }
+
+    [Theory]
+    [InlineData("InvalidType")]
+    [InlineData("")]
+    [InlineData("random")]
+    public async Task ExecuteAsync_WithInvalidDatabaseTypes_ReturnsValidationError(string invalidDatabaseType)
+    {
+        var result = await CallToolAsync(
+            "azmcp_appservice_database_add",
+            new Dictionary<string, object?>
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", "test-rg" },
+                { "app-name", "test-app" },
+                { "database-type", invalidDatabaseType },
+                { "database-server", "test-server" },
+                { "database-name", "test-db" }
+            });
+
+        Assert.NotNull(result);
+        Assert.True(result.IsError, $"Invalid database type '{invalidDatabaseType}' should cause validation error");
+
+        var errorContent = result.Content?.ToString() ?? "";
+        Assert.True(
+            errorContent.Contains("Unsupported database type") ||
+            errorContent.Contains("invalid database type") ||
+            errorContent.Contains("ArgumentException"),
+            $"Expected database type validation error for '{invalidDatabaseType}' but got: {errorContent}");
     }
 }
