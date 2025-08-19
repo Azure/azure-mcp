@@ -25,15 +25,13 @@ $bashScript = @'
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Installing arm64 cross-compilation toolchain"
-
 # turning on multi-arch support for arm64 on amd64 host
 sudo dpkg --add-architecture arm64 || true
 
 # Constrains the existing binary (and optionally source) package repositories to provide only amd64 packages,
 # this ensures only amd64 stuffs are pulled from 'archive.ubuntu.com' and 'security.ubuntu.com'
-sudo sed -i 's/^deb \([^[].*\)/deb [arch=amd64] \1/' /etc/apt/sources.list
-sudo sed -i 's/^deb-src \([^[].*\)/deb-src [arch=amd64] \1/' /etc/apt/sources.list
+sudo sed -i -E 's/^deb (?!\[arch=)/deb [arch=amd64] /' /etc/apt/sources.list
+sudo sed -i -E 's/^deb-src (?!\[arch=)/deb-src [arch=amd64] /' /etc/apt/sources.list
 
 # Adds package repositories that provide arm64 packages,
 # this ensures the arm64 stuffs are pulled from 'ports.ubuntu.com'.
@@ -59,22 +57,25 @@ fi
 amd64_list=$(apt-cache madison "${GCC_BASE}:amd64" | awk '{print $3}')
 arm64_list=$(apt-cache madison "${GCC_BASE}:arm64" | awk '{print $3}')
 
+amd64_gcc_versions=$(printf "%s\n" "$amd64_list" | sort -V)
+arm64_gcc_versions=$(printf "%s\n" "$arm64_list" | sort -V)
+
 # Use the highest common version of 'gcc base package'
 gcc_version=$(
   comm -12 \
-    <(printf "%s\n" "$amd64_list" | sort -V) \
-    <(printf "%s\n" "$arm64_list" | sort -V) \
+    <(printf "%s\n" "$amd64_gcc_versions") \
+    <(printf "%s\n" "$arm64_gcc_versions") \
   | tail -1
 )
 
 if [[ -z "$gcc_version" ]]; then
   echo "ERROR: No common ${GCC_BASE} version across amd64 and arm64." >&2
-  echo "amd64 candidates:" >&2; printf "%s\n" "$amd64_list" | sort -V >&2
-  echo "arm64 candidates:" >&2; printf "%s\n" "$arm64_list" | sort -V >&2
+  echo "amd64 candidates:" >&2; printf "%s\n" "$amd64_gcc_versions" >&2
+  echo "arm64 candidates:" >&2; printf "%s\n" "$arm64_gcc_versions" >&2
   exit 1
 fi
 
-echo "Using ${GCC_BASE} version: ${gcc_version} (amd64=${amd64_ver:-N/A}, arm64=${arm64_ver:-N/A})"
+echo "Using ${GCC_BASE} version: ${gcc_version} (amd64=${amd64_list}, arm64=${arm64_list})"
 
 # Install gcc base libraries for both amd64 and arm64 with versions pinned
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
