@@ -19,7 +19,7 @@ $amlfsName = $testSettings.ResourceBaseName
 
 Write-Host "Verifying AMLFS cluster deployment: $amlfsName" -ForegroundColor Yellow
 
-# Get the SQL server details to verify deployment
+# Get the AMLFS instance details to verify deployment
 $amlfsCluster = Get-AzStorageCacheAmlFileSystem -ResourceGroupName $ResourceGroupName -Name $amlfsName
 
 if ($amlfsCluster) {
