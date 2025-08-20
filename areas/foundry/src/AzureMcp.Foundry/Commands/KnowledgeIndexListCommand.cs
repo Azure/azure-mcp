@@ -11,7 +11,7 @@ namespace AzureMcp.Foundry.Commands;
 
 public sealed class KnowledgeIndexListCommand : GlobalCommand<KnowledgeIndexListOptions>
 {
-    private const string CommandTitle = "List Knowledge Indexes from Azure AI Foundry";
+    private const string CommandTitle = "List Knowledge Indexes in Azure AI Foundry";
     private readonly Option<string> _endpointOption = FoundryOptionDefinitions.EndpointOption;
 
     public override string Name => "list";
