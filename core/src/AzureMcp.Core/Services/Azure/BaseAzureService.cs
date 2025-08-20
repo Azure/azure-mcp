@@ -40,6 +40,23 @@ public abstract class BaseAzureService(ITenantService? tenantService = null, ILo
 
     protected string UserAgent { get; } = DefaultUserAgent;
 
+    /// <summary>
+    /// Escapes a string value for safe use in KQL queries to prevent injection attacks.
+    /// </summary>
+    /// <param name="value">The string value to escape</param>
+    /// <returns>The escaped string safe for use in KQL queries</returns>
+    protected static string EscapeKqlString(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        // Replace single quotes with double single quotes to escape them in KQL
+        // Also escape backslashes to prevent escape sequence issues
+        return value.Replace("\\", "\\\\").Replace("'", "''");
+    }
+
     protected async Task<string?> ResolveTenantIdAsync(string? tenant)
     {
         if (tenant == null || _tenantService == null)

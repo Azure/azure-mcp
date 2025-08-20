@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Reflection;
+using System.Text;
 using AzureMcp.Core.Areas.Server.Commands.Discovery;
 using AzureMcp.Core.Areas.Server.Commands.Runtime;
 using AzureMcp.Core.Areas.Server.Commands.ToolLoading;
 using AzureMcp.Core.Areas.Server.Options;
+using AzureMcp.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -164,11 +166,72 @@ public static class AzureMcpServiceCollectionExtensions
                         ListToolsHandler = mcpRuntime.ListToolsHandler,
                     }
                 };
+
+                // Add instructions for the server
+                mcpServerOptions.ServerInstructions = GetServerInstructions();
             });
 
         var mcpServerBuilder = services.AddMcpServer();
         mcpServerBuilder.WithStdioServerTransport();
 
         return services;
+    }
+
+    /// <summary>
+    /// Generates comprehensive instructions for using the Azure MCP Server effectively.
+    /// Includes Azure best practices from embedded resource files.
+    /// </summary>
+    /// <returns>Instructions text for LLM interactions with the Azure MCP Server.</returns>
+    private static string GetServerInstructions()
+    {
+        var instructions = new StringBuilder();
+
+        try
+        {
+            var azureRulesContent = LoadAzureRulesForBestPractices();
+            if (!string.IsNullOrEmpty(azureRulesContent))
+            {
+                instructions.AppendLine(azureRulesContent);
+            }
+        }
+        catch (Exception)
+        {
+            // Fallback if resources are not available
+            instructions.AppendLine("**Note**: Azure rules resources are not available in this configuration.");
+            instructions.AppendLine("An error occurred while loading Azure rules.");
+        }
+
+        return instructions.ToString();
+    }
+
+    /// <summary>
+    /// Loads Azure rules for calling bestpractices tool from embedded resource files.
+    /// </summary>
+    /// <returns>Combined content from all Azure best practices resource files.</returns>
+    private static string LoadAzureRulesForBestPractices()
+    {
+        var coreAssembly = typeof(AzureMcpServiceCollectionExtensions).Assembly;
+        var azureRulesContent = new StringBuilder();
+
+        // List of known best practices resource files
+        var resourceFile = "azure-rules.txt";
+
+        try
+        {
+            string resourceName = EmbeddedResourceHelper.FindEmbeddedResource(coreAssembly, resourceFile);
+            string content = EmbeddedResourceHelper.ReadEmbeddedResource(coreAssembly, resourceName);
+
+            azureRulesContent.AppendLine(content);
+            azureRulesContent.AppendLine();
+        }
+        catch (Exception)
+        {
+            // Log the error but continue processing other files
+            azureRulesContent.AppendLine($"### Error loading {resourceFile}");
+            azureRulesContent.AppendLine("An error occurred while loading this section.");
+            azureRulesContent.AppendLine();
+        }
+
+        return azureRulesContent.ToString();
     }
 }
