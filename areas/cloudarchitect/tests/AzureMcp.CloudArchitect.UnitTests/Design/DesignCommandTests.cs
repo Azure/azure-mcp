@@ -43,7 +43,16 @@ public class DesignCommandTests
         Assert.Equal("design", command.Name);
         Assert.NotNull(command.Description);
         Assert.NotEmpty(command.Description);
-        Assert.Contains("Azure architecture design tool that gathers requirements through guided questions and recommends optimal solutions.\n\nKey parameters: question, questionNumber, confidenceScore (0.0-1.0, present architecture when ≥0.7), totalQuestions, answer, nextQuestionNeeded, architectureComponent, architectureTier, state.\n\nProcess:\n1. Ask about user role, business goals (1-2 questions at a time)\n2. Track confidence and update requirements (explicit/implicit/assumed)\n3. When confident enough, present architecture with table format, visual organization, ASCII diagrams\n4. Follow Azure Well-Architected Framework principles\n5. Cover all tiers: infrastructure, platform, application, data, security, operations\n6. Provide actionable advice and high-level overview\n\nState tracks components, requirements by category, and confidence factors. Be conservative with suggestions.", command.Description);
+
+        // Check that the description contains the expected content
+        Assert.Contains("Azure architecture design tool that gathers requirements through guided questions and recommends optimal solutions.", command.Description);
+        Assert.Contains("Key parameters: question, questionNumber, confidenceScore (0.0-1.0, present architecture when ≥0.7), totalQuestions, answer, nextQuestionNeeded, architectureComponent, architectureTier, state.", command.Description);
+        Assert.Contains("Ask about user role, business goals (1-2 questions at a time)", command.Description);
+        Assert.Contains("Track confidence and update requirements (explicit/implicit/assumed)", command.Description);
+        Assert.Contains("When confident enough, present architecture with table format, visual organization, ASCII diagrams", command.Description);
+        Assert.Contains("Follow Azure Well-Architected Framework principles", command.Description);
+        Assert.Contains("Cover all tiers: infrastructure, platform, application, data, security, operations", command.Description);
+        Assert.Contains("State tracks components, requirements by category, and confidence factors. Be conservative with suggestions.", command.Description);
         Assert.Contains("confidenceScore", command.Description);
         Assert.Contains("nextQuestionNeeded", command.Description);
         Assert.Contains("Azure Well-Architected Framework", command.Description);
