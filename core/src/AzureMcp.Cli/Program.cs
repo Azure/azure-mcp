@@ -67,6 +67,7 @@ internal class Program
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
+            new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Deploy.DeploySetup(),
             new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.CloudArchitect.CloudArchitectSetup(),
@@ -97,7 +98,6 @@ internal class Program
             // https://github.com/Azure/azure-mcp/blob/main/docs/aot-compatibility.md
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
-            new AzureMcp.Cosmos.CosmosSetup()
 #endif
         ];
     }

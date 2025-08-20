@@ -52,8 +52,6 @@
     <ProjectReference Include="..\..\..\areas\*\src\**\AzureMcp.*.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <!-- We need a package reference for Cosmos so we have a path to the native assets for exclusion later -->
-    <PackageReference Include="Microsoft.Azure.Cosmos" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ModelContextProtocol" />
     <PackageReference Include="System.CommandLine" />
@@ -64,18 +62,6 @@
        https://github.com/Azure/azure-mcp/blob/main/docs/aot-compatibility.md
        Do not add ProjectReference removals in this ItemGroup. -->
   <ItemGroup Condition="'$(BuildNative)' == 'true'">
-    <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
     <ProjectReference Remove="..\..\..\areas\azuremanagedlustre\src\AzureMcp.AzureManagedLustre\AzureMcp.AzureManagedLustre.csproj" />
-    <PackageReference Remove="Microsoft.Azure.Cosmos" />
   </ItemGroup>
-
-  <!-- Remove Cosmos native files from the build output directory -->
-  <Target Name="RemoveCosmosNativeFiles" BeforeTargets="GetCopyToOutputDirectoryItems">
-    <ItemGroup>
-      <FilesToRemove Include="@(ContentWithTargetPath)" Condition="$([System.String]::new('%(FullPath)').Contains('$(PkgMicrosoft_Azure_Cosmos)'))" />
-    </ItemGroup>
-    <ItemGroup>
-      <ContentWithTargetPath Remove="@(FilesToRemove)" />
-    </ItemGroup>
-  </Target>
 </Project>

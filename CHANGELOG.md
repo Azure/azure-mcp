@@ -44,6 +44,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#1031](https://github.com/Azure/azure-mcp/pull/1031)]
   - Azure.ResourceManager.ResourceHealth: `1.0.0` → `1.1.0-beta.5`
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#1033](https://github.com/Azure/azure-mcp/pull/1033)]
+  - Switched from the AOT-incompatible Microsoft.Azure.Cosmos to the AOT-compatible Microsoft.Azure.Cosmos.Aot version `0.1.1-preview.1`.
 
 ## 0.5.7 (2025-08-19)
 
