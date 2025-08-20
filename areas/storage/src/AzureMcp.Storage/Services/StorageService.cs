@@ -397,7 +397,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             using var fileStream = File.OpenWrite(localFilePath);
             await response.Value.Content.CopyToAsync(fileStream);
             await fileStream.FlushAsync();
-            
+
             var result = response.Value.Details;
 
             // Calculate MD5 hash if available
