@@ -97,6 +97,8 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   zlib1g-dev:arm64
 
 # Verification step
+# output the essential arm64 cross-compilation packages (libc6, libgcc-s1, gcc-*-base) installed on the amd64 host
+# Note: In dpkg -l output, the first two characters indicate the package status: the desired state (first i = install requested) and the current state (second i = package is installed)
 dpkg -l | grep -E '^(ii)\s+(libc6|libgcc-s1|gcc-[0-9]+-base):arm64' || true
 
 '@
