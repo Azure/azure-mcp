@@ -10,7 +10,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Table;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -27,8 +26,8 @@ public class TableListCommandTests
     private readonly TableListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownSubscription = "sub123";
 
     public TableListCommandTests()
     {
@@ -49,13 +48,13 @@ public class TableListCommandTests
         // Arrange
         var expectedTables = new List<string> { "table1", "table2" };
 
-        _storageService.ListTables(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListTables(Arg.Is(_knownAccount), Arg.Is(_knownSubscription),
             Arg.Is(AuthMethod.Credential), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
                 .Returns(expectedTables);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);
 
@@ -77,13 +76,13 @@ public class TableListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoTables()
     {
         // Arrange
-        _storageService.ListTables(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListTables(Arg.Is(_knownAccount), Arg.Is(_knownSubscription),
             Arg.Is(AuthMethod.Credential), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns([]);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);
 
@@ -101,13 +100,13 @@ public class TableListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _storageService.ListTables(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListTables(Arg.Is(_knownAccount), Arg.Is(_knownSubscription),
             Arg.Is(AuthMethod.Credential), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _command.GetCommand().Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription,
             "--auth-method", AuthMethod.Credential.ToString().ToLowerInvariant()
         ]);
 

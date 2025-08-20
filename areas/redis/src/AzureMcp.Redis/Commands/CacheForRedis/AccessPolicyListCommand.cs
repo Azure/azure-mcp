@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Redis.Commands;
 using AzureMcp.Redis.Models.CacheForRedis;
 using AzureMcp.Redis.Options.CacheForRedis;
 using AzureMcp.Redis.Services;
@@ -40,8 +39,6 @@ public sealed class AccessPolicyListCommand(ILogger<AccessPolicyListCommand> log
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var redisService = context.GetService<IRedisService>() ?? throw new InvalidOperationException("Redis service is not available.");
             var accessPolicyAssignments = await redisService.ListAccessPolicyAssignmentsAsync(

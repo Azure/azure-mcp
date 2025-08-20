@@ -44,8 +44,6 @@ public sealed class SubscriptionDetailsCommand(ILogger<SubscriptionDetailsComman
         command.AddOption(_subscriptionNameOption);
     }
 
-
-
     protected override SubscriptionDetailsOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
@@ -65,8 +63,6 @@ public sealed class SubscriptionDetailsCommand(ILogger<SubscriptionDetailsComman
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetSubscriptionDetails(

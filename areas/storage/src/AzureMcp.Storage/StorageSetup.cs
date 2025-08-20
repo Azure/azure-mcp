@@ -91,6 +91,7 @@ public class StorageSetup : IAreaSetup
 
         // Register Storage commands
         storageAccount.AddCommand("list", new AccountListCommand(loggerFactory.CreateLogger<AccountListCommand>()));
+        storageAccount.AddCommand("details", new AccountDetailsCommand(loggerFactory.CreateLogger<AccountDetailsCommand>()));
         storageAccount.AddCommand("create", new AccountCreateCommand(loggerFactory.CreateLogger<AccountCreateCommand>()));
 
         tables.AddCommand("list", new TableListCommand(loggerFactory.CreateLogger<TableListCommand>()));
@@ -98,6 +99,7 @@ public class StorageSetup : IAreaSetup
         blobs.AddCommand("list", new BlobListCommand(loggerFactory.CreateLogger<BlobListCommand>()));
         blobs.AddCommand("details", new BlobDetailsCommand(loggerFactory.CreateLogger<BlobDetailsCommand>()));
         blobs.AddCommand("download", new BlobDownloadCommand(loggerFactory.CreateLogger<BlobDownloadCommand>()));
+        blobs.AddCommand("upload", new BlobUploadCommand(loggerFactory.CreateLogger<BlobUploadCommand>()));
 
         batch.AddCommand("set-tier", new BatchSetTierCommand(loggerFactory.CreateLogger<BatchSetTierCommand>()));
 

@@ -42,8 +42,6 @@ public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : S
         command.AddOption(_topicOption);
     }
 
-
-
     protected override BaseTopicOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
@@ -62,8 +60,6 @@ public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : S
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IServiceBusService>();
             var details = await service.GetTopicDetails(

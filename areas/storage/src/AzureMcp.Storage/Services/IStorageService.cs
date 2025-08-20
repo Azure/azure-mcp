@@ -14,8 +14,14 @@ public interface IStorageService
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
+    Task<StorageAccountInfo> GetStorageAccountDetails(
+        string account,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
     Task<StorageAccountInfo> CreateStorageAccount(
-        string accountName,
+        string account,
         string resourceGroup,
         string location,
         string subscription,
@@ -29,13 +35,13 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListContainers(
-        string accountName,
+        string account,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListTables(
-        string accountName,
+        string account,
         string subscription,
         AuthMethod authMethod = AuthMethod.Credential,
         string? connectionString = null,
@@ -43,23 +49,23 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<string>> ListBlobs(string accountName,
-        string containerName,
+        string container,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<BlobProperties> GetBlobDetails(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<Models.BlobDownloadInfo> DownloadBlob(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string localFilePath,
         bool overwrite,
         string subscription,
@@ -67,23 +73,23 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<BlobContainerProperties> GetContainerDetails(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<BlobContainerProperties> CreateContainer(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string subscription,
         string? blobContainerPublicAccess = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<DataLakePathInfo>> ListDataLakePaths(
-        string accountName,
-        string fileSystemName,
+        string account,
+        string fileSystem,
         bool recursive,
         string subscription,
         string? filterPath = null,
@@ -91,24 +97,24 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<DataLakePathInfo> CreateDirectory(
-        string accountName,
+        string account,
         string directoryPath,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string tier,
-        string[] blobNames,
+        string[] blobs,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<List<FileShareItemInfo>> ListFilesAndDirectories(
-        string accountName,
-        string shareName,
+        string account,
+        string share,
         string directoryPath,
         string? prefix,
         string subscription,
@@ -116,11 +122,21 @@ public interface IStorageService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<QueueMessageSendResult> SendQueueMessage(
-        string accountName,
-        string queueName,
-        string messageContent,
+        string account,
+        string queue,
+        string message,
         int? timeToLiveInSeconds,
         int? visibilityTimeoutInSeconds,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    Task<BlobUploadResult> UploadBlob(
+        string account,
+        string container,
+        string blob,
+        string localFilePath,
+        bool overwrite,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);

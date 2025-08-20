@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Sql.Commands;
 using AzureMcp.Sql.Models;
 using AzureMcp.Sql.Options.Database;
 using AzureMcp.Sql.Services;
@@ -42,8 +41,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger)
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var sqlService = context.GetService<ISqlService>();
 

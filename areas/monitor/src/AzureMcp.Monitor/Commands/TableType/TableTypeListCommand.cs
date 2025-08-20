@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Monitor.Commands;
 using AzureMcp.Monitor.Options.TableType;
 using AzureMcp.Monitor.Services;
 using Microsoft.Extensions.Logging;
@@ -27,15 +26,9 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_resourceGroupOption); // inherited from base
+        RequireResourceGroup();
     }
 
-    protected override TableTypeListOptions BindOptions(ParseResult parseResult)
-    {
-        var options = base.BindOptions(parseResult);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
-        return options;
-    }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
     {
@@ -47,8 +40,6 @@ public sealed class TableTypeListCommand(ILogger<TableTypeListCommand> logger) :
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var monitorService = context.GetService<IMonitorService>();
             var tableTypes = await monitorService.ListTableTypes(

@@ -1,6 +1,67 @@
 
 # Release History
 
+## 0.5.7 - 2025-08-19
+
+### Added
+
+- Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
+  - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
+  - `azmcp_deploy_iac_rules_get` - Get Infrastructure as Code rules.
+  - `azmcp_deploy_pipeline_guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
+  - `azmcp_deploy_plan_get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
+  - `azmcp_deploy_architecture_diagram-generate` - Generate Azure service architecture diagrams based on application topology.
+  - `azmcp_quota_region_availability-list` - List available Azure regions for specific resource types.
+  - `azmcp_quota_usage_check` - Check Azure resource usage and quota information for specific resource types and regions.
+- Added support for listing Azure Function Apps via the `azmcp-functionapp-list` command. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for importing existing certificates into Azure Key Vault via the `azmcp-keyvault-certificate-import` command. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
+- Added support for uploading a local file to an Azure Storage blob via the `azmcp-storage-blob-upload` command. [[#960](https://github.com/Azure/azure-mcp/pull/960)]
+- Added support for the following Azure Service Health operations: [[#998](https://github.com/Azure/azure-mcp/pull/998)]
+  - `azmcp-resourcehealth-availability-status-get` - Get the availability status for a specific resource.
+  - `azmcp-resourcehealth-availability-status-list` - List availability statuses for all resources in a subscription or resource group.
+- Added support for listing repositories in Azure Container Registries via the `azmcp-acr-registry-repository-list` command. [[#983](https://github.com/Azure/azure-mcp/pull/983)]
+
+### Changed
+
+- Improved guidance for LLM interactions with Azure MCP server by adding rules around bestpractices tool calling to server instructions. [[#1007](https://github.com/Azure/azure-mcp/pull/1007)]
+
+## 0.5.6 - 2025-08-14
+
+### Added
+
+- New VS Code settings to control Azure MCP server startup behavior: [[#971](https://github.com/Azure/azure-mcp/issues/971)]
+  - `azureMcp.serverMode`: choose tool exposure mode — `single` | `namespace` (default) | `all`.
+  - `azureMcp.readOnly`: start the server in read-only mode.
+  - `azureMcp.enabledServices`: added drop down list to select and configure the enabled services.
+- Added support for listing Azure Function Apps via the `azmcp-functionapp-list` command. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for getting details about an Azure Storage Account via the `azmcp-storage-account-details` command. [[#934](https://github.com/Azure/azure-mcp/issues/934)]
+
+### Changed
+
+- Centralized handling and validation of the `--resource-group` option across all commands. [[#961](https://github.com/Azure/azure-mcp/issues/961)]
+
+## 0.5.5 - 2025-08-12
+
+### Added
+
+- Added support for listing Azure Container Registry (ACR) registries in a subscription via the `azmcp-acr-registry-list` command. [[#915](https://github.com/Azure/azure-mcp/issues/915)]
+- Added new Azure Storage commands:
+  - `azmcp-storage-account-create`: Create a new Storage account. [[#927](https://github.com/Azure/azure-mcp/issues/927)]
+  - `azmcp-storage-queue-message-send`: Send a message to a Storage queue. [[#794](https://github.com/Azure/azure-mcp/pull/794)]
+  - `azmcp-storage-blob-details`: Get details about a Storage blob. [[#930](https://github.com/Azure/azure-mcp/issues/930)]
+  - `azmcp-storage-blob-container-create`: Create a new Storage blob container. [[#937](https://github.com/Azure/azure-mcp/issues/937)]
+- Bundled the **GitHub Copilot for Azure** extension as part of the Azure MCP Server extension pack.
+
+### Changed
+
+- The `azmcp-storage-account-list` command now returns account metadata objects instead of plain strings. Each item includes: `name`, `location`, `kind`, `skuName`, `skuTier`, `hnsEnabled`, `allowBlobPublicAccess`, `enableHttpsTrafficOnly`. Update scripts to read the `name` property. The underlying `IStorageService.GetStorageAccounts()` signature changed from `Task<List<string>>` to `Task<List<StorageAccountInfo>>`. [[#904](https://github.com/Azure/azure-mcp/issues/904)]
+- Consolidated "AzSubscriptionGuid" telemetry logic into `McpRuntime`. [[#935](https://github.com/Azure/azure-mcp/pull/935)]
+
+### Fixed
+
+- Fixed best practices tool invocation failure when passing "all" action with "general" or "azurefunctions" resources. [[#757](https://github.com/Azure/azure-mcp/issues/757)]
+- Updated metadata for CREATE and SET tools to `destructive = true`. [[#773](https://github.com/Azure/azure-mcp/pull/773)]
+
 ## 0.5.4 - 2025-08-07
 
 ### Changed

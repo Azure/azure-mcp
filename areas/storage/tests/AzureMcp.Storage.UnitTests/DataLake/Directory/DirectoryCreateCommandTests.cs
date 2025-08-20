@@ -9,7 +9,6 @@ using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.DataLake.Directory;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -26,9 +25,9 @@ public class DirectoryCreateCommandTests
     private readonly DirectoryCreateCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
+    private readonly string _knownAccount = "account123";
     private readonly string _knownDirectoryPath = "filesystem123/data/logs";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownSubscription = "sub123";
 
     public DirectoryCreateCommandTests()
     {
@@ -56,16 +55,16 @@ public class DirectoryCreateCommandTests
         );
 
         _storageService.CreateDirectory(
-            Arg.Is(_knownAccountName),
+            Arg.Is(_knownAccount),
             Arg.Is(_knownDirectoryPath),
-            Arg.Is(_knownSubscriptionId),
+            Arg.Is(_knownSubscription),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns(expectedDirectory);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
+            "--account", _knownAccount,
             "--directory-path", _knownDirectoryPath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -92,16 +91,16 @@ public class DirectoryCreateCommandTests
         var expectedError = "Test error";
 
         _storageService.CreateDirectory(
-            Arg.Is(_knownAccountName),
+            Arg.Is(_knownAccount),
             Arg.Is(_knownDirectoryPath),
-            Arg.Is(_knownSubscriptionId),
+            Arg.Is(_knownSubscription),
             null,
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
+            "--account", _knownAccount,
             "--directory-path", _knownDirectoryPath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act

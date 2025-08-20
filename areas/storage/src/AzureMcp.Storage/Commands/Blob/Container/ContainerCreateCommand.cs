@@ -3,7 +3,6 @@
 
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob.Container;
 using AzureMcp.Storage.Services;
@@ -52,8 +51,6 @@ public sealed class ContainerCreateCommand(ILogger<ContainerCreateCommand> logge
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var containerProperties = await storageService.CreateContainer(

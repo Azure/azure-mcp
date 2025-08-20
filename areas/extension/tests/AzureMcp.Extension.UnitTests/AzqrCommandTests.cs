@@ -9,7 +9,6 @@ using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.ProcessExecution;
 using AzureMcp.Core.Services.Time;
 using AzureMcp.Extension.Commands;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

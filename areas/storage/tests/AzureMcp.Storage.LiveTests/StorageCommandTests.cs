@@ -28,6 +28,98 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_get_storage_account_details_by_subscription_id()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionId },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            // Verify the account has basic properties
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+
+            var location = account.GetProperty("location");
+            Assert.NotNull(location.GetString());
+
+            var kind = account.GetProperty("kind");
+            Assert.Equal("StorageV2", kind.GetString());
+
+            var skuName = account.GetProperty("skuName");
+            Assert.Equal("Standard_LRS", skuName.GetString());
+
+            var hnsEnabled = account.GetProperty("hnsEnabled");
+            Assert.True(hnsEnabled.GetBoolean());
+        }
+
+        [Fact]
+        public async Task Should_get_storage_account_details_by_subscription_name()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+
+            var kind = account.GetProperty("kind");
+            Assert.Equal("StorageV2", kind.GetString());
+        }
+
+        [Fact]
+        public async Task Should_get_storage_account_details_with_tenant_id()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantId },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+        }
+
+        [Fact()]
+        public async Task Should_get_storage_account_details_with_tenant_name()
+        {
+            Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantName },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+        }
+
+        [Fact]
         public async Task Should_list_storage_accounts_by_subscription_name()
         {
             var result = await CallToolAsync(
@@ -119,7 +211,118 @@ namespace AzureMcp.Storage.LiveTests
             Assert.NotNull(contentType.GetString());
 
             var lastModified = details.GetProperty("lastModified");
-            Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
+            Assert.NotEqual(default, lastModified.GetDateTimeOffset());
+        }
+
+        [Fact]
+        public async Task Should_upload_blob()
+        {
+            // Create a temporary file to upload
+            var tempFileName = $"test-upload-{DateTime.UtcNow.Ticks}.txt";
+            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
+            var testContent = "This is a test file for blob upload";
+
+            try
+            {
+                await File.WriteAllTextAsync(tempFilePath, testContent, TestContext.Current.CancellationToken);
+
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Verify upload details
+                var blobName = result.AssertProperty("blob");
+                Assert.Equal(tempFileName, blobName.GetString());
+
+                var containerName = result.AssertProperty("container");
+                Assert.Equal("bar", containerName.GetString());
+
+                var uploadedFile = result.AssertProperty("uploadedFile");
+                Assert.Equal(tempFilePath, uploadedFile.GetString());
+
+                var eTag = result.AssertProperty("eTag");
+                Assert.NotNull(eTag.GetString());
+                Assert.NotEmpty(eTag.GetString()!);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Should_upload_blob_with_overwrite()
+        {
+            // Create a temporary file to upload
+            var tempFileName = $"test-overwrite-{DateTime.UtcNow.Ticks}.txt";
+            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
+            var testContent = "This is a test file for blob overwrite";
+
+            try
+            {
+                await File.WriteAllTextAsync(tempFilePath, testContent, TestContext.Current.CancellationToken);
+
+                // First upload
+                await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath }
+                    });
+
+                // Second upload with overwrite
+                var result = await CallToolAsync(
+                    "azmcp_storage_blob_upload",
+                    new()
+                    {
+                        { "subscription", Settings.SubscriptionName },
+                        { "tenant", Settings.TenantId },
+                        { "account", Settings.ResourceBaseName },
+                        { "container", "bar" },
+                        { "blob", tempFileName },
+                        { "local-file-path", tempFilePath },
+                        { "overwrite", true }
+                    });
+
+                // Verify upload details
+                var blobName = result.AssertProperty("blob");
+                Assert.Equal(tempFileName, blobName.GetString());
+
+                var containerName = result.AssertProperty("container");
+                Assert.Equal("bar", containerName.GetString());
+
+                var uploadedFile = result.AssertProperty("uploadedFile");
+                Assert.Equal(tempFilePath, uploadedFile.GetString());
+
+                var eTag = result.AssertProperty("eTag");
+                Assert.NotNull(eTag.GetString());
+                Assert.NotEmpty(eTag.GetString()!);
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
         }
 
         [Fact]
@@ -147,11 +350,11 @@ namespace AzureMcp.Storage.LiveTests
                 Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
 
                 // Verify download details
-                var blobName = downloadInfo.GetProperty("blobName");
-                Assert.Equal("README.md", blobName.GetString());
+                var blob = downloadInfo.GetProperty("blob");
+                Assert.Equal("README.md", blob.GetString());
 
-                var containerName = downloadInfo.GetProperty("containerName");
-                Assert.Equal("bar", containerName.GetString());
+                var container = downloadInfo.GetProperty("container");
+                Assert.Equal("bar", container.GetString());
 
                 var downloadLocation = downloadInfo.GetProperty("downloadLocation");
                 Assert.Equal(tempFilePath, downloadLocation.GetString());
@@ -160,9 +363,9 @@ namespace AzureMcp.Storage.LiveTests
                 Assert.True(blobSize.GetInt64() > 0);
 
                 var lastModified = downloadInfo.GetProperty("lastModified");
-                Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
+                Assert.NotEqual(default, lastModified.GetDateTimeOffset());
 
-                var eTag = downloadInfo.GetProperty("etag");
+                var eTag = downloadInfo.GetProperty("eTag");
                 Assert.NotNull(eTag.GetString());
 
                 var wasOverwritten = downloadInfo.GetProperty("wasLocalFileOverwritten");
@@ -299,8 +502,8 @@ namespace AzureMcp.Storage.LiveTests
                 var downloadInfo = result.AssertProperty("downloadInfo");
                 Assert.Equal(JsonValueKind.Object, downloadInfo.ValueKind);
 
-                var blobName = downloadInfo.GetProperty("blobName");
-                Assert.Equal("README.md", blobName.GetString());
+                var blob = downloadInfo.GetProperty("blob");
+                Assert.Equal("README.md", blob.GetString());
 
                 // Verify the file was actually downloaded
                 Assert.True(File.Exists(tempFilePath));
@@ -511,7 +714,7 @@ namespace AzureMcp.Storage.LiveTests
                     { "account", Settings.ResourceBaseName },
                     { "container", "bar" },
                     { "tier", "Cool" },
-                    { "blob-names", "blob1.txt blob2.txt" }
+                    { "blobs", "blob1.txt blob2.txt" }
                 });
 
             var successfulBlobs = result.AssertProperty("successfulBlobs");
@@ -588,10 +791,8 @@ namespace AzureMcp.Storage.LiveTests
             Assert.True(message.TryGetProperty("expirationTime", out _));
             Assert.True(message.TryGetProperty("popReceipt", out _));
             Assert.True(message.TryGetProperty("nextVisibleTime", out _));
-            Assert.True(message.TryGetProperty("messageContent", out _));
-
-            var messageContent = message.GetProperty("messageContent").GetString();
-            Assert.Equal("Test message from integration test", messageContent);
+            Assert.True(message.TryGetProperty("message", out var messageElement));
+            Assert.Equal("Test message from integration test", messageElement.GetString());
         }
 
         [Fact]
@@ -613,9 +814,8 @@ namespace AzureMcp.Storage.LiveTests
             // Assert
             var message = result.AssertProperty("message");
             Assert.Equal(JsonValueKind.Object, message.ValueKind);
-
-            var messageContent = message.GetProperty("messageContent").GetString();
-            Assert.Equal("Test message with TTL", messageContent);
+            Assert.True(message.TryGetProperty("message", out var messageElement));
+            Assert.Equal("Test message with TTL", messageElement.GetString());
         }
 
         [Fact]
@@ -629,7 +829,7 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionId },
-                    { "account-name", uniqueAccountName },
+                    { "account", uniqueAccountName },
                     { "resource-group", Settings.ResourceGroupName },
                     { "location", "eastus" },
                     { "sku", "Standard_LRS" },

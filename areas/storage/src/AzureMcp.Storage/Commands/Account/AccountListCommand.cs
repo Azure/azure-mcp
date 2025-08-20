@@ -3,9 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Models.Option;
-using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Options.Account;
 using AzureMcp.Storage.Services;
 using Microsoft.Extensions.Logging;
@@ -22,9 +19,8 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
     public override string Description =>
         $"""
         List all Storage accounts in a subscription. This command retrieves all Storage accounts available
-        in the specified {OptionDefinitions.Common.SubscriptionName}. Results are returned as a JSON array of
-        objects including common metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess,
-        enableHttpsTrafficOnly).
+        in the specified subscription. Results are returned as a JSON array of objects including common 
+        metadata (name, location, kind, skuName, skuTier, hnsEnabled, allowBlobPublicAccess, enableHttpsTrafficOnly).
         """;
 
     public override string Title => CommandTitle;
@@ -42,8 +38,6 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var storageService = context.GetService<IStorageService>();
             var accounts = await storageService.GetStorageAccounts(
                 options.Subscription!,
@@ -51,7 +45,7 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
                 options.RetryPolicy);
 
             context.Response.Results = accounts?.Count > 0
-                ? ResponseResult.Create<AccountListCommandResult>(new AccountListCommandResult(accounts), StorageJsonContext.Default.AccountListCommandResult)
+                ? ResponseResult.Create(new AccountListCommandResult(accounts), StorageJsonContext.Default.AccountListCommandResult)
                 : null;
         }
         catch (Exception ex)
@@ -63,5 +57,5 @@ public sealed class AccountListCommand(ILogger<AccountListCommand> logger) : Sub
         return context.Response;
     }
 
-    internal record AccountListCommandResult(List<Storage.Models.StorageAccountInfo> Accounts);
+    internal record AccountListCommandResult(List<Models.StorageAccountInfo> Accounts);
 }

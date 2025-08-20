@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.BicepSchema.Services.Support;
-using AzureMcp.Tests;
 using Xunit;
 
 namespace AzureMcp.BicepSchema.UnitTests;

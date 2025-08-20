@@ -24,11 +24,11 @@ public class BlobDownloadCommandTests
     private readonly BlobDownloadCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownBlobName = "test-blob.txt";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownBlob = "test-blob.txt";
     private readonly string _knownLocalFilePath = @"C:\Downloads\test-blob.txt";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownSubscription = "sub123";
 
     public BlobDownloadCommandTests()
     {
@@ -57,8 +57,8 @@ public class BlobDownloadCommandTests
     {
         // Arrange
         var expectedResult = new BlobDownloadInfo(
-            _knownBlobName,
-            _knownContainerName,
+            _knownBlob,
+            _knownContainer,
             _knownLocalFilePath,
             1024,
             DateTimeOffset.UtcNow,
@@ -67,22 +67,22 @@ public class BlobDownloadCommandTests
             false);
 
         _storageService.DownloadBlob(
-            Arg.Is(_knownAccountName),
-            Arg.Is(_knownContainerName),
-            Arg.Is(_knownBlobName),
+            Arg.Is(_knownAccount),
+            Arg.Is(_knownContainer),
+            Arg.Is(_knownBlob),
             Arg.Is(_knownLocalFilePath),
             Arg.Is(false),
-            Arg.Is(_knownSubscriptionId),
+            Arg.Is(_knownSubscription),
             Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>())
             .Returns(expectedResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -103,8 +103,8 @@ public class BlobDownloadCommandTests
         Assert.NotNull(commandResult.DownloadInfo);
 
         var result = commandResult.DownloadInfo;
-        Assert.Equal(_knownBlobName, result.BlobName);
-        Assert.Equal(_knownContainerName, result.ContainerName);
+        Assert.Equal(_knownBlob, result.Blob);
+        Assert.Equal(_knownContainer, result.Container);
         Assert.Equal(_knownLocalFilePath, result.DownloadLocation);
         Assert.Equal(1024, result.BlobSize);
         Assert.Equal("\"0x8D123456789ABCD\"", result.ETag);
@@ -117,8 +117,8 @@ public class BlobDownloadCommandTests
     {
         // Arrange
         var expectedResult = new BlobDownloadInfo(
-            _knownBlobName,
-            _knownContainerName,
+            _knownBlob,
+            _knownContainer,
             _knownLocalFilePath,
             1024,
             DateTimeOffset.UtcNow,
@@ -138,12 +138,12 @@ public class BlobDownloadCommandTests
             .Returns(expectedResult);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--overwrite",
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -230,11 +230,11 @@ public class BlobDownloadCommandTests
             .Returns(Task.FromException<BlobDownloadInfo>(new Exception("Test error")));
 
         var parseResult = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -262,11 +262,11 @@ public class BlobDownloadCommandTests
             .Returns(Task.FromException<BlobDownloadInfo>(new InvalidOperationException("File already exists")));
 
         var parseResult = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act

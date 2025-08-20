@@ -4,8 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Grafana.Commands;
-using AzureMcp.Grafana.Models.Workspace;
 using AzureMcp.Grafana.Options.Workspace;
 using AzureMcp.Grafana.Services;
 using Microsoft.Extensions.Logging;
@@ -42,8 +40,6 @@ public sealed class WorkspaceListCommand(ILogger<WorkspaceListCommand> logger) :
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var grafanaService = context.GetService<IGrafanaService>() ?? throw new InvalidOperationException("Grafana service is not available.");
             var workspaces = await grafanaService.ListWorkspacesAsync(

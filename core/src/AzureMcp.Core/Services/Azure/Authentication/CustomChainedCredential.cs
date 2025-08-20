@@ -84,7 +84,7 @@ public class CustomChainedCredential(string? tenantId = null, ILogger<CustomChai
             }
         }
         creds.Add(CreateBrowserCredential(tenantId, authRecord));
-        return new ChainedTokenCredential(creds.ToArray());
+        return new ChainedTokenCredential([.. creds]);
     }
 
     private static string TokenCacheName = "azure-mcp-msal.cache";

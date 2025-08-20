@@ -8,7 +8,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -25,8 +24,8 @@ public class ContainerListCommandTests
     private readonly ContainerListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownSubscription = "sub123";
 
     public ContainerListCommandTests()
     {
@@ -47,12 +46,12 @@ public class ContainerListCommandTests
         // Arrange
         var expectedContainers = new List<string> { "container1", "container2" };
 
-        _storageService.ListContainers(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+        _storageService.ListContainers(Arg.Is(_knownAccount), Arg.Is(_knownSubscription), Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns(expectedContainers);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -73,12 +72,12 @@ public class ContainerListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoContainers()
     {
         // Arrange
-        _storageService.ListContainers(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+        _storageService.ListContainers(Arg.Is(_knownAccount), Arg.Is(_knownSubscription), Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -95,12 +94,12 @@ public class ContainerListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _storageService.ListContainers(Arg.Is(_knownAccountName), Arg.Is(_knownSubscriptionId), Arg.Any<string>(),
+        _storageService.ListContainers(Arg.Is(_knownAccount), Arg.Is(_knownSubscription), Arg.Any<string>(),
             Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--subscription", _knownSubscription
         ]);
 
         // Act

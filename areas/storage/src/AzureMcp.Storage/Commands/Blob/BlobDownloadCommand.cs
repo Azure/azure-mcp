@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Services;
@@ -13,7 +12,7 @@ namespace AzureMcp.Storage.Commands.Blob;
 
 public sealed class BlobDownloadCommand(ILogger<BlobDownloadCommand> logger) : BaseBlobCommand<BlobDownloadOptions>()
 {
-    private const string CommandTitle = "Download Storage Blob";
+    private const string CommandTitle = "Download Storage Blob to local file";
     private readonly ILogger<BlobDownloadCommand> _logger = logger;
 
     private readonly Option<string> _localFilePathOption = StorageOptionDefinitions.LocalFilePath;
@@ -30,7 +29,7 @@ public sealed class BlobDownloadCommand(ILogger<BlobDownloadCommand> logger) : B
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = false };
+    public override ToolMetadata Metadata => new() { Destructive = true, ReadOnly = false };
 
     protected override void RegisterOptions(Command command)
     {
@@ -58,8 +57,6 @@ public sealed class BlobDownloadCommand(ILogger<BlobDownloadCommand> logger) : B
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var storageService = context.GetService<IStorageService>();
             var result = await storageService.DownloadBlob(
                 options.Account!,
@@ -78,8 +75,8 @@ public sealed class BlobDownloadCommand(ILogger<BlobDownloadCommand> logger) : B
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error downloading blob. Account: {Account}, Container: {Container}, Blob: {Blob}, LocalPath: {LocalPath}.",
-                options.Account, options.Container, options.Blob, options.LocalFilePath);
+            _logger.LogError(ex, "Error downloading blob. Account: {Account}, Container: {Container}, Blob: {Blob}, LocalPath: {LocalPath}, Overwrite: {Overwrite}.",
+                options.Account, options.Container, options.Blob, options.LocalFilePath, options.Overwrite);
             HandleException(context, ex);
             return context.Response;
         }

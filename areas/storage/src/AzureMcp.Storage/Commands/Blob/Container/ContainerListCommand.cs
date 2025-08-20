@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob.Container;
 using AzureMcp.Storage.Services;
@@ -22,7 +20,6 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
         $"""
         List all containers in a Storage account. This command retrieves and displays all containers available
         in the specified account. Results include container names and are returned as a JSON array.
-        Requires {StorageOptionDefinitions.AccountName}.
         """;
 
     public override string Title => CommandTitle;
@@ -39,8 +36,6 @@ public sealed class ContainerListCommand(ILogger<ContainerListCommand> logger) :
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
             var containers = await storageService.ListContainers(

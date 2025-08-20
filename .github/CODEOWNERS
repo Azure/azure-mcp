@@ -42,6 +42,13 @@
 # ServiceOwners:                       @shenmuxiaosen @avanigupta
 
 
+# PRLabel: %area-ACR
+/areas/acr/                            @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-ACR
+# ServiceOwners:                       @jongio
+
+
 # PRLabel: %area-BestPractices
 /areas/azurebestpractices/             @g2vinay @conniey @Azure/azure-mcp
 
@@ -74,6 +81,12 @@
 
 # ServiceLabel: %area-Foundry
 # ServiceOwners:                       @jayzzh @xiangyan99
+
+# PRLabel: %area-FunctionApp
+/areas/functionapp/                   @jongio @Azure/azure-mcp
+
+# ServiceLabel: %area-FunctionApp
+# ServiceOwners:                      @jongio
 
 # PRLabel: %area-Grafana
 /areas/grafana/                        @weng5e @xiangyan99 @Azure/azure-mcp
@@ -113,6 +126,10 @@
 # ServiceLabel: %area-Monitor
 # ServiceOwners:                       @smritiy @srnagar @jongio
 
+# PRLabel: %area-AzureManagedLustre
+/areas/azuremanagedlustre/                        @wolfgang-desalvador
+# ServiceLabel: %area-AzureManagedLustre
+# ServiceOwners:                       @wolfgang-desalvador
 
 # PRLabel: %area-Postgres
 /areas/postgres/                       @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
@@ -151,6 +168,13 @@
 
 # ServiceLabel: %area-Authorization
 # ServiceOwners:                       @vurhanau
+
+# PRLabel: %area-Deploy
+/src/Areas/Deploy/                     @qianwens @xiaofanzhou @Azure/azure-mcp
+/src/Areas/Quota/                      @qianwens @xiaofanzhou @Azure/azure-mcp
+
+# ServiceLabel: %area-Deploy
+# ServiceOwners:                       @qianwens @xiaofanzhou
 
 # PRLabel: %area-LoadTesting
 /areas/loadtesting/                    @nishtha489 @knarayanana @krchanda @johnsta @Azure/azure-mcp

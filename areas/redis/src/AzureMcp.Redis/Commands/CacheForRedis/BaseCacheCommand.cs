@@ -18,14 +18,13 @@ public abstract class BaseCacheCommand<
     {
         base.RegisterOptions(command);
         command.AddOption(_cacheOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
     }
 
     protected override T BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Cache = parseResult.GetValueForOption(_cacheOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption) ?? "";
         return options;
     }
 }

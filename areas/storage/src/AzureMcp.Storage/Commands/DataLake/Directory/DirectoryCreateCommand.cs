@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.DataLake.Directory;
@@ -56,8 +55,6 @@ public sealed class DirectoryCreateCommand(ILogger<DirectoryCreateCommand> logge
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var storageService = context.GetService<IStorageService>();
 

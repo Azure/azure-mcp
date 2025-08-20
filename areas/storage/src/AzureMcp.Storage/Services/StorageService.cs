@@ -30,7 +30,10 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     private const string StorageAccountsCacheKey = "accounts";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
 
-    public async Task<List<StorageAccountInfo>> GetStorageAccounts(string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<StorageAccountInfo>> GetStorageAccounts(
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(subscription);
 
@@ -79,8 +82,43 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         return accounts;
     }
 
+    public async Task<StorageAccountInfo> GetStorageAccountDetails(
+        string account,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(account, subscription);
+
+        var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
+
+        try
+        {
+            var storageAccount = await GetStorageAccount(subscriptionResource, account);
+            if (storageAccount == null)
+            {
+                throw new Exception($"Storage account '{account}' not found in subscription '{subscription}'");
+            }
+
+            var data = storageAccount.Data;
+            return new StorageAccountInfo(
+                data.Name,
+                data.Location.ToString(),
+                data.Kind?.ToString(),
+                data.Sku?.Name.ToString(),
+                data.Sku?.Tier.ToString(),
+                data.IsHnsEnabled,
+                data.AllowBlobPublicAccess,
+                data.EnableHttpsTrafficOnly);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving Storage account details for '{account}': {ex.Message}", ex);
+        }
+    }
+
     public async Task<StorageAccountInfo> CreateStorageAccount(
-        string accountName,
+        string account,
         string resourceGroup,
         string location,
         string subscription,
@@ -93,14 +131,13 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, resourceGroup, location, subscription);
+        ValidateRequiredParameters(account, resourceGroup, location, subscription);
 
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
 
         try
         {
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroup);
+            var resourceGroupResource = await subscriptionResource.GetResourceGroupAsync(resourceGroup);
 
             if (!resourceGroupResource.HasValue)
             {
@@ -125,7 +162,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
             var operation = await resourceGroupResource.Value
                 .GetStorageAccounts()
-                .CreateOrUpdateAsync(WaitUntil.Completed, accountName, createOptions);
+                .CreateOrUpdateAsync(WaitUntil.Completed, account, createOptions);
 
             var result = operation.Value;
             var data = result.Data;
@@ -142,15 +179,19 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error creating Storage account '{accountName}': {ex.Message}", ex);
+            throw new Exception($"Error creating Storage account '{account}': {ex.Message}", ex);
         }
     }
 
-    public async Task<List<string>> ListContainers(string accountName, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<string>> ListContainers(
+        string account,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, subscription);
+        ValidateRequiredParameters(account, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
         var containers = new List<string>();
 
         try
@@ -169,14 +210,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<List<string>> ListTables(
-        string accountName,
+        string account,
         string subscription,
         AuthMethod authMethod = AuthMethod.Credential,
         string? connectionString = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, subscription);
+        ValidateRequiredParameters(account, subscription);
 
         var tables = new List<string>();
 
@@ -184,7 +225,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         {
             // First attempt with requested auth method
             var tableServiceClient = await CreateTableServiceClientWithAuth(
-                accountName,
+                account,
                 subscription,
                 authMethod,
                 connectionString,
@@ -206,7 +247,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             {
                 // If credential auth fails with 403/401, try key auth
                 var keyClient = await CreateTableServiceClientWithAuth(
-                    accountName, subscription, AuthMethod.Key, connectionString, tenant, retryPolicy);
+                    account, subscription, AuthMethod.Key, connectionString, tenant, retryPolicy);
 
                 tables.Clear(); // Reset the list for reuse
                 await foreach (var table in keyClient.QueryAsync())
@@ -219,7 +260,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             {
                 // If key auth fails with 403, try connection string
                 var connStringClient = await CreateTableServiceClientWithAuth(
-                    accountName, subscription, AuthMethod.ConnectionString, connectionString, tenant, retryPolicy);
+                    account, subscription, AuthMethod.ConnectionString, connectionString, tenant, retryPolicy);
 
                 tables.Clear(); // Reset the list for reuse
                 await foreach (var table in connStringClient.QueryAsync())
@@ -241,7 +282,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             {
                 // If key auth fails with 403, try connection string
                 var connStringClient = await CreateTableServiceClientWithAuth(
-                    accountName, subscription, AuthMethod.ConnectionString, connectionString, tenant, retryPolicy);
+                    account, subscription, AuthMethod.ConnectionString, connectionString, tenant, retryPolicy);
 
                 tables.Clear(); // Reset the list for reuse
                 await foreach (var table in connStringClient.QueryAsync())
@@ -261,12 +302,17 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
-    public async Task<List<string>> ListBlobs(string accountName, string containerName, string subscription, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    public async Task<List<string>> ListBlobs(
+        string account,
+        string container,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, subscription);
+        ValidateRequiredParameters(account, container, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
         var blobs = new List<string>();
 
         try
@@ -285,18 +331,18 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<BlobProperties> GetBlobDetails(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, blobName, subscription);
+        ValidateRequiredParameters(account, container, blob, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        var blobClient = containerClient.GetBlobClient(blobName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
+        var blobClient = containerClient.GetBlobClient(blob);
 
         try
         {
@@ -310,20 +356,20 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<Models.BlobDownloadInfo> DownloadBlob(
-        string accountName,
-        string containerName,
-        string blobName,
+        string account,
+        string container,
+        string blob,
         string localFilePath,
         bool overwrite,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, blobName, localFilePath, subscription);
+        ValidateRequiredParameters(account, container, blob, localFilePath, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        var blobClient = containerClient.GetBlobClient(blobName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
+        var blobClient = containerClient.GetBlobClient(blob);
 
         bool wasOverwritten = false;
 
@@ -362,8 +408,8 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             }
 
             return new Models.BlobDownloadInfo(
-                blobName,
-                containerName,
+                blob,
+                container,
                 localFilePath,
                 result.ContentLength,
                 result.LastModified,
@@ -378,16 +424,16 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<BlobContainerProperties> GetContainerDetails(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName);
+        ValidateRequiredParameters(account, container, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
 
         try
         {
@@ -401,17 +447,17 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<BlobContainerProperties> CreateContainer(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string subscription,
         string? blobContainerPublicAccess = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, subscription);
+        ValidateRequiredParameters(account, container, subscription);
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
 
         try
         {
@@ -437,11 +483,14 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
-    private async Task<string> GetStorageAccountKey(string accountName, string subscription, string? tenant = null)
+    private async Task<string> GetStorageAccountKey(
+        string account,
+        string subscription,
+        string? tenant = null)
     {
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant);
-        var storageAccount = await GetStorageAccount(subscriptionResource, accountName) ??
-            throw new Exception($"Storage account '{accountName}' not found in subscription '{subscription}'");
+        var storageAccount = await GetStorageAccount(subscriptionResource, account) ??
+            throw new Exception($"Storage account '{account}' not found in subscription '{subscription}'");
 
         var keys = new List<StorageAccountKey>();
         await foreach (var key in storageAccount.GetKeysAsync())
@@ -449,15 +498,18 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             keys.Add(key);
         }
 
-        var firstKey = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{accountName}'");
+        var firstKey = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{account}'");
         return firstKey.Value;
     }
 
-    private async Task<string> GetStorageAccountConnectionString(string accountName, string subscription, string? tenant = null)
+    private async Task<string> GetStorageAccountConnectionString(
+        string account,
+        string subscription,
+        string? tenant = null)
     {
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant);
-        var storageAccount = await GetStorageAccount(subscriptionResource, accountName) ??
-            throw new Exception($"Storage account '{accountName}' not found in subscription '{subscription}'");
+        var storageAccount = await GetStorageAccount(subscriptionResource, account) ??
+            throw new Exception($"Storage account '{account}' not found in subscription '{subscription}'");
 
         var keys = new List<StorageAccountKey>();
         await foreach (var key in storageAccount.GetKeysAsync())
@@ -465,25 +517,25 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             keys.Add(key);
         }
 
-        var firstKey = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{accountName}'");
-        return $"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={firstKey.Value};EndpointSuffix=core.windows.net";
+        var firstKey = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{account}'");
+        return $"DefaultEndpointsProtocol=https;AccountName={account};AccountKey={firstKey.Value};EndpointSuffix=core.windows.net";
     }
 
     // Helper method to get storage account
-    private static async Task<StorageAccountResource?> GetStorageAccount(SubscriptionResource subscription, string accountName)
+    private static async Task<StorageAccountResource?> GetStorageAccount(SubscriptionResource subscription, string account)
     {
-        await foreach (var account in subscription.GetStorageAccountsAsync())
+        await foreach (var storageAccount in subscription.GetStorageAccountsAsync())
         {
-            if (account.Data.Name == accountName)
+            if (storageAccount.Data.Name == account)
             {
-                return account;
+                return storageAccount;
             }
         }
         return null;
     }
 
     protected async Task<TableServiceClient> CreateTableServiceClientWithAuth(
-        string accountName,
+        string account,
         string subscription,
         AuthMethod authMethod,
         string? connectionString = null,
@@ -495,63 +547,75 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
         switch (authMethod)
         {
             case AuthMethod.Key:
-                var key = await GetStorageAccountKey(accountName, subscription, tenant);
-                var uri = $"https://{accountName}.table.core.windows.net";
-                return new TableServiceClient(new Uri(uri), new TableSharedKeyCredential(accountName, key), options);
+                var key = await GetStorageAccountKey(account, subscription, tenant);
+                var uri = $"https://{account}.table.core.windows.net";
+                return new TableServiceClient(new Uri(uri), new TableSharedKeyCredential(account, key), options);
 
             case AuthMethod.ConnectionString:
-                var connString = await GetStorageAccountConnectionString(accountName, subscription, tenant);
+                var connString = await GetStorageAccountConnectionString(account, subscription, tenant);
                 return new TableServiceClient(connString, options);
 
             case AuthMethod.Credential:
             default:
-                var defaultUri = $"https://{accountName}.table.core.windows.net";
+                var defaultUri = $"https://{account}.table.core.windows.net";
                 return new TableServiceClient(new Uri(defaultUri), await GetCredential(tenant), options);
         }
     }
 
-    private async Task<BlobServiceClient> CreateBlobServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    private async Task<BlobServiceClient> CreateBlobServiceClient(
+        string account,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        var uri = $"https://{accountName}.blob.core.windows.net";
+        var uri = $"https://{account}.blob.core.windows.net";
         var options = ConfigureRetryPolicy(AddDefaultPolicies(new BlobClientOptions()), retryPolicy);
         return new BlobServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
-    private async Task<DataLakeServiceClient> CreateDataLakeServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    private async Task<DataLakeServiceClient> CreateDataLakeServiceClient(
+        string account,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        var uri = $"https://{accountName}.dfs.core.windows.net";
+        var uri = $"https://{account}.dfs.core.windows.net";
         var options = ConfigureRetryPolicy(AddDefaultPolicies(new DataLakeClientOptions()), retryPolicy);
         return new DataLakeServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
-    private async Task<ShareServiceClient> CreateShareServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    private async Task<ShareServiceClient> CreateShareServiceClient(
+        string account,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        var uri = $"https://{accountName}.file.core.windows.net";
+        var uri = $"https://{account}.file.core.windows.net";
         var options = ConfigureRetryPolicy(AddDefaultPolicies(new ShareClientOptions()), retryPolicy);
         options.ShareTokenIntent = ShareTokenIntent.Backup; // Set the intent for file backup, needed for Manged Identity
         return new ShareServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
-    private async Task<QueueServiceClient> CreateQueueServiceClient(string accountName, string? tenant = null, RetryPolicyOptions? retryPolicy = null)
+    private async Task<QueueServiceClient> CreateQueueServiceClient(
+        string account,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
     {
-        var uri = $"https://{accountName}.queue.core.windows.net";
+        var uri = $"https://{account}.queue.core.windows.net";
         var options = ConfigureRetryPolicy(AddDefaultPolicies(new QueueClientOptions()), retryPolicy);
         return new QueueServiceClient(new Uri(uri), await GetCredential(tenant), options);
     }
 
     public async Task<List<DataLakePathInfo>> ListDataLakePaths(
-        string accountName,
-        string fileSystemName,
+        string account,
+        string fileSystem,
         bool recursive,
         string subscription,
         string? filterPath = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, fileSystemName, subscription);
+        ValidateRequiredParameters(account, fileSystem, subscription);
 
-        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
-        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystemName);
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(account, tenant, retryPolicy);
+        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(fileSystem);
         var paths = new List<DataLakePathInfo>();
 
         try
@@ -577,15 +641,15 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<DataLakePathInfo> CreateDirectory(
-        string accountName,
+        string account,
         string directoryPath,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, directoryPath, subscription);
+        ValidateRequiredParameters(account, directoryPath, subscription);
 
-        var dataLakeServiceClient = await CreateDataLakeServiceClient(accountName, tenant, retryPolicy);
+        var dataLakeServiceClient = await CreateDataLakeServiceClient(account, tenant, retryPolicy);
 
         try
         {
@@ -632,23 +696,23 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<(List<string> SuccessfulBlobs, List<string> FailedBlobs)> SetBlobTierBatch(
-        string accountName,
-        string containerName,
+        string account,
+        string container,
         string tier,
-        string[] blobNames,
+        string[] blobs,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, containerName, tier, subscription);
+        ValidateRequiredParameters(account, container, tier, subscription);
 
-        if (blobNames == null || blobNames.Length == 0)
+        if (blobs == null || blobs.Length == 0)
         {
-            throw new ArgumentException("At least one blob name must be provided.", nameof(blobNames));
+            throw new ArgumentException("At least one blob name must be provided.", nameof(blobs));
         }
 
-        var blobServiceClient = await CreateBlobServiceClient(accountName, tenant, retryPolicy);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var containerClient = blobServiceClient.GetBlobContainerClient(container);
         var batchClient = blobServiceClient.GetBlobBatchClient();
         var accessTier = new AccessTier(tier);
 
@@ -659,7 +723,7 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
 
             // Add all blob tier operations to the batch
             var batchOperations = new List<(string blobName, Response batchOperationResponse)>();
-            foreach (var blobName in blobNames)
+            foreach (var blobName in blobs)
             {
                 var blobClient = containerClient.GetBlobClient(blobName);
                 var batchOperationResponse = batch.SetBlobAccessTier(blobClient.Uri, accessTier);
@@ -703,21 +767,21 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<List<FileShareItemInfo>> ListFilesAndDirectories(
-        string accountName,
-        string shareName,
+        string account,
+        string share,
         string directoryPath,
         string? prefix,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, shareName, directoryPath, subscription);
+        ValidateRequiredParameters(account, share, directoryPath, subscription);
 
-        var shareServiceClient = await CreateShareServiceClient(accountName, tenant, retryPolicy);
+        var shareServiceClient = await CreateShareServiceClient(account, tenant, retryPolicy);
 
         try
         {
-            var shareClient = shareServiceClient.GetShareClient(shareName);
+            var shareClient = shareServiceClient.GetShareClient(share);
             var directoryClient = shareClient.GetDirectoryClient(directoryPath);
 
             var items = new List<FileShareItemInfo>();
@@ -741,20 +805,20 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
     }
 
     public async Task<QueueMessageSendResult> SendQueueMessage(
-        string accountName,
-        string queueName,
-        string messageContent,
+        string account,
+        string queue,
+        string message,
         int? timeToLiveInSeconds,
         int? visibilityTimeoutInSeconds,
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(accountName, queueName, messageContent, subscription);
+        ValidateRequiredParameters(account, queue, message, subscription);
 
         // Create queue service client
-        var queueServiceClient = await CreateQueueServiceClient(accountName, tenant, retryPolicy);
-        var queueClient = queueServiceClient.GetQueueClient(queueName);
+        var queueServiceClient = await CreateQueueServiceClient(account, tenant, retryPolicy);
+        var queueClient = queueServiceClient.GetQueueClient(queue);
 
         try
         {
@@ -762,17 +826,15 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             TimeSpan? timeToLive = timeToLiveInSeconds.HasValue ? TimeSpan.FromSeconds(timeToLiveInSeconds.Value) : null;
             TimeSpan? visibilityTimeout = visibilityTimeoutInSeconds.HasValue ? TimeSpan.FromSeconds(visibilityTimeoutInSeconds.Value) : null;
 
-            var response = await queueClient.SendMessageAsync(messageContent, visibilityTimeout, timeToLive);
+            var response = await queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive);
 
-            return new QueueMessageSendResult
-            {
-                MessageId = response.Value.MessageId,
-                InsertionTime = response.Value.InsertionTime,
-                ExpirationTime = response.Value.ExpirationTime,
-                PopReceipt = response.Value.PopReceipt,
-                NextVisibleTime = response.Value.TimeNextVisible,
-                MessageContent = messageContent
-            };
+            return new QueueMessageSendResult(
+                response.Value.MessageId,
+                response.Value.InsertionTime,
+                response.Value.ExpirationTime,
+                response.Value.PopReceipt,
+                response.Value.TimeNextVisible,
+                message);
         }
         catch (Exception ex)
         {
@@ -820,5 +882,40 @@ public class StorageService(ISubscriptionService subscriptionService, ITenantSer
             "cool" => StorageAccountAccessTier.Cool,
             _ => throw new ArgumentException($"Invalid access tier '{accessTier}'. Valid values are: Hot, Cool")
         };
+    }
+
+    public async Task<BlobUploadResult> UploadBlob(
+        string account,
+        string container,
+        string blob,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(account, container, blob, localFilePath, subscription);
+
+        if (!File.Exists(localFilePath))
+        {
+            throw new FileNotFoundException($"Local file not found: {localFilePath}");
+        }
+
+        var blobServiceClient = await CreateBlobServiceClient(account, tenant, retryPolicy);
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(container);
+        var blobClient = blobContainerClient.GetBlobClient(blob);
+
+        // Upload the file
+        using var fileStream = File.OpenRead(localFilePath);
+        var response = await blobClient.UploadAsync(fileStream, overwrite);
+
+        return new BlobUploadResult(
+            Blob: blob,
+            Container: container,
+            UploadedFile: localFilePath,
+            LastModified: response.Value.LastModified,
+            ETag: response.Value.ETag.ToString(),
+            MD5Hash: response.Value.ContentHash != null ? Convert.ToBase64String(response.Value.ContentHash) : null
+        );
     }
 }

@@ -36,7 +36,7 @@ public sealed class AzqrCommand(ILogger<AzqrCommand> logger, int processTimeoutS
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(ExtensionOptionDefinitions.Azqr.OptionalResourceGroup);
+        UseResourceGroup();
     }
 
     public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
