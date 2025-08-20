@@ -25,5 +25,9 @@ public class AcrSetup : IAreaSetup
         acr.AddSubGroup(registry);
 
         registry.AddCommand("list", new RegistryListCommand(loggerFactory.CreateLogger<RegistryListCommand>()));
+
+        var repository = new CommandGroup("repository", "Container Registry repository operations - Commands for listing and managing repositories within a Container Registry.");
+        registry.AddSubGroup(repository);
+        repository.AddCommand("list", new RegistryRepositoryListCommand(loggerFactory.CreateLogger<RegistryRepositoryListCommand>()));
     }
 }

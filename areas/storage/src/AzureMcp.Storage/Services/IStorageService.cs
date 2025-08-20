@@ -120,4 +120,14 @@ public interface IStorageService
         string subscription,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<BlobUploadResult> UploadBlob(
+        string account,
+        string container,
+        string blob,
+        string localFilePath,
+        bool overwrite,
+        string subscription,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
