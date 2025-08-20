@@ -26,7 +26,6 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
-
 - Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
   - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
   - `azmcp_deploy_iac_rules_get` - Get Infrastructure as Code rules.
