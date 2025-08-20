@@ -348,6 +348,77 @@ public sealed class CheckCommandTests
     }
 
     [Fact]
+    public async Task Should_handle_unsupported_provider_returns_no_limit()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var region = "eastus";
+        var resourceTypes = "Microsoft.UnsupportedProvider/resourceType";
+
+        var expectedQuotaInfo = new Dictionary<string, List<UsageInfo>>
+        {
+            {
+                "Microsoft.UnsupportedProvider/resourceType",
+                new List<UsageInfo>
+                {
+                    new("Microsoft.UnsupportedProvider/resourceType", 0, 0, null, "No Limit")
+                }
+            }
+        };
+
+        _quotaService.GetAzureQuotaAsync(
+                Arg.Is<List<string>>(list =>
+                    list.Count == 1 &&
+                    list.Contains("Microsoft.UnsupportedProvider/resourceType")),
+                subscriptionId,
+                region)
+            .Returns(expectedQuotaInfo);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--region", region,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+        Assert.NotNull(result.Results);
+
+        // Verify the service was called with the correct parameters
+        await _quotaService.Received(1).GetAzureQuotaAsync(
+            Arg.Is<List<string>>(list =>
+                list.Count == 1 &&
+                list.Contains("Microsoft.UnsupportedProvider/resourceType")),
+            subscriptionId,
+            region);
+
+        // Verify the response structure
+        var json = JsonSerializer.Serialize(result.Results);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<CheckCommand.UsageCheckCommandResult>(json, options);
+        Assert.NotNull(response);
+        Assert.NotNull(response.UsageInfo);
+        Assert.True(response.UsageInfo.ContainsKey("Microsoft.UnsupportedProvider/resourceType"));
+
+        var usageInfo = response.UsageInfo["Microsoft.UnsupportedProvider/resourceType"];
+        Assert.Single(usageInfo);
+        Assert.Equal("No Limit", usageInfo[0].Description);
+        Assert.Equal(0, usageInfo[0].Limit);
+        Assert.Equal(0, usageInfo[0].Used);
+    }
+
+    [Fact]
     public async Task Should_handle_very_long_resource_types_list()
     {
         // Arrange
@@ -411,5 +482,76 @@ public sealed class CheckCommandTests
         Assert.NotNull(response);
         Assert.NotNull(response.UsageInfo);
         Assert.Equal(50, response.UsageInfo.Count);
+    }
+
+    [Fact]
+    public async Task Should_handle_network_failure_returns_descriptive_usage_info()
+    {
+        // Arrange
+        var subscriptionId = "test-subscription-id";
+        var region = "eastus";
+        var resourceTypes = "Microsoft.Storage/storageAccounts";
+
+        var expectedQuotaInfo = new Dictionary<string, List<UsageInfo>>
+        {
+            {
+                "Microsoft.Storage/storageAccounts",
+                new List<UsageInfo>
+                {
+                    new("Microsoft.Storage/storageAccounts", 0, 0, null, "Network failure occurred while retrieving quota information")
+                }
+            }
+        };
+
+        _quotaService.GetAzureQuotaAsync(
+                Arg.Is<List<string>>(list =>
+                    list.Count == 1 &&
+                    list.Contains("Microsoft.Storage/storageAccounts")),
+                subscriptionId,
+                region)
+            .Returns(expectedQuotaInfo);
+
+        var args = _parser.Parse([
+            "--subscription", subscriptionId,
+            "--region", region,
+            "--resource-types", resourceTypes
+        ]);
+
+        var context = new CommandContext(_serviceProvider);
+
+        // Act
+        var result = await _command.ExecuteAsync(context, args);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(200, result.Status);
+        Assert.NotNull(result.Results);
+
+        // Verify the service was called with the correct parameters
+        await _quotaService.Received(1).GetAzureQuotaAsync(
+            Arg.Is<List<string>>(list =>
+                list.Count == 1 &&
+                list.Contains("Microsoft.Storage/storageAccounts")),
+            subscriptionId,
+            region);
+
+        // Verify the response structure contains descriptive error in Description
+        var json = JsonSerializer.Serialize(result.Results);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<CheckCommand.UsageCheckCommandResult>(json, options);
+        Assert.NotNull(response);
+        Assert.NotNull(response.UsageInfo);
+        Assert.True(response.UsageInfo.ContainsKey("Microsoft.Storage/storageAccounts"));
+
+        var usageInfo = response.UsageInfo["Microsoft.Storage/storageAccounts"];
+        Assert.Single(usageInfo);
+        Assert.Equal("Network failure occurred while retrieving quota information", usageInfo[0].Description);
+        Assert.Equal(0, usageInfo[0].Limit);
+        Assert.Equal(0, usageInfo[0].Used);
     }
 }

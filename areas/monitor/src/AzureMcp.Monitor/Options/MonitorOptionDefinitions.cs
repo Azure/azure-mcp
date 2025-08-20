@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Core.Models.Option;
-
 namespace AzureMcp.Monitor.Options;
 
 public static class MonitorOptionDefinitions
@@ -168,13 +166,6 @@ public static class MonitorOptionDefinitions
             IsRequired = false
         };
 
-        public static readonly Option<string> OptionalResourceGroup = new(
-            $"--{OptionDefinitions.Common.ResourceGroupName}",
-            "The name of the Azure resource group. This is a logical container for Azure resources."
-        )
-        {
-            IsRequired = false
-        };
 
         public static readonly Option<string> ResourceType = new(
             $"--{ResourceTypeName}",

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Azure.Core;
-using AzureMcp.Core.Areas.Server.Options;
 
 namespace AzureMcp.Core.Models.Option;
 
@@ -47,7 +46,7 @@ public static partial class OptionDefinitions
             "The name of the Azure resource group. This is a logical container for Azure resources."
         )
         {
-            IsRequired = true
+            IsRequired = false
         };
     }
 

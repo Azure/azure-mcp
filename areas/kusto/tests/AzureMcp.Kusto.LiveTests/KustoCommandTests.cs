@@ -8,7 +8,6 @@ using AzureMcp.Kusto.Services;
 using AzureMcp.Tests;
 using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
-using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
 using Xunit;
 using MsOptions = Microsoft.Extensions.Options.Options;

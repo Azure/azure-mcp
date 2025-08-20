@@ -134,22 +134,21 @@ public class DiagramGenerateCommandTests
         Assert.NotNull(response);
         Assert.Equal(200, response.Status);
         // Extract the URL from the response message
-        var urlPattern = "https://mermaid.live/view#pako:";
-        var urlStartIndex = response.Message.IndexOf(urlPattern);
-        Assert.True(urlStartIndex >= 0, "URL starting with 'https://mermaid.live/view#pako:' should be present in the response");
+        var graphStartPattern = "```mermaid";
+        var graphStartIndex = response.Message.IndexOf(graphStartPattern);
+        Assert.True(graphStartIndex >= 0, "Graph data starting with '```mermaid' should be present in the response");
 
-        // Extract the full URL (assuming it ends at whitespace or end of string)
-        var urlStartPosition = urlStartIndex;
-        var urlEndPosition = response.Message.IndexOfAny([' ', '\n', '\r', '\t'], urlStartPosition);
-        if (urlEndPosition == -1)
-            urlEndPosition = response.Message.Length;
+        // Extract the full graph (assuming it ends at whitespace or end of string)
+        var graphStartPosition = graphStartIndex;
+        var graphEndPosition = response.Message.IndexOf("```", graphStartIndex + 1);
 
-        var extractedUrl = response.Message.Substring(urlStartPosition, urlEndPosition - urlStartPosition);
-        Assert.StartsWith(urlPattern, extractedUrl);
-        var encodedDiagram = extractedUrl.Substring(urlPattern.Length).Replace("_", "/").Replace("-", "+"); // Replace back for decoding
-        var decodedDiagram = EncodeMermaid.GetDecodedMermaidChart(encodedDiagram);
-        Assert.NotEmpty(decodedDiagram);
-        Assert.Contains("website", decodedDiagram);
-        Assert.Contains("store", decodedDiagram);
+        if (graphEndPosition == -1)
+            graphEndPosition = response.Message.Length;
+
+        var extractedGraph = response.Message.Substring(graphStartPosition, graphEndPosition - graphStartPosition);
+        Assert.StartsWith(graphStartPattern, extractedGraph);
+        Assert.NotEmpty(extractedGraph);
+        Assert.Contains("website", extractedGraph);
+        Assert.Contains("store", extractedGraph);
     }
 }

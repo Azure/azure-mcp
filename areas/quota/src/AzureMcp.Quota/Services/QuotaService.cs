@@ -4,13 +4,17 @@
 using Azure.Core;
 using Azure.ResourceManager;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Http;
 using AzureMcp.Quota.Models;
 using AzureMcp.Quota.Services.Util;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Quota.Services;
 
-public class QuotaService() : BaseAzureService, IQuotaService
+public class QuotaService(ILoggerFactory? loggerFactory = null, IHttpClientService? httpClientService = null) : BaseAzureService(loggerFactory: loggerFactory), IQuotaService
 {
+    private readonly IHttpClientService _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
+
     public async Task<Dictionary<string, List<UsageInfo>>> GetAzureQuotaAsync(
         List<string> resourceTypes,
         string subscriptionId,
@@ -21,7 +25,9 @@ public class QuotaService() : BaseAzureService, IQuotaService
             credential,
             resourceTypes,
             subscriptionId,
-            location
+            location,
+            LoggerFactory,
+            _httpClientService
             );
         return quotaByResourceTypes;
     }
@@ -49,7 +55,7 @@ public class QuotaService() : BaseAzureService, IQuotaService
             };
         }
 
-        var availableRegions = await AzureRegionService.GetAvailableRegionsForResourceTypesAsync(armClient, resourceTypes, subscriptionId, cognitiveServiceProperties);
+        var availableRegions = await AzureRegionService.GetAvailableRegionsForResourceTypesAsync(armClient, resourceTypes, subscriptionId, LoggerFactory, cognitiveServiceProperties);
         var allRegions = availableRegions.Values
             .Where(regions => regions.Count > 0)
             .SelectMany(regions => regions)

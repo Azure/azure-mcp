@@ -1,10 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.Identity;
 using AzureMcp.Core.Services.Azure.Authentication;
-using AzureMcp.Tests;
-using AzureMcp.Tests.Client;
 using AzureMcp.Tests.Client.Helpers;
 using Microsoft.Azure.Cosmos;
 using Xunit;

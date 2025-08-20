@@ -28,6 +28,98 @@ namespace AzureMcp.Storage.LiveTests
         }
 
         [Fact]
+        public async Task Should_get_storage_account_details_by_subscription_id()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionId },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            // Verify the account has basic properties
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+
+            var location = account.GetProperty("location");
+            Assert.NotNull(location.GetString());
+
+            var kind = account.GetProperty("kind");
+            Assert.Equal("StorageV2", kind.GetString());
+
+            var skuName = account.GetProperty("skuName");
+            Assert.Equal("Standard_LRS", skuName.GetString());
+
+            var hnsEnabled = account.GetProperty("hnsEnabled");
+            Assert.True(hnsEnabled.GetBoolean());
+        }
+
+        [Fact]
+        public async Task Should_get_storage_account_details_by_subscription_name()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+
+            var kind = account.GetProperty("kind");
+            Assert.Equal("StorageV2", kind.GetString());
+        }
+
+        [Fact]
+        public async Task Should_get_storage_account_details_with_tenant_id()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantId },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+        }
+
+        [Fact()]
+        public async Task Should_get_storage_account_details_with_tenant_name()
+        {
+            Assert.SkipWhen(Settings.IsServicePrincipal, TenantNameReason);
+
+            var result = await CallToolAsync(
+                "azmcp_storage_account_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantName },
+                { "account", Settings.ResourceBaseName }
+                });
+
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            var name = account.GetProperty("name");
+            Assert.Equal(Settings.ResourceBaseName, name.GetString());
+        }
+
+        [Fact]
         public async Task Should_list_storage_accounts_by_subscription_name()
         {
             var result = await CallToolAsync(
@@ -92,6 +184,34 @@ namespace AzureMcp.Storage.LiveTests
             var actual = result.AssertProperty("blobs");
             Assert.Equal(JsonValueKind.Array, actual.ValueKind);
             Assert.NotEmpty(actual.EnumerateArray());
+        }
+
+        [Fact]
+        public async Task Should_get_blob_details()
+        {
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_details",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "tenant", Settings.TenantId },
+                { "account", Settings.ResourceBaseName },
+                { "container", "bar" },
+                { "blob", "README.md" },
+                });
+
+            var details = result.AssertProperty("details");
+            Assert.Equal(JsonValueKind.Object, details.ValueKind);
+
+            // Verify the blob has basic properties
+            var contentLength = details.GetProperty("contentLength");
+            Assert.True(contentLength.GetInt64() > 0);
+
+            var contentType = details.GetProperty("contentType");
+            Assert.NotNull(contentType.GetString());
+
+            var lastModified = details.GetProperty("lastModified");
+            Assert.NotEqual(default(DateTimeOffset), lastModified.GetDateTimeOffset());
         }
 
         [Fact]
@@ -196,6 +316,27 @@ namespace AzureMcp.Storage.LiveTests
 
             var actual = result.AssertProperty("details");
             Assert.Equal(JsonValueKind.Object, actual.ValueKind);
+        }
+
+        [Fact]
+        public async Task Should_create_container()
+        {
+            var containerName = $"test-container-{DateTime.UtcNow.Ticks}";
+
+            var result = await CallToolAsync(
+                "azmcp_storage_blob_container_create",
+                new()
+                {
+                { "subscription", Settings.SubscriptionName },
+                { "account", Settings.ResourceBaseName },
+                { "container", containerName }
+                });
+
+            var actual = result.AssertProperty("container");
+            Assert.Equal(JsonValueKind.Object, actual.ValueKind);
+            Assert.True(actual.TryGetProperty("lastModified", out _));
+            Assert.True(actual.TryGetProperty("eTag", out _));
+            Assert.True(actual.TryGetProperty("publicAccess", out _));
         }
 
         [Fact]
@@ -319,6 +460,124 @@ namespace AzureMcp.Storage.LiveTests
             // When using a prefix that does not match any files, we should still return a valid response
             // with no result.
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_Successfully()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message from integration test" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            // Check message properties
+            Assert.True(message.TryGetProperty("messageId", out _));
+            Assert.True(message.TryGetProperty("insertionTime", out _));
+            Assert.True(message.TryGetProperty("expirationTime", out _));
+            Assert.True(message.TryGetProperty("popReceipt", out _));
+            Assert.True(message.TryGetProperty("nextVisibleTime", out _));
+            Assert.True(message.TryGetProperty("messageContent", out _));
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message from integration test", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_SendQueueMessage_WithOptionalParameters()
+        {
+            // Arrange
+            var result = await CallToolAsync(
+                "azmcp_storage_queue_message_send",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account", Settings.ResourceBaseName },
+                    { "queue", "testqueue" },
+                    { "message", "Test message with TTL" },
+                    { "time-to-live-in-seconds", "3600" },
+                    { "visibility-timeout-in-seconds", "30" }
+                });
+
+            // Assert
+            var message = result.AssertProperty("message");
+            Assert.Equal(JsonValueKind.Object, message.ValueKind);
+
+            var messageContent = message.GetProperty("messageContent").GetString();
+            Assert.Equal("Test message with TTL", messageContent);
+        }
+
+        [Fact]
+        public async Task Should_CreateStorageAccount_Successfully()
+        {
+            // Arrange - Use a unique account name for testing
+            var uniqueAccountName = $"testacct{DateTime.UtcNow:MMddHHmmss}";
+
+            var result = await CallToolAsync(
+                "azmcp_storage_account_create",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "account-name", uniqueAccountName },
+                    { "resource-group", Settings.ResourceGroupName },
+                    { "location", "eastus" },
+                    { "sku", "Standard_LRS" },
+                    { "kind", "StorageV2" }
+                });
+
+            // Assert
+            var account = result.AssertProperty("account");
+            Assert.Equal(JsonValueKind.Object, account.ValueKind);
+
+            // Check account properties
+            var name = account.GetProperty("name").GetString();
+            Assert.Equal(uniqueAccountName, name);
+
+            var location = account.GetProperty("location").GetString();
+            Assert.Equal("eastus", location);
+
+            var kind = account.GetProperty("kind").GetString();
+            Assert.Equal("StorageV2", kind);
+
+            var skuName = account.GetProperty("skuName").GetString();
+            Assert.Equal("Standard_LRS", skuName);
+        }
+
+        [Theory]
+        [InlineData("--invalid-param", new string[0])]
+        [InlineData("--subscription", new[] { "invalidSub" })]
+        [InlineData("--account-name", new[] { "testacct", "--subscription", "sub123" })] // Missing required resource-group and location
+        public async Task Should_Return400_WithInvalidInput_ForAccountCreate(string firstArg, string[] remainingArgs)
+        {
+            var allArgs = new[] { firstArg }.Concat(remainingArgs);
+            var argsString = string.Join(" ", allArgs);
+
+            // For error testing, we expect CallToolAsync to return null (no results)
+            // and we need to catch any exceptions or check the response manually
+            try
+            {
+                var result = await CallToolAsync("azmcp_storage_account_create",
+                    new Dictionary<string, object?> { { "args", argsString } });
+
+                // If we get here, the command didn't fail as expected
+                // This might indicate the command succeeded when it should have failed
+                Assert.Fail("Expected command to fail with invalid input, but it succeeded");
+            }
+            catch (Exception ex)
+            {
+                // Expected to fail with validation errors
+                Assert.True(ex.Message.Contains("required") || ex.Message.Contains("invalid"),
+                    $"Expected validation error, but got: {ex.Message}");
+            }
         }
     }
 }

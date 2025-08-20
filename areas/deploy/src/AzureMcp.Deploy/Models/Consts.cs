@@ -30,7 +30,7 @@ public static class AzureServiceConstants
         AzureOpenAI,
         AzureDatabaseForPostgreSQL,
         AzurePrivateEndpoint,
-        AzureRedisCache,
+        AzureCacheForRedis,
         AzureSQLDatabase,
         AzureStorageAccount,
         StaticWebApp,

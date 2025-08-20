@@ -3,10 +3,11 @@
 
 using Azure.Core;
 using Azure.ResourceManager.Network;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Quota.Services.Util;
 
-public class NetworkUsageChecker(TokenCredential credential, string subscriptionId) : AzureUsageChecker(credential, subscriptionId)
+public class NetworkUsageChecker(TokenCredential credential, string subscriptionId, ILogger<NetworkUsageChecker> logger) : AzureUsageChecker(credential, subscriptionId, logger)
 {
     public override async Task<List<UsageInfo>> GetUsageForLocationAsync(string location)
     {
@@ -30,7 +31,7 @@ public class NetworkUsageChecker(TokenCredential credential, string subscription
         }
         catch (Exception error)
         {
-            throw new Exception($"Error fetching network quotas: {error.Message}");
+            throw new InvalidOperationException("Failed to fetch Network quotas. Please check your subscription permissions and service availability.", error);
         }
     }
 }

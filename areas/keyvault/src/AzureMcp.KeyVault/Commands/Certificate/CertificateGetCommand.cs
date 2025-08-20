@@ -4,7 +4,6 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.KeyVault.Commands;
 using AzureMcp.KeyVault.Options;
 using AzureMcp.KeyVault.Options.Certificate;
 using AzureMcp.KeyVault.Services;
@@ -56,8 +55,6 @@ public sealed class CertificateGetCommand(ILogger<CertificateGetCommand> logger)
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var keyVaultService = context.GetService<IKeyVaultService>();
             var certificate = await keyVaultService.GetCertificate(

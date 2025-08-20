@@ -8,6 +8,7 @@ using AzureMcp.Core.Commands;
 using AzureMcp.Core.Helpers;
 using AzureMcp.Deploy.Options;
 using AzureMcp.Deploy.Options.Architecture;
+using AzureMcp.Deploy.Services.Templates;
 using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Deploy.Commands.Architecture;
@@ -86,7 +87,6 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
             {
                 throw new InvalidOperationException("Failed to generate architecture diagram. The chart content is empty.");
             }
-            var encodedDiagram = EncodeMermaid.GetEncodedMermaidChart(chart).Replace("+", "-").Replace("/", "_"); // replace '+' with '-' and "/" with "_" for URL safety and consistency with mermaid.live URL encoding
 
             context.Activity?.AddTag("MermaidDiagram", chart);
 
@@ -106,10 +106,9 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
                 ? string.Join(", ", usedServiceTypes)
                 : null;
 
-            context.Response.Message = $"Help the user open up this URI to preview their app topology using tool open_simple_browser: {mermaidUrl} \n"
-                + "Ask user if the topology is expected, if not, you should call this tool with the user's updated instructions. "
-                + "Please inform the user that here are the supported hosting technologies: "
-                + $"{string.Join(", ", Enum.GetNames<AzureServiceConstants.AzureComputeServiceType>())}. ";
+            var response = TemplateService.LoadTemplate("Architecture/architecture-diagram");
+            context.Response.Message = response.Replace("{{chart}}", chart)
+                .Replace("{{hostings}}", string.Join(", ", Enum.GetNames<AzureServiceConstants.AzureComputeServiceType>()));
             if (!string.IsNullOrWhiteSpace(usedServiceTypesString))
             {
                 context.Response.Message += $"Here is the full list of supported component service types for the topology: {usedServiceTypesString}.";

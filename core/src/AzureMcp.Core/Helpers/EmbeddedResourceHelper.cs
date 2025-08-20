@@ -43,9 +43,7 @@ namespace AzureMcp.Core.Helpers
                 throw new ArgumentException($"Invalid regex pattern: '{resourcePattern}'", nameof(resourcePattern), ex);
             }
 
-            string[] matches = assembly.GetManifestResourceNames()
-                .Where(name => regex.IsMatch(name))
-                .ToArray();
+            string[] matches = [.. assembly.GetManifestResourceNames().Where(name => regex.IsMatch(name))];
 
             if (matches.Length == 0)
             {

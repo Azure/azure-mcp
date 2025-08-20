@@ -3,6 +3,8 @@
 
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Extensions;
+using AzureMcp.Core.Services.Http;
 using AzureMcp.Quota.Commands.Region;
 using AzureMcp.Quota.Commands.Usage;
 using AzureMcp.Quota.Services;
@@ -15,20 +17,22 @@ public sealed class QuotaSetup : IAreaSetup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IQuotaService, QuotaService>();
+        services.AddHttpClientServices();
+
+        services.AddTransient<IQuotaService>(serviceProvider =>
+            new QuotaService(serviceProvider.GetService<ILoggerFactory>(), serviceProvider.GetRequiredService<IHttpClientService>()));
     }
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var quota = new CommandGroup("quota", "Quota commands for Azure resource quota checking and usage analysis");
+        var quota = new CommandGroup("quota", "Quota commands for getting the available regions of specific Azure resource types"
+                    + " or checking Azure resource quota and usage");
         rootGroup.AddSubGroup(quota);
 
-        // Resource usage and quota operations
         var usageGroup = new CommandGroup("usage", "Resource usage and quota operations");
         usageGroup.AddCommand("check", new CheckCommand(loggerFactory.CreateLogger<CheckCommand>()));
         quota.AddSubGroup(usageGroup);
 
-        // Region availability operations
         var regionGroup = new CommandGroup("region", "Region availability operations");
         var availabilityGroup = new CommandGroup("availability", "Region availability information");
         availabilityGroup.AddCommand("list", new AvailabilityListCommand(loggerFactory.CreateLogger<AvailabilityListCommand>()));

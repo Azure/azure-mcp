@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.AzureIsv.Commands.Datadog;
 using AzureMcp.AzureIsv.Options;
 using AzureMcp.AzureIsv.Options.Datadog;
 using AzureMcp.AzureIsv.Services;
@@ -22,7 +21,7 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
 
     public override string Description =>
         """
-        List monitored resources in Datadog for a datadog resource taken as input from the user. 
+        List monitored resources in Datadog for a datadog resource taken as input from the user.
         This command retrieves all monitored azure resources available.
         Requires `datadog-resource`, `resource-group` and `subscription`.
         Result is a list of monitored resources as a JSON array.
@@ -36,14 +35,13 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
     {
         base.RegisterOptions(command);
         command.AddOption(_datadogResourceOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
     }
 
     protected override MonitoredResourcesListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.DatadogResource = parseResult.GetValueForOption(_datadogResourceOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 
@@ -56,8 +54,6 @@ public sealed class MonitoredResourcesListCommand(ILogger<MonitoredResourcesList
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var service = context.GetService<IDatadogService>();
             List<string> results = await service.ListMonitoredResources(

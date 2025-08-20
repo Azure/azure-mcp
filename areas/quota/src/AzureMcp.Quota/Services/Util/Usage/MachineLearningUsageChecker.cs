@@ -3,10 +3,11 @@
 
 using Azure.Core;
 using Azure.ResourceManager.MachineLearning;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Quota.Services.Util;
 
-public class MachineLearningUsageChecker(TokenCredential credential, string subscriptionId) : AzureUsageChecker(credential, subscriptionId)
+public class MachineLearningUsageChecker(TokenCredential credential, string subscriptionId, ILogger<MachineLearningUsageChecker> logger) : AzureUsageChecker(credential, subscriptionId, logger)
 {
     public override async Task<List<UsageInfo>> GetUsageForLocationAsync(string location)
     {
@@ -30,7 +31,7 @@ public class MachineLearningUsageChecker(TokenCredential credential, string subs
         }
         catch (Exception error)
         {
-            throw new Exception($"Error fetching Machine Learning Services quotas: {error.Message}");
+            throw new InvalidOperationException("Failed to fetch Machine Learning quotas. Please check your subscription permissions and service availability.", error);
         }
     }
 }

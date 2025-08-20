@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Kusto.Commands;
 using AzureMcp.Kusto.Options;
 using AzureMcp.Kusto.Services;
 using Microsoft.Extensions.Logging;
@@ -38,8 +37,6 @@ public sealed class DatabaseListCommand(ILogger<DatabaseListCommand> logger) : B
             {
                 return context.Response;
             }
-
-            context.Activity?.WithSubscriptionTag(options);
 
             var kusto = context.GetService<IKustoService>();
 

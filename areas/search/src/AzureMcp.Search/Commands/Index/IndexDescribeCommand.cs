@@ -117,7 +117,7 @@ public sealed class IndexDescribeCommand(ILogger<IndexDescribeCommand> logger) :
         public SearchIndexProxy(SearchIndex index) : this()
         {
             Name = index.Name;
-            Fields = index.Fields.Select(field => new SearchFieldProxy(field)).ToList();
+            Fields = [.. index.Fields.Select(field => new SearchFieldProxy(field))];
         }
     }
 }

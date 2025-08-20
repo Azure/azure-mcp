@@ -110,19 +110,26 @@ public static class AzdResourceLogService
                     while (parser.Accept<MappingEnd>(out _) == false)
                     {
                         var propertyKey = parser.Consume<Scalar>().Value;
-                        var propertyValue = parser.Consume<Scalar>().Value;
-
-                        switch (propertyKey)
+                        // Only accept properties host, project, and language which are scalars
+                        if (parser.Accept<Scalar>(out _))
                         {
-                            case "host":
-                                host = propertyValue;
-                                break;
-                            case "project":
-                                project = propertyValue;
-                                break;
-                            case "language":
-                                language = propertyValue;
-                                break;
+                            var propertyValue = parser.Consume<Scalar>().Value;
+                            switch (propertyKey)
+                            {
+                                case "host":
+                                    host = propertyValue;
+                                    break;
+                                case "project":
+                                    project = propertyValue;
+                                    break;
+                                case "language":
+                                    language = propertyValue;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            SkipValue(parser);
                         }
                     }
 

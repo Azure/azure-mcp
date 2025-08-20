@@ -1,17 +1,23 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net.Http.Headers;
+using System.Text.Json;
 using Azure.Core;
+using AzureMcp.Core.Services.Http;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Quota.Services.Util;
 
-public class PostgreSQLUsageChecker(TokenCredential credential, string subscriptionId) : AzureUsageChecker(credential, subscriptionId)
+public class PostgreSQLUsageChecker(TokenCredential credential, string subscriptionId, ILogger<PostgreSQLUsageChecker> logger, IHttpClientService httpClientService) : AzureUsageChecker(credential, subscriptionId, logger)
 {
+    private readonly IHttpClientService _httpClientService = httpClientService;
+
     public override async Task<List<UsageInfo>> GetUsageForLocationAsync(string location)
     {
         try
         {
-            var requestUrl = $"https://management.azure.com/subscriptions/{SubscriptionId}/providers/Microsoft.DBforPostgreSQL/locations/{location}/resourceType/flexibleServers/usages?api-version=2023-06-01-preview";
+            var requestUrl = $"{managementEndpoint}/subscriptions/{SubscriptionId}/providers/Microsoft.DBforPostgreSQL/locations/{location}/resourceType/flexibleServers/usages?api-version=2023-06-01-preview";
             using var rawResponse = await GetQuotaByUrlAsync(requestUrl);
 
             if (rawResponse?.RootElement.TryGetProperty("value", out var valueElement) != true)
@@ -54,7 +60,34 @@ public class PostgreSQLUsageChecker(TokenCredential credential, string subscript
         }
         catch (Exception error)
         {
-            throw new Exception($"Error fetching PostgreSQL quotas: {error.Message}");
+            throw new InvalidOperationException("Failed to fetch PostgreSQL quotas. Please check your subscription permissions and network connectivity.", error);
+        }
+    }
+
+    protected async Task<JsonDocument?> GetQuotaByUrlAsync(string requestUrl, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var token = await Credential.GetTokenAsync(new TokenRequestContext([$"{managementEndpoint}/.default"]), cancellationToken);
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await _httpClientService.DefaultClient.SendAsync(request, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"HTTP error! status: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonDocument.Parse(content);
+        }
+        catch (Exception error)
+        {
+            Logger.LogWarning("Error fetching quotas directly: {Error}", error.Message);
+            return null;
         }
     }
 }

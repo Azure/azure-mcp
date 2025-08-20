@@ -9,6 +9,7 @@ using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.PostgreSql.FlexibleServers;
 using Azure.ResourceManager.PostgreSql.FlexibleServers.Models;
 using AzureMcp.Quota.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.Quota.Services.Util;
 
@@ -21,16 +22,19 @@ public abstract class AzureRegionChecker : IRegionChecker
 {
     protected readonly string SubscriptionId;
     protected readonly ArmClient ResourceClient;
-    protected AzureRegionChecker(ArmClient armClient, string subscriptionId)
+    protected readonly ILogger Logger;
+
+    protected AzureRegionChecker(ArmClient armClient, string subscriptionId, ILogger logger)
     {
         SubscriptionId = subscriptionId;
         ResourceClient = armClient;
-        Console.WriteLine($"AzureRegionChecker initialized for subscription: {subscriptionId}");
+        Logger = logger;
     }
+
     public abstract Task<List<string>> GetAvailableRegionsAsync(string resourceType);
 }
 
-public class DefaultRegionChecker(ArmClient armClient, string subscriptionId) : AzureRegionChecker(armClient, subscriptionId)
+public class DefaultRegionChecker(ArmClient armClient, string subscriptionId, ILogger<DefaultRegionChecker> logger) : AzureRegionChecker(armClient, subscriptionId, logger)
 {
     public override async Task<List<string>> GetAvailableRegionsAsync(string resourceType)
     {
@@ -62,7 +66,7 @@ public class DefaultRegionChecker(ArmClient armClient, string subscriptionId) : 
         }
         catch (Exception error)
         {
-            throw new Exception($"Error fetching regions for resource type {resourceType}: {error.Message}");
+            throw new InvalidOperationException($"Failed to fetch available regions for resource type '{resourceType}'. Please verify the resource type name and your subscription permissions.", error);
         }
     }
 }
@@ -73,8 +77,8 @@ public class CognitiveServicesRegionChecker : AzureRegionChecker
     private readonly string? _apiVersion;
     private readonly string? _modelName;
 
-    public CognitiveServicesRegionChecker(ArmClient armClient, string subscriptionId, string? skuName = null, string? apiVersion = null, string? modelName = null)
-        : base(armClient, subscriptionId)
+    public CognitiveServicesRegionChecker(ArmClient armClient, string subscriptionId, ILogger<CognitiveServicesRegionChecker> logger, string? skuName = null, string? apiVersion = null, string? modelName = null)
+        : base(armClient, subscriptionId, logger)
     {
         _skuName = skuName;
         _apiVersion = apiVersion;
@@ -121,7 +125,7 @@ public class CognitiveServicesRegionChecker : AzureRegionChecker
             }
             catch (Exception error)
             {
-                Console.WriteLine($"Error checking cognitive services models for region {region}: {error.Message}");
+                Logger.LogWarning("Error checking cognitive services models for region {Region}: {Error}", region, error.Message);
             }
             return null;
         });
@@ -131,7 +135,7 @@ public class CognitiveServicesRegionChecker : AzureRegionChecker
     }
 }
 
-public class PostgreSqlRegionChecker(ArmClient armClient, string subscriptionId) : AzureRegionChecker(armClient, subscriptionId)
+public class PostgreSqlRegionChecker(ArmClient armClient, string subscriptionId, ILogger<PostgreSqlRegionChecker> logger) : AzureRegionChecker(armClient, subscriptionId, logger)
 {
     public override async Task<List<string>> GetAvailableRegionsAsync(string resourceType)
     {
@@ -162,7 +166,7 @@ public class PostgreSqlRegionChecker(ArmClient armClient, string subscriptionId)
             }
             catch (Exception error)
             {
-                Console.WriteLine($"Error checking PostgreSQL capabilities for region {region}: {error.Message}");
+                Logger.LogWarning("Error checking PostgreSQL capabilities for region {Region}: {Error}", region, error.Message);
             }
             return null;
         });
@@ -178,6 +182,7 @@ public static class RegionCheckerFactory
         ArmClient armClient,
         string subscriptionId,
         string resourceType,
+        ILoggerFactory loggerFactory,
         CognitiveServiceProperties? properties = null)
     {
         var provider = resourceType.Split('/')[0].ToLowerInvariant();
@@ -187,11 +192,18 @@ public static class RegionCheckerFactory
             "microsoft.cognitiveservices" => new CognitiveServicesRegionChecker(
                 armClient,
                 subscriptionId,
+                loggerFactory.CreateLogger<CognitiveServicesRegionChecker>(),
                 properties?.DeploymentSkuName,
                 properties?.ModelVersion,
                 properties?.ModelName),
-            "microsoft.dbforpostgresql" => new PostgreSqlRegionChecker(armClient, subscriptionId),
-            _ => new DefaultRegionChecker(armClient, subscriptionId)
+            "microsoft.dbforpostgresql" => new PostgreSqlRegionChecker(
+                armClient,
+                subscriptionId,
+                loggerFactory.CreateLogger<PostgreSqlRegionChecker>()),
+            _ => new DefaultRegionChecker(
+                armClient,
+                subscriptionId,
+                loggerFactory.CreateLogger<DefaultRegionChecker>())
         };
     }
 }
@@ -202,11 +214,12 @@ public static class AzureRegionService
         ArmClient armClient,
         string[] resourceTypes,
         string subscriptionId,
+        ILoggerFactory loggerFactory,
         CognitiveServiceProperties? cognitiveServiceProperties = null)
     {
         var tasks = resourceTypes.Select(async resourceType =>
         {
-            var checker = RegionCheckerFactory.CreateRegionChecker(armClient, subscriptionId, resourceType, cognitiveServiceProperties);
+            var checker = RegionCheckerFactory.CreateRegionChecker(armClient, subscriptionId, resourceType, loggerFactory, cognitiveServiceProperties);
             var regions = await checker.GetAvailableRegionsAsync(resourceType);
             return new KeyValuePair<string, List<string>>(resourceType, regions);
         });

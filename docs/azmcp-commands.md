@@ -227,6 +227,17 @@ azmcp extension az --command "storage account show --name <account> --resource-g
 azmcp extension az --command "vm list --resource-group <resource-group>"
 ```
 
+### Azure Container Registry (ACR) Operations
+
+```bash
+# List Azure Container Registries in a subscription
+azmcp acr registry list --subscription <subscription>
+
+# List Azure Container Registries in a specific resource group
+azmcp acr registry list --subscription <subscription> \
+                        --resource-group <resource-group>
+```
+
 ### Azure Cosmos DB Operations
 
 ```bash
@@ -365,6 +376,43 @@ azmcp extension azd --command "<command>"
 azmcp extension azd --command "init --template todo-nodejs-mongo"
 ```
 
+### Azure Deploy Operations
+
+```bash
+# Get the application service log for a specific azd environment
+azmcp deploy app logs get --workspace-folder <workspace-folder> \
+                             --azd-env-name <azd-env-name> \
+                             [--limit <limit>]
+
+# Generate a mermaid architecture diagram for the application topology follow the schema defined in [deploy-app-topology-schema.json](../areas/deploy/src/AzureMcp.Deploy/Schemas/deploy-app-topology-schema.json)
+azmcp deploy architecture diagram generate --raw-mcp-tool-input <app-topology>
+
+# Get the iac generation rules for the resource types
+azmcp deploy iac rules get --deployment-tool <deployment-tool> \
+                           --iac-type <iac-type> \
+                           --resource-types <resource-types>
+
+# Get the ci/cd pipeline guidance
+azmcp deploy pipeline guidance get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
+                                        [--organization-name <organization-name>] \
+                                        [--repository-name <repository-name>] \
+                                        [--github-environment-name <github-environment-name>]
+
+# Get a deployment plan for a specific project
+azmcp deploy plan get --workspace-folder <workspace-folder> \
+                      --project-name <project-name> \
+                      --target-app-service <target-app-service> \
+                      --provisioning-tool <provisioning-tool> \
+                      [--azd-iac-options <azd-iac-options>]
+```
+
+### Azure Function App Operations
+
+```bash
+# List function apps in a subscription
+azmcp functionapp list --subscription <subscription>
+```
+
 ### Azure Key Vault Operations
 
 ```bash
@@ -381,6 +429,13 @@ azmcp keyvault certificate get --subscription <subscription> \
 # Lists certificates in a key vault
 azmcp keyvault certificate list --subscription <subscription> \
                                 --vault <vault-name>
+
+# Imports an existing certificate (PFX or PEM) into a key vault
+azmcp keyvault certificate import --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --certificate <certificate-name> \
+                                  --certificate-data <path-or-base64-or-raw-pem> \
+                                  [--password <pfx-password>]
 
 # Creates a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
@@ -642,6 +697,22 @@ azmcp extension azqr --subscription <subscription> \
                      --resource-group <resource-group-name>
 ```
 
+### Azure Quota Operations
+
+```bash
+# Get the available regions for the resources types
+azmcp quota region availability list --subscription <subscription> \
+                                  --resource-types <resource-types> \
+                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+
+# Check the usage for Azure resources type
+azmcp quota usage check --subscription <subscription> \
+                         --region <region> \
+                         --resource-types <resource-types>
+```
+
 ### Azure RBAC Operations
 
 ```bash
@@ -671,6 +742,20 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --cache <cache-name>
 ```
 
+### Azure Resource Health Operations
+
+```bash
+# Get availability status for a specific resource
+azmcp resourcehealth availability-status get --resourceId <resource-id>
+
+# List availability statuses for all resources in a subscription
+azmcp resourcehealth availability-status list --subscription <subscription>
+
+# List availability statuses for all resources in a specific resource group
+azmcp resourcehealth availability-status list --subscription <subscription> \
+                                              --resource-group <resource-group>
+```
+
 ### Azure Resource Group Operations
 
 ```bash
@@ -681,6 +766,11 @@ azmcp group list --subscription <subscription>
 ### Azure Service Bus Operations
 
 ```bash
+# Returns runtime and details about the Service Bus queue
+azmcp servicebus queue details --subscription <subscription> \
+                               --namespace <service-bus-namespace> \
+                               --queue <queue>
+
 # Gets runtime details a Service Bus topic
 azmcp servicebus topic details --subscription <subscription> \
                                --namespace <service-bus-namespace> \
@@ -691,11 +781,6 @@ azmcp servicebus topic subscription details --subscription <subscription> \
                                             --namespace <service-bus-namespace> \
                                             --topic <topic> \
                                             --subscription-name <subscription-name>
-
-# Returns runtime and details about the Service Bus queue
-azmcp servicebus queue details --subscription <subscription> \
-                               --namespace <service-bus-namespace> \
-                               --queue <queue>
 ```
 
 ### Azure SQL Database Operations
@@ -739,6 +824,23 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ### Azure Storage Operations
 
 ```bash
+# Create a new Storage account with custom configuration
+azmcp storage account create --subscription <subscription> \
+                             --account-name <unique-account-name> \
+                             --resource-group <resource-group> \
+                             --location <location> \
+                             --sku <sku> \
+                             --kind <kind> \
+                             --access-tier <access-tier> \
+                             --enable-https-traffic-only true \
+                             --allow-blob-public-access false \
+                             --enable-hierarchical-namespace false
+
+# Get detailed information about a specific Storage account
+azmcp storage account details --subscription <subscription> \
+                              --account <account-name> \
+                              [--tenant <tenant>]
+
 # List Storage accounts in a subscription
 azmcp storage account list --subscription <subscription>
 
@@ -749,10 +851,11 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --tier <tier> \
                                   --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
 
-# List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> \
-                        --account <account> \
-                        --container <container>
+# Create a blob container with optional public access
+azmcp storage blob container create --subscription <subscription> \
+                                    --account <account> \
+                                    --container <container> \
+                                    [--blob-container-public-access <blob|container>]
 
 # Get detailed properties of a storage container
 azmcp storage blob container details --subscription <subscription> \
@@ -762,6 +865,17 @@ azmcp storage blob container details --subscription <subscription> \
 # List containers in a Storage blob service
 azmcp storage blob container list --subscription <subscription> \
                                   --account <account>
+
+# Get detailed properties of a blob
+azmcp storage blob details --subscription <subscription> \
+                           --account <account> \
+                           --container <container> \
+                           --blob <blob-name>
+
+# List blobs in a Storage container
+azmcp storage blob list --subscription <subscription> \
+                        --account <account> \
+                        --container <container>
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -774,6 +888,14 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
                                               --file-system <file-system> \
                                               [--filter-path <filter-path>] \
                                               [--recursive]
+
+# Send a message to a Storage queue
+azmcp storage queue message send --subscription <subscription> \
+                                 --account <account-name> \
+                                 --queue <queue-name> \
+                                 --message "<message-content>" \
+                                 [--time-to-live-in-seconds <seconds>] \
+                                 [--visibility-timeout-in-seconds <seconds>]
 
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \
@@ -889,50 +1011,6 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 ```bash
 # Get Bicep schema for a specific Azure resource type
 azmcp bicepschema get --resource-type <resource-type> \
-```
-
-### Quota
-```bash
-# Check the usage for Azure resources type
-azmcp quota usage check --subscription <subscription> \
-                         --region <region> \
-                         --resource-types <resource-types>
-
-# Get the available regions for the resources types
-azmcp quota region availability list --subscription <subscription> \
-                                  --resource-types <resource-types> \
-                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
-                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
-                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
-```
-
-### Deploy
-```bash
-# Get a deployment plan for a specific project
-azmcp deploy plan get --workspace-folder <workspace-folder> \
-                      --project-name <project-name> \
-                      --target-app-service <target-app-service> \
-                      --provisioning-tool <provisioning-tool> \
-                      [--azd-iac-options <azd-iac-options>]
-                         
-# Get the iac generation rules for the resource types
-azmcp deploy iac rules get --deployment-tool <deployment-tool> \
-                           --iac-type <iac-type> \
-                           --resource-types <resource-types>
-
-# Get the application service log for a specific azd environment
-azmcp deploy app logs get --workspace-folder <workspace-folder> \
-                             --azd-env-name <azd-env-name> \
-                             [--limit <limit>]
-
-# Get the ci/cd pipeline guidance
-azmcp deploy pipeline guidance get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
-                                        [--organization-name <organization-name>] \
-                                        [--repository-name <repository-name>] \
-                                        [--github-environment-name <github-environment-name>]
-
-# Generate a mermaid architecture diagram for the application topology
-azmcp deploy architecture diagram generate --raw-mcp-tool-input <app-topology>
 ```
 
 ## Response Format
