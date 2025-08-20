@@ -18,12 +18,14 @@ public interface IFunctionAppService
         string resourceGroup,
         string functionAppName,
         string location,
-        string? appServicePlan = null,
-        string? planType = null,
-        string? planSku = null,
+        string? planName = null,
+        string? hostingKind = null,
+        string? sku = null,
         string? runtime = null,
         string? runtimeVersion = null,
-        string? operatingSystem = null,
+        string? os = null,
+        string? storageAccountName = null,
+        string? containerAppsEnvironmentName = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
 }

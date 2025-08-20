@@ -31,6 +31,93 @@ public sealed class FunctionAppService(
     private const string CacheGroup = "functionapp";
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(1);
 
+    private static readonly HashSet<string> SupportedRuntimes = new()
+    {
+        "dotnet", "dotnet-isolated", "node", "python", "java", "powershell", "custom"
+    };
+
+    private static class ContainerAppsDefaults
+    {
+        public const double CpuCores = 0.25;
+        public const string Memory = "0.5Gi";
+        public const int IngressPort = 80;
+        public const bool ExternalIngress = true;
+    }
+
+    private static class FlexConsumptionDefaults
+    {
+        public const int InstanceMemoryMB = 2048;
+        public const int MaximumInstanceCount = 100;
+    }
+
+    private static string? GetDefaultRuntimeVersion(string runtime) => runtime switch
+    {
+        "python" => "3.12",
+        "node" => "22",
+        "dotnet" => "8.0",
+        "dotnet-isolated" => "8.0",
+        "java" => "17",
+        "powershell" => "7.4",
+        _ => null
+    };
+
+    internal static string GetContainerImage(string runtime) => runtime switch
+    {
+        "dotnet" => "mcr.microsoft.com/azure-functions/dotnet:4",
+        "dotnet-isolated" => "mcr.microsoft.com/azure-functions/dotnet-isolated:4",
+        "node" => "mcr.microsoft.com/azure-functions/node:4",
+        "python" => "mcr.microsoft.com/azure-functions/python:4",
+        "java" => "mcr.microsoft.com/azure-functions/java:4",
+        "powershell" => "mcr.microsoft.com/azure-functions/powershell:4",
+        _ => "mcr.microsoft.com/azure-functions/dotnet-isolated:4"
+    };
+
+    private static AppServiceSkuDescription GetDefaultSku(HostingKind hostingKind) => hostingKind switch
+    {
+        HostingKind.FlexConsumption => new AppServiceSkuDescription { Name = "FC1", Tier = "FlexConsumption" },
+        HostingKind.Premium => new AppServiceSkuDescription { Name = "EP1", Tier = "ElasticPremium" },
+        HostingKind.Consumption => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" },
+        HostingKind.AppService => new AppServiceSkuDescription { Name = "B1", Tier = "Basic" },
+        _ => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" }
+    };
+
+    internal readonly record struct NormalizedInputs(
+        string Runtime,
+        string? RuntimeVersion,
+        string? PlanType,
+        string? PlanSku,
+        string? OperatingSystem,
+        string? StorageAccountName,
+        string? ContainerAppsEnvironmentName);
+
+    internal static NormalizedInputs ValidateAndNormalizeInputs(
+        string subscription,
+        string resourceGroup,
+        string functionAppName,
+        string location,
+        string? runtime,
+        string? runtimeVersion,
+        string? hostingKind,
+        string? sku,
+        string? os,
+        string? storageAccountName,
+        string? containerAppsEnvironmentName)
+    {
+        ValidateRequiredParameters(subscription, resourceGroup, functionAppName, location);
+
+        var inputs = new NormalizedInputs(
+            string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant(),
+            string.IsNullOrWhiteSpace(runtimeVersion) ? null : runtimeVersion.Trim(),
+            string.IsNullOrWhiteSpace(hostingKind) ? null : hostingKind.Trim().ToLowerInvariant(),
+            string.IsNullOrWhiteSpace(sku) ? null : sku.Trim(),
+            string.IsNullOrWhiteSpace(os) ? null : os.Trim().ToLowerInvariant(),
+            string.IsNullOrWhiteSpace(storageAccountName) ? null : storageAccountName.Trim(),
+            string.IsNullOrWhiteSpace(containerAppsEnvironmentName) ? null : containerAppsEnvironmentName.Trim());
+
+        ValidateParameterCombinations(inputs);
+        return inputs;
+    }
+
     public async Task<List<FunctionAppInfo>?> ListFunctionApps(
         string subscription,
         string? tenant = null,
@@ -62,40 +149,77 @@ public sealed class FunctionAppService(
         string resourceGroup,
         string functionAppName,
         string location,
-        string? appServicePlan = null,
-        string? planType = null,
-        string? planSku = null,
+        string? planName = null,
+        string? hostingKind = null,
+        string? sku = null,
         string? runtime = null,
         string? runtimeVersion = null,
-        string? operatingSystem = null,
+        string? os = null,
+        string? storageAccountName = null,
+        string? containerAppsEnvironmentName = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscription, resourceGroup, functionAppName, location);
+        var inputs = ValidateAndNormalizeInputs(
+            subscription, resourceGroup, functionAppName, location,
+            runtime, runtimeVersion, hostingKind, sku, os,
+            storageAccountName, containerAppsEnvironmentName);
         var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
         var rg = await _resourceGroupService.CreateOrUpdateResourceGroup(subscription, resourceGroup, location, tenant, retryPolicy);
-        var options = BuildCreateOptions(runtime, runtimeVersion, planType, planSku, operatingSystem);
+        var options = BuildCreateOptions(inputs);
 
         return options.HostingKind == HostingKind.ContainerApp
-            ? await CreateContainerHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, options)
-            : await CreateAppServiceHostedFunctionAppAsync(subscriptionResource, rg, functionAppName, location, appServicePlan, options);
+            ? await ContainerAppsStrategy.CreateFunctionAppAsync(subscriptionResource, rg, functionAppName, location, options, inputs.StorageAccountName, inputs.ContainerAppsEnvironmentName)
+            : await AppServiceStrategy.CreateFunctionAppAsync(subscriptionResource, rg, functionAppName, location, planName, options, inputs.StorageAccountName);
     }
 
-    private static CreateOptions BuildCreateOptions(string? runtime, string? runtimeVersion, string? planType, string? planSku, string? operatingSystem)
+    internal static void ValidateParameterCombinations(NormalizedInputs inputs)
     {
-        var selectedRuntime = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
-        var hostingKind = ParseHostingKind(planType);
-        if (hostingKind == HostingKind.FlexConsumption && selectedRuntime == "dotnet")
-            selectedRuntime = "dotnet-isolated";
-        var selectedRuntimeVersion = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion(selectedRuntime) : runtimeVersion!.Trim();
-        var (requiresLinux, normalizedOs) = ResolveOs(selectedRuntime, hostingKind, operatingSystem);
-        return new CreateOptions(selectedRuntime, selectedRuntimeVersion, hostingKind, requiresLinux, planSku, normalizedOs);
+        var hostingKind = ParseHostingKind(inputs.PlanType);
+
+        if (inputs.OperatingSystem is not null && inputs.OperatingSystem != "windows" && inputs.OperatingSystem != "linux")
+            throw new ArgumentException("Operating system must be either 'windows' or 'linux'.");
+
+        if (inputs.StorageAccountName is not null)
+        {
+            if (inputs.StorageAccountName.Length < 3 || inputs.StorageAccountName.Length > 24)
+                throw new ArgumentException("Storage account name must be between 3 and 24 characters long.");
+            if (!inputs.StorageAccountName.All(c => char.IsLetterOrDigit(c) && (char.IsDigit(c) || char.IsLower(c))))
+                throw new ArgumentException("Storage account name must contain only lowercase letters and numbers.");
+        }
+
+        if (inputs.ContainerAppsEnvironmentName is not null && hostingKind != HostingKind.ContainerApp)
+            throw new InvalidOperationException("Container Apps environment name can only be specified when using Container Apps hosting.");
+
+        if (hostingKind == HostingKind.ContainerApp && inputs.PlanSku is not null)
+            throw new InvalidOperationException("Plan SKU cannot be specified for Container Apps hosting.");
+
+        if (!SupportedRuntimes.Contains(inputs.Runtime))
+            throw new ArgumentException($"Runtime '{inputs.Runtime}' is not supported. Supported runtimes: {string.Join(", ", SupportedRuntimes)}.");
+
+        if (inputs.Runtime == "python" && inputs.OperatingSystem == "windows")
+            throw new InvalidOperationException("Python runtime requires Linux operating system.");
+
+        if (hostingKind == HostingKind.FlexConsumption && inputs.Runtime == "dotnet" && inputs.RuntimeVersion is not null)
+        {
+            throw new InvalidOperationException("Flex Consumption with .NET runtime automatically uses dotnet-isolated. Specify runtime as 'dotnet-isolated' instead.");
+        }
+    }
+
+    internal static CreateOptions BuildCreateOptions(NormalizedInputs inputs)
+    {
+        var hostingKind = ParseHostingKind(inputs.PlanType);
+        var selectedRuntime = hostingKind == HostingKind.FlexConsumption && inputs.Runtime == "dotnet"
+            ? "dotnet-isolated"
+            : inputs.Runtime;
+        var selectedRuntimeVersion = inputs.RuntimeVersion ?? GetDefaultRuntimeVersion(selectedRuntime);
+        var (requiresLinux, normalizedOs) = ResolveOs(selectedRuntime, hostingKind, inputs.OperatingSystem);
+        return new CreateOptions(selectedRuntime, selectedRuntimeVersion, hostingKind, requiresLinux, inputs.PlanSku, normalizedOs);
     }
 
     internal static HostingKind ParseHostingKind(string? planType)
     {
-        var pt = planType?.Trim().ToLowerInvariant();
-        return pt switch
+        return planType switch
         {
             "flex" or "flexconsumption" => HostingKind.FlexConsumption,
             "premium" or "functionspremium" => HostingKind.Premium,
@@ -105,18 +229,18 @@ public sealed class FunctionAppService(
         };
     }
 
-    private static async Task<AppServicePlanResource> CreatePlan(ResourceGroupResource rg, string planName, string location, CreateOptions options)
+    internal static async Task<AppServicePlanResource> CreatePlan(ResourceGroupResource rg, string planName, string location, CreateOptions options)
     {
         var sku = !string.IsNullOrWhiteSpace(options.ExplicitSku)
             ? new AppServiceSkuDescription { Name = options.ExplicitSku!.Trim(), Tier = InferTier(options.ExplicitSku!) }
-            : CreateSkuForHostingKind(options.HostingKind);
+            : GetDefaultSku(options.HostingKind);
 
         var data = new AppServicePlanData(location) { Sku = sku, IsReserved = options.RequiresLinux };
         var op = await rg.GetAppServicePlans().CreateOrUpdateAsync(WaitUntil.Completed, planName, data);
         return op.Value;
     }
 
-    private static void ValidateExistingPlan(AppServicePlanResource plan, string planName, CreateOptions options)
+    internal static void ValidateExistingPlan(AppServicePlanResource plan, string planName, CreateOptions options)
     {
         if (options.RequiresLinux && plan.Data.IsReserved != true)
             throw new InvalidOperationException($"App Service plan '{planName}' must be Linux for runtime '{options.Runtime}'.");
@@ -127,49 +251,31 @@ public sealed class FunctionAppService(
             throw new InvalidOperationException($"App Service plan '{planName}' is not an Elastic Premium plan.");
     }
 
-    private static SiteConfigProperties? BuildSiteConfig(bool isLinux, CreateOptions options)
+    internal static SiteConfigProperties? BuildSiteConfig(bool isLinux, CreateOptions options)
     {
         if (isLinux)
-        {
             return CreateLinuxSiteConfig(options.Runtime, options.RuntimeVersion);
-        }
-
-        if (options.Runtime != "powershell")
-            return null;
-
-        var version = string.IsNullOrWhiteSpace(options.RuntimeVersion)
-            ? GetDefaultRuntimeVersion("powershell")
-            : options.RuntimeVersion;
-        if (string.IsNullOrWhiteSpace(version))
-            return null;
-
-        return new SiteConfigProperties
-        {
-            PowerShellVersion = version
-        };
+        return options.Runtime == "powershell" ? CreateWindowsPowerShellSiteConfig(options.RuntimeVersion) : null;
     }
 
-    private static string BuildKind(bool isLinux) => isLinux ? "functionapp,linux" : "functionapp";
+    internal static string BuildKind(bool isLinux) => isLinux ? "functionapp,linux" : "functionapp";
 
-    private static async Task<AppServicePlanResource> EnsureAppServicePlan(ResourceGroupResource rg, string? planName, string functionAppName, string location, CreateOptions options)
+    internal static async Task<AppServicePlanResource> EnsureAppServicePlan(ResourceGroupResource rg, string? planName, string functionAppName, string location, CreateOptions options)
     {
-        if (!string.IsNullOrWhiteSpace(planName))
+        var effectivePlanName = planName ?? $"{functionAppName}-plan";
+        var plans = rg.GetAppServicePlans();
+
+        if (await plans.ExistsAsync(effectivePlanName))
         {
-            var plans = rg.GetAppServicePlans();
-            if (await plans.ExistsAsync(planName))
-            {
-                var existing = await plans.GetAsync(planName);
-                ValidateExistingPlan(existing, planName, options);
-                return existing;
-            }
-            return await CreatePlan(rg, planName, location, options);
+            var existing = await plans.GetAsync(effectivePlanName);
+            ValidateExistingPlan(existing, effectivePlanName, options);
+            return existing;
         }
 
-        var autoName = $"{functionAppName}-plan";
-        return await CreatePlan(rg, autoName, location, options);
+        return await CreatePlan(rg, effectivePlanName, location, options);
     }
 
-    private static async Task<WebSiteResource> CreateAppServiceSiteAsync(ResourceGroupResource rg, string functionAppName, string location, AppServicePlanResource plan, CreateOptions options)
+    internal static async Task<WebSiteResource> CreateAppServiceSiteAsync(ResourceGroupResource rg, string functionAppName, string location, AppServicePlanResource plan, CreateOptions options, string storageConnection)
     {
         var isLinux = plan.Data.IsReserved == true;
         var data = new WebSiteData(location)
@@ -191,20 +297,11 @@ public sealed class FunctionAppService(
                     Name = MapToFunctionAppRuntimeName(options.Runtime),
                     Version = NormalizeRuntimeVersionForConfig(options.Runtime, options.RuntimeVersion)
                 },
-                DeploymentStorage = new FunctionAppStorage
-                {
-                    StorageType = FunctionAppStorageType.BlobContainer,
-                    Value = new Uri($"https://{CreateStorageAccountName(functionAppName)}.blob.core.windows.net/{functionAppName}"),
-                    Authentication = new FunctionAppStorageAuthentication
-                    {
-                        AuthenticationType = FunctionAppStorageAccountAuthenticationType.StorageAccountConnectionString,
-                        StorageAccountConnectionStringName = "AzureWebJobsStorage"
-                    }
-                },
+                DeploymentStorage = BuildDeploymentStorage(storageConnection),
                 ScaleAndConcurrency = new FunctionAppScaleAndConcurrency
                 {
-                    InstanceMemoryMB = 2048,
-                    MaximumInstanceCount = 100
+                    InstanceMemoryMB = FlexConsumptionDefaults.InstanceMemoryMB,
+                    MaximumInstanceCount = FlexConsumptionDefaults.MaximumInstanceCount
                 }
             };
         }
@@ -212,48 +309,8 @@ public sealed class FunctionAppService(
         return op.Value;
     }
 
-    private static async Task<FunctionAppInfo> CreateContainerHostedFunctionAppAsync(
-        SubscriptionResource subscription,
-        ResourceGroupResource rg,
-        string functionAppName,
-        string location,
-        CreateOptions options)
-    {
-        var storage = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
-        var containerApp = await EnsureMinimalContainerApp(rg, functionAppName, location, options.Runtime, storage);
-        var host = containerApp.Data.Configuration?.Ingress?.Fqdn ?? containerApp.Data.LatestRevisionName ?? containerApp.Data.Name;
-        return new FunctionAppInfo(
-            containerApp.Data.Name,
-            rg.Data.Name,
-            location,
-            "containerapp",
-            containerApp.Data.ProvisioningState.ToString(),
-            host,
-            "linux",
-            containerApp.Data.Tags?.ToDictionary(k => k.Key, v => v.Value));
-    }
 
-    private static async Task<FunctionAppInfo> CreateAppServiceHostedFunctionAppAsync(
-        SubscriptionResource subscription,
-        ResourceGroupResource rg,
-        string functionAppName,
-        string location,
-        string? appServicePlan,
-        CreateOptions options)
-    {
-        var plan = await EnsureAppServicePlan(rg, appServicePlan, functionAppName, location, options);
-        var storageConnection = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location);
-        var site = await CreateAppServiceSiteAsync(
-            rg,
-            functionAppName,
-            location,
-            plan,
-            options);
-        await ApplyAppSettings(site, options, storageConnection);
-        return ConvertToFunctionAppModel(site);
-    }
-
-    private static async Task ApplyAppSettings(WebSiteResource site, CreateOptions options, string storageConnectionString)
+    internal static async Task ApplyAppSettings(WebSiteResource site, CreateOptions options, string storageConnectionString)
     {
         var appSettings = BuildAppSettings(options.Runtime, options.RuntimeVersion, options.RequiresLinux, storageConnectionString, includeWorkerRuntime: options.HostingKind != HostingKind.FlexConsumption);
         if (options.HostingKind == HostingKind.FlexConsumption)
@@ -261,12 +318,12 @@ public sealed class FunctionAppService(
         await site.UpdateApplicationSettingsAsync(appSettings);
     }
 
-    private static bool IsFunctionApp(WebSiteData siteData)
+    internal static bool IsFunctionApp(WebSiteData siteData)
     {
         return siteData.Kind?.Contains("functionapp", StringComparison.OrdinalIgnoreCase) == true;
     }
 
-    private static FunctionAppInfo ConvertToFunctionAppModel(WebSiteResource siteResource)
+    internal static FunctionAppInfo ConvertToFunctionAppModel(WebSiteResource siteResource)
     {
         var data = siteResource.Data;
 
@@ -283,7 +340,7 @@ public sealed class FunctionAppService(
         );
     }
 
-    private static string CreateStorageAccountName(string functionAppName)
+    internal static string CreateStorageAccountName(string functionAppName)
     {
         var baseName = new string(functionAppName.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
         if (string.IsNullOrEmpty(baseName))
@@ -295,26 +352,35 @@ public sealed class FunctionAppService(
         return $"{trimmed}{suffix}";
     }
 
-    private static string BuildConnectionString(string accountName, string key)
+    internal static string BuildConnectionString(string accountName, string key)
     {
         return $"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={key};EndpointSuffix=core.windows.net";
     }
 
-    private static async Task<string> EnsureStorageForFunctionApp(SubscriptionResource subscription, ResourceGroupResource rg, string functionAppName, string location)
+    internal static async Task<string> EnsureStorageForFunctionApp(SubscriptionResource subscription, ResourceGroupResource rg, string functionAppName, string location, string? storageAccountName = null)
     {
-        var storageAccountName = CreateStorageAccountName(functionAppName);
-        var createOptions = CreateStorageAccountOptions(location);
+        var accountName = storageAccountName ?? CreateStorageAccountName(functionAppName);
+        var storageAccounts = rg.GetStorageAccounts();
 
-        var op = await rg.GetStorageAccounts().CreateOrUpdateAsync(Azure.WaitUntil.Completed, storageAccountName, createOptions);
-        var storage = op.Value;
+        StorageAccountResource storage;
+        if (await storageAccounts.ExistsAsync(accountName))
+        {
+            storage = await storageAccounts.GetAsync(accountName);
+        }
+        else
+        {
+            var createOptions = CreateStorageAccountOptions(location);
+            var op = await storageAccounts.CreateOrUpdateAsync(Azure.WaitUntil.Completed, accountName, createOptions);
+            storage = op.Value;
+        }
 
         var keys = new List<StorageAccountKey>();
         await foreach (var key in storage.GetKeysAsync())
         {
             keys.Add(key);
         }
-        var primary = keys.FirstOrDefault() ?? throw new Exception($"No keys found for storage account '{storageAccountName}'");
-        return BuildConnectionString(storageAccountName, primary.Value);
+        var primary = keys.FirstOrDefault() ?? throw new InvalidOperationException($"No keys found for storage account '{accountName}'");
+        return BuildConnectionString(accountName, primary.Value);
     }
 
     internal static StorageAccountCreateOrUpdateContent CreateStorageAccountOptions(string location)
@@ -350,22 +416,22 @@ public sealed class FunctionAppService(
         return config;
     }
 
-    private static FunctionAppRuntimeName? MapToFunctionAppRuntimeName(string runtime) => runtime switch
+    internal static FunctionAppRuntimeName MapToFunctionAppRuntimeName(string runtime) => runtime switch
     {
         "dotnet-isolated" => FunctionAppRuntimeName.DotnetIsolated,
         "node" => FunctionAppRuntimeName.Node,
         "java" => FunctionAppRuntimeName.Java,
         "powershell" => FunctionAppRuntimeName.Powershell,
         "python" => FunctionAppRuntimeName.Python,
-        "custom" => FunctionAppRuntimeName.Custom,
         "dotnet" => FunctionAppRuntimeName.DotnetIsolated,
-        _ => null
+        _ => FunctionAppRuntimeName.Custom
     };
 
-    private static string NormalizeRuntimeVersionForConfig(string runtime, string? runtimeVersion)
+    internal static string NormalizeRuntimeVersionForConfig(string runtime, string? runtimeVersion)
     {
         var version = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion(runtime) : runtimeVersion;
-        if (string.IsNullOrWhiteSpace(version)) return string.Empty;
+        if (string.IsNullOrWhiteSpace(version))
+            return string.Empty;
         if (runtime == "java" && version.EndsWith(".0", StringComparison.Ordinal))
             version = version[..^2];
         return version;
@@ -395,41 +461,30 @@ public sealed class FunctionAppService(
         return settings;
     }
 
-    private static string? GetDefaultRuntimeVersion(string runtime) => runtime switch
-    {
-        "python" => "3.12",
-        "node" => "22",
-        "dotnet" => "8.0",
-        "dotnet-isolated" => "8.0",
-        "java" => "17",
-        "powershell" => "7.4",
-        _ => null
-    };
-
-    private static string? ExtractMajorVersion(string version) => string.IsNullOrWhiteSpace(version)
+    internal static string? ExtractMajorVersion(string? version) => string.IsNullOrWhiteSpace(version)
         ? null
         : new string(version.Trim().TakeWhile(char.IsDigit).ToArray()) switch { "" => null, var v => v };
 
-    private static AppServiceSkuDescription CreateSkuForHostingKind(HostingKind kind) => kind switch
-    {
-        HostingKind.FlexConsumption => new AppServiceSkuDescription { Name = "FC1", Tier = "FlexConsumption" },
-        HostingKind.Premium => new AppServiceSkuDescription { Name = "EP1", Tier = "ElasticPremium" },
-        HostingKind.Consumption => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" },
-        HostingKind.AppService => new AppServiceSkuDescription { Name = "B1", Tier = "Basic" },
-        _ => new AppServiceSkuDescription { Name = "Y1", Tier = "Dynamic" }
-    };
 
-    private static string InferTier(string skuName)
+    internal static string InferTier(string skuName)
     {
         var upper = skuName.Trim().ToUpperInvariant();
+
+        if (upper.StartsWith("FC"))
+            return "FlexConsumption";
+        if (upper.StartsWith("EP"))
+            return "ElasticPremium";
+        if (upper.StartsWith("P") && (upper.Contains("V3") || upper.StartsWith("P1V3") || upper.StartsWith("P2V3") || upper.StartsWith("P3V3")))
+            return "PremiumV3";
+        if (upper.StartsWith("P"))
+            return "Premium";
         if (upper.StartsWith("B"))
             return "Basic";
         if (upper.StartsWith("S"))
             return "Standard";
-        if (upper.StartsWith("P1V3") || upper.StartsWith("P2V3") || upper.StartsWith("P3V3") || upper.StartsWith("P"))
-            return "PremiumV3";
-        if (upper.StartsWith("P"))
-            return "Premium";
+        if (upper.StartsWith("Y"))
+            return "Dynamic";
+
         return "Standard";
     }
 
@@ -441,15 +496,24 @@ public sealed class FunctionAppService(
         settings.Properties.Remove("FUNCTIONS_WORKER_RUNTIME");
     }
 
-    private static async Task<ContainerAppResource> EnsureMinimalContainerApp(ResourceGroupResource rg, string name, string location, string runtime, string storageConnectionString)
+    internal static async Task<ContainerAppResource> EnsureMinimalContainerApp(ResourceGroupResource rg, string name, string location, string runtime, string storageConnectionString, string? containerAppsEnvironmentName = null)
     {
         var envs = rg.GetContainerAppManagedEnvironments();
-        var envName = $"{name}-env";
-        var envData = new ContainerAppManagedEnvironmentData(location);
-        var env = (await envs.CreateOrUpdateAsync(WaitUntil.Completed, envName, envData)).Value;
+        var envName = containerAppsEnvironmentName ?? $"{name}-env";
+
+        ContainerAppManagedEnvironmentResource env;
+        if (await envs.ExistsAsync(envName))
+        {
+            env = await envs.GetAsync(envName);
+        }
+        else
+        {
+            var envData = new ContainerAppManagedEnvironmentData(location);
+            env = (await envs.CreateOrUpdateAsync(WaitUntil.Completed, envName, envData)).Value;
+        }
 
         var apps = rg.GetContainerApps();
-        var image = ResolveFunctionsContainerImage(runtime);
+        var image = GetContainerImage(runtime);
         var data = new ContainerAppData(location)
         {
             ManagedEnvironmentId = env.Id,
@@ -457,8 +521,8 @@ public sealed class FunctionAppService(
             {
                 Ingress = new ContainerAppIngressConfiguration()
                 {
-                    External = true,
-                    TargetPort = 80
+                    External = ContainerAppsDefaults.ExternalIngress,
+                    TargetPort = ContainerAppsDefaults.IngressPort
                 }
             },
             Template = new ContainerAppTemplate()
@@ -467,12 +531,12 @@ public sealed class FunctionAppService(
                 {
                     new ContainerAppContainer()
                     {
-                        Name = "functions", //TODO: set to name
+                        Name = name,
                         Image = image,
                         Resources = new AppContainerResources()
                         {
-                            Cpu = 0.25,
-                            Memory = "0.5Gi"
+                            Cpu = ContainerAppsDefaults.CpuCores,
+                            Memory = ContainerAppsDefaults.Memory
                         },
                         Env =
                         {
@@ -501,54 +565,69 @@ public sealed class FunctionAppService(
         return app;
     }
 
-    internal static string ResolveFunctionsContainerImage(string runtime)
+    internal static SiteConfigProperties? CreateWindowsPowerShellSiteConfig(string? runtimeVersion)
     {
-        var rt = (runtime ?? "dotnet").Trim().ToLowerInvariant();
-        return rt switch
+        var version = string.IsNullOrWhiteSpace(runtimeVersion) ? GetDefaultRuntimeVersion("powershell") : runtimeVersion;
+        if (string.IsNullOrWhiteSpace(version))
+            return null;
+        return new SiteConfigProperties { PowerShellVersion = version };
+    }
+
+    internal static FunctionAppStorage? BuildDeploymentStorage(string storageConnectionString)
+    {
+        if (string.IsNullOrWhiteSpace(storageConnectionString))
+            return null;
+        var accountName = ExtractStorageAccountName(storageConnectionString);
+        if (string.IsNullOrWhiteSpace(accountName))
+            return null;
+        return new FunctionAppStorage
         {
-            "dotnet" => "mcr.microsoft.com/azure-functions/dotnet:4",
-            "dotnet-isolated" => "mcr.microsoft.com/azure-functions/dotnet-isolated:4",
-            "node" => "mcr.microsoft.com/azure-functions/node:4",
-            "python" => "mcr.microsoft.com/azure-functions/python:4",
-            "java" => "mcr.microsoft.com/azure-functions/java:4",
-            "powershell" => "mcr.microsoft.com/azure-functions/powershell:4",
-            _ => "mcr.microsoft.com/azure-functions/dotnet-isolated:4"
+            StorageType = FunctionAppStorageType.BlobContainer,
+            Value = new Uri($"https://{accountName}.blob.core.windows.net/azure-webjobs-hosts"),
+            Authentication = new FunctionAppStorageAuthentication
+            {
+                AuthenticationType = FunctionAppStorageAccountAuthenticationType.StorageAccountConnectionString,
+                StorageAccountConnectionStringName = "AzureWebJobsStorage"
+            }
         };
     }
 
-    internal static bool RequiresLinuxFor(string? runtime, string? planType)
+    internal static string? ExtractStorageAccountName(string? connectionString)
     {
-        var rt = string.IsNullOrWhiteSpace(runtime) ? "dotnet" : runtime.Trim().ToLowerInvariant();
-        var hostingKind = ParseHostingKind(planType);
-        return rt == "python" || hostingKind == HostingKind.FlexConsumption || hostingKind == HostingKind.ContainerApp;
+        if (string.IsNullOrWhiteSpace(connectionString))
+            return null;
+        var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var p in parts)
+        {
+            if (p.StartsWith("AccountName=", StringComparison.OrdinalIgnoreCase))
+                return p[12..];
+        }
+        return null;
     }
+
 
     internal static (bool RequiresLinux, string? NormalizedOs) ResolveOs(string runtime, HostingKind hostingKind, string? operatingSystem)
     {
         var forcedLinux = runtime == "python" || hostingKind == HostingKind.FlexConsumption || hostingKind == HostingKind.ContainerApp;
-        var os = string.IsNullOrWhiteSpace(operatingSystem) ? null : operatingSystem!.Trim().ToLowerInvariant();
         bool requiresLinux = forcedLinux;
 
-        if (string.IsNullOrEmpty(os))
+        if (string.IsNullOrEmpty(operatingSystem))
         {
             return (requiresLinux, null);
         }
 
-        if (os is not ("linux" or "windows"))
-            throw new ArgumentException("--os must be either 'windows' or 'linux'.");
-
-        if (forcedLinux && os == "windows")
-            throw new InvalidOperationException("Selected runtime/plan requires Linux. Remove --os or set --os linux.");
+        if (forcedLinux && operatingSystem == "windows")
+            throw new InvalidOperationException("Selected runtime/plan requires Linux operating system.");
 
         if (!forcedLinux)
         {
-            requiresLinux = os == "linux";
+            requiresLinux = operatingSystem == "linux";
         }
 
-        return (requiresLinux, os);
+        return (requiresLinux, operatingSystem);
     }
 
-    private static bool IsFlexConsumption(AppServicePlanData plan)
+    internal static bool IsFlexConsumption(AppServicePlanData plan)
     {
         return string.Equals(plan.Sku?.Tier, "FlexConsumption", StringComparison.OrdinalIgnoreCase);
     }
@@ -562,11 +641,62 @@ public sealed class FunctionAppService(
         ContainerApp
     }
 
-    private readonly record struct CreateOptions(
+    internal readonly record struct CreateOptions(
         string Runtime,
         string? RuntimeVersion,
         HostingKind HostingKind,
         bool RequiresLinux,
         string? ExplicitSku,
         string? ExplicitOs);
+
+    internal static class AppServiceStrategy
+    {
+        public static async Task<FunctionAppInfo> CreateFunctionAppAsync(
+            SubscriptionResource subscription,
+            ResourceGroupResource rg,
+            string functionAppName,
+            string location,
+            string? planName,
+            CreateOptions options,
+            string? storageAccountName = null)
+        {
+            var plan = await EnsureAppServicePlan(rg, planName, functionAppName, location, options);
+            var storageConnection = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location, storageAccountName);
+            var site = await CreateAppServiceSiteAsync(
+                rg,
+                functionAppName,
+                location,
+                plan,
+                options,
+                storageConnection);
+            await ApplyAppSettings(site, options, storageConnection);
+            return ConvertToFunctionAppModel(site);
+        }
+    }
+
+    internal static class ContainerAppsStrategy
+    {
+        public static async Task<FunctionAppInfo> CreateFunctionAppAsync(
+            SubscriptionResource subscription,
+            ResourceGroupResource rg,
+            string functionAppName,
+            string location,
+            CreateOptions options,
+            string? storageAccountName = null,
+            string? containerAppsEnvironmentName = null)
+        {
+            var storage = await EnsureStorageForFunctionApp(subscription, rg, functionAppName, location, storageAccountName);
+            var containerApp = await EnsureMinimalContainerApp(rg, functionAppName, location, options.Runtime, storage, containerAppsEnvironmentName);
+            var host = containerApp.Data.Configuration?.Ingress?.Fqdn ?? containerApp.Data.LatestRevisionName ?? containerApp.Data.Name;
+            return new FunctionAppInfo(
+                containerApp.Data.Name,
+                rg.Data.Name,
+                location,
+                "containerapp",
+                containerApp.Data.ProvisioningState.ToString(),
+                host,
+                "linux",
+                containerApp.Data.Tags?.ToDictionary(k => k.Key, v => v.Value));
+        }
+    }
 }

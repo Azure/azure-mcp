@@ -108,15 +108,15 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
         string expectedOperatingSystem,
         string? runtimeVersion)
     {
-        var uniqueFunctionAppName = $"mcp-test-{planType}-{DateTime.UtcNow:MMddHHmmss}";
+        var uniqueName = $"mcp-test-{planType}-{DateTime.UtcNow:MMddHHmmss}";
 
         var result = await CallToolAsync(
             "azmcp_functionapp_create",
             new()
             {
                 { "subscription", Settings.SubscriptionId },
-                { "resource-group", Settings.ResourceGroupName },
-                { "function-app", uniqueFunctionAppName },
+                { "resource-group", uniqueName },
+                { "function-app", uniqueName },
                 { "location", "westus" },
                 { "plan-type", planType },
                 { "plan-sku", planSku },
@@ -129,16 +129,13 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
         var functionAppWrapper = result!.Value;
         Assert.True(functionAppWrapper.TryGetProperty("functionApp", out var functionApp));
         Assert.True(functionApp.TryGetProperty("name", out var nameProp));
-        Assert.Equal(uniqueFunctionAppName, nameProp.GetString());
+        Assert.Equal(uniqueName, nameProp.GetString());
         Assert.True(functionApp.TryGetProperty("resourceGroupName", out var rgProp));
-        Assert.Equal(Settings.ResourceGroupName, rgProp.GetString());
+        Assert.Equal(uniqueName, rgProp.GetString());
         Assert.True(functionApp.TryGetProperty("appServicePlanName", out var planProp));
         Assert.False(string.IsNullOrWhiteSpace(planProp.GetString()));
-
-        if (functionApp.TryGetProperty("operatingSystem", out var osProp))
-        {
-            Assert.Equal(expectedOperatingSystem, osProp.GetString());
-        }
+        Assert.True(functionApp.TryGetProperty("operatingSystem", out var osProp));
+        Assert.Equal(expectedOperatingSystem, osProp.GetString());
     }
 
     [Theory]

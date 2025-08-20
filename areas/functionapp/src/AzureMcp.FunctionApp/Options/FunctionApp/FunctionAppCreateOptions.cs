@@ -28,4 +28,10 @@ public class FunctionAppCreateOptions : BaseFunctionAppOptions
 
     [JsonPropertyName(FunctionAppOptionDefinitions.OperatingSystemName)]
     public string? OperatingSystem { get; set; }
+
+    [JsonPropertyName(FunctionAppOptionDefinitions.StorageAccountName)]
+    public string? StorageAccount { get; set; }
+
+    [JsonPropertyName(FunctionAppOptionDefinitions.ContainerAppsEnvironmentName)]
+    public string? ContainerAppsEnvironment { get; set; }
 }

@@ -13,6 +13,8 @@ public static class FunctionAppOptionDefinitions
     public const string RuntimeName = "runtime";
     public const string RuntimeVersionName = "runtime-version";
     public const string OperatingSystemName = "os";
+    public const string StorageAccountName = "storage-account";
+    public const string ContainerAppsEnvironmentName = "container-apps-environment";
 
     public static readonly Option<string> FunctionApp = new(
         $"--{FunctionAppName}",
@@ -66,6 +68,20 @@ public static class FunctionAppOptionDefinitions
     public static readonly Option<string> OperatingSystem = new(
         $"--{OperatingSystemName}",
         "Target operating system (windows|linux). Defaults to windows except when runtime/plan requires Linux (python, flex consumption, containerapp). Python and flex consumption are Linux only.")
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> StorageAccount = new(
+        $"--{StorageAccountName}",
+        "The name of the Storage Account to use or create.")
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> ContainerAppsEnvironment = new(
+        $"--{ContainerAppsEnvironmentName}",
+        "The name of the Container Apps environment to use or create.")
     {
         IsRequired = false
     };

@@ -25,6 +25,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
     private readonly Option<string> _runtimeOption = FunctionAppOptionDefinitions.Runtime;
     private readonly Option<string> _runtimeVersionOption = FunctionAppOptionDefinitions.RuntimeVersion;
     private readonly Option<string> _osOption = FunctionAppOptionDefinitions.OperatingSystem;
+    private readonly Option<string> _storageAccountOption = FunctionAppOptionDefinitions.StorageAccount;
+    private readonly Option<string> _containerAppsEnvironmentOption = FunctionAppOptionDefinitions.ContainerAppsEnvironment;
 
     public override string Name => "create";
 
@@ -91,6 +93,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         command.AddOption(_runtimeOption);
         command.AddOption(_runtimeVersionOption);
         command.AddOption(_osOption);
+        command.AddOption(_storageAccountOption);
+        command.AddOption(_containerAppsEnvironmentOption);
     }
 
     protected override FunctionAppCreateOptions BindOptions(ParseResult parseResult)
@@ -104,6 +108,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
         options.Runtime = parseResult.GetValueForOption(_runtimeOption) ?? "dotnet";
         options.RuntimeVersion = parseResult.GetValueForOption(_runtimeVersionOption);
         options.OperatingSystem = parseResult.GetValueForOption(_osOption);
+        options.StorageAccount = parseResult.GetValueForOption(_storageAccountOption);
+        options.ContainerAppsEnvironment = parseResult.GetValueForOption(_containerAppsEnvironmentOption);
         return options;
     }
 
@@ -146,6 +152,8 @@ public sealed class FunctionAppCreateCommand(ILogger<FunctionAppCreateCommand> l
                 options.Runtime ?? "dotnet",
                 options.RuntimeVersion,
                 options.OperatingSystem,
+                options.StorageAccount,
+                options.ContainerAppsEnvironment,
                 options.Tenant,
                 options.RetryPolicy);
 
