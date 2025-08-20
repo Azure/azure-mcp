@@ -15,6 +15,7 @@ class Program
 
     private const string CommandPrefix = "azmcp ";
     private const string SpaceReplacement = "_";
+    private const string TestToolIdPrefix = $"azmcp{SpaceReplacement}test{SpaceReplacement}tool{SpaceReplacement}";
 
     static async Task Main(string[] args)
     {
@@ -275,6 +276,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
 
             Environment.Exit(1);
         }
@@ -466,12 +468,13 @@ class Program
         try
         {
             var json = JsonSerializer.Serialize(toolsResult, SourceGenerationContext.Default.ListToolsResult);
-            
+
             await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
         }
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️  Warning: Failed to save tools to {filePath}: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
 
@@ -508,7 +511,7 @@ class Program
                     continue;
                 }
 
-                // Parse table rows: | azmcp-tool-name | Test prompt |
+                // Parse table rows: | azmcp_tool_name | Test prompt |
                 if (trimmedLine.StartsWith("|") && trimmedLine.Contains("|"))
                 {
                     var parts = trimmedLine.Split('|', StringSplitOptions.RemoveEmptyEntries);
@@ -521,8 +524,8 @@ class Program
                         if (string.IsNullOrWhiteSpace(toolName) || string.IsNullOrWhiteSpace(prompt))
                             continue;
 
-                        // Ensure we have a valid tool name (starts with azmcp-)
-                        if (!toolName.StartsWith("azmcp-"))
+                        // Ensure we have a valid tool name (starts with azmcp_)
+                        if (!toolName.StartsWith("azmcp_"))
                             continue;
 
                         if (!prompts.ContainsKey(toolName))
@@ -574,6 +577,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️  Warning: Failed to save prompts to {filePath}: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
 
@@ -610,9 +614,9 @@ class Program
 
             // Handle test tools specially
             string toolName;
-            if (tool.Name.StartsWith("test-tool"))
+            if (tool.Name.StartsWith(TestToolIdPrefix))
             {
-                toolName = $"azmcp-{tool.Name}";
+                toolName = tool.Name;
             }
             else
             {
@@ -620,7 +624,7 @@ class Program
                 toolName = tool.Command?.Replace(CommandPrefix, "")?.Replace(" ", SpaceReplacement) ?? tool.Name;
                 if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith($"{CommandPrefix.Trim()}-"))
                 {
-                    toolName = $"azmcp-{toolName}";
+                    toolName = $"azmcp{SpaceReplacement}{toolName}";
                 }
             }
 
@@ -1031,7 +1035,7 @@ class Program
             var testTools = new List<Tool>();
             testTools.Add(new Tool
             {
-                Name = $"test-tool-1",
+                Name = $"{TestToolIdPrefix}1",
                 Description = toolDescription
             });
 
@@ -1063,9 +1067,9 @@ class Program
                 for (int i = 0; i < queryResults.Count; i++)
                 {
                     var result = queryResults[i];
-                    if (result.Entry.Id.StartsWith("azmcp-test-tool-"))
+                    if (result.Entry.Id.StartsWith(TestToolIdPrefix))
                     {
-                        testToolResults.Add((i + 1, result.Score, "test-tool-1"));
+                        testToolResults.Add((i + 1, result.Score, $"{TestToolIdPrefix}1"));
                     }
                 }
 
@@ -1074,16 +1078,18 @@ class Program
                 if (testToolResults.Count > 0)
                 {
                     var (rank, score, toolName) = testToolResults.First();
-                    var quality = rank == 1 ? "✅ EXCELLENT" :
-                                 rank <= 3 ? "🟡 GOOD" :
-                                 rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
-                    var confidence = score >= 0.8 ? "💪 Very High confidence" :
+                    var quality = rank == 1 ? "✅ Excellent" :
+                                 rank <= 3 ? "🟡 Good" :
+                                 rank <= 10 ? "🟠 Fair" : "🔴 Poor";
+                    var confidence = score >= 0.8 ? "💪 Very high confidence" :
                                    score >= 0.7 ? "🎯 High confidence" :
                                    score >= 0.6 ? "✅ Good confidence" :
                                    score >= 0.5 ? "👍 Fair confidence" :
                                    score >= 0.4 ? "👌 Acceptable confidence" : "❌ Low confidence";
 
-                    Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
+                    Console.WriteLine($"   {toolName}:");
+                    Console.WriteLine($"      Rank #{rank} - {quality}");
+                    Console.WriteLine($"      Score {score:F4} - {confidence}");
                     Console.WriteLine($"      Description: \"{toolDescription}\"");
                 }
                 else
@@ -1096,11 +1102,10 @@ class Program
                 for (int i = 0; i < Math.Min(5, queryResults.Count); i++)
                 {
                     var result = queryResults[i];
-                    var isTestTool = result.Entry.Id.StartsWith("azmcp-test-tool-");
+                    var isTestTool = result.Entry.Id.StartsWith(TestToolIdPrefix);
                     var indicator = isTestTool ? "👉 TEST TOOL" : "";
-                    var toolName = isTestTool ? result.Entry.Id.Replace("azmcp-", "") : result.Entry.Id;
 
-                    Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
+                    Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {result.Entry.Id} {indicator}");
                 }
 
                 // Suggestions for improvement
@@ -1129,7 +1134,7 @@ class Program
             }
 
             // Summary
-            Console.WriteLine("📈 Summary:");
+            Console.WriteLine("📈 Rankings Summary:");
             var totalTests = testPrompts.Count;
             var excellentCount = 0;
             var goodCount = 0;
@@ -1141,7 +1146,7 @@ class Program
                 var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
                 var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
 
-                var testToolId = $"azmcp-test-tool-1";
+                var testToolId = $"{TestToolIdPrefix}1";
                 var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
 
                 if (rank == 1)
@@ -1164,6 +1169,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error during validation: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
 
             Environment.Exit(1);
         }
@@ -1172,14 +1178,14 @@ class Program
 
 internal static class UnicodeChars
 {
-    public const char SingleQuote = '\u0027';
-    public const char LeftSingleQuote = '\u2018';
-    public const char RightSingleQuote = '\u2019';
-    public const char DoubleQuote = '\u0022';
-    public const char LeftDoubleQuote = '\u201C';
-    public const char RightDoubleQuote = '\u201D';
-    public const char LessThan = '\u003C';
-    public const char GreaterThan = '\u003E';
-    public const char Ampersand = '\u0026';
-    public const char Backtick = '\u0060';
+    public const string SingleQuote = "\u0027";
+    public const string LeftSingleQuote = "\u2018";
+    public const string RightSingleQuote = "\u2019";
+    public const string DoubleQuote = "\u0022";
+    public const string LeftDoubleQuote = "\u201C";
+    public const string RightDoubleQuote = "\u201D";
+    public const string LessThan = "\u003C";
+    public const string GreaterThan = "\u003E";
+    public const string Ampersand = "\u0026";
+    public const string Backtick = "\u0060";
 }
