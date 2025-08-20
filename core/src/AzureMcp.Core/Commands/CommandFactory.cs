@@ -241,7 +241,8 @@ public class CommandFactory
         }
 
         var split = tokenizedName.Split(Separator, 2);
-        return _serviceAreaNames.Contains(split[0]) ? split[1] : null;
+        var first = split[0];
+        return _serviceAreaNames.Contains(first) ? first : null;
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)
