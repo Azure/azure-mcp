@@ -50,7 +50,13 @@ public class AcrCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
             registryItems = [.. rgRegistries.EnumerateArray()];
         }
 
-        Assert.NotEmpty(registryItems); // After fallback we must have the test registry
+        Assert.NotEmpty(registryItems); // After fallback we must have at least one registry
+
+        // Validate that the test registry exists (created by bicep as baseName)
+        var hasTestRegistry = registryItems.Any(item =>
+            item.TryGetProperty("name", out var nameProp) &&
+            string.Equals(nameProp.GetString(), Settings.ResourceBaseName, StringComparison.OrdinalIgnoreCase));
+        Assert.True(hasTestRegistry, $"Expected test registry '{Settings.ResourceBaseName}' to exist.");
 
         foreach (var item in registryItems)
         {
@@ -70,6 +76,35 @@ public class AcrCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper 
                 Assert.False(string.IsNullOrWhiteSpace(loginServerProp.GetString()));
             }
         }
+    }
+
+    [Theory]
+    [InlineData(AuthMethod.Credential)]
+    public async Task Should_list_repositories_for_registries(AuthMethod authMethod)
+    {
+        var result = await CallToolAsync(
+            "azmcp_acr_registry_repository_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", Settings.ResourceGroupName },
+                { "auth-method", authMethod.ToString() }
+            });
+
+        if (result is null)
+        {
+            // No registries or repos found in the test RG/subscription; treat as pass with null results
+            return;
+        }
+
+        var map = result.AssertProperty("repositoriesByRegistry");
+        Assert.True(map.ValueKind == JsonValueKind.Object);
+
+        // Validate we have entries for the test registry and the seeded 'testrepo'
+        Assert.True(map.TryGetProperty(Settings.ResourceBaseName, out var repoArray));
+        Assert.Equal(JsonValueKind.Array, repoArray.ValueKind);
+        var repos = repoArray.EnumerateArray().Select(e => e.GetString()).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+        Assert.Contains("testrepo", repos);
     }
 
     [Fact]

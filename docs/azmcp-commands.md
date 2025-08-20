@@ -236,6 +236,18 @@ azmcp acr registry list --subscription <subscription>
 # List Azure Container Registries in a specific resource group
 azmcp acr registry list --subscription <subscription> \
                         --resource-group <resource-group>
+
+# List repositories across all registries in a subscription
+azmcp acr registry repository list --subscription <subscription>
+
+# List repositories across all registries in a specific resource group
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group>
+
+# List repositories in a specific registry
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group> \
+                                   --registry <registry>
 ```
 
 ### Azure Cosmos DB Operations
@@ -381,8 +393,8 @@ azmcp extension azd --command "init --template todo-nodejs-mongo"
 ```bash
 # Get the application service log for a specific azd environment
 azmcp deploy app logs get --workspace-folder <workspace-folder> \
-                             --azd-env-name <azd-env-name> \
-                             [--limit <limit>]
+                          --azd-env-name <azd-env-name> \
+                          [--limit <limit>]
 
 # Generate a mermaid architecture diagram for the application topology follow the schema defined in [deploy-app-topology-schema.json](../areas/deploy/src/AzureMcp.Deploy/Schemas/deploy-app-topology-schema.json)
 azmcp deploy architecture diagram generate --raw-mcp-tool-input <app-topology>
@@ -394,9 +406,9 @@ azmcp deploy iac rules get --deployment-tool <deployment-tool> \
 
 # Get the ci/cd pipeline guidance
 azmcp deploy pipeline guidance get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
-                                        [--organization-name <organization-name>] \
-                                        [--repository-name <repository-name>] \
-                                        [--github-environment-name <github-environment-name>]
+                                   [--organization-name <organization-name>] \
+                                   [--repository-name <repository-name>] \
+                                   [--github-environment-name <github-environment-name>]
 
 # Get a deployment plan for a specific project
 azmcp deploy plan get --workspace-folder <workspace-folder> \
@@ -426,16 +438,16 @@ azmcp keyvault certificate get --subscription <subscription> \
                                --vault <vault-name> \
                                --name <certificate-name>
 
-# Lists certificates in a key vault
-azmcp keyvault certificate list --subscription <subscription> \
-                                --vault <vault-name>
-
 # Imports an existing certificate (PFX or PEM) into a key vault
 azmcp keyvault certificate import --subscription <subscription> \
                                   --vault <vault-name> \
                                   --certificate <certificate-name> \
                                   --certificate-data <path-or-base64-or-raw-pem> \
                                   [--password <pfx-password>]
+
+# Lists certificates in a key vault
+azmcp keyvault certificate list --subscription <subscription> \
+                                --vault <vault-name>
 
 # Creates a key in a key vault
 azmcp keyvault key create --subscription <subscription> \
@@ -702,15 +714,15 @@ azmcp extension azqr --subscription <subscription> \
 ```bash
 # Get the available regions for the resources types
 azmcp quota region availability list --subscription <subscription> \
-                                  --resource-types <resource-types> \
-                                  [--cognitive-service-model-name <cognitive-service-model-name>] \
-                                  [--cognitive-service-model-version <cognitive-service-model-version>] \
-                                  [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+                                     --resource-types <resource-types> \
+                                     [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                     [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                     [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
 
 # Check the usage for Azure resources type
 azmcp quota usage check --subscription <subscription> \
-                         --region <region> \
-                         --resource-types <resource-types>
+                        --region <region> \
+                        --resource-types <resource-types>
 ```
 
 ### Azure RBAC Operations
@@ -742,6 +754,13 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --cache <cache-name>
 ```
 
+### Azure Resource Group Operations
+
+```bash
+# List resource groups in a subscription
+azmcp group list --subscription <subscription>
+```
+
 ### Azure Resource Health Operations
 
 ```bash
@@ -749,18 +768,8 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
 azmcp resourcehealth availability-status get --resourceId <resource-id>
 
 # List availability statuses for all resources in a subscription
-azmcp resourcehealth availability-status list --subscription <subscription>
-
-# List availability statuses for all resources in a specific resource group
 azmcp resourcehealth availability-status list --subscription <subscription> \
-                                              --resource-group <resource-group>
-```
-
-### Azure Resource Group Operations
-
-```bash
-# List resource groups in a subscription
-azmcp group list --subscription <subscription>
+                                              [--resource-group <resource-group>]
 ```
 
 ### Azure Service Bus Operations
@@ -838,7 +847,7 @@ azmcp storage account create --subscription <subscription> \
 
 # Get detailed information about a specific Storage account
 azmcp storage account details --subscription <subscription> \
-                              --account <account-name> \
+                              --account <account> \
                               [--tenant <tenant>]
 
 # List Storage accounts in a subscription
@@ -870,12 +879,20 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob details --subscription <subscription> \
                            --account <account> \
                            --container <container> \
-                           --blob <blob-name>
+                           --blob <blob>
 
 # List blobs in a Storage container
 azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
+
+# Upload a file to a Storage blob container
+azmcp storage blob upload --subscription <subscription> \
+                          --account <account> \
+                          --container <container> \
+                          --blob <blob> \
+                          --local-file-path <path-to-local-file> \
+                          [--overwrite]
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -891,16 +908,16 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
 
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
-                                 --account <account-name> \
-                                 --queue <queue-name> \
-                                 --message "<message-content>" \
+                                 --account <account> \
+                                 --queue <queue> \
+                                 --message "<message>" \
                                  [--time-to-live-in-seconds <seconds>] \
                                  [--visibility-timeout-in-seconds <seconds>]
 
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \
-                              --account <account-name> \
-                              --share <share-name> \
+                              --account <account> \
+                              --share <share> \
                               --directory-path <directory-path> \
                               [--prefix <prefix>]
 
