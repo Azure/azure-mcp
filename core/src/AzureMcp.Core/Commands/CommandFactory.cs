@@ -28,6 +28,7 @@ public class CommandFactory
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
+    private readonly HashSet<string> _serviceAreaNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private readonly ITelemetryService _telemetryService;
 
     // Add this new class inside CommandFactory
@@ -94,12 +95,37 @@ public class CommandFactory
 
         return commandsFromGroups;
     }
+
     private void RegisterCommandGroup()
     {
         // Register area command groups
         var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
         foreach (var area in _serviceAreas)
         {
+            if (string.IsNullOrEmpty(area.Name))
+            {
+                var error = new ArgumentException("IAreaSetup cannot have an empty or null name. Type "
+                    + area.GetType());
+                _logger.LogError(error, "Invalid IAreaSetup encountered. Type: {Type}", area.GetType());
+
+                throw error;
+            }
+
+            if (!_serviceAreaNames.Add(area.Name))
+            {
+                var matchingAreaNames = _serviceAreas
+                    .Where(x => x.Name == area.Name)
+                    .Select(a => a.GetType());
+
+                var error = new ArgumentException("Cannot have two IAreaSetups with the same Name.");
+                _logger.LogError(error,
+                    "Duplicated {AreaName}. Areas with same name: {Areas}",
+                    area.Name,
+                    string.Join(", ", matchingAreaNames));
+
+                throw error;
+            }
+
             area.RegisterCommands(_rootGroup, loggerFactory);
         }
     }
@@ -205,6 +231,17 @@ public class CommandFactory
     public IBaseCommand? FindCommandByName(string tokenizedName)
     {
         return _commandMap.GetValueOrDefault(tokenizedName);
+    }
+
+    public string? GetServiceArea(string tokenizedName)
+    {
+        if (string.IsNullOrEmpty(tokenizedName))
+        {
+            return null;
+        }
+
+        var split = tokenizedName.Split(Separator, 2);
+        return _serviceAreaNames.Contains(split[0]) ? split[1] : null;
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)
