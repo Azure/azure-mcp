@@ -267,7 +267,7 @@ public class FoundryService(IHttpClientService httpClientService, ITenantService
                     Name = index.Name,
                     Version = index.Version,
                     Description = index.Description,
-                    Tags = index.Tags?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? null
+                    Tags = index.Tags?.ToDictionary(kvp => kvp.Key, kvp => (string?)kvp.Value) ?? null
                 };
 
                 indexes.Add(knowledgeIndex);
