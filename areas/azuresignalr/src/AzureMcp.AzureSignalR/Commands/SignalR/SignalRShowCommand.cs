@@ -8,6 +8,7 @@ using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
+using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.SignalR;
 
@@ -17,15 +18,10 @@ namespace AzureMcp.AzureSignalR.Commands.SignalR;
 public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
     : BaseAzureSignalRCommand<SignalRShowOptions>
 {
-    private const string CommandTitle = "Show SignalR Service";
+    private const string CommandTitle = "Show Service Details";
     private readonly ILogger<SignalRShowCommand> _logger = logger;
 
-    private static readonly Option<string> _signalRNameOption = new(
-        ["--signalr-name", "-n"],
-        "The name of the SignalR service")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
 
     public override string Name => "show";
 

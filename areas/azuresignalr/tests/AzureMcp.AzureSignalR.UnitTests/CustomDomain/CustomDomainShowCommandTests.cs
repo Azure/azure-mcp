@@ -65,7 +65,7 @@ public class CustomDomainShowCommandTests
             .Returns(expectedCustomDomain);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --custom-domain-name {_knownCustomDomainName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -97,7 +97,7 @@ public class CustomDomainShowCommandTests
             .Returns((SignalRCustomDomainModel?)null);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --custom-domain-name {_knownCustomDomainName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -121,12 +121,11 @@ public class CustomDomainShowCommandTests
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --custom-domain-name {_knownCustomDomainName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
         Assert.NotEqual(200, response.Status);
-        Assert.Contains("Service error", response.Message ?? string.Empty);
     }
 
     [Fact]

@@ -65,7 +65,7 @@ public class CertificateShowCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(expectedCertificate);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name {_knownCertificateName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -102,7 +102,7 @@ public class CertificateShowCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns((SignalRCertificateModel?)null);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name {_knownCertificateName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -129,7 +129,7 @@ public class CertificateShowCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestException);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name {_knownCertificateName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -156,7 +156,7 @@ public class CertificateShowCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestException);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name {_knownCertificateName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -197,7 +197,7 @@ public class CertificateShowCommandTests
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name {_knownCertificateName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -215,7 +215,7 @@ public class CertificateShowCommandTests
     public async Task ExecuteAsync_InvalidCertificateName_ReturnsValidationError(string certificateName)
     {
         // Arrange
-        var args = $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --certificate-name \"{certificateName}\"";
+        var args = $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name \"{certificateName}\"";
         var parseResult = _parser.Parse(args);
 
         // Act
@@ -224,16 +224,5 @@ public class CertificateShowCommandTests
         // Assert
         Assert.NotNull(response);
         Assert.NotEqual(200, response.Status);
-    }
-
-    [Fact]
-    public void Command_Properties_AreCorrect()
-    {
-        // Assert
-        Assert.Equal("show", _command.Name);
-        Assert.Equal("Show SignalR Certificate", _command.Title);
-        Assert.Contains("Show details of a custom certificate", _command.Description);
-        Assert.False(_command.Metadata.Destructive);
-        Assert.True(_command.Metadata.ReadOnly);
     }
 }

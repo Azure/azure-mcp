@@ -15,17 +15,17 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     : BaseAzureService(tenantService), IAzureSignalRService
 {
     public async Task<IEnumerable<SignalRServiceModel>> ListSignalRServicesAsync(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId);
+        ValidateRequiredParameters(subscription);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var signalRServices = new List<SignalRServiceModel>();
 
@@ -54,7 +54,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<SignalRCertificateModel?> GetCertificateAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string certificateName,
@@ -62,12 +62,12 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName, certificateName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName, certificateName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -100,19 +100,19 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<IEnumerable<SignalRCustomDomainModel>> ListCustomDomainsAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -145,19 +145,19 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<IEnumerable<SignalRCertificateModel>> ListCertificatesAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -191,7 +191,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<SignalRCustomDomainModel?> GetCustomDomainAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string customDomainName,
@@ -199,12 +199,12 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName, customDomainName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName, customDomainName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -236,19 +236,19 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<SignalRKeyModel> ListKeysAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -276,19 +276,19 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
     }
 
     public async Task<SignalRServiceModel?> GetSignalRServiceAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        ValidateRequiredParameters(subscriptionId, resourceGroupName, signalRName);
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscriptionId, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscriptionId}' not found");
+            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);

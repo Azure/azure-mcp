@@ -10,13 +10,13 @@ namespace AzureMcp.AzureSignalR.Services;
 public interface IAzureSignalRService
 {
     Task<IEnumerable<SignalRServiceModel>> ListSignalRServicesAsync(
-        string subscriptionId,
+        string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
     Task<SignalRCertificateModel?> GetCertificateAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string certificateName,
@@ -25,7 +25,7 @@ public interface IAzureSignalRService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<IEnumerable<SignalRCustomDomainModel>> ListCustomDomainsAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
@@ -33,7 +33,7 @@ public interface IAzureSignalRService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<IEnumerable<SignalRCertificateModel>> ListCertificatesAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
@@ -41,7 +41,7 @@ public interface IAzureSignalRService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<SignalRCustomDomainModel?> GetCustomDomainAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string customDomainName,
@@ -50,7 +50,7 @@ public interface IAzureSignalRService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<SignalRKeyModel> ListKeysAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
@@ -58,7 +58,7 @@ public interface IAzureSignalRService
         RetryPolicyOptions? retryPolicy = null);
 
     Task<SignalRServiceModel?> GetSignalRServiceAsync(
-        string subscriptionId,
+        string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,

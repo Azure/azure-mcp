@@ -8,21 +8,17 @@ using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
+using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.CustomDomain;
 
 public sealed class CustomDomainListCommand(ILogger<CustomDomainListCommand> logger)
     : BaseAzureSignalRCommand<CustomDomainListOptions>
 {
-    private const string CommandTitle = "List SignalR Custom Domains";
+    private const string CommandTitle = "List Custom Domains";
     private readonly ILogger<CustomDomainListCommand> _logger = logger;
 
-    private static readonly Option<string> _signalRNameOption = new(
-        ["--signalr-name", "-n"],
-        "The name of the SignalR service")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
 
     public override string Name => "list";
 

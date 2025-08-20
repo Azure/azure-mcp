@@ -17,11 +17,11 @@ namespace AzureMcp.AzureSignalR.Commands.Key;
 public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
     : BaseAzureSignalRCommand<KeyListOptions>
 {
-    private const string CommandTitle = "List SignalR Access Keys";
+    private const string CommandTitle = "List Access Keys";
     private readonly ILogger<KeyListCommand> _logger = logger;
 
     private static readonly Option<string> _signalRNameOption = new(
-        ["--signalr-name", "-n"],
+        ["--name", "-n"],
         "The name of the SignalR service")
     {
         IsRequired = true
@@ -36,7 +36,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
         Required options:
         - --subscription: The subscription ID or name
         - --resource-group: The resource group name
-        - --signalr-name: The SignalR service name
+        - --name: The SignalR service name
         """;
 
     public override string Title => CommandTitle;

@@ -63,7 +63,7 @@ public class KeyListCommandTests
             .Returns(expectedKeys);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -96,7 +96,7 @@ public class KeyListCommandTests
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert

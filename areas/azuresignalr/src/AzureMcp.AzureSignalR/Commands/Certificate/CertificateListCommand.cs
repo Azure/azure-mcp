@@ -8,21 +8,17 @@ using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
+using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.Certificate;
 
 public sealed class CertificateListCommand(ILogger<CertificateListCommand> logger)
     : BaseAzureSignalRCommand<CertificateListOptions>
 {
-    private const string CommandTitle = "List SignalR Certificates";
+    private const string CommandTitle = "List Certificates";
     private readonly ILogger<CertificateListCommand> _logger = logger;
 
-    private static readonly Option<string> _signalRNameOption = new(
-        ["--signalr-name", "-n"],
-        "The name of the SignalR service")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
 
     public override string Name => "list";
 

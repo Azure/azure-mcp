@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.AzureSignalR.Commands;
 using AzureMcp.AzureSignalR.Options.SignalR;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
@@ -17,7 +16,7 @@ namespace AzureMcp.AzureSignalR.Commands.SignalR;
 public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand> logger)
     : BaseAzureSignalRCommand<SignalRListOptions>
 {
-    private const string CommandTitle = "List SignalR Services";
+    private const string CommandTitle = "List all Services";
     private readonly ILogger<SignalRServiceListCommand> _logger = logger;
     protected override bool RequiresResourceGroup => false;
 

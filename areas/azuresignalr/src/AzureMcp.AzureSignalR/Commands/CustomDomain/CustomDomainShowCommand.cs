@@ -8,6 +8,7 @@ using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
+using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.CustomDomain;
 
@@ -17,22 +18,12 @@ namespace AzureMcp.AzureSignalR.Commands.CustomDomain;
 public sealed class CustomDomainShowCommand(ILogger<CustomDomainShowCommand> logger)
     : BaseAzureSignalRCommand<CustomDomainShowOptions>
 {
-    private const string CommandTitle = "Show SignalR Custom Domain";
+    private const string CommandTitle = "Show Custom Domain";
     private readonly ILogger<CustomDomainShowCommand> _logger = logger;
 
-    private static readonly Option<string> _signalRNameOption = new(
-        ["--signalr-name", "-n"],
-        "The name of the SignalR service")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
 
-    private static readonly Option<string> _customDomainNameOption = new(
-        ["--custom-domain-name", "-d"],
-        "The name of the custom domain")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _customDomainNameOption = AzureSignalROptionDefinitions.CustomDomainName;
 
     public override string Name => "show";
 
@@ -44,7 +35,7 @@ public sealed class CustomDomainShowCommand(ILogger<CustomDomainShowCommand> log
         - --subscription: The subscription ID or name
         - --resource-group: The resource group name
         - --signalr-name: The SignalR service name
-        - --custom-domain-name: The custom domain name
+        - --name: The custom domain name
         """;
 
     public override string Title => CommandTitle;

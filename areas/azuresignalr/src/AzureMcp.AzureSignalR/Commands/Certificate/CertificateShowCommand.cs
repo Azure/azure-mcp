@@ -19,7 +19,7 @@ namespace AzureMcp.AzureSignalR.Commands.Certificate;
 public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logger)
     : BaseAzureSignalRCommand<CertificateShowOptions>
 {
-    private const string CommandTitle = "Show SignalR Certificate";
+    private const string CommandTitle = "Show Certificate";
     private readonly ILogger<CertificateShowCommand> _logger = logger;
 
     private readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
@@ -34,7 +34,7 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
         - --subscription: The subscription ID or name
         - --resource-group: The resource group name
         - --signalr-name: The SignalR service name
-        - --certificate-name: The certificate name
+        - --name: The certificate name
         """;
 
     public override string Title => CommandTitle;
