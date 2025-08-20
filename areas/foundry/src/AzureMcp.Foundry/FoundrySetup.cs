@@ -12,6 +12,8 @@ namespace AzureMcp.Foundry;
 
 public class FoundrySetup : IAreaSetup
 {
+    public string Name => "foundry";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IFoundryService, FoundryService>();
@@ -19,7 +21,7 @@ public class FoundrySetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var foundry = new CommandGroup("foundry", "Foundry service operations - Commands for listing and managing services and resources in AI Foundry.");
+        var foundry = new CommandGroup(Name, "Foundry service operations - Commands for listing and managing services and resources in AI Foundry.");
         rootGroup.AddSubGroup(foundry);
 
         var models = new CommandGroup("models", "Foundry models operations - Commands for listing and managing models in AI Foundry.");

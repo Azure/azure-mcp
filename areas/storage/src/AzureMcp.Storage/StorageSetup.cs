@@ -20,6 +20,8 @@ namespace AzureMcp.Storage;
 
 public class StorageSetup : IAreaSetup
 {
+    public string Name => "storage";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IStorageService, StorageService>();
@@ -27,8 +29,7 @@ public class StorageSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        // Create Storage command group
-        var storage = new CommandGroup("storage",
+        var storage = new CommandGroup(Name,
             """
             Storage operations - Commands for managing and accessing Azure Storage accounts and their data services
             including Blobs, Data Lake Gen 2, Shares, Tables, and Queues for scalable cloud storage solutions. Use

@@ -13,6 +13,8 @@ namespace AzureMcp.AppConfig;
 
 public class AppConfigSetup : IAreaSetup
 {
+    public string Name => "appconfig";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IAppConfigService, AppConfigService>();
@@ -21,7 +23,7 @@ public class AppConfigSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create AppConfig command group
-        var appConfig = new CommandGroup("appconfig", "App Configuration operations - Commands for managing Azure App Configuration stores and key-value settings. Includes operations for listing configuration stores, managing key-value pairs, setting labels, locking/unlocking settings, and retrieving configuration data.");
+        var appConfig = new CommandGroup(Name, "App Configuration operations - Commands for managing Azure App Configuration stores and key-value settings. Includes operations for listing configuration stores, managing key-value pairs, setting labels, locking/unlocking settings, and retrieving configuration data.");
         rootGroup.AddSubGroup(appConfig);
 
         // Create AppConfig subgroups

@@ -15,6 +15,8 @@ namespace AzureMcp.Quota;
 
 public sealed class QuotaSetup : IAreaSetup
 {
+    public string Name => "quota";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClientServices();
@@ -25,7 +27,7 @@ public sealed class QuotaSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var quota = new CommandGroup("quota", "Quota commands for getting the available regions of specific Azure resource types"
+        var quota = new CommandGroup(Name, "Quota commands for getting the available regions of specific Azure resource types"
                     + " or checking Azure resource quota and usage");
         rootGroup.AddSubGroup(quota);
 
