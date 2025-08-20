@@ -23,5 +23,5 @@ public class KnowledgeIndexInformation
     public string? Description { get; set; }
 
     [JsonPropertyName("tags")]
-    public Dictionary<string, string>? Tags { get; set; }
+    public Dictionary<string, string?>? Tags { get; set; }
 }
