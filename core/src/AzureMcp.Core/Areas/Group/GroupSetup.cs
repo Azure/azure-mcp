@@ -10,6 +10,8 @@ namespace AzureMcp.Core.Areas.Group;
 
 public sealed class GroupSetup : IAreaSetup
 {
+    public string Name => "group";
+
     public void ConfigureServices(IServiceCollection services)
     {
         // No additional services needed for Group area
@@ -18,7 +20,7 @@ public sealed class GroupSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Group command group
-        var group = new CommandGroup("group", "Resource group operations - Commands for listing and managing Azure resource groups in your subscriptions.");
+        var group = new CommandGroup(Name, "Resource group operations - Commands for listing and managing Azure resource groups in your subscriptions.");
         rootGroup.AddSubGroup(group);
 
         // Register Group commands
