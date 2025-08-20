@@ -5,6 +5,7 @@ using System.CommandLine.Parsing;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.MySql.Commands;
+using AzureMcp.MySql.Commands.Database;
 using AzureMcp.MySql.Json;
 using AzureMcp.MySql.Options.Table;
 using AzureMcp.MySql.Services;

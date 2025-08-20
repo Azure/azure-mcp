@@ -308,75 +308,6 @@ azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> -
 
 ```
 
-### Azure Database for PostgreSQL Operations
-
-#### Database commands
-
-```bash
-# List all databases in a PostgreSQL server
-azmcp postgres database list --subscription <subscription> \
-                             --resource-group <resource-group> \
-                             --user <user> \
-                             --server <server>
-
-# Execute a query on a PostgreSQL database
-azmcp postgres database query --subscription <subscription> \
-                              --resource-group <resource-group> \
-                              --user <user> \
-                              --server <server> \
-                              --database <database> \
-                              --query <query>
-```
-
-#### Table Commands
-
-```bash
-# List all tables in a PostgreSQL database
-azmcp postgres table list --subscription <subscription> \
-                          --resource-group <resource-group> \
-                          --user <user> \
-                          --server <server> \
-                          --database <database>
-
-# Get the schema of a specific table in a PostgreSQL database
-azmcp postgres table schema get --subscription <subscription> \
-                                --resource-group <resource-group> \
-                                --user <user> \
-                                --server <server> \
-                                --database <database> \
-                                --table <table>
-```
-
-#### Server Commands
-
-```bash
-# Retrieve the configuration of a PostgreSQL server
-azmcp postgres server config get --subscription <subscription> \
-                                 --resource-group <resource-group> \
-                                 --user <user> \
-                                 --server <server>
-
-# List all PostgreSQL servers in a subscription & resource group
-azmcp postgres server list --subscription <subscription> \
-                           --resource-group <resource-group> \
-                           --user <user>
-
-# Retrieve a specific parameter of a PostgreSQL server
-azmcp postgres server param get --subscription <subscription> \
-                                --resource-group <resource-group> \
-                                --user <user> \
-                                --server <server> \
-                                --param <parameter>
-
-# Set a specific parameter of a PostgreSQL server to a specific value
-azmcp postgres server param set --subscription <subscription> \
-                                --resource-group <resource-group> \
-                                --user <user> \
-                                --server <server> \
-                                --param <parameter> \
-                                --value <value>
-```
-
 ### Azure Database for MySQL Operations
 
 #### Database commands
@@ -444,6 +375,75 @@ azmcp mysql server param set --subscription <subscription> \
                              --server <server> \
                              --param <parameter> \
                              --value <value>
+```
+
+### Azure Database for PostgreSQL Operations
+
+#### Database commands
+
+```bash
+# List all databases in a PostgreSQL server
+azmcp postgres database list --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server>
+
+# Execute a query on a PostgreSQL database
+azmcp postgres database query --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server> \
+                              --database <database> \
+                              --query <query>
+```
+
+#### Table Commands
+
+```bash
+# List all tables in a PostgreSQL database
+azmcp postgres table list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user <user> \
+                          --server <server> \
+                          --database <database>
+
+# Get the schema of a specific table in a PostgreSQL database
+azmcp postgres table schema get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --database <database> \
+                                --table <table>
+```
+
+#### Server Commands
+
+```bash
+# Retrieve the configuration of a PostgreSQL server
+azmcp postgres server config get --subscription <subscription> \
+                                 --resource-group <resource-group> \
+                                 --user <user> \
+                                 --server <server>
+
+# List all PostgreSQL servers in a subscription & resource group
+azmcp postgres server list --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user <user>
+
+# Retrieve a specific parameter of a PostgreSQL server
+azmcp postgres server param get --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter>
+
+# Set a specific parameter of a PostgreSQL server to a specific value
+azmcp postgres server param set --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --user <user> \
+                                --server <server> \
+                                --param <parameter> \
+                                --value <value>
 ```
 
 ### Azure Developer CLI Operations

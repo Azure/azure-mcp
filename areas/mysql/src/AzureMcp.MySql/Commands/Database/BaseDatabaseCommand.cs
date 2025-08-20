@@ -5,27 +5,28 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Core.Commands;
+using AzureMcp.MySql.Commands.Server;
 using AzureMcp.MySql.Options;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.MySql.Commands;
+namespace AzureMcp.MySql.Commands.Database;
 
-public abstract class BaseServerCommand<
+public abstract class BaseDatabaseCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>(ILogger<BaseMySqlCommand<TOptions>> logger)
-    : BaseMySqlCommand<TOptions>(logger) where TOptions : MySqlServerOptions, new()
+    : BaseServerCommand<TOptions>(logger) where TOptions : MySqlDatabaseOptions, new()
 {
-    private readonly Option<string> _serverOption = MySqlOptionDefinitions.Server;
+    private readonly Option<string> _databaseOption = MySqlOptionDefinitions.Database;
 
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_serverOption);
+        command.AddOption(_databaseOption);
     }
 
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.Server = parseResult.GetValueForOption(_serverOption);
+        options.Database = parseResult.GetValueForOption(_databaseOption);
         return options;
     }
 }

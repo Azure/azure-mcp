@@ -90,23 +90,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-kusto-table-list | Show me the tables in the Data Explorer database <database_name> in cluster <cluster_name> |
 | azmcp-kusto-table-schema | Show me the schema for table <table_name> in the Data Explorer database <database_name> in cluster <cluster_name> |
 
-## Azure Database for PostgreSQL
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
-| azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
-| azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-server-config-get | Show me the configuration of PostgreSQL server \<server> |
-| azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
-| azmcp-postgres-server-list | Show me my PostgreSQL servers |
-| azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
-| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
-| azmcp-postgres-server-param-set | Enable replication for my PostgreSQL server \<server> |
-| azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
-| azmcp-postgres-table-schema-get | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
-
 ## Azure Database for MySQL
 
 | Tool Name | Test Prompt |
@@ -123,6 +106,23 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-mysql-table-list | List all tables in the MySQL database \<database> in server \<server> |
 | azmcp-mysql-table-list | Show me the tables in the MySQL database \<database> in server \<server> |
 | azmcp-mysql-table-schema-get | Show me the schema of table \<table> in the MySQL database \<database> in server \<server> |
+
+## Azure Database for PostgreSQL
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-postgres-database-list | List all PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-list | Show me the PostgreSQL databases in server \<server> |
+| azmcp-postgres-database-query | Show me all items that contain the word \<search_term> in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-server-config-get | Show me the configuration of PostgreSQL server \<server> |
+| azmcp-postgres-server-list | List all PostgreSQL servers in my subscription |
+| azmcp-postgres-server-list | Show me my PostgreSQL servers |
+| azmcp-postgres-server-list | Show me the PostgreSQL servers in my subscription |
+| azmcp-postgres-server-param | Show me if the parameter my PostgreSQL server \<server> has replication enabled |
+| azmcp-postgres-server-param-set | Enable replication for my PostgreSQL server \<server> |
+| azmcp-postgres-table-list | List all tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-list | Show me the tables in the PostgreSQL database \<database> in server \<server> |
+| azmcp-postgres-table-schema-get | Show me the schema of table \<table> in the PostgreSQL database \<database> in server \<server> |
 
 ## Azure Developer CLI
 

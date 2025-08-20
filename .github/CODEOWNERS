@@ -132,10 +132,10 @@
 # ServiceOwners:                       @wolfgang-desalvador
 
 # PRLabel: %area-MySQL
-/areas/mysql/                          @ramnov @Azure/azure-mcp
+/areas/mysql/                          @ramnov @mattkohnms @Azure/azure-mcp
 
 # ServiceLabel: %area-MySQL
-# ServiceOwners:                       @ramnov
+# ServiceOwners:                       @ramnov @mattkohnms
 
 
 # PRLabel: %area-Postgres
