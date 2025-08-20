@@ -121,15 +121,6 @@ jobs:
       useGlobalJson: true
       workingDirectory: azure-sdk-tools
 
-  - task: UseDotNet@2
-    displayName: "Use .NET SDK 9.0.x"
-    retryCountOnTaskFailure: 3
-    inputs:
-      packageType: sdk
-      version: 9.0.x
-      performMultiLevelLookup: true
-      workingDirectory: azure-sdk-tools
-
   # Copied from eng/pipelines/templates/steps/install-dotnet.yml, but changed workingDirectory
   - task: UseDotNet@2
     displayName: "Use .NET SDK 8.0.x"
