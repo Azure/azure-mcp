@@ -67,6 +67,7 @@ internal class Program
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
+            new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.Deploy.DeploySetup(),
             new AzureMcp.Acr.AcrSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
@@ -88,7 +89,6 @@ internal class Program
             new AzureMcp.Workbooks.WorkbooksSetup(),
 #if !BUILD_NATIVE
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.ResourceHealth.ResourceHealthSetup(),
 #endif
         ];

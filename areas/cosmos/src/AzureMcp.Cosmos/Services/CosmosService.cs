@@ -51,8 +51,10 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null)
     {
-        var clientOptions = new CosmosClientOptions { AllowBulkExecution = true };
-        clientOptions.CosmosClientTelemetryOptions.DisableDistributedTracing = false;
+        // Enable bulk execution and distributed tracing telemetry features once they are supported by the Microsoft.Azure.Cosmos.Aot package.
+        // var clientOptions = new CosmosClientOptions { AllowBulkExecution = true };
+        // clientOptions.CosmosClientTelemetryOptions.DisableDistributedTracing = false;
+        var clientOptions = new CosmosClientOptions();
         clientOptions.CustomHandlers.Add(new UserPolicyRequestHandler(UserAgent));
 
         if (retryPolicy != null)
@@ -197,11 +199,26 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
 
         try
         {
-            var iterator = client.GetDatabaseQueryIterator<DatabaseProperties>();
+            var iterator = client.GetDatabaseQueryStreamIterator();
             while (iterator.HasMoreResults)
             {
-                var results = await iterator.ReadNextAsync();
-                databases.AddRange(results.Select(r => r.Id));
+                ResponseMessage dbResponse = await iterator.ReadNextAsync();
+                if (!dbResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception(dbResponse.ErrorMessage);
+                }
+                using JsonDocument dbsQueryResultDoc = JsonDocument.Parse(dbResponse.Content);
+                if (dbsQueryResultDoc.RootElement.TryGetProperty("Databases", out JsonElement documentsElement))
+                {
+                    foreach (JsonElement databaseElement in documentsElement.EnumerateArray())
+                    {
+                        string? databaseId = databaseElement.GetProperty("id").GetString();
+                        if (!string.IsNullOrEmpty(databaseId))
+                        {
+                            databases.Add(databaseId);
+                        }
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -237,11 +254,26 @@ public class CosmosService(ISubscriptionService subscriptionService, ITenantServ
         try
         {
             var database = client.GetDatabase(databaseName);
-            var iterator = database.GetContainerQueryIterator<ContainerProperties>();
+            var iterator = database.GetContainerQueryStreamIterator();
             while (iterator.HasMoreResults)
             {
-                var results = await iterator.ReadNextAsync();
-                containers.AddRange(results.Select(r => r.Id));
+                ResponseMessage containerRResponse = await iterator.ReadNextAsync();
+                if (!containerRResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception(containerRResponse.ErrorMessage);
+                }
+                using JsonDocument containersQueryResultDoc = JsonDocument.Parse(containerRResponse.Content);
+                if (containersQueryResultDoc.RootElement.TryGetProperty("DocumentCollections", out JsonElement containersElement))
+                {
+                    foreach (JsonElement containerElement in containersElement.EnumerateArray())
+                    {
+                        string? containerId = containerElement.GetProperty("id").GetString();
+                        if (!string.IsNullOrEmpty(containerId))
+                        {
+                            containers.Add(containerId);
+                        }
+                    }
+                }
             }
         }
         catch (Exception ex)
