@@ -46,24 +46,27 @@ public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand>
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var signalRService = context.GetService<IAzureSignalRService>() ?? throw new InvalidOperationException("SignalR service is not available.");
+            var signalRService = context.GetService<IAzureSignalRService>() ??
+                                 throw new InvalidOperationException("SignalR service is not available.");
             var signalRServices = await signalRService.ListSignalRServicesAsync(
                 options.Subscription!,
                 options.Tenant,
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            _logger.LogInformation("Found {Count} SignalR service(s) in subscription {SubscriptionId}", signalRServices.Count(), options.Subscription);
+            _logger.LogInformation("Found {Count} SignalR service(s) in subscription {SubscriptionId}",
+                signalRServices.Count(), options.Subscription);
 
-            context.Response.Results = signalRServices.Any() ?
-                ResponseResult.Create(
+            context.Response.Results = signalRServices.Any()
+                ? ResponseResult.Create(
                     new SignalRServiceListCommandResult(signalRServices),
-                    AzureSignalRJsonContext.Default.SignalRServiceListCommandResult) :
-                null;
+                    AzureSignalRJsonContext.Default.SignalRServiceListCommandResult)
+                : null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error listing SignalR services in subscription {SubscriptionId}", options.Subscription);
+            _logger.LogError(ex, "Error listing SignalR services in subscription {SubscriptionId}",
+                options.Subscription);
             HandleException(context, ex);
         }
 

@@ -7,7 +7,7 @@ using AzureMcp.AzureSignalR.Options.Key;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
+using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.Key;
 
@@ -20,12 +20,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
     private const string CommandTitle = "List Access Keys";
     private readonly ILogger<KeyListCommand> _logger = logger;
 
-    private static readonly Option<string> _signalRNameOption = new(
-        ["--name", "-n"],
-        "The name of the SignalR service")
-    {
-        IsRequired = true
-    };
+    private static readonly Option<string> _signalRNameOption = AzureSignalROptionDefinitions.SignalRName;
 
     public override string Name => "list";
 
@@ -36,7 +31,7 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
         Required options:
         - --subscription: The subscription ID or name
         - --resource-group: The resource group name
-        - --name: The SignalR service name
+        - --signalr-name: The SignalR service name
         """;
 
     public override string Title => CommandTitle;

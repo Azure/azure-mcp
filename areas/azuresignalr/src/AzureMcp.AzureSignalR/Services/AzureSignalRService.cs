@@ -1,13 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Azure.ResourceManager.SignalR;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.AzureSignalR.Models;
-using AzureMcp.Core.Models;
 
 namespace AzureMcp.AzureSignalR.Services;
 
@@ -25,7 +23,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var signalRServices = new List<SignalRServiceModel>();
 
@@ -67,7 +65,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -112,7 +110,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -157,7 +155,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -204,7 +202,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -248,7 +246,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);
@@ -288,7 +286,7 @@ public class AzureSignalRService(ISubscriptionService subscriptionService, ITena
         try
         {
             var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                ?? throw new Exception($"Subscription '{subscription}' not found");
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
                 .GetResourceGroupAsync(resourceGroupName);

@@ -7,7 +7,6 @@ using AzureMcp.AzureSignalR.Options.Certificate;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
 using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.Certificate;
@@ -69,11 +68,11 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
                 options.RetryPolicy);
 
             var certificatesList = certificates.ToList();
-            context.Response.Results = certificatesList.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = certificatesList.Count > 0
+                ? ResponseResult.Create(
                     new CertificateListCommandResult(certificatesList),
-                    AzureSignalRJsonContext.Default.CertificateListCommandResult) :
-                null;
+                    AzureSignalRJsonContext.Default.CertificateListCommandResult)
+                : null;
         }
         catch (Exception ex)
         {

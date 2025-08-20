@@ -8,7 +8,6 @@ using AzureMcp.Core.Models;
 using AzureMcp.AzureSignalR.Commands.SignalR;
 using AzureMcp.AzureSignalR.Models;
 using AzureMcp.AzureSignalR.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -73,10 +72,10 @@ public class SignalRServiceListCommandTests
         };
 
         _signalRService.ListSignalRServicesAsync(
-            _knownSubscriptionId,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(expectedServices);
 
         var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
@@ -91,8 +90,9 @@ public class SignalRServiceListCommandTests
 
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer.Deserialize<SignalRServiceListCommand.SignalRServiceListCommandResult>(
-            json, AzureSignalRJsonContext.Default.SignalRServiceListCommandResult);
+        var resultData = System.Text.Json.JsonSerializer
+            .Deserialize<SignalRServiceListCommand.SignalRServiceListCommandResult>(
+                json, AzureSignalRJsonContext.Default.SignalRServiceListCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(2, resultData.SignalRServices.Count());
 
@@ -112,10 +112,10 @@ public class SignalRServiceListCommandTests
         var emptyServices = new List<SignalRServiceModel>();
 
         _signalRService.ListSignalRServicesAsync(
-            _knownSubscriptionId,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(emptyServices);
 
         var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
@@ -135,10 +135,10 @@ public class SignalRServiceListCommandTests
         // Arrange
         var requestException = new RequestFailedException(403, "Forbidden");
         _signalRService.ListSignalRServicesAsync(
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestException);
 
         var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
@@ -172,10 +172,10 @@ public class SignalRServiceListCommandTests
         // Arrange
         var exception = new InvalidOperationException("Service error");
         _signalRService.ListSignalRServicesAsync(
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
         var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");

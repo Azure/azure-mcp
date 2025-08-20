@@ -47,25 +47,29 @@ public class CustomDomainShowCommandTests
         var expectedCustomDomain = new SignalRCustomDomainModel
         {
             Name = _knownCustomDomainName,
-            Id = $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customDomains/{_knownCustomDomainName}",
+            Id =
+                $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customDomains/{_knownCustomDomainName}",
             Type = "Microsoft.SignalRService/signalR/customDomains",
             ProvisioningState = "Succeeded",
             DomainName = _knownCustomDomainName,
-            CustomCertificate = "/subscriptions/sub123/resourceGroups/rg123/providers/Microsoft.SignalRService/signalR/signalr123/customCertificates/cert1"
+            CustomCertificate =
+                "/subscriptions/sub123/resourceGroups/rg123/providers/Microsoft.SignalRService/signalR/signalr123/customCertificates/cert1"
         };
 
         _signalRService.GetCustomDomainAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            _knownCustomDomainName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                _knownCustomDomainName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedCustomDomain);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -74,8 +78,9 @@ public class CustomDomainShowCommandTests
 
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer.Deserialize<CustomDomainShowCommand.CustomDomainShowCommandResult>(
-            json, AzureSignalRJsonContext.Default.CustomDomainShowCommandResult);
+        var resultData = System.Text.Json.JsonSerializer
+            .Deserialize<CustomDomainShowCommand.CustomDomainShowCommandResult>(
+                json, AzureSignalRJsonContext.Default.CustomDomainShowCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(_knownCustomDomainName, resultData.CustomDomain.Name);
         Assert.Equal(_knownCustomDomainName, resultData.CustomDomain.DomainName);
@@ -87,17 +92,19 @@ public class CustomDomainShowCommandTests
     {
         // Arrange
         _signalRService.GetCustomDomainAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            _knownCustomDomainName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                _knownCustomDomainName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns((SignalRCustomDomainModel?)null);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -111,17 +118,19 @@ public class CustomDomainShowCommandTests
     {
         // Arrange
         _signalRService.GetCustomDomainAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            _knownCustomDomainName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                _knownCustomDomainName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCustomDomainName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -132,7 +141,8 @@ public class CustomDomainShowCommandTests
     public async Task ExecuteAsync_MissingRequiredParameters_ReturnsValidationError()
     {
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup}");
+        var parseResult =
+            _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert

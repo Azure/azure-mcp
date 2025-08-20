@@ -47,7 +47,8 @@ public class CertificateShowCommandTests
         var expectedCertificate = new SignalRCertificateModel
         {
             Name = _knownCertificateName,
-            Id = $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/{_knownCertificateName}",
+            Id =
+                $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/{_knownCertificateName}",
             Type = "Microsoft.SignalRService/signalR/customCertificates",
             ProvisioningState = "Succeeded",
             KeyVaultBaseUri = "https://keyvault.vault.azure.net/",
@@ -56,16 +57,18 @@ public class CertificateShowCommandTests
         };
 
         _signalRService.GetCertificateAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            _knownCertificateName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                _knownCertificateName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(expectedCertificate);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -77,8 +80,9 @@ public class CertificateShowCommandTests
 
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer.Deserialize<CertificateShowCommand.CertificateShowCommandResult>(
-            json, AzureSignalRJsonContext.Default.CertificateShowCommandResult);
+        var resultData = System.Text.Json.JsonSerializer
+            .Deserialize<CertificateShowCommand.CertificateShowCommandResult>(
+                json, AzureSignalRJsonContext.Default.CertificateShowCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(expectedCertificate.Name, resultData.Certificate.Name);
         Assert.Equal(expectedCertificate.Id, resultData.Certificate.Id);
@@ -93,16 +97,18 @@ public class CertificateShowCommandTests
     {
         // Arrange
         _signalRService.GetCertificateAsync(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns((SignalRCertificateModel?)null);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -120,16 +126,18 @@ public class CertificateShowCommandTests
         // Arrange
         var requestException = new RequestFailedException(404, "Not Found");
         _signalRService.GetCertificateAsync(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestException);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -147,16 +155,18 @@ public class CertificateShowCommandTests
         // Arrange
         var requestException = new RequestFailedException(403, "Forbidden");
         _signalRService.GetCertificateAsync(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(requestException);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -172,7 +182,9 @@ public class CertificateShowCommandTests
     public async Task ExecuteAsync_MissingRequiredParameters_ReturnsValidationError()
     {
         // Arrange - missing certificate name
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -188,16 +200,18 @@ public class CertificateShowCommandTests
         // Arrange
         var exception = new InvalidOperationException("Service error");
         _signalRService.GetCertificateAsync(
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string>(),
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<Core.Options.RetryPolicyOptions?>())
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<Core.Options.RetryPolicyOptions?>())
             .ThrowsAsync(exception);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name {_knownCertificateName}");
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -215,7 +229,8 @@ public class CertificateShowCommandTests
     public async Task ExecuteAsync_InvalidCertificateName_ReturnsValidationError(string certificateName)
     {
         // Arrange
-        var args = $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name \"{certificateName}\"";
+        var args =
+            $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName} --name \"{certificateName}\"";
         var parseResult = _parser.Parse(args);
 
         // Act

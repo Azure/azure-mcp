@@ -57,16 +57,18 @@ public class SignalRShowCommandTests
         };
 
         _signalRService.GetSignalRServiceAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedService);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -90,16 +92,18 @@ public class SignalRShowCommandTests
     {
         // Arrange
         _signalRService.GetSignalRServiceAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns((SignalRServiceModel?)null);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -113,16 +117,18 @@ public class SignalRShowCommandTests
     {
         // Arrange
         _signalRService.GetSignalRServiceAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert

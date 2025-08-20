@@ -48,22 +48,27 @@ public class KeyListCommandTests
             KeyType = "Both",
             PrimaryKey = "primary-key-value",
             SecondaryKey = "secondary-key-value",
-            PrimaryConnectionString = "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;",
-            SecondaryConnectionString = "Endpoint=https://signalr123.service.signalr.net;AccessKey=secondary-key-value;Version=1.0;",
-            ConnectionString = "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;"
+            PrimaryConnectionString =
+                "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;",
+            SecondaryConnectionString =
+                "Endpoint=https://signalr123.service.signalr.net;AccessKey=secondary-key-value;Version=1.0;",
+            ConnectionString =
+                "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;"
         };
 
         _signalRService.ListKeysAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedKeys);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -87,16 +92,18 @@ public class KeyListCommandTests
     {
         // Arrange
         _signalRService.ListKeysAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert

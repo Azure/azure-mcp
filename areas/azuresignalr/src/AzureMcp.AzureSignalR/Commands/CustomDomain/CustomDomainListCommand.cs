@@ -7,7 +7,6 @@ using AzureMcp.AzureSignalR.Options.CustomDomain;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
 using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.CustomDomain;
@@ -69,11 +68,11 @@ public sealed class CustomDomainListCommand(ILogger<CustomDomainListCommand> log
                 options.RetryPolicy);
 
             var customDomainsList = customDomains.ToList();
-            context.Response.Results = customDomainsList.Count > 0 ?
-                ResponseResult.Create(
+            context.Response.Results = customDomainsList.Count > 0
+                ? ResponseResult.Create(
                     new CustomDomainListCommandResult(customDomainsList),
-                    AzureSignalRJsonContext.Default.CustomDomainListCommandResult) :
-                null;
+                    AzureSignalRJsonContext.Default.CustomDomainListCommandResult)
+                : null;
         }
         catch (Exception ex)
         {

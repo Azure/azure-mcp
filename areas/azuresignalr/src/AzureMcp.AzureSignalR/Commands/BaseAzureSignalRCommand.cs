@@ -4,10 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Options;
 using AzureMcp.AzureSignalR.Options;
-using System.CommandLine;
-using AzureMcp.Core.Models.Option;
 
 namespace AzureMcp.AzureSignalR.Commands;
 
@@ -15,7 +12,8 @@ namespace AzureMcp.AzureSignalR.Commands;
 /// Base command for all Azure SignalR commands.
 /// </summary>
 public abstract class BaseAzureSignalRCommand<
-    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)] TOptions>
+    [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)]
+    TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseAzureSignalROptions, new()
 {
     protected virtual bool RequiresResourceGroup => true;

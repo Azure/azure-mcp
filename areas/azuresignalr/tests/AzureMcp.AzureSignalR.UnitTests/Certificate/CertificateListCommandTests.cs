@@ -48,7 +48,8 @@ public class CertificateListCommandTests
             new()
             {
                 Name = "cert1",
-                Id = $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/cert1",
+                Id =
+                    $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/cert1",
                 Type = "Microsoft.SignalRService/signalR/customCertificates",
                 ProvisioningState = "Succeeded",
                 KeyVaultBaseUri = "https://vault1.vault.azure.net/",
@@ -58,7 +59,8 @@ public class CertificateListCommandTests
             new()
             {
                 Name = "cert2",
-                Id = $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/cert2",
+                Id =
+                    $"/subscriptions/{_knownSubscriptionId}/resourceGroups/{_knownResourceGroup}/providers/Microsoft.SignalRService/signalR/{_knownSignalRName}/customCertificates/cert2",
                 Type = "Microsoft.SignalRService/signalR/customCertificates",
                 ProvisioningState = "Succeeded",
                 KeyVaultBaseUri = "https://vault2.vault.azure.net/",
@@ -68,16 +70,18 @@ public class CertificateListCommandTests
         };
 
         _signalRService.ListCertificatesAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns(expectedCertificates);
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -86,8 +90,9 @@ public class CertificateListCommandTests
 
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer.Deserialize<CertificateListCommand.CertificateListCommandResult>(
-            json, AzureSignalRJsonContext.Default.CertificateListCommandResult);
+        var resultData = System.Text.Json.JsonSerializer
+            .Deserialize<CertificateListCommand.CertificateListCommandResult>(
+                json, AzureSignalRJsonContext.Default.CertificateListCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(2, resultData.Certificates.Count);
         Assert.Equal("cert1", resultData.Certificates[0].Name);
@@ -101,16 +106,18 @@ public class CertificateListCommandTests
     {
         // Arrange
         _signalRService.ListCertificatesAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .Returns(new List<SignalRCertificateModel>());
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
@@ -123,16 +130,18 @@ public class CertificateListCommandTests
     {
         // Arrange
         _signalRService.ListCertificatesAsync(
-            _knownSubscriptionId,
-            _knownResourceGroup,
-            _knownSignalRName,
-            Arg.Any<string?>(),
-            Arg.Any<AuthMethod?>(),
-            Arg.Any<RetryPolicyOptions?>())
+                _knownSubscriptionId,
+                _knownResourceGroup,
+                _knownSignalRName,
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions?>())
             .ThrowsAsync(new Exception("Service error"));
 
         // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
+        var parseResult =
+            _parser.Parse(
+                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert

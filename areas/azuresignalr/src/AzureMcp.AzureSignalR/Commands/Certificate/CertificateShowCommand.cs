@@ -3,13 +3,11 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.AzureSignalR.Commands;
 using AzureMcp.AzureSignalR.Options;
 using AzureMcp.AzureSignalR.Options.Certificate;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
 
 namespace AzureMcp.AzureSignalR.Commands.Certificate;
 
@@ -39,11 +37,7 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new()
-    {
-        Destructive = false,
-        ReadOnly = true
-    };
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -73,7 +67,8 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
 
             context.Activity?.WithSubscriptionTag(options);
 
-            var signalRService = context.GetService<IAzureSignalRService>() ?? throw new InvalidOperationException("SignalR service is not available.");
+            var signalRService = context.GetService<IAzureSignalRService>() ??
+                                 throw new InvalidOperationException("SignalR service is not available.");
             var certificate = await signalRService.GetCertificateAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
@@ -86,7 +81,8 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
             if (certificate == null)
             {
                 context.Response.Status = 404;
-                context.Response.Message = $"Certificate '{options.CertificateName}' not found in SignalR service '{options.SignalRName}'.";
+                context.Response.Message =
+                    $"Certificate '{options.CertificateName}' not found in SignalR service '{options.SignalRName}'.";
                 return context.Response;
             }
 
@@ -99,7 +95,8 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error showing certificate {CertificateName} in SignalR service {SignalRName}. Options: {@Options}",
+            _logger.LogError(ex,
+                "Error showing certificate {CertificateName} in SignalR service {SignalRName}. Options: {@Options}",
                 options.CertificateName, options.SignalRName, options);
             HandleException(context, ex);
         }

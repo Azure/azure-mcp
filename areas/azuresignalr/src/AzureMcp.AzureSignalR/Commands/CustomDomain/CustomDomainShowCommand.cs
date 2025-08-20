@@ -7,7 +7,6 @@ using AzureMcp.AzureSignalR.Options.CustomDomain;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
 using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.CustomDomain;
@@ -40,11 +39,7 @@ public sealed class CustomDomainShowCommand(ILogger<CustomDomainShowCommand> log
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new()
-    {
-        Destructive = false,
-        ReadOnly = true
-    };
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -87,7 +82,8 @@ public sealed class CustomDomainShowCommand(ILogger<CustomDomainShowCommand> log
             if (customDomain == null)
             {
                 context.Response.Status = 404;
-                context.Response.Message = $"Custom domain '{options.CustomDomainName}' not found in SignalR service '{options.SignalRName}'.";
+                context.Response.Message =
+                    $"Custom domain '{options.CustomDomainName}' not found in SignalR service '{options.SignalRName}'.";
                 return context.Response;
             }
 

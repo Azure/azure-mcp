@@ -7,7 +7,6 @@ using AzureMcp.AzureSignalR.Options.SignalR;
 using AzureMcp.AzureSignalR.Services;
 using AzureMcp.AzureSignalR.Models;
 using Microsoft.Extensions.Logging;
-using System.CommandLine;
 using AzureMcp.AzureSignalR.Options;
 
 namespace AzureMcp.AzureSignalR.Commands.SignalR;
@@ -37,11 +36,7 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new()
-    {
-        Destructive = false,
-        ReadOnly = true
-    };
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -81,7 +76,8 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
             if (service == null)
             {
                 context.Response.Status = 404;
-                context.Response.Message = $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
+                context.Response.Message =
+                    $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
                 return context.Response;
             }
 
