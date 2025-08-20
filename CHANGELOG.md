@@ -26,6 +26,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
   - Fixed KQL string escaping in Workbooks service queries.
 - Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+- Update to .NET 10 SDK to prepare for .NET tool packing.
 
 ## 0.5.7 (2025-08-19)
 
