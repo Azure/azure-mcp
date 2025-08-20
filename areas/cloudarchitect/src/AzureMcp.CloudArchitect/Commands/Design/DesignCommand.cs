@@ -142,6 +142,11 @@ public sealed class DesignCommand(ILogger<DesignCommand> logger) : GlobalCommand
         {
             var options = BindOptions(parseResult);
 
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return Task.FromResult(context.Response);
+            }
+
             var designArchitecture = GetArchitectureDesignText();
             var responseObject = new CloudArchitectResponseObject
             {
