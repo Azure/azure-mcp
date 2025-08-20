@@ -2,34 +2,66 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
-## 0.5.7 (Unreleased)
+## 0.5.8 (Unreleased)
 
 ### Features Added
 
-- Added support for the following Azure Deploy operations and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
-  - `azmcp-deploy-app-logs-get` - Get logs from Azure applications deployed using azd.
-  - `azmcp-deploy-iac-rules-get` - Get Infrastructure as Code rules.
-  - `azmcp-deploy-pipeline-guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
-  - `azmcp-deploy-plan-get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
-  - `azmcp-deploy-architecture-diagram-generate` - Generate Azure service architecture diagrams based on application topology.
-  - `azmcp-quota-region-availability-list` - List available Azure regions for specific resource types.
-  - `azmcp-quota-usage-check` - Check Azure resource usage and quota information for specific resource types and regions.
-- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
-- Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. This command accepts PFX or PEM certificate data (file path, base64, or raw PEM) with optional password protection. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
-- Added `azmcp-storage-blob-upload`: Upload a local file to an Azure Storage blob with the option to overwrite if the blob already exists. Returns blob metadata including name, container, uploaded file, last modified time, ETag, MD5 hash, and overwrite status. [[#960](https://github.com/Azure/azure-mcp/pull/960)]
+- Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Added support for Azure MySQL. [[#855](https://github.com/Azure/azure-mcp/issues/855)]
 
 ### Breaking Changes
 
+- Renamed the following Storage tool option names: [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+  - Renamed `azmcp-storage-account-create` `account-name` to `account`.
+  - Renamed `azmcp-storage-blob-batch-set-tier` `blob-names` to `blobs`.
+
 ### Bugs Fixed
 
+- Fixed SQL service test assertions to use case-insensitive string comparisons for resource type validation. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Fixed HttpClient service test assertions to properly validate NoProxy collection handling instead of expecting a single string value. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+
 ### Other Changes
+
+- Refactored SQL service implementation to use Azure Resource Graph queries instead of direct ARM API calls. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+  - Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
+- Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+  - Fixed KQL string escaping in Workbooks service queries.
+- Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+
+## 0.5.7 (2025-08-19)
+
+### Features Added
+- Added the following Azure Managed Lustre commands:
+  - `azmcp-azuremanagedlustre-filesystem-list`: List available Azure Managed Lustre filesystem. [[#1001](https://github.com/Azure/azure-mcp/issues/1001)]
+  - `azmcp-azuremanagedlustre-filesystem-required-subnet-size`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem. [[#1002](https://github.com/Azure/azure-mcp/issues/1002)]
+
+- Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
+  - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
+  - `azmcp_deploy_iac_rules_get` - Get Infrastructure as Code rules.
+  - `azmcp_deploy_pipeline_guidance-get` - Get guidance for creating CI/CD pipelines to provision Azure resources and deploy applications.
+  - `azmcp_deploy_plan_get` - Generate deployment plans to construct infrastructure and deploy applications on Azure.
+  - `azmcp_deploy_architecture_diagram-generate` - Generate Azure service architecture diagrams based on application topology.
+  - `azmcp_quota_region_availability-list` - List available Azure regions for specific resource types.
+  - `azmcp_quota_usage_check` - Check Azure resource usage and quota information for specific resource types and regions.
+- Added support for listing Azure Function Apps via the command `azmcp-functionapp-list`. [[#863](https://github.com/Azure/azure-mcp/pull/863)]
+- Added support for importing existing certificates into Azure Key Vault via the command `azmcp-keyvault-certificate-import`. [[#968](https://github.com/Azure/azure-mcp/issues/968)]
+- Added support for uploading a local file to an Azure Storage blob via the command `azmcp-storage-blob-upload`. [[#960](https://github.com/Azure/azure-mcp/pull/960)]
+- Added support for the following Azure Service Health operations: [[#998](https://github.com/Azure/azure-mcp/pull/998)]
+  - `azmcp-resourcehealth-availability-status-get` - Get the availability status for a specific resource.
+  - `azmcp-resourcehealth-availability-status-list` - List availability statuses for all resources in a subscription or resource group.
+- Added support for listing repositories in Azure Container Registries via the command `azmcp-acr-registry-repository-list`. [[#983](https://github.com/Azure/azure-mcp/pull/983)]
+
+### Other Changes
+
+- Improved guidance for LLM interactions with Azure MCP server by adding rules around bestpractices tool calling to server instructions. [[#1007](https://github.com/Azure/azure-mcp/pull/1007)]
 
 #### Dependency Updates
 
 - Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#893](https://github.com/Azure/azure-mcp/pull/893)]
   - Azure.Bicep.Types: `0.5.110` → `0.6.1`
   - Azure.Bicep.Types.Az: `0.2.771` → `0.2.792`
+- Added the following dependencies to support Azure Managed Lustre
+  - Azure.ResourceManager.StorageCache:  `1.3.1`
 
 ## 0.5.6 (2025-08-14)
 

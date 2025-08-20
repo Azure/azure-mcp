@@ -89,6 +89,7 @@ internal class Program
             new AzureMcp.Workbooks.WorkbooksSetup(),
 #if !BUILD_NATIVE
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.ResourceHealth.ResourceHealthSetup(),
 #endif

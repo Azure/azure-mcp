@@ -78,17 +78,14 @@ jobs:
 
   - task: Powershell@2
     displayName: "(Native AOT) Install Linux arm64 cross compile toolchain"
-    # The arm64 cross-compilation toolchain install on Linux x64 has glitches. This will be re-enabled once resolved.
-    # condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))
-    condition: eq('false', 'true')
+    condition: and(succeeded(), eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))
     inputs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Install-LinuxArm64CrossCompileToolchain.ps1
 
   - task: Powershell@2
     displayName: "(Native AOT) Build module"
-    # Native build runs on all platforms except when targeting arm64 from Linux x64.
-    condition: and(succeeded(), ne(variables['NoPackagesChanged'],'true'), not(and(eq('${{ parameters.OSName }}', 'linux'), eq(variables['Architecture'], 'arm64'))))
+    condition: and(succeeded(), ne(variables['NoPackagesChanged'],'true'))
     inputs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Build-Module.ps1

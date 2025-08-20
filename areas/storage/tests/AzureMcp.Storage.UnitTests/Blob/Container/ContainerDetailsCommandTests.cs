@@ -25,9 +25,9 @@ public class ContainerDetailsCommandTests
     private readonly ContainerDetailsCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownSubscription = "sub123";
 
     public ContainerDetailsCommandTests()
     {
@@ -92,14 +92,14 @@ public class ContainerDetailsCommandTests
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public
             | System.Reflection.BindingFlags.NonPublic)?.SetValue(expectedProperties, true);
 
-        _storageService.GetContainerDetails(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetContainerDetails(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedProperties);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -135,14 +135,14 @@ public class ContainerDetailsCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        _storageService.GetContainerDetails(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetContainerDetails(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act

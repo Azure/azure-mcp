@@ -24,10 +24,10 @@ public class BlobDetailsCommandTests
     private readonly BlobDetailsCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownBlobName = "test-blob.txt";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownBlob = "test-blob.txt";
+    private readonly string _knownSubscription = "sub123";
 
     public BlobDetailsCommandTests()
     {
@@ -58,15 +58,15 @@ public class BlobDetailsCommandTests
         SetProperty(expectedProperties, "ContentType", "text/plain");
         SetProperty(expectedProperties, "BlobType", BlobType.Block);
 
-        _storageService.GetBlobDetails(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownBlobName), Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetBlobDetails(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownBlob), Arg.Is(_knownSubscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedProperties);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -97,15 +97,15 @@ public class BlobDetailsCommandTests
         // Arrange
         var expectedError = "Blob not found";
 
-        _storageService.GetBlobDetails(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownBlobName), Arg.Is(_knownSubscriptionId), null, Arg.Any<RetryPolicyOptions>())
+        _storageService.GetBlobDetails(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownBlob), Arg.Is(_knownSubscription), null, Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--blob", _knownBlobName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--blob", _knownBlob,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -122,9 +122,9 @@ public class BlobDetailsCommandTests
     {
         // Arrange - missing blob parameter
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act

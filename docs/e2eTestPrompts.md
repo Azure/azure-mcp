@@ -56,6 +56,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-acr-registry-list | Show me the container registries in my subscription |
 | azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
 | azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-repository-list | List all container registry repositories in my subscription |
+| azmcp-acr-registry-repository-list | Show me my container registry repositories |
+| azmcp-acr-registry-repository-list | List repositories in the container registry <registry_name> |
+| azmcp-acr-registry-repository-list | Show me the repositories in the container registry <registry_name> |
 
 ## Azure Cosmos DB
 
@@ -238,6 +242,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
+
+## Azure Managed Lustre
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my subscription <subscription_name> |
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my resource group <resource_group_name> |
+| azmcp-azuremanagedlustre-filesystem-required-subnet-size | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
 
 ## Azure Native ISV
 

@@ -58,15 +58,13 @@ public class QueueMessageSendCommandTests
         // Arrange
         if (shouldSucceed)
         {
-            var mockResult = new QueueMessageSendResult
-            {
-                MessageId = "msg-123",
-                InsertionTime = DateTimeOffset.UtcNow,
-                ExpirationTime = DateTimeOffset.UtcNow.AddHours(1),
-                PopReceipt = "receipt-456",
-                NextVisibleTime = DateTimeOffset.UtcNow,
-                MessageContent = "test message"
-            };
+            var mockResult = new QueueMessageSendResult(
+                MessageId: "msg-123",
+                InsertionTime: DateTimeOffset.UtcNow,
+                ExpirationTime: DateTimeOffset.UtcNow.AddHours(1),
+                PopReceipt: "receipt-456",
+                NextVisibleTime: DateTimeOffset.UtcNow,
+                Message: "test message");
 
             _service.SendQueueMessage(
                 Arg.Any<string>(),

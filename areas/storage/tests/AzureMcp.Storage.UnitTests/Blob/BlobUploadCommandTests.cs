@@ -26,7 +26,7 @@ public class BlobUploadCommandTests
     private readonly string _knownContainer = "container123";
     private readonly string _knownBlob = "test-blob.txt";
     private readonly string _knownLocalFilePath = "C:\\temp\\test-file.txt";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownSubscription = "sub123";
 
     public BlobUploadCommandTests()
     {
@@ -60,7 +60,7 @@ public class BlobUploadCommandTests
             _knownBlob,
             _knownLocalFilePath,
             false,
-            _knownSubscriptionId,
+            _knownSubscription,
             Arg.Any<string?>(),
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(uploadResult);
@@ -70,7 +70,7 @@ public class BlobUploadCommandTests
             "--container", _knownContainer,
             "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -101,7 +101,7 @@ public class BlobUploadCommandTests
             _knownBlob,
             _knownLocalFilePath,
             true,
-            _knownSubscriptionId,
+            _knownSubscription,
             Arg.Any<string?>(),
             Arg.Any<Core.Options.RetryPolicyOptions?>())
             .Returns(uploadResult);
@@ -112,7 +112,7 @@ public class BlobUploadCommandTests
             "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
             "--overwrite",
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -144,7 +144,7 @@ public class BlobUploadCommandTests
             "--container", _knownContainer,
             "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -175,7 +175,7 @@ public class BlobUploadCommandTests
             "--container", _knownContainer,
             "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -227,7 +227,7 @@ public class BlobUploadCommandTests
             "--container", _knownContainer,
             "--blob", _knownBlob,
             "--local-file-path", _knownLocalFilePath,
-            "--subscription", _knownSubscriptionId
+            "--subscription", _knownSubscription
         ]);
 
         // Act

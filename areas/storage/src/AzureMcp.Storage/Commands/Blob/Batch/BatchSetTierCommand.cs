@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Commands.Blob.Container;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob.Batch;
@@ -17,7 +16,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     private readonly ILogger<BatchSetTierCommand> _logger = logger;
 
     private readonly Option<string> _tierOption = StorageOptionDefinitions.Tier;
-    private readonly Option<string[]> _blobNamesOption = StorageOptionDefinitions.BlobNames;
+    private readonly Option<string[]> _blobsOption = StorageOptionDefinitions.Blobs;
 
     public override string Name => "set-tier";
 
@@ -25,8 +24,7 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
         $"""
         Set access tier for multiple blobs in a single batch operation. This tool efficiently changes the 
         storage tier for multiple blobs simultaneously in a single request. Different tiers offer different 
-        trade-offs between storage costs, access costs, and retrieval latency. Requires {StorageOptionDefinitions.AccountName}, 
-        {StorageOptionDefinitions.ContainerName}, {StorageOptionDefinitions.TierName}, and {StorageOptionDefinitions.BlobNames}.
+        trade-offs between storage costs, access costs, and retrieval latency.
         """;
 
     public override string Title => CommandTitle;
@@ -37,14 +35,14 @@ public sealed class BatchSetTierCommand(ILogger<BatchSetTierCommand> logger) : B
     {
         base.RegisterOptions(command);
         command.AddOption(_tierOption);
-        command.AddOption(_blobNamesOption);
+        command.AddOption(_blobsOption);
     }
 
     protected override BatchSetTierOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.Tier = parseResult.GetValueForOption(_tierOption);
-        options.BlobNames = parseResult.GetValueForOption(_blobNamesOption);
+        options.BlobNames = parseResult.GetValueForOption(_blobsOption);
         return options;
     }
 
