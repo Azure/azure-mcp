@@ -25,9 +25,6 @@ public sealed class KnowledgeIndexListCommand : GlobalCommand<KnowledgeIndexList
         Usage:
             Use this function when a user wants to explore the available knowledge indexes in Azure AI Foundry. This can help users understand what knowledge bases are currently operational and how they can be utilized for retrieval-augmented generation (RAG) scenarios.
 
-        Required arguments:
-        - endpoint: The Azure AI Foundry project endpoint URL
-
         Notes:
             - The indexes listed are knowledge indexes specifically created within Azure AI Foundry projects.
             - These indexes can be used with AI agents for knowledge retrieval and RAG applications.
