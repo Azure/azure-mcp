@@ -7,6 +7,7 @@ using AzureMcp.Core.Areas;
 using AzureMcp.Core.Areas.Subscription;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.Deploy;
 using AzureMcp.KeyVault;
 using AzureMcp.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ internal class CommandFactoryHelpers
             new SubscriptionSetup(),
             new KeyVaultSetup(),
             new StorageSetup(),
+            new DeploySetup(),
             new AppConfigSetup()
         ];
 

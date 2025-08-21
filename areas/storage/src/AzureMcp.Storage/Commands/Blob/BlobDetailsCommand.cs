@@ -3,7 +3,6 @@
 
 using Azure.Storage.Blobs.Models;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Blob;
 using AzureMcp.Storage.Services;
@@ -21,8 +20,7 @@ public sealed class BlobDetailsCommand(ILogger<BlobDetailsCommand> logger) : Bas
     public override string Description =>
         $"""
         Get blob properties, metadata, and general information. This tool retrieves blob configuration including metadata properties, 
-        approximate size, and last modification time information. Returns blob properties as JSON. Requires {StorageOptionDefinitions.AccountName}, 
-        {StorageOptionDefinitions.ContainerName}, and {StorageOptionDefinitions.BlobName}.
+        approximate size, and last modification time information. Returns blob properties as JSON.
         """;
 
     public override string Title => CommandTitle;

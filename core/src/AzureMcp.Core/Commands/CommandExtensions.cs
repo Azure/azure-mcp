@@ -1,6 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Buffers;
+using System.Text;
+using System.Text.Json.Nodes;
 using AzureMcp.Core.Helpers;
 
 namespace AzureMcp.Core.Commands;
@@ -66,6 +69,35 @@ public static class CommandExtensions
                     args.Add(strValue);
                 }
             }
+        }
+
+        return command.Parse([.. args]);
+    }
+
+    public static ParseResult ParseFromRawMcpToolInput(this Command command, IReadOnlyDictionary<string, JsonElement>? arguments)
+    {
+        var args = new List<string>();
+        var option = command.Options[0];
+        args.Add($"--{option.Name}");
+
+        if (arguments == null || arguments.Count == 0)
+        {
+            args.Add("{}");
+        }
+        else
+        {
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var jsonWriter = new Utf8JsonWriter(buffer))
+            {
+                jsonWriter.WriteStartObject();
+                foreach (var argument in arguments)
+                {
+                    jsonWriter.WritePropertyName(argument.Key);
+                    argument.Value.WriteTo(jsonWriter);
+                }
+                jsonWriter.WriteEndObject();
+            }
+            args.Add(Encoding.UTF8.GetString(buffer.WrittenSpan));
         }
 
         return command.Parse(args.ToArray());

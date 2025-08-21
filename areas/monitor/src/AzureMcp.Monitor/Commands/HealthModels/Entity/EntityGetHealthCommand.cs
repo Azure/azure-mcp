@@ -37,7 +37,7 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         base.RegisterOptions(command);
         command.AddOption(_entityOption);
         command.AddOption(_healthModelOption);
-        command.AddOption(_resourceGroupOption);
+        RequireResourceGroup();
     }
 
     protected override EntityGetHealthOptions BindOptions(ParseResult parseResult)
@@ -45,7 +45,6 @@ public sealed class EntityGetHealthCommand(ILogger<EntityGetHealthCommand> logge
         var options = base.BindOptions(parseResult);
         options.Entity = parseResult.GetValueForOption(_entityOption);
         options.HealthModelName = parseResult.GetValueForOption(_healthModelOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 

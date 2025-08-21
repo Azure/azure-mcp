@@ -364,4 +364,35 @@ public class ServiceCollectionExtensionsTests
         Assert.NotNull(provider.GetService<IMcpDiscoveryStrategy>());
         Assert.IsType<RegistryDiscoveryStrategy>(provider.GetService<IMcpDiscoveryStrategy>());
     }
+
+    [Fact]
+    public void AddAzureMcpServer_ConfiguresServerInstructions()
+    {
+        // Arrange
+        var services = SetupBaseServices();
+        var options = new ServiceStartOptions
+        {
+            Transport = StdioTransport
+        };
+
+        // Act
+        services.AddAzureMcpServer(options);
+
+        // Assert
+        var provider = services.BuildServiceProvider();
+        var mcpServerOptions = provider.GetService<IOptions<McpServerOptions>>()?.Value;
+
+        // Verify server instructions are configured
+        Assert.NotNull(mcpServerOptions);
+        Assert.NotNull(mcpServerOptions.ServerInstructions);
+        Assert.NotEmpty(mcpServerOptions.ServerInstructions);
+
+        // Output the actual content for debugging
+        var instructions = mcpServerOptions.ServerInstructions;
+
+        // Verify the instructions contain expected sections
+        Assert.Contains("Azure MCP server usage rules:", instructions);
+        Assert.Contains("Use Azure Code Gen Best Practices:", instructions);
+        Assert.Contains("Use Azure SWA Best Practices:", instructions);
+    }
 }

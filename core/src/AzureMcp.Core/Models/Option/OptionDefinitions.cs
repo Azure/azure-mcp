@@ -46,7 +46,7 @@ public static partial class OptionDefinitions
             "The name of the Azure resource group. This is a logical container for Azure resources."
         )
         {
-            IsRequired = true
+            IsRequired = false
         };
     }
 

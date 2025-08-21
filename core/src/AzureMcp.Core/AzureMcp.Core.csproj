@@ -13,6 +13,7 @@
     <PackageReference Include="Azure.Identity.Broker" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
     <PackageReference Include="Azure.ResourceManager" />
+    <PackageReference Include="Azure.ResourceManager.ResourceGraph" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />

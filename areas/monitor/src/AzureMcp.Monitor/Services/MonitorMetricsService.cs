@@ -250,20 +250,17 @@ public class MonitorMetricsService(IResourceResolverService resourceResolverServ
                 // Add supported aggregation types
                 if (definition.SupportedAggregationTypes != null)
                 {
-                    metricDef.SupportedAggregationTypes = definition.SupportedAggregationTypes
-                        .Select(a => a.ToString())
-                        .ToList();
+                    metricDef.SupportedAggregationTypes = [.. definition.SupportedAggregationTypes.Select(a => a.ToString())];
                 }
 
                 // Convert metric availabilities to allowed intervals (ISO 8601 duration format)
                 if (definition.MetricAvailabilities != null)
                 {
-                    metricDef.AllowedIntervals = definition.MetricAvailabilities
+                    metricDef.AllowedIntervals = [.. definition.MetricAvailabilities
                         .Where(a => a.Granularity.HasValue)
                         .Select(a => XmlConvert.ToString(a.Granularity!.Value))
                         .Distinct()
-                        .OrderBy(interval => interval)
-                        .ToArray();
+                        .OrderBy(interval => interval)];
                 }
 
                 results.Add(metricDef);

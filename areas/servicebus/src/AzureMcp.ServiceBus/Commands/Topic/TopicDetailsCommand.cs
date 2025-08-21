@@ -42,8 +42,6 @@ public sealed class TopicDetailsCommand(ILogger<TopicDetailsCommand> logger) : S
         command.AddOption(_topicOption);
     }
 
-
-
     protected override BaseTopicOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);

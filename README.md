@@ -2,6 +2,13 @@
 
 The Azure MCP Server implements the [MCP specification](https://modelcontextprotocol.io) to create a seamless connection between AI agents and Azure services.  Azure MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.  This project is in Public Preview and implementation may significantly change prior to our General Availability.
 
+
+>[!WARNING]
+>**Deprecation Notice: SSE transport mode has been removed in version [0.4.0 (2025-07-15)](https://github.com/Azure/azure-mcp/blob/main/CHANGELOG.md#breaking-changes-7).**
+>
+> SSE was deprecated in MCP `2025-03-26` due to [security vulnerabilities and architectural limitations](https://blog.fka.dev/blog/2025-06-06-why-mcp-deprecated-sse-and-go-with-streamable-http/). Users must discontinue use of SSE transport mode and upgrade to version `0.4.0` or newer to maintain compatibility with current MCP clients.
+
+
 ### ✅ VS Code Install Guide (Recommended)
 
 1. Install either the stable or Insiders release of VS Code:
@@ -40,6 +47,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "List all my Azure Container Registries"
 * "Show me my container registries in the 'myproject' resource group"
+* "List all my Azure Container Registry repositories"
 
 ### ☸️ Azure Kubernetes Service (AKS)
 
@@ -60,6 +68,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "Query my Log Analytics workspace"
 
+### ⚡ Azure Managed Lustre
+
+* "List the Azure Managed Lustre clusters in resource group 'my-resourcegroup'"
+* "How many IP Addresses I need to create a 128 TiB cluster of AMLFS 500?"
+
 ### 🗄️ Azure SQL Database
 
 * "Show me details about my Azure SQL database 'mydb'"
@@ -77,9 +90,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 💾 Azure Storage
 
 * "List my Azure storage accounts"
+* "Get details about my storage account 'mystorageaccount'"
 * "Create a new storage account in East US with Data Lake support"
 * "Show me the tables in my Storage account"
 * "Get details about my Storage container"
+* "Upload my file to the blob container"
 * "List paths in my Data Lake file system"
 * "List files and directories in my File Share"
 * "Send a message to my storage queue"
@@ -113,8 +128,8 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 📦 Azure Container Registry (ACR)
 
-* List Azure Container Registries in a subscription
-* Filter container registries by resource group
+* List Azure Container Registries and repositories in a subscription
+* Filter container registries and repositories by resource group
 * JSON output formatting
 * Cross-platform compatibility
 
@@ -146,11 +161,23 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Support for template discovery, template initialization, provisioning and deployment
 * Cross-platform compatibility
 
+### 🚀 Azure Deploy
+
+* Generate Azure service architecture diagrams from source code
+* Create a deploy plan for provisioning and deploying the application
+* Get the application service log for a specific azd environment
+* Get the bicep or terraform file generation rules for an application
+* Get the GitHub pipeline creation guideline for an application
+
 ### 🧮 Azure Foundry
 
 * List Azure Foundry models
 * Deploy foundry models
 * List foundry model deployments
+ 
+### ☁️ Azure Function App
+
+* List Azure Function Apps
 
 ### 🚀 Azure Managed Grafana
 
@@ -158,7 +185,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 ### 🔑 Azure Key Vault
 
-* List and create certificates
+* List, create, and import certificates
 * List and create keys
 * List and create secrets
 
@@ -201,6 +228,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Scan Azure resources for compliance related recommendations
 
+### 📊 Azure Quota
+
+* List available regions
+* Check quota usage
+
 ### 🔴 Azure Redis Cache
 
 * List Redis Cluster resources
@@ -237,7 +269,9 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 💾 Azure Storage
 
 * List and create Storage accounts
+* Get detailed information about specific Storage accounts
 * Manage blob containers and blobs
+* Upload files to blob containers
 * List and query Storage tables
 * List paths in Data Lake file systems
 * Get container properties and metadata
@@ -268,6 +302,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🏗️ Bicep
 
 * Get the Bicep schema for specific Azure resource types
+
+### 🏗️ Cloud Architect
+
+* Design Azure cloud architectures through guided questions
 
 Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/areas/extension/src/AzureMcp.Extension/Resources/azd-best-practices.txt).
 

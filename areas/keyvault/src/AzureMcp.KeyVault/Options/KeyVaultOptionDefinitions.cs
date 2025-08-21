@@ -12,6 +12,8 @@ public static class KeyVaultOptionDefinitions
     public const string SecretNameParam = "secret";
     public const string SecretValueParam = "value";
     public const string CertificateNameParam = "certificate";
+    public const string CertificateDataParam = "certificate-data";
+    public const string CertificatePasswordParam = "password";
 
     public static readonly Option<string> VaultName = new(
         $"--{VaultNameParam}",
@@ -67,5 +69,21 @@ public static class KeyVaultOptionDefinitions
     )
     {
         IsRequired = true
+    };
+
+    public static readonly Option<string> CertificateData = new(
+        $"--{CertificateDataParam}",
+        "The certificate content: path to a PFX/PEM file, a base64 encoded PFX, or raw PEM text beginning with -----BEGIN."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<string> CertificatePassword = new(
+        $"--{CertificatePasswordParam}",
+        "Optional password for a protected PFX being imported."
+    )
+    {
+        IsRequired = false
     };
 }

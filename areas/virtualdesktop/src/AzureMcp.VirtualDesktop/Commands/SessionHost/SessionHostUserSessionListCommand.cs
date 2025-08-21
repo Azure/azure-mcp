@@ -19,10 +19,10 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
 
     public override string Description =>
         """
-        List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop 
-        user session objects available on the specified session host. Results include user session details such as 
-        user principal name, session state, application type, and creation time.
-        """;
+		List all user sessions on a specific session host in a host pool. This command retrieves all Azure Virtual Desktop
+		user session objects available on the specified session host. Results include user session details such as
+		user principal name, session state, application type, and creation time.
+		""";
 
     public override string Title => CommandTitle;
 
@@ -72,8 +72,8 @@ public sealed class SessionHostUserSessionListCommand(ILogger<SessionHostUserSes
             }
 
             context.Response.Results = userSessions.Count > 0
-                ? ResponseResult.Create(new SessionHostUserSessionListCommandResult(userSessions.ToList()), VirtualDesktopJsonContext.Default.SessionHostUserSessionListCommandResult)
-                : null;
+                 ? ResponseResult.Create(new SessionHostUserSessionListCommandResult([.. userSessions]), VirtualDesktopJsonContext.Default.SessionHostUserSessionListCommandResult)
+                 : null;
         }
         catch (Exception ex)
         {

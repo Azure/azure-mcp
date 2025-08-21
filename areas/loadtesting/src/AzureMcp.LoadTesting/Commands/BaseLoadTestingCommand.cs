@@ -18,13 +18,13 @@ public abstract class BaseLoadTestingCommand<
     {
         base.RegisterOptions(command);
         command.AddOption(_loadTestOption);
-        command.AddOption(_resourceGroupOption);
+        UseResourceGroup();
     }
+
     protected override TOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.TestResourceName = parseResult.GetValueForOption(_loadTestOption);
-        options.ResourceGroup = parseResult.GetValueForOption(_resourceGroupOption);
         return options;
     }
 }
