@@ -105,7 +105,7 @@ public class CommandFactory
             if (string.IsNullOrEmpty(area.Name))
             {
                 var error = new ArgumentException("IAreaSetup cannot have an empty or null name. Type "
-                var error = new ArgumentException($"IAreaSetup cannot have an empty or null name. Type: {area.GetType().FullName}");
+                    + area.GetType());
                 _logger.LogError(error, "Invalid IAreaSetup encountered. Type: {Type}", area.GetType());
 
                 throw error;
@@ -117,9 +117,9 @@ public class CommandFactory
                     .Where(x => x.Name == area.Name)
                     .Select(a => a.GetType());
 
-                var error = new ArgumentException("Cannot have two IAreaSetups with the same Name.");
+                var error = new ArgumentException("Cannot have multiple IAreaSetup with the same Name.");
                 _logger.LogError(error,
-                    "Duplicated {AreaName}. Areas with same name: {Areas}",
+                    "Duplicate {AreaName}. Areas with same name: {AllAreas}",
                     area.Name,
                     string.Join(", ", matchingAreaNames));
 
@@ -228,11 +228,20 @@ public class CommandFactory
         return nextGroup != null ? FindCommandInGroup(nextGroup, nameParts) : null;
     }
 
+    /// <summary>
+    /// Finds the BaseCommand given its full command name (i.e. storage_account_list).
+    /// </summary>
+    /// <param name="tokenizedName">Name of the command with prefixes.</param>
+    /// <returns></returns>
     public IBaseCommand? FindCommandByName(string tokenizedName)
     {
         return _commandMap.GetValueOrDefault(tokenizedName);
     }
 
+    /// <summary>
+    /// Gets the service area given the full command name (i.e. 'storage_account_list' would return 'storage').
+    /// </summary>
+    /// <param name="tokenizedName">Name of the command with prefixes.</param>
     public string? GetServiceArea(string tokenizedName)
     {
         if (string.IsNullOrEmpty(tokenizedName))
@@ -241,8 +250,8 @@ public class CommandFactory
         }
 
         var split = tokenizedName.Split(Separator, 2);
-        var first = split[0];
-        return _serviceAreaNames.Contains(first) ? first : null;
+
+        return _serviceAreaNames.Contains(split[0]) ? split[0] : null;
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)
