@@ -65,7 +65,8 @@ else {
     -Version $version `
     -ArtifactsPath $packagesPath `
     -UsePaths:(!$NoUsePaths) `
-    -OutputPath $distPath
+    -OutputPath $distPath `
+    -BuildNative:$BuildNative
 
 $tgzFile = Get-ChildItem -Path "$distPath/wrapper" -Filter '*.tgz'
 | Select-Object -First 1

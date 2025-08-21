@@ -6,7 +6,8 @@ param(
     [string] $ArtifactsPath,
     [string] $OutputPath,
     [string] $Version,
-    [switch] $UsePaths
+    [switch] $UsePaths,
+    [switch] $BuildNative
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -43,6 +44,7 @@ try {
     
     $package = Get-Content "$npmPackagePath/package.json" -Raw | ConvertFrom-Json -AsHashtable
     $package.version = $Version
+    $package.name = if ($BuildNative) { "@azure/mcp-native" } else { "@azure/mcp" }
 
     # Build the project
     $platformFiles = Get-ChildItem -Path $ArtifactsPath -Filter "package.json" -Recurse

@@ -1,5 +1,5 @@
 {
-  "name": "@azure/mcp-{os}-{cpu}",
+  "name": "@azure/{mcp}-{os}-{cpu}",
   "version": "{version}",
   "description": "Azure MCP Server - Model Context Protocol implementation for Azure, for {os} on {cpu}",
   "author": "Microsoft Corporation",
@@ -22,7 +22,7 @@
   },
   "main": "./index.js",
   "bin": {
-    "azmcp-{os}-{cpu}": "./dist/{executable}"
+    "{azmcp}-{os}-{cpu}": "./dist/{executable}"
   },
   "os": [
     "{os}"
