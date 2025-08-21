@@ -85,7 +85,7 @@ internal class Program
             new AzureMcp.ResourceHealth.ResourceHealthSetup(),
             new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
-            new AzureMcp.AzureSignalR.AzureSignalRSetup(),
+            new AzureMcp.SignalR.SignalRSetup(),
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),

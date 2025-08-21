@@ -318,6 +318,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.UnitTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AppConfig.UnitTests", "areas\appconfig\tests\AzureMcp.AppConfig.UnitTests\AzureMcp.AppConfig.UnitTests.csproj", "{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.SignalR", "areas\signalr\src\AzureMcp.SignalR\AzureMcp.SignalR.csproj", "{66F9E10D-C1E5-4012-A064-D28A18750E78}"
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{546CED3D-7F74-09C6-3DFD-7EDC477A0556}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{311C78D5-1A27-A98E-17B9-D29F6B7DECD5}"
@@ -377,13 +378,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureManagedLustre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureSignalR", "areas\azuresignalr\src\AzureMcp.AzureSignalR\AzureMcp.AzureSignalR.csproj", "{66F9E10D-C1E5-4012-A064-D28A18750E78}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azuresignalr", "azuresignalr", "{5DCC59B3-8069-49C9-82B8-672EC4B690C3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "signalr", "signalr", "{5DCC59B3-8069-49C9-82B8-672EC4B690C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{165A0B01-D57C-443F-80BB-A54B494EC8B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4D0C77C1-27EE-498C-BF3E-B740E13B8DCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureSignalR.UnitTests", "areas\azuresignalr\tests\AzureMcp.AzureSignalR.UnitTests\AzureMcp.AzureSignalR.UnitTests.csproj", "{2268256F-C613-427B-817A-188FA22D3311}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.SignalR.UnitTests", "areas\signalr\tests\AzureMcp.SignalR.UnitTests\AzureMcp.SignalR.UnitTests.csproj", "{2268256F-C613-427B-817A-188FA22D3311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
