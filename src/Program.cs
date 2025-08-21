@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Builder;
-using System.Diagnostics;
 using AzureMcp.Areas;
 using AzureMcp.Commands;
 using AzureMcp.Services.Azure.ResourceGroup;
