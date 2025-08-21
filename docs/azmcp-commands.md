@@ -1,22 +1,23 @@
 # Azure MCP CLI Command Reference
 
 > [!IMPORTANT]
-> The Azure MCP Server has two modes: MCP Server mode and CLI mode. When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`. Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
+> The Azure MCP Server has two modes: MCP Server mode and CLI mode.  When you start the MCP Server with `azmcp server start` that will expose an endpoint for MCP Client communication. The `azmcp` CLI also exposes all of the Tools via a command line interface, i.e. `azmcp subscription list`.  Since `azmcp` is built on a CLI infrastructure, you'll see the word "Command" be used interchangeably with "Tool".
 
 ## Global Options
 
 The following options are available for all commands:
 
-| Option                    | Required | Default                                      | Description                                                     |
-| ------------------------- | -------- | -------------------------------------------- | --------------------------------------------------------------- |
-| `--subscription`          | No       | Environment variable `AZURE_SUBSCRIPTION_ID` | Azure subscription ID for target resources                      |
-| `--tenant-id`             | No       | -                                            | Azure tenant ID for authentication                              |
-| `--auth-method`           | No       | 'credential'                                 | Authentication method ('credential', 'key', 'connectionString') |
-| `--retry-max-retries`     | No       | 3                                            | Maximum retry attempts for failed operations                    |
-| `--retry-delay`           | No       | 2                                            | Delay between retry attempts (seconds)                          |
-| `--retry-max-delay`       | No       | 10                                           | Maximum delay between retries (seconds)                         |
-| `--retry-mode`            | No       | 'exponential'                                | Retry strategy ('fixed' or 'exponential')                       |
-| `--retry-network-timeout` | No       | 100                                          | Network operation timeout (seconds)                             |
+| Option | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `--subscription` | No | Environment variable `AZURE_SUBSCRIPTION_ID` | Azure subscription ID for target resources |
+| `--tenant-id` | No | - | Azure tenant ID for authentication |
+| `--auth-method` | No | 'credential' | Authentication method ('credential', 'key', 'connectionString') |
+| `--retry-max-retries` | No | 3 | Maximum retry attempts for failed operations |
+| `--retry-delay` | No | 2 | Delay between retry attempts (seconds) |
+| `--retry-max-delay` | No | 10 | Maximum delay between retries (seconds) |
+| `--retry-mode` | No | 'exponential' | Retry strategy ('fixed' or 'exponential') |
+| `--retry-network-timeout` | No | 100 | Network operation timeout (seconds) |
+                             |
 
 ## Available Commands
 
