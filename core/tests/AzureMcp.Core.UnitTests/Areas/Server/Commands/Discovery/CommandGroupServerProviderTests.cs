@@ -56,6 +56,8 @@ public class CommandGroupServerProviderTests
 
         // Assert
         Assert.NotNull(client);
+
+        await client.DisposeAsync();
     }
 
     [Fact]
