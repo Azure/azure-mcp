@@ -25,9 +25,9 @@ public class FileSystemListPathsCommandTests
     private readonly FileSystemListPathsCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownFileSystemName = "filesystem123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownFileSystem = "filesystem123";
+    private readonly string _knownSubscription = "sub123";
 
     public FileSystemListPathsCommandTests()
     {
@@ -52,13 +52,13 @@ public class FileSystemListPathsCommandTests
             new("directory1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false, Arg.Is(_knownSubscription),
             null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -81,13 +81,13 @@ public class FileSystemListPathsCommandTests
     public async Task ExecuteAsync_ReturnsEmptyArray_WhenNoPaths()
     {
         // Arrange
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false, Arg.Is(_knownSubscription),
             null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -110,13 +110,13 @@ public class FileSystemListPathsCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false, Arg.Is(_knownSubscriptionId),
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false, Arg.Is(_knownSubscription),
             null, null, Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -139,14 +139,14 @@ public class FileSystemListPathsCommandTests
             new("folder1/subfolder", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
-            Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false,
+            Arg.Is(_knownSubscription), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription,
             "--filter-path", filterPath
         ]);
 
@@ -178,14 +178,14 @@ public class FileSystemListPathsCommandTests
             new("folder1/subfolder/file3.txt", "file", 512, DateTimeOffset.Now, "\"etag5\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
-            Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), true,
+            Arg.Is(_knownSubscription), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription,
             "--recursive"
         ]);
 
@@ -217,14 +217,14 @@ public class FileSystemListPathsCommandTests
             new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
-            Arg.Is(_knownSubscriptionId), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false,
+            Arg.Is(_knownSubscription), null, Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -255,14 +255,14 @@ public class FileSystemListPathsCommandTests
             new("documents/archive/old.pdf", "file", 2048, DateTimeOffset.Now, "\"etag3\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), true,
-            Arg.Is(_knownSubscriptionId), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), true,
+            Arg.Is(_knownSubscription), Arg.Is(filterPath), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription,
             "--filter-path", filterPath,
             "--recursive"
         ]);
@@ -295,14 +295,14 @@ public class FileSystemListPathsCommandTests
             new("folder1", "directory", null, DateTimeOffset.Now, "\"etag2\"")
         };
 
-        _storageService.ListDataLakePaths(Arg.Is(_knownAccountName), Arg.Is(_knownFileSystemName), false,
-            Arg.Is(_knownSubscriptionId), Arg.Is(""), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.ListDataLakePaths(Arg.Is(_knownAccount), Arg.Is(_knownFileSystem), false,
+            Arg.Is(_knownSubscription), Arg.Is(""), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedPaths);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--file-system", _knownFileSystemName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--file-system", _knownFileSystem,
+            "--subscription", _knownSubscription,
             "--filter-path", ""
         ]);
 

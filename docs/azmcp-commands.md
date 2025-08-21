@@ -689,6 +689,21 @@ azmcp monitor metrics query --subscription <subscription> \
                             --aggregation "Average"
 ```
 
+### Azure Managed Lustre
+
+```bash
+# List Azure Managed Lustre Filesystems available in a subscription or resource group
+azmcp azuremanagedlustre filesystem list --subscription <subscription> \
+                                      --resource-group <resource-group> 
+
+# Returns the required number of IP addresses for a specific Azure Managed Lustre SKU and filesystem size
+azmcp azuremanagedlustre filesystem required-subnet-size --subscription <subscription> \
+                                      --sku <azure-managed-lustre-sku> \
+                                      --size <filesystem-size-in-tib>
+```
+
+
+
 ### Azure Native ISV Operations
 
 ```bash
@@ -835,7 +850,7 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ```bash
 # Create a new Storage account with custom configuration
 azmcp storage account create --subscription <subscription> \
-                             --account-name <unique-account-name> \
+                             --account <unique-account-name> \
                              --resource-group <resource-group> \
                              --location <location> \
                              --sku <sku> \
@@ -858,7 +873,7 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \
                                   --container <container> \
                                   --tier <tier> \
-                                  --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
+                                  --blobs <blob-name1> <blob-name2> ... <blob-nameN>
 
 # Create a blob container with optional public access
 azmcp storage blob container create --subscription <subscription> \
@@ -1030,6 +1045,26 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Cloud Architect
+
+```bash
+# Design Azure cloud architectures through guided questions
+azmcp cloudarchitect design [--question <question>] \
+                           [--question-number <question-number>] \
+                           [--total-questions <total-questions>] \
+                           [--answer <answer>] \
+                           [--next-question-needed <true/false>] \
+                           [--confidence-score <confidence-score>] \
+                           [--architecture-component <architecture-component>]
+
+# Example:
+# Start an interactive architecture design session
+azmcp cloudarchitect design --question "What type of application are you building?" \
+                           --question-number 1 \
+                           --total-questions 5 \
+                           --confidence-score 0.1
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:
@@ -1050,3 +1085,4 @@ The CLI returns structured JSON responses for errors, including:
 
 - Service availability issues
 - Authentication errors
+

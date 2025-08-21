@@ -24,9 +24,9 @@ public class BlobListCommandTests
     private readonly BlobListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownSubscription = "sub123";
 
     public BlobListCommandTests()
     {
@@ -47,13 +47,13 @@ public class BlobListCommandTests
         // Arrange
         var expectedBlobs = new List<string> { "blob1", "blob2" };
 
-        _storageService.ListBlobs(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListBlobs(Arg.Is(_knownAccount), Arg.Is(_knownContainer), Arg.Is(_knownSubscription),
             Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns(expectedBlobs);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -74,13 +74,13 @@ public class BlobListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoBlobs()
     {
         // Arrange
-        _storageService.ListBlobs(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListBlobs(Arg.Is(_knownAccount), Arg.Is(_knownContainer), Arg.Is(_knownSubscription),
             Arg.Any<string>(), Arg.Any<RetryPolicyOptions>()).Returns([]);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -97,13 +97,13 @@ public class BlobListCommandTests
         // Arrange
         var expectedError = "Test error";
 
-        _storageService.ListBlobs(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName), Arg.Is(_knownSubscriptionId),
+        _storageService.ListBlobs(Arg.Is(_knownAccount), Arg.Is(_knownContainer), Arg.Is(_knownSubscription),
             null, Arg.Any<RetryPolicyOptions>()).ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act

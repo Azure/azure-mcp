@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Queue.Message;
@@ -18,16 +17,17 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
     private readonly ILogger<QueueMessageSendCommand> _logger = logger;
 
     // Define options from OptionDefinitions
-    private readonly Option<string> _messageContentOption = StorageOptionDefinitions.MessageContentOption;
-    private readonly Option<int?> _timeToLiveOption = StorageOptionDefinitions.TimeToLiveInSecondsOption;
-    private readonly Option<int?> _visibilityTimeoutOption = StorageOptionDefinitions.VisibilityTimeoutInSecondsOption;
+    private readonly Option<string> _messageOption = StorageOptionDefinitions.Message;
+    private readonly Option<int?> _timeToLiveOption = StorageOptionDefinitions.TimeToLiveInSeconds;
+    private readonly Option<int?> _visibilityTimeoutOption = StorageOptionDefinitions.VisibilityTimeoutInSeconds;
 
     public override string Name => "send";
 
     public override string Description =>
         """
-        Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue with optional time-to-live and visibility delay settings. 
-        Messages are returned with receipt handles for tracking. Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, 
+        Send messages to an Azure Storage queue for asynchronous processing. This tool sends a message to a specified queue
+        with optional time-to-live and visibility delay settings. Messages are returned with receipt handles for tracking.
+        Returns a QueueMessageSendResult object containing message ID, insertion time, expiration time, pop receipt, 
         next visible time, and message content.
         """;
 
@@ -42,7 +42,7 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_messageContentOption);
+        command.AddOption(_messageOption);
         command.AddOption(_timeToLiveOption);
         command.AddOption(_visibilityTimeoutOption);
     }
@@ -50,7 +50,7 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
     protected override QueueMessageSendOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.MessageContent = parseResult.GetValueForOption(_messageContentOption);
+        options.Message = parseResult.GetValueForOption(_messageOption);
         options.TimeToLiveInSeconds = parseResult.GetValueForOption(_timeToLiveOption);
         options.VisibilityTimeoutInSeconds = parseResult.GetValueForOption(_visibilityTimeoutOption);
         return options;
@@ -75,7 +75,7 @@ public sealed class QueueMessageSendCommand(ILogger<QueueMessageSendCommand> log
             var result = await service.SendQueueMessage(
                 options.Account!,
                 options.Queue!,
-                options.MessageContent!,
+                options.Message!,
                 options.TimeToLiveInSeconds,
                 options.VisibilityTimeoutInSeconds,
                 options.Subscription!,

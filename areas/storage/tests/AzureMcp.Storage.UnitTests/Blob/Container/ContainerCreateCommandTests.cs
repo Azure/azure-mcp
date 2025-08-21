@@ -25,9 +25,9 @@ public class ContainerCreateCommandTests
     private readonly ContainerCreateCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownAccountName = "account123";
-    private readonly string _knownContainerName = "container123";
-    private readonly string _knownSubscriptionId = "sub123";
+    private readonly string _knownAccount = "account123";
+    private readonly string _knownContainer = "container123";
+    private readonly string _knownSubscription = "sub123";
 
     public ContainerCreateCommandTests()
     {
@@ -89,14 +89,14 @@ public class ContainerCreateCommandTests
     {
         // Arrange
         var expectedProperties = CreateMockBlobContainerProperties();
-        _storageService.CreateContainer(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Is((string?)null), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.CreateContainer(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Is((string?)null), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedProperties);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -127,14 +127,14 @@ public class ContainerCreateCommandTests
             | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
             ?.SetValue(expectedProperties, expectedPublicAccess);
 
-        _storageService.CreateContainer(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Is(publicAccessInput), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.CreateContainer(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Is(publicAccessInput), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(expectedProperties);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId,
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription,
             "--blob-container-public-access", publicAccessInput
         ]);
 
@@ -158,14 +158,14 @@ public class ContainerCreateCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        _storageService.CreateContainer(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.CreateContainer(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act
@@ -182,14 +182,14 @@ public class ContainerCreateCommandTests
     {
         // Arrange
         var conflictException = new Azure.RequestFailedException(409, "Container already exists");
-        _storageService.CreateContainer(Arg.Is(_knownAccountName), Arg.Is(_knownContainerName),
-            Arg.Is(_knownSubscriptionId), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.CreateContainer(Arg.Is(_knownAccount), Arg.Is(_knownContainer),
+            Arg.Is(_knownSubscription), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(conflictException);
 
         var args = _parser.Parse([
-            "--account", _knownAccountName,
-            "--container", _knownContainerName,
-            "--subscription", _knownSubscriptionId
+            "--account", _knownAccount,
+            "--container", _knownContainer,
+            "--subscription", _knownSubscription
         ]);
 
         // Act

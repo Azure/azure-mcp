@@ -10,4 +10,5 @@ public record FileShareItemInfo(
     [property: JsonPropertyName("isDirectory")] bool IsDirectory,
     [property: JsonPropertyName("size")] long? Size,
     [property: JsonPropertyName("lastModified")] DateTimeOffset? LastModified,
-    [property: JsonPropertyName("etag")] string? ETag);
+    [property: JsonPropertyName("eTag")] string? ETag
+);

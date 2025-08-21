@@ -520,7 +520,7 @@ namespace AzureMcp.Storage.LiveTests
                     { "account", Settings.ResourceBaseName },
                     { "container", "bar" },
                     { "tier", "Cool" },
-                    { "blob-names", "blob1.txt blob2.txt" }
+                    { "blobs", "blob1.txt blob2.txt" }
                 });
 
             var successfulBlobs = result.AssertProperty("successfulBlobs");
@@ -597,10 +597,8 @@ namespace AzureMcp.Storage.LiveTests
             Assert.True(message.TryGetProperty("expirationTime", out _));
             Assert.True(message.TryGetProperty("popReceipt", out _));
             Assert.True(message.TryGetProperty("nextVisibleTime", out _));
-            Assert.True(message.TryGetProperty("messageContent", out _));
-
-            var messageContent = message.GetProperty("messageContent").GetString();
-            Assert.Equal("Test message from integration test", messageContent);
+            Assert.True(message.TryGetProperty("message", out var messageElement));
+            Assert.Equal("Test message from integration test", messageElement.GetString());
         }
 
         [Fact]
@@ -622,9 +620,8 @@ namespace AzureMcp.Storage.LiveTests
             // Assert
             var message = result.AssertProperty("message");
             Assert.Equal(JsonValueKind.Object, message.ValueKind);
-
-            var messageContent = message.GetProperty("messageContent").GetString();
-            Assert.Equal("Test message with TTL", messageContent);
+            Assert.True(message.TryGetProperty("message", out var messageElement));
+            Assert.Equal("Test message with TTL", messageElement.GetString());
         }
 
         [Fact]
@@ -638,7 +635,7 @@ namespace AzureMcp.Storage.LiveTests
                 new()
                 {
                     { "subscription", Settings.SubscriptionId },
-                    { "account-name", uniqueAccountName },
+                    { "account", uniqueAccountName },
                     { "resource-group", Settings.ResourceGroupName },
                     { "location", "eastus" },
                     { "sku", "Standard_LRS" },
