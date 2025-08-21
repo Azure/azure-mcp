@@ -17,7 +17,6 @@ The following options are available for all commands:
 | `--retry-max-delay` | No | 10 | Maximum delay between retries (seconds) |
 | `--retry-mode` | No | 'exponential' | Retry strategy ('fixed' or 'exponential') |
 | `--retry-network-timeout` | No | 100 | Network operation timeout (seconds) |
-                             |
 
 ## Available Commands
 
@@ -113,10 +112,10 @@ azmcp server start \
 
 > **Note:**
 >
-> -   For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
-> -   The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
-> -   Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
-> -   The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
+> - For namespace mode, replace `<namespace-name>` with available top level command groups. Run `azmcp -h` to review available namespaces. Examples include `storage`, `keyvault`, `cosmos`, `monitor`, etc.
+> - The `--read-only` flag applies to all modes and filters the tool list to only contain tools that provide read-only operations.
+> - Multiple `--namespace` parameters can be used together to expose tools for multiple specific namespaces.
+> - The `--namespace` and `--mode` parameters can also be combined to provide a unique running mode based on the desired scenario.
 
 ### Azure AI Foundry Operations
 
@@ -1030,8 +1029,8 @@ azmcp virtualdesktop hostpool sessionhost usersession-list --subscription <subsc
 
 The Virtual Desktop commands support an optional `--resource-group` parameter that provides significant performance improvements when specified:
 
--   **Without `--resource-group`**: Commands enumerate through all resources in the subscription
--   **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
+- **Without `--resource-group`**: Commands enumerate through all resources in the subscription
+- **With `--resource-group`**: Commands directly access resources within the specified resource group, avoiding subscription-wide enumeration
 
 **Host Pool List Usage:**
 
@@ -1103,11 +1102,11 @@ All responses follow a consistent JSON format:
 
 ```json
 {
-    "status": "200|403|500, etc",
-    "message": "",
-    "options": [],
-    "results": [],
-    "duration": 123
+  "status": "200|403|500, etc",
+  "message": "",
+  "options": [],
+  "results": [],
+  "duration": 123
 }
 ```
 
@@ -1115,5 +1114,5 @@ All responses follow a consistent JSON format:
 
 The CLI returns structured JSON responses for errors, including:
 
--   Service availability issues
--   Authentication errors
+- Service availability issues
+- Authentication errors
