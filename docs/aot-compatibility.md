@@ -28,10 +28,8 @@ This section explains the Native AOT checks enforced in the `azmcp` CI and what 
 
 2. **If violations come from an `Azure.ResourceManager.*` package**
 
-   - No action is needed on your side to "fix" those violations, the Azure MCP Server core team will ensure we ship an AOT-fixed version of the `Azure.ResourceManager.*` package(s).
-   - Add the ARM references under the `ItemGroup` with `'$(BuildNative)' == 'true'` condition in **AzureMcp.Cli.csproj**, [see](https://github.com/Azure/azure-mcp/blob/1b7006aa72db38ab17614911973b275c0f5dbfe9/core/src/AzureMcp.Cli/AzureMcp.Cli.csproj#L64).
-   - Add the Area setup under a `!BUILD_NATIVE` conditional in **core/src/AzureMcp.Cli/Program.cs**, [see](https://github.com/Azure/azure-mcp/blob/1b7006aa72db38ab17614911973b275c0f5dbfe9/core/src/AzureMcp.Cli/Program.cs#L82).
-   - Let reviewers know in the PR description and comment that the dependency is `Azure.ResourceManager.*`.
+   - No action is required on your side to resolve these violations. Please reach out to Anu Thomas and Arthur Ma over Teams. They will create a work item to publish an AOT-compatible version of the `Azure.ResourceManager.*` package, and you’ll need to wait until the updated package is published before merging.
+   - State in the PR description and comments that the dependency on an AOT-compatible `Azure.ResourceManager.*` package is pending.
 
 3. **If violations come from an external package**
 

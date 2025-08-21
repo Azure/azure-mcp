@@ -4,6 +4,7 @@
 using AzureMcp.Core.Options;
 
 namespace AzureMcp.LoadTesting.Options;
+
 public class BaseLoadTestingOptions : SubscriptionOptions
 {
     /// <summary>

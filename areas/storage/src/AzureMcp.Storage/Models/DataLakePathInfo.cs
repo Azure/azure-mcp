@@ -5,9 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Storage.Models;
 
-public record DataLakePathInfo(
+public sealed record DataLakePathInfo(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("type")] string Type,
     [property: JsonPropertyName("size")] long? Size,
     [property: JsonPropertyName("lastModified")] DateTimeOffset? LastModified,
-    [property: JsonPropertyName("etag")] string? ETag);
+    [property: JsonPropertyName("eTag")] string? ETag
+);

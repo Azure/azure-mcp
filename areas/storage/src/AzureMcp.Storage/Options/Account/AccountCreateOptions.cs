@@ -8,27 +8,27 @@ namespace AzureMcp.Storage.Options.Account;
 
 public class AccountCreateOptions : SubscriptionOptions
 {
-    [JsonPropertyName("account-name")]
-    public string? AccountName { get; set; }
+    [JsonPropertyName(StorageOptionDefinitions.AccountCreateName)]
+    public string? Account { get; set; }
 
-    [JsonPropertyName("location")]
+    [JsonPropertyName(StorageOptionDefinitions.LocationName)]
     public string? Location { get; set; }
 
-    [JsonPropertyName("sku")]
+    [JsonPropertyName(StorageOptionDefinitions.SkuName)]
     public string? Sku { get; set; }
 
-    [JsonPropertyName("kind")]
+    [JsonPropertyName(StorageOptionDefinitions.KindName)]
     public string? Kind { get; set; }
 
-    [JsonPropertyName("access-tier")]
+    [JsonPropertyName(StorageOptionDefinitions.AccessTierName)]
     public string? AccessTier { get; set; }
 
-    [JsonPropertyName("enable-https-traffic-only")]
+    [JsonPropertyName(StorageOptionDefinitions.EnableHttpsTrafficOnlyName)]
     public bool? EnableHttpsTrafficOnly { get; set; }
 
-    [JsonPropertyName("allow-blob-public-access")]
+    [JsonPropertyName(StorageOptionDefinitions.AllowBlobPublicAccessName)]
     public bool? AllowBlobPublicAccess { get; set; }
 
-    [JsonPropertyName("enable-hierarchical-namespace")]
+    [JsonPropertyName(StorageOptionDefinitions.EnableHierarchicalNamespaceName)]
     public bool? EnableHierarchicalNamespace { get; set; }
 }

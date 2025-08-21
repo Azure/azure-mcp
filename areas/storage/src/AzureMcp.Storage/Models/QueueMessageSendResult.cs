@@ -5,23 +5,11 @@ using System.Text.Json.Serialization;
 
 namespace AzureMcp.Storage.Models;
 
-public record QueueMessageSendResult
-{
-    [JsonPropertyName("messageId")]
-    public required string MessageId { get; init; }
-
-    [JsonPropertyName("insertionTime")]
-    public required DateTimeOffset InsertionTime { get; init; }
-
-    [JsonPropertyName("expirationTime")]
-    public required DateTimeOffset ExpirationTime { get; init; }
-
-    [JsonPropertyName("popReceipt")]
-    public required string PopReceipt { get; init; }
-
-    [JsonPropertyName("nextVisibleTime")]
-    public required DateTimeOffset NextVisibleTime { get; init; }
-
-    [JsonPropertyName("messageContent")]
-    public required string MessageContent { get; init; }
-}
+public record QueueMessageSendResult(
+    [property: JsonPropertyName("messageId")] string MessageId,
+    [property: JsonPropertyName("insertionTime")] DateTimeOffset InsertionTime,
+    [property: JsonPropertyName("expirationTime")] DateTimeOffset ExpirationTime,
+    [property: JsonPropertyName("popReceipt")] string PopReceipt,
+    [property: JsonPropertyName("nextVisibleTime")] DateTimeOffset NextVisibleTime,
+    [property: JsonPropertyName("message")] string Message
+);

@@ -56,6 +56,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-acr-registry-list | Show me the container registries in my subscription |
 | azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
 | azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-repository-list | List all container registry repositories in my subscription |
+| azmcp-acr-registry-repository-list | Show me my container registry repositories |
+| azmcp-acr-registry-repository-list | List repositories in the container registry <registry_name> |
+| azmcp-acr-registry-repository-list | Show me the repositories in the container registry <registry_name> |
 
 ## Azure Cosmos DB
 
@@ -230,6 +234,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | Show me my Log Analytics workspaces |
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
+
+## Azure Managed Lustre
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my subscription <subscription_name> |
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my resource group <resource_group_name> |
+| azmcp-azuremanagedlustre-filesystem-required-subnet-size | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
 
 ## Azure Native ISV
 
@@ -411,3 +423,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+
+## Cloud Architect
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-cloudarchitect-design | Please help me design an architecture for a large-scale file upload, storage, and retrieval service |
+| azmcp-cloudarchitect-design | Help me create a cloud service that will serve as ATM for users |
+| azmcp-cloudarchitect-design | I want to design a cloud app for ordering groceries |
+| azmcp-cloudarchitect-design | How can I design a cloud service in Azure that will store and present videos for users? |

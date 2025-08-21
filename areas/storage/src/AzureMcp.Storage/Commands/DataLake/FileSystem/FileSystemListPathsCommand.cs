@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.DataLake.FileSystem;
@@ -22,8 +21,7 @@ public sealed class FileSystemListPathsCommand(ILogger<FileSystemListPathsComman
         """
         List paths in a Data Lake file system. This command retrieves and displays paths (files and directories)
         available in the specified Data Lake file system within the storage account. Results include path names, 
-        types (file or directory), and metadata, returned as a JSON array. Requires account and file-system.
-        Optional filter-path can be used to filter results and recursive to include all subdirectories.
+        types (file or directory), and metadata, returned as a JSON array.
         """;
 
     public override string Title => CommandTitle;
