@@ -128,7 +128,7 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 🧮 **Azure Data Explorer** - Analytics queries and KQL
 - 🐘 **Azure Database for PostgreSQL** - PostgreSQL database management
 - 🛠️ **Azure Developer CLI (azd)** - Template and deployment management
-- 🧮 **Azure Foundry** - AI model management and deployment
+- 🧮 **Azure Foundry** - AI model management, AI model deployment, and knowledge index management
 - 🚀 **Azure Managed Grafana** - Monitoring dashboards
 - 🔑 **Azure Key Vault** - Secrets, keys, and certificates
 - ☸️ **Azure Kubernetes Service (AKS)** - Container orchestration

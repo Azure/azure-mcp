@@ -142,6 +142,9 @@ azmcp foundry models list [--search-for-free-playground <search-for-free-playgro
                           [--publisher <publisher>] \
                           [--license <license>] \
                           [--model-name <model>]
+
+# List knowledge indexes in an AI Foundry project
+azmcp foundry knowledge index list --endpoint <endpoint>
 ```
 
 ### Azure AI Search Operations

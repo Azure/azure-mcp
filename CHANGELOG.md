@@ -6,6 +6,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for listing knowledge indexes in Azure AI Foundry projects via the command `azmcp-foundry-knowledge-index-list`. [[#1004](https://github.com/Azure/azure-mcp/pull/1004)]
 - Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 - Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]

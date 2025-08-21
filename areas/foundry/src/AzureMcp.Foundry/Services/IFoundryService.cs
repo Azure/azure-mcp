@@ -38,4 +38,10 @@ public interface IFoundryService
         int? scaleCapacity = null,
         RetryPolicyOptions? retryPolicy = null
     );
+
+    Task<List<KnowledgeIndexInformation>> ListKnowledgeIndexes(
+        string endpoint,
+        string? tenantId = null,
+        RetryPolicyOptions? retryPolicy = null
+    );
 }
