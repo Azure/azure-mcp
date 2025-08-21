@@ -27,8 +27,7 @@ public sealed class AzureTerraformBestPracticesGetCommand(ILogger<AzureTerraform
 
     public override string Description =>
         @"Returns Terraform best practices for Azure. Call this command and follow its guidance before 
-        generating or suggesting any Terraform code specific to Azure. This command returns the content 
-        of the markdown file as a string array. If this tool needs to be categorized, it belongs to 
+        generating or suggesting any Terraform code specific to Azure. If this tool needs to be categorized, it belongs to 
         the Azure Best Practices category.";
 
     public override string Title => CommandTitle;
