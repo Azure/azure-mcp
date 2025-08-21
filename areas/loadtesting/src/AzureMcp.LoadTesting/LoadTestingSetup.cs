@@ -25,7 +25,9 @@ public class LoadTestingSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Load Testing command group
-        var service = new CommandGroup(Name, "Load Testing operations - Commands for managing Azure Load Testing resources, test configurations, and test runs. Includes operations for creating and managing load test resources, configuring test scripts, executing performance tests, and monitoring test results.");
+        var service = new CommandGroup(
+            Name,
+            "Load Testing operations - Commands for managing Azure Load Testing resources, test configurations, and test runs. Includes operations for creating and managing load test resources, configuring test scripts, executing performance tests, and monitoring test results.");
         rootGroup.AddSubGroup(service);
 
         // Create Load Test subgroups
