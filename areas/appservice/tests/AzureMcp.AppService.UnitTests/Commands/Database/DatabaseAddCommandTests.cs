@@ -125,16 +125,18 @@ public class DatabaseAddCommandTests
         }
     }
 
-    [Fact]
-    public async Task ExecuteAsync_MissingRequiredParameter_ReturnsErrorResponse()
+    [Theory]
+    [InlineData(new string[] { "--subscription", "sub123", "--resource-group", "rg1" })] // Missing app, database-type, database-server, database
+    [InlineData(new string[] { "--subscription", "sub123", "--resource-group", "rg1", "--app", "test-app" })] // Missing database-type, database-server, database
+    [InlineData(new string[] { "--subscription", "sub123", "--resource-group", "rg1", "--app", "test-app", "--database-type", "SqlServer" })] // Missing database-server, database
+    [InlineData(new string[] { "--subscription", "sub123", "--resource-group", "rg1", "--app", "test-app", "--database-type", "SqlServer", "--database-server", "test-server" })] // Missing database
+    [InlineData(new string[] { "--resource-group", "rg1", "--app", "test-app", "--database-type", "SqlServer", "--database-server", "test-server", "--database", "test-db" })] // Missing subscription
+    [InlineData(new string[] { "--subscription", "sub123", "--app", "test-app", "--database-type", "SqlServer", "--database-server", "test-server", "--database", "test-db" })] // Missing resource-group
+    public async Task ExecuteAsync_MissingRequiredParameter_ReturnsErrorResponse(string[] commandArgs)
     {
         // Arrange
         var command = new DatabaseAddCommand(_logger);
-        var args = command.GetCommand().Parse([
-            "--subscription", "sub123",
-            "--resource-group", "rg1"
-            // Missing required parameters
-        ]);
+        var args = command.GetCommand().Parse(commandArgs);
         var context = new CommandContext(_serviceProvider);
 
         // Act
