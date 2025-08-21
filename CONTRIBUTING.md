@@ -144,7 +144,7 @@ The project is organized as follows:
    - Include tests in the `/tests` folder
    - Ensure all tests pass
    - Follow code style requirements
-   - Run the [`ToolDescriptionEvaluator`](https://github.com/Azure/azure-mcp/blob/main/eng/tools/ToolDescriptionEvaluator/Quickstart.md) utility for the new tool description and obtain a score of `0.4` or more and a top 3 ranking for all related test prompts
+   - Run [`ToolDescriptionEvaluator`](https://github.com/Azure/azure-mcp/blob/main/eng/tools/ToolDescriptionEvaluator/Quickstart.md) for the new tool description and obtain a score of `0.4` or more and a top 3 ranking for all related test prompts
 
 ## Testing
 
