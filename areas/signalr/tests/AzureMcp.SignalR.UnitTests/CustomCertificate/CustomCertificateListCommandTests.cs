@@ -6,7 +6,7 @@ using AzureMcp.SignalR;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Models;
 using AzureMcp.Core.Options;
-using AzureMcp.SignalR.Commands.Certificate;
+using AzureMcp.SignalR.Commands.CustomCertificate;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,20 +17,20 @@ using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.Certificate;
 
-public class CertificateListCommandTests
+public class CustomCertificateListCommandTests
 {
     private readonly ISignalRService _signalRService;
-    private readonly CertificateListCommand _command;
+    private readonly CustomCertificateListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownSubscriptionId = "sub123";
     private readonly string _knownResourceGroup = "rg123";
     private readonly string _knownSignalRName = "signalr123";
 
-    public CertificateListCommandTests()
+    public CustomCertificateListCommandTests()
     {
         _signalRService = Substitute.For<ISignalRService>();
-        var logger = Substitute.For<ILogger<CertificateListCommand>>();
+        var logger = Substitute.For<ILogger<CustomCertificateListCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
         var serviceProvider = collection.BuildServiceProvider();
@@ -44,7 +44,7 @@ public class CertificateListCommandTests
     public async Task ExecuteAsync_ValidParameters_ReturnsCertificates()
     {
         // Arrange
-        var expectedCertificates = new List<SignalRCertificateModel>
+        var expectedCertificates = new List<SignalRCustomCertificateModel>
         {
             new()
             {
@@ -70,7 +70,7 @@ public class CertificateListCommandTests
             }
         };
 
-        _signalRService.ListCertificatesAsync(
+        _signalRService.ListCustomCertificatesAsync(
                 _knownSubscriptionId,
                 _knownResourceGroup,
                 _knownSignalRName,
@@ -92,7 +92,7 @@ public class CertificateListCommandTests
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
         var resultData = System.Text.Json.JsonSerializer
-            .Deserialize<CertificateListCommand.CertificateListCommandResult>(
+            .Deserialize<CustomCertificateListCommand.CertificateListCommandResult>(
                 json, SignalRJsonContext.Default.CertificateListCommandResult);
         Assert.NotNull(resultData);
         Assert.Equal(2, resultData.Certificates.Count);
@@ -106,14 +106,14 @@ public class CertificateListCommandTests
     public async Task ExecuteAsync_NoCertificates_ReturnsNull()
     {
         // Arrange
-        _signalRService.ListCertificatesAsync(
+        _signalRService.ListCustomCertificatesAsync(
                 _knownSubscriptionId,
                 _knownResourceGroup,
                 _knownSignalRName,
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
                 Arg.Any<RetryPolicyOptions?>())
-            .Returns(new List<SignalRCertificateModel>());
+            .Returns(new List<SignalRCustomCertificateModel>());
 
         // Act
         var parseResult =
@@ -130,7 +130,7 @@ public class CertificateListCommandTests
     public async Task ExecuteAsync_ServiceThrowsException_ReturnsError()
     {
         // Arrange
-        _signalRService.ListCertificatesAsync(
+        _signalRService.ListCustomCertificatesAsync(
                 _knownSubscriptionId,
                 _knownResourceGroup,
                 _knownSignalRName,

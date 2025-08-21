@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.SignalR.Options.Certificate;
+namespace AzureMcp.SignalR.Options.CustomCertificate;
 
 /// <summary>
 /// Options for listing SignalR certificates.
 /// </summary>
-public class CertificateListOptions : BaseSignalROptions
+public class CustomCertificateListOptions : BaseSignalROptions
 {
 }

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.SignalR.Commands.Certificate;
+using AzureMcp.SignalR.Commands.CustomCertificate;
 using AzureMcp.SignalR.Commands.CustomDomain;
 using AzureMcp.SignalR.Commands.Key;
 using AzureMcp.SignalR.Commands.SignalR;
@@ -15,18 +15,18 @@ namespace AzureMcp.SignalR;
 /// </summary>
 [JsonSerializable(typeof(SignalRServiceListCommand.SignalRServiceListCommandResult))]
 [JsonSerializable(typeof(SignalRShowCommand.SignalRShowCommandResult))]
-[JsonSerializable(typeof(CertificateShowCommand.CertificateShowCommandResult))]
-[JsonSerializable(typeof(CertificateListCommand.CertificateListCommandResult))]
+[JsonSerializable(typeof(CustomCertificateShowCommand.CertificateShowCommandResult))]
+[JsonSerializable(typeof(CustomCertificateListCommand.CertificateListCommandResult))]
 [JsonSerializable(typeof(CustomDomainListCommand.CustomDomainListCommandResult))]
 [JsonSerializable(typeof(CustomDomainShowCommand.CustomDomainShowCommandResult))]
 [JsonSerializable(typeof(KeyListCommand.KeyListCommandResult))]
 [JsonSerializable(typeof(SignalRServiceModel))]
-[JsonSerializable(typeof(SignalRCertificateModel))]
+[JsonSerializable(typeof(SignalRCustomCertificateModel))]
 [JsonSerializable(typeof(SignalRCustomDomainModel))]
 [JsonSerializable(typeof(SignalRKeyModel))]
 [JsonSerializable(typeof(IEnumerable<SignalRServiceModel>))]
 [JsonSerializable(typeof(List<SignalRCustomDomainModel>))]
-[JsonSerializable(typeof(List<SignalRCertificateModel>))]
+[JsonSerializable(typeof(List<SignalRCustomCertificateModel>))]
 public partial class SignalRJsonContext : JsonSerializerContext
 {
 }

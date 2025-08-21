@@ -6,7 +6,7 @@ namespace AzureMcp.SignalR.Models;
 /// <summary>
 /// Represents a SignalR service custom certificate.
 /// </summary>
-public class SignalRCertificateModel
+public class SignalRCustomCertificateModel
 {
     /// <summary>
     /// The name of the certificate.

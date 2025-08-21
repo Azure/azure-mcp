@@ -6,7 +6,7 @@ using Azure;
 using AzureMcp.SignalR;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Models;
-using AzureMcp.SignalR.Commands.Certificate;
+using AzureMcp.SignalR.Commands.CustomCertificate;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,10 +17,10 @@ using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.Certificate;
 
-public class CertificateShowCommandTests
+public class CustomCertificateShowCommandTests
 {
     private readonly ISignalRService _signalRService;
-    private readonly CertificateShowCommand _command;
+    private readonly CustomCertificateShowCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownSubscriptionId = "sub123";
@@ -28,10 +28,10 @@ public class CertificateShowCommandTests
     private readonly string _knownSignalRName = "signalr123";
     private readonly string _knownCertificateName = "cert123";
 
-    public CertificateShowCommandTests()
+    public CustomCertificateShowCommandTests()
     {
         _signalRService = Substitute.For<ISignalRService>();
-        var logger = Substitute.For<ILogger<CertificateShowCommand>>();
+        var logger = Substitute.For<ILogger<CustomCertificateShowCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
         var serviceProvider = collection.BuildServiceProvider();
@@ -45,7 +45,7 @@ public class CertificateShowCommandTests
     public async Task ExecuteAsync_ValidParameters_ReturnsCertificate()
     {
         // Arrange
-        var expectedCertificate = new SignalRCertificateModel
+        var expectedCertificate = new SignalRCustomCertificateModel
         {
             Name = _knownCertificateName,
             Id =
@@ -57,7 +57,7 @@ public class CertificateShowCommandTests
             KeyVaultSecretVersion = "v1"
         };
 
-        _signalRService.GetCertificateAsync(
+        _signalRService.GetCustomCertificateAsync(
                 _knownSubscriptionId,
                 _knownResourceGroup,
                 _knownSignalRName,
@@ -82,22 +82,22 @@ public class CertificateShowCommandTests
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
         var resultData = System.Text.Json.JsonSerializer
-            .Deserialize<CertificateShowCommand.CertificateShowCommandResult>(
+            .Deserialize<CustomCertificateShowCommand.CertificateShowCommandResult>(
                 json, SignalRJsonContext.Default.CertificateShowCommandResult);
         Assert.NotNull(resultData);
-        Assert.Equal(expectedCertificate.Name, resultData.Certificate.Name);
-        Assert.Equal(expectedCertificate.Id, resultData.Certificate.Id);
-        Assert.Equal(expectedCertificate.ProvisioningState, resultData.Certificate.ProvisioningState);
-        Assert.Equal(expectedCertificate.KeyVaultBaseUri, resultData.Certificate.KeyVaultBaseUri);
-        Assert.Equal(expectedCertificate.KeyVaultSecretName, resultData.Certificate.KeyVaultSecretName);
-        Assert.Equal(expectedCertificate.KeyVaultSecretVersion, resultData.Certificate.KeyVaultSecretVersion);
+        Assert.Equal(expectedCertificate.Name, resultData.CustomCertificate.Name);
+        Assert.Equal(expectedCertificate.Id, resultData.CustomCertificate.Id);
+        Assert.Equal(expectedCertificate.ProvisioningState, resultData.CustomCertificate.ProvisioningState);
+        Assert.Equal(expectedCertificate.KeyVaultBaseUri, resultData.CustomCertificate.KeyVaultBaseUri);
+        Assert.Equal(expectedCertificate.KeyVaultSecretName, resultData.CustomCertificate.KeyVaultSecretName);
+        Assert.Equal(expectedCertificate.KeyVaultSecretVersion, resultData.CustomCertificate.KeyVaultSecretVersion);
     }
 
     [Fact]
     public async Task ExecuteAsync_CertificateNotFound_Returns404()
     {
         // Arrange
-        _signalRService.GetCertificateAsync(
+        _signalRService.GetCustomCertificateAsync(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
@@ -105,7 +105,7 @@ public class CertificateShowCommandTests
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
                 Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .Returns((SignalRCertificateModel?)null);
+            .Returns((SignalRCustomCertificateModel?)null);
 
         var parseResult =
             _parser.Parse(
@@ -126,7 +126,7 @@ public class CertificateShowCommandTests
     {
         // Arrange
         var requestException = new RequestFailedException(404, "Not Found");
-        _signalRService.GetCertificateAsync(
+        _signalRService.GetCustomCertificateAsync(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
@@ -155,7 +155,7 @@ public class CertificateShowCommandTests
     {
         // Arrange
         var requestException = new RequestFailedException(403, "Forbidden");
-        _signalRService.GetCertificateAsync(
+        _signalRService.GetCustomCertificateAsync(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
@@ -200,7 +200,7 @@ public class CertificateShowCommandTests
     {
         // Arrange
         var exception = new InvalidOperationException("Service error");
-        _signalRService.GetCertificateAsync(
+        _signalRService.GetCustomCertificateAsync(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),

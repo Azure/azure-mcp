@@ -6,16 +6,16 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
-using AzureMcp.SignalR.Options.Certificate;
+using AzureMcp.SignalR.Options.CustomCertificate;
 using AzureMcp.SignalR.Services;
 
-namespace AzureMcp.SignalR.Commands.Certificate;
+namespace AzureMcp.SignalR.Commands.CustomCertificate;
 
-public sealed class CertificateListCommand(ILogger<CertificateListCommand> logger)
-    : BaseSignalRCommand<CertificateListOptions>
+public sealed class CustomCertificateListCommand(ILogger<CustomCertificateListCommand> logger)
+    : BaseSignalRCommand<CustomCertificateListOptions>
 {
-    private const string CommandTitle = "List Certificates";
-    private readonly ILogger<CertificateListCommand> _logger = logger;
+    private const string CommandTitle = "List Custom Certificates";
+    private readonly ILogger<CustomCertificateListCommand> _logger = logger;
 
     private static readonly Option<string> _signalRNameOption = SignalROptionDefinitions.SignalRName;
 
@@ -24,7 +24,7 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
     public override string Description =>
         """
         List all custom certificates for a SignalR service. This command retrieves and displays all custom certificates
-        configured for the specified SignalR service. Results include certificate names, provisioning states, and
+        configured for the specified SignalR service. Results include custom certificate names, provisioning states, and
         Key Vault information.
         """;
 
@@ -38,7 +38,7 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
         command.AddOption(_signalRNameOption);
     }
 
-    protected override CertificateListOptions BindOptions(ParseResult parseResult)
+    protected override CustomCertificateListOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
@@ -59,7 +59,7 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
             context.Activity?.WithSubscriptionTag(options);
 
             var signalRService = context.GetService<ISignalRService>();
-            var certificates = await signalRService.ListCertificatesAsync(
+            var certificates = await signalRService.ListCustomCertificatesAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
                 options.SignalRName!,
@@ -83,5 +83,5 @@ public sealed class CertificateListCommand(ILogger<CertificateListCommand> logge
         return context.Response;
     }
 
-    public record CertificateListCommandResult(List<SignalRCertificateModel> Certificates);
+    public record CertificateListCommandResult(List<SignalRCustomCertificateModel> Certificates);
 }

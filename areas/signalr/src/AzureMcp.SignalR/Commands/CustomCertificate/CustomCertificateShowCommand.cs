@@ -5,20 +5,20 @@ using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
-using AzureMcp.SignalR.Options.Certificate;
+using AzureMcp.SignalR.Options.CustomCertificate;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.SignalR.Commands.Certificate;
+namespace AzureMcp.SignalR.Commands.CustomCertificate;
 
 /// <summary>
 /// Shows details of a custom certificate in an Azure SignalR Service.
 /// </summary>
-public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logger)
-    : BaseSignalRCommand<CertificateShowOptions>
+public sealed class CustomCertificateShowCommand(ILogger<CustomCertificateShowCommand> logger)
+    : BaseSignalRCommand<CustomCertificateShowOptions>
 {
     private const string CommandTitle = "Show Certificate";
-    private readonly ILogger<CertificateShowCommand> _logger = logger;
+    private readonly ILogger<CustomCertificateShowCommand> _logger = logger;
 
     private readonly Option<string> _signalRNameOption = SignalROptionDefinitions.SignalRName;
     private readonly Option<string> _certificateNameOption = SignalROptionDefinitions.CertificateName;
@@ -46,7 +46,7 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
         command.AddOption(_certificateNameOption);
     }
 
-    protected override CertificateShowOptions BindOptions(ParseResult parseResult)
+    protected override CustomCertificateShowOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
@@ -69,7 +69,7 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
 
             var signalRService = context.GetService<ISignalRService>() ??
                                  throw new InvalidOperationException("SignalR service is not available.");
-            var certificate = await signalRService.GetCertificateAsync(
+            var certificate = await signalRService.GetCustomCertificateAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
                 options.SignalRName!,
@@ -120,5 +120,5 @@ public sealed class CertificateShowCommand(ILogger<CertificateShowCommand> logge
         _ => base.GetStatusCode(ex)
     };
 
-    public record CertificateShowCommandResult(SignalRCertificateModel Certificate);
+    public record CertificateShowCommandResult(SignalRCustomCertificateModel CustomCertificate);
 }

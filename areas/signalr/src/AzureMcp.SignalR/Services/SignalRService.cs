@@ -51,7 +51,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
-    public async Task<SignalRCertificateModel?> GetCertificateAsync(
+    public async Task<SignalRCustomCertificateModel?> GetCustomCertificateAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -80,7 +80,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
 
             var certificate = certificateResource.Value;
 
-            return new SignalRCertificateModel
+            return new SignalRCustomCertificateModel
             {
                 Name = certificate.Data.Name,
                 Id = certificate.Id.ToString(),
@@ -142,7 +142,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
-    public async Task<IEnumerable<SignalRCertificateModel>> ListCertificatesAsync(
+    public async Task<IEnumerable<SignalRCustomCertificateModel>> ListCustomCertificatesAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -164,11 +164,11 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
                 .GetSignalRs()
                 .GetAsync(signalRName);
 
-            var certificates = new List<SignalRCertificateModel>();
+            var certificates = new List<SignalRCustomCertificateModel>();
 
             await foreach (var certificate in signalRResource.Value.GetSignalRCustomCertificates())
             {
-                certificates.Add(new SignalRCertificateModel
+                certificates.Add(new SignalRCustomCertificateModel
                 {
                     Name = certificate.Data.Name,
                     Id = certificate.Id.ToString(),

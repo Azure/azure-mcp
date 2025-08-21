@@ -31,7 +31,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.GetCertificateAsync(null!, _knownResourceGroup, _knownSignalRName, _knownCertificateName));
+            _service.GetCustomCertificateAsync(null!, _knownResourceGroup, _knownSignalRName, _knownCertificateName));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.GetCertificateAsync(_knownSubscriptionId, null!, _knownSignalRName, _knownCertificateName));
+            _service.GetCustomCertificateAsync(_knownSubscriptionId, null!, _knownSignalRName, _knownCertificateName));
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.GetCertificateAsync(_knownSubscriptionId, _knownResourceGroup, null!, _knownCertificateName));
+            _service.GetCustomCertificateAsync(_knownSubscriptionId, _knownResourceGroup, null!, _knownCertificateName));
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.GetCertificateAsync(_knownSubscriptionId, _knownResourceGroup, _knownSignalRName, null!));
+            _service.GetCustomCertificateAsync(_knownSubscriptionId, _knownResourceGroup, _knownSignalRName, null!));
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.ListCertificatesAsync(null!, _knownResourceGroup, _knownSignalRName));
+            _service.ListCustomCertificatesAsync(null!, _knownResourceGroup, _knownSignalRName));
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.ListCertificatesAsync(_knownSubscriptionId, null!, _knownSignalRName));
+            _service.ListCustomCertificatesAsync(_knownSubscriptionId, null!, _knownSignalRName));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class SignalRServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.ListCertificatesAsync(_knownSubscriptionId, _knownResourceGroup, null!));
+            _service.ListCustomCertificatesAsync(_knownSubscriptionId, _knownResourceGroup, null!));
     }
 
     [Fact]

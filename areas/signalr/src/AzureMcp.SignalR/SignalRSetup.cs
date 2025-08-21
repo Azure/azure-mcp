@@ -3,7 +3,7 @@
 
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
-using AzureMcp.SignalR.Commands.Certificate;
+using AzureMcp.SignalR.Commands.CustomCertificate;
 using AzureMcp.SignalR.Commands.CustomDomain;
 using AzureMcp.SignalR.Commands.Key;
 using AzureMcp.SignalR.Commands.SignalR;
@@ -26,9 +26,13 @@ public class SignalRSetup : IAreaSetup
             "Azure SignalR operations - Commands for managing Azure SignalR Service resources. Includes operations for listing SignalR services, managing hubs, configuring access keys, and scaling SignalR instances.");
         rootGroup.AddSubGroup(signalr);
 
-        signalr.AddCommand("list",
+        var service = new CommandGroup("service",
+            "SignalR service operations - Commands for managing Azure SignalR Service resources.");
+        signalr.AddSubGroup(signalr);
+
+        service.AddCommand("list",
             new SignalRServiceListCommand(loggerFactory.CreateLogger<SignalRServiceListCommand>()));
-        signalr.AddCommand("show", new SignalRShowCommand(loggerFactory.CreateLogger<SignalRShowCommand>()));
+        service.AddCommand("show", new SignalRShowCommand(loggerFactory.CreateLogger<SignalRShowCommand>()));
 
         // Azure SignalR Certificate
         var certificate = new CommandGroup("custom-certificate",
@@ -36,9 +40,9 @@ public class SignalRSetup : IAreaSetup
         signalr.AddSubGroup(certificate);
 
         certificate.AddCommand("show",
-            new CertificateShowCommand(loggerFactory.CreateLogger<CertificateShowCommand>()));
+            new CustomCertificateShowCommand(loggerFactory.CreateLogger<CustomCertificateShowCommand>()));
         certificate.AddCommand("list",
-            new CertificateListCommand(loggerFactory.CreateLogger<CertificateListCommand>()));
+            new CustomCertificateListCommand(loggerFactory.CreateLogger<CustomCertificateListCommand>()));
 
         var customDomain = new CommandGroup("custom-domain",
             "SignalR custom domain operations - Commands for managing custom domains in Azure SignalR Service resources.");

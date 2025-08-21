@@ -14,7 +14,7 @@ public interface ISignalRService
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<SignalRCertificateModel?> GetCertificateAsync(
+    Task<SignalRCustomCertificateModel?> GetCustomCertificateAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -31,7 +31,7 @@ public interface ISignalRService
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<IEnumerable<SignalRCertificateModel>> ListCertificatesAsync(
+    Task<IEnumerable<SignalRCustomCertificateModel>> ListCustomCertificatesAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
