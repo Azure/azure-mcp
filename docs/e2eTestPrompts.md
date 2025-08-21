@@ -96,18 +96,18 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-mysql-database-list | List all MySQL databases in server \<server> |
-| azmcp-mysql-database-list | Show me the MySQL databases in server \<server> |
-| azmcp-mysql-database-query | Show me all items that contain the word \<search_term> in the MySQL database \<database> in server \<server> |
-| azmcp-mysql-server-config-get | Show me the configuration of MySQL server \<server> |
-| azmcp-mysql-server-list | List all MySQL servers in my subscription |
-| azmcp-mysql-server-list | Show me my MySQL servers |
-| azmcp-mysql-server-list | Show me the MySQL servers in my subscription |
-| azmcp-mysql-server-param-get | Show me the value of connection timeout in seconds in my MySQL server \<server>  |
-| azmcp-mysql-server-param-set | Set connection timeout to 20 seconds for my MySQL server \<server> |
-| azmcp-mysql-table-list | List all tables in the MySQL database \<database> in server \<server> |
-| azmcp-mysql-table-list | Show me the tables in the MySQL database \<database> in server \<server> |
-| azmcp-mysql-table-schema-get | Show me the schema of table \<table> in the MySQL database \<database> in server \<server> |
+| azmcp_mysql_database_list | List all MySQL databases in server \<server> |
+| azmcp_mysql_database_list | Show me the MySQL databases in server \<server> |
+| azmcp_mysql_database_query | Show me all items that contain the word \<search_term> in the MySQL database \<database> in server \<server> |
+| azmcp_mysql_server_config_get | Show me the configuration of MySQL server \<server> |
+| azmcp_mysql_server_list | List all MySQL servers in my subscription |
+| azmcp_mysql_server_list | Show me my MySQL servers |
+| azmcp_mysql_server_list | Show me the MySQL servers in my subscription |
+| azmcp_mysql_server_param_get | Show me the value of connection timeout in seconds in my MySQL server \<server>  |
+| azmcp_mysql_server_param_set | Set connection timeout to 20 seconds for my MySQL server \<server> |
+| azmcp_mysql_table_list | List all tables in the MySQL database \<database> in server \<server> |
+| azmcp_mysql_table_list | Show me the tables in the MySQL database \<database> in server \<server> |
+| azmcp_mysql_table_schema_get | Show me the schema of table \<table> in the MySQL database \<database> in server \<server> |
 
 ## Azure Database for PostgreSQL
 
@@ -147,15 +147,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
-| azmcp-functionapp_get | Describe the function app <function_app_name> in resource group <resource_group_name> |
-| azmcp-functionapp_get | Get configuration for function app <function_app_name> |
-| azmcp-functionapp_get | Get function app status for <function_app_name> |
-| azmcp-functionapp_get | Get information about my function app <function_app_name> in <resource_group_name> |
-| azmcp-functionapp_get | Retrieve host name and status of function app <function_app_name> |
-| azmcp-functionapp_get | Show function app details for <function_app_name> in <resource_group_name> |
-| azmcp-functionapp_get | Show me the details for the function app <function_app_name> |
-| azmcp-functionapp_get | Show plan and region for function app <function_app_name> |
-| azmcp-functionapp_get | What is the status of function app <function_app_name>? |
+| azmcp_functionapp_get | Describe the function app <function_app_name> in resource group <resource_group_name> |
+| azmcp_functionapp_get | Get configuration for function app <function_app_name> |
+| azmcp_functionapp_get | Get function app status for <function_app_name> |
+| azmcp_functionapp_get | Get information about my function app <function_app_name> in <resource_group_name> |
+| azmcp_functionapp_get | Retrieve host name and status of function app <function_app_name> |
+| azmcp_functionapp_get | Show function app details for <function_app_name> in <resource_group_name> |
+| azmcp_functionapp_get | Show me the details for the function app <function_app_name> |
+| azmcp_functionapp_get | Show plan and region for function app <function_app_name> |
+| azmcp_functionapp_get | What is the status of function app <function_app_name>? |
 | azmcp_functionapp_list | List all function apps in my subscription |
 | azmcp_functionapp_list | Show me my Azure function apps |
 | azmcp_functionapp_list | What function apps do I have? |
@@ -209,6 +209,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 |:----------|:----------|
 | azmcp_grafana_list | List all Azure Managed Grafana in one subscription |
 
+## Azure Managed Lustre
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp_azuremanagedlustre_filesystem_list | List the Azure Managed Lustre filesystems in my subscription <subscription_name> |
+| azmcp_azuremanagedlustre_filesystem_list | List the Azure Managed Lustre filesystems in my resource group <resource_group_name> |
+| azmcp_azuremanagedlustre_filesystem_required-subnet-size | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
+
 ## Azure Marketplace
 
 | Tool Name | Test Prompt |
@@ -253,14 +261,6 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp_monitor_workspace_list | Show me my Log Analytics workspaces |
 | azmcp_monitor_workspace_list | Show me the Log Analytics workspaces in my subscription |
 | azmcp_monitor_workspace_log_query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
-
-## Azure Managed Lustre
-
-| Tool Name | Test Prompt |
-|:----------|:----------|
-| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my subscription <subscription_name> |
-| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my resource group <resource_group_name> |
-| azmcp-azuremanagedlustre-filesystem-required-subnet-size | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
 
 ## Azure Native ISV
 

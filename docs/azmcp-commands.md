@@ -120,6 +120,9 @@ azmcp server start \
 ### Azure AI Foundry Operations
 
 ```bash
+# List knowledge indexes in an AI Foundry project
+azmcp foundry knowledge index list --endpoint <endpoint>
+
 # Deploy an AI Foundry model
 azmcp foundry models deploy --subscription <subscription> \
                             --resource-group <resource-group> \
@@ -142,9 +145,6 @@ azmcp foundry models list [--search-for-free-playground <search-for-free-playgro
                           [--publisher <publisher>] \
                           [--license <license>] \
                           [--model-name <model>]
-
-# List knowledge indexes in an AI Foundry project
-azmcp foundry knowledge index list --endpoint <endpoint>
 ```
 
 ### Azure AI Search Operations
@@ -1127,19 +1127,19 @@ azmcp bicepschema get --resource-type <resource-type> \
 ```bash
 # Design Azure cloud architectures through guided questions
 azmcp cloudarchitect design [--question <question>] \
-                           [--question-number <question-number>] \
-                           [--total-questions <total-questions>] \
-                           [--answer <answer>] \
-                           [--next-question-needed <true/false>] \
-                           [--confidence-score <confidence-score>] \
-                           [--architecture-component <architecture-component>]
+                            [--question-number <question-number>] \
+                            [--total-questions <total-questions>] \
+                            [--answer <answer>] \
+                            [--next-question-needed <true/false>] \
+                            [--confidence-score <confidence-score>] \
+                            [--architecture-component <architecture-component>]
 
 # Example:
 # Start an interactive architecture design session
 azmcp cloudarchitect design --question "What type of application are you building?" \
-                           --question-number 1 \
-                           --total-questions 5 \
-                           --confidence-score 0.1
+                            --question-number 1 \
+                            --total-questions 5 \
+                            --confidence-score 0.1
 ```
 
 ## Response Format

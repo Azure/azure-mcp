@@ -64,14 +64,20 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "Get Azure Data Explorer databases in cluster 'mycluster'"
 * "Sample 10 rows from table 'StormEvents' in Azure Data Explorer database 'db1'"
 
-### 📊 Azure Monitor
-
-* "Query my Log Analytics workspace"
-
 ### ⚡ Azure Managed Lustre
 
 * "List the Azure Managed Lustre clusters in resource group 'my-resourcegroup'"
 * "How many IP Addresses I need to create a 128 TiB cluster of AMLFS 500?"
+
+### 📊 Azure Monitor
+
+* "Query my Log Analytics workspace"
+
+### 🔧 Azure Resource Management
+
+* "List my resource groups"
+* "List my Azure CDN endpoints"
+* "Help me build an Azure application using Node.js"
 
 ### 🗄️ Azure SQL Database
 
@@ -80,12 +86,6 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * "List all firewall rules for my Azure SQL server 'myserver'"
 * "List all elastic pools in my Azure SQL server 'myserver'"
 * "List Active Directory administrators for my Azure SQL server 'myserver'"
-
-### 🔧 Azure Resource Management
-
-* "List my resource groups"
-* "List my Azure CDN endpoints"
-* "Help me build an Azure application using Node.js"
 
 ### 💾 Azure Storage
 
@@ -149,17 +149,17 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Sample rows from a table
 * Query using KQL
 
-### 🐘 Azure Database for PostgreSQL - Flexible Server
-
-* List and query databases.
-* List and get schema for tables.
-* List, get configuration and get parameters for servers.
-
 ### 🐬 Azure Database for MySQL - Flexible Server
 
 * List and query databases.
 * List and get schema for tables.
 * List, get configuration and get parameters for servers.
+
+### 🐘 Azure Database for PostgreSQL - Flexible Server
+
+* List and query databases.
+* List and get schema for tables.
+* List, get configuration and get/set parameters for servers.
 
 ### 🛠️ Azure Developer CLI (azd) Extension
 
@@ -187,10 +187,6 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List Azure Function Apps
 * Get details for a specific Function App
 
-### 🚀 Azure Managed Grafana
-
-* List Azure Managed Grafana
-
 ### 🔑 Azure Key Vault
 
 * List, create, and import certificates
@@ -206,6 +202,16 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List, create load test resources
 * List, create load tests
 * Get, list, (create) run and rerun, update load test runs
+
+
+### 🚀 Azure Managed Grafana
+
+* List Azure Managed Grafana
+
+### ⚡ Azure Managed Lustre
+
+* List Azure Managed Lustre filesystems
+* Get the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem
 
 ### 🏪 Azure Marketplace
 
@@ -227,6 +233,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Query Azure Monitor metrics for resources with time series data
 * List available metric definitions for resources
+
+### 🏥 Azure Service Health
+
+* Get the availability status for a specific resource
+* List availability statuses for all resources in a subscription or resource group
 
 ### ⚙️ Azure Native ISV Services
 

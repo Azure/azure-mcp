@@ -75,43 +75,297 @@ You’re all set! Azure MCP Server is now ready to help you work smarter with Az
 Here are some cool prompts you can try across our supported Azure services:
 
 ### 🔎 Azure AI Search
+
 * "What indexes do I have in my Azure AI Search service 'mysvc'?"
 * "Let's search this index for 'my search query'"
 
 ### ⚙️ Azure App Configuration
+
 * "List my App Configuration stores"
 * "Show my key-value pairs in App Config"
 
 ### 📦 Azure Container Registry (ACR)
+
 * "List all my Azure Container Registries"
 * "Show me my container registries in the 'myproject' resource group"
+* "List all my Azure Container Registry repositories"
 
 ### ☸️ Azure Kubernetes Service (AKS)
+
 * "List my AKS clusters in my subscription"
 * "Show me all my Azure Kubernetes Service clusters"
 
 ### 📊 Azure Cosmos DB
+
 * "Show me all my Cosmos DB databases"
 * "List containers in my Cosmos DB database"
 
-### 🗄️ Azure SQL Database
-* "Show me details about my Azure SQL database 'mydb'"
-* "List all databases in my Azure SQL server 'myserver'"
+### 🧮 Azure Data Explorer
 
-### 💾 Azure Storage
-* "List my Azure storage accounts"
-* "Get details about my storage account 'mystorageaccount'"
-* "Create a new storage account with premium SSD storage"
-* "Show me the tables in my Storage account"
-* "Get details about my Storage container"
+* "Get Azure Data Explorer databases in cluster 'mycluster'"
+* "Sample 10 rows from table 'StormEvents' in Azure Data Explorer database 'db1'"
 
-### 🔑 Azure Key Vault
-* "List my Key Vault secrets"
-* "Show me the certificates in my Key Vault"
+### ⚡ Azure Managed Lustre
+
+* "List the Azure Managed Lustre clusters in resource group 'my-resourcegroup'"
+* "How many IP Addresses I need to create a 128 TiB cluster of AMLFS 500?"
 
 ### 📊 Azure Monitor
+
 * "Query my Log Analytics workspace"
-* "Show me metrics for my Azure resources"
+
+### 🔧 Azure Resource Management
+
+* "List my resource groups"
+* "List my Azure CDN endpoints"
+* "Help me build an Azure application using Node.js"
+
+### 🗄️ Azure SQL Database
+
+* "Show me details about my Azure SQL database 'mydb'"
+* "List all databases in my Azure SQL server 'myserver'"
+* "List all firewall rules for my Azure SQL server 'myserver'"
+* "List all elastic pools in my Azure SQL server 'myserver'"
+* "List Active Directory administrators for my Azure SQL server 'myserver'"
+
+### 💾 Azure Storage
+
+* "List my Azure storage accounts"
+* "Get details about my storage account 'mystorageaccount'"
+* "Create a new storage account in East US with Data Lake support"
+* "Show me the tables in my Storage account"
+* "Get details about my Storage container"
+* "Upload my file to the blob container"
+* "List paths in my Data Lake file system"
+* "List files and directories in my File Share"
+* "Send a message to my storage queue"
+
+## 🛠️ Currently Supported Tools
+
+<details>
+<summary>The Azure MCP Server provides tools for interacting with the following Azure services</summary>
+
+### 🔎 Azure AI Search (search engine/vector database)
+
+* List Azure AI Search services
+* List indexes and look at their schema and configuration
+* Query search indexes
+
+### ⚙️ Azure App Configuration
+
+* List App Configuration stores
+* Manage key-value pairs
+* Handle labeled configurations
+* Lock/unlock configuration settings
+
+### 🛡️ Azure Best Practices
+
+* Get secure, production-grade Azure SDK best practices for effective code generation.
+
+### 🖥️ Azure CLI Extension
+
+* Execute Azure CLI commands directly
+* Support for all Azure CLI functionality
+
+### 📦 Azure Container Registry (ACR)
+
+* List Azure Container Registries and repositories in a subscription
+* Filter container registries and repositories by resource group
+* JSON output formatting
+* Cross-platform compatibility
+
+### 📊 Azure Cosmos DB (NoSQL Databases)
+
+* List Cosmos DB accounts
+* List and query databases
+* Manage containers and items
+* Execute SQL queries against containers
+
+### 🧮 Azure Data Explorer
+
+* List Azure Data Explorer clusters
+* List databases
+* List tables
+* Get schema for a table
+* Sample rows from a table
+* Query using KQL
+
+### 🐬 Azure Database for MySQL - Flexible Server
+
+* List and query databases.
+* List and get schema for tables.
+* List, get configuration and get parameters for servers.
+
+### 🐘 Azure Database for PostgreSQL - Flexible Server
+
+* List and query databases.
+* List and get schema for tables.
+* List, get configuration and get/set parameters for servers.
+
+### 🛠️ Azure Developer CLI (azd) Extension
+
+* Execute Azure Developer CLI commands directly
+* Support for template discovery, template initialization, provisioning and deployment
+* Cross-platform compatibility
+
+### 🚀 Azure Deploy
+
+* Generate Azure service architecture diagrams from source code
+* Create a deploy plan for provisioning and deploying the application
+* Get the application service log for a specific azd environment
+* Get the bicep or terraform file generation rules for an application
+* Get the GitHub pipeline creation guideline for an application
+
+### 🧮 Azure Foundry
+
+* List Azure Foundry models
+* Deploy foundry models
+* List foundry model deployments
+* List knowledge indexes
+
+### ☁️ Azure Function App
+
+* List Azure Function Apps
+* Get details for a specific Function App
+
+### 🔑 Azure Key Vault
+
+* List, create, and import certificates
+* List and create keys
+* List and create secrets
+
+### ☸️ Azure Kubernetes Service (AKS)
+
+* List Azure Kubernetes Service clusters
+
+### 📦 Azure Load Testing
+
+* List, create load test resources
+* List, create load tests
+* Get, list, (create) run and rerun, update load test runs
+
+
+### 🚀 Azure Managed Grafana
+
+* List Azure Managed Grafana
+
+### ⚡ Azure Managed Lustre
+
+* List Azure Managed Lustre filesystems
+* Get the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem
+
+### 🏪 Azure Marketplace
+
+* Get details about Marketplace products
+
+### 📈 Azure Monitor
+
+#### Log Analytics
+
+* List Log Analytics workspaces
+* Query logs using KQL
+* List available tables
+
+#### Health Models
+
+* Get health of an entity
+
+#### Metrics
+
+* Query Azure Monitor metrics for resources with time series data
+* List available metric definitions for resources
+
+### 🏥 Azure Service Health
+
+* Get the availability status for a specific resource
+* List availability statuses for all resources in a subscription or resource group
+
+### ⚙️ Azure Native ISV Services
+
+* List Monitored Resources in a Datadog Monitor
+
+### 🛡️ Azure Quick Review CLI Extension
+
+* Scan Azure resources for compliance related recommendations
+
+### 📊 Azure Quota
+
+* List available regions
+* Check quota usage
+
+### 🔴 Azure Redis Cache
+
+* List Redis Cluster resources
+* List databases in Redis Clusters
+* List Redis Cache resources
+* List access policies for Redis Caches
+
+### 🏗️ Azure Resource Groups
+
+* List resource groups
+
+### 🎭 Azure Role-Based Access Control (RBAC)
+
+* List role assignments
+
+### 🚌 Azure Service Bus
+
+* Examine properties and runtime information about queues, topics, and subscriptions
+
+### 🗄️ Azure SQL Database
+
+* Show database details and properties
+* List the details and properties of all databases
+* List SQL server firewall rules
+
+### 🗄️ Azure SQL Elastic Pool
+
+* List elastic pools in SQL servers
+
+### 🗄️ Azure SQL Server
+
+* List Microsoft Entra ID administrators for SQL servers
+
+### 💾 Azure Storage
+
+* List and create Storage accounts
+* Get detailed information about specific Storage accounts
+* Manage blob containers and blobs
+* Upload files to blob containers
+* List and query Storage tables
+* List paths in Data Lake file systems
+* Get container properties and metadata
+* List files and directories in File Shares
+
+### 📋 Azure Subscription
+
+* List Azure subscriptions
+
+### 🏗️ Azure Terraform Best Practices
+
+* Get secure, production-grade Azure Terraform best practices for effective code generation and command execution
+
+### 🖥️ Azure Virtual Desktop
+
+* List Azure Virtual Desktop host pools
+* List session hosts in host pools
+* List user sessions on a session host
+
+### 📊 Azure Workbooks
+
+* List workbooks in resource groups
+* Create new workbooks with custom visualizations
+* Update existing workbook configurations
+* Get workbook details and metadata
+* Delete workbooks when no longer needed
+
+### 🏗️ Bicep
+
+* Get the Bicep schema for specific Azure resource types
+
+### 🏗️ Cloud Architect
+
+* Design Azure cloud architectures through guided questions
 
 **And 20+ more Azure services!** For the complete list of supported services and sample prompts, see our [full documentation](https://github.com/Azure/azure-mcp/blob/main/README.md#-what-can-you-do-with-the-azure-mcp-server).
 
@@ -127,14 +381,18 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 📊 **Azure Cosmos DB** - NoSQL database operations
 - 🧮 **Azure Data Explorer** - Analytics queries and KQL
 - 🐘 **Azure Database for PostgreSQL** - PostgreSQL database management
+- 🐬 **Azure Database for MySQL** - MySQL database management
 - 🛠️ **Azure Developer CLI (azd)** - Template and deployment management
+- ⚡ **Azure Functions** - Function App management
 - 🧮 **Azure Foundry** - AI model management, AI model deployment, and knowledge index management
 - 🚀 **Azure Managed Grafana** - Monitoring dashboards
+- 🗃️ **Azure Managed Lustre** - High-performance Lustre filesystem operations
 - 🔑 **Azure Key Vault** - Secrets, keys, and certificates
 - ☸️ **Azure Kubernetes Service (AKS)** - Container orchestration
 - 📦 **Azure Load Testing** - Performance testing
 - 🏪 **Azure Marketplace** - Product discovery
 - 📈 **Azure Monitor** - Logging, metrics, and health monitoring
+- 🏥 **Azure Service Health** - Resource health status and availability
 - ⚙️ **Azure Native ISV Services** - Third-party integrations
 - 🛡️ **Azure Quick Review CLI** - Compliance scanning
 - 🔴 **Azure Redis Cache** - In-memory data store
@@ -150,6 +408,7 @@ The Azure MCP Server provides tools for interacting with **28 Azure service area
 - 🖥️ **Azure Virtual Desktop** - Virtual desktop infrastructure
 - 📊 **Azure Workbooks** - Custom visualizations
 - 🏗️ **Bicep** - Azure resource templates
+- 🏗️ **Cloud Architect** - Guided architecture design
 
 ## Documentation
 
