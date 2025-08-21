@@ -2,12 +2,15 @@
 
 The Azure MCP Server updates automatically by default whenever a new release comes out 🚀. We ship updates twice a week on Tuesdays and Thursdays 😊
 
-## 0.5.8 (Unreleased)
+## 0.5.8 (2025-08-21)
 
 ### Features Added
 
-- Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
-- Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Added support for getting details of an Azure Function App via the command `azmcp_functionapp_get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+- Added the following Azure Managed Lustre commands: [[#1003](https:/github.com/Azure/azure-mcp/issues/1003)]
+  - `azmcp_azuremanagedlustre_filesystem_list`: List available Azure Managed Lustre filesystem.
+  - `azmcp_azuremanagedlustre_filesystem_require_subnet_size`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem.
+- Added support for designing Azure Cloud Architecture through guided questions via the command `azmcp_cloudarchitect_design`. [[#890](https://github.com/Azure/azure-mcp/pull/890)]
 - Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]
   - `azmcp_mysql_database_list` - List all databases in a MySQL server.
   - `azmcp_mysql_database_query` - Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
@@ -21,8 +24,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ### Breaking Changes
 
 - Renamed the following Storage tool option names: [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
-  - Renamed `azmcp-storage-account-create` `account-name` to `account`.
-  - Renamed `azmcp-storage-blob-batch-set-tier` `blob-names` to `blobs`.
+  - `azmcp_storage_account_create`: `account-name` → `account`.
+  - `azmcp_storage_blob_batch_set_tier`: `blob-names` → `blobs`.
 
 ### Bugs Fixed
 
@@ -31,13 +34,14 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Other Changes
 
+- Introduced the `BaseAzureResourceService` class to allow performing Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Refactored SQL service implementation to use Azure Resource Graph queries instead of direct ARM API calls. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
   - Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
 - Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
   - Fixed KQL string escaping in Workbooks service queries.
 - Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
-- Update to .NET 10 SDK to prepare for .NET tool packing.
-- Enhance `bestpractices` and `azureterraformbestpractices` tool descriptions to better work with the vscode copilot tool grouping feature. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
+- Updated to .NET 10 SDK to prepare for .NET tool packing.
+- Enhanced `bestpractices` and `azureterraformbestpractices` tool descriptions to better work with the vscode copilot tool grouping feature. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
 
 ## 0.5.7 (2025-08-19)
 

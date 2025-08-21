@@ -1,6 +1,42 @@
 
 # Release History
 
+## 0.5.8 - 2025-08-21
+
+### Added
+
+- Added support for getting details of an Azure Function App via the `azmcp_functionapp_get` command. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
+- Added the following Azure Managed Lustre commands: [[#1003](https://github.com/Azure/azure-mcp/issues/1003)]
+  - `azmcp_azuremanagedlustre_filesystem_list`: List available Azure Managed Lustre filesystem.
+  - `azmcp_azuremanagedlustre_filesystem_require_subnet_size`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem.
+- Added support for designing Azure Cloud Architecture through guided questions via the `azmcp_cloudarchitect_design` command. [[#890](https://github.com/Azure/azure-mcp/pull/890)]
+- Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+  - `azmcp_mysql_database_list` - List all databases in a MySQL server.
+  - `azmcp_mysql_database_query` - Execute a SELECT query on a MySQL database (non-destructive only).
+  - `azmcp_mysql_table_list` - List all tables in a MySQL database.
+  - `azmcp_mysql_table_schema_get` - Get the schema of a specific table in a MySQL database.
+  - `azmcp_mysql_server_config_get` - Retrieve the configuration of a MySQL server.
+  - `azmcp_mysql_server_list` - List all MySQL servers in a subscription and resource group.
+  - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
+  - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
+
+### Changed
+
+- Standardized Azure Storage command descriptions, option names, and parameter names; cleaned up JSON serialization context. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+  - **Breaking:** Renamed the following Storage tool option names for consistency:
+    - `azmcp_storage_account_create`: `account-name` → `account`.
+    - `azmcp_storage_blob_batch_set_tier`: `blob-names` → `blobs`.
+- Introduced `BaseAzureResourceService` to enable Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Refactored SQL service to use Azure Resource Graph instead of direct ARM API calls, removing dependency on `Azure.ResourceManager.Sql` and improving startup performance. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Enhanced `BaseAzureService` with `EscapeKqlString` for safe KQL query construction across all Azure services; fixed KQL string escaping in Workbooks queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Updated to .NET 10 SDK to prepare for .NET tool packing.
+- Improved `bestpractices` and `azureterraformbestpractices` tool descriptions to work better with VS Code Copilot tool grouping. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
+
+### Fixed
+
+- SQL service tests now use case-insensitive string comparisons for resource type validation. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- HttpClient service tests now validate NoProxy collection handling correctly (instead of assuming a single string). [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+
 ## 0.5.7 - 2025-08-19
 
 ### Added
