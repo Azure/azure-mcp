@@ -20,13 +20,14 @@
   - `azmcp_mysql_server_list` - List all MySQL servers in a subscription and resource group.
   - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
   - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
+- Added telemetry for tracking service area when calling tools. [[#1024](https://github.com/Azure/azure-mcp/pull/1024)]
 
 ### Changed
 
 - Standardized Azure Storage command descriptions, option names, and parameter names; cleaned up JSON serialization context. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
   - **Breaking:** Renamed the following Storage tool option names for consistency:
     - `azmcp_storage_account_create`: `account-name` → `account`.
-    - `azmcp_storage_blob_batch_set_tier`: `blob-names` → `blobs`.
+    - `azmcp_storage_blob_batch_set-tier`: `blob-names` → `blobs`.
 - Introduced `BaseAzureResourceService` to enable Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Refactored SQL service to use Azure Resource Graph instead of direct ARM API calls, removing dependency on `Azure.ResourceManager.Sql` and improving startup performance. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
 - Enhanced `BaseAzureService` with `EscapeKqlString` for safe KQL query construction across all Azure services; fixed KQL string escaping in Workbooks queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]

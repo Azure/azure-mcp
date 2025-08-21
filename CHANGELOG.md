@@ -21,13 +21,13 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
   - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
   - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
-- Adds telemetry for tracking service area when calling tools. [[#1024](https://github.com/Azure/azure-mcp/pull/1024)]
+- Added telemetry for tracking service area when calling tools. [[#1024](https://github.com/Azure/azure-mcp/pull/1024)]
 
 ### Breaking Changes
 
 - Renamed the following Storage tool option names: [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
   - `azmcp_storage_account_create`: `account-name` → `account`.
-  - `azmcp_storage_blob_batch_set_tier`: `blob-names` → `blobs`.
+  - `azmcp_storage_blob_batch_set-tier`: `blob-names` → `blobs`.
 
 ### Bugs Fixed
 
@@ -53,11 +53,6 @@ The Azure MCP Server updates automatically by default whenever a new release com
 ## 0.5.7 (2025-08-19)
 
 ### Features Added
-- Added the following Azure Managed Lustre commands:
-  - `azmcp-azuremanagedlustre-filesystem-list`: List available Azure Managed Lustre filesystem. [[#1001](https://github.com/Azure/azure-mcp/issues/1001)]
-  - `azmcp-azuremanagedlustre-filesystem-required-subnet-size`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem. [[#1002](https://github.com/Azure/azure-mcp/issues/1002)]
-
-- Added new command for designing Azure Cloud Architecture through guided questions. [[#890](https://github.com/Azure/azure-mcp/pull/890)]
 - Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
   - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
   - `azmcp_deploy_iac_rules_get` - Get Infrastructure as Code rules.
