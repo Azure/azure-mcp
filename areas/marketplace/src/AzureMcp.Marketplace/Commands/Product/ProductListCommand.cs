@@ -1,0 +1,164 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Net;
+using AzureMcp.Core.Commands;
+using AzureMcp.Core.Commands.Subscription;
+using AzureMcp.Core.Models.Option;
+using AzureMcp.Marketplace.Models;
+using AzureMcp.Marketplace.Options.Product;
+using AzureMcp.Marketplace.Services;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.Marketplace.Commands.Product;
+
+public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : SubscriptionCommand<ProductListOptions>
+{
+    private const string CommandTitle = "List Marketplace Products";
+    private readonly ILogger<ProductListCommand> _logger = logger;
+
+    // Define options from OptionDefinitions
+    private readonly Option<string> _languageOption = OptionDefinitions.Marketplace.Language;
+    private readonly Option<string> _storefrontOption = OptionDefinitions.Marketplace.Storefront;
+    private readonly Option<string> _marketOption = OptionDefinitions.Marketplace.Market;
+    private readonly Option<string> _searchOption = OptionDefinitions.Marketplace.Search;
+    private readonly Option<bool> _excludePublicOffersAndPublicPlansOption = OptionDefinitions.Marketplace.ExcludePublicOffersAndPublicPlans;
+    private readonly Option<string> _filterOption = OptionDefinitions.Marketplace.Filter;
+    private readonly Option<string> _orderByOption = OptionDefinitions.Marketplace.OrderBy;
+    private readonly Option<string> _selectOption = OptionDefinitions.Marketplace.Select;
+    private readonly Option<string> _nextCursorOption = OptionDefinitions.Marketplace.NextCursor;
+
+    public override string Name => "list";
+
+    public override string Description =>
+        """
+        Retrieves private products (offers) that a subscription has access to in the Azure Marketplace.
+        Returns a list of marketplace products including display names, publishers, pricing information, and metadata.
+        Supports filtering by search terms, language, market, and other criteria.
+        
+        Required options:
+        - subscription: Azure subscription ID or name
+        
+        Optional filtering:
+        - search: Filter by display name, publisher name, or keywords
+        - language: Product language (default: en)
+        - market: Product market (default: US)
+        - storefront: Storefront identifier (default: azure)
+        - exclude-public-offers-and-public-plans: Show only private products
+        
+        OData query options:
+        - filter: Filter results using OData syntax (e.g., "displayName eq 'Azure'")
+        - orderby: Sort results using OData syntax (e.g., "displayName asc")
+        - select: Select specific fields using OData syntax (e.g., "displayName,publisherDisplayName")
+        
+        Pagination:
+        - next-cursor: Use the NextPageLink value from a previous response to retrieve the next page of results
+        """;
+
+    public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_languageOption);
+        command.AddOption(_storefrontOption);
+        command.AddOption(_marketOption);
+        command.AddOption(_searchOption);
+        command.AddOption(_excludePublicOffersAndPublicPlansOption);
+        command.AddOption(_filterOption);
+        command.AddOption(_orderByOption);
+        command.AddOption(_selectOption);
+        command.AddOption(_nextCursorOption);
+    }
+
+    protected override ProductListOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.Language = parseResult.GetValueForOption(_languageOption);
+        options.Storefront = parseResult.GetValueForOption(_storefrontOption);
+        options.Market = parseResult.GetValueForOption(_marketOption);
+        options.Search = parseResult.GetValueForOption(_searchOption);
+        options.ExcludePublicOffersAndPublicPlans = parseResult.GetValueForOption(_excludePublicOffersAndPublicPlansOption);
+        options.Filter = parseResult.GetValueForOption(_filterOption);
+        options.OrderBy = parseResult.GetValueForOption(_orderByOption);
+        options.Select = parseResult.GetValueForOption(_selectOption);
+        options.NextCursor = parseResult.GetValueForOption(_nextCursorOption);
+        return options;
+    }
+
+    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
+    {
+        var options = BindOptions(parseResult);
+
+        try
+        {
+            // Required validation step
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+
+            // Get the marketplace service from DI
+            var marketplaceService = context.GetService<IMarketplaceService>();
+
+            // Call service operation with required parameters
+            var results = await marketplaceService.ListProducts(
+                options.Subscription!,
+                options.Language,
+                options.Storefront,
+                options.Market,
+                options.Search,
+                options.ExcludePublicOffersAndPublicPlans,
+                options.Filter,
+                options.OrderBy,
+                options.Select,
+                options.NextCursor,
+                options.Tenant,
+                options.RetryPolicy);
+
+            // Set results
+            context.Response.Results = results?.Items?.Count > 0 ?
+                ResponseResult.Create(
+                    new ProductListCommandResult(results.Items, results.NextCursor),
+                    MarketplaceJsonContext.Default.ProductListCommandResult) :
+                null;
+        }
+        catch (Exception ex)
+        {
+            // Log error with all relevant context
+            _logger.LogError(ex,
+                "Error listing marketplace products. Subscription: {Subscription}, Search: {Search}, Options: {@Options}",
+                options.Subscription, options.Search, options);
+            HandleException(context, ex);
+        }
+
+        return context.Response;
+    }
+
+    // Implementation-specific error handling
+    protected override string GetErrorMessage(Exception ex) => ex switch
+    {
+        HttpRequestException httpEx when httpEx.StatusCode == HttpStatusCode.NotFound =>
+            "No marketplace products found for the specified subscription. Verify the subscription exists and you have access to it.",
+        HttpRequestException httpEx when httpEx.StatusCode == HttpStatusCode.Forbidden =>
+            "Access denied to marketplace products. Ensure you have appropriate permissions for the subscription.",
+        HttpRequestException httpEx =>
+            $"Service unavailable or connectivity issues. Details: {httpEx.Message}",
+        ArgumentException argEx =>
+            $"Invalid parameter provided. Details: {argEx.Message}",
+        _ => base.GetErrorMessage(ex)
+    };
+
+    protected override int GetStatusCode(Exception ex) => ex switch
+    {
+        HttpRequestException httpEx => (int)httpEx.StatusCode.GetValueOrDefault(HttpStatusCode.InternalServerError),
+        ArgumentException => 400,
+        _ => base.GetStatusCode(ex)
+    };
+
+    // Strongly-typed result record
+    internal record ProductListCommandResult(List<ProductSummary> Products, string? NextCursor);
+}

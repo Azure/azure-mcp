@@ -8,8 +8,12 @@ using AzureMcp.Marketplace.Models;
 namespace AzureMcp.Marketplace.Commands;
 
 [JsonSerializable(typeof(ProductGetCommand.ProductGetCommandResult))]
+[JsonSerializable(typeof(ProductListCommand.ProductListCommandResult))]
+[JsonSerializable(typeof(ProductListResponseWithNextCursor))]
 [JsonSerializable(typeof(ProductDetails))]
 [JsonSerializable(typeof(ProductSummary))]
+[JsonSerializable(typeof(ProductsListResponse))]
+[JsonSerializable(typeof(List<ProductSummary>))]
 [JsonSerializable(typeof(PlanDetails))]
 [JsonSerializable(typeof(PlanSummary))]
 [JsonSerializable(typeof(StopSellInfo))]

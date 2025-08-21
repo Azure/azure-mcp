@@ -21,4 +21,18 @@ public interface IMarketplaceService
         string? pricingAudience = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<ProductListResponseWithNextCursor> ListProducts(
+        string subscription,
+        string? language = null,
+        string? storefront = null,
+        string? market = null,
+        string? search = null,
+        bool? excludePublicOffersAndPublicPlans = null,
+        string? filter = null,
+        string? orderBy = null,
+        string? select = null,
+        string? nextCursor = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }
