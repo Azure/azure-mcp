@@ -14,6 +14,8 @@ namespace AzureMcp.MySql;
 
 public class MySqlSetup : IAreaSetup
 {
+    public string Name => "mysql";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IMySqlService, MySqlService>();
@@ -21,7 +23,7 @@ public class MySqlSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var mysql = new CommandGroup("mysql", "MySQL operations - Commands for managing Azure Database for MySQL Flexible Server resources. Includes operations for listing servers and databases, executing SQL queries, managing table schemas, and configuring server parameters.");
+        var mysql = new CommandGroup(Name, "MySQL operations - Commands for managing Azure Database for MySQL Flexible Server resources. Includes operations for listing servers and databases, executing SQL queries, managing table schemas, and configuring server parameters.");
         rootGroup.AddSubGroup(mysql);
 
         var database = new CommandGroup("database", "MySQL database operations");

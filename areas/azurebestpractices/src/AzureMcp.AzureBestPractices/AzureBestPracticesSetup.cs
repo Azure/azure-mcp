@@ -11,6 +11,8 @@ namespace AzureMcp.AzureBestPractices;
 
 public class AzureBestPracticesSetup : IAreaSetup
 {
+    public string Name => "bestpractices";
+
     public void ConfigureServices(IServiceCollection services)
     {
     }
@@ -19,7 +21,7 @@ public class AzureBestPracticesSetup : IAreaSetup
     {
         // Register Azure Best Practices command at the root level
         var bestPractices = new CommandGroup(
-            "bestpractices",
+            Name,
             @"Azure best practices - Commands return a list of best practices for code generation, operations and deployment 
             when working with Azure services. It should be called for any code generation, deployment or 
             operations involving Azure, Azure Functions, Azure Kubernetes Service (AKS), Azure Container 

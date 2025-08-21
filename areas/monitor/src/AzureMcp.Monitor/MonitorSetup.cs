@@ -17,6 +17,8 @@ namespace AzureMcp.Monitor;
 
 public class MonitorSetup : IAreaSetup
 {
+    public string Name => "monitor";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IMonitorService, MonitorService>();
@@ -29,7 +31,7 @@ public class MonitorSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Monitor command group
-        var monitor = new CommandGroup("monitor", "Azure Monitor operations - Commands for querying and analyzing Azure Monitor logs and metrics.");
+        var monitor = new CommandGroup(Name, "Azure Monitor operations - Commands for querying and analyzing Azure Monitor logs and metrics.");
         rootGroup.AddSubGroup(monitor);
 
         // Create Monitor subgroups

@@ -12,6 +12,8 @@ namespace AzureMcp.FunctionApp;
 
 public class FunctionAppSetup : IAreaSetup
 {
+    public string Name => "functionapp";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IFunctionAppService, FunctionAppService>();
@@ -19,7 +21,7 @@ public class FunctionAppSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var functionApp = new CommandGroup("functionapp", "Function App operations - Commands for managing and accessing Azure Function App resources.");
+        var functionApp = new CommandGroup(Name, "Function App operations - Commands for managing and accessing Azure Function App resources.");
         rootGroup.AddSubGroup(functionApp);
 
         functionApp.AddCommand("list", new FunctionAppListCommand(

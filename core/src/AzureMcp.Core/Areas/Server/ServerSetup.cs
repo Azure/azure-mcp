@@ -13,6 +13,8 @@ namespace AzureMcp.Core.Areas.Server;
 /// </summary>
 public sealed class ServerSetup : IAreaSetup
 {
+    public string Name => "server";
+
     /// <summary>
     /// Configures services required for the Server area.
     /// </summary>
@@ -30,7 +32,7 @@ public sealed class ServerSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create MCP Server command group
-        var mcpServer = new CommandGroup("server", "MCP Server operations - Commands for managing and interacting with the MCP Server.");
+        var mcpServer = new CommandGroup(Name, "MCP Server operations - Commands for managing and interacting with the MCP Server.");
         rootGroup.AddSubGroup(mcpServer);
 
         // Register MCP Server commands

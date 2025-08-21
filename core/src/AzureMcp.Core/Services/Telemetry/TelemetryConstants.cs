@@ -20,6 +20,7 @@ internal static class TelemetryConstants
         public const string ResourceHash = "AzResourceHash";
         public const string SubscriptionGuid = "AzSubscriptionGuid";
         public const string ToolName = "ToolName";
+        public const string ToolArea = "ToolArea";
     }
 
     internal class ActivityName

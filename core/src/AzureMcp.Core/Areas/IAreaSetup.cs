@@ -9,7 +9,19 @@ namespace AzureMcp.Core.Areas
 {
     public interface IAreaSetup
     {
+        /// <summary>
+        /// Gets the name of the area.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Configure any dependencies.
+        /// </summary>
         void ConfigureServices(IServiceCollection services);
+
+        /// <summary>
+        /// Register the area's commands to the root group.
+        /// </summary>
         void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory);
     }
 }

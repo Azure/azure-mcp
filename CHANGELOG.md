@@ -21,6 +21,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
   - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
   - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
+- Adds telemetry for tracking service area when calling tools. [[#1024](https://github.com/Azure/azure-mcp/pull/1024)]
 
 ### Breaking Changes
 
@@ -43,6 +44,11 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
 - Updated to .NET 10 SDK to prepare for .NET tool packing.
 - Enhanced `bestpractices` and `azureterraformbestpractices` tool descriptions to better work with the vscode copilot tool grouping feature. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
+
+#### Dependency Updates
+
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#1031](https://github.com/Azure/azure-mcp/pull/1031)]
+  - Azure.ResourceManager.ResourceHealth: `1.0.0` → `1.1.0-beta.5`
 
 ## 0.5.7 (2025-08-19)
 
