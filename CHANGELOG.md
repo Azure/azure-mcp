@@ -8,6 +8,15 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 - Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+  - `azmcp_mysql_database_list` - List all databases in a MySQL server.
+  - `azmcp_mysql_database_query` - Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+  - `azmcp_mysql_table_list` - List all tables in a MySQL database.
+  - `azmcp_mysql_table_schema_get` - Get the schema of a specific table in a MySQL database.
+  - `azmcp_mysql_server_config_get` - Retrieve the configuration of a MySQL server.
+  - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
+  - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
+  - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
 
 ### Breaking Changes
 

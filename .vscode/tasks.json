@@ -14,20 +14,16 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "build",
-			"type": "shell",
+			"label": "build ToolDescriptionEvaluator",
 			"command": "dotnet",
+			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/AzureMcp.sln",
+				"${workspaceFolder}/eng/tools/ToolDescriptionEvaluator/ToolDescriptionEvaluator.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
-			"isBackground": false,
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build"
+			"problemMatcher": "$msCompile"
 		}
 	]
 }

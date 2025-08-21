@@ -308,6 +308,75 @@ azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> -
 
 ```
 
+### Azure Database for MySQL Operations
+
+#### Database commands
+
+```bash
+# List all databases in a MySQL server
+azmcp mysql database list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user <user> \
+                          --server <server>
+
+# Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+azmcp mysql database query --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user <user> \
+                           --server <server> \
+                           --database <database> \
+                           --query <query>
+```
+
+#### Table Commands
+
+```bash
+# List all tables in a MySQL database
+azmcp mysql table list --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --user <user> \
+                       --server <server> \
+                       --database <database>
+
+# Get the schema of a specific table in a MySQL database
+azmcp mysql table schema get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --database <database> \
+                             --table <table>
+```
+
+#### Server Commands
+
+```bash
+# Retrieve the configuration of a MySQL server
+azmcp mysql server config get --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server>
+
+# List all MySQL servers in a subscription & resource group
+azmcp mysql server list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --user <user>
+
+# Retrieve a specific parameter of a MySQL server
+azmcp mysql server param get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter>
+
+# Set a specific parameter of a MySQL server to a specific value
+azmcp mysql server param set --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter> \
+                             --value <value>
+```
+
 ### Azure Database for PostgreSQL Operations
 
 #### Database commands

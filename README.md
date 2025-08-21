@@ -155,6 +155,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * List and get schema for tables.
 * List, get configuration and get parameters for servers.
 
+### 🐬 Azure Database for MySQL - Flexible Server
+
+* List and query databases.
+* List and get schema for tables.
+* List, get configuration and get parameters for servers.
+
 ### 🛠️ Azure Developer CLI (azd) Extension
 
 * Execute Azure Developer CLI commands directly
