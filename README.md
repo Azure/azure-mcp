@@ -185,6 +185,7 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### ☁️ Azure Function App
 
 * List Azure Function Apps
+* Get details for a specific Function App
 
 ### 🚀 Azure Managed Grafana
 

@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using Azure.ResourceManager.AppService;
-using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure;
+using AzureMcp.Core.Services.Azure.ResourceGroup;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.Core.Services.Caching;
@@ -14,10 +14,12 @@ namespace AzureMcp.FunctionApp.Services;
 public sealed class FunctionAppService(
     ISubscriptionService subscriptionService,
     ITenantService tenantService,
-    ICacheService cacheService) : BaseAzureService(tenantService), IFunctionAppService
+    ICacheService cacheService,
+    IResourceGroupService resourceGroupService) : BaseAzureService(tenantService), IFunctionAppService
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     private readonly ICacheService _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+    private readonly IResourceGroupService _resourceGroupService = resourceGroupService ?? throw new ArgumentNullException(nameof(resourceGroupService));
 
     private const string CacheGroup = "functionapp";
     private static readonly TimeSpan s_cacheDuration = TimeSpan.FromHours(1);
@@ -60,6 +62,49 @@ public sealed class FunctionAppService(
         }
 
         return functionApps;
+    }
+
+    public async Task<FunctionAppInfo?> GetFunctionApp(
+        string subscription,
+        string functionAppName,
+        string resourceGroup,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, functionAppName, resourceGroup);
+
+        var cacheKey = string.IsNullOrEmpty(tenant)
+            ? $"{subscription}_{resourceGroup}_{functionAppName}"
+            : $"{subscription}_{tenant}_{resourceGroup}_{functionAppName}";
+
+        var cachedResults = await _cacheService.GetAsync<FunctionAppInfo>(CacheGroup, cacheKey, s_cacheDuration);
+        if (cachedResults != null)
+        {
+            return cachedResults;
+        }
+
+        try
+        {
+            var rg = await _resourceGroupService.GetResourceGroupResource(subscription, resourceGroup, tenant, retryPolicy);
+            if (rg is null)
+            {
+                return null;
+            }
+            var site = await rg.GetWebSites().GetAsync(functionAppName);
+
+            if (site?.Value?.Data is null || !IsFunctionApp(site.Value.Data))
+            {
+                return null;
+            }
+
+            var info = ConvertToFunctionAppModel(site.Value);
+            await _cacheService.SetAsync(CacheGroup, cacheKey, info, s_cacheDuration);
+            return info;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving Function App '{functionAppName}' in resource group '{resourceGroup}': {ex.Message}", ex);
+        }
     }
 
     private static bool IsFunctionApp(WebSiteData siteData)

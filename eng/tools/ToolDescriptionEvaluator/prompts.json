@@ -155,7 +155,18 @@
   "azmcp_deploy_plan_get": [
     "Create a plan to deploy this application to azure"
   ],
-  "azmcp_functionapp_list": [
+  "azmcp-functionapp_get": [
+    "Describe the function app <function_app_name> in resource group <resource_group_name>",
+    "Get configuration for function app <function_app_name>",
+    "Get function app status for <function_app_name>",
+    "Get information about my function app <function_app_name> in <resource_group_name>",
+    "Retrieve host name and status of function app <function_app_name>",
+    "Show function app details for <function_app_name> in <resource_group_name>",
+    "Show me the details for the function app <function_app_name>",
+    "Show plan and region for function app <function_app_name>",
+    "What is the status of function app <function_app_name>?"
+  ],
+  "azmcp-functionapp_list": [
     "List all function apps in my subscription",
     "Show me my Azure function apps",
     "What function apps do I have?"

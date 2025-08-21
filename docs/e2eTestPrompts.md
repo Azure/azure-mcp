@@ -147,6 +147,15 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 
 | Tool Name | Test Prompt |
 |:----------|:----------|
+| azmcp-functionapp_get | Describe the function app <function_app_name> in resource group <resource_group_name> |
+| azmcp-functionapp_get | Get configuration for function app <function_app_name> |
+| azmcp-functionapp_get | Get function app status for <function_app_name> |
+| azmcp-functionapp_get | Get information about my function app <function_app_name> in <resource_group_name> |
+| azmcp-functionapp_get | Retrieve host name and status of function app <function_app_name> |
+| azmcp-functionapp_get | Show function app details for <function_app_name> in <resource_group_name> |
+| azmcp-functionapp_get | Show me the details for the function app <function_app_name> |
+| azmcp-functionapp_get | Show plan and region for function app <function_app_name> |
+| azmcp-functionapp_get | What is the status of function app <function_app_name>? |
 | azmcp_functionapp_list | List all function apps in my subscription |
 | azmcp_functionapp_list | Show me my Azure function apps |
 | azmcp_functionapp_list | What function apps do I have? |
