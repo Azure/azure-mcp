@@ -17,6 +17,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
   - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
   - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
+- Adds telemetry for tracking service area when calling tools. [[#1024](https://github.com/Azure/azure-mcp/pull/1024)]
 
 ### Breaking Changes
 
