@@ -216,10 +216,10 @@ azmcp appconfig kv unlock --subscription <subscription> \
 # Add a database connection to an App Service
 azmcp appservice database add --subscription <subscription> \
                               --resource-group <resource-group> \
-                              --app-name <app-name> \
+                              --app <app> \
                               --database-type <database-type> \
                               --database-server <database-server> \
-                              --database-name <database-name> \
+                              --database <database> \
                               [--connection-string <connection-string>] \
                               [--tenant <tenant-id>]
 
@@ -227,35 +227,35 @@ azmcp appservice database add --subscription <subscription> \
 # Add a SQL Server database connection
 azmcp appservice database add --subscription "my-subscription" \
                               --resource-group "my-rg" \
-                              --app-name "my-webapp" \
+                              --app "my-webapp" \
                               --database-type "SqlServer" \
                               --database-server "myserver.database.windows.net" \
-                              --database-name "mydb"
+                              --database "mydb"
 
 # Add a MySQL database connection with custom connection string
 azmcp appservice database add --subscription "my-subscription" \
                               --resource-group "my-rg" \
-                              --app-name "my-webapp" \
+                              --app "my-webapp" \
                               --database-type "MySQL" \
                               --database-server "myserver.mysql.database.azure.com" \
-                              --database-name "mydb" \
+                              --database "mydb" \
                               --connection-string "Server=myserver.mysql.database.azure.com;Database=mydb;Uid=myuser;Pwd=mypass;"
 
 # Add a PostgreSQL database connection
 azmcp appservice database add --subscription "my-subscription" \
                               --resource-group "my-rg" \
-                              --app-name "my-webapp" \
+                              --app "my-webapp" \
                               --database-type "PostgreSQL" \
                               --database-server "myserver.postgres.database.azure.com" \
-                              --database-name "mydb"
+                              --database "mydb"
 
 # Add a Cosmos DB connection
 azmcp appservice database add --subscription "my-subscription" \
                               --resource-group "my-rg" \
-                              --app-name "my-webapp" \
+                              --app "my-webapp" \
                               --database-type "CosmosDB" \
                               --database-server "myaccount" \
-                              --database-name "mydb"
+                              --database "mydb"
 ```
 
 **Database Types Supported:**
@@ -269,10 +269,10 @@ azmcp appservice database add --subscription "my-subscription" \
 
 -   `--subscription`: Azure subscription ID (required)
 -   `--resource-group`: Resource group containing the App Service (required)
--   `--app-name`: Name of the App Service web app (required)
+-   `--app`: Name of the App Service web app (required)
 -   `--database-type`: Type of database - SqlServer, MySQL, PostgreSQL, or CosmosDB (required)
 -   `--database-server`: Database server name or endpoint (required)
--   `--database-name`: Name of the database (required)
+-   `--database`: Name of the database (required)
 -   `--connection-string`: Custom connection string (optional - auto-generated if not provided)
 -   `--tenant`: Azure tenant ID for authentication (optional)
 

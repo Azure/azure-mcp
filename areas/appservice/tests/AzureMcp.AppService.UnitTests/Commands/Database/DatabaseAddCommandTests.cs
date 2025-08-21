@@ -73,10 +73,10 @@ public class DatabaseAddCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", subscription,
             "--resource-group", resourceGroup,
-            "--app-name", appName,
+            "--app", appName,
             "--database-type", databaseType,
             "--database-server", databaseServer,
-            "--database-name", databaseName
+            "--database", databaseName
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -127,10 +127,10 @@ public class DatabaseAddCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", subscription,
             "--resource-group", resourceGroup,
-            "--app-name", appName,
+            "--app", appName,
             "--database-type", databaseType,
             "--database-server", databaseServer,
-            "--database-name", databaseName,
+            "--database", databaseName,
             "--connection-string", connectionString
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -193,10 +193,10 @@ public class DatabaseAddCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", subscription,
             "--resource-group", resourceGroup,
-            "--app-name", appName,
+            "--app", appName,
             "--database-type", databaseType,
             "--database-server", databaseServer,
-            "--database-name", databaseName,
+            "--database", databaseName,
             "--tenant", tenant
         ]);
         var context = new CommandContext(_serviceProvider);
@@ -279,10 +279,10 @@ public class DatabaseAddCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", subscription,
             "--resource-group", resourceGroup,
-            "--app-name", appName,
+            "--app", appName,
             "--database-type", databaseType,
             "--database-server", databaseServer,
-            "--database-name", databaseName
+            "--database", databaseName
         ]);
         var context = new CommandContext(_serviceProvider);
 
@@ -334,10 +334,10 @@ public class DatabaseAddCommandTests
         var args = command.GetCommand().Parse([
             "--subscription", subscription,
             "--resource-group", resourceGroup,
-            "--app-name", appName,
+            "--app", appName,
             "--database-type", databaseType,
             "--database-server", databaseServer,
-            "--database-name", databaseName
+            "--database", databaseName
         ]);
         var context = new CommandContext(_serviceProvider);
 

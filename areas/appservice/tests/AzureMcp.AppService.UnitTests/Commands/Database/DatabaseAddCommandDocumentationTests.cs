@@ -75,10 +75,10 @@ public class DatabaseAddCommandDocumentationTests
         var options = systemCommand.Options.ToList();
 
         // Assert - Required App Service specific options
-        Assert.Contains(options, o => o.Name == "app-name");
+        Assert.Contains(options, o => o.Name == "app");
         Assert.Contains(options, o => o.Name == "database-type");
         Assert.Contains(options, o => o.Name == "database-server");
-        Assert.Contains(options, o => o.Name == "database-name");
+        Assert.Contains(options, o => o.Name == "database");
         Assert.Contains(options, o => o.Name == "resource-group");
 
         // Optional App Service specific option
@@ -108,10 +108,10 @@ public class DatabaseAddCommandDocumentationTests
         // Assert - Check that critical options are required
         // Note: subscription is not marked as required because it can be provided via environment variable
         Assert.Contains(requiredOptions, o => o.Name == "resource-group");
-        Assert.Contains(requiredOptions, o => o.Name == "app-name");
+        Assert.Contains(requiredOptions, o => o.Name == "app");
         Assert.Contains(requiredOptions, o => o.Name == "database-type");
         Assert.Contains(requiredOptions, o => o.Name == "database-server");
-        Assert.Contains(requiredOptions, o => o.Name == "database-name");
+        Assert.Contains(requiredOptions, o => o.Name == "database");
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class DatabaseAddCommandDocumentationTests
         Assert.True(optionsWithDescriptions.Count > 0, "Command options should have descriptions");
 
         // Check specific critical options have descriptions
-        var appNameOption = systemCommand.Options.FirstOrDefault(o => o.Name == "app-name");
+        var appNameOption = systemCommand.Options.FirstOrDefault(o => o.Name == "app");
         Assert.NotNull(appNameOption);
         Assert.False(string.IsNullOrEmpty(appNameOption.Description));
 

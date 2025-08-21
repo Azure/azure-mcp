@@ -24,10 +24,10 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
+                { "app", "test-app" },
                 { "database-type", "SqlServer" },
                 { "database-server", "test-server.database.windows.net" },
-                { "database-name", "test-db" }
+                { "database", "test-db" }
             });
 
         // Test should validate actual command execution and error handling
@@ -72,10 +72,10 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
         {
             { "subscription", Settings.SubscriptionId },
             { "resource-group", "test-rg" },
-            { "app-name", "test-app" },
+            { "app", "test-app" },
             { "database-type", "SqlServer" },
             { "database-server", "test-server.database.windows.net" },
-            { "database-name", "test-db" }
+            { "database", "test-db" }
         };
 
         // Add optional parameters based on scenario
@@ -137,10 +137,10 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
+                { "app", "test-app" },
                 { "database-type", databaseType },
                 { "database-server", "test-server" },
-                { "database-name", "test-db" }
+                { "database", "test-db" }
             });
 
         Assert.NotNull(result);
@@ -183,10 +183,10 @@ public class DatabaseAddCommandLiveTests(LiveTestFixture liveTestFixture, ITestO
             {
                 { "subscription", Settings.SubscriptionId },
                 { "resource-group", "test-rg" },
-                { "app-name", "test-app" },
+                { "app", "test-app" },
                 { "database-type", invalidDatabaseType },
                 { "database-server", "test-server" },
-                { "database-name", "test-db" }
+                { "database", "test-db" }
             });
 
         Assert.NotNull(result);
