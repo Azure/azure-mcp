@@ -32,5 +32,13 @@ public class FoundrySetup : IAreaSetup
 
         models.AddCommand("list", new ModelsListCommand());
         models.AddCommand("deploy", new ModelDeploymentCommand());
+
+        var knowledge = new CommandGroup("knowledge", "Foundry knowledge operations - Commands for managing knowledge bases and indexes in AI Foundry.");
+        foundry.AddSubGroup(knowledge);
+
+        var index = new CommandGroup("index", "Foundry knowledge index operations - Commands for managing knowledge indexes in AI Foundry.");
+        knowledge.AddSubGroup(index);
+
+        index.AddCommand("list", new KnowledgeIndexListCommand());
     }
 }
