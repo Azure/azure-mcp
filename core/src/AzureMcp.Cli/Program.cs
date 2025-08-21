@@ -82,6 +82,7 @@ internal class Program
             new AzureMcp.MySql.MySqlSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
+            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
             new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),
@@ -96,8 +97,7 @@ internal class Program
             // https://github.com/Azure/azure-mcp/blob/main/docs/aot-compatibility.md
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
             new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
-            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
+            new AzureMcp.Cosmos.CosmosSetup()
 #endif
         ];
     }

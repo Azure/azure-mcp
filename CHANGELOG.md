@@ -40,6 +40,11 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Update to .NET 10 SDK to prepare for .NET tool packing.
 - Enhance `bestpractices` and `azureterraformbestpractices` tool descriptions to better work with the vscode copilot tool grouping feature. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
 
+#### Dependency Updates
+
+- Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#1031](https://github.com/Azure/azure-mcp/pull/1031)]
+  - Azure.ResourceManager.ResourceHealth: `1.0.0` → `1.1.0-beta.5`
+
 ## 0.5.7 (2025-08-19)
 
 ### Features Added
