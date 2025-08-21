@@ -105,7 +105,7 @@ public class CommandFactory
             if (string.IsNullOrEmpty(area.Name))
             {
                 var error = new ArgumentException("IAreaSetup cannot have an empty or null name. Type "
-                    + area.GetType());
+                var error = new ArgumentException($"IAreaSetup cannot have an empty or null name. Type: {area.GetType().FullName}");
                 _logger.LogError(error, "Invalid IAreaSetup encountered. Type: {Type}", area.GetType());
 
                 throw error;
