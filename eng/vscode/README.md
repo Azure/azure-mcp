@@ -367,7 +367,9 @@ Here are some cool prompts you can try across our supported Azure services:
 
 * Design Azure cloud architectures through guided questions
 
-**And 20+ more Azure services!** For the complete list of supported services and sample prompts, see our [full documentation](https://github.com/Azure/azure-mcp/blob/main/README.md#-what-can-you-do-with-the-azure-mcp-server).
+</details>
+
+For the complete list of supported services and sample prompts, see our [full documentation](https://github.com/Azure/azure-mcp/blob/main/README.md#-what-can-you-do-with-the-azure-mcp-server).
 
 ## Complete List of Supported Azure Services
 
