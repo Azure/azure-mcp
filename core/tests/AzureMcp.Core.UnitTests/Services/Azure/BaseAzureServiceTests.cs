@@ -62,11 +62,83 @@ public class BaseAzureServiceTests
         Assert.Null(actual2);
     }
 
+    [Fact]
+    public void EscapeKqlString_EscapesSingleQuotes()
+    {
+        // Arrange
+        var testAzureService = new TestAzureService();
+        var input = "resource'with'quotes";
+        var expected = "resource''with''quotes";
+
+        // Act
+        var result = testAzureService.EscapeKqlStringTest(input);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void EscapeKqlString_EscapesBackslashes()
+    {
+        // Arrange
+        var testAzureService = new TestAzureService();
+        var input = @"resource\with\backslashes";
+        var expected = @"resource\\with\\backslashes";
+
+        // Act
+        var result = testAzureService.EscapeKqlStringTest(input);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void EscapeKqlString_EscapesBothQuotesAndBackslashes()
+    {
+        // Arrange
+        var testAzureService = new TestAzureService();
+        var input = @"resource\'with\'mixed";
+        var expected = @"resource\\''with\\''mixed";
+
+        // Act
+        var result = testAzureService.EscapeKqlStringTest(input);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void EscapeKqlString_HandlesNullAndEmptyStrings()
+    {
+        // Arrange
+        var testAzureService = new TestAzureService();
+
+        // Act & Assert
+        Assert.Equal(string.Empty, testAzureService.EscapeKqlStringTest(null!));
+        Assert.Equal(string.Empty, testAzureService.EscapeKqlStringTest(string.Empty));
+    }
+
+    [Fact]
+    public void EscapeKqlString_HandlesRegularStringsWithoutEscaping()
+    {
+        // Arrange
+        var testAzureService = new TestAzureService();
+        var input = "regular-resource-name";
+
+        // Act
+        var result = testAzureService.EscapeKqlStringTest(input);
+
+        // Assert
+        Assert.Equal(input, result);
+    }
+
     private sealed class TestAzureService(ITenantService? tenantService = null) : BaseAzureService(tenantService)
     {
         public Task<ArmClient> GetArmClientAsync(string? tenant = null, RetryPolicyOptions? retryPolicy = null) =>
             CreateArmClientAsync(tenant, retryPolicy);
 
         public Task<string?> ResolveTenantId(string? tenant) => ResolveTenantIdAsync(tenant);
+
+        public string EscapeKqlStringTest(string value) => EscapeKqlString(value);
     }
 }

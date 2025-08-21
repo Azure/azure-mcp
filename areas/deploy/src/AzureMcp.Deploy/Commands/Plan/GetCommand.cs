@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Deploy.Options;
 using AzureMcp.Deploy.Options.Plan;
 using AzureMcp.Deploy.Services.Util;

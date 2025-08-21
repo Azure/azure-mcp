@@ -10,4 +10,11 @@ public interface IAcrService
         string? resourceGroup = null,
         string? tenant = null,
         RetryPolicyOptions? retryPolicy = null);
+
+    Task<Dictionary<string, List<string>>> ListRegistryRepositories(
+        string subscription,
+        string? resourceGroup = null,
+        string? registry = null,
+        string? tenant = null,
+        RetryPolicyOptions? retryPolicy = null);
 }

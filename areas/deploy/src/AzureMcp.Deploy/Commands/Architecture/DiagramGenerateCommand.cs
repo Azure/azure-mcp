@@ -90,9 +90,6 @@ public sealed class DiagramGenerateCommand(ILogger<DiagramGenerateCommand> logge
 
             context.Activity?.AddTag("MermaidDiagram", chart);
 
-            var mermaidUrl = $"https://mermaid.live/view#pako:{encodedDiagram}";
-            _logger.LogInformation("Generated architecture diagram successfully. Mermaid URL: {MermaidUrl}", mermaidUrl);
-
             var usedServiceTypes = appTopology.Services
                 .SelectMany(service => service.Dependencies)
                 .Select(dep => dep.ServiceType)

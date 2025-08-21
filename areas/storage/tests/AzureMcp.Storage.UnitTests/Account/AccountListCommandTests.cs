@@ -42,17 +42,17 @@ public class AccountListCommandTests
     public async Task ExecuteAsync_NoParameters_ReturnsSubscriptions()
     {
         // Arrange
-        var subscriptionId = "sub123";
-        var expectedAccounts = new List<Storage.Models.StorageAccountInfo>
+        var subscription = "sub123";
+        var expectedAccounts = new List<Models.StorageAccountInfo>
         {
             new("account1", "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true),
             new("account2", "westus", "StorageV2", "Standard_GRS", "Standard", false, false, true)
         };
 
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+        _storageService.GetStorageAccounts(Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromResult(expectedAccounts));
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse(["--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -74,12 +74,12 @@ public class AccountListCommandTests
     public async Task ExecuteAsync_ReturnsNull_WhenNoAccounts()
     {
         // Arrange
-        var subscriptionId = "sub123";
+        var subscription = "sub123";
 
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(Task.FromResult(new List<Storage.Models.StorageAccountInfo>()));
+        _storageService.GetStorageAccounts(Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromResult(new List<Models.StorageAccountInfo>()));
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse(["--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -94,12 +94,12 @@ public class AccountListCommandTests
     {
         // Arrange
         var expectedError = "Test error";
-        var subscriptionId = "sub123";
+        var subscription = "sub123";
 
-        _storageService.GetStorageAccounts(Arg.Is(subscriptionId), null, Arg.Any<RetryPolicyOptions>())
+        _storageService.GetStorageAccounts(Arg.Is(subscription), null, Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception(expectedError));
 
-        var args = _parser.Parse(["--subscription", subscriptionId]);
+        var args = _parser.Parse(["--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -113,6 +113,6 @@ public class AccountListCommandTests
     private class AccountListResult
     {
         [JsonPropertyName("accounts")]
-        public List<Storage.Models.StorageAccountInfo>? Accounts { get; set; }
+        public List<Models.StorageAccountInfo>? Accounts { get; set; }
     }
 }

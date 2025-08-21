@@ -56,6 +56,10 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-acr-registry-list | Show me the container registries in my subscription |
 | azmcp-acr-registry-list | List container registries in resource group <resource_group_name> |
 | azmcp-acr-registry-list | Show me the container registries in resource group <resource_group_name> |
+| azmcp-acr-registry-repository-list | List all container registry repositories in my subscription |
+| azmcp-acr-registry-repository-list | Show me my container registry repositories |
+| azmcp-acr-registry-repository-list | List repositories in the container registry <registry_name> |
+| azmcp-acr-registry-repository-list | Show me the repositories in the container registry <registry_name> |
 
 ## Azure Cosmos DB
 
@@ -222,6 +226,14 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-monitor-workspace-list | Show me the Log Analytics workspaces in my subscription |
 | azmcp-monitor-workspace-log-query | Show me the logs for the past hour in the Log Analytics workspace <workspace_name> |
 
+## Azure Managed Lustre
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my subscription <subscription_name> |
+| azmcp-azuremanagedlustre-filesystem-list | List the Azure Managed Lustre filesystems in my resource group <resource_group_name> |
+| azmcp-azuremanagedlustre-filesystem-required-subnet-size | Tell me how many IP addresses I need for <filesystem_size> of <amlfs_sku> |
+
 ## Azure Native ISV
 
 | Tool Name | Test Prompt |
@@ -328,35 +340,38 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | azmcp-storage-account-create | Create a new storage account called testaccount123 in East US region |
 | azmcp-storage-account-create | Create a storage account with premium performance and LRS replication |
 | azmcp-storage-account-create | Create a new storage account with Data Lake Storage Gen2 enabled |
-| azmcp-storage-account-details | Show me the details for my storage account <account_name> |
-| azmcp-storage-account-details | Get details about the storage account <account_name> |
+| azmcp-storage-account-details | Show me the details for my storage account <account> |
+| azmcp-storage-account-details | Get details about the storage account <account> |
 | azmcp-storage-account-list | List all storage accounts in my subscription including their location and SKU |
 | azmcp-storage-account-list | Show me my storage accounts with whether hierarchical namespace (HNS) is enabled |
 | azmcp-storage-account-list | Show me the storage accounts in my subscription and include HTTPS-only and public blob access settings |
-| azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container_name> in the storage account <account_name> |
-| azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container_name> in the storage account <account_name> |
-| azmcp-storage-blob-container-create | Create the storage container mycontainer in storage account <account_name> |
-| azmcp-storage-blob-container-create | Create the container using blob public access in storage account <account_name> |
-| azmcp-storage-blob-container-create | Create a new blob container named documents with container public access in storage account <account_name> |
-| azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account_name> |
-| azmcp-storage-blob-container-list | List all blob containers in the storage account <account_name> |
-| azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account_name> |
-| azmcp-storage-blob-details | Show me the properties for blob <blob_name> in container <container_name> in storage account <account_name> |
-| azmcp-storage-blob-details | Get the details about blob <blob_name> in the container <container_name> in storage account <account_name> |
-| azmcp-storage-blob-list | List all blobs in the blob container <container_name> in the storage account <account_name> |
-| azmcp-storage-blob-list | Show me the blobs in the blob container <container_name> in the storage account <account_name> |
-| azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account_name> |
-| azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
-| azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system_name> in the storage account <account_name> |
-| azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system_name> in the storage account <account_name> filtered by <filter_path> |
-| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue_name> in storage account <account_name> |
-| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue_name> in storage account <account_name> |
-| azmcp-storage-queue-message-send | Add a message to the queue <queue_name> in storage account <account_name> with visibility timeout of 30 seconds |
-| azmcp-storage-share-file-list | List all files and directories in the File Share <share_name> in the storage account <account_name> |
-| azmcp-storage-share-file-list | Show me the files in the File Share <share_name> directory <directory_path> in the storage account <account_name> |
-| azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share_name> in the storage account <account_name> |
-| azmcp-storage-table-list | List all tables in the storage account <account_name> |
-| azmcp-storage-table-list | Show me the tables in the storage account <account_name> |
+| azmcp-storage-blob-batch-set-tier | Set access tier to Cool for multiple blobs in the container <container> in the storage account <account> |
+| azmcp-storage-blob-batch-set-tier | Change the access tier to Archive for blobs file1.txt and file2.txt in the container <container> in the storage account <account> |
+| azmcp-storage-blob-container-create | Create the storage container mycontainer in storage account <account> |
+| azmcp-storage-blob-container-create | Create the container using blob public access in storage account <account> |
+| azmcp-storage-blob-container-create | Create a new blob container named documents with container public access in storage account <account> |
+| azmcp-storage-blob-container-details | Show me the properties of the storage container files in the storage account <account> |
+| azmcp-storage-blob-container-list | List all blob containers in the storage account <account> |
+| azmcp-storage-blob-container-list | Show me the blob containers in the storage account <account> |
+| azmcp-storage-blob-details | Show me the properties for blob <blob> in container <container> in storage account <account> |
+| azmcp-storage-blob-details | Get the details about blob <blob> in the container <container> in storage account <account> |
+| azmcp-storage-blob-list | List all blobs in the blob container <container> in the storage account <account> |
+| azmcp-storage-blob-list | Show me the blobs in the blob container <container> in the storage account <account> |
+| azmcp-storage-blob-upload | Upload file <local-file-path> to storage blob <blob> in container <container> in storage account <account> |
+| azmcp-storage-blob-upload | Upload the file <local-file-path> overwriting blob <blob> in container <container> in storage account <account> |
+| azmcp-storage-blob-upload | Overwrite <blob> with <local-file-name> in container <container> in storage account <account> |
+| azmcp-storage-datalake-directory-create | Create a new directory at the path <directory_path> in Data Lake in the storage account <account> |
+| azmcp-storage-datalake-file-system-list-paths | List all paths in the Data Lake file system <file_system> in the storage account <account> |
+| azmcp-storage-datalake-file-system-list-paths | Show me the paths in the Data Lake file system <file_system> in the storage account <account> |
+| azmcp-storage-datalake-file-system-list-paths | Recursively list all paths in the Data Lake file system <file_system> in the storage account <account> filtered by <filter_path> |
+| azmcp-storage-queue-message-send | Send a message "Hello, World!" to the queue <queue> in storage account <account> |
+| azmcp-storage-queue-message-send | Send a message with TTL of 3600 seconds to the queue <queue> in storage account <account> |
+| azmcp-storage-queue-message-send | Add a message to the queue <queue> in storage account <account> with visibility timeout of 30 seconds |
+| azmcp-storage-share-file-list | List all files and directories in the File Share <share> in the storage account <account> |
+| azmcp-storage-share-file-list | Show me the files in the File Share <share> directory <directory_path> in the storage account <account> |
+| azmcp-storage-share-file-list | List files with prefix 'report' in the File Share <share> in the storage account <account> |
+| azmcp-storage-table-list | List all tables in the storage account <account> |
+| azmcp-storage-table-list | Show me the tables in the storage account <account> |
 
 ## Azure Subscription Management
 
@@ -399,3 +414,12 @@ This file contains prompts used for end-to-end testing to ensure each tool is in
 | Tool Name | Test Prompt |
 |:----------|:----------|
 | azmcp-bicepschema-get | How can I use Bicep to create an Azure OpenAI service? |
+
+## Cloud Architect
+
+| Tool Name | Test Prompt |
+|:----------|:----------|
+| azmcp-cloudarchitect-design | Please help me design an architecture for a large-scale file upload, storage, and retrieval service |
+| azmcp-cloudarchitect-design | Help me create a cloud service that will serve as ATM for users |
+| azmcp-cloudarchitect-design | I want to design a cloud app for ordering groceries |
+| azmcp-cloudarchitect-design | How can I design a cloud service in Azure that will store and present videos for users? |

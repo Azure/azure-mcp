@@ -57,7 +57,6 @@ public class CheckCommand(ILogger<CheckCommand> logger) : SubscriptionCommand<Ch
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
             context.Activity?
                 .AddTag("Region", options.Region)
                 .AddTag("ResourceTypes", options.ResourceTypes);

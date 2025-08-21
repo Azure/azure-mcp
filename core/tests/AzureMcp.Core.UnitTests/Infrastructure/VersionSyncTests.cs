@@ -30,12 +30,30 @@ public class VersionSyncTests
         Assert.NotNull(globalJsonSdkVersion);
         Assert.NotNull(dockerfileRuntimeVersion);
 
-        var sdkVersion = new Version(globalJsonSdkVersion);
-        var runtimeVersion = new Version(dockerfileRuntimeVersion);
+        // can't use System.Version to parse Semantic Versions. Need to ensure Major.Minor versions are compatible _only_
+        // the right thing to check here _isn't_ the SDK version, but the versions of the runtime that the app targets
+        var sdkVersion = ParseMajorMinorVersion(globalJsonSdkVersion);
+        var runtimeVersion = ParseMajorMinorVersion(dockerfileRuntimeVersion);
 
-        Assert.True(sdkVersion.Major == runtimeVersion.Major && sdkVersion.Minor == runtimeVersion.Minor,
-            $"Major.Minor versions should match between {GlobalJsonFileName} SDK ({sdkVersion}) and {DockerfileFileName} runtime ({runtimeVersion}). " +
+        Assert.True(sdkVersion >= runtimeVersion,
+            $"Major.Minor versions should be compatible between {GlobalJsonFileName} SDK ({sdkVersion}) and {DockerfileFileName} runtime ({runtimeVersion}). " +
             $"Found SDK: {sdkVersion.Major}.{sdkVersion.Minor}, Runtime: {runtimeVersion.Major}.{runtimeVersion.Minor}");
+    }
+
+    private static Version ParseMajorMinorVersion(string semverString)
+    {
+        var parts = semverString.Split('.');
+        if (parts.Length < 2)
+        {
+            throw new ArgumentException($"Invalid version format: {semverString}. Expected at least Major.Minor format.");
+        }
+
+        if (!int.TryParse(parts[0], out var major) || !int.TryParse(parts[1], out var minor))
+        {
+            throw new ArgumentException($"Invalid version format: {semverString}. Major and Minor must be valid integers.");
+        }
+
+        return new Version(major, minor);
     }
 
     private static string GetDotNetSdkVersionFromGlobalJson(string globalJsonPath)
