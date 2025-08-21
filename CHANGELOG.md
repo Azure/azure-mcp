@@ -6,7 +6,17 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 ### Features Added
 
+- Added support for getting an Azure Function App via the command `azmcp-functionapp-get`. [[#970](https://github.com/Azure/azure-mcp/pull/970)]
 - Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+  - `azmcp_mysql_database_list` - List all databases in a MySQL server.
+  - `azmcp_mysql_database_query` - Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+  - `azmcp_mysql_table_list` - List all tables in a MySQL database.
+  - `azmcp_mysql_table_schema_get` - Get the schema of a specific table in a MySQL database.
+  - `azmcp_mysql_server_config_get` - Retrieve the configuration of a MySQL server.
+  - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
+  - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
+  - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
 
 ### Breaking Changes
 
@@ -27,6 +37,7 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - Fixed KQL string escaping in Workbooks service queries.
 - Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
 - Update to .NET 10 SDK to prepare for .NET tool packing. [[#1023](https://github.com/Azure/azure-mcp/pull/1023)]
+- Enhance `bestpractices` and `azureterraformbestpractices` tool descriptions to better work with the vscode copilot tool grouping feature. [[#1029](https://github.com/Azure/azure-mcp/pull/1029)]
 - The Azure MCP Server can now be packaged as a .NET SDK Tool for easier use by users with the .NET 10 SDK installed. [[#422](https://github.com/Azure/azure-mcp/issues/422)]
 
 ## 0.5.7 (2025-08-19)

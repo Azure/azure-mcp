@@ -21,7 +21,6 @@
 [CmdletBinding()]
 param(
     [switch]$BuildAzureMcp
-    
 )
 
 Set-StrictMode -Version 3.0
@@ -43,14 +42,27 @@ try {
         Write-Host "Root project build completed successfully!" -ForegroundColor Green
     }
 
-    # Check for AzureMcp.exe before building
-    $cliBinDir = Join-Path $repoRoot "core/src/AzureMcp.Cli/bin/Debug"
-    $exePath = Get-ChildItem -Path $cliBinDir -Filter "azmcp.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $exePath) {
-        Write-Host "[ERROR] azmcp.exe not found in project. Please run this script again with the option -BuildAzureMcp." -ForegroundColor Red
+    # Locate azmcp CLI artifact (platform & build-type agnostic)
+    $cliBinDir = Join-Path $repoRoot "core/src/AzureMcp.Cli/bin/Release"
+    $platformIsWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+
+    # Acceptable artifact name candidates in precedence order
+    $candidateNames = if ($platformIsWindows) { @('azmcp.exe','azmcp','azmcp.dll') } else { @('azmcp','azmcp.dll') }
+    $cliArtifact = $null
+    foreach ($name in $candidateNames) {
+        $found = Get-ChildItem -Path $cliBinDir -Filter $name -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | Select-Object -First 1
+        if ($found) { $cliArtifact = $found; break }
+    }
+    if (-not $cliArtifact) {
+        # Broad fallback to help user diagnose
+        $any = Get-ChildItem -Path $cliBinDir -Filter 'azmcp*' -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer }
+        if ($any) {
+            Write-Host "[WARNING] Located the following azmcp artifacts but none matched expected names: $($any | Select-Object -ExpandProperty Name -Join ', ')" -ForegroundColor Yellow
+        }
+        Write-Host "[ERROR] No azmcp CLI artifact found in Release output. Try rerunning with -BuildAzureMcp or ensure Release build completed." -ForegroundColor Red
         exit 1
     }
-    
+    Write-Host "Discovered CLI artifact: $($cliArtifact.FullName)" -ForegroundColor Green
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
     & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj"

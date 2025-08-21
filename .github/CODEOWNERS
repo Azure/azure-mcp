@@ -136,6 +136,13 @@
 # ServiceLabel: %area-AzureManagedLustre
 # ServiceOwners:                       @wolfgang-desalvador
 
+# PRLabel: %area-MySQL
+/areas/mysql/                          @ramnov @mattkohnms @Azure/azure-mcp
+
+# ServiceLabel: %area-MySQL
+# ServiceOwners:                       @ramnov @mattkohnms
+
+
 # PRLabel: %area-Postgres
 /areas/postgres/                       @kk-src @shreyaaithal @maxluk @xiangyan99 @Azure/azure-mcp
 
