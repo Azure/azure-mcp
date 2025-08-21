@@ -8,7 +8,6 @@ using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Storage.Commands.Account;
 using AzureMcp.Storage.Services;
-using AzureMcp.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -69,7 +68,7 @@ public class AccountDetailsCommandTests
 
             if (shouldSucceed)
             {
-                var expectedAccount = new Storage.Models.StorageAccountInfo(
+                var expectedAccount = new Models.StorageAccountInfo(
                     "mystorageaccount", "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true);
 
                 _storageService.GetStorageAccountDetails(
@@ -105,16 +104,16 @@ public class AccountDetailsCommandTests
     public async Task ExecuteAsync_ReturnsAccountDetails_WhenAccountExists()
     {
         // Arrange
-        var accountName = "mystorageaccount";
-        var subscriptionId = "sub123";
-        var expectedAccount = new Storage.Models.StorageAccountInfo(
-            accountName, "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true);
+        var account = "mystorageaccount";
+        var subscription = "sub123";
+        var expectedAccount = new Models.StorageAccountInfo(
+            account, "eastus", "StorageV2", "Standard_LRS", "Standard", true, true, true);
 
         _storageService.GetStorageAccountDetails(
-            Arg.Is(accountName), Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            Arg.Is(account), Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromResult(expectedAccount));
 
-        var args = _parser.Parse(["--account", accountName, "--subscription", subscriptionId]);
+        var args = _parser.Parse(["--account", account, "--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, args);
@@ -138,14 +137,14 @@ public class AccountDetailsCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        var accountName = "mystorageaccount";
-        var subscriptionId = "sub123";
+        var account = "mystorageaccount";
+        var subscription = "sub123";
 
         _storageService.GetStorageAccountDetails(
-            Arg.Is(accountName), Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            Arg.Is(account), Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Exception("Test error"));
 
-        var parseResult = _parser.Parse(["--account", accountName, "--subscription", subscriptionId]);
+        var parseResult = _parser.Parse(["--account", account, "--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -160,14 +159,14 @@ public class AccountDetailsCommandTests
     public async Task ExecuteAsync_HandlesNotFound()
     {
         // Arrange
-        var accountName = "nonexistentaccount";
-        var subscriptionId = "sub123";
+        var account = "nonexistentaccount";
+        var subscription = "sub123";
 
         _storageService.GetStorageAccountDetails(
-            Arg.Is(accountName), Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            Arg.Is(account), Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Azure.RequestFailedException(404, "Storage account not found"));
 
-        var parseResult = _parser.Parse(["--account", accountName, "--subscription", subscriptionId]);
+        var parseResult = _parser.Parse(["--account", account, "--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -181,14 +180,14 @@ public class AccountDetailsCommandTests
     public async Task ExecuteAsync_HandlesAuthorizationFailure()
     {
         // Arrange
-        var accountName = "mystorageaccount";
-        var subscriptionId = "sub123";
+        var account = "mystorageaccount";
+        var subscription = "sub123";
 
         _storageService.GetStorageAccountDetails(
-            Arg.Is(accountName), Arg.Is(subscriptionId), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            Arg.Is(account), Arg.Is(subscription), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
             .ThrowsAsync(new Azure.RequestFailedException(403, "Authorization failed"));
 
-        var parseResult = _parser.Parse(["--account", accountName, "--subscription", subscriptionId]);
+        var parseResult = _parser.Parse(["--account", account, "--subscription", subscription]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
@@ -201,6 +200,6 @@ public class AccountDetailsCommandTests
     private class AccountDetailsResult
     {
         [JsonPropertyName("account")]
-        public Storage.Models.StorageAccountInfo Account { get; set; } = null!;
+        public Models.StorageAccountInfo Account { get; set; } = null!;
     }
 }

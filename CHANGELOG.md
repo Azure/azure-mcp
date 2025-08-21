@@ -8,8 +8,21 @@ The Azure MCP Server updates automatically by default whenever a new release com
 
 - Added support for listing knowledge indexes in Azure AI Foundry projects via the command `azmcp-foundry-knowledge-index-list`. [[#1004](https://github.com/Azure/azure-mcp/pull/1004)]
 - Introduced `BaseAzureResourceService` class to perform Azure Resource read operations using Azure Resource Graph queries. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
+- Added support for the following Azure MySQL operations: [[#855](https://github.com/Azure/azure-mcp/issues/855)]
+  - `azmcp_mysql_database_list` - List all databases in a MySQL server.
+  - `azmcp_mysql_database_query` - Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+  - `azmcp_mysql_table_list` - List all tables in a MySQL database.
+  - `azmcp_mysql_table_schema_get` - Get the schema of a specific table in a MySQL database.
+  - `azmcp_mysql_server_config_get` - Retrieve the configuration of a MySQL server.
+  - `azmcp_mysql_server_list` - List all MySQL servers in a subscription & resource group.
+  - `azmcp_mysql_server_param_get` - Retrieve a specific parameter of a MySQL server.
+  - `azmcp_mysql_server_param_set` - Set a specific parameter of a MySQL server to a specific value.
 
 ### Breaking Changes
+
+- Renamed the following Storage tool option names: [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+  - Renamed `azmcp-storage-account-create` `account-name` to `account`.
+  - Renamed `azmcp-storage-blob-batch-set-tier` `blob-names` to `blobs`.
 
 ### Bugs Fixed
 
@@ -22,11 +35,17 @@ The Azure MCP Server updates automatically by default whenever a new release com
   - Removed dependency on `Azure.ResourceManager.Sql` package by migrating to Azure Resource Graph queries, reducing package size and improving startup performance.
 - Enhanced `BaseAzureService` with `EscapeKqlString` method for safe KQL query construction across all Azure services. [[#938](https://github.com/Azure/azure-mcp/pull/938)]
   - Fixed KQL string escaping in Workbooks service queries.
+- Standardized Azure Storage command descriptions, option names, and parameter names for consistency across all storage commands. Updated JSON serialization context to remove unused model types and improve organization. [[#1015](https://github.com/Azure/azure-mcp/pull/1015)]
+- Update to .NET 10 SDK to prepare for .NET tool packing.
 
 ## 0.5.7 (2025-08-19)
 
 ### Features Added
+- Added the following Azure Managed Lustre commands:
+  - `azmcp-azuremanagedlustre-filesystem-list`: List available Azure Managed Lustre filesystem. [[#1001](https://github.com/Azure/azure-mcp/issues/1001)]
+  - `azmcp-azuremanagedlustre-filesystem-required-subnet-size`: Returns the number of IP addresses required for a specific SKU and size of Azure Managed Lustre filesystem. [[#1002](https://github.com/Azure/azure-mcp/issues/1002)]
 
+- Added new command for designing Azure Cloud Architecture through guided questions. [[#890](https://github.com/Azure/azure-mcp/pull/890)]
 - Added support for the following Azure Deploy and Azure Quota operations: [[#626](https://github.com/Azure/azure-mcp/pull/626)]
   - `azmcp_deploy_app_logs_get` - Get logs from Azure applications deployed using azd.
   - `azmcp_deploy_iac_rules_get` - Get Infrastructure as Code rules.
@@ -52,6 +71,8 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Updated the following dependencies to improve .NET Ahead-of-Time (AOT) compilation support: [[#893](https://github.com/Azure/azure-mcp/pull/893)]
   - Azure.Bicep.Types: `0.5.110` → `0.6.1`
   - Azure.Bicep.Types.Az: `0.2.771` → `0.2.792`
+- Added the following dependencies to support Azure Managed Lustre
+  - Azure.ResourceManager.StorageCache:  `1.3.1`
 
 ## 0.5.6 (2025-08-14)
 

@@ -29,7 +29,7 @@
                     },
                     "port": {
                         "type": "string",
-                        "description": "The port number the service uses. Get this from Dockerfile for container apps. If not available, default to \u002780\u0027."
+                        "description": "The port number the service uses. Get this from Dockerfile for container apps. If not available, default to '80'."
                     },
                     "azureComputeHost": {
                         "type": "string",
@@ -44,15 +44,15 @@
                     },
                     "dockerSettings": {
                         "type": "object",
-                        "description": "Docker settings for the service. This is only needed if the service\u0027s azureComputeHost is containerapp.",
+                        "description": "Docker settings for the service. This is only needed if the service's azureComputeHost is containerapp.",
                         "properties": {
                             "dockerFilePath": {
                                 "type": "string",
-                                "description": "The absolute path to the Dockerfile for the service. If the service\u0027s azureComputeHost is not containerapp, leave blank."
+                                "description": "The absolute path to the Dockerfile for the service. If the service's azureComputeHost is not containerapp, leave blank."
                             },
                             "dockerContext": {
                                 "type": "string",
-                                "description": "The absolute path to the Docker build context for the service. If the service\u0027s azureComputeHost is not containerapp, leave blank."
+                                "description": "The absolute path to the Docker build context for the service. If the service's azureComputeHost is not containerapp, leave blank."
                             }
                         },
                         "required": [

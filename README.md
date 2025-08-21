@@ -68,6 +68,11 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * "Query my Log Analytics workspace"
 
+### ⚡ Azure Managed Lustre
+
+* "List the Azure Managed Lustre clusters in resource group 'my-resourcegroup'"
+* "How many IP Addresses I need to create a 128 TiB cluster of AMLFS 500?"
+
 ### 🗄️ Azure SQL Database
 
 * "Show me details about my Azure SQL database 'mydb'"
@@ -145,6 +150,12 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 * Query using KQL
 
 ### 🐘 Azure Database for PostgreSQL - Flexible Server
+
+* List and query databases.
+* List and get schema for tables.
+* List, get configuration and get parameters for servers.
+
+### 🐬 Azure Database for MySQL - Flexible Server
 
 * List and query databases.
 * List and get schema for tables.
@@ -298,6 +309,10 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 ### 🏗️ Bicep
 
 * Get the Bicep schema for specific Azure resource types
+
+### 🏗️ Cloud Architect
+
+* Design Azure cloud architectures through guided questions
 
 Agents and models can discover and learn best practices and usage guidelines for the `azd` MCP tool. For more information, see [AZD Best Practices](https://github.com/Azure/azure-mcp/tree/main/areas/extension/src/AzureMcp.Extension/Resources/azd-best-practices.txt).
 

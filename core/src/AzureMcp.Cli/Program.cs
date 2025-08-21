@@ -69,6 +69,7 @@ internal class Program
             new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
             new AzureMcp.Deploy.DeploySetup(),
             new AzureMcp.Acr.AcrSetup(),
+            new AzureMcp.CloudArchitect.CloudArchitectSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.FunctionApp.FunctionAppSetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
@@ -78,6 +79,7 @@ internal class Program
             new AzureMcp.Marketplace.MarketplaceSetup(),
             new AzureMcp.Quota.QuotaSetup(),
             new AzureMcp.Monitor.MonitorSetup(),
+            new AzureMcp.MySql.MySqlSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
             new AzureMcp.Search.SearchSetup(),
@@ -88,6 +90,7 @@ internal class Program
             new AzureMcp.Workbooks.WorkbooksSetup(),
 #if !BUILD_NATIVE
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
+            new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
             new AzureMcp.Cosmos.CosmosSetup(),
             new AzureMcp.ResourceHealth.ResourceHealthSetup(),
 #endif

@@ -1,0 +1,45 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.Text.Json;
+using AzureMcp.Tests;
+using AzureMcp.Tests.Client;
+using AzureMcp.Tests.Client.Helpers;
+using Xunit;
+
+namespace AzureMcp.AzureManagedLustre.LiveTests
+{
+    public class AzureManagedLustreCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output)
+        : CommandTestsBase(liveTestFixture, output), IClassFixture<LiveTestFixture>
+    {
+        [Fact]
+        public async Task Should_list_filesystems_by_subscription()
+        {
+            var result = await CallToolAsync(
+                "azmcp_azuremanagedlustre_filesystem_list",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId }
+                });
+
+            var fileSystems = result.AssertProperty("fileSystems");
+            Assert.Equal(JsonValueKind.Array, fileSystems.ValueKind);
+        }
+
+        [Fact]
+        public async Task Should_calculate_required_subnet_size()
+        {
+            var result = await CallToolAsync(
+                "azmcp_azuremanagedlustre_filesystem_required-subnet-size",
+                new()
+                {
+                    { "subscription", Settings.SubscriptionId },
+                    { "sku", "AMLFS-Durable-Premium-40" },
+                    { "size", 480 }
+                });
+
+            var ips = result.AssertProperty("numberOfRequiredIPs");
+            Assert.Equal(JsonValueKind.Number, ips.ValueKind);
+        }
+    }
+}

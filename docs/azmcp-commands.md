@@ -311,6 +311,75 @@ azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> -
 
 ```
 
+### Azure Database for MySQL Operations
+
+#### Database commands
+
+```bash
+# List all databases in a MySQL server
+azmcp mysql database list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user <user> \
+                          --server <server>
+
+# Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+azmcp mysql database query --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user <user> \
+                           --server <server> \
+                           --database <database> \
+                           --query <query>
+```
+
+#### Table Commands
+
+```bash
+# List all tables in a MySQL database
+azmcp mysql table list --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --user <user> \
+                       --server <server> \
+                       --database <database>
+
+# Get the schema of a specific table in a MySQL database
+azmcp mysql table schema get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --database <database> \
+                             --table <table>
+```
+
+#### Server Commands
+
+```bash
+# Retrieve the configuration of a MySQL server
+azmcp mysql server config get --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server>
+
+# List all MySQL servers in a subscription & resource group
+azmcp mysql server list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --user <user>
+
+# Retrieve a specific parameter of a MySQL server
+azmcp mysql server param get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter>
+
+# Set a specific parameter of a MySQL server to a specific value
+azmcp mysql server param set --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter> \
+                             --value <value>
+```
+
 ### Azure Database for PostgreSQL Operations
 
 #### Database commands
@@ -692,6 +761,21 @@ azmcp monitor metrics query --subscription <subscription> \
                             --aggregation "Average"
 ```
 
+### Azure Managed Lustre
+
+```bash
+# List Azure Managed Lustre Filesystems available in a subscription or resource group
+azmcp azuremanagedlustre filesystem list --subscription <subscription> \
+                                      --resource-group <resource-group> 
+
+# Returns the required number of IP addresses for a specific Azure Managed Lustre SKU and filesystem size
+azmcp azuremanagedlustre filesystem required-subnet-size --subscription <subscription> \
+                                      --sku <azure-managed-lustre-sku> \
+                                      --size <filesystem-size-in-tib>
+```
+
+
+
 ### Azure Native ISV Operations
 
 ```bash
@@ -838,7 +922,7 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ```bash
 # Create a new Storage account with custom configuration
 azmcp storage account create --subscription <subscription> \
-                             --account-name <unique-account-name> \
+                             --account <unique-account-name> \
                              --resource-group <resource-group> \
                              --location <location> \
                              --sku <sku> \
@@ -861,7 +945,7 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \
                                   --container <container> \
                                   --tier <tier> \
-                                  --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
+                                  --blobs <blob-name1> <blob-name2> ... <blob-nameN>
 
 # Create a blob container with optional public access
 azmcp storage blob container create --subscription <subscription> \
@@ -1033,6 +1117,26 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Cloud Architect
+
+```bash
+# Design Azure cloud architectures through guided questions
+azmcp cloudarchitect design [--question <question>] \
+                           [--question-number <question-number>] \
+                           [--total-questions <total-questions>] \
+                           [--answer <answer>] \
+                           [--next-question-needed <true/false>] \
+                           [--confidence-score <confidence-score>] \
+                           [--architecture-component <architecture-component>]
+
+# Example:
+# Start an interactive architecture design session
+azmcp cloudarchitect design --question "What type of application are you building?" \
+                           --question-number 1 \
+                           --total-questions 5 \
+                           --confidence-score 0.1
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:
@@ -1053,3 +1157,4 @@ The CLI returns structured JSON responses for errors, including:
 
 - Service availability issues
 - Authentication errors
+

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Share.File;
@@ -20,8 +19,9 @@ public sealed class FileListCommand(ILogger<FileListCommand> logger) : BaseFileC
 
     public override string Description =>
         $"""
-        Lists files and directories within a file share directory. This tool recursively lists all items in a specified file share directory, 
-        including files, subdirectories, and their properties. Files and directories may be filtered by a prefix. Returns file listing as JSON.
+        Lists files and directories within a file share directory. This tool recursively lists all items in a specified
+        file share directory, including files, subdirectories, and their properties. Files and directories may be filtered
+        by a prefix. Returns file listing as JSON.
         """;
 
     public override string Title => CommandTitle;

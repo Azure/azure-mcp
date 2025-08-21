@@ -12,21 +12,10 @@ namespace ToolSelection;
 class Program
 {
     private static readonly HttpClient HttpClient = new();
-    private const string CommandPrefix = "azmcp ";
-    private const string SpaceReplacement = "-";
 
-    // Unicode character constants
-    private const string UnicodeApostrophe = "\\u0027";
-    private const string UnicodeLeftSingleQuote = "\\u2018";
-    private const string UnicodeRightSingleQuote = "\\u2019";
-    private const string UnicodeQuote = "\\u0022";
-    private const string UnicodeLeftDoubleQuote = "\\u201C";
-    private const string UnicodeRightDoubleQuote = "\\u201D";
-    private const string UnicodeEnDash = "\\u2013";
-    private const string UnicodeEmDash = "\\u2014";
-    private const string UnicodeLessThan = "\\u003C";
-    private const string UnicodeGreaterThan = "\\u003E";
-    private const string UnicodeAmpersand = "\\u0026";
+    private const string CommandPrefix = "azmcp ";
+    private const string SpaceReplacement = "_";
+    private const string TestToolIdPrefix = $"azmcp{SpaceReplacement}test{SpaceReplacement}tool{SpaceReplacement}";
 
     static async Task Main(string[] args)
     {
@@ -116,8 +105,8 @@ class Program
             await LoadDotEnvFile(toolDir);
 
             // Get configuration values
-            var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
-            if (string.IsNullOrEmpty(baseEndpoint))
+            var endpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
+            if (string.IsNullOrEmpty(endpoint))
             {
                 if (isCiMode)
                 {
@@ -126,18 +115,6 @@ class Program
                 }
                 throw new InvalidOperationException("AOAI_ENDPOINT environment variable is required");
             }
-
-            // Construct the full Azure OpenAI embeddings endpoint
-            const string deploymentName = "text-embedding-3-large";
-            const string apiVersion = "2024-02-01";
-
-            // Remove trailing slash if present
-            if (baseEndpoint.EndsWith("/"))
-            {
-                baseEndpoint = baseEndpoint.TrimEnd('/');
-            }
-
-            var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
             var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
@@ -299,11 +276,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error: {ex.Message}");
-
-            // Provide helpful error information
-            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
-            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-            Console.WriteLine("   or create a .env file with these values");
+            Console.WriteLine(ex.StackTrace);
 
             Environment.Exit(1);
         }
@@ -494,13 +467,42 @@ class Program
     {
         try
         {
-            var json = JsonSerializer.Serialize(toolsResult, SourceGenerationContext.Default.ListToolsResult);
-            
-            await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
+            // Normalize only tool and option descriptions instead of escaping the entire JSON document
+            foreach (var tool in toolsResult.Tools)
+            {
+                if (!string.IsNullOrEmpty(tool.Description))
+                {
+                    tool.Description = EscapeCharacters(tool.Description);
+                }
+
+                if (tool.Options != null)
+                {
+                    foreach (var opt in tool.Options)
+                    {
+                        if (!string.IsNullOrEmpty(opt.Description))
+                        {
+                            opt.Description = EscapeCharacters(opt.Description);
+                        }
+                    }
+                }
+            }
+
+            var writerOptions = new JsonWriterOptions
+            {
+                Indented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            using var stream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(jsonWriter, toolsResult, SourceGenerationContext.Default.ListToolsResult);
+            }
+            await File.WriteAllBytesAsync(filePath, stream.ToArray());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️  Warning: Failed to save tools to {filePath}: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
 
@@ -537,7 +539,7 @@ class Program
                     continue;
                 }
 
-                // Parse table rows: | azmcp-tool-name | Test prompt |
+                // Parse table rows: | azmcp_tool_name | Test prompt |
                 if (trimmedLine.StartsWith("|") && trimmedLine.Contains("|"))
                 {
                     var parts = trimmedLine.Split('|', StringSplitOptions.RemoveEmptyEntries);
@@ -550,8 +552,8 @@ class Program
                         if (string.IsNullOrWhiteSpace(toolName) || string.IsNullOrWhiteSpace(prompt))
                             continue;
 
-                        // Ensure we have a valid tool name (starts with azmcp-)
-                        if (!toolName.StartsWith("azmcp-"))
+                        // Ensure we have a valid tool name (starts with azmcp_)
+                        if (!toolName.StartsWith("azmcp_"))
                             continue;
 
                         if (!prompts.ContainsKey(toolName))
@@ -596,27 +598,47 @@ class Program
     {
         try
         {
-            var json = JsonSerializer.Serialize(prompts, SourceGenerationContext.Default.DictionaryStringListString);
+            // Escape only the prompt VALUES (not the keys or overall JSON structure)
+            foreach (var kvp in prompts.ToList())
+            {
+                var list = kvp.Value;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (!string.IsNullOrEmpty(list[i]))
+                    {
+                        list[i] = EscapeCharacters(list[i]);
+                    }
+                }
+            }
 
-            await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
+            var writerOptions = new JsonWriterOptions
+            {
+                Indented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            using var stream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(jsonWriter, prompts, SourceGenerationContext.Default.DictionaryStringListString);
+            }
+            await File.WriteAllBytesAsync(filePath, stream.ToArray());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️  Warning: Failed to save prompts to {filePath}: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
 
-    private static string EscapeCharactersForJson(string json)
+    private static string EscapeCharacters(string text)
     {
-        return json.Replace(UnicodeApostrophe, "'")          // Single quotation mark
-                   .Replace(UnicodeLeftSingleQuote, "'")     // Left single quotation mark
-                   .Replace(UnicodeRightSingleQuote, "'")    // Right single quotation mark
-                   .Replace(UnicodeQuote, "\\\"")            // Double quotation mark
-                   .Replace(UnicodeLeftDoubleQuote, "\\\"")  // Left double quotation mark
-                   .Replace(UnicodeRightDoubleQuote, "\\\"") // Right double quotation mark
-                   .Replace(UnicodeLessThan, "<")
-                   .Replace(UnicodeGreaterThan, ">")
-                   .Replace(UnicodeAmpersand, "&");
+        if (string.IsNullOrEmpty(text)) return text;
+
+    // Normalize only the fancy “curly” quotes to straight ASCII. Identity replacements were removed.
+    return text.Replace(UnicodeChars.LeftSingleQuote, "'")
+           .Replace(UnicodeChars.RightSingleQuote, "'")
+           .Replace(UnicodeChars.LeftDoubleQuote, "\"")
+           .Replace(UnicodeChars.RightDoubleQuote, "\"");
     }
 
     private static async Task PopulateDatabaseAsync(VectorDB db, List<Tool> tools, EmbeddingService embeddingService)
@@ -638,9 +660,9 @@ class Program
 
             // Handle test tools specially
             string toolName;
-            if (tool.Name.StartsWith("test-tool"))
+            if (tool.Name.StartsWith(TestToolIdPrefix))
             {
-                toolName = $"azmcp-{tool.Name}";
+                toolName = tool.Name;
             }
             else
             {
@@ -648,7 +670,7 @@ class Program
                 toolName = tool.Command?.Replace(CommandPrefix, "")?.Replace(" ", SpaceReplacement) ?? tool.Name;
                 if (!string.IsNullOrEmpty(toolName) && !toolName.StartsWith($"{CommandPrefix.Trim()}-"))
                 {
-                    toolName = $"azmcp-{toolName}";
+                    toolName = $"azmcp{SpaceReplacement}{toolName}";
                 }
             }
 
@@ -1023,8 +1045,8 @@ class Program
             await LoadDotEnvFile(toolDir);
 
             // Get configuration values
-            var baseEndpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
-            if (string.IsNullOrEmpty(baseEndpoint))
+            var endpoint = Environment.GetEnvironmentVariable("AOAI_ENDPOINT");
+            if (string.IsNullOrEmpty(endpoint))
             {
                 if (isCiMode)
                 {
@@ -1037,17 +1059,6 @@ class Program
                 Console.WriteLine("   or create a .env file with these values");
                 Environment.Exit(1);
             }
-
-            // Construct the full Azure OpenAI embeddings endpoint
-            const string deploymentName = "text-embedding-3-large";
-            const string apiVersion = "2024-02-01";
-
-            if (baseEndpoint.EndsWith("/"))
-            {
-                baseEndpoint = baseEndpoint.TrimEnd('/');
-            }
-
-            var endpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}/embeddings?api-version={apiVersion}";
 
             var apiKey = GetApiKey(isCiMode);
             if (apiKey == null && isCiMode)
@@ -1070,7 +1081,7 @@ class Program
             var testTools = new List<Tool>();
             testTools.Add(new Tool
             {
-                Name = $"test-tool-1",
+                Name = $"{TestToolIdPrefix}1",
                 Description = toolDescription
             });
 
@@ -1102,9 +1113,9 @@ class Program
                 for (int i = 0; i < queryResults.Count; i++)
                 {
                     var result = queryResults[i];
-                    if (result.Entry.Id.StartsWith("azmcp-test-tool-"))
+                    if (result.Entry.Id.StartsWith(TestToolIdPrefix))
                     {
-                        testToolResults.Add((i + 1, result.Score, "test-tool-1"));
+                        testToolResults.Add((i + 1, result.Score, $"{TestToolIdPrefix}1"));
                     }
                 }
 
@@ -1113,16 +1124,18 @@ class Program
                 if (testToolResults.Count > 0)
                 {
                     var (rank, score, toolName) = testToolResults.First();
-                    var quality = rank == 1 ? "✅ EXCELLENT" :
-                                 rank <= 3 ? "🟡 GOOD" :
-                                 rank <= 10 ? "🟠 FAIR" : "🔴 POOR";
-                    var confidence = score >= 0.8 ? "💪 Very High confidence" :
+                    var quality = rank == 1 ? "✅ Excellent" :
+                                 rank <= 3 ? "🟡 Good" :
+                                 rank <= 10 ? "🟠 Fair" : "🔴 Poor";
+                    var confidence = score >= 0.8 ? "💪 Very high confidence" :
                                    score >= 0.7 ? "🎯 High confidence" :
                                    score >= 0.6 ? "✅ Good confidence" :
                                    score >= 0.5 ? "👍 Fair confidence" :
                                    score >= 0.4 ? "👌 Acceptable confidence" : "❌ Low confidence";
 
-                    Console.WriteLine($"   {toolName}: Rank #{rank}, Score {score:F4} - {quality}, {confidence}");
+                    Console.WriteLine($"   {toolName}:");
+                    Console.WriteLine($"      Rank #{rank} - {quality}");
+                    Console.WriteLine($"      Score {score:F4} - {confidence}");
                     Console.WriteLine($"      Description: \"{toolDescription}\"");
                 }
                 else
@@ -1135,11 +1148,10 @@ class Program
                 for (int i = 0; i < Math.Min(5, queryResults.Count); i++)
                 {
                     var result = queryResults[i];
-                    var isTestTool = result.Entry.Id.StartsWith("azmcp-test-tool-");
+                    var isTestTool = result.Entry.Id.StartsWith(TestToolIdPrefix);
                     var indicator = isTestTool ? "👉 TEST TOOL" : "";
-                    var toolName = isTestTool ? result.Entry.Id.Replace("azmcp-", "") : result.Entry.Id;
 
-                    Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {toolName} {indicator}");
+                    Console.WriteLine($"   {i + 1:D2}. {result.Score:F4} - {result.Entry.Id} {indicator}");
                 }
 
                 // Suggestions for improvement
@@ -1168,7 +1180,7 @@ class Program
             }
 
             // Summary
-            Console.WriteLine("📈 Summary:");
+            Console.WriteLine("📈 Rankings Summary:");
             var totalTests = testPrompts.Count;
             var excellentCount = 0;
             var goodCount = 0;
@@ -1180,7 +1192,7 @@ class Program
                 var vector = await embeddingService.CreateEmbeddingsAsync(testPrompt);
                 var queryResults = db.Query(vector, new QueryOptions(TopK: 10));
 
-                var testToolId = $"azmcp-test-tool-1";
+                var testToolId = $"{TestToolIdPrefix}1";
                 var rank = queryResults.FindIndex(r => r.Entry.Id == testToolId) + 1;
 
                 if (rank == 1)
@@ -1203,11 +1215,23 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error during validation: {ex.Message}");
-            Console.WriteLine("💡 Tip: This validation requires Azure OpenAI configuration");
-            Console.WriteLine("   Set AOAI_ENDPOINT and TEXT_EMBEDDING_API_KEY environment variables");
-            Console.WriteLine("   or create a .env file with these values");
+            Console.WriteLine(ex.StackTrace);
 
             Environment.Exit(1);
         }
     }
+}
+
+internal static class UnicodeChars
+{
+    public const string SingleQuote = "\u0027";
+    public const string LeftSingleQuote = "\u2018";
+    public const string RightSingleQuote = "\u2019";
+    public const string DoubleQuote = "\u0022";
+    public const string LeftDoubleQuote = "\u201C";
+    public const string RightDoubleQuote = "\u201D";
+    public const string LessThan = "\u003C";
+    public const string GreaterThan = "\u003E";
+    public const string Ampersand = "\u0026";
+    public const string Backtick = "\u0060";
 }
