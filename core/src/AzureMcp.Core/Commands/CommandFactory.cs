@@ -113,15 +113,15 @@ public class CommandFactory
 
             if (!_serviceAreaNames.Add(area.Name))
             {
-                var matchingAreaNames = _serviceAreas
+                var matchingAreaTypes = _serviceAreas
                     .Where(x => x.Name == area.Name)
-                    .Select(a => a.GetType());
+                    .Select(a => a.GetType().FullName);
 
                 var error = new ArgumentException("Cannot have multiple IAreaSetup with the same Name.");
                 _logger.LogError(error,
-                    "Duplicate {AreaName}. Areas with same name: {AllAreas}",
+                    "Duplicate {AreaName}. Areas with same name: {AllAreaTypes}",
                     area.Name,
-                    string.Join(", ", matchingAreaNames));
+                    string.Join(", ", matchingAreaTypes));
 
                 throw error;
             }
