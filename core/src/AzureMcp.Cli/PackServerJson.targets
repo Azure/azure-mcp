@@ -20,7 +20,7 @@
     This dependency is already in the runtime graph via AzureMcp.Core.
     Use it at pack time in SerializePropertiesToJson to fill in .mcp/server.json placeholders.
     -->
-    <PackageReference Include="Newtonsoft.Json" GeneratePathProperty="true" />
+    <PackageReference Include="System.Text.Json" GeneratePathProperty="true" />
   </ItemGroup>
   
   <UsingTask TaskName="SerializePropertiesToJson" TaskFactory="RoslynCodeTaskFactory" AssemblyName="Microsoft.Build.Tasks.Core">
@@ -36,14 +36,14 @@
       <JsonRepositoryUrl ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
-        <Reference Include="$(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll"/>
-        <Using Namespace="Newtonsoft.Json"/>
+        <Reference Include="$(PkgSystem_Text_Json)/lib/netstandard2.0/System.Text.Json.dll"/>
+        <Using Namespace="System.Text.Json"/>
         <Code Type="Fragment" Language="cs">
           <![CDATA[
-          JsonPackageId = JsonConvert.SerializeObject(PackageId);
-          JsonPackageVersion = JsonConvert.SerializeObject(PackageVersion);
-          JsonPackageDescription = JsonConvert.SerializeObject(PackageDescription);
-          JsonRepositoryUrl = JsonConvert.SerializeObject(RepositoryUrl);
+          JsonPackageId = JsonSerializer.Serialize(PackageId);
+          JsonPackageVersion = JsonSerializer.Serialize(PackageVersion);
+          JsonPackageDescription = JsonSerializer.Serialize(PackageDescription);
+          JsonRepositoryUrl = JsonSerializer.Serialize(RepositoryUrl);
           ]]>
         </Code>
     </Task>
