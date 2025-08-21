@@ -467,9 +467,37 @@ class Program
     {
         try
         {
-            var json = JsonSerializer.Serialize(toolsResult, SourceGenerationContext.Default.ListToolsResult);
+            // Normalize only tool and option descriptions instead of escaping the entire JSON document
+            foreach (var tool in toolsResult.Tools)
+            {
+                if (!string.IsNullOrEmpty(tool.Description))
+                {
+                    tool.Description = EscapeCharacters(tool.Description);
+                }
 
-            await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
+                if (tool.Options != null)
+                {
+                    foreach (var opt in tool.Options)
+                    {
+                        if (!string.IsNullOrEmpty(opt.Description))
+                        {
+                            opt.Description = EscapeCharacters(opt.Description);
+                        }
+                    }
+                }
+            }
+
+            var writerOptions = new JsonWriterOptions
+            {
+                Indented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            using var stream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(jsonWriter, toolsResult, SourceGenerationContext.Default.ListToolsResult);
+            }
+            await File.WriteAllBytesAsync(filePath, stream.ToArray());
         }
         catch (Exception ex)
         {
@@ -570,9 +598,30 @@ class Program
     {
         try
         {
-            var json = JsonSerializer.Serialize(prompts, SourceGenerationContext.Default.DictionaryStringListString);
+            // Escape only the prompt VALUES (not the keys or overall JSON structure)
+            foreach (var kvp in prompts.ToList())
+            {
+                var list = kvp.Value;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (!string.IsNullOrEmpty(list[i]))
+                    {
+                        list[i] = EscapeCharacters(list[i]);
+                    }
+                }
+            }
 
-            await File.WriteAllTextAsync(filePath, EscapeCharactersForJson(json));
+            var writerOptions = new JsonWriterOptions
+            {
+                Indented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            using var stream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(jsonWriter, prompts, SourceGenerationContext.Default.DictionaryStringListString);
+            }
+            await File.WriteAllBytesAsync(filePath, stream.ToArray());
         }
         catch (Exception ex)
         {
@@ -581,18 +630,15 @@ class Program
         }
     }
 
-    private static string EscapeCharactersForJson(string json)
+    private static string EscapeCharacters(string text)
     {
-        return json.Replace(UnicodeChars.SingleQuote, "'")
-                   .Replace(UnicodeChars.LeftSingleQuote, "'")
-                   .Replace(UnicodeChars.RightSingleQuote, "'")
-                   .Replace(UnicodeChars.DoubleQuote, "\\\"")
-                   .Replace(UnicodeChars.LeftDoubleQuote, "\\\"")
-                   .Replace(UnicodeChars.RightDoubleQuote, "\\\"")
-                   .Replace(UnicodeChars.LessThan, "<")
-                   .Replace(UnicodeChars.GreaterThan, ">")
-                   .Replace(UnicodeChars.Ampersand, "&")
-                   .Replace(UnicodeChars.Backtick, "`");
+        if (string.IsNullOrEmpty(text)) return text;
+
+    // Normalize only the fancy “curly” quotes to straight ASCII. Identity replacements were removed.
+    return text.Replace(UnicodeChars.LeftSingleQuote, "'")
+           .Replace(UnicodeChars.RightSingleQuote, "'")
+           .Replace(UnicodeChars.LeftDoubleQuote, "\"")
+           .Replace(UnicodeChars.RightDoubleQuote, "\"");
     }
 
     private static async Task PopulateDatabaseAsync(VectorDB db, List<Tool> tools, EmbeddingService embeddingService)
