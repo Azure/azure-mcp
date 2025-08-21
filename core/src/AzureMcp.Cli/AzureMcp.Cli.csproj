@@ -59,8 +59,10 @@
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 
-  <!-- Remove non-AOT safe projects and packages when building native -->
-  <!-- https://github.com/Azure/azure-mcp-pr/issues/318 -->
+  <!-- IMPORTANT: DO NOT ADD EXCLUSIONS HERE -->
+  <!-- If the "(Native AOT) Build module" stage fails in CI, follow the AOT compatibility guide:
+       https://github.com/Azure/azure-mcp/blob/main/docs/aot-compatibility.md
+       Do not add ProjectReference removals in this ItemGroup. -->
   <ItemGroup Condition="'$(BuildNative)' == 'true'">
     <ProjectReference Remove="..\..\..\areas\cosmos\src\AzureMcp.Cosmos\AzureMcp.Cosmos.csproj" />
     <ProjectReference Remove="..\..\..\areas\azuremanagedlustre\src\AzureMcp.AzureManagedLustre\AzureMcp.AzureManagedLustre.csproj" />
