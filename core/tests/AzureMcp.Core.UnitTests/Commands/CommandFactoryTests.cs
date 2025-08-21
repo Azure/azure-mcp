@@ -190,7 +190,7 @@ public class CommandFactoryTests
         var factory = new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger);
 
         // Act
-        var actual = factory.GetServiceArea("doesnotexist_foo_bar");
+        var actual = factory.GetServiceArea("foo_bar_1");
 
         // Assert
         Assert.Null(actual);
