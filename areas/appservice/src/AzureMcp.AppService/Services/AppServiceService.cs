@@ -188,17 +188,7 @@ public class AppServiceService(
         {
             "sqlserver" => $"Server={databaseServer};Database={databaseName};User Id={{username}};Password={{password}};TrustServerCertificate=True;",
             "mysql" => $"Server={databaseServer};Database={databaseName};Uid={{username}};Pwd={{password}};",
-    private static string BuildConnectionString(string databaseType, string databaseServer, string databaseName, string? username = null, string? password = null)
-    {
-        return databaseType.ToLowerInvariant() switch
-        {
-            "sqlserver" => $"Server={databaseServer};Database={databaseName};Trusted_Connection=True;TrustServerCertificate=True;",
-            "mysql" => username != null && password != null
-                ? $"Server={databaseServer};Database={databaseName};Uid={username};Pwd={password};"
-                : throw new ArgumentException("Username and password must be provided for MySQL connection string."),
-            "postgresql" => username != null && password != null
-                ? $"Host={databaseServer};Database={databaseName};Username={username};Password={password};"
-                : throw new ArgumentException("Username and password must be provided for PostgreSQL connection string."),
+            "postgresql" => $"Host={databaseServer};Database={databaseName};Username={{username}};Password={{password}};",
             "cosmosdb" => $"AccountEndpoint=https://{databaseServer}.documents.azure.com:443/;AccountKey={{key}};Database={databaseName};",
             _ => throw new ArgumentException($"Unsupported database type: {databaseType}")
         };
