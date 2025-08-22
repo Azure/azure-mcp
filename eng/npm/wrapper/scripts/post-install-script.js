@@ -3,7 +3,7 @@ const os = require('os');
 const platform = os.platform();
 const arch = os.arch();
 
-const requiredPackage = `@azure/mcp-${platform}-${arch}`;
+const requiredPackage = `@azure/{mcp}-${platform}-${arch}`;
 
 try {
   require.resolve(requiredPackage);

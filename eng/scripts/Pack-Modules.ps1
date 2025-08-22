@@ -117,6 +117,15 @@ try {
     New-Item -ItemType Directory $wrapperFolder | Out-Null
     Copy-Item -Path "$npmPackagePath/*" -Destination $wrapperFolder -Recurse -Force
 
+    # Replace template placeholders in index.js and post-install-script.js
+    $indexJs = Get-Content "$wrapperFolder/index.js" -Raw
+    $mcp = if ($BuildNative) { "mcp-native" } else { "mcp" }
+    $indexJs = $indexJs.Replace('{mcp}', $mcp)
+    $indexJs | Out-File -FilePath "$wrapperFolder/index.js" -Encoding utf8 -NoNewline
+    $postInstallScript = Get-Content "$wrapperFolder/scripts/post-install-script.js" -Raw
+    $postInstallScript = $postInstallScript.Replace('{mcp}', $mcp)
+    $postInstallScript | Out-File -FilePath "$wrapperFolder/scripts/post-install-script.js" -Encoding utf8 -NoNewline
+
     if (!$IsWindows) {
         Write-Host "Setting executable permissions for $wrapperFolder/index.js" -ForegroundColor Yellow
         Invoke-LoggedCommand "chmod +x `"$wrapperFolder/index.js`""
