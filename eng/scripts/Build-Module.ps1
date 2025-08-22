@@ -110,6 +110,11 @@ try {
 
     Invoke-LoggedCommand $command -GroupOutput
 
+    if ($BuildNative -and -not $DebugBuild) {
+        Write-Host "Removing debug files (.pdb, .dSYM) from native Release build" -ForegroundColor Yellow
+        Get-ChildItem -Path "$outputDir/dist" -Recurse -Include "*.pdb", "*.dSYM" | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
     $package = Get-Content "$outputDir/package.json" -Raw
     $mcp = if ($BuildNative) { "mcp-native" } else { "mcp" }
     $azmcp = if ($BuildNative) { "azmcp-native" } else { "azmcp" }
