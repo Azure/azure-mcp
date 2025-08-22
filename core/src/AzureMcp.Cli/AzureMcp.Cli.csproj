@@ -42,8 +42,8 @@
     <!-- Enable 'Control Flow Guard' (CFG) -->
     <ControlFlowGuard>Guard</ControlFlowGuard>
     <!-- Ensure 'DYNAMICBASE' is enabled -->
-    <EnableCOMDATFolding>false</EnableCOMDATFolding>
-    <OptimizeReferences>false</OptimizeReferences>
+    <!-- <EnableCOMDATFolding>false</EnableCOMDATFolding>
+    <OptimizeReferences>false</OptimizeReferences> -->
   </PropertyGroup>
 
   <!-- Debug configuration -->
