@@ -6,19 +6,19 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
-using AzureMcp.SignalR.Options.SignalR;
+using AzureMcp.SignalR.Options.Identity;
 using AzureMcp.SignalR.Services;
 
-namespace AzureMcp.SignalR.Commands.SignalR;
+namespace AzureMcp.SignalR.Commands.Identity;
 
 /// <summary>
-/// Shows details of an Azure SignalR Service.
+/// Shows the managed identity configuration of an Azure SignalR Service.
 /// </summary>
-public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
-    : BaseSignalRCommand<SignalRShowOptions>
+public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
+    : BaseSignalRCommand<IdentityShowOptions>
 {
-    private const string CommandTitle = "Show Service Details";
-    private readonly ILogger<SignalRShowCommand> _logger = logger;
+    private const string CommandTitle = "Show Identity Configuration";
+    private readonly ILogger<IdentityShowCommand> _logger = logger;
 
     private static readonly Option<string> _signalRNameOption = SignalROptionDefinitions.SignalRName;
 
@@ -26,8 +26,9 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
 
     public override string Description =>
         """
-        Show details of an Azure SignalR Service. Returns service information including location, SKU,
-        provisioning state, hostname, and port configuration.
+        Show the managed identity configuration of an Azure SignalR Service. Returns identity information
+        including type (SystemAssigned, UserAssigned, or both), principal ID, tenant ID, and any
+        user-assigned identities associated with the service.
         Required options:
         - --subscription: The subscription ID or name
         - --resource-group: The resource group name
@@ -44,7 +45,7 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
         command.AddOption(_signalRNameOption);
     }
 
-    protected override SignalRShowOptions BindOptions(ParseResult parseResult)
+    protected override IdentityShowOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
@@ -65,7 +66,7 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
             context.Activity?.WithSubscriptionTag(options);
 
             var signalRService = context.GetService<ISignalRService>();
-            var service = await signalRService.GetSignalRServiceAsync(
+            var identity = await signalRService.GetSignalRIdentityAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
                 options.SignalRName!,
@@ -73,26 +74,26 @@ public sealed class SignalRShowCommand(ILogger<SignalRShowCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            if (service == null)
+            if (identity == null)
             {
                 context.Response.Status = 404;
                 context.Response.Message =
-                    $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
+                    $"SignalR service '{options.SignalRName}' does not have managed identity configured or service not found in resource group '{options.ResourceGroup}'.";
                 return context.Response;
             }
 
             context.Response.Results = ResponseResult.Create(
-                new SignalRShowCommandResult(service),
-                SignalRJsonContext.Default.SignalRShowCommandResult);
+                new IdentityShowCommandResult(identity),
+                SignalRJsonContext.Default.IdentityShowCommandResult);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred showing SignalR service");
+            _logger.LogError(ex, "An exception occurred showing SignalR identity");
             HandleException(context, ex);
         }
 
         return context.Response;
     }
 
-    public record SignalRShowCommandResult(SignalRServiceModel Service);
+    public record IdentityShowCommandResult(SignalRIdentityModel Identity);
 }

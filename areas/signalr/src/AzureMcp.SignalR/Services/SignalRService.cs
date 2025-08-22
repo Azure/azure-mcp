@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.ResourceManager.SignalR;
 using AzureMcp.Core.Options;
+using AzureMcp.Core.Services;
 using AzureMcp.Core.Services.Azure;
 using AzureMcp.Core.Services.Azure.Subscription;
 using AzureMcp.Core.Services.Azure.Tenant;
@@ -9,10 +11,13 @@ using AzureMcp.SignalR.Models;
 
 namespace AzureMcp.SignalR.Services;
 
-public class SignalRService(ISubscriptionService subscriptionService, ITenantService tenantService)
+/// <summary>
+/// Service for Azure SignalR operations.
+/// </summary>
+public class SignalRService(ISubscriptionService _subscriptionService, ITenantService tenantService)
     : BaseAzureService(tenantService), ISignalRService
 {
-    public async Task<IEnumerable<SignalRServiceModel>> ListSignalRServicesAsync(
+    public async Task<IEnumerable<SignalRRuntimeModel>> ListRuntimesAsync(
         string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
@@ -22,14 +27,14 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
                                        ?? throw new Exception($"Subscription '{subscription}' not found");
 
-            var signalRServices = new List<SignalRServiceModel>();
+            var runtimes = new List<SignalRRuntimeModel>();
 
             await foreach (var signalR in subscriptionResource.GetSignalRsAsync())
             {
-                signalRServices.Add(new SignalRServiceModel
+                runtimes.Add(new SignalRRuntimeModel
                 {
                     Name = signalR.Data.Name,
                     ResourceGroupName = signalR.Id.ResourceGroupName ?? string.Empty,
@@ -43,193 +48,11 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
                 });
             }
 
-            return signalRServices;
+            return runtimes;
         }
         catch (Exception ex)
         {
             throw new Exception($"Failed to list SignalR services: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<SignalRCustomCertificateModel?> GetCustomCertificateAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string certificateName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(subscription, resourceGroupName, signalRName, certificateName);
-
-        try
-        {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                                       ?? throw new Exception($"Subscription '{subscription}' not found");
-
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroupName);
-
-            var signalRResource = await resourceGroupResource.Value
-                .GetSignalRs()
-                .GetAsync(signalRName);
-
-            var certificateResource = await signalRResource.Value
-                .GetSignalRCustomCertificates()
-                .GetAsync(certificateName);
-
-            var certificate = certificateResource.Value;
-
-            return new SignalRCustomCertificateModel
-            {
-                Name = certificate.Data.Name,
-                Id = certificate.Id.ToString(),
-                Type = certificate.Data.ResourceType.ToString(),
-                ProvisioningState = certificate.Data.ProvisioningState?.ToString() ?? string.Empty,
-                KeyVaultBaseUri = certificate.Data.KeyVaultBaseUri?.ToString() ?? string.Empty,
-                KeyVaultSecretName = certificate.Data.KeyVaultSecretName ?? string.Empty,
-                KeyVaultSecretVersion = certificate.Data.KeyVaultSecretVersion
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to get SignalR certificate '{certificateName}': {ex.Message}", ex);
-        }
-    }
-
-    public async Task<IEnumerable<SignalRCustomDomainModel>> ListCustomDomainsAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
-
-        try
-        {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                                       ?? throw new Exception($"Subscription '{subscription}' not found");
-
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroupName);
-
-            var signalRResource = await resourceGroupResource.Value
-                .GetSignalRs()
-                .GetAsync(signalRName);
-
-            var customDomains = new List<SignalRCustomDomainModel>();
-
-            await foreach (var customDomain in signalRResource.Value.GetSignalRCustomDomains())
-            {
-                customDomains.Add(new SignalRCustomDomainModel
-                {
-                    Name = customDomain.Data.Name,
-                    Id = customDomain.Id.ToString(),
-                    Type = customDomain.Data.ResourceType.ToString(),
-                    ProvisioningState = customDomain.Data.ProvisioningState?.ToString() ?? string.Empty,
-                    DomainName = customDomain.Data.DomainName ?? string.Empty,
-                    CustomCertificate = string.Empty // Note: CustomCertificate property may not be directly accessible
-                });
-            }
-
-            return customDomains;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to list SignalR custom domains for service '{signalRName}': {ex.Message}", ex);
-        }
-    }
-
-    public async Task<IEnumerable<SignalRCustomCertificateModel>> ListCustomCertificatesAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
-
-        try
-        {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                                       ?? throw new Exception($"Subscription '{subscription}' not found");
-
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroupName);
-
-            var signalRResource = await resourceGroupResource.Value
-                .GetSignalRs()
-                .GetAsync(signalRName);
-
-            var certificates = new List<SignalRCustomCertificateModel>();
-
-            await foreach (var certificate in signalRResource.Value.GetSignalRCustomCertificates())
-            {
-                certificates.Add(new SignalRCustomCertificateModel
-                {
-                    Name = certificate.Data.Name,
-                    Id = certificate.Id.ToString(),
-                    Type = certificate.Data.ResourceType.ToString(),
-                    ProvisioningState = certificate.Data.ProvisioningState?.ToString() ?? string.Empty,
-                    KeyVaultBaseUri = certificate.Data.KeyVaultBaseUri?.ToString() ?? string.Empty,
-                    KeyVaultSecretName = certificate.Data.KeyVaultSecretName ?? string.Empty,
-                    KeyVaultSecretVersion = certificate.Data.KeyVaultSecretVersion
-                });
-            }
-
-            return certificates;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to list SignalR certificates for service '{signalRName}': {ex.Message}", ex);
-        }
-    }
-
-    public async Task<SignalRCustomDomainModel?> GetCustomDomainAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string customDomainName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(subscription, resourceGroupName, signalRName, customDomainName);
-
-        try
-        {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
-                                       ?? throw new Exception($"Subscription '{subscription}' not found");
-
-            var resourceGroupResource = await subscriptionResource
-                .GetResourceGroupAsync(resourceGroupName);
-
-            var signalRResource = await resourceGroupResource.Value
-                .GetSignalRs()
-                .GetAsync(signalRName);
-
-            var customDomainResource = await signalRResource.Value
-                .GetSignalRCustomDomains()
-                .GetAsync(customDomainName);
-
-            var customDomain = customDomainResource.Value;
-
-            return new SignalRCustomDomainModel
-            {
-                Name = customDomain.Data.Name,
-                Id = customDomain.Id.ToString(),
-                Type = customDomain.Data.ResourceType.ToString(),
-                ProvisioningState = customDomain.Data.ProvisioningState?.ToString() ?? string.Empty,
-                DomainName = customDomain.Data.DomainName ?? string.Empty,
-                CustomCertificate = string.Empty // Note: CustomCertificate property may not be directly accessible
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to get SignalR custom domain '{customDomainName}': {ex.Message}", ex);
         }
     }
 
@@ -245,7 +68,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
                                        ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
@@ -273,7 +96,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
         }
     }
 
-    public async Task<SignalRServiceModel?> GetSignalRServiceAsync(
+    public async Task<SignalRRuntimeModel?> GetRuntimeAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -285,7 +108,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
 
         try
         {
-            var subscriptionResource = await subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
                                        ?? throw new Exception($"Subscription '{subscription}' not found");
 
             var resourceGroupResource = await subscriptionResource
@@ -297,7 +120,7 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
 
             var signalR = signalRResource.Value;
 
-            return new SignalRServiceModel
+            return new SignalRRuntimeModel
             {
                 Name = signalR.Data.Name,
                 ResourceGroupName = signalR.Id.ResourceGroupName ?? string.Empty,
@@ -313,6 +136,117 @@ public class SignalRService(ISubscriptionService subscriptionService, ITenantSer
         catch (Exception ex)
         {
             throw new Exception($"Failed to get SignalR service '{signalRName}': {ex.Message}", ex);
+        }
+    }
+
+    public async Task<SignalRIdentityModel?> GetSignalRIdentityAsync(
+        string subscription,
+        string resourceGroupName,
+        string signalRName,
+        string? tenant = null,
+        AuthMethod? authMethod = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, resourceGroupName, signalRName);
+
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
+                                       ?? throw new Exception($"Subscription '{subscription}' not found");
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroupName);
+
+            var signalRResource = await resourceGroupResource.Value
+                .GetSignalRs()
+                .GetAsync(signalRName);
+
+            var signalR = signalRResource.Value;
+            var identity = signalR.Data.Identity;
+
+            if (identity == null)
+            {
+                return null;
+            }
+
+            var userAssignedIdentities = new Dictionary<string, UserAssignedIdentity>();
+            if (identity.UserAssignedIdentities != null)
+            {
+                foreach (var (key, value) in identity.UserAssignedIdentities)
+                {
+                    if (!string.IsNullOrEmpty(key) && value != null)
+                    {
+                        userAssignedIdentities[key!] = new UserAssignedIdentity
+                        {
+                            PrincipalId = value.PrincipalId?.ToString(),
+                            ClientId = value.ClientId?.ToString()
+                        };
+                    }
+                }
+            }
+
+            return new SignalRIdentityModel
+            {
+                Type = identity.ManagedServiceIdentityType.ToString(),
+                PrincipalId = identity.PrincipalId?.ToString(),
+                TenantId = identity.TenantId?.ToString(),
+                UserAssignedIdentities = userAssignedIdentities.Count > 0 ? userAssignedIdentities : null
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to get SignalR identity for service '{signalRName}': {ex.Message}", ex);
+        }
+    }
+
+    public async Task<SignalRNetworkAclModel?> GetNetworkRulesAsync(
+        string subscription,
+        string resourceGroup,
+        string signalRName,
+        AuthMethod? authMethod = null,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(subscription, resourceGroup, signalRName);
+
+        try
+        {
+            var subscriptionResource = await _subscriptionService.GetSubscription(subscription, null, retryPolicy);
+
+            var resourceGroupResource = await subscriptionResource
+                .GetResourceGroupAsync(resourceGroup, cancellationToken: default);
+
+            var signalRResource = await resourceGroupResource.Value
+                .GetSignalRs()
+                .GetAsync(signalRName, cancellationToken: default);
+
+            var networkAcls = signalRResource.Value.Data.NetworkACLs;
+            if (networkAcls == null)
+            {
+                return null;
+            }
+
+            return new SignalRNetworkAclModel
+            {
+                DefaultAction = networkAcls.DefaultAction?.ToString(),
+                PublicNetwork =
+                    networkAcls.PublicNetwork != null
+                        ? new SignalRNetworkRuleModel
+                        {
+                            Allow = networkAcls.PublicNetwork.Allow?.Select(a => a.ToString()),
+                            Deny = networkAcls.PublicNetwork.Deny?.Select(d => d.ToString())
+                        }
+                        : null,
+                PrivateEndpoints = networkAcls.PrivateEndpoints?.Select(pe => new SignalRPrivateEndpointModel
+                {
+                    Name = pe.Name,
+                    Allow = pe.Allow?.Select(a => a.ToString()),
+                    Deny = pe.Deny?.Select(d => d.ToString())
+                })
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to get SignalR identity for service '{signalRName}': {ex.Message}", ex);
         }
     }
 }

@@ -17,20 +17,20 @@ using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.SignalR;
 
-public class SignalRServiceListCommandTests
+public class RuntimeListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ISignalRService _signalRService;
-    private readonly ILogger<SignalRServiceListCommand> _logger;
-    private readonly SignalRServiceListCommand _command;
+    private readonly ILogger<RuntimeListCommand> _logger;
+    private readonly RuntimeListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
     private readonly string _knownSubscriptionId = "sub123";
 
-    public SignalRServiceListCommandTests()
+    public RuntimeListCommandTests()
     {
         _signalRService = Substitute.For<ISignalRService>();
-        _logger = Substitute.For<ILogger<SignalRServiceListCommand>>();
+        _logger = Substitute.For<ILogger<RuntimeListCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
 
@@ -44,7 +44,7 @@ public class SignalRServiceListCommandTests
     public async Task ExecuteAsync_ValidParameters_ReturnsSignalRServices()
     {
         // Arrange
-        var expectedServices = new List<SignalRServiceModel>
+        var expectedServices = new List<SignalRRuntimeModel>
         {
             new()
             {
@@ -72,7 +72,7 @@ public class SignalRServiceListCommandTests
             }
         };
 
-        _signalRService.ListSignalRServicesAsync(
+        _signalRService.ListRuntimesAsync(
                 _knownSubscriptionId,
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
@@ -92,12 +92,12 @@ public class SignalRServiceListCommandTests
         // Serialize the entire ResponseResult to JSON and then deserialize to verify content
         var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
         var resultData = System.Text.Json.JsonSerializer
-            .Deserialize<SignalRServiceListCommand.SignalRServiceListCommandResult>(
-                json, SignalRJsonContext.Default.SignalRServiceListCommandResult);
+            .Deserialize<RuntimeListCommand.RuntimeListCommandResult>(
+                json, SignalRJsonContext.Default.RuntimeListCommandResult);
         Assert.NotNull(resultData);
-        Assert.Equal(2, resultData.SignalRServices.Count());
+        Assert.Equal(2, resultData.Runtimes.Count());
 
-        var services = resultData.SignalRServices.ToList();
+        var services = resultData.Runtimes.ToList();
         Assert.Equal("signalr1", services[0].Name);
         Assert.Equal("rg1", services[0].ResourceGroupName);
         Assert.Equal("Standard_S1", services[0].SkuName);
@@ -110,9 +110,9 @@ public class SignalRServiceListCommandTests
     public async Task ExecuteAsync_NoSignalRServices_ReturnsNull()
     {
         // Arrange
-        var emptyServices = new List<SignalRServiceModel>();
+        var emptyServices = new List<SignalRRuntimeModel>();
 
-        _signalRService.ListSignalRServicesAsync(
+        _signalRService.ListRuntimesAsync(
                 _knownSubscriptionId,
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
@@ -135,7 +135,7 @@ public class SignalRServiceListCommandTests
     {
         // Arrange
         var requestException = new RequestFailedException(403, "Forbidden");
-        _signalRService.ListSignalRServicesAsync(
+        _signalRService.ListRuntimesAsync(
                 Arg.Any<string>(),
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
@@ -172,7 +172,7 @@ public class SignalRServiceListCommandTests
     {
         // Arrange
         var exception = new InvalidOperationException("Service error");
-        _signalRService.ListSignalRServicesAsync(
+        _signalRService.ListRuntimesAsync(
                 Arg.Any<string>(),
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
@@ -195,7 +195,7 @@ public class SignalRServiceListCommandTests
     {
         // Assert
         Assert.Equal("list", _command.Name);
-        Assert.Equal("List SignalR Services", _command.Title);
+        Assert.Equal("List all Services", _command.Title);
         Assert.Contains("List all SignalR Service resources", _command.Description);
         Assert.False(_command.Metadata.Destructive);
         Assert.True(_command.Metadata.ReadOnly);

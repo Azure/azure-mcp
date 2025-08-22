@@ -6,24 +6,18 @@ using AzureMcp.SignalR.Models;
 
 namespace AzureMcp.SignalR.Services;
 
+/// <summary>
+/// Service interface for Azure SignalR operations.
+/// </summary>
 public interface ISignalRService
 {
-    Task<IEnumerable<SignalRServiceModel>> ListSignalRServicesAsync(
+    Task<IEnumerable<SignalRRuntimeModel>> ListRuntimesAsync(
         string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<SignalRCustomCertificateModel?> GetCustomCertificateAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string certificateName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null);
-
-    Task<IEnumerable<SignalRCustomDomainModel>> ListCustomDomainsAsync(
+    Task<SignalRRuntimeModel?> GetRuntimeAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -31,23 +25,9 @@ public interface ISignalRService
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<IEnumerable<SignalRCustomCertificateModel>> ListCustomCertificatesAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null);
-
-    Task<SignalRCustomDomainModel?> GetCustomDomainAsync(
-        string subscription,
-        string resourceGroupName,
-        string signalRName,
-        string customDomainName,
-        string? tenant = null,
-        AuthMethod? authMethod = null,
-        RetryPolicyOptions? retryPolicy = null);
-
+    /// <summary>
+    /// Lists keys for a SignalR service.
+    /// </summary>
     Task<SignalRKeyModel> ListKeysAsync(
         string subscription,
         string resourceGroupName,
@@ -56,11 +36,24 @@ public interface ISignalRService
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<SignalRServiceModel?> GetSignalRServiceAsync(
+    /// <summary>
+    /// Gets identity configuration for a SignalR service.
+    /// </summary>
+    Task<SignalRIdentityModel?> GetSignalRIdentityAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
         string? tenant = null,
+        AuthMethod? authMethod = null,
+        RetryPolicyOptions? retryPolicy = null);
+
+    /// <summary>
+    /// Lists network ACL rules for a SignalR service.
+    /// </summary>
+    Task<SignalRNetworkAclModel?> GetNetworkRulesAsync(
+        string subscription,
+        string resourceGroup,
+        string signalRName,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 }

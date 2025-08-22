@@ -6,26 +6,32 @@ using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
-using AzureMcp.SignalR.Options.CustomCertificate;
+using AzureMcp.SignalR.Options.SignalR;
 using AzureMcp.SignalR.Services;
 
-namespace AzureMcp.SignalR.Commands.CustomCertificate;
+namespace AzureMcp.SignalR.Commands.SignalR;
 
-public sealed class CustomCertificateListCommand(ILogger<CustomCertificateListCommand> logger)
-    : BaseSignalRCommand<CustomCertificateListOptions>
+/// <summary>
+/// Shows details of an Azure SignalR Service.
+/// </summary>
+public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
+    : BaseSignalRCommand<SignalRShowOptions>
 {
-    private const string CommandTitle = "List Custom Certificates";
-    private readonly ILogger<CustomCertificateListCommand> _logger = logger;
+    private const string CommandTitle = "Show Service Details";
+    private readonly ILogger<RuntimeShowCommand> _logger = logger;
 
     private static readonly Option<string> _signalRNameOption = SignalROptionDefinitions.SignalRName;
 
-    public override string Name => "list";
+    public override string Name => "show";
 
     public override string Description =>
         """
-        List all custom certificates for a SignalR service. This command retrieves and displays all custom certificates
-        configured for the specified SignalR service. Results include custom certificate names, provisioning states, and
-        Key Vault information.
+        Show details of an Azure SignalR Service. Returns service information including location, SKU,
+        provisioning state, hostname, and port configuration.
+        Required options:
+        - --subscription: The subscription ID or name
+        - --resource-group: The resource group name
+        - --signalr-name: The SignalR service name
         """;
 
     public override string Title => CommandTitle;
@@ -38,7 +44,7 @@ public sealed class CustomCertificateListCommand(ILogger<CustomCertificateListCo
         command.AddOption(_signalRNameOption);
     }
 
-    protected override CustomCertificateListOptions BindOptions(ParseResult parseResult)
+    protected override SignalRShowOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
         options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
@@ -59,7 +65,7 @@ public sealed class CustomCertificateListCommand(ILogger<CustomCertificateListCo
             context.Activity?.WithSubscriptionTag(options);
 
             var signalRService = context.GetService<ISignalRService>();
-            var certificates = await signalRService.ListCustomCertificatesAsync(
+            var runtime = await signalRService.GetRuntimeAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
                 options.SignalRName!,
@@ -67,21 +73,26 @@ public sealed class CustomCertificateListCommand(ILogger<CustomCertificateListCo
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            var certificatesList = certificates.ToList();
-            context.Response.Results = certificatesList.Count > 0
-                ? ResponseResult.Create(
-                    new CertificateListCommandResult(certificatesList),
-                    SignalRJsonContext.Default.CertificateListCommandResult)
-                : null;
+            if (runtime == null)
+            {
+                context.Response.Status = 404;
+                context.Response.Message =
+                    $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
+                return context.Response;
+            }
+
+            context.Response.Results = ResponseResult.Create(
+                new RuntimeShowCommandResult(runtime),
+                SignalRJsonContext.Default.RuntimeShowCommandResult);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred listing SignalR certificates");
+            _logger.LogError(ex, "An exception occurred showing SignalR service");
             HandleException(context, ex);
         }
 
         return context.Response;
     }
 
-    public record CertificateListCommandResult(List<SignalRCustomCertificateModel> Certificates);
+    public record RuntimeShowCommandResult(SignalRRuntimeModel Runtime);
 }

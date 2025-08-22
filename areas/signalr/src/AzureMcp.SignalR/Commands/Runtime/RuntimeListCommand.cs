@@ -13,11 +13,11 @@ namespace AzureMcp.SignalR.Commands.SignalR;
 /// <summary>
 /// Lists Azure SignalR Service resources in the specified subscription.
 /// </summary>
-public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand> logger)
+public sealed class RuntimeListCommand(ILogger<RuntimeListCommand> logger)
     : BaseSignalRCommand<SignalRListOptions>
 {
     private const string CommandTitle = "List all Services";
-    private readonly ILogger<SignalRServiceListCommand> _logger = logger;
+    private readonly ILogger<RuntimeListCommand> _logger = logger;
     protected override bool RequiresResourceGroup => false;
 
     public override string Name => "list";
@@ -48,19 +48,19 @@ public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand>
 
             var signalRService = context.GetService<ISignalRService>() ??
                                  throw new InvalidOperationException("SignalR service is not available.");
-            var signalRServices = await signalRService.ListSignalRServicesAsync(
+            var runtimes = await signalRService.ListRuntimesAsync(
                 options.Subscription!,
                 options.Tenant,
                 options.AuthMethod,
                 options.RetryPolicy);
 
             _logger.LogInformation("Found {Count} SignalR service(s) in subscription {SubscriptionId}",
-                signalRServices.Count(), options.Subscription);
+                runtimes.Count(), options.Subscription);
 
-            context.Response.Results = signalRServices.Any()
+            context.Response.Results = runtimes.Any()
                 ? ResponseResult.Create(
-                    new SignalRServiceListCommandResult(signalRServices),
-                    SignalRJsonContext.Default.SignalRServiceListCommandResult)
+                    new RuntimeListCommandResult(runtimes),
+                    SignalRJsonContext.Default.RuntimeListCommandResult)
                 : null;
         }
         catch (Exception ex)
@@ -73,5 +73,5 @@ public sealed class SignalRServiceListCommand(ILogger<SignalRServiceListCommand>
         return context.Response;
     }
 
-    public record SignalRServiceListCommandResult(IEnumerable<SignalRServiceModel> SignalRServices);
+    public record RuntimeListCommandResult(IEnumerable<SignalRRuntimeModel> Runtimes);
 }

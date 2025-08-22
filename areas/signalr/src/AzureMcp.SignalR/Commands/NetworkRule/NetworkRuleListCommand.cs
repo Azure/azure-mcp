@@ -1,0 +1,122 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
+using AzureMcp.SignalR.Options;
+using AzureMcp.SignalR.Options.NetworkRule;
+using AzureMcp.SignalR.Services;
+using Microsoft.Extensions.Logging;
+
+namespace AzureMcp.SignalR.Commands.NetworkRule;
+
+/// <summary>
+/// Command to list SignalR network rules.
+/// </summary>
+public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logger)
+    : BaseSignalRCommand<NetworkRuleListOptions>
+{
+    private const string CommandTitle = "List SignalR Network Rules";
+    private readonly ILogger<NetworkRuleListCommand> _logger = logger;
+
+    private readonly Option<string> _signalRNameOption = SignalROptionDefinitions.SignalRName;
+
+    public override string Name => "list";
+
+    public override string Description =>
+        """
+        Lists network access control rules for a SignalR service.
+        Returns the network ACL configuration including public network rules and private endpoint rules.
+
+        Required options:
+        - signalr-name: The name of the SignalR service
+        - resource-group: The resource group containing the SignalR service
+        - subscription: The subscription ID or name
+        """;
+
+    public override string Title => CommandTitle;
+
+    public override ToolMetadata Metadata => new()
+    {
+        Destructive = false,
+        ReadOnly = true
+    };
+
+    protected override void RegisterOptions(Command command)
+    {
+        base.RegisterOptions(command);
+        command.AddOption(_signalRNameOption);
+    }
+
+    protected override NetworkRuleListOptions BindOptions(ParseResult parseResult)
+    {
+        var options = base.BindOptions(parseResult);
+        options.SignalRName = parseResult.GetValueForOption(_signalRNameOption);
+        return options;
+    }
+
+    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, ParseResult parseResult)
+    {
+        var options = BindOptions(parseResult);
+
+        try
+        {
+            // Required validation step
+            if (!Validate(parseResult.CommandResult, context.Response).IsValid)
+            {
+                return context.Response;
+            }
+
+            context.Activity?.WithSubscriptionTag(options);
+
+            // Get the SignalR service from DI
+            var service = context.GetService<ISignalRService>();
+
+            // Call service to get network rules
+            var networkRules = await service.GetNetworkRulesAsync(
+                options.Subscription!,
+                options.ResourceGroup!,
+                options.SignalRName!,
+                options.AuthMethod,
+                options.RetryPolicy);
+
+            // Set results
+            context.Response.Results = networkRules != null ?
+                ResponseResult.Create(
+                    new NetworkRuleListCommandResult(networkRules),
+                    SignalRJsonContext.Default.NetworkRuleListCommandResult) :
+                null;
+        }
+        catch (Exception ex)
+        {
+            // Log error with all relevant context
+            _logger.LogError(ex,
+                "Error listing network rules for SignalR service. SignalR: {SignalRName}, ResourceGroup: {ResourceGroup}, Options: {@Options}",
+                options.SignalRName, options.ResourceGroup, options);
+            HandleException(context, ex);
+        }
+
+        return context.Response;
+    }
+
+    protected override string GetErrorMessage(Exception ex) => ex switch
+    {
+        Azure.RequestFailedException reqEx when reqEx.Status == 404 =>
+            "SignalR service not found. Verify the service name, resource group, and subscription are correct.",
+        Azure.RequestFailedException reqEx when reqEx.Status == 403 =>
+            $"Authorization failed accessing the SignalR service. Details: {reqEx.Message}",
+        Azure.RequestFailedException reqEx => reqEx.Message,
+        _ => base.GetErrorMessage(ex)
+    };
+
+    protected override int GetStatusCode(Exception ex) => ex switch
+    {
+        Azure.RequestFailedException reqEx => reqEx.Status,
+        _ => base.GetStatusCode(ex)
+    };
+
+    /// <summary>
+    /// Result for the network rule list command.
+    /// </summary>
+    public record NetworkRuleListCommandResult(Models.SignalRNetworkAclModel NetworkRules);
+}

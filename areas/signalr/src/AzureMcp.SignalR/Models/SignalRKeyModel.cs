@@ -11,30 +11,30 @@ public class SignalRKeyModel
     /// <summary>
     /// The type of the key (Primary or Secondary).
     /// </summary>
-    public string KeyType { get; set; } = string.Empty;
+    public string? KeyType { get; set; }
 
     /// <summary>
     /// The connection string for this key.
     /// </summary>
-    public string ConnectionString { get; set; } = string.Empty;
+    public string? ConnectionString { get; set; }
 
     /// <summary>
     /// The primary key value.
     /// </summary>
-    public string PrimaryKey { get; set; } = string.Empty;
+    public string? PrimaryKey { get; set; }
 
     /// <summary>
     /// The secondary key value.
     /// </summary>
-    public string SecondaryKey { get; set; } = string.Empty;
+    public string? SecondaryKey { get; set; }
 
     /// <summary>
     /// The primary connection string.
     /// </summary>
-    public string PrimaryConnectionString { get; set; } = string.Empty;
+    public string? PrimaryConnectionString { get; set; }
 
     /// <summary>
     /// The secondary connection string.
     /// </summary>
-    public string SecondaryConnectionString { get; set; } = string.Empty;
+    public string? SecondaryConnectionString { get; set; }
 }

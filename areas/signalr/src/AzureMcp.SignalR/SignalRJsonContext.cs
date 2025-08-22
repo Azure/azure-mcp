@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
-using AzureMcp.SignalR.Commands.CustomCertificate;
-using AzureMcp.SignalR.Commands.CustomDomain;
+using AzureMcp.SignalR.Commands.Identity;
 using AzureMcp.SignalR.Commands.Key;
+using AzureMcp.SignalR.Commands.NetworkRule;
 using AzureMcp.SignalR.Commands.SignalR;
 using AzureMcp.SignalR.Models;
 
@@ -13,20 +13,21 @@ namespace AzureMcp.SignalR;
 /// <summary>
 /// JSON serialization context for Azure SignalR Service commands.
 /// </summary>
-[JsonSerializable(typeof(SignalRServiceListCommand.SignalRServiceListCommandResult))]
-[JsonSerializable(typeof(SignalRShowCommand.SignalRShowCommandResult))]
-[JsonSerializable(typeof(CustomCertificateShowCommand.CertificateShowCommandResult))]
-[JsonSerializable(typeof(CustomCertificateListCommand.CertificateListCommandResult))]
-[JsonSerializable(typeof(CustomDomainListCommand.CustomDomainListCommandResult))]
-[JsonSerializable(typeof(CustomDomainShowCommand.CustomDomainShowCommandResult))]
+[JsonSerializable(typeof(RuntimeListCommand.RuntimeListCommandResult))]
+[JsonSerializable(typeof(RuntimeShowCommand.RuntimeShowCommandResult))]
 [JsonSerializable(typeof(KeyListCommand.KeyListCommandResult))]
-[JsonSerializable(typeof(SignalRServiceModel))]
-[JsonSerializable(typeof(SignalRCustomCertificateModel))]
-[JsonSerializable(typeof(SignalRCustomDomainModel))]
+[JsonSerializable(typeof(IdentityShowCommand.IdentityShowCommandResult))]
+[JsonSerializable(typeof(NetworkRuleListCommand.NetworkRuleListCommandResult))]
+[JsonSerializable(typeof(SignalRRuntimeModel))]
 [JsonSerializable(typeof(SignalRKeyModel))]
-[JsonSerializable(typeof(IEnumerable<SignalRServiceModel>))]
-[JsonSerializable(typeof(List<SignalRCustomDomainModel>))]
-[JsonSerializable(typeof(List<SignalRCustomCertificateModel>))]
+[JsonSerializable(typeof(SignalRIdentityModel))]
+[JsonSerializable(typeof(SignalRNetworkAclModel))]
+[JsonSerializable(typeof(SignalRNetworkRuleModel))]
+[JsonSerializable(typeof(SignalRPrivateEndpointModel))]
+[JsonSerializable(typeof(UserAssignedIdentity))]
+[JsonSerializable(typeof(IEnumerable<SignalRRuntimeModel>))]
+[JsonSerializable(typeof(IEnumerable<SignalRPrivateEndpointModel>))]
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 public partial class SignalRJsonContext : JsonSerializerContext
 {
 }
