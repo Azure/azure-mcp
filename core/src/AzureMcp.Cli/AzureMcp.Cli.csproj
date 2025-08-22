@@ -37,6 +37,22 @@
     <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
   </PropertyGroup>
 
+  <!-- Windows AOT native build security settings -->
+  <PropertyGroup Condition="'$(BuildNative)' == 'true' AND ($(RuntimeIdentifier.StartsWith('win')) OR $([MSBuild]::IsOSPlatform('Windows')))">
+    <!-- Enable 'Control Flow Guard' (CFG) -->
+    <ControlFlowGuard>Guard</ControlFlowGuard>
+    <!-- Ensure 'DYNAMICBASE' is enabled -->
+    <EnableCOMDATFolding>false</EnableCOMDATFolding>
+    <OptimizeReferences>false</OptimizeReferences>
+  </PropertyGroup>
+
+  <!-- Native AOT compiler options for Windows 'Control Flow Guard' (CFG) -->
+  <ItemGroup Condition="'$(BuildNative)' == 'true' AND ($(RuntimeIdentifier.StartsWith('win')) OR $([MSBuild]::IsOSPlatform('Windows')))">
+    <IlcArg Include="--guard:cf" />
+    <LinkerArg Include="/guard:cf" />
+    <LinkerArg Include="/DYNAMICBASE" />
+  </ItemGroup>
+
   <!-- Debug configuration -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <PublishSingleFile>false</PublishSingleFile>
