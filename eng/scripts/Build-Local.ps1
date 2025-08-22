@@ -68,7 +68,8 @@ else {
     -OutputPath $distPath `
     -BuildNative:$BuildNative
 
-$tgzFile = Get-ChildItem -Path "$distPath/wrapper" -Filter '*.tgz'
+$wrapperPath = if ($BuildNative) { "$distPath/native/wrapper" } else { "$distPath/dotnet/wrapper" }
+$tgzFile = Get-ChildItem -Path $wrapperPath -Filter '*.tgz'
 | Select-Object -First 1
 
 $testSettingsPath = "$root/.testsettings.json"
