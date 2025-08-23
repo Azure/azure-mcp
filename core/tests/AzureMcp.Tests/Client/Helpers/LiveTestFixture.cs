@@ -30,6 +30,10 @@ public class LiveTestFixture : LiveTestSettingsFixture
 
         var fileInfo = new FileInfo(executablePath);
         double sizeInMB = fileInfo.Length / (1024.0 * 1024.0);
+        if (sizeInMB > 20.0)
+        {
+            throw new Exception("Fail on aot");
+        }
         Console.WriteLine($"Executable size: {sizeInMB:F2} MB ({executablePath})");
 
         // Use custom arguments if provided, otherwise default to ["server", "start"]
