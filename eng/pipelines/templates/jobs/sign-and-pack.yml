@@ -72,8 +72,8 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
-        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/dotnet'
         -Version '$(Version)'
 
   - task: Powershell@2
@@ -82,8 +82,8 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
-        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/native'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/native'
         -Version '$(Version)'
         -BuildNative
 

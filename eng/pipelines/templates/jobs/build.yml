@@ -50,14 +50,14 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Build-Module.ps1
       arguments: >
-        -OutputPath '$(Build.ArtifactStagingDirectory)'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/dotnet'
         -Version '$(Version)'
         -OperatingSystem '${{ parameters.OSName }}'
         -Architecture '$(Architecture)'
         -SelfContained
 
   - task: Powershell@2
-    displayName: "Run tests"
+    displayName: "Run unit tests"
     condition: and(succeeded(), eq(variables['RunTests'], 'true'))
     timeoutInMinutes: ${{ parameters.TestTimeoutInMinutes }}
     inputs:
@@ -97,7 +97,7 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Build-Module.ps1
       arguments: >
-        -OutputPath '$(Build.ArtifactStagingDirectory)'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/native'
         -Version '$(Version)'
         -OperatingSystem '${{ parameters.OSName }}'
         -Architecture '$(Architecture)'

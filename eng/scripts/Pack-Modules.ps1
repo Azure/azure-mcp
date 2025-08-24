@@ -37,11 +37,11 @@ Remove-Item -Path $wrapperFolder -Recurse -Force -ErrorAction SilentlyContinue -
 
 Push-Location $RepoRoot
 try {
-    if ($BuildNative) {
-        $OutputPath = "$OutputPath/native"
-    } else {
-        $OutputPath = "$OutputPath/dotnet"
-    }
+    # if ($BuildNative) {
+    #     $OutputPath = "$OutputPath/native"
+    # } else {
+    #     $OutputPath = "$OutputPath/dotnet"
+    # }
 
     # Clear and recreate the output directory
     Remove-Item -Path $OutputPath -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
@@ -58,17 +58,17 @@ try {
         $packageFolder = $platformFile.DirectoryName
         $platform = Get-Content $platformFile.FullName -Raw | ConvertFrom-Json -AsHashtable
 
-        if ($BuildNative) {
-            # For native builds, only process packages with names starting with "@azure/mcp-native-"
-            if (-not $platform.name.StartsWith("@azure/mcp-native-")) {
-                continue
-            }
-        } else {
-            # For regular builds, skip packages with names starting with "@azure/mcp-native-"
-            if ($platform.name.StartsWith("@azure/mcp-native-")) {
-                continue
-            }
-        }
+        # if ($BuildNative) {
+        #     # For native builds, only process packages with names starting with "@azure/mcp-native-"
+        #     if (-not $platform.name.StartsWith("@azure/mcp-native-")) {
+        #         continue
+        #     }
+        # } else {
+        #     # For regular builds, skip packages with names starting with "@azure/mcp-native-"
+        #     if ($platform.name.StartsWith("@azure/mcp-native-")) {
+        #         continue
+        #     }
+        # }
 
         if ($platform.version -ne $version) {
            Write-Error "Version mismatch in $($platformFile.FullName). Expected $version, found $($platform.version)"
