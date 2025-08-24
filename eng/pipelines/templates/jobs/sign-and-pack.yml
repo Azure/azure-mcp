@@ -14,17 +14,19 @@ jobs:
   steps:
   - checkout: self
 
-  - download: current
-    patterns: |
-      $(PipelineArtifactName)_*/dotnet/**
-    path: $(Pipeline.Workspace)/dotnet
+  - task: DownloadPipelineArtifact@2
     displayName: Download dotnet artifacts
+    inputs:
+      source: current
+      patterns: $(PipelineArtifactName)_*/dotnet/**
+      path: $(Pipeline.Workspace)/dotnet
 
-  - download: current
-    patterns: |
-      $(PipelineArtifactName)_*/native/**
-    path: $(Pipeline.Workspace)/native
+  - task: DownloadPipelineArtifact@2
     displayName: Download native artifacts
+    inputs:
+      source: current
+      patterns: $(PipelineArtifactName)_*/native/**
+      path: $(Pipeline.Workspace)/native
 
   - task: Powershell@2
     displayName: "Show Pipeline.Workspace directory structure"
