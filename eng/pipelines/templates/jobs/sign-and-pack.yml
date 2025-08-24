@@ -18,6 +18,27 @@ jobs:
     displayName: Download artifacts
 
   - task: Powershell@2
+    displayName: "Show Pipeline.Workspace directory structure"
+    inputs:
+      pwsh: true
+      targetType: inline
+      script: |
+        Write-Host "Pipeline.Workspace directory structure (4 levels deep):"
+        Get-ChildItem -Path '$(Pipeline.Workspace)' -Recurse -Depth 4 | 
+          Sort-Object FullName | 
+          ForEach-Object {
+            $indent = "  " * (($_.FullName.Split([IO.Path]::DirectorySeparatorChar).Count) - (('$(Pipeline.Workspace)'.Split([IO.Path]::DirectorySeparatorChar).Count)))
+            if ($_.PSIsContainer) {
+              Write-Host "$indent$($_.Name)/" -ForegroundColor Cyan
+            } else {
+              $sizeInfo = if ($_.Length -gt 1MB) { " ({0:F1} MB)" -f ($_.Length / 1MB) } 
+                         elseif ($_.Length -gt 1KB) { " ({0:F1} KB)" -f ($_.Length / 1KB) } 
+                         else { " ($($_.Length) bytes)" }
+              Write-Host "$indent$($_.Name)$sizeInfo" -ForegroundColor White
+            }
+          }
+
+  - task: Powershell@2
     displayName: "Compress packages"
     inputs:
       pwsh: true
