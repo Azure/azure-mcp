@@ -23,14 +23,14 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Compress-ForSigning.ps1
       arguments: >
-        -ArtifactsPath '$(Pipeline.Workspace)'
+        -ArtifactsPath '$(Pipeline.Workspace)/dotnet'
         -ArtifactPrefix '$(PipelineArtifactName)_'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/signed'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
 
   - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
     parameters:
       SigningKeyCode: 'CP-230012' # MS Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
       BinaryPattern: |
         win-*/**/azmcp.dll
         win-*/**/azmcp.exe
@@ -39,7 +39,7 @@ jobs:
   - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
     parameters:
       SigningKeyCode: 'CP-231522' # MS 3rd Party Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
       BinaryPattern: |
         win-*/**/ModelContextProtocol*.dll
         win-*/**/Npgsql.dll
@@ -49,7 +49,7 @@ jobs:
 
   - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
     parameters:
-      MacPath: $(Build.ArtifactStagingDirectory)/signed
+      MacPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
       MacPattern: "**/*.zip"
 
   - task: Powershell@2
@@ -58,11 +58,60 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Expand-AfterSigning.ps1
       arguments: >
-        -Path '$(Build.ArtifactStagingDirectory)/signed'
+        -Path '$(Build.ArtifactStagingDirectory)/signed/dotnet'
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
+      ArtifactName: $(PipelineArtifactName)_signed
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+
+  - task: Powershell@2
+    displayName: "Compress packages"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Compress-ForSigning.ps1
+      arguments: >
+        -ArtifactsPath '$(Pipeline.Workspace)/native'
+        -ArtifactPrefix '$(PipelineArtifactName)_'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/signed/native'
+
+  - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
+    parameters:
+      SigningKeyCode: 'CP-230012' # MS Cert
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/native
+      BinaryPattern: |
+        win-*/**/azmcp.dll
+        win-*/**/azmcp.exe
+        win-*/**/AzureMcp*.dll
+
+  - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
+    parameters:
+      SigningKeyCode: 'CP-231522' # MS 3rd Party Cert
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/native
+      BinaryPattern: |
+        win-*/**/ModelContextProtocol*.dll
+        win-*/**/Npgsql.dll
+        win-*/**/OpenAI.dll
+        win-*/**/OpenTelemetry*.dll
+        win-*/**/YamlDotNet.dll
+
+  - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
+    parameters:
+      MacPath: $(Build.ArtifactStagingDirectory)/signed/native
+      MacPattern: "**/*.zip"
+
+  - task: Powershell@2
+    displayName: "Expand packages"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Expand-AfterSigning.ps1
+      arguments: >
+        -Path '$(Build.ArtifactStagingDirectory)/signed/native'
+
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/native
       ArtifactName: $(PipelineArtifactName)_signed
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
