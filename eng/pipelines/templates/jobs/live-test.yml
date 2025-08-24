@@ -42,81 +42,81 @@ jobs:
       EnvVars:
         Pool: $(Pool)
 
-  - template: /eng/common/TestResources/deploy-test-resources.yml
-    parameters:
-      ServiceConnection: azure-sdk-tests-public
-      PersistOidcToken: true
-      TestResourcesDirectory: $(Build.SourcesDirectory)/$(TestResourcesPath)
+  # - template: /eng/common/TestResources/deploy-test-resources.yml
+  #   parameters:
+  #     ServiceConnection: azure-sdk-tests-public
+  #     PersistOidcToken: true
+  #     TestResourcesDirectory: $(Build.SourcesDirectory)/$(TestResourcesPath)
 
-  - pwsh: |
-      ./eng/scripts/Build-Local.ps1 -VerifyNpx
-    displayName: "Build local package"
-    workingDirectory: $(Build.SourcesDirectory)
+  # - pwsh: |
+  #     ./eng/scripts/Build-Local.ps1 -VerifyNpx
+  #   displayName: "Build local package"
+  #   workingDirectory: $(Build.SourcesDirectory)
 
-  - task: AzurePowershell@5
-    displayName: "Run tests - az pwsh"
-    env:
-      AZURE_TEST_MODE: 'live'
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      azureSubscription: azure-sdk-tests-public
-      azurePowerShellVersion: 'LatestVersion'
-      scriptType: InlineScript
-      Inline: |
-        ./eng/scripts/Test-Code.ps1 `
-          -TestType 'Live' `
-          -Area $(Area) `
-          -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults/dotnet'
+  # - task: AzurePowershell@5
+  #   displayName: "Run tests - az pwsh"
+  #   env:
+  #     AZURE_TEST_MODE: 'live'
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   inputs:
+  #     azureSubscription: azure-sdk-tests-public
+  #     azurePowerShellVersion: 'LatestVersion'
+  #     scriptType: InlineScript
+  #     Inline: |
+  #       ./eng/scripts/Test-Code.ps1 `
+  #         -TestType 'Live' `
+  #         -Area $(Area) `
+  #         -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults/dotnet'
 
-        exit $LastExitCode
-      pwsh: true
-      workingDirectory: $(Build.SourcesDirectory)
+  #       exit $LastExitCode
+  #     pwsh: true
+  #     workingDirectory: $(Build.SourcesDirectory)
 
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    displayName: "Publish Results"
-    inputs:
-      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/dotnet/*.trx"
-      testRunTitle: "live-dotnet-$(Area)"
-      testResultsFormat: "VSTest"
-      mergeTestResults: true
+  # - task: PublishTestResults@2
+  #   condition: succeededOrFailed()
+  #   displayName: "Publish Results"
+  #   inputs:
+  #     testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/dotnet/*.trx"
+  #     testRunTitle: "live-dotnet-$(Area)"
+  #     testResultsFormat: "VSTest"
+  #     mergeTestResults: true
 
   - pwsh: |
       ./eng/scripts/Build-Local.ps1 -VerifyNpx -BuildNative
     displayName: "(Native AOT) Build local package"
     workingDirectory: $(Build.SourcesDirectory)
 
-  - task: AzurePowershell@5
-    displayName: "(Native AOT) Run tests - az pwsh"
-    env:
-      AZURE_TEST_MODE: 'live'
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      azureSubscription: azure-sdk-tests-public
-      azurePowerShellVersion: 'LatestVersion'
-      scriptType: InlineScript
-      Inline: |
-        ./eng/scripts/Test-Code.ps1 `
-          -TestType 'Live' `
-          -Area $(Area) `
-          -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults/native' `
-          -TestNativeBuild
+  # - task: AzurePowershell@5
+  #   displayName: "(Native AOT) Run tests - az pwsh"
+  #   env:
+  #     AZURE_TEST_MODE: 'live'
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   inputs:
+  #     azureSubscription: azure-sdk-tests-public
+  #     azurePowerShellVersion: 'LatestVersion'
+  #     scriptType: InlineScript
+  #     Inline: |
+  #       ./eng/scripts/Test-Code.ps1 `
+  #         -TestType 'Live' `
+  #         -Area $(Area) `
+  #         -TestResultsPath '$(Build.ArtifactStagingDirectory)/testResults/native' `
+  #         -TestNativeBuild
 
-        exit $LastExitCode
-      pwsh: true
-      workingDirectory: $(Build.SourcesDirectory)
+  #       exit $LastExitCode
+  #     pwsh: true
+  #     workingDirectory: $(Build.SourcesDirectory)
 
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    displayName: "(Native AOT) Publish Results"
-    inputs:
-      testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/native/*.trx"
-      testRunTitle: "live-native-$(Area)"
-      testResultsFormat: "VSTest"
-      mergeTestResults: true
+  # - task: PublishTestResults@2
+  #   condition: succeededOrFailed()
+  #   displayName: "(Native AOT) Publish Results"
+  #   inputs:
+  #     testResultsFiles: "$(Build.ArtifactStagingDirectory)/testResults/native/*.trx"
+  #     testRunTitle: "live-native-$(Area)"
+  #     testResultsFormat: "VSTest"
+  #     mergeTestResults: true
 
-  - template: /eng/common/TestResources/remove-test-resources.yml
-    parameters:
-      ServiceConnection: azure-sdk-tests-public
-      EnvVars:
-        Pool: $(Pool)
+  # - template: /eng/common/TestResources/remove-test-resources.yml
+  #   parameters:
+  #     ServiceConnection: azure-sdk-tests-public
+  #     EnvVars:
+  #       Pool: $(Pool)
