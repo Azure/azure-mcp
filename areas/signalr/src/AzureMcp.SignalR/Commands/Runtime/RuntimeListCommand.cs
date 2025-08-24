@@ -4,11 +4,11 @@
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.SignalR.Models;
-using AzureMcp.SignalR.Options.SignalR;
+using AzureMcp.SignalR.Options.Runtime;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.SignalR.Commands.SignalR;
+namespace AzureMcp.SignalR.Commands.Runtime;
 
 /// <summary>
 /// Lists Azure SignalR Service resources in the specified subscription.
@@ -16,7 +16,7 @@ namespace AzureMcp.SignalR.Commands.SignalR;
 public sealed class RuntimeListCommand(ILogger<RuntimeListCommand> logger)
     : BaseSignalRCommand<SignalRListOptions>
 {
-    private const string CommandTitle = "List all Services";
+    private const string CommandTitle = "List all Runtimes";
     private readonly ILogger<RuntimeListCommand> _logger = logger;
     protected override bool RequiresResourceGroup => false;
 
@@ -24,9 +24,9 @@ public sealed class RuntimeListCommand(ILogger<RuntimeListCommand> logger)
 
     public override string Description =>
         """
-        List all SignalR Service resources in a specified subscription. Returns an array of SignalR Service details.
+        List all SignalR Runtime resources in a specified subscription. Returns an array of SignalR Runtime details.
         Required options:
-        - --subscription: The subscription ID or name
+        - subscription: The subscription ID or name
         """;
 
     public override string Title => CommandTitle;

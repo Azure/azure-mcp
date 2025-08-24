@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AzureMcp.Core.Options;
-
 namespace AzureMcp.SignalR.Options;
 
 /// <summary>
@@ -25,9 +23,11 @@ public static class SignalROptionDefinitions
     /// </summary>
     public static readonly Option<string> CertificateName = new(
         aliases: ["--name"],
-        description: "The name of the custom certificate.") { IsRequired = true };
+        description: "The name of the custom certificate.")
+    { IsRequired = true };
 
     public static readonly Option<string> CustomDomainName = new(
         aliases: ["--name"],
-        description: "The name of the custom domain to be added to the SignalR service.") { IsRequired = true };
+        description: "The name of the custom domain to be added to the SignalR service.")
+    { IsRequired = true };
 }

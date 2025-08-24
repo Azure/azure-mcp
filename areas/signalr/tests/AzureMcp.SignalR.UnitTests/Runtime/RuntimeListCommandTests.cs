@@ -3,10 +3,10 @@
 
 using System.CommandLine.Parsing;
 using Azure;
-using AzureMcp.SignalR;
-using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Models;
-using AzureMcp.SignalR.Commands.SignalR;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.SignalR;
+using AzureMcp.SignalR.Commands.Runtime;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +41,7 @@ public class RuntimeListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ValidParameters_ReturnsSignalRServices()
+    public async Task ExecuteAsync_ValidParameters_ReturnsSignalRRuntimes()
     {
         // Arrange
         var expectedServices = new List<SignalRRuntimeModel>
@@ -107,17 +107,17 @@ public class RuntimeListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_NoSignalRServices_ReturnsNull()
+    public async Task ExecuteAsync_NoSignalRRuntimes_ReturnsNull()
     {
         // Arrange
-        var emptyServices = new List<SignalRRuntimeModel>();
+        var emptyRuntimes = new List<SignalRRuntimeModel>();
 
         _signalRService.ListRuntimesAsync(
                 _knownSubscriptionId,
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
                 Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .Returns(emptyServices);
+            .Returns(emptyRuntimes);
 
         var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
 

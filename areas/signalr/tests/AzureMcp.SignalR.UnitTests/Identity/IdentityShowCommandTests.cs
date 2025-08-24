@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine.Parsing;
 using Azure;
+using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
 using AzureMcp.Core.Services.Azure.Subscription;
@@ -13,8 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System.CommandLine.Parsing;
-using AzureMcp.Core.Models;
 using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.Identity;
@@ -60,7 +60,9 @@ public class IdentityShowCommandTests
         // Arrange
         var identity = new SignalRIdentityModel
         {
-            Type = "SystemAssigned", PrincipalId = "principal123", TenantId = "tenant123"
+            Type = "SystemAssigned",
+            PrincipalId = "principal123",
+            TenantId = "tenant123"
         };
 
         _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),

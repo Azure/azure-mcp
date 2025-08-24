@@ -3,13 +3,13 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
-using AzureMcp.SignalR.Options.SignalR;
+using AzureMcp.SignalR.Options.Runtime;
 using AzureMcp.SignalR.Services;
+using Microsoft.Extensions.Logging;
 
-namespace AzureMcp.SignalR.Commands.SignalR;
+namespace AzureMcp.SignalR.Commands.Runtime;
 
 /// <summary>
 /// Shows details of an Azure SignalR Service.
@@ -26,12 +26,12 @@ public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
 
     public override string Description =>
         """
-        Show details of an Azure SignalR Service. Returns service information including location, SKU,
+        Show details of an Azure SignalR Runtime. Returns runtime information including location, SKU,
         provisioning state, hostname, and port configuration.
         Required options:
-        - --subscription: The subscription ID or name
-        - --resource-group: The resource group name
-        - --signalr-name: The SignalR service name
+        - subscription: The subscription ID or name
+        - resource-group: The resource group name
+        - signalr-name: The SignalR runtime name
         """;
 
     public override string Title => CommandTitle;

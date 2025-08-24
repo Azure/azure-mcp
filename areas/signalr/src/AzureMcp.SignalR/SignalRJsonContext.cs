@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using AzureMcp.SignalR.Commands.Identity;
 using AzureMcp.SignalR.Commands.Key;
 using AzureMcp.SignalR.Commands.NetworkRule;
-using AzureMcp.SignalR.Commands.SignalR;
+using AzureMcp.SignalR.Commands.Runtime;
 using AzureMcp.SignalR.Models;
 
 namespace AzureMcp.SignalR;

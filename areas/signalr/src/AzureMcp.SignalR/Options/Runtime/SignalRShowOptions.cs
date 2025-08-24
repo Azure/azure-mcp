@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace AzureMcp.SignalR.Options.SignalR;
+namespace AzureMcp.SignalR.Options.Runtime;
 
 /// <summary>
 /// Options for showing SignalR service details.

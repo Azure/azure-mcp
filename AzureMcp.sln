@@ -383,9 +383,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{165A0B01-D57C-443F-80BB-A54B494EC8B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4D0C77C1-27EE-498C-BF3E-B740E13B8DCE}"
-	ProjectSection(SolutionItems) = preProject
-		areas\signalr\tests\test-resources-post.ps1 = areas\signalr\tests\test-resources-post.ps1
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.SignalR.UnitTests", "areas\signalr\tests\AzureMcp.SignalR.UnitTests\AzureMcp.SignalR.UnitTests.csproj", "{2268256F-C613-427B-817A-188FA22D3311}"
 EndProject

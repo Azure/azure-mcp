@@ -3,11 +3,11 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
 using AzureMcp.SignalR.Options.Identity;
 using AzureMcp.SignalR.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.SignalR.Commands.Identity;
 
@@ -30,9 +30,9 @@ public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
         including type (SystemAssigned, UserAssigned, or both), principal ID, tenant ID, and any
         user-assigned identities associated with the service.
         Required options:
-        - --subscription: The subscription ID or name
-        - --resource-group: The resource group name
-        - --signalr-name: The SignalR service name
+        - subscription: The subscription ID or name
+        - resource-group: The resource group name
+        - signalr-name: The SignalR service name
         """;
 
     public override string Title => CommandTitle;

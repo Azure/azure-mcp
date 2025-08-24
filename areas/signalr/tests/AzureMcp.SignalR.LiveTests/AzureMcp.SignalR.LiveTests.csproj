@@ -2,7 +2,6 @@
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AzureMcp.SignalR.LiveTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\core\src\AzureMcp.Cli\AzureMcp.Cli.csproj"/>

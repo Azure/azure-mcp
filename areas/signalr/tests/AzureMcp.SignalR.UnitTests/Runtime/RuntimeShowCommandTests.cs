@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using AzureMcp.SignalR;
-using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Models;
+using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.SignalR.Commands.SignalR;
+using AzureMcp.SignalR;
+using AzureMcp.SignalR.Commands.Runtime;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;

@@ -3,11 +3,11 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
-using Microsoft.Extensions.Logging;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Options;
 using AzureMcp.SignalR.Options.Key;
 using AzureMcp.SignalR.Services;
+using Microsoft.Extensions.Logging;
 
 namespace AzureMcp.SignalR.Commands.Key;
 
@@ -29,9 +29,9 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
         List access keys for a SignalR service. This command retrieves and displays the primary and secondary
         access keys and connection strings for the specified SignalR service.
         Required options:
-        - --subscription: The subscription ID or name
-        - --resource-group: The resource group name
-        - --signalr-name: The SignalR service name
+        - subscription: The subscription ID or name
+        - resource-group: The resource group name
+        - signalr-name: The SignalR service name
         """;
 
     public override string Title => CommandTitle;

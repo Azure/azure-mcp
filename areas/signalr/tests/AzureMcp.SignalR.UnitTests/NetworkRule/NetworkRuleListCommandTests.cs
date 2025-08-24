@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.CommandLine.Parsing;
 using Azure;
+using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
 using AzureMcp.SignalR.Commands.NetworkRule;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
@@ -10,9 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System.CommandLine.Parsing;
-using AzureMcp.Core.Models;
-using AzureMcp.Core.Options;
 using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.NetworkRule;
@@ -138,7 +138,8 @@ public class NetworkRuleListCommandTests
             PublicNetwork =
                 new SignalRNetworkRuleModel
                 {
-                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI", "Trace" }, Deny = null
+                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI", "Trace" },
+                    Deny = null
                 },
             PrivateEndpoints = new[]
             {
