@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization.Metadata;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using AzureMcp.Core.Options;
@@ -133,24 +134,19 @@ public class MarketplaceService(ITenantService tenantService)
 
     private async Task<ProductListResponseWithNextCursor> GetMarketplaceProductsListResponseAsync(string url, string? tenant, RetryPolicyOptions? retryPolicy = null)
     {
-        return await ExecuteMarketplaceRequestAsync(
+        var productsListResponse = await ExecuteMarketplaceRequestAsync<ProductsListResponse>(
             url,
             tenant,
             retryPolicy,
-            requestConfig: null,
-            responseProcessor: stream =>
-            {
-                var productsListResponse = JsonSerializer.Deserialize(stream, MarketplaceJsonContext.Default.ProductsListResponse);
+            null,
+            MarketplaceJsonContext.Default.ProductsListResponse);
 
-                var result = new ProductListResponseWithNextCursor
-                {
-                    Items = productsListResponse?.Items ?? new List<ProductSummary>(),
-                    NextCursor = ExtractSkipTokenFromUrl(productsListResponse?.NextPageLink)
-
-                };
-                return result;
-            },
-            errorContext: "marketplace products list response");
+        var result = new ProductListResponseWithNextCursor
+        {
+            Items = productsListResponse?.Items ?? [],
+            NextCursor = ExtractSkipTokenFromUrl(productsListResponse?.NextPageLink)
+        };
+        return result;
     }
 
 
@@ -197,22 +193,20 @@ public class MarketplaceService(ITenantService tenantService)
 
     private async Task<ProductDetails> GetMarketplaceProductsGetResponseAsync(string url, string? pricingAudience, string? tenant, RetryPolicyOptions? retryPolicy = null)
     {
-        return await ExecuteMarketplaceRequestAsync(
+        var headers = new Dictionary<string, string>();
+        if (!string.IsNullOrEmpty(pricingAudience))
+        {
+            headers["PricingAudience"] = pricingAudience;
+        }
+
+        var productDetails = await ExecuteMarketplaceRequestAsync<ProductDetails>(
             url,
             tenant,
             retryPolicy,
-            requestConfig: request =>
-            {
-                // Add optional headers as specified in the API
-                if (!string.IsNullOrEmpty(pricingAudience))
-                    request.Headers.Add("PricingAudience", pricingAudience);
-            },
-            responseProcessor: stream =>
-            {
-                var productDetails = JsonSerializer.Deserialize(stream, MarketplaceJsonContext.Default.ProductDetails);
-                return productDetails ?? throw new JsonException("Failed to deserialize marketplace response to ProductDetails.");
-            },
-            errorContext: "marketplace response");
+            headers,
+            MarketplaceJsonContext.Default.ProductDetails);
+
+        return productDetails ?? throw new JsonException("Failed to deserialize marketplace response to ProductDetails.");
     }
 
     private async Task<string> GetAccessTokenAsync(string? tenant = null)
@@ -276,9 +270,8 @@ public class MarketplaceService(ITenantService tenantService)
         string url,
         string? tenant,
         RetryPolicyOptions? retryPolicy,
-        Action<Azure.Core.Request>? requestConfig,
-        Func<Stream, T> responseProcessor,
-        string errorContext)
+        Dictionary<string, string>? headers,
+        JsonTypeInfo<T> jsonTypeInfo)
     {
         // Use Azure Core pipeline approach consistently
         var clientOptions = AddDefaultPolicies(new MarketplaceClientOptions());
@@ -303,8 +296,14 @@ public class MarketplaceService(ITenantService tenantService)
         request.Uri.Reset(new Uri(url));
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
 
-        // Allow caller to configure additional request properties
-        requestConfig?.Invoke(request);
+        // Add any additional headers
+        if (headers != null && headers.Count > 0)
+        {
+            foreach (var header in headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
+            }
+        }
 
         var response = await pipeline.SendRequestAsync(request, CancellationToken.None);
 
@@ -312,11 +311,11 @@ public class MarketplaceService(ITenantService tenantService)
         {
             try
             {
-                return responseProcessor(response.Content.ToStream());
+                return JsonSerializer.Deserialize(response.Content.ToStream(), jsonTypeInfo)!;
             }
             catch (JsonException ex)
             {
-                throw new JsonException($"Failed to deserialize {errorContext}: {ex.Message}", ex);
+                throw new JsonException($"Failed to deserialize marketplace response: {ex.Message}", ex);
             }
         }
 
