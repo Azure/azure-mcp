@@ -1,5 +1,5 @@
 >[!NOTE]
->Active development has moved to [microsoft/mcp](https://github.com/microsoft/mcp) as of 8/25/2025
+>Active development has moved to [microsoft/mcp](https://github.com/microsoft/mcp) as of August 25, 2025
 
 
 # 🌟 Azure MCP Server
