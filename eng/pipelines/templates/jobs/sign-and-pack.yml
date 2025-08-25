@@ -14,40 +14,14 @@ jobs:
   steps:
   - checkout: self
 
+# Process dotnet based binaries.
+
   - task: DownloadPipelineArtifact@2
     displayName: Download dotnet artifacts
     inputs:
       source: current
       patterns: $(PipelineArtifactName)_*/dotnet/**
       path: $(Pipeline.Workspace)/dotnet
-
-  - task: DownloadPipelineArtifact@2
-    displayName: Download native artifacts
-    inputs:
-      source: current
-      patterns: $(PipelineArtifactName)_*/native/**
-      path: $(Pipeline.Workspace)/native
-
-  - task: Powershell@2
-    displayName: "Show Pipeline.Workspace directory structure"
-    inputs:
-      pwsh: true
-      targetType: inline
-      script: |
-        Write-Host "Pipeline.Workspace directory structure (4 levels deep):"
-        Get-ChildItem -Path '$(Pipeline.Workspace)' -Recurse -Depth 4 | 
-          Sort-Object FullName | 
-          ForEach-Object {
-            $indent = "  " * (($_.FullName.Split([IO.Path]::DirectorySeparatorChar).Count) - (('$(Pipeline.Workspace)'.Split([IO.Path]::DirectorySeparatorChar).Count)))
-            if ($_.PSIsContainer) {
-              Write-Host "$indent$($_.Name)/" -ForegroundColor Cyan
-            } else {
-              $sizeInfo = if ($_.Length -gt 1MB) { " ({0:F1} MB)" -f ($_.Length / 1MB) } 
-                         elseif ($_.Length -gt 1KB) { " ({0:F1} KB)" -f ($_.Length / 1KB) } 
-                         else { " ($($_.Length) bytes)" }
-              Write-Host "$indent$($_.Name)$sizeInfo" -ForegroundColor White
-            }
-          }
 
   - task: Powershell@2
     displayName: "Compress packages"
@@ -97,6 +71,31 @@ jobs:
       ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
       ArtifactName: $(PipelineArtifactName)_signed
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+
+  - task: Powershell@2
+    displayName: "Pack modules"
+    inputs:
+      pwsh: true
+      filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
+      arguments: >
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/dotnet'
+        -Version '$(Version)'
+
+  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
+    parameters:
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/dotnet
+      ArtifactName: $(PipelineArtifactName)_packed
+      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+
+# Process native based binaries.
+
+  - task: DownloadPipelineArtifact@2
+    displayName: Download native artifacts
+    inputs:
+      source: current
+      patterns: $(PipelineArtifactName)_*/native/**
+      path: $(Pipeline.Workspace)/native
 
   - task: Powershell@2
     displayName: "Compress packages"
@@ -153,16 +152,6 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
-        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/dotnet'
-        -Version '$(Version)'
-
-  - task: Powershell@2
-    displayName: "(Native) Pack modules"
-    inputs:
-      pwsh: true
-      filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
-      arguments: >
         -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/native'
         -OutputPath '$(Build.ArtifactStagingDirectory)/packed/native'
         -Version '$(Version)'
@@ -170,6 +159,6 @@ jobs:
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/native
       ArtifactName: $(PipelineArtifactName)_packed
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
