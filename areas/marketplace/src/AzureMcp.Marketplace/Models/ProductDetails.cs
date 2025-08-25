@@ -82,12 +82,6 @@ public class ProductsListResponse
     public string? NextPageLink { get; set; }
 }
 
-public class ProductsListResult
-{
-    public List<ProductSummary> Items { get; set; } = new();
-    public string? NextCursor { get; set; }
-}
-
 // ===============================
 // PLAN CLASSES (HIERARCHY ORDER)
 // ===============================
