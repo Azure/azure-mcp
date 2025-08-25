@@ -25,10 +25,7 @@ public interface IMarketplaceService
     Task<ProductListResponseWithNextCursor> ListProducts(
         string subscription,
         string? language = null,
-        string? storefront = null,
-        string? market = null,
         string? search = null,
-        bool? excludePublicOffersAndPublicPlans = null,
         string? filter = null,
         string? orderBy = null,
         string? select = null,

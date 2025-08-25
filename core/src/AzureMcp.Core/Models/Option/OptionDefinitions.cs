@@ -222,7 +222,6 @@ public static partial class OptionDefinitions
         public const string PricingAudienceName = "pricing-audience";
         public const string StorefrontName = "storefront";
         public const string SearchName = "search";
-        public const string ExcludePublicOffersAndPublicPlansName = "exclude-public-offers-and-public-plans";
         public const string FilterName = "filter";
         public const string OrderByName = "orderby";
         public const string SelectName = "select";
@@ -321,16 +320,6 @@ public static partial class OptionDefinitions
         {
             IsRequired = false
         };
-
-        public static readonly Option<bool> ExcludePublicOffersAndPublicPlans = new(
-            $"--{ExcludePublicOffersAndPublicPlansName}",
-            () => false,
-            "Exclude public products and plans from the results, showing only private marketplace products."
-        )
-        {
-            IsRequired = false
-        };
-
 
         public static readonly Option<string> Filter = new(
             $"--{FilterName}",

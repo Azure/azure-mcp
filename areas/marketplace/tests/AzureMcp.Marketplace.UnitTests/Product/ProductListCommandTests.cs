@@ -74,9 +74,6 @@ public class ProductListCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<bool?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -101,7 +98,6 @@ public class ProductListCommandTests
         var subscriptionId = "test-sub";
         var search = "azure";
         var language = "en";
-        var market = "US";
         var expectedProducts = new List<ProductSummary>
         {
             new()
@@ -114,10 +110,7 @@ public class ProductListCommandTests
         _marketplaceService.ListProducts(
             Arg.Is(subscriptionId),
             Arg.Is(language),
-            Arg.Any<string?>(),
-            Arg.Is(market),
             Arg.Is(search),
-            Arg.Any<bool?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -129,8 +122,7 @@ public class ProductListCommandTests
         var args = _parser.Parse([
             "--subscription", subscriptionId,
             "--search", search,
-            "--language", language,
-            "--market", market
+            "--language", language
         ]);
 
         // Act
@@ -170,9 +162,6 @@ public class ProductListCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<bool?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -201,9 +190,6 @@ public class ProductListCommandTests
             Arg.Is(subscriptionId),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<bool?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -244,9 +230,6 @@ public class ProductListCommandTests
             Arg.Is(subscriptionId),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<bool?>(),
             Arg.Is(filter),
             Arg.Is(orderBy),
             Arg.Is(select),
@@ -303,9 +286,6 @@ public class ProductListCommandTests
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<bool?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
@@ -353,9 +333,6 @@ public class ProductListCommandTests
             Arg.Is(subscriptionId),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
-            Arg.Any<bool?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),
             Arg.Any<string?>(),

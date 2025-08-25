@@ -13,113 +13,21 @@ using Xunit;
 namespace AzureMcp.Tests.Areas.Marketplace.LiveTests;
 
 [Trait("Area", "Marketplace")]
-public class MarketplaceCommandTests : CommandTestsBase,
+public class ProductListCommandTests : CommandTestsBase,
     IClassFixture<LiveTestFixture>
 {
-    private const string ProductKey = "product";
     private const string ProductsKey = "products";
-    private const string ProductId = "test_test_pmc2pc1.vmsr_uat_beta";
     private const string Language = "en";
-    private const string Market = "US";
     private readonly MarketplaceService _marketplaceService;
     private readonly string _subscriptionId;
 
-    public MarketplaceCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : base(liveTestFixture, output)
+    public ProductListCommandTests(LiveTestFixture liveTestFixture, ITestOutputHelper output) : base(liveTestFixture, output)
     {
         var memoryCache = new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions()));
         var cacheService = new CacheService(memoryCache);
         var tenantService = new TenantService(cacheService);
         _marketplaceService = new MarketplaceService(tenantService);
         _subscriptionId = Settings.SubscriptionId;
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_get_marketplace_product()
-    {
-        var result = await CallToolAsync(
-            "azmcp_marketplace_product_get",
-            new()
-            {
-                { "subscription", _subscriptionId },
-                { "product-id", ProductId }
-            });
-
-        var product = result.AssertProperty(ProductKey);
-        Assert.Equal(JsonValueKind.Object, product.ValueKind);
-
-        var id = product.AssertProperty("uniqueProductId");
-        Assert.Equal(JsonValueKind.String, id.ValueKind);
-        Assert.Contains(ProductId, id.GetString());
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_get_marketplace_product_with_language_option()
-    {
-        var result = await CallToolAsync(
-            "azmcp_marketplace_product_get",
-            new()
-            {
-                { "subscription", _subscriptionId },
-                { "product-id", ProductId },
-                { "language", Language }
-            });
-
-        var product = result.AssertProperty(ProductKey);
-        Assert.Equal(JsonValueKind.Object, product.ValueKind);
-
-        var id = product.AssertProperty("uniqueProductId");
-        Assert.Equal(JsonValueKind.String, id.ValueKind);
-        Assert.Contains(ProductId, id.GetString());
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_get_marketplace_product_with_market_option()
-    {
-
-
-        var result = await CallToolAsync(
-            "azmcp_marketplace_product_get",
-            new()
-            {
-                { "subscription", _subscriptionId },
-                { "product-id", ProductId },
-                { "market", Market }
-            });
-
-        var product = result.AssertProperty(ProductKey);
-        Assert.Equal(JsonValueKind.Object, product.ValueKind);
-
-        var id = product.AssertProperty("uniqueProductId");
-        Assert.Equal(JsonValueKind.String, id.ValueKind);
-        Assert.Contains(ProductId, id.GetString());
-    }
-
-    [Fact]
-    [Trait("Category", "Live")]
-    public async Task Should_get_marketplace_product_with_multiple_options()
-    {
-
-        var result = await CallToolAsync(
-            "azmcp_marketplace_product_get",
-            new()
-            {
-                { "subscription", _subscriptionId },
-                { "product-id", ProductId },
-                { "language", Language },
-                { "market", Market },
-                { "include-hidden-plans", true },
-                { "include-service-instruction-templates", true }
-            });
-
-        var product = result.AssertProperty(ProductKey);
-        Assert.Equal(JsonValueKind.Object, product.ValueKind);
-
-        var id = product.AssertProperty("uniqueProductId");
-        Assert.Equal(JsonValueKind.String, id.ValueKind);
-        Assert.Contains(ProductId, id.GetString());
     }
 
     [Fact]
@@ -170,22 +78,27 @@ public class MarketplaceCommandTests : CommandTestsBase,
 
     [Fact]
     [Trait("Category", "Live")]
-    public async Task Should_list_marketplace_products_with_market_option()
+    public async Task Should_list_marketplace_products_with_language_and_search_options()
     {
         var result = await CallToolAsync(
             "azmcp_marketplace_product_list",
             new()
             {
                 { "subscription", _subscriptionId },
-                { "market", Market }
+                { "language", Language },
+                { "search", "test" }
             });
 
         var products = result.AssertProperty(ProductsKey);
         Assert.Equal(JsonValueKind.Array, products.ValueKind);
 
-        // Check that we have at least one product
+        // Results may be empty for search, but structure should be valid
         var productArray = products.EnumerateArray().ToArray();
-        Assert.NotEmpty(productArray);
+        foreach (var product in productArray)
+        {
+            Assert.True(product.TryGetProperty("uniqueProductId", out _));
+            Assert.True(product.TryGetProperty("displayName", out _));
+        }
     }
 
     [Fact]
@@ -222,19 +135,14 @@ public class MarketplaceCommandTests : CommandTestsBase,
             {
                 { "subscription", _subscriptionId },
                 { "language", Language },
-                { "market", Market },
-                { "storefront", "azure" },
-                { "exclude-public-offers-and-public-plans", false },
+                { "search", "microsoft" }
             });
 
         var products = result.AssertProperty(ProductsKey);
         Assert.Equal(JsonValueKind.Array, products.ValueKind);
 
-        // Check that we have at least one product
+        // Results may be filtered, but structure should be valid
         var productArray = products.EnumerateArray().ToArray();
-        Assert.NotEmpty(productArray);
-
-        // Verify each product has expected properties
         foreach (var product in productArray)
         {
             Assert.True(product.TryGetProperty("uniqueProductId", out _));

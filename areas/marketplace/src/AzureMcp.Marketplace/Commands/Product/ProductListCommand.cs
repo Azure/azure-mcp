@@ -19,10 +19,7 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
 
     // Define options from OptionDefinitions
     private readonly Option<string> _languageOption = OptionDefinitions.Marketplace.Language;
-    private readonly Option<string> _storefrontOption = OptionDefinitions.Marketplace.Storefront;
-    private readonly Option<string> _marketOption = OptionDefinitions.Marketplace.Market;
     private readonly Option<string> _searchOption = OptionDefinitions.Marketplace.Search;
-    private readonly Option<bool> _excludePublicOffersAndPublicPlansOption = OptionDefinitions.Marketplace.ExcludePublicOffersAndPublicPlans;
     private readonly Option<string> _filterOption = OptionDefinitions.Marketplace.Filter;
     private readonly Option<string> _orderByOption = OptionDefinitions.Marketplace.OrderBy;
     private readonly Option<string> _selectOption = OptionDefinitions.Marketplace.Select;
@@ -34,7 +31,7 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
         """
         Retrieves private products (offers) that a subscription has access to in the Azure Marketplace.
         Returns a list of marketplace products including display names, publishers, pricing information, and metadata.
-        Supports filtering by search terms, language, market, and other criteria.
+        Supports filtering by search terms, language, and other criteria.
         
         Required options:
         - subscription: Azure subscription ID or name
@@ -42,9 +39,6 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
         Optional filtering:
         - search: Filter by display name, publisher name, or keywords
         - language: Product language (default: en)
-        - market: Product market (default: US)
-        - storefront: Storefront identifier (default: azure)
-        - exclude-public-offers-and-public-plans: Show only private products
         
         OData query options:
         - filter: Filter results using OData syntax (e.g., "displayName eq 'Azure'")
@@ -63,10 +57,7 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
     {
         base.RegisterOptions(command);
         command.AddOption(_languageOption);
-        command.AddOption(_storefrontOption);
-        command.AddOption(_marketOption);
         command.AddOption(_searchOption);
-        command.AddOption(_excludePublicOffersAndPublicPlansOption);
         command.AddOption(_filterOption);
         command.AddOption(_orderByOption);
         command.AddOption(_selectOption);
@@ -77,10 +68,7 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
     {
         var options = base.BindOptions(parseResult);
         options.Language = parseResult.GetValueForOption(_languageOption);
-        options.Storefront = parseResult.GetValueForOption(_storefrontOption);
-        options.Market = parseResult.GetValueForOption(_marketOption);
         options.Search = parseResult.GetValueForOption(_searchOption);
-        options.ExcludePublicOffersAndPublicPlans = parseResult.GetValueForOption(_excludePublicOffersAndPublicPlansOption);
         options.Filter = parseResult.GetValueForOption(_filterOption);
         options.OrderBy = parseResult.GetValueForOption(_orderByOption);
         options.Select = parseResult.GetValueForOption(_selectOption);
@@ -108,10 +96,7 @@ public sealed class ProductListCommand(ILogger<ProductListCommand> logger) : Sub
             var results = await marketplaceService.ListProducts(
                 options.Subscription!,
                 options.Language,
-                options.Storefront,
-                options.Market,
                 options.Search,
-                options.ExcludePublicOffersAndPublicPlans,
                 options.Filter,
                 options.OrderBy,
                 options.Select,

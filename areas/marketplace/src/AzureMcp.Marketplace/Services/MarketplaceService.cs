@@ -66,10 +66,11 @@ public class MarketplaceService(ITenantService tenantService)
     /// </summary>
     /// <param name="subscription">The Azure subscription ID.</param>
     /// <param name="language">Product language (default: en).</param>
-    /// <param name="storefront">Storefront identifier (default: azure).</param>
-    /// <param name="market">Product market (default: US).</param>
     /// <param name="search">Search by display name, publisher name, or keywords.</param>
-    /// <param name="excludePublicOffersAndPublicPlans">Exclude public products.</param>
+    /// <param name="filter">OData filter expression.</param>
+    /// <param name="orderBy">OData orderby expression.</param>
+    /// <param name="select">OData select expression.</param>
+    /// <param name="nextCursor">Pagination cursor.</param>
     /// <param name="tenant">Optional. The Azure tenant ID for authentication.</param>
     /// <param name="retryPolicy">Optional. Policy parameters for retrying failed requests.</param>
     /// <returns>A list of ProductSummary objects containing the marketplace products.</returns>
@@ -78,10 +79,7 @@ public class MarketplaceService(ITenantService tenantService)
     public async Task<ProductListResponseWithNextCursor> ListProducts(
         string subscription,
         string? language = null,
-        string? storefront = null,
-        string? market = null,
         string? search = null,
-        bool? excludePublicOffersAndPublicPlans = null,
         string? filter = null,
         string? orderBy = null,
         string? select = null,
@@ -91,8 +89,7 @@ public class MarketplaceService(ITenantService tenantService)
     {
         ValidateRequiredParameters(subscription);
 
-        string productsUrl = BuildProductsListUrl(subscription, language, storefront, market,
-            search, excludePublicOffersAndPublicPlans, filter, orderBy, select, nextCursor);
+        string productsUrl = BuildProductsListUrl(subscription, language, search, filter, orderBy, select, nextCursor);
 
         return await GetMarketplaceProductsListResponseAsync(productsUrl, tenant, retryPolicy);
     }
@@ -100,10 +97,7 @@ public class MarketplaceService(ITenantService tenantService)
     private static string BuildProductsListUrl(
         string subscription,
         string? language,
-        string? storefront,
-        string? market,
         string? search,
-        bool? excludePublicOffersAndPublicPlans,
         string? filter,
         string? orderBy,
         string? select,
@@ -117,17 +111,8 @@ public class MarketplaceService(ITenantService tenantService)
         if (!string.IsNullOrEmpty(language))
             queryParams.Add($"language={Uri.EscapeDataString(language)}");
 
-        if (!string.IsNullOrEmpty(market))
-            queryParams.Add($"market={Uri.EscapeDataString(market)}");
-
-        if (!string.IsNullOrEmpty(storefront))
-            queryParams.Add($"storefront={Uri.EscapeDataString(storefront)}");
-
         if (!string.IsNullOrEmpty(search))
             queryParams.Add($"$search={Uri.EscapeDataString(search)}");
-
-        if (excludePublicOffersAndPublicPlans.HasValue)
-            queryParams.Add($"excludePublicOffersAndPublicPlans={excludePublicOffersAndPublicPlans.Value.ToString().ToLower()}");
 
         // Add OData query parameters
         if (!string.IsNullOrEmpty(filter))
