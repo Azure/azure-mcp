@@ -92,4 +92,95 @@ public sealed class FunctionAppCommandTests(LiveTestFixture liveTestFixture, ITe
 
         Assert.False(result.HasValue);
     }
+
+    [Fact]
+    public async Task Should_get_specific_function_app()
+    {
+        // List to obtain a real function app and its resource group
+        var listResult = await CallToolAsync(
+            "azmcp_functionapp_list",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId }
+            });
+
+        var functionApps = listResult.AssertProperty("results");
+        Assert.True(functionApps.GetArrayLength() > 0, "Expected at least one Function App for get command test");
+
+        var first = functionApps.EnumerateArray().First();
+        var name = first.GetProperty("name").GetString()!;
+        var resourceGroup = first.GetProperty("resourceGroupName").GetString()!;
+
+        var getResult = await CallToolAsync(
+            "azmcp_functionapp_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", resourceGroup },
+                { "function-app", name }
+            });
+
+        var functionApp = getResult.AssertProperty("functionApp");
+        Assert.Equal(JsonValueKind.Object, functionApp.ValueKind);
+        Assert.Equal(name, functionApp.GetProperty("name").GetString());
+        Assert.Equal(resourceGroup, functionApp.GetProperty("resourceGroupName").GetString());
+        // Common useful properties
+        if (functionApp.TryGetProperty("location", out var loc))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(loc.GetString()));
+        }
+    }
+
+    [Fact]
+    public async Task Should_handle_nonexistent_function_app_gracefully()
+    {
+        var result = await CallToolAsync(
+            "azmcp_functionapp_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", "nonexistent-rg" },
+                { "function-app", "nonexistent-functionapp" }
+            });
+
+        Assert.True(result.HasValue);
+        var errorDetails = result.Value;
+        Assert.True(errorDetails.TryGetProperty("message", out _));
+        Assert.True(errorDetails.TryGetProperty("type", out var typeProperty));
+        Assert.Equal("Exception", typeProperty.GetString());
+    }
+
+    [Fact]
+    public async Task Should_validate_required_parameters_for_get_command()
+    {
+        // Missing functionapp
+        var missingName = await CallToolAsync(
+            "azmcp_functionapp_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "resource-group", "rg-test" }
+            });
+        Assert.False(missingName.HasValue);
+
+        // Missing resource-group
+        var missingRg = await CallToolAsync(
+            "azmcp_functionapp_get",
+            new()
+            {
+                { "subscription", Settings.SubscriptionId },
+                { "function-app", "name-test" }
+            });
+        Assert.False(missingRg.HasValue);
+
+        // Missing subscription
+        var missingSub = await CallToolAsync(
+            "azmcp_functionapp_get",
+            new()
+            {
+                { "resource-group", "rg-test" },
+                { "function-app", "name-test" }
+            });
+        Assert.False(missingSub.HasValue);
+    }
 }

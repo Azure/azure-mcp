@@ -12,6 +12,8 @@ namespace AzureMcp.Workbooks;
 
 public class WorkbooksSetup : IAreaSetup
 {
+    public string Name => "workbooks";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IWorkbooksService, WorkbooksService>();
@@ -19,7 +21,7 @@ public class WorkbooksSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var workbooks = new CommandGroup("workbooks", "Workbooks operations - Commands for managing Azure Workbooks resources and interactive data visualization dashboards. Includes operations for listing, creating, updating, and deleting workbooks, as well as managing workbook configurations and content.");
+        var workbooks = new CommandGroup(Name, "Workbooks operations - Commands for managing Azure Workbooks resources and interactive data visualization dashboards. Includes operations for listing, creating, updating, and deleting workbooks, as well as managing workbook configurations and content.");
         rootGroup.AddSubGroup(workbooks);
 
         workbooks.AddCommand("list", new ListWorkbooksCommand(

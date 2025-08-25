@@ -3,10 +3,9 @@
 
 using System.Diagnostics;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization.Metadata;
-using AzureMcp.Core.Areas.Server;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
@@ -81,7 +80,7 @@ public sealed class CommandFactoryToolLoader(
         {
             var content = new TextContentBlock
             {
-                Text = $"Could not find command: {request.Params.Name}",
+                Text = $"Could not find command: {toolName}",
             };
 
             return new CallToolResult
@@ -105,6 +104,12 @@ public sealed class CommandFactoryToolLoader(
         }
 
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
+
+        if (commandContext.Activity != null)
+        {
+            var serviceArea = commandFactory.GetServiceArea(realCommand.Name) ?? toolName;
+            commandContext.Activity.AddTag(TelemetryConstants.TagName.ToolArea, serviceArea);
+        }
 
         try
         {

@@ -12,6 +12,8 @@ namespace AzureMcp.AzureManagedLustre;
 
 public class AzureManagedLustreSetup : IAreaSetup
 {
+    public string Name => "azuremanagedlustre";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IAzureManagedLustreService, AzureManagedLustreService>();
@@ -19,7 +21,7 @@ public class AzureManagedLustreSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var azureManagedLustre = new CommandGroup("azuremanagedlustre",
+        var azureManagedLustre = new CommandGroup(Name,
             "Azure Managed Lustre operations - Commands for listing and inspecting Azure Managed Lustre file systems (AMLFS) used for high-performance computing workloads.");
         rootGroup.AddSubGroup(azureManagedLustre);
 

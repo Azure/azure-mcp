@@ -28,6 +28,37 @@
       ]
     },
     {
+      "name": "list",
+      "description": "List repositories in Azure Container Registries. By default, lists repositories for all registries in the subscription.\r\nYou can narrow the scope using --resource-group and/or --registry to list repositories for a specific registry only.",
+      "command": "azmcp acr registry repository list",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "registry",
+          "description": "The name of the Azure Container Registry. This is the unique name you chose for your container registry.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
       "name": "get",
       "description": "Get details for a specific Azure Kubernetes Service (AKS) cluster.\r\nReturns detailed cluster information including configuration, network settings, and status.",
       "command": "azmcp aks cluster get",
@@ -524,7 +555,7 @@
     },
     {
       "name": "list",
-      "description": "List monitored resources in Datadog for a datadog resource taken as input from the user.\r\nThis command retrieves all monitored azure resources available.\r\nRequires \u0060datadog-resource\u0060, \u0060resource-group\u0060 and \u0060subscription\u0060.\r\nResult is a list of monitored resources as a JSON array.",
+      "description": "List monitored resources in Datadog for a datadog resource taken as input from the user.\r\nThis command retrieves all monitored azure resources available.\r\nRequires `datadog-resource`, `resource-group` and `subscription`.\r\nResult is a list of monitored resources as a JSON array.",
       "command": "azmcp datadog monitoredresources list",
       "option": [
         {
@@ -548,6 +579,161 @@
         {
           "name": "resource-group",
           "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "get",
+      "description": "This tool fetches logs from the Log Analytics workspace for Container Apps, App Services, and Function Apps deployed using azd. Use it after a successful azd up to check app status or troubleshoot errors in deployed applications.",
+      "command": "azmcp deploy app logs get",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "workspace-folder",
+          "description": "The full path of the workspace folder.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "azd-env-name",
+          "description": "The name of the environment created by azd (AZURE_ENV_NAME) during `azd init` or `azd up`. If not provided in context, try to find it in the .azure directory in the workspace or use 'azd env list'.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "limit",
+          "description": "The maximum row number of logs to retrieve. Use this to get a specific number of logs or to avoid the retrieved logs from reaching token limit. Default is 200.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "generate",
+      "description": "Generates an azure service architecture diagram for the application based on the provided app topology.Call this tool when the user need recommend or design the azure architecture of their application.Do not call this tool when the user need detailed design of the azure architecture, such as the network topology, security design, etc.Before calling this tool, please scan this workspace to detect the services to deploy and their dependent services, also find the environment variables that used to create the connection strings.If it's a .NET Aspire application, check aspireManifest.json file if there is. Try your best to fulfill the input schema with your analyze result.",
+      "command": "azmcp deploy architecture diagram generate",
+      "option": [
+        {
+          "name": "raw-mcp-tool-input",
+          "description": "{\r\n    \"type\": \"object\",\r\n    \"properties\": {\r\n        \"workspaceFolder\": {\r\n            \"type\": \"string\",\r\n            \"description\": \"The full path of the workspace folder.\"\r\n        },\r\n        \"projectName\": {\r\n            \"type\": \"string\",\r\n            \"description\": \"The name of the project. This is used to generate the resource names.\"\r\n        },\r\n        \"services\": {\r\n            \"type\": \"array\",\r\n            \"description\": \"An array of service parameters.\",\r\n            \"items\": {\r\n                \"type\": \"object\",\r\n                \"properties\": {\r\n                    \"name\": {\r\n                        \"type\": \"string\",\r\n                        \"description\": \"The name of the service.\"\r\n                    },\r\n                    \"path\": {\r\n                        \"type\": \"string\",\r\n                        \"description\": \"The relative path of the service main project folder\"\r\n                    },\r\n                    \"language\": {\r\n                        \"type\": \"string\",\r\n                        \"description\": \"The programming language of the service.\"\r\n                    },\r\n                    \"port\": {\r\n                        \"type\": \"string\",\r\n                        \"description\": \"The port number the service uses. Get this from Dockerfile for container apps. If not available, default to '80'.\"\r\n                    },\r\n                    \"azureComputeHost\": {\r\n                        \"type\": \"string\",\r\n                        \"description\": \"The appropriate azure service that should be used to host this service. Use containerapp if the service is containerized and has a Dockerfile.\",\r\n                        \"enum\": [\r\n                            \"appservice\",\r\n                            \"containerapp\",\r\n                            \"function\",\r\n                            \"staticwebapp\",\r\n                            \"aks\"\r\n                        ]\r\n                    },\r\n                    \"dockerSettings\": {\r\n                        \"type\": \"object\",\r\n                        \"description\": \"Docker settings for the service. This is only needed if the service's azureComputeHost is containerapp.\",\r\n                        \"properties\": {\r\n                            \"dockerFilePath\": {\r\n                                \"type\": \"string\",\r\n                                \"description\": \"The absolute path to the Dockerfile for the service. If the service's azureComputeHost is not containerapp, leave blank.\"\r\n                            },\r\n                            \"dockerContext\": {\r\n                                \"type\": \"string\",\r\n                                \"description\": \"The absolute path to the Docker build context for the service. If the service's azureComputeHost is not containerapp, leave blank.\"\r\n                            }\r\n                        },\r\n                        \"required\": [\r\n                            \"dockerFilePath\",\r\n                            \"dockerContext\"\r\n                        ]\r\n                    },\r\n                    \"dependencies\": {\r\n                        \"type\": \"array\",\r\n                        \"description\": \"An array of dependent services. A compute service may have a dependency on another compute service.\",\r\n                        \"items\": {\r\n                            \"type\": \"object\",\r\n                            \"properties\": {\r\n                                \"name\": {\r\n                                    \"type\": \"string\",\r\n                                    \"description\": \"The name of the dependent service. Can be arbitrary, or must reference another service in the services array if referencing appservice, containerapp, staticwebapps, aks, or functionapp.\"\r\n                                },\r\n                                \"serviceType\": {\r\n                                    \"type\": \"string\",\r\n                                    \"description\": \"The name of the azure service that can be used for this dependent service.\",\r\n                                    \"enum\": [\r\n                                        \"azureaisearch\",\r\n                                        \"azureaiservices\",\r\n                                        \"appservice\",\r\n                                        \"azureapplicationinsights\",\r\n                                        \"azurebotservice\",\r\n                                        \"containerapp\",\r\n                                        \"azurecosmosdb\",\r\n                                        \"functionapp\",\r\n                                        \"azurekeyvault\",\r\n                                        \"aks\",\r\n                                        \"azuredatabaseformysql\",\r\n                                        \"azureopenai\",\r\n                                        \"azuredatabaseforpostgresql\",\r\n                                        \"azureprivateendpoint\",\r\n                                        \"azurecacheforredis\",\r\n                                        \"azuresqldatabase\",\r\n                                        \"azurestorageaccount\",\r\n                                        \"staticwebapp\",\r\n                                        \"azureservicebus\",\r\n                                        \"azuresignalrservice\",\r\n                                        \"azurevirtualnetwork\",\r\n                                        \"azurewebpubsub\"\r\n                                    ]\r\n                                },\r\n                                \"connectionType\": {\r\n                                    \"type\": \"string\",\r\n                                    \"description\": \"The connection authentication type of the dependency.\",\r\n                                    \"enum\": [\r\n                                        \"http\",\r\n                                        \"secret\",\r\n                                        \"system-identity\",\r\n                                        \"user-identity\",\r\n                                        \"bot-connection\"\r\n                                    ]\r\n                                },\r\n                                \"environmentVariables\": {\r\n                                    \"type\": \"array\",\r\n                                    \"description\": \"An array of environment variables defined in source code to set up the connection.\",\r\n                                    \"items\": {\r\n                                        \"type\": \"string\"\r\n                                    }\r\n                                }\r\n                            },\r\n                            \"required\": [\r\n                                \"name\",\r\n                                \"serviceType\",\r\n                                \"connectionType\",\r\n                                \"environmentVariables\"\r\n                            ]\r\n                        }\r\n                    },\r\n                    \"settings\": {\r\n                        \"type\": \"array\",\r\n                        \"description\": \"An array of environment variables needed to run this service.  Please search the entire codebase to find environment variables.\",\r\n                        \"items\": {\r\n                            \"type\": \"string\"\r\n                        }\r\n                    }\r\n                },\r\n                \"required\": [\r\n                    \"name\",\r\n                    \"path\",\r\n                    \"azureComputeHost\",\r\n                    \"language\",\r\n                    \"port\",\r\n                    \"dependencies\",\r\n                    \"settings\"\r\n                ]\r\n            }\r\n        }\r\n    },\r\n    \"required\": [\r\n        \"workspaceFolder\",\r\n        \"services\"\r\n    ]\r\n}",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "get",
+      "description": "This tool offers guidelines for creating Bicep/Terraform files to deploy applications on Azure. The guidelines outline rules to improve the quality of Infrastructure as Code files, ensuring they are compatible with the azd tool and adhere to best practices.",
+      "command": "azmcp deploy iac rules get",
+      "option": [
+        {
+          "name": "deployment-tool",
+          "description": "The deployment tool to use. Valid values: AZD, AzCli",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "iac-type",
+          "description": "The Infrastructure as Code type. Valid values: bicep, terraform. Leave empty if deployment-tool is AzCli.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resource-types",
+          "description": "Specifies the Azure resource types to retrieve IaC rules for. It should be comma-separated. Supported values are: 'appservice', 'containerapp', 'function', 'aks'. If none of these services are used, this parameter can be left empty.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "get",
+      "description": "Guidance to create a CI/CD pipeline which provision Azure resources and build and deploy applications to Azure. Use this tool BEFORE generating/creating a Github actions workflow file for DEPLOYMENT on Azure. Infrastructure files should be ready and the application should be ready to be containerized.",
+      "command": "azmcp deploy pipeline guidance get",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "use-azd-pipeline-config",
+          "description": "Whether to use azd tool to set up the deployment pipeline. Set to true ONLY if azure.yaml is provided or the context suggests AZD tools.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "organization-name",
+          "description": "The name of the organization or the user account name of the current Github repository. DO NOT fill this in if you're not sure.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "repository-name",
+          "description": "The name of the current Github repository. DO NOT fill this in if you're not sure.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "github-environment-name",
+          "description": "The name of the environment to which the deployment pipeline will be deployed. DO NOT fill this in if you're not sure.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "get",
+      "description": "Generates a deployment plan to construct the infrastructure and deploy the application on Azure. Agent should read its output and generate a deploy plan in '.azure/plan.copilotmd' for execution steps, recommended azure services based on the information agent detected from project. Before calling this tool, please scan this workspace to detect the services to deploy and their dependent services.",
+      "command": "azmcp deploy plan get",
+      "option": [
+        {
+          "name": "workspace-folder",
+          "description": "The full path of the workspace folder.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "project-name",
+          "description": "The name of the project to generate the deployment plan for. If not provided, will be inferred from the workspace.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-app-service",
+          "description": "The Azure service to deploy the application. Valid values: ContainerApp, WebApp, FunctionApp, AKS. Recommend one based on user application.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "provisioning-tool",
+          "description": "The tool to use for provisioning Azure resources. Valid values: AZD, AzCli. Use AzCli if TargetAppService is AKS.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "azd-iac-options",
+          "description": "The Infrastructure as Code option for azd. Valid values: bicep, terraform. Leave empty if Deployment tool is AzCli.",
           "type": "string",
           "required": null
         }
@@ -1094,7 +1280,7 @@
     },
     {
       "name": "get",
-      "description": "Get details for a specific Kusto cluster. Requires \u0060subscription\u0060 and \u0060cluster\u0060.\r\nThe response includes the \u0060clusterUri\u0060 property for use in subsequent commands.",
+      "description": "Get details for a specific Kusto cluster. Requires `subscription` and `cluster`.\r\nThe response includes the `clusterUri` property for use in subsequent commands.",
       "command": "azmcp kusto cluster get",
       "option": [
         {
@@ -1125,7 +1311,7 @@
     },
     {
       "name": "list",
-      "description": "List all Kusto clusters in a subscription. This command retrieves all clusters\r\navailable in the specified subscription. Requires \u0060subscription\u0060.\r\nResult is a list of cluster names as a JSON array.",
+      "description": "List all Kusto clusters in a subscription. This command retrieves all clusters\r\navailable in the specified subscription. Requires `subscription`.\r\nResult is a list of cluster names as a JSON array.",
       "command": "azmcp kusto cluster list",
       "option": [
         {
@@ -1144,7 +1330,7 @@
     },
     {
       "name": "list",
-      "description": "List all databases in a Kusto cluster.\r\nRequires \u0060cluster-uri\u0060 ( or \u0060subscription\u0060 and \u0060cluster\u0060).\r\nResult is a list of database names, returned as a JSON array.",
+      "description": "List all databases in a Kusto cluster.\r\nRequires `cluster-uri` ( or `subscription` and `cluster`).\r\nResult is a list of database names, returned as a JSON array.",
       "command": "azmcp kusto database list",
       "option": [
         {
@@ -1175,7 +1361,7 @@
     },
     {
       "name": "query",
-      "description": "Execute a KQL against items in a Kusto cluster.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060 and \u0060subscription\u0060), \u0060database\u0060, and \u0060query\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+      "description": "Execute a KQL against items in a Kusto cluster.\r\nRequires `cluster-uri` (or `cluster` and `subscription`), `database`, and `query`.\r\nResults are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.",
       "command": "azmcp kusto query",
       "option": [
         {
@@ -1218,7 +1404,7 @@
     },
     {
       "name": "sample",
-      "description": "Return a sample of rows from the specified table in an Kusto table.\r\nRequires \u0060cluster-uri\u0060 (or \u0060cluster\u0060), \u0060database\u0060, and \u0060table\u0060.\r\nResults are returned as a JSON array of documents, for example: \u0060[{'Column1': val1, 'Column2': val2}, ...]\u0060.",
+      "description": "Return a sample of rows from the specified table in an Kusto table.\r\nRequires `cluster-uri` (or `cluster`), `database`, and `table`.\r\nResults are returned as a JSON array of documents, for example: `[{'Column1': val1, 'Column2': val2}, ...]`.",
       "command": "azmcp kusto sample",
       "option": [
         {
@@ -1267,7 +1453,7 @@
     },
     {
       "name": "list",
-      "description": "List all tables in a specific Kusto database.\r\nRequired \u0060cluster-uri\u0060 (or \u0060subscription\u0060 and \u0060cluster\u0060) and \u0060database\u0060.\r\nReturns table names as a JSON array.",
+      "description": "List all tables in a specific Kusto database.\r\nRequired `cluster-uri` (or `subscription` and `cluster`) and `database`.\r\nReturns table names as a JSON array.",
       "command": "azmcp kusto table list",
       "option": [
         {
@@ -1304,7 +1490,7 @@
     },
     {
       "name": "schema",
-      "description": "Get the schema of a specific table in an Kusto database.\r\nRequires \u0060cluster-uri\u0060 ( or \u0060subscription\u0060 and \u0060cluster\u0060), \u0060database\u0060 and \u0060table\u0060.",
+      "description": "Get the schema of a specific table in an Kusto database.\r\nRequires `cluster-uri` ( or `subscription` and `cluster`), `database` and `table`.",
       "command": "azmcp kusto table schema",
       "option": [
         {
@@ -2488,6 +2674,80 @@
     },
     {
       "name": "list",
+      "description": "Given a list of Azure resource types, this tool will return a list of regions where the resource types are available. Always get the user's subscription ID before calling this tool.",
+      "command": "azmcp quota region availability list",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resource-types",
+          "description": "Comma-separated list of Azure resource types to check available regions for. The valid Azure resource types. E.g. 'Microsoft.App/containerApps, Microsoft.Web/sites, Microsoft.CognitiveServices/accounts'.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "cognitive-service-model-name",
+          "description": "Optional model name for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "cognitive-service-model-version",
+          "description": "Optional model version for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "cognitive-service-deployment-sku-name",
+          "description": "Optional deployment SKU name for cognitive services. Only needed when Microsoft.CognitiveServices is included in resource types.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "check",
+      "description": "This tool will check the usage and quota information for Azure resources in a region.",
+      "command": "azmcp quota usage check",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "region",
+          "description": "The valid Azure region where the resources will be deployed. E.g. 'eastus', 'westus', etc.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "resource-types",
+          "description": "The valid Azure resource types that are going to be deployed(comma-separated). E.g. 'Microsoft.App/containerApps,Microsoft.Web/sites,Microsoft.CognitiveServices/accounts', etc.",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list",
       "description": "List the Access Policies and Assignments for the specified Redis cache. Returns an array of Redis Access Policy Assignment details.\r\nUse this command to explore which Access Policies have been assigned to which identities for your Redis cache.",
       "command": "azmcp redis cache accesspolicy list",
       "option": [
@@ -2581,6 +2841,56 @@
         {
           "name": "subscription",
           "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        }
+      ]
+    },
+    {
+      "name": "get",
+      "description": "Get the current availability status of an Azure resource to diagnose health issues. \r\nProvides detailed information about resource availability state, potential issues, and timestamps.\r\nEquivalent to Azure Resource Health availability status API.",
+      "command": "azmcp resourcehealth availability-status get",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resourceId",
+          "description": "The Azure resource ID to get health status for (e.g., /subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.Compute/virtualMachines/{vm}).",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List availability statuses for all resources in a subscription or resource group.\r\nProvides health status information for multiple Azure resources at once, including availability state,\r\nsummaries, and timestamps. This is useful for getting an overview of resource health across your infrastructure.\r\nResults can be filtered by resource group to narrow the scope.",
+      "command": "azmcp resourcehealth availability-status list",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "resource-group",
+          "description": "The name of the Azure resource group. This is a logical container for Azure resources.",
           "type": "string",
           "required": null
         }
@@ -3084,7 +3394,7 @@
     },
     {
       "name": "set-tier",
-      "description": "Set access tier for multiple blobs in a single batch operation. This tool efficiently changes the \r\nstorage tier for multiple blobs simultaneously in a single request. Different tiers offer different \r\ntrade-offs between storage costs, access costs, and retrieval latency. Requires account, \r\ncontainer, tier, and Option\u00601: blob-names.",
+      "description": "Set access tier for multiple blobs in a single batch operation. This tool efficiently changes the \r\nstorage tier for multiple blobs simultaneously in a single request. Different tiers offer different \r\ntrade-offs between storage costs, access costs, and retrieval latency. Requires account, \r\ncontainer, tier, and Option`1: blob-names.",
       "command": "azmcp storage blob batch set-tier",
       "option": [
         {
@@ -3283,6 +3593,55 @@
           "description": "The name of the container to access within the storage account.",
           "type": "string",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "upload",
+      "description": "Uploads a local file to a blob in Azure Storage with the option to overwrite if the blob already exists.\r\nReturns details about the uploaded blob including last modified time, ETag, and content hash.",
+      "command": "azmcp storage blob upload",
+      "option": [
+        {
+          "name": "auth-method",
+          "description": "Authentication method to use. Options: 'credential' (Azure CLI/managed identity), 'key' (access key), or 'connectionString'.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "subscription",
+          "description": "Specifies the Azure subscription to use. Accepts either a subscription ID (GUID) or display name. If not specified, the AZURE_SUBSCRIPTION_ID environment variable will be used instead.",
+          "type": "string",
+          "required": null
+        },
+        {
+          "name": "account",
+          "description": "The name of the Azure Storage account. This is the unique name you chose for your storage account (e.g., 'mystorageaccount').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "container",
+          "description": "The name of the container to access within the storage account.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "blob",
+          "description": "The name of the blob to access within the container. This should be the full path within the container (e.g., 'file.txt' or 'folder/file.txt').",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "local-file-path",
+          "description": "The local file path to read content from or to write content to. This should be the full path to the file on your local system.",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "overwrite",
+          "description": "Whether to overwrite content if it already exists. Defaults to false.",
+          "type": "string",
+          "required": null
         }
       ]
     },
@@ -3492,7 +3851,7 @@
     },
     {
       "name": "list",
-      "description": "List all hostpools in a subscription or resource group. This command retrieves all Azure Virtual Desktop hostpool objects available\r\nin the specified Option\u00601: subscription. If a resource group is specified, only hostpools in that resource group are returned.\r\nResults include hostpool names and are returned as a JSON array.",
+      "description": "List all hostpools in a subscription or resource group. This command retrieves all Azure Virtual Desktop hostpool objects available\r\nin the specified Option`1: subscription. If a resource group is specified, only hostpools in that resource group are returned.\r\nResults include hostpool names and are returned as a JSON array.",
       "command": "azmcp virtualdesktop hostpool list",
       "option": [
         {
@@ -3517,7 +3876,7 @@
     },
     {
       "name": "list",
-      "description": "List all SessionHosts in a hostpool. This command retrieves all Azure Virtual Desktop SessionHost objects available\r\nin the specified Option\u00601: subscription and hostpool. Results include SessionHost details and are\r\nreturned as a JSON array.",
+      "description": "List all SessionHosts in a hostpool. This command retrieves all Azure Virtual Desktop SessionHost objects available\r\nin the specified Option`1: subscription and hostpool. Results include SessionHost details and are\r\nreturned as a JSON array.",
       "command": "azmcp virtualdesktop hostpool sessionhost list",
       "option": [
         {
@@ -3751,5 +4110,5 @@
       ]
     }
   ],
-  "duration": 56
+  "duration": 24
 }

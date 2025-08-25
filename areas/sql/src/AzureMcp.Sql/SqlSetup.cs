@@ -15,6 +15,8 @@ namespace AzureMcp.Sql;
 
 public class SqlSetup : IAreaSetup
 {
+    public string Name => "sql";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ISqlService, SqlService>();
@@ -22,7 +24,7 @@ public class SqlSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var sql = new CommandGroup("sql", "Azure SQL operations - Commands for managing Azure SQL databases, servers, and elastic pools. Includes operations for listing databases, configuring server settings, managing firewall rules, Entra ID administrators, and elastic pool resources.");
+        var sql = new CommandGroup(Name, "Azure SQL operations - Commands for managing Azure SQL databases, servers, and elastic pools. Includes operations for listing databases, configuring server settings, managing firewall rules, Entra ID administrators, and elastic pool resources.");
         rootGroup.AddSubGroup(sql);
 
         var database = new CommandGroup("db", "SQL database operations");

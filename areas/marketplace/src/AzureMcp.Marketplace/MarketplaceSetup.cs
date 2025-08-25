@@ -12,6 +12,8 @@ namespace AzureMcp.Marketplace;
 
 public class MarketplaceSetup : IAreaSetup
 {
+    public string Name => "marketplace";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IMarketplaceService, MarketplaceService>();
@@ -20,7 +22,7 @@ public class MarketplaceSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Marketplace command group
-        var marketplace = new CommandGroup("marketplace", "Marketplace operations - Commands for managing and accessing Azure Marketplace products and offers.");
+        var marketplace = new CommandGroup(Name, "Marketplace operations - Commands for managing and accessing Azure Marketplace products and offers.");
         rootGroup.AddSubGroup(marketplace);
 
         // Create Product subgroup
