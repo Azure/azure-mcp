@@ -7,7 +7,7 @@ param(
     [string] $OutputPath,
     [string] $Version,
     [switch] $UsePaths,
-    [switch] $BuildNative
+    [switch] $IsNative
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -44,7 +44,7 @@ try {
     
     $package = Get-Content "$npmPackagePath/package.json" -Raw | ConvertFrom-Json -AsHashtable
     $package.version = $Version
-    $package.name = if ($BuildNative) { "@azure/mcp-native" } else { "@azure/mcp" }
+    $package.name = if ($IsNative) { "@azure/mcp-native" } else { "@azure/mcp" }
 
     # Build the project
     $platformFiles = Get-ChildItem -Path $ArtifactsPath -Filter "package.json" -Recurse
@@ -99,9 +99,8 @@ try {
     New-Item -ItemType Directory $wrapperFolder | Out-Null
     Copy-Item -Path "$npmPackagePath/*" -Destination $wrapperFolder -Recurse -Force
 
-    # Replace template placeholders in index.js and post-install-script.js
     $indexJs = Get-Content "$wrapperFolder/index.js" -Raw
-    $mcp = if ($BuildNative) { "mcp-native" } else { "mcp" }
+    $mcp = if ($IsNative) { "mcp-native" } else { "mcp" }
     $indexJs = $indexJs.Replace('{mcp}', $mcp)
     $indexJs | Out-File -FilePath "$wrapperFolder/index.js" -Encoding utf8 -NoNewline
     $postInstallScript = Get-Content "$wrapperFolder/scripts/post-install-script.js" -Raw

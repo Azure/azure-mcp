@@ -110,9 +110,8 @@ try {
 
     Invoke-LoggedCommand $command -GroupOutput
 
-    if ($BuildNative -and -not $DebugBuild) {
-        # TODO: anu, see if AOT compiler has an option to not to produce these rather than deleting manually.
-        Write-Host "Removing debug files (.pdb, .dSYM, .dbg) from native Release build" -ForegroundColor Yellow
+    if (-not $DebugBuild) {
+        Write-Host "Removing debug files (.pdb, .dSYM, .dbg) from Release build" -ForegroundColor Yellow
         Get-ChildItem -Path "$outputDir/dist" -Recurse -Include "*.pdb", "*.dSYM", "*.dbg" | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
     }
 

@@ -18,10 +18,10 @@ $ErrorActionPreference = 'Stop'
 $root = $RepoRoot.Path.Replace('\', '/')
 
 if ($BuildNative) {
-    $packagesPath = "$root/.work/platform/native"
+    $packagesPath = "$root/.work/native/platform"
     $distPath = "$root/.dist/native"
 } else {
-    $packagesPath = "$root/.work/platform/dotnet"
+    $packagesPath = "$root/.work/dotnet/platform"
     $distPath = "$root/.dist/dotnet"
 }
 
@@ -71,10 +71,9 @@ else {
     -ArtifactsPath $packagesPath `
     -UsePaths:(!$NoUsePaths) `
     -OutputPath $distPath `
-    -BuildNative:$BuildNative
+    -IsNative:$BuildNative
 
-$wrapperPath = "$distPath/wrapper"
-$tgzFile = Get-ChildItem -Path $wrapperPath -Filter '*.tgz'
+$tgzFile = Get-ChildItem -Path "$distPath/wrapper" -Filter '*.tgz'
 | Select-Object -First 1
 
 $testSettingsPath = "$root/.testsettings.json"
