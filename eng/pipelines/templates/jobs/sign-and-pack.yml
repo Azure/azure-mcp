@@ -115,7 +115,7 @@ jobs:
         -ArtifactsPath '$(Build.ArtifactStagingDirectory)/topack/native'
         -OutputPath '$(Build.ArtifactStagingDirectory)/packed/native'
         -Version '$(Version)'
-        -IsNative $true
+        -IsNative
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
