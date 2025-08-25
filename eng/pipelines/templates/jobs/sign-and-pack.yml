@@ -69,7 +69,7 @@ jobs:
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
-      ArtifactName: $(PipelineArtifactName)_signed
+      ArtifactName: $(PipelineArtifactName)_signed_dotnet
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
   - task: Powershell@2
@@ -85,7 +85,7 @@ jobs:
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/dotnet
-      ArtifactName: $(PipelineArtifactName)_packed
+      ArtifactName: $(PipelineArtifactName)_packed_dotnet
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
 # Process native based binaries.
@@ -143,7 +143,7 @@ jobs:
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/native
-      ArtifactName: $(PipelineArtifactName)_signed
+      ArtifactName: $(PipelineArtifactName)_signed_native
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
   - task: Powershell@2
@@ -160,5 +160,5 @@ jobs:
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
       ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/native
-      ArtifactName: $(PipelineArtifactName)_packed
+      ArtifactName: $(PipelineArtifactName)_packed_native
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
