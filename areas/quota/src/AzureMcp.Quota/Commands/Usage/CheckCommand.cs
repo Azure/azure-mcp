@@ -60,7 +60,7 @@ public class CheckCommand(ILogger<CheckCommand> logger) : SubscriptionCommand<Ch
             context.Activity?
                 .AddTag("Region", options.Region)
                 .AddTag("ResourceTypes", options.ResourceTypes);
-            
+
             var ResourceTypes = options.ResourceTypes.Split(',')
                 .Select(rt => rt.Trim())
                 .Where(rt => !string.IsNullOrWhiteSpace(rt))
