@@ -13,6 +13,8 @@ namespace AzureMcp.VirtualDesktop;
 
 public class VirtualDesktopSetup : IAreaSetup
 {
+    public string Name => "virtualdesktop";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IVirtualDesktopService, VirtualDesktopService>();
@@ -20,8 +22,7 @@ public class VirtualDesktopSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        // Create AVD command group
-        var desktop = new CommandGroup("virtualdesktop", "Azure Virtual Desktop operations - Commands for managing and accessing Azure Virtual Desktop resources. Includes operations for hostpools, session hosts, and user sessions.");
+        var desktop = new CommandGroup(Name, "Azure Virtual Desktop operations - Commands for managing and accessing Azure Virtual Desktop resources. Includes operations for hostpools, session hosts, and user sessions.");
         rootGroup.AddSubGroup(desktop);
 
         // Create AVD subgroups

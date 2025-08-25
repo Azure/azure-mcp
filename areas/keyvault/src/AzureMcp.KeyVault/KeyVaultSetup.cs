@@ -14,6 +14,8 @@ namespace AzureMcp.KeyVault;
 
 public class KeyVaultSetup : IAreaSetup
 {
+    public string Name => "keyvault";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IKeyVaultService, KeyVaultService>();
@@ -21,7 +23,7 @@ public class KeyVaultSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var keyVault = new CommandGroup("keyvault", "Key Vault operations - Commands for managing and accessing Azure Key Vault resources.");
+        var keyVault = new CommandGroup(Name, "Key Vault operations - Commands for managing and accessing Azure Key Vault resources.");
         rootGroup.AddSubGroup(keyVault);
 
         var keys = new CommandGroup("key", "Key Vault key operations - Commands for managing and accessing keys in Azure Key Vault.");

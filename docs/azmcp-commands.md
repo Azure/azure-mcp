@@ -120,6 +120,9 @@ azmcp server start \
 ### Azure AI Foundry Operations
 
 ```bash
+# List knowledge indexes in an AI Foundry project
+azmcp foundry knowledge index list --endpoint <endpoint>
+
 # Deploy an AI Foundry model
 azmcp foundry models deploy --subscription <subscription> \
                             --resource-group <resource-group> \
@@ -308,6 +311,75 @@ azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> -
 
 ```
 
+### Azure Database for MySQL Operations
+
+#### Database commands
+
+```bash
+# List all databases in a MySQL server
+azmcp mysql database list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user <user> \
+                          --server <server>
+
+# Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+azmcp mysql database query --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user <user> \
+                           --server <server> \
+                           --database <database> \
+                           --query <query>
+```
+
+#### Table Commands
+
+```bash
+# List all tables in a MySQL database
+azmcp mysql table list --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --user <user> \
+                       --server <server> \
+                       --database <database>
+
+# Get the schema of a specific table in a MySQL database
+azmcp mysql table schema get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --database <database> \
+                             --table <table>
+```
+
+#### Server Commands
+
+```bash
+# Retrieve the configuration of a MySQL server
+azmcp mysql server config get --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server>
+
+# List all MySQL servers in a subscription & resource group
+azmcp mysql server list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --user <user>
+
+# Retrieve a specific parameter of a MySQL server
+azmcp mysql server param get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter>
+
+# Set a specific parameter of a MySQL server to a specific value
+azmcp mysql server param set --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter> \
+                             --value <value>
+```
+
 ### Azure Database for PostgreSQL Operations
 
 #### Database commands
@@ -421,6 +493,11 @@ azmcp deploy plan get --workspace-folder <workspace-folder> \
 ### Azure Function App Operations
 
 ```bash
+# Get details for a specific Function App
+azmcp functionapp get --subscription <subscription> \
+                      --resource-group <resource-group> \
+                      --function-app <function-app-name>
+
 # List function apps in a subscription
 azmcp functionapp list --subscription <subscription>
 ```
@@ -1050,19 +1127,19 @@ azmcp bicepschema get --resource-type <resource-type> \
 ```bash
 # Design Azure cloud architectures through guided questions
 azmcp cloudarchitect design [--question <question>] \
-                           [--question-number <question-number>] \
-                           [--total-questions <total-questions>] \
-                           [--answer <answer>] \
-                           [--next-question-needed <true/false>] \
-                           [--confidence-score <confidence-score>] \
-                           [--architecture-component <architecture-component>]
+                            [--question-number <question-number>] \
+                            [--total-questions <total-questions>] \
+                            [--answer <answer>] \
+                            [--next-question-needed <true/false>] \
+                            [--confidence-score <confidence-score>] \
+                            [--architecture-component <architecture-component>]
 
 # Example:
 # Start an interactive architecture design session
 azmcp cloudarchitect design --question "What type of application are you building?" \
-                           --question-number 1 \
-                           --total-questions 5 \
-                           --confidence-score 0.1
+                            --question-number 1 \
+                            --total-questions 5 \
+                            --confidence-score 0.1
 ```
 
 ## Response Format

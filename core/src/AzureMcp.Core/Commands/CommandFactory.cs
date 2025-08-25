@@ -28,6 +28,7 @@ public class CommandFactory
     /// Mapping of tokenized command names to their <see cref="IBaseCommand" />
     /// </summary>
     private readonly Dictionary<string, IBaseCommand> _commandMap;
+    private readonly HashSet<string> _serviceAreaNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private readonly ITelemetryService _telemetryService;
 
     // Add this new class inside CommandFactory
@@ -94,12 +95,37 @@ public class CommandFactory
 
         return commandsFromGroups;
     }
+
     private void RegisterCommandGroup()
     {
         // Register area command groups
         var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
         foreach (var area in _serviceAreas)
         {
+            if (string.IsNullOrEmpty(area.Name))
+            {
+                var error = new ArgumentException("IAreaSetup cannot have an empty or null name. Type "
+                    + area.GetType());
+                _logger.LogError(error, "Invalid IAreaSetup encountered. Type: {Type}", area.GetType());
+
+                throw error;
+            }
+
+            if (!_serviceAreaNames.Add(area.Name))
+            {
+                var matchingAreaTypes = _serviceAreas
+                    .Where(x => x.Name == area.Name)
+                    .Select(a => a.GetType().FullName);
+
+                var error = new ArgumentException("Cannot have multiple IAreaSetup with the same Name.");
+                _logger.LogError(error,
+                    "Duplicate {AreaName}. Areas with same name: {AllAreaTypes}",
+                    area.Name,
+                    string.Join(", ", matchingAreaTypes));
+
+                throw error;
+            }
+
             area.RegisterCommands(_rootGroup, loggerFactory);
         }
     }
@@ -202,9 +228,30 @@ public class CommandFactory
         return nextGroup != null ? FindCommandInGroup(nextGroup, nameParts) : null;
     }
 
+    /// <summary>
+    /// Finds the BaseCommand given its full command name (i.e. storage_account_list).
+    /// </summary>
+    /// <param name="tokenizedName">Name of the command with prefixes.</param>
+    /// <returns></returns>
     public IBaseCommand? FindCommandByName(string tokenizedName)
     {
         return _commandMap.GetValueOrDefault(tokenizedName);
+    }
+
+    /// <summary>
+    /// Gets the service area given the full command name (i.e. 'storage_account_list' would return 'storage').
+    /// </summary>
+    /// <param name="tokenizedName">Name of the command with prefixes.</param>
+    public string? GetServiceArea(string tokenizedName)
+    {
+        if (string.IsNullOrEmpty(tokenizedName))
+        {
+            return null;
+        }
+
+        var split = tokenizedName.Split(Separator, 2);
+
+        return _serviceAreaNames.Contains(split[0]) ? split[0] : null;
     }
 
     private static Dictionary<string, IBaseCommand> CreateCommmandDictionary(CommandGroup node, string prefix)

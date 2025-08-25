@@ -11,6 +11,8 @@ namespace AzureMcp.CloudArchitect;
 
 public class CloudArchitectSetup : IAreaSetup
 {
+    public string Name => "cloudarchitect";
+
     public void ConfigureServices(IServiceCollection services)
     {
     }
@@ -18,7 +20,7 @@ public class CloudArchitectSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create CloudArchitect command group
-        var cloudArchitect = new CommandGroup("cloudarchitect", "Cloud Architecture operations - Commands for generating Azure architecture designs and recommendations based on requirements.");
+        var cloudArchitect = new CommandGroup(Name, "Cloud Architecture operations - Commands for generating Azure architecture designs and recommendations based on requirements.");
         rootGroup.AddSubGroup(cloudArchitect);
 
         // Register CloudArchitect commands

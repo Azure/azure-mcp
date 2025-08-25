@@ -12,6 +12,8 @@ namespace AzureMcp.Authorization;
 
 public sealed class AuthorizationSetup : IAreaSetup
 {
+    public string Name => "role";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IAuthorizationService, AuthorizationService>();
@@ -20,7 +22,7 @@ public sealed class AuthorizationSetup : IAreaSetup
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
         // Create Authorization RBAC role command group
-        var authorization = new CommandGroup("role",
+        var authorization = new CommandGroup(Name,
             "Authorization operations - Commands for managing Azure Role-Based Access Control (RBAC) resources. Includes operations for listing role assignments, managing permissions, and working with Azure security and access management at various scopes.");
         rootGroup.AddSubGroup(authorization);
 
