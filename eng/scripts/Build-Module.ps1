@@ -67,8 +67,13 @@ try {
         default { $node_os = $os; $extension = '' }
     }
 
-    $outputDir = "$OutputPath/$os-$arch"
-    Write-Host "Building version $Version, $os-$arch in $outputDir" -ForegroundColor Green
+    if ($BuildNative) {
+        $outputDir = "$OutputPath/$os-$arch-native"
+        Write-Host "Building (native AOT) version $Version, $os-$arch in $outputDir" -ForegroundColor Green
+    } else {
+        $outputDir = "$OutputPath/$os-$arch"
+        Write-Host "Building version $Version, $os-$arch in $outputDir" -ForegroundColor Green
+    }
 
     $configuration = if ($DebugBuild) { 'Debug' } else { 'Release' }
 
@@ -105,7 +110,17 @@ try {
 
     Invoke-LoggedCommand $command -GroupOutput
 
+    if ($BuildNative -and -not $DebugBuild) {
+        # TODO: anu, see if AOT compiler has an option to not to produce these rather than deleting manually.
+        Write-Host "Removing debug files (.pdb, .dSYM, .dbg) from native Release build" -ForegroundColor Yellow
+        Get-ChildItem -Path "$outputDir/dist" -Recurse -Include "*.pdb", "*.dSYM", "*.dbg" | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
     $package = Get-Content "$outputDir/package.json" -Raw
+    $mcp = if ($BuildNative) { "mcp-native" } else { "mcp" }
+    $azmcp = if ($BuildNative) { "azmcp-native" } else { "azmcp" }
+    $package = $package.Replace('{mcp}', $mcp)
+    $package = $package.Replace('{azmcp}', $azmcp)
     $package = $package.Replace('{os}', $node_os)
     $package = $package.Replace('{cpu}', $arch)
     $package = $package.Replace('{version}', $Version)

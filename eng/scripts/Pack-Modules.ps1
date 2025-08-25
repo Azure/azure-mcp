@@ -6,7 +6,8 @@ param(
     [string] $ArtifactsPath,
     [string] $OutputPath,
     [string] $Version,
-    [switch] $UsePaths
+    [switch] $UsePaths,
+    [switch] $BuildNative
 )
 
 . "$PSScriptRoot/../common/scripts/common.ps1"
@@ -36,6 +37,12 @@ Remove-Item -Path $wrapperFolder -Recurse -Force -ErrorAction SilentlyContinue -
 
 Push-Location $RepoRoot
 try {
+    # if ($BuildNative) {
+    #     $OutputPath = "$OutputPath/native"
+    # } else {
+    #     $OutputPath = "$OutputPath/dotnet"
+    # }
+
     # Clear and recreate the output directory
     Remove-Item -Path $OutputPath -Recurse -Force -ErrorAction SilentlyContinue -ProgressAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path "$OutputPath/platform" | Out-Null
@@ -43,12 +50,25 @@ try {
     
     $package = Get-Content "$npmPackagePath/package.json" -Raw | ConvertFrom-Json -AsHashtable
     $package.version = $Version
+    $package.name = if ($BuildNative) { "@azure/mcp-native" } else { "@azure/mcp" }
 
     # Build the project
     $platformFiles = Get-ChildItem -Path $ArtifactsPath -Filter "package.json" -Recurse
     foreach ($platformFile in $platformFiles) {
         $packageFolder = $platformFile.DirectoryName
         $platform = Get-Content $platformFile.FullName -Raw | ConvertFrom-Json -AsHashtable
+
+        # if ($BuildNative) {
+        #     # For native builds, only process packages with names starting with "@azure/mcp-native-"
+        #     if (-not $platform.name.StartsWith("@azure/mcp-native-")) {
+        #         continue
+        #     }
+        # } else {
+        #     # For regular builds, skip packages with names starting with "@azure/mcp-native-"
+        #     if ($platform.name.StartsWith("@azure/mcp-native-")) {
+        #         continue
+        #     }
+        # }
 
         if ($platform.version -ne $version) {
            Write-Error "Version mismatch in $($platformFile.FullName). Expected $version, found $($platform.version)"
@@ -96,6 +116,15 @@ try {
 
     New-Item -ItemType Directory $wrapperFolder | Out-Null
     Copy-Item -Path "$npmPackagePath/*" -Destination $wrapperFolder -Recurse -Force
+
+    # Replace template placeholders in index.js and post-install-script.js
+    $indexJs = Get-Content "$wrapperFolder/index.js" -Raw
+    $mcp = if ($BuildNative) { "mcp-native" } else { "mcp" }
+    $indexJs = $indexJs.Replace('{mcp}', $mcp)
+    $indexJs | Out-File -FilePath "$wrapperFolder/index.js" -Encoding utf8 -NoNewline
+    $postInstallScript = Get-Content "$wrapperFolder/scripts/post-install-script.js" -Raw
+    $postInstallScript = $postInstallScript.Replace('{mcp}', $mcp)
+    $postInstallScript | Out-File -FilePath "$wrapperFolder/scripts/post-install-script.js" -Encoding utf8 -NoNewline
 
     if (!$IsWindows) {
         Write-Host "Setting executable permissions for $wrapperFolder/index.js" -ForegroundColor Yellow

@@ -28,6 +28,10 @@ public class LiveTestFixture : LiveTestSettingsFixture
         string testAssemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         string executablePath = OperatingSystem.IsWindows() ? Path.Combine(testAssemblyPath, "azmcp.exe") : Path.Combine(testAssemblyPath, "azmcp");
 
+        var fileInfo = new FileInfo(executablePath);
+        double sizeInMB = fileInfo.Length / (1024.0 * 1024.0);
+        Console.WriteLine($"Executable size: {sizeInMB:F2} MB ({executablePath})");
+
         // Use custom arguments if provided, otherwise default to ["server", "start"]
         var arguments = _customArguments ?? ["server", "start", "--mode", "all"];
 

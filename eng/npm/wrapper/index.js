@@ -25,7 +25,7 @@ process.argv.forEach((val, index) => {
 const platform = os.platform()
 const arch = os.arch()
 
-const platformPackageName = `@azure/mcp-${platform}-${arch}`
+const platformPackageName = `@azure/{mcp}-${platform}-${arch}`
 
 // Try to load the platform package
 let platformPackage

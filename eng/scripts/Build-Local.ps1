@@ -17,8 +17,13 @@ $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/../common/scripts/common.ps1"
 $root = $RepoRoot.Path.Replace('\', '/')
 
-$packagesPath = "$root/.work/platform"
-$distPath = "$root/.dist"
+if ($BuildNative) {
+    $packagesPath = "$root/.work/platform/native"
+    $distPath = "$root/.dist/native"
+} else {
+    $packagesPath = "$root/.work/platform/dotnet"
+    $distPath = "$root/.dist/dotnet"
+}
 
 $version = [AzureEngSemanticVersion]::ParseVersionString((& "$PSScriptRoot/Get-Version.ps1"))
 $version.PrereleaseLabel = 'alpha'
@@ -65,9 +70,11 @@ else {
     -Version $version `
     -ArtifactsPath $packagesPath `
     -UsePaths:(!$NoUsePaths) `
-    -OutputPath $distPath
+    -OutputPath $distPath `
+    -BuildNative:$BuildNative
 
-$tgzFile = Get-ChildItem -Path "$distPath/wrapper" -Filter '*.tgz'
+$wrapperPath = "$distPath/wrapper"
+$tgzFile = Get-ChildItem -Path $wrapperPath -Filter '*.tgz'
 | Select-Object -First 1
 
 $testSettingsPath = "$root/.testsettings.json"

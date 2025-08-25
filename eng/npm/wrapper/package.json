@@ -1,5 +1,5 @@
 {
-  "name": "@azure/mcp",
+  "name": "@azure/{mcp}",
   "version": "0.0.0",
   "description": "Azure MCP Server - Model Context Protocol implementation for Azure",
   "author": "Microsoft Corporation",
@@ -28,7 +28,6 @@
   "cpu": [
   ], 
   "optionalDependencies": {
-    "@azure/mcp-linux-x64": "^0.2.3"
   },
   "scripts": {
     "postinstall": "node ./scripts/post-install-script.js"
