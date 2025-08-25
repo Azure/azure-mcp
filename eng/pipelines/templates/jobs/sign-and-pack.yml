@@ -14,14 +14,8 @@ jobs:
   steps:
   - checkout: self
 
-# Process dotnet based binaries.
-
-  - task: DownloadPipelineArtifact@2
-    displayName: Download dotnet artifacts
-    inputs:
-      source: current
-      patterns: $(PipelineArtifactName)_*/dotnet/**
-      path: $(Pipeline.Workspace)/dotnet
+  - download: current
+    displayName: Download artifacts
 
   - task: Powershell@2
     displayName: "Compress packages"
@@ -29,14 +23,14 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Compress-ForSigning.ps1
       arguments: >
-        -ArtifactsPath '$(Pipeline.Workspace)/dotnet'
+        -ArtifactsPath '$(Pipeline.Workspace)'
         -ArtifactPrefix '$(PipelineArtifactName)_'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/signed'
 
   - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
     parameters:
       SigningKeyCode: 'CP-230012' # MS Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed
       BinaryPattern: |
         win-*/**/azmcp.dll
         win-*/**/azmcp.exe
@@ -45,7 +39,7 @@ jobs:
   - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
     parameters:
       SigningKeyCode: 'CP-231522' # MS 3rd Party Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
+      BinaryPath: $(Build.ArtifactStagingDirectory)/signed
       BinaryPattern: |
         win-*/**/ModelContextProtocol*.dll
         win-*/**/Npgsql.dll
@@ -55,7 +49,7 @@ jobs:
 
   - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
     parameters:
-      MacPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
+      MacPath: $(Build.ArtifactStagingDirectory)/signed
       MacPattern: "**/*.zip"
 
   - task: Powershell@2
@@ -64,101 +58,67 @@ jobs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Expand-AfterSigning.ps1
       arguments: >
-        -Path '$(Build.ArtifactStagingDirectory)/signed/dotnet'
+        -Path '$(Build.ArtifactStagingDirectory)/signed'
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/dotnet
-      ArtifactName: $(PipelineArtifactName)_signed_dotnet
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed
+      ArtifactName: $(PipelineArtifactName)_signed
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
 
   - task: Powershell@2
-    displayName: "Pack modules"
+    displayName: "Organize signed dotnet and native artifacts for packaging"
+    inputs:
+      pwsh: true
+      targetType: 'inline'
+      script: |
+        $signedPath = "$(Build.ArtifactStagingDirectory)/signed"
+        $toPackPath = "$(Build.ArtifactStagingDirectory)/topack"
+
+        New-Item -ItemType Directory -Force -Path "$toPackPath/dotnet" | Out-Null
+        New-Item -ItemType Directory -Force -Path "$toPackPath/native" | Out-Null
+
+        $directories = Get-ChildItem -Path $signedPath -Directory
+
+        foreach ($packageDir in $directories) {
+            $packageJsonPath = Join-Path $packageDir.FullName "package.json"
+            if (Test-Path $packageJsonPath) {
+                $packageName = $packageDir.Name
+                Write-Host "Processing platform package: $packageName"
+                if ($packageName.EndsWith("-native")) {
+                    $destinationPath = Join-Path "$toPackPath/native" $packageName
+                    Write-Host "  → Moving to native artifacts folder"
+                } else {
+                    $destinationPath = Join-Path "$toPackPath/dotnet" $packageName
+                    Write-Host "  → Moving to dotnet artifacts folder"
+                }
+                Copy-Item -Path $packageDir.FullName -Destination $destinationPath -Recurse -Force
+            }
+        }
+
+  - task: Powershell@2
+    displayName: "(Dotnet) Pack modules"
     inputs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
-        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/dotnet'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/dotnet'
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/topack/dotnet'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
         -Version '$(Version)'
 
-  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
-    parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/dotnet
-      ArtifactName: $(PipelineArtifactName)_packed_dotnet
-      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
-
-# Process native based binaries.
-
-  - task: DownloadPipelineArtifact@2
-    displayName: Download native artifacts
-    inputs:
-      source: current
-      patterns: $(PipelineArtifactName)_*/native/**
-      path: $(Pipeline.Workspace)/native
-
   - task: Powershell@2
-    displayName: "Compress packages"
-    inputs:
-      pwsh: true
-      filePath: $(Build.SourcesDirectory)/eng/scripts/Compress-ForSigning.ps1
-      arguments: >
-        -ArtifactsPath '$(Pipeline.Workspace)/native'
-        -ArtifactPrefix '$(PipelineArtifactName)_'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/signed/native'
-
-  - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
-    parameters:
-      SigningKeyCode: 'CP-230012' # MS Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/native
-      BinaryPattern: |
-        win-*/**/azmcp.dll
-        win-*/**/azmcp.exe
-        win-*/**/AzureMcp*.dll
-
-  - template: pipelines/steps/binary-signing.yml@azure-sdk-build-tools
-    parameters:
-      SigningKeyCode: 'CP-231522' # MS 3rd Party Cert
-      BinaryPath: $(Build.ArtifactStagingDirectory)/signed/native
-      BinaryPattern: |
-        win-*/**/ModelContextProtocol*.dll
-        win-*/**/Npgsql.dll
-        win-*/**/OpenAI.dll
-        win-*/**/OpenTelemetry*.dll
-        win-*/**/YamlDotNet.dll
-
-  - template: pipelines/steps/azd-cli-mac-signing.yml@azure-sdk-build-tools
-    parameters:
-      MacPath: $(Build.ArtifactStagingDirectory)/signed/native
-      MacPattern: "**/*.zip"
-
-  - task: Powershell@2
-    displayName: "Expand packages"
-    inputs:
-      pwsh: true
-      filePath: $(Build.SourcesDirectory)/eng/scripts/Expand-AfterSigning.ps1
-      arguments: >
-        -Path '$(Build.ArtifactStagingDirectory)/signed/native'
-
-  - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
-    parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/signed/native
-      ArtifactName: $(PipelineArtifactName)_signed_native
-      SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
-
-  - task: Powershell@2
-    displayName: "Pack modules"
+    displayName: "(Native) Pack modules"
     inputs:
       pwsh: true
       filePath: $(Build.SourcesDirectory)/eng/scripts/Pack-Modules.ps1
       arguments: >
-        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/signed/native'
-        -OutputPath '$(Build.ArtifactStagingDirectory)/packed/native'
+        -ArtifactsPath '$(Build.ArtifactStagingDirectory)/topack/native'
+        -OutputPath '$(Build.ArtifactStagingDirectory)/packed'
         -Version '$(Version)'
         -BuildNative
 
   - template: /eng/common/pipelines/templates/steps/publish-1es-artifact.yml
     parameters:
-      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed/native
-      ArtifactName: $(PipelineArtifactName)_packed_native
+      ArtifactPath: $(Build.ArtifactStagingDirectory)/packed
+      ArtifactName: $(PipelineArtifactName)_packed
       SbomEnabled: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
