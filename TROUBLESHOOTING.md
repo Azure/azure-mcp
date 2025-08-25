@@ -8,6 +8,11 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Console window is empty when running Azure MCP Server](#console-window-is-empty-when-running-azure-mcp-server)
   - [Can I select what tools to load in the MCP server?](#can-i-select-what-tools-to-load-in-the-mcp-server)
   - [Why does VS Code only show a subset of tools available?](#why-does-vs-code-only-show-a-subset-of-tools-available)
+  - [VS Code Permission Dialog for Language Model Calls](#vs-code-permission-dialog-for-language-model-calls)
+  - [VS Code Integration Issues](#vs-code-integration-issues)
+    - [Clearing VS Code Cache](#clearing-vs-code-cache)
+    - [Server Not Showing Up in Agent Mode](#server-not-showing-up-in-agent-mode)
+    - [Tools Not Loading in Agent Mode](#tools-not-loading-in-agent-mode)
   - [Bring your own language model key](#bring-your-own-language-model-key)
 - [Tool Limitations](#tool-limitations)
   - [128-Tool Limit Issue](#128-tool-limit-issue)
@@ -17,8 +22,13 @@ This guide helps you diagnose and resolve common issues with the Azure MCP Serve
   - [Primary Access Token from Wrong Issuer](#primary-access-token-from-wrong-issuer)
   - [Network and Firewall Restrictions](#network-and-firewall-restrictions)
   - [Enterprise Environment Scenarios](#enterprise-environment-scenarios)
+  - [Multi-Tenant Authentication Problems](#multi-tenant-authentication-problems)
+  - [Dev Container and WSL Authentication Issues](#dev-container-and-wsl-authentication-issues)
   - [AADSTS500200 error: User account is a personal Microsoft account](#aadsts500200-error-user-account-is-a-personal-microsoft-account)
-  - [Platform Package Installation Issues](#platform-package-installation-issues)
+  - [Package Installation and npm Issues](#package-installation-and-npm-issues)
+    - [Platform Package Installation Issues](#platform-package-installation-issues)
+    - [npm Authentication Issues for Remote Access](#npm-authentication-issues-for-remote-access)
+    - [Dependency Installation Errors](#dependency-installation-errors)
 - [Logging and Diagnostics](#logging-and-diagnostics)
   - [Logging](#logging)
   - [Observability with OpenTelemetry](#observability-with-opentelemetry)
@@ -85,6 +95,63 @@ The dialog shows: "The MCP server 'Azure' has issued a request to make an langua
 - **"Always"** - Permanently allows the server to make language model calls
 
 This permission is required because some Azure MCP tools may need to make additional language model calls to process complex requests or provide enhanced responses.
+
+### VS Code Integration Issues
+
+#### Clearing VS Code Cache
+
+If you encounter issues with stale configurations or the Azure MCP Server behaving unexpectedly, clearing VS Code's cache can resolve many problems:
+
+**Step 1: Reload the VS Code Window**
+- Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+- Select `Developer: Reload Window`
+
+**Step 2: Clear VS Code Cache (if reload doesn't help)**
+If the issue persists, clear the following folders:
+- **Windows:** `%APPDATA%\Code\Cache`, `%APPDATA%\Code\CachedData`, `%APPDATA%\Code\User\workspaceStorage`, `%APPDATA%\Code\logs`
+- **macOS:** `~/Library/Caches/com.microsoft.VSCode`, `~/Library/Application Support/Code/CachedData`, `~/Library/Application Support/Code/User/workspaceStorage`, `~/Library/Application Support/Code/logs`
+- **Linux:** `~/.cache/vscode`, `~/.config/Code/CachedData`, `~/.config/Code/User/workspaceStorage`, `~/.config/Code/logs`
+
+**Step 3: Clear Node.js Cache**
+```bash
+npm cache clean --force
+```
+
+#### Server Not Showing Up in Agent Mode
+
+If the Azure MCP Server doesn't appear in VS Code's MCP integration:
+
+1. **Check MCP Configuration:**
+   - Ensure `mcp.json` is correctly configured in your workspace (`.vscode/mcp.json`) or user settings
+   - Verify the server configuration matches the expected format
+
+2. **Restart the MCP Server:**
+   - Use Command Palette: `MCP: Restart Servers`
+   - Or reload the VS Code window completely
+
+3. **Verify Installation:**
+   - Check that the Azure MCP Server is properly installed
+   - For npm installations: `npm list -g @azure/mcp`
+   - For local builds: verify the binary path exists
+
+#### Tools Not Loading in Agent Mode
+
+If Azure MCP tools don't appear in VS Code Agent Mode:
+
+1. **Add Context in Agent Mode:**
+   - Click "Add Context" in VS Code Agent Mode
+   - Ensure all tools starting with `azure_` are selected
+   - Verify the tools you need are checked in the tool picker
+
+2. **Check Tool Limits:**
+   - VS Code has a 128-tool limit per request
+   - If you have multiple MCP servers, you may exceed this limit
+   - See [128-Tool Limit Issue](#128-tool-limit-issue) for solutions
+
+3. **Verify Server Status:**
+   - Use Command Palette: `MCP: List Servers`
+   - Check that the Azure MCP Server shows as "Connected"
+   - Review any error messages in the server output
 
 ## Tool Limitations
 
@@ -454,6 +521,128 @@ When resources are heavily restricted:
    - Conditional Access policies
    - Service principal creation
 
+### Multi-Tenant Authentication Problems
+
+If you encounter authentication errors like `TF400813: The user 'xxx' is not authorized to access this resource` or `Authorization failed`, you may be experiencing multi-tenant authentication issues.
+
+#### Symptoms
+
+- Azure CLI (`az account show`) works fine
+- Azure MCP Server fails with authorization errors
+- You have access to multiple Azure tenants
+- Authentication succeeds but resource access fails
+
+#### Root Cause
+
+The Azure MCP Server may be authenticating with a different tenant than your Azure subscription, especially when you have access to multiple Azure tenants. The server may also be using a different tenant when the user belongs to one tenant but is added as a guest user in another organization's tenant.
+
+#### Solution
+
+1. **Identify the correct tenant ID** for your Azure subscription:
+
+   ```bash
+   az account show --query tenantId -o tsv
+   ```
+
+   Look for the `tenantId` field in the output for the desired subscription.
+
+2. **Configure the Azure MCP Server with the tenant ID** by setting the tenant in your VS Code global `settings.json`.
+
+   **Steps:**
+   - Determine your correct **Tenant ID** using the command above
+   - Add the following setting to the VS Code global settings file:
+
+   **Stable (GA) VS Code**
+   - Windows: `%APPDATA%\Code\User\settings.json`
+   - macOS: `~/Library/Application Support/Code/User/settings.json`
+   - Linux: `~/.config/Code/User/settings.json`
+
+   **Insiders VS Code**
+   - Windows: `%APPDATA%\Code - Insiders\User\settings.json`
+   - macOS: `~/Library/Application Support/Code - Insiders/User/settings.json`
+   - Linux: `~/.config/Code - Insiders/User/settings.json`
+
+   ```json
+   {
+     "@azure.argTenant": "<Tenant-Id-of-the-preferred-tenant>"
+   }
+   ```
+
+3. **Restart VS Code** completely to ensure the Azure MCP Server picks up the new configuration.
+
+4. **Alternative: Set Environment Variable**
+   
+   You can also set the tenant ID using an environment variable:
+   ```bash
+   export AZURE_TENANT_ID="your-tenant-id"
+   ```
+
+#### Verification
+
+After configuration, verify the tenant is correct:
+```bash
+az account show --query "tenantId" -o tsv
+```
+
+This should match the tenant ID you configured.
+
+### Dev Container and WSL Authentication Issues
+
+If the tenant configuration solution above doesn't resolve your authentication issues, and you're working in a **Dev Container** or **WSL (Windows Subsystem for Linux)** environment, the root cause may be different.
+
+#### Dev Container/WSL Symptoms
+
+- Same authorization errors as above (`Authorization failed` or similar)
+- Tenant ID configuration didn't resolve the issue
+- You're using VS Code with Dev Containers or WSL
+- Azure MCP Server is configured in User Settings (global) rather than workspace settings
+
+#### Dev Container/WSL Root Cause
+
+When MCP servers are configured in **User Settings** (global configuration), they inherit the environment context from the **host machine**, including Azure authentication settings. In Dev Container or WSL scenarios, this means:
+
+- The MCP server uses the host machine's Azure authentication
+- Any `az login` performed inside the Dev Container or WSL environment is ignored
+- There may be a mismatch between the authentication context the MCP server expects and your development environment
+
+#### Dev Container/WSL Solution
+
+1. **Verify your MCP configuration location**:
+   - Check if your Azure MCP Server is configured in User Settings (global) vs Workspace Settings
+   - User Settings: Run `MCP: Open User Configuration` from Command Palette
+   - Workspace Settings: Check for `.vscode/mcp.json` in your project
+
+2. **For User Settings (Global) MCP configuration**:
+   - Ensure you are logged into Azure from the **host machine** (not inside the Dev Container/WSL)
+   - Run `az login` on the host Windows machine (outside of WSL/Dev Container)
+   - Do NOT run `az login` inside the Dev Container or WSL environment
+   - Restart VS Code completely
+
+3. **Alternative: Use Workspace Settings instead**:
+   - Move your Azure MCP Server configuration from User Settings to Workspace Settings
+   - Create/update `.vscode/mcp.json` in your project
+   - This allows the MCP server to use the authentication context from within the Dev Container/WSL environment
+
+4. **For Dev Containers specifically**:
+   - Consider configuring MCP servers directly in your `devcontainer.json` file
+   - This ensures the MCP server runs within the containerized environment with the correct context
+
+#### Example Workspace MCP Configuration
+
+Create `.vscode/mcp.json` in your project root:
+
+```json
+{
+  "servers": {
+    "azure": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start"]
+    }
+  }
+}
+```
+
 ### AADSTS500200 error: User account is a personal Microsoft account
 
 This error occurs when trying to authenticate with a personal Microsoft account (@hotmail.com, @outlook.com, @live.com, @gmail.com, etc.) against Azure resources.
@@ -491,16 +680,18 @@ See the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs
 2. Complete the authentication setup as described in the [Authentication guide](https://github.com/Azure/azure-mcp/blob/main/docs/Authentication.md)
 3. Verify access by running `az account show` to confirm you're authenticated with the correct account type
 
-### Platform Package Installation Issues
+### Package Installation and npm Issues
+
+#### Platform Package Installation Issues
 
 The Azure MCP wrapper automatically installs the correct platform-specific package when needed. However, if you encounter persistent errors about missing platform packages (e.g., `@azure/mcp-linux-x64`, `@azure/mcp-win32-x64`, `@azure/mcp-darwin-x64`), this may indicate network connectivity issues or permission problems.
 
-#### Error Examples:
+**Error Examples:**
 - `Failed to load platform specific package '@azure/mcp-linux-x64'`
 - `Cannot find module '@azure/mcp-linux-x64'`
 - `'@azure/mcp-linux-x64' module is missing`
 
-#### Resolution Steps:
+**Resolution Steps:**
 
 **First, ensure you have the latest VS Code version** (v1.101 or later), as older versions may cause compatibility issues with the Azure MCP Server on Ubuntu systems.
 
@@ -534,18 +725,88 @@ The Azure MCP wrapper automatically installs the correct platform-specific packa
    npm --version
    ```
 
-#### Common Causes of Auto-Installation Failure:
+**Common Causes of Auto-Installation Failure:**
 - **Network connectivity issues** during package installation
 - **Permission problems** preventing npm from installing packages
 - **Corporate firewall/proxy** blocking npm registry access
 - **Disk space issues** preventing package extraction
 - **npm cache corruption** preventing proper package resolution
 
+#### npm Authentication Issues for Remote Access
+
+If you encounter authentication errors when installing or using Azure MCP packages:
+
+1. **Verify npm registry configuration:**
+   ```bash
+   npm config get registry
+   ```
+   
+   It should point to: `https://registry.npmjs.org/`
+
+2. **Check npm authentication status:**
+   ```bash
+   npm whoami
+   ```
+
+3. **If authentication is required, log in to npm:**
+   ```bash
+   npm login
+   ```
+
+#### Dependency Installation Errors
+
+If `npm install` fails when installing Azure MCP packages:
+
+1. **Verify Node.js version compatibility:**
+   ```bash
+   node -v
+   ```
+   
+   Azure MCP requires Node.js version 20 or higher.
+
+2. **Clear npm cache and retry:**
+   ```bash
+   npm cache clean --force
+   npm install
+   ```
+
+3. **Install with verbose output to diagnose issues:**
+   ```bash
+   npm install -g @azure/mcp --verbose
+   ```
+
+4. **For permission errors on global installs:**
+   ```bash
+   # Use npx instead of global installation
+   npx -y @azure/mcp@latest server start
+   
+   # Or configure npm to use a different global directory
+   mkdir ~/.npm-global
+   npm config set prefix '~/.npm-global'
+   export PATH=~/.npm-global/bin:$PATH
+   ```
+
 #### For Enterprise Users:
-If you're behind a corporate firewall, you may need to:
-- Configure npm proxy settings
-- Whitelist npm registry domains (`*.npmjs.org`, `registry.npmjs.org`)
-- Work with IT to ensure npm can download packages
+
+If you're behind a corporate firewall or proxy, you may need to:
+
+- **Configure npm proxy settings:**
+  ```bash
+  npm config set proxy http://proxy.company.com:8080
+  npm config set https-proxy http://proxy.company.com:8080
+  ```
+
+- **Whitelist npm registry domains:**
+  - `*.npmjs.org`
+  - `registry.npmjs.org`
+  - `npmjs.com`
+
+- **Work with IT to ensure npm can download packages**
+
+- **Configure corporate certificate trust:**
+  ```bash
+  npm config set cafile /path/to/corporate-ca-bundle.crt
+  ```
 
 ## Logging and Diagnostics
 
