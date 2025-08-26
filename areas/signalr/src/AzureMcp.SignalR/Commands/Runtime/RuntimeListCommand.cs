@@ -73,5 +73,5 @@ public sealed class RuntimeListCommand(ILogger<RuntimeListCommand> logger)
         return context.Response;
     }
 
-    public record RuntimeListCommandResult(IEnumerable<SignalRRuntimeModel> Runtimes);
+    public record RuntimeListCommandResult(IEnumerable<Models.Runtime> Runtimes);
 }

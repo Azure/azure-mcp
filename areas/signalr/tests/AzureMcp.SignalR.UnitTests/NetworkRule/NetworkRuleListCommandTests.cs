@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using System.Text.Json;
 using Azure;
 using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
@@ -12,7 +13,6 @@ using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.NetworkRule;
@@ -20,7 +20,7 @@ namespace AzureMcp.SignalR.UnitTests.NetworkRule;
 public class NetworkRuleListCommandTests
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ISignalRService _service;
+    private readonly ISignalRService _signalRService;
     private readonly ILogger<NetworkRuleListCommand> _logger;
     private readonly NetworkRuleListCommand _command;
     private readonly CommandContext _context;
@@ -28,10 +28,10 @@ public class NetworkRuleListCommandTests
 
     public NetworkRuleListCommandTests()
     {
-        _service = Substitute.For<ISignalRService>();
+        _signalRService = Substitute.For<ISignalRService>();
         _logger = Substitute.For<ILogger<NetworkRuleListCommand>>();
 
-        var collection = new ServiceCollection().AddSingleton(_service);
+        var collection = new ServiceCollection().AddSingleton(_signalRService);
         _serviceProvider = collection.BuildServiceProvider();
         _command = new(_logger);
         _context = new(_serviceProvider);
@@ -49,23 +49,42 @@ public class NetworkRuleListCommandTests
     }
 
     [Theory]
-    [InlineData("--signalr-name testSignalR --resource-group testRG --subscription testSub", true)]
-    [InlineData("--signalr-name testSignalR --resource-group testRG", false)] // Missing subscription
-    [InlineData("--resource-group testRG --subscription testSub", false)] // Missing signalr-name
-    [InlineData("", false)] // Missing all required params
+    [InlineData("--subscription sub1 --resource-group rg1 --signalr-name signalr1", true)]
+    [InlineData("--subscription sub1 --signalr-name signalr1", false)] // Missing resource-group
+    [InlineData("--subscription sub1 --resource-group rg1", false)] // Missing signalr-name
+    [InlineData("--resource-group rg1 --signalr-name signalr1", false)] // Missing subscription
+    [InlineData("", false)] // Missing all required options
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
-        var networkRules = new SignalRNetworkAclModel
+        if (shouldSucceed)
         {
-            DefaultAction = "Allow",
-            PublicNetwork = new SignalRNetworkRuleModel { Allow = new[] { "ClientConnection", "RESTAPI" } }
-        };
+            var testNetworkRules = new Models.NetworkRule
+            {
+                DefaultAction = "Deny",
+                PublicNetwork =
+                    new NetworkAcl
+                    {
+                        Allow = new[] { "ServerConnection", "ClientConnection" }, Deny = new[] { "RESTAPI" }
+                    },
+                PrivateEndpoints = new[]
+                {
+                    new PrivateEndpointNetworkAcl
+                    {
+                        Name = "test-endpoint", Allow = new[] { "ServerConnection" }
+                    }
+                }
+            };
 
-        // Set up service mock for all cases to avoid NSubstitute issues
-        _service.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
-            .Returns(networkRules);
+            _signalRService.GetNetworkRulesAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<AuthMethod?>(),
+                    Arg.Any<RetryPolicyOptions>())
+                .Returns(testNetworkRules);
+        }
 
         var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
@@ -73,50 +92,90 @@ public class NetworkRuleListCommandTests
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
         if (shouldSucceed)
         {
-            Assert.Equal(200, response.Status);
             Assert.NotNull(response.Results);
             Assert.Equal("Success", response.Message);
         }
         else
         {
-            // Validation failures return 400 status with error message about missing required options
-            Assert.Equal(400, response.Status);
-            Assert.Contains("Missing Required options", response.Message);
+            Assert.Contains("required", response.Message.ToLower());
         }
     }
 
     [Fact]
-    public async Task ExecuteAsync_HandlesServiceErrors()
+    public async Task ExecuteAsync_ReturnsNetworkRulesWhenFound()
     {
-        // Arrange - Use a more realistic Azure exception
-        var azureException = new RequestFailedException(500, "Test error", "InternalServerError", null);
-        _service.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(azureException);
+        // Arrange
+        var expectedNetworkRules = new Models.NetworkRule
+        {
+            DefaultAction = "Allow",
+            PublicNetwork =
+                new NetworkAcl
+                {
+                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI" },
+                    Deny = new[] { "Trace" }
+                },
+            PrivateEndpoints = new[]
+            {
+                new PrivateEndpointNetworkAcl
+                {
+                    Name = "test-private-endpoint",
+                    Allow = new[] { "ServerConnection", "ClientConnection" },
+                    Deny = new[] { "RESTAPI" }
+                }
+            }
+        };
+
+        _signalRService.GetNetworkRulesAsync(
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedNetworkRules);
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
         ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.Equal(500, response.Status);
-        Assert.Contains("Test error", response.Message);
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        Assert.Equal("Success", response.Message);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json, SignalRJsonContext.Default.NetworkRuleListCommandResult);
+
+        Assert.NotNull(result);
+        Assert.Equal("Allow",
+            result.NetworkRules.DefaultAction);
+        Assert.NotNull(
+            result.NetworkRules.PublicNetwork);
+        Assert.Contains("ServerConnection",
+            result.NetworkRules.PublicNetwork.Allow!);
+        Assert.NotNull(
+            result.NetworkRules.PrivateEndpoints);
+        Assert.Single(
+            result.NetworkRules.PrivateEndpoints);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNullWhenNoNetworkRules()
+    public async Task ExecuteAsync_ReturnsNullWhenNetworkRulesNotFound()
     {
         // Arrange
-        _service.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns((SignalRNetworkAclModel?)null);
+        _signalRService.GetNetworkRulesAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+                Arg.Any<RetryPolicyOptions>())
+            .Returns((Models.NetworkRule?)null);
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name",
+            "nonexistent-signalr"
         ]);
 
         // Act
@@ -129,30 +188,65 @@ public class NetworkRuleListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNetworkRulesSuccessfully()
+    public async Task ExecuteAsync_HandlesRequestFailedException()
     {
         // Arrange
-        var expectedNetworkRules = new SignalRNetworkAclModel
-        {
-            DefaultAction = "Deny",
-            PublicNetwork =
-                new SignalRNetworkRuleModel
-                {
-                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI", "Trace" },
-                    Deny = null
-                },
-            PrivateEndpoints = new[]
-            {
-                new SignalRPrivateEndpointModel { Name = "test-pe", Allow = new[] { "ClientConnection" } }
-            }
-        };
-
-        _service.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns(expectedNetworkRules);
+        var exception = new RequestFailedException(403, "Insufficient permissions to access network rules");
+        _signalRService.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.NetworkRule?>(exception));
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(403, response.Status);
+        Assert.Contains("Insufficient permissions to access network rules", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesServiceErrors()
+    {
+        // Arrange
+        _signalRService.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.NetworkRule?>(new Exception("Network configuration error")));
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Network configuration error", response.Message);
+    }
+
+    [Theory]
+    [InlineData("Allow")]
+    [InlineData("Deny")]
+    public async Task ExecuteAsync_HandlesAllDefaultActions(string defaultAction)
+    {
+        // Arrange
+        var networkRules = new Models.NetworkRule { DefaultAction = defaultAction };
+
+        _signalRService.GetNetworkRulesAsync(
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(networkRules);
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
         ]);
 
         // Act
@@ -161,6 +255,43 @@ public class NetworkRuleListCommandTests
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-        Assert.Equal("Success", response.Message);
+
+        var json = JsonSerializer.Serialize(response.Results);
+        var result = JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json, SignalRJsonContext.Default.NetworkRuleListCommandResult);
+        Assert.NotNull(result);
+        var rules = Assert.IsType<Models.NetworkRule>(result.NetworkRules);
+        Assert.Equal(defaultAction, rules.DefaultAction);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesEmptyNetworkRules()
+    {
+        // Arrange
+        var emptyNetworkRules = new Models.NetworkRule
+        {
+            DefaultAction = "Allow",
+            PublicNetwork = null,
+            PrivateEndpoints = Array.Empty<PrivateEndpointNetworkAcl>()
+        };
+
+        _signalRService.GetNetworkRulesAsync(
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(emptyNetworkRules);
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
     }
 }

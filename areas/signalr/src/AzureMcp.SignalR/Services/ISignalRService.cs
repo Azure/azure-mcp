@@ -11,13 +11,13 @@ namespace AzureMcp.SignalR.Services;
 /// </summary>
 public interface ISignalRService
 {
-    Task<IEnumerable<SignalRRuntimeModel>> ListRuntimesAsync(
+    Task<IEnumerable<Runtime>> ListRuntimesAsync(
         string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 
-    Task<SignalRRuntimeModel?> GetRuntimeAsync(
+    Task<Runtime?> GetRuntimeAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -28,7 +28,7 @@ public interface ISignalRService
     /// <summary>
     /// Lists keys for a SignalR service.
     /// </summary>
-    Task<SignalRKeyModel> ListKeysAsync(
+    Task<Key?> ListKeysAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -39,7 +39,7 @@ public interface ISignalRService
     /// <summary>
     /// Gets identity configuration for a SignalR service.
     /// </summary>
-    Task<SignalRIdentityModel?> GetSignalRIdentityAsync(
+    Task<Identity?> GetSignalRIdentityAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -50,10 +50,11 @@ public interface ISignalRService
     /// <summary>
     /// Lists network ACL rules for a SignalR service.
     /// </summary>
-    Task<SignalRNetworkAclModel?> GetNetworkRulesAsync(
+    Task<NetworkRule?> GetNetworkRulesAsync(
         string subscription,
         string resourceGroup,
         string signalRName,
+        string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null);
 }

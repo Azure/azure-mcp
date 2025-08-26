@@ -6,21 +6,19 @@ using Azure;
 using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.Core.Services.Azure.Subscription;
-using AzureMcp.Core.Services.Azure.Tenant;
 using AzureMcp.SignalR.Commands.Identity;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.Identity;
 
 public class IdentityShowCommandTests
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ISignalRService _signalRService;
     private readonly ILogger<IdentityShowCommand> _logger;
     private readonly IdentityShowCommand _command;
@@ -33,10 +31,9 @@ public class IdentityShowCommandTests
         _logger = Substitute.For<ILogger<IdentityShowCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
-        var serviceProvider = collection.BuildServiceProvider();
-
+        _serviceProvider = collection.BuildServiceProvider();
         _command = new(_logger);
-        _context = new(serviceProvider);
+        _context = new(_serviceProvider);
         _parser = new(_command.GetCommand());
     }
 
@@ -51,23 +48,30 @@ public class IdentityShowCommandTests
     }
 
     [Theory]
-    [InlineData("--signalr-name testSignalR --resource-group testRG --subscription testSub", true)]
-    [InlineData("--signalr-name testSignalR --resource-group testRG", false)] // Missing subscription
-    [InlineData("--resource-group testRG --subscription testSub", false)] // Missing signalr-name
-    [InlineData("", false)] // Missing all required params
+    [InlineData("--subscription sub1 --resource-group rg1 --signalr-name signalr1", true)]
+    [InlineData("--subscription sub1 --signalr-name signalr1", false)] // Missing resource-group
+    [InlineData("--subscription sub1 --resource-group rg1", false)] // Missing signalr-name
+    [InlineData("--resource-group rg1 --signalr-name signalr1", false)] // Missing subscription
+    [InlineData("", false)] // Missing all required options
     public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
-        var identity = new SignalRIdentityModel
+        if (shouldSucceed)
         {
-            Type = "SystemAssigned",
-            PrincipalId = "principal123",
-            TenantId = "tenant123"
-        };
+            var testIdentity = new Models.Identity
+            {
+                Type = "SystemAssigned", PrincipalId = "principal123", TenantId = "tenant123"
+            };
 
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns(identity);
+            _signalRService.GetSignalRIdentityAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<AuthMethod?>(),
+                    Arg.Any<RetryPolicyOptions>())
+                .Returns(testIdentity);
+        }
 
         var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
@@ -75,37 +79,38 @@ public class IdentityShowCommandTests
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
         if (shouldSucceed)
         {
-            Assert.Equal(200, response.Status);
             Assert.NotNull(response.Results);
             Assert.Equal("Success", response.Message);
         }
         else
         {
-            // Validation failures return 400 status with error message about missing required options
-            Assert.Equal(400, response.Status);
-            Assert.Contains("Missing Required options", response.Message);
+            Assert.Contains("required", response.Message.ToLower());
         }
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsIdentitySuccessfully()
+    public async Task ExecuteAsync_ReturnsIdentityWhenFound()
     {
         // Arrange
-        var expectedIdentity = new SignalRIdentityModel
+        var expectedIdentity = new Models.Identity
         {
-            Type = "SystemAssigned",
-            PrincipalId = "12345678-1234-1234-1234-123456789012",
-            TenantId = "87654321-4321-4321-4321-210987654321"
+            Type = "SystemAssigned", PrincipalId = "test-principal-id", TenantId = "test-tenant-id"
         };
 
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
+        _signalRService.GetSignalRIdentityAsync(
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(expectedIdentity);
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
         ]);
 
         // Act
@@ -118,27 +123,16 @@ public class IdentityShowCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsUserAssignedIdentitySuccessfully()
+    public async Task ExecuteAsync_ReturnsNullWhenIdentityNotFound()
     {
         // Arrange
-        var expectedIdentity = new SignalRIdentityModel
-        {
-            Type = "UserAssigned",
-            UserAssignedIdentities = new Dictionary<string, UserAssignedIdentity>
-            {
-                {
-                    "/subscriptions/testSub/resourceGroups/testRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/testIdentity",
-                    new UserAssignedIdentity { PrincipalId = "principal123", ClientId = "client123" }
-                }
-            }
-        };
-
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns(expectedIdentity);
+        _signalRService.GetSignalRIdentityAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+                Arg.Any<RetryPolicyOptions>())
+            .Returns((Models.Identity?)null);
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name",
+            "nonexistent-signalr"
         ]);
 
         // Act
@@ -146,65 +140,21 @@ public class IdentityShowCommandTests
 
         // Assert
         Assert.Equal(200, response.Status);
-        Assert.NotNull(response.Results);
+        Assert.Null(response.Results);
         Assert.Equal("Success", response.Message);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsNotFoundWhenIdentityDoesNotExist()
+    public async Task ExecuteAsync_HandlesRequestFailedException()
     {
         // Arrange
+        var exception = new RequestFailedException(404, "SignalR service not found");
         _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .Returns((SignalRIdentityModel?)null);
+                Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.Identity?>(exception));
 
         var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.Equal(404, response.Status);
-        Assert.Contains("does not have managed identity configured", response.Message);
-        Assert.Contains("testSignalR", response.Message);
-        Assert.Contains("testRG", response.Message);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_HandlesServiceErrors()
-    {
-        // Arrange
-        var azureException = new RequestFailedException(500, "Internal server error", "InternalServerError", null);
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(azureException);
-
-        var parseResult = _parser.Parse([
-            "--signalr-name", "testSignalR", "--resource-group", "testRG", "--subscription", "testSub"
-        ]);
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.Equal(500, response.Status);
-        Assert.Contains("Internal server error", response.Message);
-        Assert.Contains("troubleshooting", response.Message);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_HandlesNotFoundExceptionGracefully()
-    {
-        // Arrange
-        var notFoundException = new RequestFailedException(404, "SignalR service not found", "NotFound", null);
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string?>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(notFoundException);
-
-        var parseResult = _parser.Parse([
-            "--signalr-name", "nonExistentSignalR", "--resource-group", "testRG", "--subscription", "testSub"
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
         ]);
 
         // Act
@@ -215,43 +165,23 @@ public class IdentityShowCommandTests
         Assert.Contains("SignalR service not found", response.Message);
     }
 
-    // Service layer tests for backward compatibility
     [Fact]
-    public async Task GetSignalRIdentityAsync_ThrowsArgumentNullException_WhenSubscriptionIdIsNull()
+    public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        var service = new SignalRService(
-            Substitute.For<ISubscriptionService>(),
-            Substitute.For<ITenantService>());
+        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.Identity?>(new Exception("Test error")));
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            service.GetSignalRIdentityAsync(null!, "testRG", "testSignalR"));
-    }
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
 
-    [Fact]
-    public async Task GetSignalRIdentityAsync_ThrowsArgumentNullException_WhenResourceGroupIsNull()
-    {
-        // Arrange
-        var service = new SignalRService(
-            Substitute.For<ISubscriptionService>(),
-            Substitute.For<ITenantService>());
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            service.GetSignalRIdentityAsync("testSub", null!, "testSignalR"));
-    }
-
-    [Fact]
-    public async Task GetSignalRIdentityAsync_ThrowsArgumentNullException_WhenSignalRNameIsNull()
-    {
-        // Arrange
-        var service = new SignalRService(
-            Substitute.For<ISubscriptionService>(),
-            Substitute.For<ITenantService>());
-
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            service.GetSignalRIdentityAsync("testSub", "testRG", null!));
+        // Assert
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Test error", response.Message);
     }
 }

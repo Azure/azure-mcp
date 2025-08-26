@@ -73,7 +73,8 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(
+            context.Response.Results =keys is null ?
+                null: ResponseResult.Create(
                 new KeyListCommandResult(keys),
                 SignalRJsonContext.Default.KeyListCommandResult);
         }
@@ -86,5 +87,5 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
         return context.Response;
     }
 
-    public record KeyListCommandResult(SignalRKeyModel Keys);
+    public record KeyListCommandResult(Models.Key Keys);
 }

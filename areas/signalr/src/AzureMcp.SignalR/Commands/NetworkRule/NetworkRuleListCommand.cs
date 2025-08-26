@@ -77,15 +77,15 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
                 options.Subscription!,
                 options.ResourceGroup!,
                 options.SignalRName!,
+                options.Tenant,
                 options.AuthMethod,
                 options.RetryPolicy);
 
             // Set results
-            context.Response.Results = networkRules != null ?
-                ResponseResult.Create(
+            context.Response.Results = networkRules is null ?
+                null : ResponseResult.Create(
                     new NetworkRuleListCommandResult(networkRules),
-                    SignalRJsonContext.Default.NetworkRuleListCommandResult) :
-                null;
+                    SignalRJsonContext.Default.NetworkRuleListCommandResult);
         }
         catch (Exception ex)
         {
@@ -118,5 +118,5 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
     /// <summary>
     /// Result for the network rule list command.
     /// </summary>
-    public record NetworkRuleListCommandResult(Models.SignalRNetworkAclModel NetworkRules);
+    public record NetworkRuleListCommandResult(Models.NetworkRule NetworkRules);
 }

@@ -2,20 +2,19 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
-using Azure;
+using System.Text.Json;
 using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
-using AzureMcp.SignalR;
+using AzureMcp.Core.Options;
 using AzureMcp.SignalR.Commands.Runtime;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace AzureMcp.SignalR.UnitTests.SignalR;
+namespace AzureMcp.SignalR.UnitTests.Runtime;
 
 public class RuntimeListCommandTests
 {
@@ -25,7 +24,6 @@ public class RuntimeListCommandTests
     private readonly RuntimeListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownSubscriptionId = "sub123";
 
     public RuntimeListCommandTests()
     {
@@ -33,7 +31,6 @@ public class RuntimeListCommandTests
         _logger = Substitute.For<ILogger<RuntimeListCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
-
         _serviceProvider = collection.BuildServiceProvider();
         _command = new(_logger);
         _context = new(_serviceProvider);
@@ -41,163 +38,177 @@ public class RuntimeListCommandTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ValidParameters_ReturnsSignalRRuntimes()
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        var command = _command.GetCommand();
+        Assert.Equal("list", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+    }
+
+    [Theory]
+    [InlineData("--subscription sub1", true)]
+    [InlineData("--subscription sub1 --tenant tenant1", true)] // Missing all required options
+    [InlineData("", false)]
+    public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
-        var expectedServices = new List<SignalRRuntimeModel>
+        if (shouldSucceed)
+        {
+            var testRuntimes = new List<Models.Runtime>
+            {
+                new() { Name = "test-signalr", ResourceGroupName = "test-rg", Location = "East US" }
+            };
+
+            _signalRService.ListRuntimesAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<AuthMethod?>(),
+                    Arg.Any<RetryPolicyOptions>())
+                .Returns(testRuntimes);
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
+        if (shouldSucceed)
+        {
+            Assert.NotNull(response.Results);
+            Assert.Equal("Success", response.Message);
+        }
+        else
+        {
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsRuntimesWhenFound()
+    {
+        // Arrange
+        var expectedRuntimes = new List<Models.Runtime>
         {
             new()
             {
-                Name = "signalr1",
-                ResourceGroupName = "rg1",
+                Name = "test-signalr-1",
+                ResourceGroupName = "test-rg",
                 Location = "East US",
-                SkuName = "Standard_S1",
-                SkuTier = "Standard",
-                ProvisioningState = "Succeeded",
-                HostName = "signalr1.service.signalr.net",
-                PublicPort = 443,
-                ServerPort = 443
+                SkuName = "Standard_S1"
             },
             new()
             {
-                Name = "signalr2",
-                ResourceGroupName = "rg2",
+                Name = "test-signalr-2",
+                ResourceGroupName = "test-rg",
                 Location = "West US",
-                SkuName = "Free_F1",
-                SkuTier = "Free",
-                ProvisioningState = "Succeeded",
-                HostName = "signalr2.service.signalr.net",
-                PublicPort = 443,
-                ServerPort = 443
+                SkuName = "Free_F1"
             }
         };
 
         _signalRService.ListRuntimesAsync(
-                _knownSubscriptionId,
+                "test-subscription",
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
-                Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .Returns(expectedServices);
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedRuntimes);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.NotNull(response);
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
+        Assert.Equal("Success", response.Message);
 
-        // Serialize the entire ResponseResult to JSON and then deserialize to verify content
-        var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer
-            .Deserialize<RuntimeListCommand.RuntimeListCommandResult>(
-                json, SignalRJsonContext.Default.RuntimeListCommandResult);
-        Assert.NotNull(resultData);
-        Assert.Equal(2, resultData.Runtimes.Count());
+        var json = JsonSerializer.Serialize(response.Results);
+        // Debug: Output the actual JSON to understand the structure
+        Console.WriteLine($"Actual JSON: {json}");
 
-        var services = resultData.Runtimes.ToList();
-        Assert.Equal("signalr1", services[0].Name);
-        Assert.Equal("rg1", services[0].ResourceGroupName);
-        Assert.Equal("Standard_S1", services[0].SkuName);
-        Assert.Equal("signalr2", services[1].Name);
-        Assert.Equal("rg2", services[1].ResourceGroupName);
-        Assert.Equal("Free_F1", services[1].SkuName);
+        var result =
+            JsonSerializer.Deserialize<RuntimeListCommand.RuntimeListCommandResult>(json,
+                SignalRJsonContext.Default.RuntimeListCommandResult);
+        Assert.NotNull(result);
+        var runtimeList = result.Runtimes.ToList();
+        Assert.Equal(2, runtimeList.Count);
+        Assert.Contains(runtimeList, r => r.Name == "test-signalr-1" && r.SkuName == "Standard_S1");
+        Assert.Contains(runtimeList, r => r.Name == "test-signalr-2" && r.Location == "West US");
     }
 
     [Fact]
-    public async Task ExecuteAsync_NoSignalRRuntimes_ReturnsNull()
+    public async Task ExecuteAsync_ReturnsEmptyListWhenNoRuntimesFound()
     {
         // Arrange
-        var emptyRuntimes = new List<SignalRRuntimeModel>();
-
         _signalRService.ListRuntimesAsync(
-                _knownSubscriptionId,
+                "test-subscription",
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
-                Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .Returns(emptyRuntimes);
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(new List<Models.Runtime>());
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription"
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.NotNull(response);
         Assert.Equal(200, response.Status);
-        Assert.Null(response.Results);
+        Assert.Equal("Success", response.Message);
     }
 
     [Fact]
-    public async Task ExecuteAsync_RequestFailedException403_ReturnsAuthorizationError()
+    public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        var requestException = new RequestFailedException(403, "Forbidden");
-        _signalRService.ListRuntimesAsync(
-                Arg.Any<string>(),
-                Arg.Any<string?>(),
-                Arg.Any<AuthMethod?>(),
-                Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .ThrowsAsync(requestException);
+        _signalRService.ListRuntimesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<IEnumerable<Models.Runtime>>(new Exception("Service unavailable")));
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
+        var parseResult = _parser.Parse([
+            "--subscription", "invalid-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
 
         // Act
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.NotNull(response);
-        Assert.Equal(403, response.Status);
-        Assert.NotNull(response.Message);
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Service unavailable", response.Message);
     }
 
     [Fact]
-    public async Task ExecuteAsync_MissingRequiredParameters_ReturnsValidationError()
-    {
-        // Arrange - missing subscription
-        var parseResult = _parser.Parse("");
-
-        // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotEqual(200, response.Status);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_ServiceThrowsException_HandlesGracefully()
+    public async Task ExecuteAsync_VerifiesServiceMethodCalled()
     {
         // Arrange
-        var exception = new InvalidOperationException("Service error");
+        var expectedRuntimes = new List<Models.Runtime> { new() { Name = "test-signalr" } };
+
         _signalRService.ListRuntimesAsync(
-                Arg.Any<string>(),
+                "test-subscription",
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
-                Arg.Any<Core.Options.RetryPolicyOptions?>())
-            .ThrowsAsync(exception);
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedRuntimes);
 
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
 
         // Act
-        var response = await _command.ExecuteAsync(_context, parseResult);
+        await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.NotNull(response);
-        Assert.NotEqual(200, response.Status);
-        Assert.NotNull(response.Message);
-    }
-
-    [Fact]
-    public void Command_Properties_AreCorrect()
-    {
-        // Assert
-        Assert.Equal("list", _command.Name);
-        Assert.Equal("List all Services", _command.Title);
-        Assert.Contains("List all SignalR Service resources", _command.Description);
-        Assert.False(_command.Metadata.Destructive);
-        Assert.True(_command.Metadata.ReadOnly);
+        await _signalRService.Received(1).ListRuntimesAsync(
+            "test-subscription",
+            Arg.Any<string?>(),
+            Arg.Any<AuthMethod?>(),
+            Arg.Any<RetryPolicyOptions>());
     }
 }

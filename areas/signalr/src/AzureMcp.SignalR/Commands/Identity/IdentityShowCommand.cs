@@ -74,15 +74,8 @@ public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            if (identity == null)
-            {
-                context.Response.Status = 404;
-                context.Response.Message =
-                    $"SignalR service '{options.SignalRName}' does not have managed identity configured or service not found in resource group '{options.ResourceGroup}'.";
-                return context.Response;
-            }
-
-            context.Response.Results = ResponseResult.Create(
+            context.Response.Results = identity is null ?
+                null: ResponseResult.Create(
                 new IdentityShowCommandResult(identity),
                 SignalRJsonContext.Default.IdentityShowCommandResult);
         }
@@ -95,5 +88,5 @@ public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
         return context.Response;
     }
 
-    public record IdentityShowCommandResult(SignalRIdentityModel Identity);
+    public record IdentityShowCommandResult(Models.Identity Identity);
 }

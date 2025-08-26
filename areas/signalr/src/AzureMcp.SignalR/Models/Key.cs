@@ -6,7 +6,7 @@ namespace AzureMcp.SignalR.Models;
 /// <summary>
 /// Represents a SignalR service access key.
 /// </summary>
-public class SignalRKeyModel
+public class Key
 {
     /// <summary>
     /// The type of the key (Primary or Secondary).

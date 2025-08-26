@@ -6,20 +6,20 @@ namespace AzureMcp.SignalR.Models;
 /// <summary>
 /// Model representing an Azure SignalR Service identity.
 /// </summary>
-public sealed class SignalRIdentityModel
+public class Identity
 {
     /// <summary>
     /// The type of identity used for the resource.
     /// </summary>
-    public string Type { get; set; } = string.Empty;
+    public string? Type { get; set; }
 
     /// <summary>
-    /// The principal ID of the system assigned identity.
+    /// The principal ID of the identity.
     /// </summary>
     public string? PrincipalId { get; set; }
 
     /// <summary>
-    /// The tenant ID of the system assigned identity.
+    /// The tenant ID of the identity.
     /// </summary>
     public string? TenantId { get; set; }
 
@@ -32,7 +32,7 @@ public sealed class SignalRIdentityModel
 /// <summary>
 /// Model representing a user assigned identity.
 /// </summary>
-public sealed class UserAssignedIdentity
+public class UserAssignedIdentity
 {
     /// <summary>
     /// The principal ID of the user assigned identity.

@@ -73,15 +73,8 @@ public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            if (runtime == null)
-            {
-                context.Response.Status = 404;
-                context.Response.Message =
-                    $"SignalR service '{options.SignalRName}' not found in resource group '{options.ResourceGroup}'.";
-                return context.Response;
-            }
-
-            context.Response.Results = ResponseResult.Create(
+            context.Response.Results = runtime is null ?
+                null: ResponseResult.Create(
                 new RuntimeShowCommandResult(runtime),
                 SignalRJsonContext.Default.RuntimeShowCommandResult);
         }
@@ -94,5 +87,5 @@ public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
         return context.Response;
     }
 
-    public record RuntimeShowCommandResult(SignalRRuntimeModel Runtime);
+    public record RuntimeShowCommandResult(Models.Runtime Runtime);
 }

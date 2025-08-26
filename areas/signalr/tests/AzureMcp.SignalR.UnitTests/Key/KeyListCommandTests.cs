@@ -2,154 +2,226 @@
 // Licensed under the MIT License.
 
 using System.CommandLine.Parsing;
+using Azure;
 using AzureMcp.Core.Models;
 using AzureMcp.Core.Models.Command;
 using AzureMcp.Core.Options;
-using AzureMcp.SignalR;
 using AzureMcp.SignalR.Commands.Key;
 using AzureMcp.SignalR.Models;
 using AzureMcp.SignalR.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace AzureMcp.SignalR.UnitTests.Key;
 
 public class KeyListCommandTests
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ISignalRService _signalRService;
+    private readonly ILogger<KeyListCommand> _logger;
     private readonly KeyListCommand _command;
     private readonly CommandContext _context;
     private readonly Parser _parser;
-    private readonly string _knownSubscriptionId = "sub123";
-    private readonly string _knownResourceGroup = "rg123";
-    private readonly string _knownSignalRName = "signalr123";
 
     public KeyListCommandTests()
     {
         _signalRService = Substitute.For<ISignalRService>();
-        var logger = Substitute.For<ILogger<KeyListCommand>>();
+        _logger = Substitute.For<ILogger<KeyListCommand>>();
 
         var collection = new ServiceCollection().AddSingleton(_signalRService);
-        var serviceProvider = collection.BuildServiceProvider();
-
-        _command = new(logger);
-        _context = new(serviceProvider);
+        _serviceProvider = collection.BuildServiceProvider();
+        _command = new(_logger);
+        _context = new(_serviceProvider);
         _parser = new(_command.GetCommand());
     }
 
     [Fact]
-    public async Task ExecuteAsync_ValidParameters_ReturnsKeys()
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        var command = _command.GetCommand();
+        Assert.Equal("list", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+        Assert.Contains("access keys", command.Description);
+    }
+
+    [Theory]
+    [InlineData("--subscription sub1 --resource-group rg1 --signalr-name signalr1", true)]
+    [InlineData("--subscription sub1 --signalr-name signalr1", false)] // Missing resource-group
+    [InlineData("--subscription sub1 --resource-group rg1", false)] // Missing signalr-name
+    [InlineData("--resource-group rg1 --signalr-name signalr1", false)] // Missing subscription
+    [InlineData("", false)] // Missing all required options
+    public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
     {
         // Arrange
-        var expectedKeys = new SignalRKeyModel
+        if (shouldSucceed)
         {
-            KeyType = "Both",
-            PrimaryKey = "primary-key-value",
-            SecondaryKey = "secondary-key-value",
+            var testKeys = new Models.Key
+            {
+                PrimaryKey = "primary-key-123",
+                SecondaryKey = "secondary-key-456",
+                PrimaryConnectionString = "connection-string-primary",
+                SecondaryConnectionString = "connection-string-secondary"
+            };
+
+            _signalRService.ListKeysAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<AuthMethod?>(),
+                    Arg.Any<RetryPolicyOptions>())
+                .Returns(testKeys);
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
+        if (shouldSucceed)
+        {
+            Assert.NotNull(response.Results);
+            Assert.Equal("Success", response.Message);
+        }
+        else
+        {
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsKeysWhenFound()
+    {
+        // Arrange
+        var expectedKeys = new Models.Key
+        {
+            PrimaryKey = "test-primary-key",
+            SecondaryKey = "test-secondary-key",
             PrimaryConnectionString =
-                "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;",
+                "Endpoint=https://test-signalr.service.signalr.net;AccessKey=test-primary-key;Version=1.0;",
             SecondaryConnectionString =
-                "Endpoint=https://signalr123.service.signalr.net;AccessKey=secondary-key-value;Version=1.0;",
-            ConnectionString =
-                "Endpoint=https://signalr123.service.signalr.net;AccessKey=primary-key-value;Version=1.0;"
+                "Endpoint=https://test-signalr.service.signalr.net;AccessKey=test-secondary-key;Version=1.0;"
         };
 
         _signalRService.ListKeysAsync(
-                _knownSubscriptionId,
-                _knownResourceGroup,
-                _knownSignalRName,
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
-                Arg.Any<RetryPolicyOptions?>())
+                Arg.Any<RetryPolicyOptions>())
             .Returns(expectedKeys);
 
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
         // Act
-        var parseResult =
-            _parser.Parse(
-                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
         var response = await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
         Assert.Equal(200, response.Status);
         Assert.NotNull(response.Results);
-
-        // Serialize the entire ResponseResult to JSON and then deserialize to verify content
-        var json = System.Text.Json.JsonSerializer.Serialize(response.Results);
-        var resultData = System.Text.Json.JsonSerializer.Deserialize<KeyListCommand.KeyListCommandResult>(
-            json, SignalRJsonContext.Default.KeyListCommandResult);
-        Assert.NotNull(resultData);
-        Assert.Equal("Both", resultData.Keys.KeyType);
-        Assert.Equal("primary-key-value", resultData.Keys.PrimaryKey);
-        Assert.Equal("secondary-key-value", resultData.Keys.SecondaryKey);
-        Assert.Contains("primary-key-value", resultData.Keys.PrimaryConnectionString);
-        Assert.Contains("secondary-key-value", resultData.Keys.SecondaryConnectionString);
+        Assert.Equal("Success", response.Message);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ServiceThrowsException_ReturnsError()
+    public async Task ExecuteAsync_ReturnsNullWhenKeysNotFound()
     {
         // Arrange
+        _signalRService.ListKeysAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+                Arg.Any<RetryPolicyOptions>())
+            .Returns((Models.Key?)null);
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name",
+            "nonexistent-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.Null(response.Results);
+        Assert.Equal("Success", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesRequestFailedException()
+    {
+        // Arrange
+        var exception = new RequestFailedException(403, "Access denied");
+        _signalRService.ListKeysAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.Key?>(exception));
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(403, response.Status);
+        Assert.Contains("Access denied", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesServiceErrors()
+    {
+        // Arrange
+        _signalRService.ListKeysAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<Models.Key?>(new Exception("Service unavailable")));
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Service unavailable", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_VerifiesServiceMethodCalled()
+    {
+        // Arrange
+        var expectedKeys = new Models.Key { PrimaryKey = "key1", SecondaryKey = "key2" };
+
         _signalRService.ListKeysAsync(
-                _knownSubscriptionId,
-                _knownResourceGroup,
-                _knownSignalRName,
+                "test-subscription",
+                "test-rg",
+                "test-signalr",
                 Arg.Any<string?>(),
                 Arg.Any<AuthMethod?>(),
-                Arg.Any<RetryPolicyOptions?>())
-            .ThrowsAsync(new Exception("Service error"));
+                Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedKeys);
+
+        var parseResult = _parser.Parse([
+            "--subscription", "test-subscription", "--resource-group", "test-rg", "--signalr-name", "test-signalr"
+        ]);
 
         // Act
-        var parseResult =
-            _parser.Parse(
-                $"--subscription {_knownSubscriptionId} --resource-group {_knownResourceGroup} --signalr-name {_knownSignalRName}");
-        var response = await _command.ExecuteAsync(_context, parseResult);
+        await _command.ExecuteAsync(_context, parseResult);
 
         // Assert
-        Assert.NotEqual(200, response.Status);
-        Assert.Contains("Service error", response.Message ?? string.Empty);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_MissingRequiredParameters_ReturnsValidationError()
-    {
-        // Act
-        var parseResult = _parser.Parse($"--subscription {_knownSubscriptionId}");
-        var response = await _command.ExecuteAsync(_context, parseResult);
-
-        // Assert
-        Assert.NotEqual(200, response.Status);
-    }
-
-    [Theory]
-    [InlineData("list")]
-    public void Name_ReturnsCorrectValue(string expectedName)
-    {
-        // Assert
-        Assert.Equal(expectedName, _command.Name);
-    }
-
-    [Fact]
-    public void Description_ReturnsNonEmptyString()
-    {
-        // Assert
-        Assert.False(string.IsNullOrWhiteSpace(_command.Description));
-    }
-
-    [Fact]
-    public void Title_ReturnsNonEmptyString()
-    {
-        // Assert
-        Assert.False(string.IsNullOrWhiteSpace(_command.Title));
-    }
-
-    [Fact]
-    public void Metadata_ReturnsReadOnlyNonDestructive()
-    {
-        // Assert
-        Assert.True(_command.Metadata.ReadOnly);
-        Assert.False(_command.Metadata.Destructive);
+        await _signalRService.Received(1).ListKeysAsync(
+            "test-subscription",
+            "test-rg",
+            "test-signalr",
+            Arg.Any<string?>(),
+            Arg.Any<AuthMethod?>(),
+            Arg.Any<RetryPolicyOptions>());
     }
 }

@@ -15,7 +15,7 @@ namespace AzureMcp.SignalR.Services;
 public class SignalRService(ISubscriptionService _subscriptionService, ITenantService tenantService)
     : BaseAzureService(tenantService), ISignalRService
 {
-    public async Task<IEnumerable<SignalRRuntimeModel>> ListRuntimesAsync(
+    public async Task<IEnumerable<Runtime>> ListRuntimesAsync(
         string subscription,
         string? tenant = null,
         AuthMethod? authMethod = null,
@@ -28,11 +28,11 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
             var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy)
                                        ?? throw new Exception($"Subscription '{subscription}' not found");
 
-            var runtimes = new List<SignalRRuntimeModel>();
+            var runtimes = new List<Runtime>();
 
             await foreach (var signalR in subscriptionResource.GetSignalRsAsync())
             {
-                runtimes.Add(new SignalRRuntimeModel
+                runtimes.Add(new Runtime
                 {
                     Name = signalR.Data.Name,
                     ResourceGroupName = signalR.Id.ResourceGroupName ?? string.Empty,
@@ -54,7 +54,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
         }
     }
 
-    public async Task<SignalRKeyModel> ListKeysAsync(
+    public async Task<Key?> ListKeysAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -78,7 +78,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
 
             var keys = await signalRResource.Value.GetKeysAsync();
 
-            return new SignalRKeyModel
+            return new Key
             {
                 KeyType = "Both",
                 PrimaryKey = keys.Value.PrimaryKey ?? string.Empty,
@@ -94,7 +94,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
         }
     }
 
-    public async Task<SignalRRuntimeModel?> GetRuntimeAsync(
+    public async Task<Runtime?> GetRuntimeAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -118,7 +118,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
 
             var signalR = signalRResource.Value;
 
-            return new SignalRRuntimeModel
+            return new Runtime
             {
                 Name = signalR.Data.Name,
                 ResourceGroupName = signalR.Id.ResourceGroupName ?? string.Empty,
@@ -137,7 +137,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
         }
     }
 
-    public async Task<SignalRIdentityModel?> GetSignalRIdentityAsync(
+    public async Task<Identity?> GetSignalRIdentityAsync(
         string subscription,
         string resourceGroupName,
         string signalRName,
@@ -183,7 +183,7 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
                 }
             }
 
-            return new SignalRIdentityModel
+            return new Identity
             {
                 Type = identity.ManagedServiceIdentityType.ToString(),
                 PrincipalId = identity.PrincipalId?.ToString(),
@@ -197,10 +197,11 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
         }
     }
 
-    public async Task<SignalRNetworkAclModel?> GetNetworkRulesAsync(
+    public async Task<NetworkRule?> GetNetworkRulesAsync(
         string subscription,
         string resourceGroup,
         string signalRName,
+        string? tenant = null,
         AuthMethod? authMethod = null,
         RetryPolicyOptions? retryPolicy = null)
     {
@@ -223,18 +224,18 @@ public class SignalRService(ISubscriptionService _subscriptionService, ITenantSe
                 return null;
             }
 
-            return new SignalRNetworkAclModel
+            return new NetworkRule
             {
                 DefaultAction = networkAcls.DefaultAction?.ToString(),
                 PublicNetwork =
                     networkAcls.PublicNetwork != null
-                        ? new SignalRNetworkRuleModel
+                        ? new NetworkAcl
                         {
                             Allow = networkAcls.PublicNetwork.Allow?.Select(a => a.ToString()),
                             Deny = networkAcls.PublicNetwork.Deny?.Select(d => d.ToString())
                         }
                         : null,
-                PrivateEndpoints = networkAcls.PrivateEndpoints?.Select(pe => new SignalRPrivateEndpointModel
+                PrivateEndpoints = networkAcls.PrivateEndpoints?.Select(pe => new PrivateEndpointNetworkAcl
                 {
                     Name = pe.Name,
                     Allow = pe.Allow?.Select(a => a.ToString()),
