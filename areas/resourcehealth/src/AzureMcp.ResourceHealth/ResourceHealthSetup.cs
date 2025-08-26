@@ -4,6 +4,8 @@
 using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.ResourceHealth.Commands.AvailabilityStatus;
+using AzureMcp.ResourceHealth.Commands.ResourceEvents;
+using AzureMcp.ResourceHealth.Commands.ServiceHealthEvents;
 using AzureMcp.ResourceHealth.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,8 +35,24 @@ public class ResourceHealthSetup : IAreaSetup
             "Resource availability status operations - Commands for retrieving current and historical availability status of Azure resources.");
         resourceHealth.AddSubGroup(availabilityStatus);
 
-        // Register commands
+        // Create service-health-events subgroup
+        var serviceHealthEvents = new CommandGroup("service-health-events",
+            "Service health events operations - Commands for retrieving service health events affecting Azure services and subscriptions.");
+        resourceHealth.AddSubGroup(serviceHealthEvents);
+
+        // Create resource-events subgroup
+        var resourceEvents = new CommandGroup("resource-events",
+            "Resource health events operations - Commands for retrieving historical availability events for specific Azure resources.");
+        resourceHealth.AddSubGroup(resourceEvents);
+
+        // Register availability-status commands
         availabilityStatus.AddCommand("get", new AvailabilityStatusGetCommand(loggerFactory.CreateLogger<AvailabilityStatusGetCommand>()));
         availabilityStatus.AddCommand("list", new AvailabilityStatusListCommand(loggerFactory.CreateLogger<AvailabilityStatusListCommand>()));
+
+        // Register service-health-events commands
+        serviceHealthEvents.AddCommand("list", new ServiceHealthEventsListCommand(loggerFactory.CreateLogger<ServiceHealthEventsListCommand>()));
+
+        // Register resource-events commands
+        resourceEvents.AddCommand("get", new ResourceEventsGetCommand(loggerFactory.CreateLogger<ResourceEventsGetCommand>()));
     }
 }
