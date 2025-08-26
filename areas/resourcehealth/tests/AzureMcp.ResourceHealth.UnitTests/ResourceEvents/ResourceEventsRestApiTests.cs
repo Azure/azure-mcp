@@ -1,8 +1,8 @@
 // Test to validate REST API endpoint construction
 using System.Text.Json;
+using Azure.Core;
 using AzureMcp.ResourceHealth.Models;
 using AzureMcp.ResourceHealth.Services;
-using Azure.Core;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -18,17 +18,17 @@ public class ResourceEventsRestApiTests
         var resourceId = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm";
         var expectedBaseUrl = $"https://management.azure.com{resourceId}/providers/Microsoft.ResourceHealth/events";
         var expectedApiVersion = "2025-05-01";
-        
+
         // The URL should be constructed as: https://management.azure.com{resourceId}/providers/Microsoft.ResourceHealth/events?api-version=2025-05-01
         var expectedFullUrl = $"{expectedBaseUrl}?api-version={expectedApiVersion}";
-        
+
         Assert.Contains("https://management.azure.com", expectedFullUrl);
         Assert.Contains("/providers/Microsoft.ResourceHealth/events", expectedFullUrl);
         Assert.Contains("api-version=2025-05-01", expectedFullUrl);
         Assert.Contains(resourceId, expectedFullUrl);
     }
 
-    [Fact] 
+    [Fact]
     public void ValidateApiEndpointWithQueryParameters()
     {
         // Test that we construct query parameters correctly
@@ -36,27 +36,27 @@ public class ResourceEventsRestApiTests
         var filter = "eventType eq 'HealthEvent'";
         var top = 10;
         var expand = "impact";
-        
+
         var baseUrl = $"https://management.azure.com{resourceId}/providers/Microsoft.ResourceHealth/events";
         var queryParams = new List<string> { "api-version=2025-05-01" };
-        
+
         if (!string.IsNullOrWhiteSpace(filter))
         {
             queryParams.Add($"$filter={Uri.EscapeDataString(filter)}");
         }
-        
+
         if (top > 0)
         {
             queryParams.Add($"$top={top}");
         }
-        
+
         if (!string.IsNullOrWhiteSpace(expand))
         {
             queryParams.Add($"$expand={Uri.EscapeDataString(expand)}");
         }
-        
+
         var fullUrl = $"{baseUrl}?{string.Join("&", queryParams)}";
-        
+
         Assert.Contains("$filter=", fullUrl);
         Assert.Contains("$top=10", fullUrl);
         Assert.Contains("$expand=", fullUrl);
@@ -92,15 +92,15 @@ public class ResourceEventsRestApiTests
         """;
 
         // This tests the JSON structure we expect from the Azure Resource Health events API
-        var apiResponse = JsonSerializer.Deserialize<ServiceHealthEventsResponse>(jsonResponse, new JsonSerializerOptions 
-        { 
-            PropertyNameCaseInsensitive = true 
+        var apiResponse = JsonSerializer.Deserialize<ServiceHealthEventsResponse>(jsonResponse, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
         });
 
         Assert.NotNull(apiResponse);
         Assert.NotNull(apiResponse.Value);
         Assert.Single(apiResponse.Value);
-        
+
         var eventData = apiResponse.Value[0];
         Assert.Equal("event1", eventData.Name);
         Assert.NotNull(eventData.Properties);

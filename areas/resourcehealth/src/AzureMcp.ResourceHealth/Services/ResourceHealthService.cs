@@ -136,7 +136,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
         try
         {
             var subscriptionResource = await _subscriptionService.GetSubscription(subscription, tenant, retryPolicy);
-            
+
             // Get access token for Azure Management API
             var tokenCredential = await GetCredential(tenant);
             var tokenRequestContext = new TokenRequestContext(["https://management.azure.com/.default"]);
@@ -149,7 +149,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
 
             // Build query parameters - avoid complex OData filters which cause InvalidODataQueryOptions
             var queryParams = new List<string>();
-            
+
             // Add queryStartTime parameter (this is supported directly, not as a filter)
             if (!string.IsNullOrEmpty(queryStartTime))
             {
@@ -165,7 +165,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
             {
                 // Build simple filter for supported parameters
                 var filterParts = new List<string>();
-                
+
                 // Only add event type filter if no user filter provided
                 if (!string.IsNullOrEmpty(eventType))
                 {
@@ -205,7 +205,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
             httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
 
             var response = await httpClient.GetAsync(fullUrl);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
@@ -222,7 +222,8 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
                 foreach (var eventData in apiResponse.Value)
                 {
                     var properties = eventData.Properties;
-                    if (properties == null) continue;
+                    if (properties == null)
+                        continue;
 
                     serviceHealthEvents.Add(new ServiceHealthEvent
                     {
@@ -311,7 +312,7 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
             httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
 
             var response = await httpClient.GetAsync(fullUrl);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
@@ -328,7 +329,8 @@ public class ResourceHealthService(ISubscriptionService subscriptionService, ITe
                 foreach (var eventData in apiResponse.Value)
                 {
                     var properties = eventData.Properties;
-                    if (properties == null) continue;
+                    if (properties == null)
+                        continue;
 
                     serviceHealthEvents.Add(new ServiceHealthEvent
                     {

@@ -701,6 +701,56 @@ azmcp resourcehealth availability-status list --subscription <subscription>
 # List availability statuses for all resources in a specific resource group
 azmcp resourcehealth availability-status list --subscription <subscription> \
                                               --resource-group <resource-group>
+
+# List service health events affecting Azure services and subscriptions
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                [--event-type <event-type>] \
+                                                [--status <status>] \
+                                                [--tracking-id <tracking-id>] \
+                                                [--query-start-time <start-time>] \
+                                                [--query-end-time <end-time>] \
+                                                [--top <number>] \
+                                                [--filter <filter-expression>]
+
+# Get historical availability events for a specific Azure resource
+azmcp resourcehealth resource-events get --subscription <subscription> \
+                                         --resourceId <resource-id> \
+                                         [--filter <filter-expression>] \
+                                         [--query-start-time <start-time>] \
+                                         [--query-end-time <end-time>] \
+                                         [--top <number>] \
+                                         [--expand <properties>]
+
+# Examples:
+# List all service issues
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                --event-type "ServiceIssue"
+
+# List planned maintenance events
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                --event-type "PlannedMaintenance"
+
+# List health advisories
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                --event-type "HealthAdvisory"
+
+# List security advisories
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                --event-type "SecurityAdvisory"
+
+# Get events within a specific time range
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                --query-start-time "2024-01-01T00:00:00Z" \
+                                                --query-end-time "2024-12-31T23:59:59Z"
+
+# Get resource events for a specific virtual machine
+azmcp resourcehealth resource-events get --subscription <subscription> \
+                                         --resourceId "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Compute/virtualMachines/<vm-name>"
+
+# Get resource events with expanded properties
+azmcp resourcehealth resource-events get --subscription <subscription> \
+                                         --resourceId <resource-id> \
+                                         --expand "impact,recommendedActions"
 ```
 
 ### Azure Resource Group Operations

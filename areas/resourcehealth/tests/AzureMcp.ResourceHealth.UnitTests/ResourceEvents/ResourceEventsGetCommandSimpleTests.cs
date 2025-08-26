@@ -19,7 +19,7 @@ public class ResourceEventsGetCommandSimpleTests
         var logger = Substitute.For<ILogger<ResourceEventsGetCommand>>();
         var command = new ResourceEventsGetCommand(logger);
         var cmd = command.GetCommand();
-        
+
         Assert.Equal("get", cmd.Name);
     }
 
@@ -29,7 +29,7 @@ public class ResourceEventsGetCommandSimpleTests
         var logger = Substitute.For<ILogger<ResourceEventsGetCommand>>();
         var command = new ResourceEventsGetCommand(logger);
         var cmd = command.GetCommand();
-        
+
         var resourceIdOption = cmd.Options.FirstOrDefault(o => o.Name == "resourceId");
         Assert.NotNull(resourceIdOption);
         Assert.True(resourceIdOption.IsRequired);
@@ -58,7 +58,7 @@ public class ResourceEventsGetCommandSimpleTests
         };
 
         var resourceId = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm";
-        
+
         resourceHealthService.GetResourceEventsAsync(resourceId, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Core.Options.RetryPolicyOptions>())
             .Returns(expectedEvents);
 
