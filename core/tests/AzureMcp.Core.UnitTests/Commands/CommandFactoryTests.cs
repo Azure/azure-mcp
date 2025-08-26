@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AzureMcp.Core.Areas;
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,6 +102,98 @@ public class CommandFactoryTests
         Assert.Equal("azmcp", parts[0]);
         Assert.Equal("role", parts[1]);
         Assert.Equal(commandNameWithDash, parts[2]);
+    }
+
+    [Fact]
+    public void Constructor_Throws_AreaSetups_Duplicate()
+    {
+        // Arrange
+        var duplicate = "Duplicate Name";
+        var area = Substitute.For<IAreaSetup>();
+        var area1 = Substitute.For<IAreaSetup>();
+        var area2 = Substitute.For<IAreaSetup>();
+
+        area.Name.Returns(duplicate);
+        area1.Name.Returns("Name1");
+        area2.Name.Returns(duplicate);
+
+        var serviceAreas = new List<IAreaSetup> { area, area1, area2 };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() =>
+            new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger));
+    }
+
+    [Fact]
+    public void Constructor_Throws_AreaSetups_EmptyName()
+    {
+        // Arrange
+        var area = Substitute.For<IAreaSetup>();
+        var area1 = Substitute.For<IAreaSetup>();
+        var area2 = Substitute.For<IAreaSetup>();
+
+        area.Name.Returns("Name");
+        area1.Name.Returns("Name1");
+        area2.Name.Returns(string.Empty);
+
+        var serviceAreas = new List<IAreaSetup> { area, area1, area2 };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() =>
+            new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger));
+    }
+
+    [Theory]
+    [InlineData("name3_account_list")]
+    [InlineData("name3_list")]
+    [InlineData("name3")]
+    public void GetServiceArea_Existing_SetupArea(string commandName)
+    {
+        // Arrange
+        var area = Substitute.For<IAreaSetup>();
+        var area1 = Substitute.For<IAreaSetup>();
+        var area2 = Substitute.For<IAreaSetup>();
+
+        var name1 = "name1";
+        var name2 = "name2";
+        var name3 = "name3";
+        area.Name.Returns(name1);
+        area1.Name.Returns(name2);
+        area2.Name.Returns(name3);
+
+        var serviceAreas = new List<IAreaSetup> { area, area1, area2 };
+        var factory = new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger);
+
+        // Act
+        var actual = factory.GetServiceArea(commandName);
+
+        // Assert
+        Assert.Equal(name3, actual);
+    }
+
+    [Fact]
+    public void GetServiceArea_DoesNotExist()
+    {
+        // Arrange
+        var area = Substitute.For<IAreaSetup>();
+        var area1 = Substitute.For<IAreaSetup>();
+        var area2 = Substitute.For<IAreaSetup>();
+
+        var name1 = "name1";
+        var name2 = "name2";
+        var name3 = "name3";
+        area.Name.Returns(name1);
+        area1.Name.Returns(name2);
+        area2.Name.Returns(name3);
+
+        var serviceAreas = new List<IAreaSetup> { area, area1, area2 };
+        var factory = new CommandFactory(_serviceProvider, serviceAreas, _telemetryService, _logger);
+
+        // Act
+        var actual = factory.GetServiceArea("foo_bar_1");
+
+        // Assert
+        Assert.Null(actual);
     }
 
     /// <summary>

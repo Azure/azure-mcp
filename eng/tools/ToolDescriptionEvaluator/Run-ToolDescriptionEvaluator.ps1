@@ -9,7 +9,7 @@
 .DESCRIPTION
     This script optionally builds the root project to ensure tools can be loaded dynamically,
     then builds the tool selection confidence score calculation application.
-    It restores dependencies, builds the application in Release configuration, and runs it.
+    It restores dependencies, builds the application in Debug configuration, and runs it.
 
 .EXAMPLE
     .\Run-ToolDescriptionEvaluator.ps1
@@ -21,7 +21,6 @@
 [CmdletBinding()]
 param(
     [switch]$BuildAzureMcp
-    
 )
 
 Set-StrictMode -Version 3.0
@@ -36,24 +35,37 @@ try {
     if ($BuildAzureMcp
     ) {
         Write-Host "Building root project to enable dynamic tool loading..." -ForegroundColor Yellow
-        & dotnet build "$repoRoot/AzureMcp.sln" --configuration Release
+        & dotnet build "$repoRoot/AzureMcp.sln"
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to build root project"
         }
         Write-Host "Root project build completed successfully!" -ForegroundColor Green
     }
 
-    # Check for AzureMcp.exe before building
+    # Locate azmcp CLI artifact (platform & build-type agnostic)
     $cliBinDir = Join-Path $repoRoot "core/src/AzureMcp.Cli/bin/Release"
-    $exePath = Get-ChildItem -Path $cliBinDir -Filter "azmcp.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $exePath) {
-        Write-Host "[ERROR] azmcp.exe not found in project. Please run this script again with the option -BuildAzureMcp." -ForegroundColor Red
+    $platformIsWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+
+    # Acceptable artifact name candidates in precedence order
+    $candidateNames = if ($platformIsWindows) { @('azmcp.exe','azmcp','azmcp.dll') } else { @('azmcp','azmcp.dll') }
+    $cliArtifact = $null
+    foreach ($name in $candidateNames) {
+        $found = Get-ChildItem -Path $cliBinDir -Filter $name -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | Select-Object -First 1
+        if ($found) { $cliArtifact = $found; break }
+    }
+    if (-not $cliArtifact) {
+        # Broad fallback to help user diagnose
+        $any = Get-ChildItem -Path $cliBinDir -Filter 'azmcp*' -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer }
+        if ($any) {
+            Write-Host "[WARNING] Located the following azmcp artifacts but none matched expected names: $($any | Select-Object -ExpandProperty Name -Join ', ')" -ForegroundColor Yellow
+        }
+        Write-Host "[ERROR] No azmcp CLI artifact found in Release output. Try rerunning with -BuildAzureMcp or ensure Release build completed." -ForegroundColor Red
         exit 1
     }
-    
+    Write-Host "Discovered CLI artifact: $($cliArtifact.FullName)" -ForegroundColor Green
     Write-Host "Building and running tool selection confidence score calculation app..." -ForegroundColor Green
     Write-Host "Building application..." -ForegroundColor Yellow
-    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj" --configuration Release
+    & dotnet build "$toolDir/ToolDescriptionEvaluator.csproj"
 
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build application"

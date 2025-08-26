@@ -13,6 +13,8 @@ namespace AzureMcp.Search;
 
 public class SearchSetup : IAreaSetup
 {
+    public string Name => "search";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ISearchService, SearchService>();
@@ -20,7 +22,7 @@ public class SearchSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var search = new CommandGroup("search",
+        var search = new CommandGroup(Name,
         """
         Search operations - Commands for Azure AI Search (formerly known as \"Azure Cognitive Search\") services and 
         search indexes. Use this tool when you need to list search services and indexes, get index details, or execute 

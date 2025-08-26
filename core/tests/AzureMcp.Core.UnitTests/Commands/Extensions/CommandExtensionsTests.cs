@@ -349,4 +349,25 @@ public class CommandExtensionsTests
         Assert.Empty(result.Errors);
         Assert.Equal("echo \"User's home: '$HOME'\" && echo 'Path: \"$PATH\"'", result.GetValueForOption(scriptOption));
     }
+
+    [Fact]
+    public void ParseFromRawMcpToolInput()
+    {
+        // Arrange
+        var command = new Command("test");
+        var scriptOption = new Option<string>("--raw-mcp-tool-input") { IsRequired = true };
+        command.AddOption(scriptOption);
+
+        var arguments = new Dictionary<string, JsonElement>
+        {
+            { "name", JsonSerializer.SerializeToElement("abc") },
+            { "path", JsonSerializer.SerializeToElement("123") }
+        };
+
+        // Act
+        var result = command.ParseFromRawMcpToolInput(arguments);        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result.Errors);
+        Assert.Equal("{\"name\":\"abc\",\"path\":\"123\"}", result.GetValueForOption(scriptOption));
+    }
 }

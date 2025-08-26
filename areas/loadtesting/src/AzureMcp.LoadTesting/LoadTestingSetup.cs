@@ -15,6 +15,8 @@ namespace AzureMcp.LoadTesting;
 
 public class LoadTestingSetup : IAreaSetup
 {
+    public string Name => "loadtesting";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ILoadTestingService, LoadTestingService>();
@@ -24,7 +26,7 @@ public class LoadTestingSetup : IAreaSetup
     {
         // Create Load Testing command group
         var service = new CommandGroup(
-            "loadtesting",
+            Name,
             "Load Testing operations - Commands for managing Azure Load Testing resources, test configurations, and test runs. Includes operations for creating and managing load test resources, configuring test scripts, executing performance tests, and monitoring test results.");
         rootGroup.AddSubGroup(service);
 

@@ -3,7 +3,6 @@
 
 using AzureMcp.Core.Commands;
 using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Services.Telemetry;
 using AzureMcp.Storage.Models;
 using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Account;
@@ -18,7 +17,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     private readonly ILogger<AccountCreateCommand> _logger = logger;
 
     // Define options from OptionDefinitions
-    private readonly Option<string> _accountNameOption = StorageOptionDefinitions.AccountNameForCreate;
+    private readonly Option<string> _accountCreateOption = StorageOptionDefinitions.AccountCreate;
     private readonly Option<string> _locationOption = StorageOptionDefinitions.Location;
     private readonly Option<string> _skuOption = StorageOptionDefinitions.Sku;
     private readonly Option<string> _kindOption = StorageOptionDefinitions.Kind;
@@ -34,17 +33,6 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
         Create a new Azure Storage account in the specified resource group and location.
         Creates a storage account with the specified configuration options. Returns the
         created storage account information including name, location, SKU, and other properties.
-          Required options:
-        - account-name: The globally unique name for the storage account
-        - resource-group: The resource group where the account will be created
-        - location: The Azure region for the storage account
-          Optional options:
-        - sku: Storage account SKU (default: Standard_LRS)
-        - kind: Storage account kind (default: StorageV2)
-        - access-tier: Default access tier for blobs (default: Hot)
-        - enable-https-traffic-only: Require HTTPS (default: true)
-        - allow-blob-public-access: Allow public blob access (default: false)
-        - enable-hierarchical-namespace: Enable Data Lake Storage Gen2 (default: false)
         """;
 
     public override string Title => CommandTitle;
@@ -58,7 +46,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.AddOption(_accountNameOption);
+        command.AddOption(_accountCreateOption);
         RequireResourceGroup();
         command.AddOption(_locationOption);
         command.AddOption(_skuOption);
@@ -72,7 +60,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
     protected override AccountCreateOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.AccountName = parseResult.GetValueForOption(_accountNameOption);
+        options.Account = parseResult.GetValueForOption(_accountCreateOption);
         options.Location = parseResult.GetValueForOption(_locationOption);
         options.Sku = parseResult.GetValueForOption(_skuOption);
         options.Kind = parseResult.GetValueForOption(_kindOption);
@@ -100,7 +88,7 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
 
             // Call service to create storage account
             var account = await storageService.CreateStorageAccount(
-                options.AccountName!,
+                options.Account!,
                 options.ResourceGroup!,
                 options.Location!,
                 options.Subscription!,
@@ -122,8 +110,8 @@ public sealed class AccountCreateCommand(ILogger<AccountCreateCommand> logger) :
         {
             // Log error with all relevant context
             _logger.LogError(ex,
-                "Error creating storage account. Account: {AccountName}, ResourceGroup: {ResourceGroup}, Location: {Location}, Options: {@Options}",
-                options.AccountName, options.ResourceGroup, options.Location, options);
+                "Error creating storage account. Account: {Account}, ResourceGroup: {ResourceGroup}, Location: {Location}, Options: {@Options}",
+                options.Account, options.ResourceGroup, options.Location, options);
             HandleException(context, ex);
         }
 

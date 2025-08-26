@@ -1,13 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Serialization;
 using AzureMcp.Core.Commands;
-using AzureMcp.Core.Commands.Subscription;
-using AzureMcp.Core.Models.Option;
-using AzureMcp.Core.Services.Telemetry;
-using AzureMcp.Storage.Commands;
-using AzureMcp.Storage.Options;
 using AzureMcp.Storage.Options.Account;
 using AzureMcp.Storage.Services;
 using Microsoft.Extensions.Logging;
@@ -89,5 +83,5 @@ public sealed class AccountDetailsCommand(ILogger<AccountDetailsCommand> logger)
     };
 
     // Strongly-typed result record
-    internal record AccountDetailsCommandResult(Storage.Models.StorageAccountInfo Account);
+    internal record AccountDetailsCommandResult(Models.StorageAccountInfo Account);
 }

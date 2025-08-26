@@ -120,6 +120,9 @@ azmcp server start \
 ### Azure AI Foundry Operations
 
 ```bash
+# List knowledge indexes in an AI Foundry project
+azmcp foundry knowledge index list --endpoint <endpoint>
+
 # Deploy an AI Foundry model
 azmcp foundry models deploy --subscription <subscription> \
                             --resource-group <resource-group> \
@@ -236,6 +239,18 @@ azmcp acr registry list --subscription <subscription>
 # List Azure Container Registries in a specific resource group
 azmcp acr registry list --subscription <subscription> \
                         --resource-group <resource-group>
+
+# List repositories across all registries in a subscription
+azmcp acr registry repository list --subscription <subscription>
+
+# List repositories across all registries in a specific resource group
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group>
+
+# List repositories in a specific registry
+azmcp acr registry repository list --subscription <subscription> \
+                                   --resource-group <resource-group> \
+                                   --registry <registry>
 ```
 
 ### Azure Cosmos DB Operations
@@ -294,6 +309,75 @@ azmcp kusto query [--cluster-uri <cluster-uri> | --subscription <subscription> -
                   --database <database> \
                   --query "<kql-query>"
 
+```
+
+### Azure Database for MySQL Operations
+
+#### Database commands
+
+```bash
+# List all databases in a MySQL server
+azmcp mysql database list --subscription <subscription> \
+                          --resource-group <resource-group> \
+                          --user <user> \
+                          --server <server>
+
+# Executes a SELECT query on a MySQL Database. The query must start with SELECT and cannot contain any destructive SQL operations for security reasons.
+azmcp mysql database query --subscription <subscription> \
+                           --resource-group <resource-group> \
+                           --user <user> \
+                           --server <server> \
+                           --database <database> \
+                           --query <query>
+```
+
+#### Table Commands
+
+```bash
+# List all tables in a MySQL database
+azmcp mysql table list --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --user <user> \
+                       --server <server> \
+                       --database <database>
+
+# Get the schema of a specific table in a MySQL database
+azmcp mysql table schema get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --database <database> \
+                             --table <table>
+```
+
+#### Server Commands
+
+```bash
+# Retrieve the configuration of a MySQL server
+azmcp mysql server config get --subscription <subscription> \
+                              --resource-group <resource-group> \
+                              --user <user> \
+                              --server <server>
+
+# List all MySQL servers in a subscription & resource group
+azmcp mysql server list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --user <user>
+
+# Retrieve a specific parameter of a MySQL server
+azmcp mysql server param get --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter>
+
+# Set a specific parameter of a MySQL server to a specific value
+azmcp mysql server param set --subscription <subscription> \
+                             --resource-group <resource-group> \
+                             --user <user> \
+                             --server <server> \
+                             --param <parameter> \
+                             --value <value>
 ```
 
 ### Azure Database for PostgreSQL Operations
@@ -376,9 +460,44 @@ azmcp extension azd --command "<command>"
 azmcp extension azd --command "init --template todo-nodejs-mongo"
 ```
 
+### Azure Deploy Operations
+
+```bash
+# Get the application service log for a specific azd environment
+azmcp deploy app logs get --workspace-folder <workspace-folder> \
+                          --azd-env-name <azd-env-name> \
+                          [--limit <limit>]
+
+# Generate a mermaid architecture diagram for the application topology follow the schema defined in [deploy-app-topology-schema.json](../areas/deploy/src/AzureMcp.Deploy/Schemas/deploy-app-topology-schema.json)
+azmcp deploy architecture diagram generate --raw-mcp-tool-input <app-topology>
+
+# Get the iac generation rules for the resource types
+azmcp deploy iac rules get --deployment-tool <deployment-tool> \
+                           --iac-type <iac-type> \
+                           --resource-types <resource-types>
+
+# Get the ci/cd pipeline guidance
+azmcp deploy pipeline guidance get [--use-azd-pipeline-config <use-azd-pipeline-config>] \
+                                   [--organization-name <organization-name>] \
+                                   [--repository-name <repository-name>] \
+                                   [--github-environment-name <github-environment-name>]
+
+# Get a deployment plan for a specific project
+azmcp deploy plan get --workspace-folder <workspace-folder> \
+                      --project-name <project-name> \
+                      --target-app-service <target-app-service> \
+                      --provisioning-tool <provisioning-tool> \
+                      [--azd-iac-options <azd-iac-options>]
+```
+
 ### Azure Function App Operations
 
 ```bash
+# Get details for a specific Function App
+azmcp functionapp get --subscription <subscription> \
+                      --resource-group <resource-group> \
+                      --function-app <function-app-name>
+
 # List function apps in a subscription
 azmcp functionapp list --subscription <subscription>
 ```
@@ -395,6 +514,13 @@ azmcp keyvault certificate create --subscription <subscription> \
 azmcp keyvault certificate get --subscription <subscription> \
                                --vault <vault-name> \
                                --name <certificate-name>
+
+# Imports an existing certificate (PFX or PEM) into a key vault
+azmcp keyvault certificate import --subscription <subscription> \
+                                  --vault <vault-name> \
+                                  --certificate <certificate-name> \
+                                  --certificate-data <path-or-base64-or-raw-pem> \
+                                  [--password <pfx-password>]
 
 # Lists certificates in a key vault
 azmcp keyvault certificate list --subscription <subscription> \
@@ -640,6 +766,21 @@ azmcp monitor metrics query --subscription <subscription> \
                             --aggregation "Average"
 ```
 
+### Azure Managed Lustre
+
+```bash
+# List Azure Managed Lustre Filesystems available in a subscription or resource group
+azmcp azuremanagedlustre filesystem list --subscription <subscription> \
+                                      --resource-group <resource-group> 
+
+# Returns the required number of IP addresses for a specific Azure Managed Lustre SKU and filesystem size
+azmcp azuremanagedlustre filesystem required-subnet-size --subscription <subscription> \
+                                      --sku <azure-managed-lustre-sku> \
+                                      --size <filesystem-size-in-tib>
+```
+
+
+
 ### Azure Native ISV Operations
 
 ```bash
@@ -658,6 +799,22 @@ azmcp extension azqr --subscription <subscription>
 # Scan a subscription and scope to a specific resource group
 azmcp extension azqr --subscription <subscription> \
                      --resource-group <resource-group-name>
+```
+
+### Azure Quota Operations
+
+```bash
+# Get the available regions for the resources types
+azmcp quota region availability list --subscription <subscription> \
+                                     --resource-types <resource-types> \
+                                     [--cognitive-service-model-name <cognitive-service-model-name>] \
+                                     [--cognitive-service-model-version <cognitive-service-model-version>] \
+                                     [--cognitive-service-deployment-sku-name <cognitive-service-deployment-sku-name>]
+
+# Check the usage for Azure resources type
+azmcp quota usage check --subscription <subscription> \
+                        --region <region> \
+                        --resource-types <resource-types>
 ```
 
 ### Azure RBAC Operations
@@ -689,6 +846,13 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
                                     --cache <cache-name>
 ```
 
+### Azure Resource Group Operations
+
+```bash
+# List resource groups in a subscription
+azmcp group list --subscription <subscription>
+```
+
 ### Azure Resource Health Operations
 
 ```bash
@@ -696,11 +860,11 @@ azmcp redis cache list accesspolicy --subscription <subscription> \
 azmcp resourcehealth availability-status get --resourceId <resource-id>
 
 # List availability statuses for all resources in a subscription
-azmcp resourcehealth availability-status list --subscription <subscription>
+azmcp resourcehealth availability-status list --subscription <subscription> \
 
 # List availability statuses for all resources in a specific resource group
 azmcp resourcehealth availability-status list --subscription <subscription> \
-                                              --resource-group <resource-group>
+                                              [--resource-group <resource-group>]
 
 # List service health events affecting Azure services and subscriptions
 azmcp resourcehealth service-health-events list --subscription <subscription> \
@@ -751,13 +915,6 @@ azmcp resourcehealth resource-events get --subscription <subscription> \
 azmcp resourcehealth resource-events get --subscription <subscription> \
                                          --resourceId <resource-id> \
                                          --expand "impact,recommendedActions"
-```
-
-### Azure Resource Group Operations
-
-```bash
-# List resource groups in a subscription
-azmcp group list --subscription <subscription>
 ```
 
 ### Azure Service Bus Operations
@@ -823,7 +980,7 @@ azmcp sql server entra-admin list --subscription <subscription> \
 ```bash
 # Create a new Storage account with custom configuration
 azmcp storage account create --subscription <subscription> \
-                             --account-name <unique-account-name> \
+                             --account <unique-account-name> \
                              --resource-group <resource-group> \
                              --location <location> \
                              --sku <sku> \
@@ -835,7 +992,7 @@ azmcp storage account create --subscription <subscription> \
 
 # Get detailed information about a specific Storage account
 azmcp storage account details --subscription <subscription> \
-                              --account <account-name> \
+                              --account <account> \
                               [--tenant <tenant>]
 
 # List Storage accounts in a subscription
@@ -846,7 +1003,7 @@ azmcp storage blob batch set-tier --subscription <subscription> \
                                   --account <account> \
                                   --container <container> \
                                   --tier <tier> \
-                                  --blob-names <blob-name1> <blob-name2> ... <blob-nameN>
+                                  --blobs <blob-name1> <blob-name2> ... <blob-nameN>
 
 # Create a blob container with optional public access
 azmcp storage blob container create --subscription <subscription> \
@@ -867,12 +1024,20 @@ azmcp storage blob container list --subscription <subscription> \
 azmcp storage blob details --subscription <subscription> \
                            --account <account> \
                            --container <container> \
-                           --blob <blob-name>
+                           --blob <blob>
 
 # List blobs in a Storage container
 azmcp storage blob list --subscription <subscription> \
                         --account <account> \
                         --container <container>
+
+# Upload a file to a Storage blob container
+azmcp storage blob upload --subscription <subscription> \
+                          --account <account> \
+                          --container <container> \
+                          --blob <blob> \
+                          --local-file-path <path-to-local-file> \
+                          [--overwrite]
 
 # Create a directory in DataLake using a specific path
 azmcp storage datalake directory create --subscription <subscription> \
@@ -888,16 +1053,16 @@ azmcp storage datalake file-system list-paths --subscription <subscription> \
 
 # Send a message to a Storage queue
 azmcp storage queue message send --subscription <subscription> \
-                                 --account <account-name> \
-                                 --queue <queue-name> \
-                                 --message "<message-content>" \
+                                 --account <account> \
+                                 --queue <queue> \
+                                 --message "<message>" \
                                  [--time-to-live-in-seconds <seconds>] \
                                  [--visibility-timeout-in-seconds <seconds>]
 
 # List files and directories in a File Share directory
 azmcp storage share file list --subscription <subscription> \
-                              --account <account-name> \
-                              --share <share-name> \
+                              --account <account> \
+                              --share <share> \
                               --directory-path <directory-path> \
                               [--prefix <prefix>]
 
@@ -1010,6 +1175,26 @@ azmcp workbooks update --workbook-id <workbook-resource-id> \
 azmcp bicepschema get --resource-type <resource-type> \
 ```
 
+### Cloud Architect
+
+```bash
+# Design Azure cloud architectures through guided questions
+azmcp cloudarchitect design [--question <question>] \
+                            [--question-number <question-number>] \
+                            [--total-questions <total-questions>] \
+                            [--answer <answer>] \
+                            [--next-question-needed <true/false>] \
+                            [--confidence-score <confidence-score>] \
+                            [--architecture-component <architecture-component>]
+
+# Example:
+# Start an interactive architecture design session
+azmcp cloudarchitect design --question "What type of application are you building?" \
+                            --question-number 1 \
+                            --total-questions 5 \
+                            --confidence-score 0.1
+```
+
 ## Response Format
 
 All responses follow a consistent JSON format:
@@ -1030,3 +1215,4 @@ The CLI returns structured JSON responses for errors, including:
 
 - Service availability issues
 - Authentication errors
+

@@ -6,22 +6,24 @@ namespace AzureMcp.Storage.Options;
 public static class StorageOptionDefinitions
 {
     public const string AccountName = "account";
-    public const string AccountNameCreate = "account-name";
+    public const string AccountCreateName = "account";
     public const string ContainerName = "container";
     public const string TableName = "table";
     public const string FileSystemName = "file-system";
     public const string DirectoryPathName = "directory-path";
     public const string TierName = "tier";
     public const string BlobName = "blob";
-    public const string BlobNamesParam = "blob-names";
+    public const string BlobsName = "blobs";
     public const string FilterPathName = "filter-path";
     public const string RecursiveName = "recursive";
     public const string ShareName = "share";
     public const string PrefixName = "prefix";
     public const string QueueName = "queue";
-    public const string MessageContent = "message";
-    public const string TimeToLiveInSeconds = "time-to-live-in-seconds";
-    public const string VisibilityTimeoutInSeconds = "visibility-timeout-in-seconds";
+    public const string MessageName = "message";
+    public const string TimeToLiveInSecondsName = "time-to-live-in-seconds";
+    public const string VisibilityTimeoutInSecondsName = "visibility-timeout-in-seconds";
+    public const string LocalFilePathName = "local-file-path";
+    public const string OverwriteName = "overwrite";
     public const string LocationName = "location";
     public const string SkuName = "sku";
     public const string KindName = "kind";
@@ -39,8 +41,8 @@ public static class StorageOptionDefinitions
         IsRequired = true
     };
 
-    public static readonly Option<string> AccountNameForCreate = new(
-        $"--{AccountNameCreate}",
+    public static readonly Option<string> AccountCreate = new(
+        $"--{AccountCreateName}",
         "The name of the Azure Storage account to create. Must be globally unique, 3-24 characters, lowercase letters and numbers only."
     )
     {
@@ -154,8 +156,8 @@ public static class StorageOptionDefinitions
         IsRequired = true
     };
 
-    public static readonly Option<string[]> BlobNames = new(
-        $"--{BlobNamesParam}",
+    public static readonly Option<string[]> Blobs = new(
+        $"--{BlobsName}",
         "The names of the blobs to set the access tier for. Provide multiple blob names separated by spaces. Each blob name should be the full path within the container (e.g., 'file1.txt' or 'folder/file2.txt')."
     )
     {
@@ -212,24 +214,40 @@ public static class StorageOptionDefinitions
         IsRequired = true
     };
 
-    public static readonly Option<string> MessageContentOption = new(
-        $"--{MessageContent}",
+    public static readonly Option<string> Message = new(
+        $"--{MessageName}",
         "The content of the message to send to the queue."
     )
     {
         IsRequired = true
     };
 
-    public static readonly Option<int?> TimeToLiveInSecondsOption = new(
-        $"--{TimeToLiveInSeconds}",
+    public static readonly Option<int?> TimeToLiveInSeconds = new(
+        $"--{TimeToLiveInSecondsName}",
         "The time-to-live for the message in seconds. If not specified, the message will use the queue's default TTL. Set to -1 for messages that never expire.")
     {
         IsRequired = false
     };
 
-    public static readonly Option<int?> VisibilityTimeoutInSecondsOption = new(
-        $"--{VisibilityTimeoutInSeconds}",
+    public static readonly Option<int?> VisibilityTimeoutInSeconds = new(
+        $"--{VisibilityTimeoutInSecondsName}",
         "The visibility timeout for the message in seconds. This determines how long the message will be invisible after it's retrieved. If not specified, defaults to 0 (immediately visible)."
+    )
+    {
+        IsRequired = false
+    };
+
+    public static readonly Option<string> LocalFilePath = new(
+        $"--{LocalFilePathName}",
+        "The local file path to read content from or to write content to. This should be the full path to the file on your local system."
+    )
+    {
+        IsRequired = true
+    };
+
+    public static readonly Option<bool> Overwrite = new(
+        $"--{OverwriteName}",
+        "Whether to overwrite content if it already exists. Defaults to false."
     )
     {
         IsRequired = false

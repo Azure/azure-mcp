@@ -1,0 +1,123 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using AzureMcp.Core.Models.Command;
+using AzureMcp.Core.Options;
+using AzureMcp.Foundry.Commands;
+using AzureMcp.Foundry.Models;
+using AzureMcp.Foundry.Services;
+using AzureMcp.Tests;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using Xunit;
+
+namespace AzureMcp.Foundry.UnitTests;
+
+public class KnowledgeIndexListCommandTests
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IFoundryService _service;
+    private readonly ILogger<KnowledgeIndexListCommand> _logger;
+    private readonly KnowledgeIndexListCommand _command;
+    private readonly CommandContext _context;
+    private readonly Parser _parser;
+
+    public KnowledgeIndexListCommandTests()
+    {
+        _service = Substitute.For<IFoundryService>();
+        _logger = Substitute.For<ILogger<KnowledgeIndexListCommand>>();
+
+        var collection = new ServiceCollection().AddSingleton(_service);
+        _serviceProvider = collection.BuildServiceProvider();
+        _command = new();
+        _context = new CommandContext(_serviceProvider);
+        _parser = new(_command.GetCommand());
+    }
+
+    [Fact]
+    public void Constructor_InitializesCommandCorrectly()
+    {
+        var command = _command.GetCommand();
+        Assert.Equal("list", command.Name);
+        Assert.NotNull(command.Description);
+        Assert.NotEmpty(command.Description);
+    }
+
+    [Theory]
+    [InlineData("--endpoint https://example.com", true)]
+    [InlineData("", false)]
+    public async Task ExecuteAsync_ValidatesInputCorrectly(string args, bool shouldSucceed)
+    {
+        // Arrange
+        if (shouldSucceed)
+        {
+            _service.ListKnowledgeIndexes(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+                .Returns(new List<KnowledgeIndexInformation>
+                {
+                    new() { Name = "test-index", Type = "aisearch", Version = "1.0", Description = "Test index" }
+                });
+        }
+
+        var parseResult = _parser.Parse(args.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(shouldSucceed ? 200 : 400, response.Status);
+        if (shouldSucceed)
+        {
+            Assert.NotNull(response.Results);
+            Assert.Equal("Success", response.Message);
+        }
+        else
+        {
+            Assert.Contains("required", response.Message.ToLower());
+        }
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_HandlesServiceErrors()
+    {
+        // Arrange
+        _service.ListKnowledgeIndexes(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(Task.FromException<List<KnowledgeIndexInformation>>(new Exception("Test error")));
+
+        var parseResult = _parser.Parse(["--endpoint", "https://example.com"]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(500, response.Status);
+        Assert.Contains("Test error", response.Message);
+        Assert.Contains("troubleshooting", response.Message);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ReturnsExpectedResults()
+    {
+        // Arrange
+        var expectedIndexes = new List<KnowledgeIndexInformation>
+        {
+            new() { Name = "test-index1", Type = "aisearch", Version = "1.0", Description = "First test index" },
+            new() { Name = "test-index2", Type = "aisearch", Version = "1.1", Description = "Second test index" }
+        };
+
+        _service.ListKnowledgeIndexes(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<RetryPolicyOptions>())
+            .Returns(expectedIndexes);
+
+        var parseResult = _parser.Parse(["--endpoint", "https://example.com"]);
+
+        // Act
+        var response = await _command.ExecuteAsync(_context, parseResult);
+
+        // Assert
+        Assert.Equal(200, response.Status);
+        Assert.NotNull(response.Results);
+        Assert.Equal("Success", response.Message);
+    }
+}

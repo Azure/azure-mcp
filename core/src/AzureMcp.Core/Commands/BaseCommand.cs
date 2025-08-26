@@ -44,7 +44,11 @@ public abstract class BaseCommand : IBaseCommand
         var response = context.Response;
         var result = new ExceptionResult(
             Message: ex.Message,
+#if DEBUG
             StackTrace: ex.StackTrace,
+#else
+            StackTrace: null,
+#endif
             Type: ex.GetType().Name);
 
         response.Status = GetStatusCode(ex);

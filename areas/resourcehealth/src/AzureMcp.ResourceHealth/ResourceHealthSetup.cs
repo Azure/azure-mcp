@@ -14,6 +14,8 @@ namespace AzureMcp.ResourceHealth;
 
 public class ResourceHealthSetup : IAreaSetup
 {
+    public string Name => "resourcehealth";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IResourceHealthService, ResourceHealthService>();
@@ -21,7 +23,7 @@ public class ResourceHealthSetup : IAreaSetup
 
     public void RegisterCommands(CommandGroup rootGroup, ILoggerFactory loggerFactory)
     {
-        var resourceHealth = new CommandGroup("resourcehealth",
+        var resourceHealth = new CommandGroup(Name,
             """
             Resource Health operations - Commands for monitoring and diagnosing Azure resource health status.
             Use this tool to check the current availability status of Azure resources and identify potential issues.

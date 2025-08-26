@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using AzureMcp.Core.Areas.Server.Models;
 using AzureMcp.Core.Commands;
+using AzureMcp.Core.Services.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
@@ -27,6 +29,8 @@ public sealed class CommandFactoryToolLoader(
             ? commandFactory.AllCommands
             : commandFactory.GroupCommands(options.Value.Namespace);
     private readonly ILogger<CommandFactoryToolLoader> _logger = logger;
+
+    public const string RawMcpToolInputOptionName = "raw-mcp-tool-input";
 
     /// <summary>
     /// Lists all tools available from the command factory.
@@ -76,7 +80,7 @@ public sealed class CommandFactoryToolLoader(
         {
             var content = new TextContentBlock
             {
-                Text = $"Could not find command: {request.Params.Name}",
+                Text = $"Could not find command: {toolName}",
             };
 
             return new CallToolResult
@@ -88,9 +92,24 @@ public sealed class CommandFactoryToolLoader(
         var commandContext = new CommandContext(_serviceProvider, Activity.Current);
 
         var realCommand = command.GetCommand();
-        var commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        ParseResult? commandOptions = null;
+
+        if (realCommand.Options.Count == 1 && realCommand.Options[0].Name == RawMcpToolInputOptionName)
+        {
+            commandOptions = realCommand.ParseFromRawMcpToolInput(request.Params.Arguments);
+        }
+        else
+        {
+            commandOptions = realCommand.ParseFromDictionary(request.Params.Arguments);
+        }
 
         _logger.LogTrace("Invoking '{Tool}'.", realCommand.Name);
+
+        if (commandContext.Activity != null)
+        {
+            var serviceArea = commandFactory.GetServiceArea(realCommand.Name) ?? toolName;
+            commandContext.Activity.AddTag(TelemetryConstants.TagName.ToolArea, serviceArea);
+        }
 
         try
         {
@@ -152,13 +171,22 @@ public sealed class CommandFactoryToolLoader(
 
         if (options != null && options.Count > 0)
         {
-            foreach (var option in options)
+            if (options.Count == 1 && options[0].Name == RawMcpToolInputOptionName)
             {
-                // Use the CreatePropertySchema method to properly handle array types with items
-                schema.Properties.Add(option.Name, TypeToJsonTypeMapper.CreatePropertySchema(option.ValueType, option.Description));
+                var arguments = JsonNode.Parse(options[0].Description ?? "{}") as JsonObject ?? new JsonObject();
+                tool.InputSchema = JsonSerializer.SerializeToElement(arguments, ServerJsonContext.Default.JsonObject);
+                return tool;
             }
+            else
+            {
+                foreach (var option in options)
+                {
+                    // Use the CreatePropertySchema method to properly handle array types with items
+                    schema.Properties.Add(option.Name, TypeToJsonTypeMapper.CreatePropertySchema(option.ValueType, option.Description));
+                }
 
-            schema.Required = [.. options.Where(p => p.IsRequired).Select(p => p.Name)];
+                schema.Required = [.. options.Where(p => p.IsRequired).Select(p => p.Name)];
+            }
         }
 
         tool.InputSchema = JsonSerializer.SerializeToElement(schema, ServerJsonContext.Default.ToolInputSchema);

@@ -66,28 +66,38 @@ internal class Program
             new AzureMcp.AppConfig.AppConfigSetup(),
             new AzureMcp.Authorization.AuthorizationSetup(),
             new AzureMcp.AzureIsv.AzureIsvSetup(),
+            new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
+            new AzureMcp.Deploy.DeploySetup(),
             new AzureMcp.Acr.AcrSetup(),
+            new AzureMcp.CloudArchitect.CloudArchitectSetup(),
             new AzureMcp.Foundry.FoundrySetup(),
             new AzureMcp.FunctionApp.FunctionAppSetup(),
             new AzureMcp.Grafana.GrafanaSetup(),
             new AzureMcp.KeyVault.KeyVaultSetup(),
             new AzureMcp.Kusto.KustoSetup(),
+            new AzureMcp.LoadTesting.LoadTestingSetup(),
             new AzureMcp.Marketplace.MarketplaceSetup(),
+            new AzureMcp.Quota.QuotaSetup(),
             new AzureMcp.Monitor.MonitorSetup(),
+            new AzureMcp.MySql.MySqlSetup(),
             new AzureMcp.Postgres.PostgresSetup(),
             new AzureMcp.Redis.RedisSetup(),
+            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
             new AzureMcp.Search.SearchSetup(),
             new AzureMcp.ServiceBus.ServiceBusSetup(),
             new AzureMcp.Sql.SqlSetup(),
             new AzureMcp.Storage.StorageSetup(),
             new AzureMcp.VirtualDesktop.VirtualDesktopSetup(),
             new AzureMcp.Workbooks.WorkbooksSetup(),
-            new AzureMcp.AzureTerraformBestPractices.AzureTerraformBestPracticesSetup(),
-            new AzureMcp.LoadTesting.LoadTestingSetup(),
 #if !BUILD_NATIVE
+            // IMPORTANT: DO NOT MODIFY OR ADD EXCLUSIONS IN THIS SECTION
+            // This block must remain as-is.
+            // If the "(Native AOT) Build module" stage fails in CI,
+            // follow the AOT compatibility guide instead of changing this list:
+            // https://github.com/Azure/azure-mcp/blob/main/docs/aot-compatibility.md
             new AzureMcp.BicepSchema.BicepSchemaSetup(),
-            new AzureMcp.Cosmos.CosmosSetup(),
-            new AzureMcp.ResourceHealth.ResourceHealthSetup(),
+            new AzureMcp.AzureManagedLustre.AzureManagedLustreSetup(),
+            new AzureMcp.Cosmos.CosmosSetup()
 #endif
         ];
     }
