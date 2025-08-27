@@ -62,8 +62,6 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var signalRService = context.GetService<ISignalRService>();
             var keys = await signalRService.ListKeysAsync(
                 options.Subscription!,

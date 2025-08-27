@@ -63,8 +63,6 @@ public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var signalRService = context.GetService<ISignalRService>();
             var identity = await signalRService.GetSignalRIdentityAsync(
                 options.Subscription!,

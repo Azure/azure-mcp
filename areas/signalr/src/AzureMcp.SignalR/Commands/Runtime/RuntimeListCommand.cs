@@ -44,8 +44,6 @@ public sealed class RuntimeListCommand(ILogger<RuntimeListCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var signalRService = context.GetService<ISignalRService>() ??
                                  throw new InvalidOperationException("SignalR service is not available.");
             var runtimes = await signalRService.ListRuntimesAsync(

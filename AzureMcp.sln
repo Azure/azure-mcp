@@ -318,7 +318,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.FunctionApp.UnitTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AppConfig.UnitTests", "areas\appconfig\tests\AzureMcp.AppConfig.UnitTests\AzureMcp.AppConfig.UnitTests.csproj", "{A3ADC1CC-6020-7233-DCFA-106CA917B0CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.SignalR", "areas\signalr\src\AzureMcp.SignalR\AzureMcp.SignalR.csproj", "{66F9E10D-C1E5-4012-A064-D28A18750E78}"
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{546CED3D-7F74-09C6-3DFD-7EDC477A0556}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{311C78D5-1A27-A98E-17B9-D29F6B7DECD5}"
@@ -376,7 +375,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureManagedLustre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureManagedLustre.LiveTests", "areas\azuremanagedlustre\tests\AzureMcp.AzureManagedLustre.LiveTests\AzureMcp.AzureManagedLustre.LiveTests.csproj", "{297EDCEE-F97C-49AF-8DB1-9E75730EBB23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.AzureSignalR", "areas\azuresignalr\src\AzureMcp.AzureSignalR\AzureMcp.AzureSignalR.csproj", "{66F9E10D-C1E5-4012-A064-D28A18750E78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMcp.SignalR", "areas\signalr\src\AzureMcp.SignalR\AzureMcp.SignalR.csproj", "{66F9E10D-C1E5-4012-A064-D28A18750E78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "signalr", "signalr", "{5DCC59B3-8069-49C9-82B8-672EC4B690C3}"
 EndProject

@@ -18,6 +18,8 @@ namespace AzureMcp.SignalR;
 /// </summary>
 public class SignalRSetup : IAreaSetup
 {
+    public string Name => "signalr";
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ISignalRService, SignalRService>();

@@ -63,12 +63,8 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
-            // Get the SignalR service from DI
             var service = context.GetService<ISignalRService>();
 
-            // Call service to get network rules
             var networkRules = await service.GetNetworkRulesAsync(
                 options.Subscription!,
                 options.ResourceGroup!,
@@ -77,7 +73,6 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            // Set results
             context.Response.Results = networkRules is null
                 ? null
                 : ResponseResult.Create(
@@ -86,7 +81,6 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
         }
         catch (Exception ex)
         {
-            // Log error with all relevant context
             _logger.LogError(ex,
                 "Error listing network rules for SignalR service. SignalR: {SignalRName}, ResourceGroup: {ResourceGroup}, Options: {@Options}",
                 options.SignalRName, options.ResourceGroup, options);

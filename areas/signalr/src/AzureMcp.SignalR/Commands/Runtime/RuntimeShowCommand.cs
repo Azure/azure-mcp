@@ -62,8 +62,6 @@ public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
                 return context.Response;
             }
 
-            context.Activity?.WithSubscriptionTag(options);
-
             var signalRService = context.GetService<ISignalRService>();
             var runtime = await signalRService.GetRuntimeAsync(
                 options.Subscription!,
