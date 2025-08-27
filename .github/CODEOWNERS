@@ -199,3 +199,9 @@
 
 # ServiceLabel: %area-VirtualDesktop
 # ServiceOwners:                       @vladimisms
+
+# PRLabel: %area-SignalR
+/src/Areas/SignalR/                  @kenchennt @JialinXin @HaofanLiao @Azure/azure-mcp
+
+# ServiceLabel: %area-SignalR
+# ServiceOwners:                       @kenchennt @JialinXin

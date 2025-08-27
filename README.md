@@ -275,6 +275,14 @@ The Azure MCP Server supercharges your agents with Azure context. Here are some 
 
 * Examine properties and runtime information about queues, topics, and subscriptions
 
+### 📶 Azure SignalR Service
+
+* Show SignalR runtime details and properties
+* Show SignalR identity details and properties
+* List SignalR runtimes
+* List SignalR keys
+* List SignalR network rules
+
 ### 🗄️ Azure SQL Database
 
 * Show database details and properties
