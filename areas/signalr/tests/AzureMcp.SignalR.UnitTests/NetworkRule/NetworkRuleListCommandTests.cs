@@ -65,7 +65,8 @@ public class NetworkRuleListCommandTests
                 PublicNetwork =
                     new NetworkAcl
                     {
-                        Allow = new[] { "ServerConnection", "ClientConnection" }, Deny = new[] { "RESTAPI" }
+                        Allow = new[] { "ServerConnection", "ClientConnection" },
+                        Deny = new[] { "RESTAPI" }
                     },
                 PrivateEndpoints = new[]
                 {
@@ -111,7 +112,8 @@ public class NetworkRuleListCommandTests
             PublicNetwork =
                 new NetworkAcl
                 {
-                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI" }, Deny = new[] { "Trace" }
+                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI" },
+                    Deny = new[] { "Trace" }
                 },
             PrivateEndpoints = new[]
             {

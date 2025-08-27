@@ -60,7 +60,9 @@ public class IdentityShowCommandTests
         {
             var testIdentity = new Models.Identity
             {
-                Type = "SystemAssigned", PrincipalId = "principal123", TenantId = "tenant123"
+                Type = "SystemAssigned",
+                PrincipalId = "principal123",
+                TenantId = "tenant123"
             };
 
             _signalRService.GetSignalRIdentityAsync(
@@ -97,7 +99,9 @@ public class IdentityShowCommandTests
         // Arrange
         var expectedIdentity = new Models.Identity
         {
-            Type = "SystemAssigned", PrincipalId = "test-principal-id", TenantId = "test-tenant-id"
+            Type = "SystemAssigned",
+            PrincipalId = "test-principal-id",
+            TenantId = "test-tenant-id"
         };
 
         _signalRService.GetSignalRIdentityAsync(

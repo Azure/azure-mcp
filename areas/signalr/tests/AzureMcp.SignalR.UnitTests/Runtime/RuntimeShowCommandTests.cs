@@ -60,7 +60,10 @@ public class RuntimeShowCommandTests
         {
             var testRuntime = new Models.Runtime
             {
-                Name = "test-signalr", ResourceGroupName = "test-rg", Location = "East US", SkuName = "Standard_S1"
+                Name = "test-signalr",
+                ResourceGroupName = "test-rg",
+                Location = "East US",
+                SkuName = "Standard_S1"
             };
 
             _signalRService.GetRuntimeAsync(
@@ -97,7 +100,10 @@ public class RuntimeShowCommandTests
         // Arrange
         var expectedRuntime = new Models.Runtime
         {
-            Name = "test-signalr", ResourceGroupName = "test-rg", Location = "East US", SkuName = "Standard_S1"
+            Name = "test-signalr",
+            ResourceGroupName = "test-rg",
+            Location = "East US",
+            SkuName = "Standard_S1"
         };
 
         _signalRService.GetRuntimeAsync(
