@@ -157,8 +157,13 @@ public class KeyListCommandTests
     {
         // Arrange
         var exception = new RequestFailedException(403, "Access denied");
-        _signalRService.ListKeysAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.ListKeysAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.Key?>(exception));
 
         var parseResult = _parser.Parse([
@@ -177,8 +182,13 @@ public class KeyListCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _signalRService.ListKeysAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.ListKeysAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.Key?>(new Exception("Service unavailable")));
 
         var parseResult = _parser.Parse([

@@ -126,7 +126,12 @@ public class IdentityShowCommandTests
     public async Task ExecuteAsync_ReturnsNullWhenIdentityNotFound()
     {
         // Arrange
-        _signalRService.GetSignalRIdentityAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+        _signalRService.GetSignalRIdentityAsync(
+                "test-subscription",
+                "test-rg",
+                "nonexistent-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
                 Arg.Any<RetryPolicyOptions>())
             .Returns((Models.Identity?)null);
 
@@ -149,8 +154,13 @@ public class IdentityShowCommandTests
     {
         // Arrange
         var exception = new RequestFailedException(404, "SignalR service not found");
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.GetSignalRIdentityAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.Identity?>(exception));
 
         var parseResult = _parser.Parse([
@@ -169,8 +179,13 @@ public class IdentityShowCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _signalRService.GetSignalRIdentityAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.GetSignalRIdentityAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.Identity?>(new Exception("Test error")));
 
         var parseResult = _parser.Parse([

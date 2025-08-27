@@ -73,10 +73,11 @@ public sealed class KeyListCommand(ILogger<KeyListCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results =keys is null ?
-                null: ResponseResult.Create(
-                new KeyListCommandResult(keys),
-                SignalRJsonContext.Default.KeyListCommandResult);
+            context.Response.Results = keys is null
+                ? null
+                : ResponseResult.Create(
+                    new KeyListCommandResult(keys),
+                    SignalRJsonContext.Default.KeyListCommandResult);
         }
         catch (Exception ex)
         {

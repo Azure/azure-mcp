@@ -13,7 +13,7 @@ namespace AzureMcp.SignalR.Commands;
 /// </summary>
 public abstract class BaseSignalRCommand<
     [DynamicallyAccessedMembers(TrimAnnotations.CommandAnnotations)]
-TOptions>
+    TOptions>
     : SubscriptionCommand<TOptions> where TOptions : BaseSignalROptions, new()
 {
     protected virtual bool RequiresResourceGroup => true;

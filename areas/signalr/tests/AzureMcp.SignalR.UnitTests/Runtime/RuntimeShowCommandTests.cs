@@ -137,7 +137,12 @@ public class RuntimeShowCommandTests
     public async Task ExecuteAsync_ReturnsNullWhenRuntimeNotFound()
     {
         // Arrange
-        _signalRService.GetRuntimeAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+        _signalRService.GetRuntimeAsync(
+                "test-subscription",
+                "test-rg",
+                "nonexistent-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
                 Arg.Any<RetryPolicyOptions>())
             .Returns((Models.Runtime?)null);
 
@@ -159,8 +164,13 @@ public class RuntimeShowCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _signalRService.GetRuntimeAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.GetRuntimeAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.Runtime?>(new Exception("Service unavailable")));
 
         var parseResult = _parser.Parse([

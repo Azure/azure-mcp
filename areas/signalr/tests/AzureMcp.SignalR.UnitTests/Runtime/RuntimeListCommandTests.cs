@@ -168,7 +168,10 @@ public class RuntimeListCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _signalRService.ListRuntimesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<AuthMethod?>(),
+        _signalRService.ListRuntimesAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
                 Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<IEnumerable<Models.Runtime>>(new Exception("Service unavailable")));
 

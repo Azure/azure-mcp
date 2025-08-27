@@ -17,10 +17,7 @@ namespace AzureMcp.SignalR.LiveTests
         {
             var result = await CallToolAsync(
                 "azmcp_signalr_runtime_list",
-                new()
-                {
-                    { "subscription", Settings.SubscriptionId }
-                });
+                new() { { "subscription", Settings.SubscriptionId } });
 
             var runtimes = result.AssertProperty("runtimes");
             Assert.Equal(JsonValueKind.Array, runtimes.ValueKind);
@@ -32,10 +29,7 @@ namespace AzureMcp.SignalR.LiveTests
         {
             var result = await CallToolAsync(
                 "azmcp_signalr_runtime_list",
-                new()
-                {
-                    { "subscription", Settings.SubscriptionName }
-                });
+                new() { { "subscription", Settings.SubscriptionName } });
 
             var runtimes = result.AssertProperty("runtimes");
             Assert.Equal(JsonValueKind.Array, runtimes.ValueKind);
@@ -47,11 +41,7 @@ namespace AzureMcp.SignalR.LiveTests
         {
             var result = await CallToolAsync(
                 "azmcp_signalr_runtime_list",
-                new()
-                {
-                    { "subscription", Settings.SubscriptionName },
-                    { "tenant", Settings.TenantId }
-                });
+                new() { { "subscription", Settings.SubscriptionName }, { "tenant", Settings.TenantId } });
 
             var runtimes = result.AssertProperty("runtimes");
             Assert.Equal(JsonValueKind.Array, runtimes.ValueKind);
@@ -65,11 +55,7 @@ namespace AzureMcp.SignalR.LiveTests
 
             var result = await CallToolAsync(
                 "azmcp_signalr_runtime_list",
-                new()
-                {
-                    { "subscription", Settings.SubscriptionName },
-                    { "tenant", Settings.TenantName }
-                });
+                new() { { "subscription", Settings.SubscriptionName }, { "tenant", Settings.TenantName } });
 
             var runtimes = result.AssertProperty("runtimes");
             Assert.Equal(JsonValueKind.Array, runtimes.ValueKind);
@@ -86,7 +72,7 @@ namespace AzureMcp.SignalR.LiveTests
                 {
                     { "subscription", Settings.SubscriptionId },
                     { "resource-group", Settings.ResourceGroupName },
-                    {"signalr-name", Settings.ResourceBaseName }
+                    { "signalr-name", Settings.ResourceBaseName }
                 });
 
             var runtime = getResult.AssertProperty("runtime");
@@ -284,8 +270,7 @@ namespace AzureMcp.SignalR.LiveTests
                 "azmcp_signalr_key_list",
                 new()
                 {
-                    { "subscription", Settings.SubscriptionId },
-                    { "resource-group", Settings.ResourceGroupName }
+                    { "subscription", Settings.SubscriptionId }, { "resource-group", Settings.ResourceGroupName }
                     // Missing signalr-name
                 });
 

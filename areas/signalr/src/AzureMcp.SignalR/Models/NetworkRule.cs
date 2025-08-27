@@ -31,7 +31,7 @@ public class NetworkRule
 /// Represents a private endpoint configuration for SignalR network access control,
 /// defining access rules for a specific private endpoint connection.
 /// </summary>
-public class PrivateEndpointNetworkAcl: NetworkAcl
+public class PrivateEndpointNetworkAcl : NetworkAcl
 {
     /// <summary>
     /// Gets or sets the name of the private endpoint.

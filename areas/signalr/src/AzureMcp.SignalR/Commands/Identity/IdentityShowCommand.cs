@@ -74,10 +74,11 @@ public sealed class IdentityShowCommand(ILogger<IdentityShowCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = identity is null ?
-                null: ResponseResult.Create(
-                new IdentityShowCommandResult(identity),
-                SignalRJsonContext.Default.IdentityShowCommandResult);
+            context.Response.Results = identity is null
+                ? null
+                : ResponseResult.Create(
+                    new IdentityShowCommandResult(identity),
+                    SignalRJsonContext.Default.IdentityShowCommandResult);
         }
         catch (Exception ex)
         {

@@ -36,11 +36,7 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
 
     public override string Title => CommandTitle;
 
-    public override ToolMetadata Metadata => new()
-    {
-        Destructive = false,
-        ReadOnly = true
-    };
+    public override ToolMetadata Metadata => new() { Destructive = false, ReadOnly = true };
 
     protected override void RegisterOptions(Command command)
     {
@@ -82,8 +78,9 @@ public sealed class NetworkRuleListCommand(ILogger<NetworkRuleListCommand> logge
                 options.RetryPolicy);
 
             // Set results
-            context.Response.Results = networkRules is null ?
-                null : ResponseResult.Create(
+            context.Response.Results = networkRules is null
+                ? null
+                : ResponseResult.Create(
                     new NetworkRuleListCommandResult(networkRules),
                     SignalRJsonContext.Default.NetworkRuleListCommandResult);
         }

@@ -73,10 +73,11 @@ public sealed class RuntimeShowCommand(ILogger<RuntimeShowCommand> logger)
                 options.AuthMethod,
                 options.RetryPolicy);
 
-            context.Response.Results = runtime is null ?
-                null: ResponseResult.Create(
-                new RuntimeShowCommandResult(runtime),
-                SignalRJsonContext.Default.RuntimeShowCommandResult);
+            context.Response.Results = runtime is null
+                ? null
+                : ResponseResult.Create(
+                    new RuntimeShowCommandResult(runtime),
+                    SignalRJsonContext.Default.RuntimeShowCommandResult);
         }
         catch (Exception ex)
         {

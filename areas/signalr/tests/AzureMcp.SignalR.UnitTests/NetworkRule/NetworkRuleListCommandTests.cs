@@ -69,10 +69,7 @@ public class NetworkRuleListCommandTests
                     },
                 PrivateEndpoints = new[]
                 {
-                    new PrivateEndpointNetworkAcl
-                    {
-                        Name = "test-endpoint", Allow = new[] { "ServerConnection" }
-                    }
+                    new PrivateEndpointNetworkAcl { Name = "test-endpoint", Allow = new[] { "ServerConnection" } }
                 }
             };
 
@@ -114,8 +111,7 @@ public class NetworkRuleListCommandTests
             PublicNetwork =
                 new NetworkAcl
                 {
-                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI" },
-                    Deny = new[] { "Trace" }
+                    Allow = new[] { "ServerConnection", "ClientConnection", "RESTAPI" }, Deny = new[] { "Trace" }
                 },
             PrivateEndpoints = new[]
             {
@@ -150,7 +146,9 @@ public class NetworkRuleListCommandTests
         Assert.Equal("Success", response.Message);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json, SignalRJsonContext.Default.NetworkRuleListCommandResult);
+        var result =
+            JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json,
+                SignalRJsonContext.Default.NetworkRuleListCommandResult);
 
         Assert.NotNull(result);
         Assert.Equal("Allow",
@@ -169,7 +167,12 @@ public class NetworkRuleListCommandTests
     public async Task ExecuteAsync_ReturnsNullWhenNetworkRulesNotFound()
     {
         // Arrange
-        _signalRService.GetNetworkRulesAsync("test-subscription", "test-rg", "nonexistent-signalr", null, null,
+        _signalRService.GetNetworkRulesAsync(
+                "test-subscription",
+                "test-rg",
+                "nonexistent-signalr",
+                Arg.Any<string?>(),
+                Arg.Any<AuthMethod?>(),
                 Arg.Any<RetryPolicyOptions>())
             .Returns((Models.NetworkRule?)null);
 
@@ -192,8 +195,13 @@ public class NetworkRuleListCommandTests
     {
         // Arrange
         var exception = new RequestFailedException(403, "Insufficient permissions to access network rules");
-        _signalRService.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.GetNetworkRulesAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.NetworkRule?>(exception));
 
         var parseResult = _parser.Parse([
@@ -212,8 +220,13 @@ public class NetworkRuleListCommandTests
     public async Task ExecuteAsync_HandlesServiceErrors()
     {
         // Arrange
-        _signalRService.GetNetworkRulesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<AuthMethod?>(), Arg.Any<RetryPolicyOptions>())
+        _signalRService.GetNetworkRulesAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<AuthMethod?>(),
+                Arg.Any<RetryPolicyOptions>())
             .Returns(Task.FromException<Models.NetworkRule?>(new Exception("Network configuration error")));
 
         var parseResult = _parser.Parse([
@@ -257,7 +270,9 @@ public class NetworkRuleListCommandTests
         Assert.NotNull(response.Results);
 
         var json = JsonSerializer.Serialize(response.Results);
-        var result = JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json, SignalRJsonContext.Default.NetworkRuleListCommandResult);
+        var result =
+            JsonSerializer.Deserialize<NetworkRuleListCommand.NetworkRuleListCommandResult>(json,
+                SignalRJsonContext.Default.NetworkRuleListCommandResult);
         Assert.NotNull(result);
         var rules = Assert.IsType<Models.NetworkRule>(result.NetworkRules);
         Assert.Equal(defaultAction, rules.DefaultAction);
