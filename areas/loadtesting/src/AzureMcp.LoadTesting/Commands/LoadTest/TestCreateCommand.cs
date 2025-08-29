@@ -27,7 +27,7 @@ public sealed class TestCreateCommand(ILogger<TestCreateCommand> logger)
         $"""
         Creates a new Azure Load Testing test configuration for performance testing scenarios. This command creates a basic URL-based load test that can be used to evaluate the performance
         and scalability of web applications and APIs. The test configuration defines the target endpoint, load parameters, and test duration. Once we create a test configuration plan, we can use that to trigger test runs to test the endpoints set.
-        This is not going to trigger any test runs and only will setup your configuration for your test plan. Once you test plan is setup, you can use this test to trigger test runs.
+        This is not going to trigger any test runs and only will setup your configuration for your test plan. Once your test plan is setup, you can use this test to trigger test runs.
         """;
     public override string Title => _commandTitle;
 
