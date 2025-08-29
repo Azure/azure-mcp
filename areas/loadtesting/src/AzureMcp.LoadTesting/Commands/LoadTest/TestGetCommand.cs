@@ -21,6 +21,7 @@ public sealed class TestGetCommand(ILogger<TestGetCommand> logger)
         $"""
         Get the Azure Load Testing test configuration for the specified load test id in the specified load test resource. 
         This command retrieves the details of a specific load test configuration, including its parameters and settings. Based on this we can see what all parameters were set for the test configuration.
+        This will not retrieve the test runs or results. It will retrieve the configuration plan for your test.
         """;
     public override string Title => _commandTitle;
 

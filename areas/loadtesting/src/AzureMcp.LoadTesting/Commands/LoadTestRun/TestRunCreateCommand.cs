@@ -26,6 +26,7 @@ public sealed class TestRunCreateCommand(ILogger<TestRunCreateCommand> logger)
         Executes a new load test run based on an existing test configuration under simulated user load. This command initiates the actual execution
         of a previously created test definition and provides real-time monitoring capabilities. A test run represents a single execution instance of your load test configuration. You can run
         the same test multiple times to validate performance improvements, compare results across different deployments, or establish performance baselines for your application.
+        This will only create a test run for the selected test plan in the load test resource. It does not help in changing the test plan configuration. 
         """;
     public override string Title => _commandTitle;
 
